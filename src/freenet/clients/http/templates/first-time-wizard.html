@@ -2,10 +2,12 @@
     <h1>{{ l10n("homepageTitle") }}</h1>
     <form method="post">
         <input name="formPassword" type="hidden" value="{{ formPassword }}">
-        <div class="infobox infobox-warning"><div class="infobox-content">
-            {{ l10n("browserImeWarning") }}<br />
-            {{ l10n("browserVoiceRecognitionWarning") }}
-        </div></div>
+        <div class="infobox infobox-warning">
+            <div class="infobox-content">
+                {{ l10n("browserImeWarning") }}<br/>
+                {{ l10n("browserVoiceRecognitionWarning") }}
+            </div>
+        </div>
         <fieldset>
             <legend>{{ l10n("networkSecurityPageTitle") }}</legend>
             <input id="knowSomeone" name="knowSomeone" type="checkbox" {{ knowSomeone }}>
@@ -16,7 +18,8 @@
             <div id="checkDarknet" hidden="hidden">
                 <p>
                     <input id="connectToStrangers" name="connectToStrangers" type="checkbox" {{ connectToStrangers }}>
-                    <label for="connectToStrangers">{{ l10n("networkSecurityIWantToConnectToUntrustedStrangers") }}</label>
+                    <label for="connectToStrangers">{{ l10n("networkSecurityIWantToConnectToUntrustedStrangers")
+                        }}</label>
                 </p>
             </div>
         </fieldset>
@@ -27,25 +30,26 @@
             <div id="monthlyLimitChecked" hidden="hidden">
                 <p>
                     {% if errors.bandwidthMonthlyLimitError is not null %}
-                        <div class="error">{{ errors.bandwidthMonthlyLimitError }}</div>
-                    {% endif %}
-                    {{ l10n("bandwidthMonthlyLimit") }}
-                    <input id="monthlyLimit" value="{{ bandwidthMonthlyLimit }}" name="monthlyLimit" type="number" min="{{ minBandwidthMonthlyLimit }}" max="999999999" step=".01">
-                    {{ l10n("bandwidthMonthlyLimitBaseUnit") }}.
+                <div class="error">{{ errors.bandwidthMonthlyLimitError }}</div>
+                {% endif %}
+                {{ l10n("bandwidthMonthlyLimit") }}
+                <input id="monthlyLimit" value="{{ bandwidthMonthlyLimit }}" name="monthlyLimit" type="number"
+                       min="{{ minBandwidthMonthlyLimit }}" max="999999999" step=".01">
+                {{ l10n("bandwidthMonthlyLimitBaseUnit") }}.
                 </p>
             </div>
             <div id="monthlyLimitUnchecked">
                 <p>
                     {% if errors.downloadLimitError is not null %}
-                        <div class="error">{{ errors.downloadLimitError }}</div>
-                    {% endif %}
-                    {% if errors.uploadLimitError is not null %}
-                        <div class="error">{{ errors.uploadLimitError }}</div>
-                    {% endif %}
-                    <input id="downLimit" name="downLimit" type="number" min="0" value="{{ downloadLimit }}">
-                    {{ l10n("bandwidthDownLimitBaseUnit") }}.
-                    <input id="upLimit" name="upLimit" type="number" min="0" value="{{ uploadLimit }}">
-                    {{ l10n("bandwidthUpLimitBaseUnit") }}.
+                <div class="error">{{ errors.downloadLimitError }}</div>
+                {% endif %}
+                {% if errors.uploadLimitError is not null %}
+                <div class="error">{{ errors.uploadLimitError }}</div>
+                {% endif %}
+                <input id="downLimit" name="downLimit" type="number" min="0" value="{{ downloadLimit }}">
+                {{ l10n("bandwidthDownLimitBaseUnit") }}.
+                <input id="upLimit" name="upLimit" type="number" min="0" value="{{ uploadLimit }}">
+                {{ l10n("bandwidthUpLimitBaseUnit") }}.
                 <p>
                 <h4>{{ l10n("bandwidthCommonInternetConnectionSpeeds") }}</h4>
                 <table>
@@ -83,13 +87,14 @@
             <legend>{{ l10n("storage") }}</legend>
             <p>
                 {% if errors.storageLimitError is not null %}
-                    <div class="error">{{ errors.storageLimitError }}</div>
-                {% endif %}
-                Give
-                <!-- TODO: Populated by the node with some percentage of free space. -->
-                <!-- TODO: Possibly attach this number with a slider of percentage of free space. -->
-                <input id="storage" value="{{ storageLimit }}" name="storage" type="number" min="{{ minStorageLimit }}" max="999999999" step=".01">
-                {{ l10n("storageLimitDescription") }}
+            <div class="error">{{ errors.storageLimitError }}</div>
+            {% endif %}
+            Give
+            <!-- TODO: Populated by the node with some percentage of free space. -->
+            <!-- TODO: Possibly attach this number with a slider of percentage of free space. -->
+            <input id="storage" value="{{ storageLimit }}" name="storage" type="number" min="{{ minStorageLimit }}"
+                   max="999999999" step=".01">
+            {{ l10n("storageLimitDescription") }}
             </p>
             {% if setPassword is not null %}
             <input id="setPassword" name="setPassword" type="checkbox" {{ setPassword }}>
@@ -99,10 +104,10 @@
                     <div class="give-password-wrap">
                         <p>
                             {% if errors.passwordError is not null %}
-                                <div class="error">{{ errors.passwordError }}</div>
-                            {% endif %}
-                            <label for="password">{{ l10n("password") }}</label>
-                            <input id="password" name="password" type="password">
+                        <div class="error">{{ errors.passwordError }}</div>
+                        {% endif %}
+                        <label for="password">{{ l10n("password") }}</label>
+                        <input id="password" name="password" type="password">
                         </p>
                         <p>
                             <label for="confirmPassword">{{ l10n("confirmPassword") }}</label>

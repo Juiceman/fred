@@ -15,9 +15,10 @@ public class WrapperKeepalive extends Thread implements AutoCloseable {
   public void run() {
     while (!shutdown) {
       try {
-        WrapperManager.signalStarting(INTERVAL + (int)SECONDS.toMillis(5));
+        WrapperManager.signalStarting(INTERVAL + (int) SECONDS.toMillis(5));
         Thread.sleep(INTERVAL);
-      } catch (InterruptedException e) {}
+      } catch (InterruptedException e) {
+      }
     }
   }
 

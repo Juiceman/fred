@@ -22,15 +22,13 @@ public class PebbleUtils {
     loader.setPrefix(PebbleUtils.TEMPLATE_ROOT_PATH);
     loader.setSuffix(PebbleUtils.TEMPLATE_NAME_SUFFIX);
 
-    templateEngine = new PebbleEngine.Builder().loader(loader).extension(new L10nExtension()).build();
+    templateEngine =
+        new PebbleEngine.Builder().loader(loader).extension(new L10nExtension()).build();
   }
 
   public static void addChild(
-      HTMLNode parent,
-      String templateName,
-      Map<String, Object> model,
-      String l10nPrefix) throws
-      IOException {
+      HTMLNode parent, String templateName, Map<String, Object> model, String l10nPrefix)
+      throws IOException {
     model.put("l10nPrefix", l10nPrefix);
     PebbleTemplate template = templateEngine.getTemplate(templateName);
 

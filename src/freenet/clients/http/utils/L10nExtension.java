@@ -20,20 +20,21 @@ class L10nExtension extends AbstractExtension {
     return functions;
   }
 
-    static class L10nFunction implements Function {
+  static class L10nFunction implements Function {
 
-        @Override
-        public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
-            Object key = args.get("0");
-            if (key == null) {
-                return "null";
-            }
-            return NodeL10n.getBase().getString(context.getVariable("l10nPrefix") + key.toString());
-        }
-
-        @Override
-        public List<String> getArgumentNames() {
-            return null;
-        }
+    @Override
+    public Object execute(
+        Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
+      Object key = args.get("0");
+      if (key == null) {
+        return "null";
+      }
+      return NodeL10n.getBase().getString(context.getVariable("l10nPrefix") + key.toString());
     }
+
+    @Override
+    public List<String> getArgumentNames() {
+      return null;
+    }
+  }
 }

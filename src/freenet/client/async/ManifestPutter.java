@@ -9,23 +9,23 @@ import java.io.Serializable;
 import freenet.client.InsertException;
 
 public abstract class ManifestPutter extends BaseClientPutter {
-    
-    private static final long serialVersionUID = 1L;
 
-    /** Required because {@link Serializable} is implemented by a parent class. */
-    protected ManifestPutter() {
-    }
+  private static final long serialVersionUID = 1L;
 
-    protected ManifestPutter(short priorityClass, RequestClient requestClient) {
-        super(priorityClass, requestClient);
-    }
+  /** Required because {@link Serializable} is implemented by a parent class. */
+  protected ManifestPutter() {}
 
-    public abstract int countFiles();
-    public abstract long totalSize();
-    public abstract void start(ClientContext context) throws InsertException;
-    
-    public byte[] getSplitfileCryptoKey() {
-        return null;
-    }
-    
+  protected ManifestPutter(short priorityClass, RequestClient requestClient) {
+    super(priorityClass, requestClient);
+  }
+
+  public abstract int countFiles();
+
+  public abstract long totalSize();
+
+  public abstract void start(ClientContext context) throws InsertException;
+
+  public byte[] getSplitfileCryptoKey() {
+    return null;
+  }
 }
