@@ -34,7 +34,7 @@ public class CleanupTranslations {
             FileInputStream fis = new FileInputStream(f);
             InputStreamReader isr = new InputStreamReader(new BufferedInputStream(fis), StandardCharsets.UTF_8);
            BufferedReader br = new BufferedReader(isr);
-				StringWriter sw = new StringWriter();
+                StringWriter sw = new StringWriter();
             boolean changed = false;
             while(true) {
                 String line = br.readLine();

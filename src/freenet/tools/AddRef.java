@@ -50,7 +50,7 @@ public class AddRef {
             fcpSocket.setSoTimeout(2000);
 
             InputStream is = fcpSocket.getInputStream();
-				LineReadingInputStream lis = new LineReadingInputStream(is);
+                LineReadingInputStream lis = new LineReadingInputStream(is);
             OutputStream os = fcpSocket.getOutputStream();
 
             try{

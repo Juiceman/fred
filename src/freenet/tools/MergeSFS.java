@@ -27,7 +27,7 @@ public class MergeSFS {
         }
         File f1 = new File(args[0]);
         File f2 = new File(args[1]);
-			SimpleFieldSet fs1 = SimpleFieldSet.readFrom(f1, false, true);
+            SimpleFieldSet fs1 = SimpleFieldSet.readFrom(f1, false, true);
         SimpleFieldSet fs2 = SimpleFieldSet.readFrom(f2, false, true);
         fs1.putAllOverwrite(fs2);
         // Force output to UTF-8. A PrintStream is still an OutputStream.
