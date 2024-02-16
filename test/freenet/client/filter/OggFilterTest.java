@@ -45,7 +45,7 @@ public class OggFilterTest {
 		}
 	}
 
-    /** the purpose of this test is to create the testoutputFile so you can check it with a video player. */
+	/** the purpose of this test is to create the testoutputFile so you can check it with a video player. */
 	@Test
 	public void testFilterFfmpegEncodedVideoSegment() throws IOException {
 		ByteArrayOutputStream expectedData = new ByteArrayOutputStream();

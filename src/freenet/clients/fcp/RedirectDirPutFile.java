@@ -14,7 +14,7 @@ public class RedirectDirPutFile extends DirPutFile {
 
 	final FreenetURI targetURI;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -35,14 +35,14 @@ public class RedirectDirPutFile extends DirPutFile {
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid TargetURI: "+e, identifier, global);
 		}
-        if(logMINOR)
-        	Logger.minor(RedirectDirPutFile.class, "targetURI = "+targetURI);
-        String mimeType;
-        if(contentTypeOverride != null)
-        	mimeType = contentTypeOverride;
-        else
-        	mimeType = guessMIME(name);
-        return new RedirectDirPutFile(name, mimeType, targetURI);
+		if(logMINOR)
+			Logger.minor(RedirectDirPutFile.class, "targetURI = "+targetURI);
+		String mimeType;
+		if(contentTypeOverride != null)
+			mimeType = contentTypeOverride;
+		else
+			mimeType = guessMIME(name);
+		return new RedirectDirPutFile(name, mimeType, targetURI);
 	}
 	
 	public RedirectDirPutFile(String name, String mimeType, FreenetURI targetURI) {

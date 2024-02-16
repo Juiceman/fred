@@ -61,10 +61,10 @@ public class AddressIdentifier {
 	 * But then that would be completely stupid, so we don't.
 	 * 
 	 * @param address
-	 *            The address to determine the type of
+	 *			The address to determine the type of
 	 * @return {@link AddressType#OTHER} if <code>address</code> is a
-	 *         hostname, {@link AddressType#IPv4} or {@link AddressType#IPv6}
-	 *         otherwise
+	 *		 hostname, {@link AddressType#IPv4} or {@link AddressType#IPv6}
+	 *		 otherwise
 	 */
 	public static AddressType getAddressType(String address) {
 		return AddressIdentifier.getAddressType(address,true);
@@ -74,12 +74,12 @@ public class AddressIdentifier {
 	 * Tries to detemine the address type of the given address.
 	 * 
 	 * @param address
-	 *            The address to determine the type of
+	 *			The address to determine the type of
 	 * @param allowIPv6PercentScopeID
-	 *            If true, match %<scope-id> suffixed IPv6 IP addresses
+	 *			If true, match %<scope-id> suffixed IPv6 IP addresses
 	 * @return {@link AddressType#OTHER} if <code>address</code> is a
-	 *         hostname, {@link AddressType#IPv4} or {@link AddressType#IPv6}
-	 *         otherwise
+	 *		 hostname, {@link AddressType#IPv4} or {@link AddressType#IPv6}
+	 *		 otherwise
 	 */
 	public static AddressType getAddressType(String address, boolean allowIPv6PercentScopeID) {
 		if (ipv4Pattern.matcher(address).matches()) {

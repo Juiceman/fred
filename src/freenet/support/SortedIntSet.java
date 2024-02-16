@@ -87,7 +87,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 	 * Remove an item
 	 * 
 	 * @param item
-	 *            the item to be removed
+	 *			the item to be removed
 	 */
 	public synchronized boolean remove(int item) {
 		int x = binarySearch(item);
@@ -127,7 +127,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 	 * Add the item.
 	 * 
 	 * @throws {@link IllegalArgumentException}
-	 *             if the item already exist
+	 *			 if the item already exist
 	 * @return <code>true</code>, if we added the item.
 	 */ 
 	public synchronized void add(int num) {

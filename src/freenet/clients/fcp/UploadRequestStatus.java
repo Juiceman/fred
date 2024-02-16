@@ -22,7 +22,7 @@ public abstract class UploadRequestStatus extends RequestStatus {
 			FreenetURI finalURI, FreenetURI targetURI, InsertExceptionMode failureCode,
 			String failureReasonShort, String failureReasonLong) {
 		super(identifier, persistence, started, finished, success, total, min, fetched,
-		      latestSuccess, fatal, failed, latestFailure, totalFinalized, prio);
+			  latestSuccess, fatal, failed, latestFailure, totalFinalized, prio);
 		this.finalURI = finalURI;
 		this.targetURI = targetURI;
 		this.failureCode = failureCode;

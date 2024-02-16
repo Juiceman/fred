@@ -119,9 +119,9 @@ public class StatisticsToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-        if(!ctx.checkFullAccess(this))
-            return;
-        
+		if(!ctx.checkFullAccess(this))
+			return;
+		
 		final SubConfig nodeConfig = node.config.get("node");
 		
 		final String requestPath = request.getPath().substring(path().length());
@@ -219,10 +219,10 @@ public class StatisticsToadlet extends Toadlet {
 		if(advancedMode) {
 			// store size box
 			//HTMLNode storeSizeInfobox = nextTableCell.addChild("div", "class", "infobox");
-             HTMLNode storeSizeInfobox = contentNode.addChild("div","class", "infobox");
+			 HTMLNode storeSizeInfobox = contentNode.addChild("div","class", "infobox");
 			
 			drawStoreSizeBox(storeSizeInfobox, myLocation, nodeUptimeSeconds);
-           
+		   
 			
 			if(numberOfConnected + numberOfRoutingBackedOff > 0) {
 				

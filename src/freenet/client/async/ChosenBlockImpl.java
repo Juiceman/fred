@@ -17,12 +17,12 @@ import freenet.support.Logger;
  *
  */
 public class ChosenBlockImpl extends ChosenBlock {
-    
-    private static volatile boolean logMINOR;
-    private static volatile boolean logDEBUG;
-    static {
-        Logger.registerClass(ChosenBlockImpl.class);
-    }
+	
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
+	static {
+		Logger.registerClass(ChosenBlockImpl.class);
+	}
 
 	public final SendableRequest request;
 	public final RequestScheduler sched;
@@ -49,82 +49,82 @@ public class ChosenBlockImpl extends ChosenBlock {
 
 	@Override
 	public void onFailure(final LowLevelPutException e, ClientContext context) {
-	    context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+		context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                try {
-                    ((SendableInsert) request).onFailure(e, token, context);
-                } finally {
-                    sched.removeRunningInsert((SendableInsert)(request), token.getKey());
-                    // Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
-                    // so wake the starter thread.
-                }
-                sched.wakeStarter();
-                return false;
-            }
-	        
-	    });
+			@Override
+			public boolean run(ClientContext context) {
+				try {
+					((SendableInsert) request).onFailure(e, token, context);
+				} finally {
+					sched.removeRunningInsert((SendableInsert)(request), token.getKey());
+					// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
+					// so wake the starter thread.
+				}
+				sched.wakeStarter();
+				return false;
+			}
+			
+		});
 	}
 
 	@Override
 	public void onInsertSuccess(final ClientKey key, ClientContext context) {
-        context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+		context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                try {
-                    ((SendableInsert) request).onSuccess(token, key, context);
-                } finally {
-                    sched.removeRunningInsert((SendableInsert)(request), token.getKey());
-                }
-                // Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
-                // so wake the starter thread.
-                sched.wakeStarter();
-                return false;
-            }
-            
-        });
+			@Override
+			public boolean run(ClientContext context) {
+				try {
+					((SendableInsert) request).onSuccess(token, key, context);
+				} finally {
+					sched.removeRunningInsert((SendableInsert)(request), token.getKey());
+				}
+				// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
+				// so wake the starter thread.
+				sched.wakeStarter();
+				return false;
+			}
+			
+		});
 	}
 
 	@Override
 	public void onFailure(final LowLevelGetException e, ClientContext context) {
-        context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+		context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                try {
-                    ((SendableGet) request).onFailure(e, token, context);
-                } finally {
-                    sched.removeFetchingKey(key);
-                }
-                // Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
-                // so wake the starter thread.
-                sched.wakeStarter();
-                return false;
-            }
+			@Override
+			public boolean run(ClientContext context) {
+				try {
+					((SendableGet) request).onFailure(e, token, context);
+				} finally {
+					sched.removeFetchingKey(key);
+				}
+				// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
+				// so wake the starter thread.
+				sched.wakeStarter();
+				return false;
+			}
 
-        });
+		});
 	}
 
 	@Override
 	public void onFetchSuccess(ClientContext context) {
-	    context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+		context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                try {
-                    sched.succeeded((SendableGet)request, false);
-                } finally {
-                    sched.removeFetchingKey(key);
-                }
-                // Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
-                // so wake the starter thread.
-                sched.wakeStarter();
-                return false;
-            }
-	        
-	    });
+			@Override
+			public boolean run(ClientContext context) {
+				try {
+					sched.succeeded((SendableGet)request, false);
+				} finally {
+					sched.removeFetchingKey(key);
+				}
+				// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
+				// so wake the starter thread.
+				sched.wakeStarter();
+				return false;
+			}
+			
+		});
 	}
 	
 	@Override

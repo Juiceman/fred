@@ -20,7 +20,7 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 	private boolean lastWasKnownGoodToo;
 	private boolean roundFinished;
 	
-    private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
 		Logger.registerClass(USKSparseProxyCallback.class);
 	}

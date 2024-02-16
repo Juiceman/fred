@@ -53,8 +53,8 @@ public class ArchiveManager {
 	private static boolean logMINOR;
 
 	public enum ARCHIVE_TYPE {
-	    // WARNING: This enum is persisted. Changing member names may break downloads/uploads.
-		ZIP((short)0, new String[] { "application/zip", "application/x-zip" }), 	/* eventually get rid of ZIP support at some point */
+		// WARNING: This enum is persisted. Changing member names may break downloads/uploads.
+		ZIP((short)0, new String[] { "application/zip", "application/x-zip" }),	/* eventually get rid of ZIP support at some point */
 		TAR((short)1, new String[] { "application/x-tar" });
 
 		public final short metadataID;
@@ -590,7 +590,7 @@ outerZIP:		while(true) {
 	private int resolve(MetadataUnresolvedException e, int x, BucketFactory bf, ArchiveStoreContext ctx, FreenetURI key, MutableBoolean gotElement, String element2, ArchiveExtractCallback callback, ClientContext context) throws IOException, ArchiveFailureException {
 		for(Metadata m: e.mustResolve) {
 			try {
-			    addStoreElement(ctx, key, ".metadata-"+(x++), m.toBucket(bf), gotElement, element2, callback, context);
+				addStoreElement(ctx, key, ".metadata-"+(x++), m.toBucket(bf), gotElement, element2, callback, context);
 			} catch (MetadataUnresolvedException e1) {
 				x = resolve(e, x, bf, ctx, key, gotElement, element2, callback, context);
 				continue;

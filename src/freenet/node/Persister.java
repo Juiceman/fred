@@ -14,12 +14,12 @@ import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 
 class Persister implements Runnable {
-        private static volatile boolean logMINOR;
-        static {
-            Logger.registerClass(Persister.class);
-        }
+		private static volatile boolean logMINOR;
+		static {
+			Logger.registerClass(Persister.class);
+		}
 
-        static final long PERIOD = MINUTES.toMillis(15);
+		static final long PERIOD = MINUTES.toMillis(15);
 
 	Persister(Persistable t, File persistTemp, File persistTarget, Ticker ps) {
 		this.persistable = t;

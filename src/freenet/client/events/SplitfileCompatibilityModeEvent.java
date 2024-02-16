@@ -19,7 +19,7 @@ public class SplitfileCompatibilityModeEvent implements ClientEvent {
 
 	@Override
 	public String getDescription() {
-	    return "CompatibilityMode between "+minCompatibilityMode+" and "+maxCompatibilityMode;
+		return "CompatibilityMode between "+minCompatibilityMode+" and "+maxCompatibilityMode;
 	}
 	
 	public SplitfileCompatibilityModeEvent(CompatibilityMode min, CompatibilityMode max, byte[] splitfileCryptoKey, boolean dontCompress, boolean bottomLayer) {

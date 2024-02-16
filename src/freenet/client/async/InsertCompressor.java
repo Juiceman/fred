@@ -199,8 +199,8 @@ public class InsertCompressor implements CompressJob {
 						shouldFreeOnFinally = false;
 					}
 				} catch (PersistenceDisabledException e) {
-				    if(!context.jobRunner.shuttingDown())
-				        Logger.error(this, "Database disabled compressing data", new Exception("error"));
+					if(!context.jobRunner.shuttingDown())
+						Logger.error(this, "Database disabled compressing data", new Exception("error"));
 					shouldFreeOnFinally = true;
 					if(bestCompressedData != null && bestCompressedData != origData && bestCompressedData != result)
 						bestCompressedData.free();
@@ -220,8 +220,8 @@ public class InsertCompressor implements CompressJob {
 
 				context.jobRunner.queue(new PersistentJob() {
 
-				    // This can wait until after the next checkpoint, because it's still in the
-				    // persistentInsertCompressors list, so will be restarted if necessary.
+					// This can wait until after the next checkpoint, because it's still in the
+					// persistentInsertCompressors list, so will be restarted if necessary.
 					@Override
 					public boolean run(ClientContext context) {
 						inserter.onCompressed(output, context);

@@ -16,9 +16,9 @@ import freenet.support.UptimeContainer;
  * @author Artefact2
  */
 public class PersistentStatsPutter implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final int OFFSET = 60000;
+	public static final int OFFSET = 60000;
 
 	private long latestNodeBytesOut = 0;
 	private long latestNodeBytesIn = 0;
@@ -50,9 +50,9 @@ public class PersistentStatsPutter implements Serializable {
 		this.latestUptimeVal = uptime;
 	}
 
-    public void addFrom(PersistentStatsPutter stored) {
-        this.latestBW.addFrom(stored.latestBW);
-        this.latestUptime.addFrom(stored.latestUptime);
-    }
+	public void addFrom(PersistentStatsPutter stored) {
+		this.latestBW.addFrom(stored.latestBW);
+		this.latestUptime.addFrom(stored.latestUptime);
+	}
 
 }

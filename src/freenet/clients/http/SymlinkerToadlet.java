@@ -30,7 +30,7 @@ public class SymlinkerToadlet extends Toadlet {
 		this.node = node;
 		tslconfig = node.config.createSubConfig("toadletsymlinker");
 		tslconfig.register("symlinks", null, 9, true, false, "SymlinkerToadlet.symlinks", "SymlinkerToadlet.symlinksLong", 
-        		new StringArrCallback() {
+				new StringArrCallback() {
 			@Override
 			public String[] get() {
 				return getConfigLoadString();
@@ -42,10 +42,10 @@ public class SymlinkerToadlet extends Toadlet {
 				throw new InvalidConfigValueException("Cannot set the plugins that's loaded.");
 			}
 
-			        @Override
+					@Override
 					public boolean isReadOnly() {
-				        return true;
-			        }
+						return true;
+					}
 		});
 		
 		String fns[] = tslconfig.getStringArr("symlinks");
@@ -129,7 +129,7 @@ public class SymlinkerToadlet extends Toadlet {
 		URI outuri = null;
 		try {
 			outuri = new URI(null, null,
-			         path, uri.getQuery(), uri.getFragment());
+					 path, uri.getQuery(), uri.getFragment());
 		} catch (URISyntaxException e) {
 			// TODO Handle error somehow
 			writeHTMLReply(ctx, 200, "OK", e.getMessage());
@@ -137,7 +137,7 @@ public class SymlinkerToadlet extends Toadlet {
 		}
 		
 		uri.getRawQuery();
-	    
+		
 		throw new RedirectException(outuri);
 	}
 

@@ -16,8 +16,8 @@ import freenet.support.api.RandomAccessBucket;
  */
 public class InsertBlock implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private RandomAccessBucket data;
+	private static final long serialVersionUID = 1L;
+	private RandomAccessBucket data;
 	private boolean isFreed;
 	public FreenetURI desiredURI;
 	public ClientMetadata clientMetadata;

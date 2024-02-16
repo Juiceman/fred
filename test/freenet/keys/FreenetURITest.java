@@ -51,16 +51,16 @@ public class FreenetURITest {
 		}
 		try {
 			new FreenetURI(
-			        "SSK@5hH~39FtjA7A9~VXWtBKI~prUDTuJZURudDG0xFn3KA,GDgRGt5f6xqbmo-WraQtU54x4H~871Sho9Hz6hC-0RA,AQACAAE/Search-17XXXX/index_d51.xml")
-			        .sskForUSK();
+					"SSK@5hH~39FtjA7A9~VXWtBKI~prUDTuJZURudDG0xFn3KA,GDgRGt5f6xqbmo-WraQtU54x4H~871Sho9Hz6hC-0RA,AQACAAE/Search-17XXXX/index_d51.xml")
+					.sskForUSK();
 			fail("no exception throw!");
 		} catch (IllegalStateException e) {
 			// pass
 		}
 		try {
 			new FreenetURI(
-			        "SSK@5hH~39FtjA7A9~VXWtBKI~prUDTuJZURudDG0xFn3KA,GDgRGt5f6xqbmo-WraQtU54x4H~871Sho9Hz6hC-0RA,AQACAAE/Search17/index_d51.xml")
-			        .sskForUSK();
+					"SSK@5hH~39FtjA7A9~VXWtBKI~prUDTuJZURudDG0xFn3KA,GDgRGt5f6xqbmo-WraQtU54x4H~871Sho9Hz6hC-0RA,AQACAAE/Search17/index_d51.xml")
+					.sskForUSK();
 			fail("no exception throw!");
 		} catch (IllegalStateException e) {
 			// pass
@@ -97,16 +97,16 @@ public class FreenetURITest {
 			// Success
 		}
 		
-        final FreenetURI requestUriSSKPlain = new FreenetURI("SSK@sdFxM0Z4zx4-gXhGwzXAVYvOUi6NRfdGbyJa797bNAg,ZP4aASnyZax8nYOvCOlUebegsmbGQIXfVzw7iyOsXEc,AQACAAE/");
-        final FreenetURI insertUriSSKPlain = new FreenetURI("SSK@ZTeIa1g4T3OYCdUFfHrFSlRnt5coeFFDCIZxWSb7abs,ZP4aASnyZax8nYOvCOlUebegsmbGQIXfVzw7iyOsXEc,AQECAAE/");
-        assertEquals(requestUriSSKPlain, insertUriSSKPlain.deriveRequestURIFromInsertURI());
-        
-        try {
-            requestUriSSKPlain.deriveRequestURIFromInsertURI();
-            fail("requestUriSSKPlain.deriveRequestURIFromInsertURI() should fail because it IS a request URI already!");
-        } catch(MalformedURLException e) {
-            // Success
-        }
+		final FreenetURI requestUriSSKPlain = new FreenetURI("SSK@sdFxM0Z4zx4-gXhGwzXAVYvOUi6NRfdGbyJa797bNAg,ZP4aASnyZax8nYOvCOlUebegsmbGQIXfVzw7iyOsXEc,AQACAAE/");
+		final FreenetURI insertUriSSKPlain = new FreenetURI("SSK@ZTeIa1g4T3OYCdUFfHrFSlRnt5coeFFDCIZxWSb7abs,ZP4aASnyZax8nYOvCOlUebegsmbGQIXfVzw7iyOsXEc,AQECAAE/");
+		assertEquals(requestUriSSKPlain, insertUriSSKPlain.deriveRequestURIFromInsertURI());
+		
+		try {
+			requestUriSSKPlain.deriveRequestURIFromInsertURI();
+			fail("requestUriSSKPlain.deriveRequestURIFromInsertURI() should fail because it IS a request URI already!");
+		} catch(MalformedURLException e) {
+			// Success
+		}
 	}
 
 	@Test

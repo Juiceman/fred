@@ -138,7 +138,7 @@ public class HTMLDecoder {
 			if (isWhitespace(c)) {
 				while ((curPos < maxPos) && isWhitespace(s.charAt(curPos))) {
 					curPos++;
-                }
+				}
 				c = '\u0020';
 			}
 			sb.append(c);
@@ -150,10 +150,10 @@ public class HTMLDecoder {
 	public static boolean isWhitespace(char ch) {
 		return 
 			//space
-		    (ch == '\u0020')
+			(ch == '\u0020')
 			//Mac newline
-		    || (ch == '\r')
-		    //Unix newline
+			|| (ch == '\r')
+			//Unix newline
 			|| (ch == '\n')		
 			//tab
 			|| (ch == '\u0009')

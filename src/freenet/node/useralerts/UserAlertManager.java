@@ -116,7 +116,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	 * 
 	 * @see #unregister(UserAlert)
 	 * @param alertHashCode
-	 *            The hash code of the user alert to dismiss
+	 *			The hash code of the user alert to dismiss
 	 */
 	public void dismissAlert(int alertHashCode) {
 		UserAlert[] userAlerts = getAlerts();
@@ -212,7 +212,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	 * Renders the given alert and returns the rendered HTML node.
 	 * 
 	 * @param userAlert
-	 *            The user alert to render
+	 *			The user alert to render
 	 * @return The rendered HTML node
 	 */
 	public HTMLNode renderAlert(UserAlert userAlert) {
@@ -430,12 +430,12 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			if (alert.isValid()) {
 				sb.append("\n");
 				sb.append("  <entry>\n");
-				sb.append("    <title>").append(alert.getTitle()).append("</title>\n");
-				sb.append("    <link href=\"").append(messagesURI).append("#").append(alert.anchor()).append("\"/>\n");
-				sb.append("    <summary>").append(alert.getShortText()).append("</summary>\n");
-				sb.append("    <content type=\"text\">").append(alert.getText()).append("</content>\n");
-				sb.append("    <id>urn:feed:").append(alert.anchor()).append("</id>\n");
-				sb.append("    <updated>").append(formatTime(alert.getUpdatedTime())).append("</updated>\n");
+				sb.append("	<title>").append(alert.getTitle()).append("</title>\n");
+				sb.append("	<link href=\"").append(messagesURI).append("#").append(alert.anchor()).append("\"/>\n");
+				sb.append("	<summary>").append(alert.getShortText()).append("</summary>\n");
+				sb.append("	<content type=\"text\">").append(alert.getText()).append("</content>\n");
+				sb.append("	<id>urn:feed:").append(alert.anchor()).append("</id>\n");
+				sb.append("	<updated>").append(formatTime(alert.getUpdatedTime())).append("</updated>\n");
 				sb.append("  </entry>\n");
 			}
 		}

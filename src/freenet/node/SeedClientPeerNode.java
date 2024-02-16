@@ -167,19 +167,19 @@ public class SeedClientPeerNode extends PeerNode {
 		return true;
 	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    protected void writePeers() {
-        // Do not write peers as seed clients are not in the peers list and are not saved.
-    }
+	@Override
+	protected void writePeers() {
+		// Do not write peers as seed clients are not in the peers list and are not saved.
+	}
 
-    @Override
-    protected boolean fromAnonymousInitiator() {
-        return true;
-    }
+	@Override
+	protected boolean fromAnonymousInitiator() {
+		return true;
+	}
 
 }

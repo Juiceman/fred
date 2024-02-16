@@ -11,135 +11,135 @@ import java.util.Map;
  */
 public class LRUQueue<T> {
 
-    /*
-     * I've just converted this to using the DLList and Hashtable
-     * this makes it Hashtable time instead of O(N) for push and
-     * remove, and Hashtable time instead of O(1) for pop.  Since
-     * push is by far the most done operation, this should be an
-     * overall improvement.
-     */
+	/*
+	 * I've just converted this to using the DLList and Hashtable
+	 * this makes it Hashtable time instead of O(N) for push and
+	 * remove, and Hashtable time instead of O(1) for pop.  Since
+	 * push is by far the most done operation, this should be an
+	 * overall improvement.
+	 */
 	private final DoublyLinkedListImpl<QItem<T>> list = new DoublyLinkedListImpl<QItem<T>>();
 	private final Map<T, QItem<T>> hash = new HashMap<T, QItem<T>>();
-    
-    public LRUQueue() {
-    }
-    
-    /**
-     *       push()ing an object that is already in
-     *       the queue moves that object to the most
-     *       recently used position, but doesn't add
-     *       a duplicate entry in the queue.
-     */
+	
+	public LRUQueue() {
+	}
+	
+	/**
+	 *	   push()ing an object that is already in
+	 *	   the queue moves that object to the most
+	 *	   recently used position, but doesn't add
+	 *	   a duplicate entry in the queue.
+	 */
 	public final synchronized void push(T obj) {
 		if (obj == null)
 			throw new NullPointerException();
 
 		QItem<T> insert = hash.get(obj);
-        if (insert == null) {
+		if (insert == null) {
 			insert = new QItem<T>(obj);
-            hash.put(obj,insert);
-        } else {
-            list.remove(insert);
-        }
+			hash.put(obj,insert);
+		} else {
+			list.remove(insert);
+		}
 
-        list.unshift(insert);
-    } 
+		list.unshift(insert);
+	} 
 
-    /**
-     * push to bottom (least recently used position)
-     */
+	/**
+	 * push to bottom (least recently used position)
+	 */
 	public synchronized void pushLeast(T obj) {
 		if (obj == null)
 			throw new NullPointerException();
 
 		QItem<T> insert = hash.get(obj);
-        if (insert == null) {
+		if (insert == null) {
 			insert = new QItem<T>(obj);
-            hash.put(obj,insert);
-        } else {
-            list.remove(insert);
-        }
+			hash.put(obj,insert);
+		} else {
+			list.remove(insert);
+		}
 
-        list.push(insert);
+		list.push(insert);
 	}
 	
-    /**
-     *  @return Least recently pushed Object.
-     */
+	/**
+	 *  @return Least recently pushed Object.
+	 */
 	public final synchronized T pop() {
-        if ( list.size() > 0 ) {
+		if ( list.size() > 0 ) {
 			return hash.remove(list.pop().obj).obj;
-        } else {
-            return null;
-        }
-    }
+		} else {
+			return null;
+		}
+	}
 
-    public final int size() {
-        return list.size();
-    }
-    
-    public final synchronized boolean remove(Object obj) {
+	public final int size() {
+		return list.size();
+	}
+	
+	public final synchronized boolean remove(Object obj) {
 		if (obj == null)
 			throw new NullPointerException();
 
 		QItem<T> i = hash.remove(obj);
 	if(i != null) {
-	    list.remove(i);
-	    return true;
+		list.remove(i);
+		return true;
 	} else {
-	    return false;
+		return false;
 	}
-    }
-    
-    /**
-     * Check if this queue contains obj
-     * @param obj Object to match
-     * @return true if this queue contains obj.
-     */
-    public final synchronized boolean contains(Object obj) {
-        return hash.containsKey(obj);
-    }
-    
+	}
+	
+	/**
+	 * Check if this queue contains obj
+	 * @param obj Object to match
+	 * @return true if this queue contains obj.
+	 */
+	public final synchronized boolean contains(Object obj) {
+		return hash.containsKey(obj);
+	}
+	
 	public Enumeration<T> elements() {
-        return new ItemEnumeration();
-    }
+		return new ItemEnumeration();
+	}
 
 	private class ItemEnumeration implements Enumeration<T> {
 
 		private Enumeration<QItem<T>> source = list.reverseElements();
-       
-        @Override
-        public boolean hasMoreElements() {
-            return source.hasMoreElements();
-        }
+	   
+		@Override
+		public boolean hasMoreElements() {
+			return source.hasMoreElements();
+		}
 
 		@Override
 		public T nextElement() {
 			return source.nextElement().obj;
-        }
-    }
+		}
+	}
 
 	private static class QItem<T> extends DoublyLinkedListImpl.Item<QItem<T>> {
 		public T obj;
 
-        public QItem(T obj) {
-            this.obj = obj;
-        }
-    }
+		public QItem(T obj) {
+			this.obj = obj;
+		}
+	}
 
-    /**
-     * Return the objects in the queue as an array in an arbitrary and meaningless
-     * order.
-     */
+	/**
+	 * Return the objects in the queue as an array in an arbitrary and meaningless
+	 * order.
+	 */
 	public synchronized Object[] toArray() {
 		return hash.keySet().toArray();
 	}
 
-    /**
-     * Return the objects in the queue as an array in an arbitrary and meaningless
-     * order.
+	/**
+	 * Return the objects in the queue as an array in an arbitrary and meaningless
+	 * order.
 	 * @param array The array to fill in. If it is too small a new array of the same type will be allocated.
-     */
+	 */
 	public synchronized <E> E[] toArray(E[] array) {
 		return hash.keySet().toArray(array);
 	}
@@ -165,8 +165,8 @@ public class LRUQueue<T> {
 	 * recently used object is in <tt>[array.length-1]</tt>.
 	 * 
 	 * @param array
-	 *            The array to fill in. If it is too small a new array of the
-	 *            same type will be allocated.
+	 *			The array to fill in. If it is too small a new array of the
+	 *			same type will be allocated.
 	 */
 
 	@SuppressWarnings("unchecked")

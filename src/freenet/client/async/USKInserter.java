@@ -31,8 +31,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompletionCallback, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
@@ -295,26 +295,26 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	}
 	
 	protected USKInserter() {
-	    // For serialization.
-	    this.hashCode = 0;
-	    this.tokenObject = null;
-	    this.persistent = false;
-	    this.parent = null;
-	    this.data = null;
-	    this.compressionCodec = 0;
-	    this.ctx = null;
-	    this.cb = null;
-	    this.isMetadata = false;
-	    this.sourceLength = 0;
-	    this.token = 0;
-	    this.privUSK = null;
-	    this.pubUSK = null;
-	    this.edition = 0;
-	    this.freeData = false;
-	    this.extraInserts = 0;
-	    this.cryptoAlgorithm = 0;
-	    this.forceCryptoKey = null;
-	    this.realTimeFlag = false;
+		// For serialization.
+		this.hashCode = 0;
+		this.tokenObject = null;
+		this.persistent = false;
+		this.parent = null;
+		this.data = null;
+		this.compressionCodec = 0;
+		this.ctx = null;
+		this.cb = null;
+		this.isMetadata = false;
+		this.sourceLength = 0;
+		this.token = 0;
+		this.privUSK = null;
+		this.pubUSK = null;
+		this.edition = 0;
+		this.freeData = false;
+		this.extraInserts = 0;
+		this.cryptoAlgorithm = 0;
+		this.forceCryptoKey = null;
+		this.realTimeFlag = false;
 	}
 
 	@Override
@@ -359,7 +359,7 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	@Override
 	public void onCancelled(ClientContext context) {
 		synchronized(this) {
-		    fetcher = null;
+			fetcher = null;
 			if(finished) return;
 		}
 		Logger.error(this, "Unexpected onCancelled()", new Exception("error"));
@@ -416,23 +416,23 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	
 	private transient boolean resumed = false;
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        if(resumed) return;
-        resumed = true;
-        if(data != null) data.onResume(context);
-        if(cb != null && cb != parent) cb.onResume(context);
-        if(fetcher != null) fetcher.onResume(context);
-        if(sbi != null) sbi.onResume(context);
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		if(resumed) return;
+		resumed = true;
+		if(data != null) data.onResume(context);
+		if(cb != null && cb != parent) cb.onResume(context);
+		if(fetcher != null) fetcher.onResume(context);
+		if(sbi != null) sbi.onResume(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        SingleBlockInserter sbi;
-        synchronized(this) {
-            sbi = this.sbi;
-        }
-        if(sbi != null) sbi.onShutdown(context);
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		SingleBlockInserter sbi;
+		synchronized(this) {
+			sbi = this.sbi;
+		}
+		if(sbi != null) sbi.onShutdown(context);
+	}
 
 }

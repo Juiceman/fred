@@ -400,11 +400,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 					ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 					props.load(bais);
 				} else {
-				    // Read the file. Throw if there is a CRC error.
-				    // Note that java.util.zip.ZipInputStream only checks the CRC for compressed 
-				    // files, so this is not entirely foolproof.
-				    long size = ze.getSize();
-				    FileUtil.copy(zis, new NullOutputStream(), size);
+					// Read the file. Throw if there is a CRC error.
+					// Note that java.util.zip.ZipInputStream only checks the CRC for compressed 
+					// files, so this is not entirely foolproof.
+					long size = ze.getSize();
+					FileUtil.copy(zis, new NullOutputStream(), size);
 					zis.closeEntry();
 				}
 			}
@@ -590,8 +590,8 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		return false;
 	}
 	
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing. Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing. Not persistent.
+	}
 }

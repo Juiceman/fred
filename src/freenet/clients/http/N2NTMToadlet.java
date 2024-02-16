@@ -42,7 +42,7 @@ public class N2NTMToadlet extends Toadlet {
 			RedirectException {
 
 	if(!ctx.checkFullAccess(this))
-	    return;
+		return;
 
 		if (request.isParameterSet("peernode_hashcode")) {
 			PageNode page = ctx.getPageMaker().getPageNode(l10n("sendMessage"), ctx);
@@ -127,7 +127,7 @@ public class N2NTMToadlet extends Toadlet {
 			RedirectException {
 
 	if(!ctx.checkFullAccess(this))
-	    return;
+		return;
 
 		//Browse button clicked. Redirect.
 		if(request.isPartSet("n2nm-browse"))

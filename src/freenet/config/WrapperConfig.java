@@ -44,9 +44,9 @@ public class WrapperConfig {
 		if(!f.exists()) {
 			f = new File("wrapper.conf");
 			if(!f.exists()) {
-                            Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf does not exist");
-                            return false;
- 			}
+							Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf does not exist");
+							return false;
+			}
 		}
 		if(!f.canRead()) {
 			Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf not readable");

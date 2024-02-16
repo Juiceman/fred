@@ -56,15 +56,15 @@ public abstract class StoreCallback<T extends StorableBlock> {
 	 * CHECK THEM EITHER! Caller MUST check that the key is the one expected.
 	 * @throws KeyVerifyException */
 	public abstract T construct(byte[] data, byte[] headers, byte[] routingKey, byte[] fullKey, boolean canReadClientCache, boolean canReadSlashdotCache, BlockMetadata meta, DSAPublicKey knownPubKey)
-	        throws KeyVerifyException;
+			throws KeyVerifyException;
 	
 	public void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException {
 		store.setMaxKeys(maxStoreKeys, shrinkNow);
 	}
-    
-    public long getMaxKeys() {
-    	return store.getMaxKeys();
-    }
+	
+	public long getMaxKeys() {
+		return store.getMaxKeys();
+	}
 	
 	public long hits() {
 		return store.hits();

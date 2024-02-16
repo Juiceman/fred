@@ -131,7 +131,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		this.maxSize = maxSize2;
 		this.timeStarted = System.currentTimeMillis();
 		this.fctx = fctx;
-        this.rc = rc;
+		this.rc = rc;
 		FetchContext alteredFctx = new FetchContext(fctx, FetchContext.IDENTICAL_MASK);
 		alteredFctx.maxOutputLength = fctx.maxTempLength = maxSize;
 		alteredFctx.eventProducer.addEventListener(this);
@@ -546,14 +546,14 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		return true;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        throw new UnsupportedOperationException(); // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		throw new UnsupportedOperationException(); // Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return rc;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return rc;
+	}
 
 }

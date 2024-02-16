@@ -9,17 +9,17 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 
 public class LowLevelGetException extends LightweightException {
-    private static volatile boolean logDEBUG;
+	private static volatile boolean logDEBUG;
 
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+			}
+		});
+	}
 
 	private static final long serialVersionUID = 1L;
 	/** Decode of data failed, probably was bogus at source */
@@ -103,8 +103,8 @@ public class LowLevelGetException extends LightweightException {
 		return super.toString()+':'+getMessage(code);
 	}
 
-    @Override
-    protected boolean shouldFillInStackTrace() {
-        return logDEBUG || code == INTERNAL_ERROR || code == DECODE_FAILED || code == VERIFY_FAILED;
-    }
+	@Override
+	protected boolean shouldFillInStackTrace() {
+		return logDEBUG || code == INTERNAL_ERROR || code == DECODE_FAILED || code == VERIFY_FAILED;
+	}
 }

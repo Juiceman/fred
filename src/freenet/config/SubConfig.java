@@ -28,7 +28,7 @@ public class SubConfig implements Comparable<SubConfig> {
 	final String prefix;
 	private boolean hasInitialized;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -90,7 +90,7 @@ public class SubConfig implements Comparable<SubConfig> {
 	 * @see BandwidthOption
 	 */
 	public void register(String optionName, int defaultValue, int sortOrder,
-	                     boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
 		if(cb == null) cb = new NullIntCallback();
 		register(new BandwidthOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
@@ -124,7 +124,7 @@ public class SubConfig implements Comparable<SubConfig> {
 	 * @see BandwidthOption
 	 */
 	public void register(String optionName, String defaultValueString, int sortOrder,
-	                     boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
 		if(cb == null) cb = new NullIntCallback();
 		register(new BandwidthOption(this, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
@@ -258,7 +258,7 @@ public class SubConfig implements Comparable<SubConfig> {
 				} catch (NodeNeedRestartException e) {
 					// Impossible
 					String msg = "Impossible: " + prefix + SimpleFieldSet.MULTI_LEVEL_CHAR + key + " = " + val
-					        + " : error: " + e;
+							+ " : error: " + e;
 					Logger.error(this, msg, e);
 				}
 			}
@@ -273,7 +273,7 @@ public class SubConfig implements Comparable<SubConfig> {
 		return exportFieldSet(Config.RequestType.CURRENT_SETTINGS, withDefaults);
 	}
 
-    public SimpleFieldSet exportFieldSet(Config.RequestType configRequestType, boolean withDefaults) {
+	public SimpleFieldSet exportFieldSet(Config.RequestType configRequestType, boolean withDefaults) {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		@SuppressWarnings("unchecked")
 		Map.Entry<String, Option<?>>[] entries = (Map.Entry<String, Option<?>>[])new Map.Entry<?,?>[map.size()];
@@ -289,7 +289,7 @@ public class SubConfig implements Comparable<SubConfig> {
 			if(logMINOR)
 				Logger.minor(this, "Key="+key+" value="+o.getValueString()+" default="+o.isDefault());
 			if (configRequestType == Config.RequestType.CURRENT_SETTINGS && (!withDefaults) && o.isDefault()
-			        && (!o.forceWrite)) {
+					&& (!o.forceWrite)) {
 				if(logMINOR)
 					Logger.minor(this, "Skipping "+key+" - "+o.isDefault());
 				continue;

@@ -12,7 +12,7 @@ public class L10n {
 	 * Returns the localized value for a key
 	 * 
 	 * @param key
-	 *            - The localization key
+	 *			- The localization key
 	 * @return The localized value
 	 */
 	public static String get(String key) {

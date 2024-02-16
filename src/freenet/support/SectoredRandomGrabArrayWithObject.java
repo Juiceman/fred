@@ -13,9 +13,9 @@ public class SectoredRandomGrabArrayWithObject<MyType,ChildType,GrabType extends
 
 	@Override
 	public MyType getObject() {
-	    synchronized(root) {
-	        return object;
-	    }
+		synchronized(root) {
+			return object;
+		}
 	}
 	
 	@Override
@@ -25,9 +25,9 @@ public class SectoredRandomGrabArrayWithObject<MyType,ChildType,GrabType extends
 
 	@Override
 	public void setObject(MyType client) {
-	    synchronized(root) {
-	        object = client;
-	    }
+		synchronized(root) {
+			object = client;
+		}
 	}
 
 }

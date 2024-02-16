@@ -14,7 +14,7 @@ public class ProbeError extends FCPResponse {
 	 * @param error type: The error code.
 	 * @param code If error is UNKNOWN or UNRECOGNIZED_TYPE, can specify remote code. Not included otherwise.
 	 * @param local True if the error occurred locally and was not prompted by an error relayed from a remote node.
-	 *              False if the error was relayed from a remote node.
+	 *			  False if the error was relayed from a remote node.
 	 * @see freenet.node.probe.Listener#onError(freenet.node.probe.Error, Byte, boolean)
 	 * @see freenet.node.probe.Error
 	 */

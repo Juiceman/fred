@@ -22,8 +22,8 @@ import freenet.support.api.Bucket;
  */
 public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private final File file;
+	private static final long serialVersionUID = 1L;
+	private final File file;
 	private final long startAt;
 	private final long length;
 
@@ -33,25 +33,25 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 		this.length = length;
 	}
 
-    @Override
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		throw new IOException("Bucket is read-only");
 	}
 
-    @Override
-    public OutputStream getOutputStreamUnbuffered() throws IOException {
-        throw new IOException("Bucket is read-only");
-    }
+	@Override
+	public OutputStream getOutputStreamUnbuffered() throws IOException {
+		throw new IOException("Bucket is read-only");
+	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return new BufferedInputStream(getInputStreamUnbuffered());
 	}
 
-    @Override
-    public InputStream getInputStreamUnbuffered() throws IOException {
-        return new MyInputStream();
-    }
+	@Override
+	public InputStream getInputStreamUnbuffered() throws IOException {
+		return new MyInputStream();
+	}
 
 	@Override
 	public String getName() {
@@ -146,33 +146,33 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 		return new ReadOnlyFileSliceBucket(newFile, startAt, length);
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing.
-    }
-    
-    static final int MAGIC = 0x99e54c4;
-    static final int VERSION = 1;
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing.
+	}
+	
+	static final int MAGIC = 0x99e54c4;
+	static final int VERSION = 1;
 
-    @Override
-    public void storeTo(DataOutputStream dos) throws IOException {
-        dos.writeInt(MAGIC);
-        dos.writeInt(VERSION);
-        dos.writeUTF(file.toString());
-        dos.writeLong(startAt);
-        dos.writeLong(length);
-    }
+	@Override
+	public void storeTo(DataOutputStream dos) throws IOException {
+		dos.writeInt(MAGIC);
+		dos.writeInt(VERSION);
+		dos.writeUTF(file.toString());
+		dos.writeLong(startAt);
+		dos.writeLong(length);
+	}
 
-    protected ReadOnlyFileSliceBucket(DataInputStream dis) throws StorageFormatException, IOException {
-        int version = dis.readInt();
-        if(version != VERSION) throw new StorageFormatException("Bad version");
-        file = new File(dis.readUTF());
-        startAt = dis.readLong();
-        if(startAt < 0) throw new StorageFormatException("Bad start at");
-        length = dis.readLong();
-        if(length < 0) throw new StorageFormatException("Bad length");
-        if(!file.exists()) throw new StorageFormatException("File does not exist any more");
-        if(file.length() < startAt+length) throw new StorageFormatException("Slice does not fit in file");
-    }
+	protected ReadOnlyFileSliceBucket(DataInputStream dis) throws StorageFormatException, IOException {
+		int version = dis.readInt();
+		if(version != VERSION) throw new StorageFormatException("Bad version");
+		file = new File(dis.readUTF());
+		startAt = dis.readLong();
+		if(startAt < 0) throw new StorageFormatException("Bad start at");
+		length = dis.readLong();
+		if(length < 0) throw new StorageFormatException("Bad length");
+		if(!file.exists()) throw new StorageFormatException("File does not exist any more");
+		if(file.length() < startAt+length) throw new StorageFormatException("Slice does not fit in file");
+	}
 
 }

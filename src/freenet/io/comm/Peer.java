@@ -39,15 +39,15 @@ import freenet.support.transport.ip.IPUtil;
  */
 public class Peer implements WritableToDataOutputStream {
 
-    public static class LocalAddressException extends Exception {
-    	private static final long serialVersionUID = -1;
+	public static class LocalAddressException extends Exception {
+		private static final long serialVersionUID = -1;
 	}
 
 	public static final PeerComparator PEER_COMPARATOR = new PeerComparator();
 
 	public static final String VERSION = "$Id: Peer.java,v 1.4 2005/08/25 17:28:19 amphibian Exp $";
 
-    private final FreenetInetAddress addr;
+	private final FreenetInetAddress addr;
 	private final int _port;
 
 	public Peer(DataInput dis) throws IOException {
@@ -86,18 +86,18 @@ public class Peer implements WritableToDataOutputStream {
 	 * @throws UnknownHostException If allowUnknown is not set, and a domain name which does
 	 * not exist was passed in.
 	 */
-    public Peer(String physical, boolean allowUnknown) throws PeerParseException, UnknownHostException {
-        int offset = physical.lastIndexOf(':'); // ipv6
-        if(offset < 0) throw new PeerParseException();
-        String host = physical.substring(0, offset);
-        addr = new FreenetInetAddress(host, allowUnknown);
-        String strport = physical.substring(offset+1);
-        try {
-            _port = Integer.parseInt(strport);
-            if(_port < 0 || _port > 65535) throw new PeerParseException("Invalid port "+_port);
-        } catch (NumberFormatException e) {
-            throw new PeerParseException(e);
-        }
+	public Peer(String physical, boolean allowUnknown) throws PeerParseException, UnknownHostException {
+		int offset = physical.lastIndexOf(':'); // ipv6
+		if(offset < 0) throw new PeerParseException();
+		String host = physical.substring(0, offset);
+		addr = new FreenetInetAddress(host, allowUnknown);
+		String strport = physical.substring(offset+1);
+		try {
+			_port = Integer.parseInt(strport);
+			if(_port < 0 || _port > 65535) throw new PeerParseException("Invalid port "+_port);
+		} catch (NumberFormatException e) {
+			throw new PeerParseException(e);
+		}
 	}
 
 	/**
@@ -117,25 +117,25 @@ public class Peer implements WritableToDataOutputStream {
 	 * @throws UnknownHostException If allowUnknown is not set, and a domain name which does
 	 * not exist was passed in.
 	 */
-    public Peer(String physical, boolean allowUnknown, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, PeerParseException, UnknownHostException {
-        int offset = physical.lastIndexOf(':'); // ipv6
-        if(offset < 0) 
-        	throw new PeerParseException("No port number: \""+physical+"\"");
-        String host = physical.substring(0, offset);
-        addr = new FreenetInetAddress(host, allowUnknown, checkHostnameOrIPSyntax);
-        String strport = physical.substring(offset+1);
-        try {
-            _port = Integer.parseInt(strport);
-            if(_port < 0 || _port > 65535) throw new PeerParseException("Invalid port "+_port);
-        } catch (NumberFormatException e) {
-            throw new PeerParseException(e);
-        }
-    }
-    
-    public Peer(FreenetInetAddress addr, int port) {
-    	this.addr = addr;
-    	if(addr == null) throw new NullPointerException();
-    	this._port = port;
+	public Peer(String physical, boolean allowUnknown, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, PeerParseException, UnknownHostException {
+		int offset = physical.lastIndexOf(':'); // ipv6
+		if(offset < 0) 
+			throw new PeerParseException("No port number: \""+physical+"\"");
+		String host = physical.substring(0, offset);
+		addr = new FreenetInetAddress(host, allowUnknown, checkHostnameOrIPSyntax);
+		String strport = physical.substring(offset+1);
+		try {
+			_port = Integer.parseInt(strport);
+			if(_port < 0 || _port > 65535) throw new PeerParseException("Invalid port "+_port);
+		} catch (NumberFormatException e) {
+			throw new PeerParseException(e);
+		}
+	}
+	
+	public Peer(FreenetInetAddress addr, int port) {
+		this.addr = addr;
+		if(addr == null) throw new NullPointerException();
+		this._port = port;
 		if(_port > 65535 || _port < 0) throw new IllegalArgumentException("bogus port");
 	}
 

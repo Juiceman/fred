@@ -13,19 +13,19 @@ import freenet.support.SimpleFieldSet;
  * <ul>
  * <li>Identifier: Optional; identifier to match probe request with results.</li>
  * <li>type: Mandatory; denotes the desired response type. Valid values are:
- *     <ul>
- *     <li>BANDWIDTH - returns outgoing bandwidth limit in KiB per second.</li>
- *     <li>BUILD - returns Freenet build / main version.</li>
- *     <li>IDENTIFIER - returns identifier and integer 7-day uptime percentage.</li>
- *     <li>LINK_LENGTHS - returns link lengths between the endpoint and its connected peers.</li>
- *     <li>LOCATION - returns the endpoint's location.</li>
- *     <li>REJECT_STATS - returns CHK and SSK reject percentage for bulk inserts and bulk requests.</li>
- *     <li>STORE_SIZE - returns store size in GiB.</li>
- *     <li>UPTIME_48H - returns 48-hour uptime percentage.</li>
- *     <li>UPTIME_7D - returns 7-day uptime percentage.</li>
- *     </ul></li>
+ *	 <ul>
+ *	 <li>BANDWIDTH - returns outgoing bandwidth limit in KiB per second.</li>
+ *	 <li>BUILD - returns Freenet build / main version.</li>
+ *	 <li>IDENTIFIER - returns identifier and integer 7-day uptime percentage.</li>
+ *	 <li>LINK_LENGTHS - returns link lengths between the endpoint and its connected peers.</li>
+ *	 <li>LOCATION - returns the endpoint's location.</li>
+ *	 <li>REJECT_STATS - returns CHK and SSK reject percentage for bulk inserts and bulk requests.</li>
+ *	 <li>STORE_SIZE - returns store size in GiB.</li>
+ *	 <li>UPTIME_48H - returns 48-hour uptime percentage.</li>
+ *	 <li>UPTIME_7D - returns 7-day uptime percentage.</li>
+ *	 </ul></li>
  * <li>hopsToLive: Optional; approximately how many hops the probe will take before possibly returning a result.
- *                            Valid values are [1, Probe.MAX_HTL]. If omitted Probe.MAX_HTL is used.</li>
+ *							Valid values are [1, Probe.MAX_HTL]. If omitted Probe.MAX_HTL is used.</li>
  * </ul>
  */
 public class ProbeRequest extends FCPMessage {
@@ -49,7 +49,7 @@ public class ProbeRequest extends FCPMessage {
 
 			if (this.htl < 0) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
-				                                  "hopsToLive cannot be negative.", null, false);
+												  "hopsToLive cannot be negative.", null, false);
 			}
 
 		} catch (IllegalArgumentException e) {

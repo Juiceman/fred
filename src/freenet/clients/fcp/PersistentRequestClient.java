@@ -50,9 +50,9 @@ public class PersistentRequestClient {
 		} else
 			this.root = null;
 		if(isGlobalQueue)
-		    statusCache = new RequestStatusCache();
+			statusCache = new RequestStatusCache();
 		else
-		    statusCache = null;
+			statusCache = null;
 	}
 	
 	/** The persistent root object, null if persistence is PERSIST_REBOOT */
@@ -82,8 +82,8 @@ public class PersistentRequestClient {
 	private transient final RequestStatusCache statusCache;
 	/** Connection mode */
 	final Persistence persistence;
-	        
-        private static volatile boolean logMINOR;
+			
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -277,12 +277,12 @@ public class PersistentRequestClient {
 			if(logMINOR) Logger.minor(this, "Killing request "+req);
 			req.cancel(context);
 		}
-        req.requestWasRemoved(context);
-        RequestCompletionCallback[] callbacks = null;
-        synchronized(this) {
-        	if(completionCallbacks != null)
-        		callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
-        }
+		req.requestWasRemoved(context);
+		RequestCompletionCallback[] callbacks = null;
+		synchronized(this) {
+			if(completionCallbacks != null)
+				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+		}
 		if(callbacks != null) {
 			for(RequestCompletionCallback cb : callbacks)
 				cb.onRemove(req);
@@ -422,11 +422,11 @@ public class PersistentRequestClient {
 	 */
 	public void notifySuccess(ClientRequest req) {
 		assert(req.persistence == persistence);
-        RequestCompletionCallback[] callbacks = null;
-        synchronized(this) {
-        	if(completionCallbacks != null)
-        		callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
-        }
+		RequestCompletionCallback[] callbacks = null;
+		synchronized(this) {
+			if(completionCallbacks != null)
+				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+		}
 		if(callbacks != null) {
 			for(RequestCompletionCallback cb : callbacks)
 				cb.notifySuccess(req);
@@ -439,11 +439,11 @@ public class PersistentRequestClient {
 	 */
 	public void notifyFailure(ClientRequest req) {
 		assert(req.persistence == persistence);
-        RequestCompletionCallback[] callbacks = null;
-        synchronized(this) {
-        	if(completionCallbacks != null)
-        		callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
-        }
+		RequestCompletionCallback[] callbacks = null;
+		synchronized(this) {
+			if(completionCallbacks != null)
+				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+		}
 		if(callbacks != null) {
 			for(RequestCompletionCallback cb : callbacks)
 				cb.notifyFailure(req);
@@ -499,7 +499,7 @@ public class PersistentRequestClient {
 	}
 	
 	public void updateRequestStatusCache() {
-	    updateRequestStatusCache(statusCache);
+		updateRequestStatusCache(statusCache);
 	}
 	
 	private void updateRequestStatusCache(RequestStatusCache cache) {
@@ -523,31 +523,31 @@ public class PersistentRequestClient {
 			return lowLevelClient;
 	}
 	
-    public void addPersistentRequesters(List<ClientRequester> requesters) {
-        for(ClientRequest req : runningPersistentRequests)
-            requesters.add(req.getClientRequest());
-        for(ClientRequest req : completedUnackedRequests)
-            requesters.add(req.getClientRequest());
-    }
+	public void addPersistentRequesters(List<ClientRequester> requesters) {
+		for(ClientRequest req : runningPersistentRequests)
+			requesters.add(req.getClientRequest());
+		for(ClientRequest req : completedUnackedRequests)
+			requesters.add(req.getClientRequest());
+	}
 
-    public void resume(ClientRequest clientRequest) {
-        if(clientRequest.hasFinished())
-            completedUnackedRequests.add(clientRequest);
-        else
-            runningPersistentRequests.add(clientRequest);
-        String identifier = clientRequest.identifier;
-        if(clientRequestsByIdentifier.get(identifier) != null) {
-            if(clientRequest != clientRequestsByIdentifier.get(identifier))
-                throw new IllegalArgumentException("Adding new client request "+clientRequest+
-                        " with same name \""+identifier+"\" as "+
-                        clientRequestsByIdentifier.get(identifier));
-            else {
-                Logger.error(this, "Adding the same identifier twice: "+identifier);
-                return;
-            }
-        } else {
-            clientRequestsByIdentifier.put(identifier, clientRequest);
-        }
-    }
+	public void resume(ClientRequest clientRequest) {
+		if(clientRequest.hasFinished())
+			completedUnackedRequests.add(clientRequest);
+		else
+			runningPersistentRequests.add(clientRequest);
+		String identifier = clientRequest.identifier;
+		if(clientRequestsByIdentifier.get(identifier) != null) {
+			if(clientRequest != clientRequestsByIdentifier.get(identifier))
+				throw new IllegalArgumentException("Adding new client request "+clientRequest+
+						" with same name \""+identifier+"\" as "+
+						clientRequestsByIdentifier.get(identifier));
+			else {
+				Logger.error(this, "Adding the same identifier twice: "+identifier);
+				return;
+			}
+		} else {
+			clientRequestsByIdentifier.put(identifier, clientRequest);
+		}
+	}
 
 }

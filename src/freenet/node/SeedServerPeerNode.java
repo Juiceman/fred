@@ -173,19 +173,19 @@ public class SeedServerPeerNode extends PeerNode {
 		return false;
 	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
-        return false; // We do not accept announcements from a seednode.
-    }
+	@Override
+	public boolean canAcceptAnnouncements() {
+		return false; // We do not accept announcements from a seednode.
+	}
 
-    @Override
-    protected void writePeers() {
-        // Do not write peers, seeds are kept separately.
-    }
+	@Override
+	protected void writePeers() {
+		// Do not write peers, seeds are kept separately.
+	}
 
 }

@@ -14,19 +14,19 @@ import freenet.support.api.Bucket;
  *
  */
 public class NullClientCallback implements ClientGetCallback, ClientPutCallback {
-    private static volatile boolean logDEBUG;
+	private static volatile boolean logDEBUG;
 
-    static {
+	static {
 		Logger.registerClass(NullClientCallback.class);
-    }
-    
-    private final RequestClient cb;
+	}
+	
+	private final RequestClient cb;
 
 	public NullClientCallback(RequestClient cb) {
-	    this.cb = cb;
-    }
+		this.cb = cb;
+	}
 
-    @Override
+	@Override
 	public void onFailure(FetchException e, ClientGetter state) {
 		if (logDEBUG) Logger.debug(this, "NullClientCallback#onFailure e=" + e + ", state=" + state, e);
 	}
@@ -63,14 +63,14 @@ public class NullClientCallback implements ClientGetCallback, ClientPutCallback 
 		metadata.free();
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return cb;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return cb;
+	}
 
 }

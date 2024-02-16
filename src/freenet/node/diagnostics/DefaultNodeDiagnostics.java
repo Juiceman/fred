@@ -18,29 +18,29 @@ import freenet.node.NodeStats;
  *  Some data pointers are obtained from NodeStats object.
  */
 public class DefaultNodeDiagnostics implements NodeDiagnostics {
-    private final DefaultThreadDiagnostics defaultThreadDiagnostics;
+	private final DefaultThreadDiagnostics defaultThreadDiagnostics;
 
    /**
-     * @param nodeStats Used to retrieve data points.
-     * @param ticker Used to queue timed jobs.
-     */
-    public DefaultNodeDiagnostics(NodeStats nodeStats, Ticker ticker) {
-        defaultThreadDiagnostics = new DefaultThreadDiagnostics(nodeStats, ticker);
-    }
+	 * @param nodeStats Used to retrieve data points.
+	 * @param ticker Used to queue timed jobs.
+	 */
+	public DefaultNodeDiagnostics(NodeStats nodeStats, Ticker ticker) {
+		defaultThreadDiagnostics = new DefaultThreadDiagnostics(nodeStats, ticker);
+	}
 
-    public void start() {
-        defaultThreadDiagnostics.start();
-    }
+	public void start() {
+		defaultThreadDiagnostics.start();
+	}
 
-    public void stop() {
-        defaultThreadDiagnostics.stop();
-    }
+	public void stop() {
+		defaultThreadDiagnostics.stop();
+	}
 
-    /**
-     * @return List of threads registered in NodeStats.getThreads()
-     */
-    @Override
-    public ThreadDiagnostics getThreadDiagnostics() {
-        return defaultThreadDiagnostics;
-    }
+	/**
+	 * @return List of threads registered in NodeStats.getThreads()
+	 */
+	@Override
+	public ThreadDiagnostics getThreadDiagnostics() {
+		return defaultThreadDiagnostics;
+	}
 }

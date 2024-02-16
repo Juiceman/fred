@@ -73,7 +73,7 @@ class KeyListenerTracker implements KeySalter {
 	final boolean persistent;
 	
 	public boolean persistent() {
-	    return persistent;
+		return persistent;
 	}
 	
 	protected KeyListenerTracker(boolean forInserts, boolean forSSKs, boolean forRT, RandomSource random, ClientRequestScheduler sched, byte[] globalSalt, boolean persistent) {
@@ -84,8 +84,8 @@ class KeyListenerTracker implements KeySalter {
 		keyListeners = new ArrayList<KeyListener>();
 		singleKeyListeners = this.isSSKScheduler ? new TreeMap<ByteArrayWrapper,Object>(ByteArrayWrapper.FAST_COMPARATOR) : new HashMap<ByteArrayWrapper,Object>();
 		if(globalSalt == null) {
-		    globalSalt = new byte[32];
-		    random.nextBytes(globalSalt);
+			globalSalt = new byte[32];
+			random.nextBytes(globalSalt);
 		}
 		this.globalSalt = globalSalt;
 		this.persistent = persistent;
@@ -420,8 +420,8 @@ class KeyListenerTracker implements KeySalter {
 		assert(key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
 		List<KeyListener> matches = probablyWantKey(key, saltedKey);
-    if(matches == null)
-      return null;
+	if(matches == null)
+	  return null;
 		for (KeyListener listener : matches) {
 			SendableGet[] reqs;
 			try {

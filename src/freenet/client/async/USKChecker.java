@@ -26,7 +26,7 @@ class USKChecker extends BaseSingleFileFetcher {
 	
 	private long cooldownWakeupTime;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -39,8 +39,8 @@ class USKChecker extends BaseSingleFileFetcher {
 	USKChecker(USKCheckerCallback cb, ClientKey key, int maxRetries, FetchContext ctx, ClientRequester parent, boolean realTimeFlag) {
 		super(key, maxRetries, ctx, parent, false, realTimeFlag);
 		this.cb = cb;
-        if(logMINOR)
-            Logger.minor(USKChecker.class, "Created USKChecker for "+key+" : "+this);
+		if(logMINOR)
+			Logger.minor(USKChecker.class, "Created USKChecker for "+key+" : "+this);
 	}
 	
 	@Override
@@ -51,8 +51,8 @@ class USKChecker extends BaseSingleFileFetcher {
 
 	@Override
 	public void onFailure(LowLevelGetException e, SendableRequestItem token, ClientContext context) {
-	    if(logMINOR)
-	        Logger.minor(this, "onFailure: "+e+" for "+this);
+		if(logMINOR)
+			Logger.minor(this, "onFailure: "+e+" for "+this);
 		// Firstly, can we retry?
 		boolean canRetry;
 		switch(e.code) {
@@ -126,9 +126,9 @@ class USKChecker extends BaseSingleFileFetcher {
 		onFailure(new LowLevelGetException(LowLevelGetException.DECODE_FAILED), token, context);
 	}
 
-    @Override
-    protected ClientGetState getClientGetState() {
-        return null;
-    }
+	@Override
+	protected ClientGetState getClientGetState() {
+		return null;
+	}
 
 }

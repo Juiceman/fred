@@ -152,7 +152,7 @@ public class HTMLNodeTest {
 	public void testAddChildUsingTheNodeItselfAsChild() {
 		try {
 			exampleNodeNonEmpty.addChild(exampleNodeNonEmpty);
-	    	fail("Expected Exception Error Not Thrown!"); } 
+			fail("Expected Exception Error Not Thrown!"); } 
 		catch (IllegalArgumentException anException) {
 			assertNotNull(anException); }
 	}
@@ -742,7 +742,7 @@ public class HTMLNodeTest {
 		methodHTMLNodeDoc.addChild(SAMPLE_OKAY_NODE_NAME_EMPTY);
 		String generatedString = methodHTMLNodeDoc.generate();
 		//consider only the HTMLDocType generated text
-		assertEquals("<!DOCTYPE "+sampleDocType+" PUBLIC \""+sampleSystemUri+"\">", 	
+		assertEquals("<!DOCTYPE "+sampleDocType+" PUBLIC \""+sampleSystemUri+"\">",	
 				readFirstLine(generatedString));
 		
 	}

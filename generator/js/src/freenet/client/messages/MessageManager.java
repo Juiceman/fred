@@ -58,7 +58,7 @@ public class MessageManager {
 	 * Adds a message to the panel
 	 * 
 	 * @param msg
-	 *            - The message to add
+	 *			- The message to add
 	 */
 	public void addMessage(Message msg) {
 		//Disabled showing fproxy messages. This is TEMPORARY!
@@ -73,7 +73,7 @@ public class MessageManager {
 	 * Removes a message at a given position
 	 * 
 	 * @param position
-	 *            - The position of the message that is removed
+	 *			- The position of the message that is removed
 	 */
 	public void removeMessage(int position) {
 		messages.remove(position);
@@ -84,7 +84,7 @@ public class MessageManager {
 	 * Removes a message
 	 * 
 	 * @param message
-	 *            - The message that will be removed
+	 *			- The message that will be removed
 	 */
 	public void removeMessage(Message message) {
 		messages.remove(message);
@@ -95,7 +95,7 @@ public class MessageManager {
 	 * Gets the position of a message
 	 * 
 	 * @param msg
-	 *            - The message which position will be returned
+	 *			- The message which position will be returned
 	 * @return The position of the message
 	 */
 	public int getMessagePosition(Message msg) {
@@ -106,9 +106,9 @@ public class MessageManager {
 	 * Replaces a message with a new one at a given position
 	 * 
 	 * @param position
-	 *            - The position, which will be replaced
+	 *			- The position, which will be replaced
 	 * @param msg
-	 *            - The message that will replace the original
+	 *			- The message that will replace the original
 	 */
 	public void replaceMessageAtPosition(int position, Message msg) {
 		messages.remove(position);
@@ -120,7 +120,7 @@ public class MessageManager {
 	 * Checks if a message is currently shown
 	 * 
 	 * @param msg
-	 *            - The message to search for
+	 *			- The message to search for
 	 * @return Whether the message is present
 	 */
 	public boolean isMessagePresent(Message msg) {

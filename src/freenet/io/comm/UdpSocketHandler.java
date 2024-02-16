@@ -41,7 +41,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private int _dropProbability;
 	// Icky layer violation, but we need to know the Node to work around the EvilJVMBug.
 	private final Node node;
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	private boolean _isDone;
 	private volatile boolean _active = true;
@@ -51,9 +51,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private long startTime;
 	private final IOStatisticCollector collector;
 
-        static {
-            Logger.registerClass(UdpSocketHandler.class);
-        }
+		static {
+			Logger.registerClass(UdpSocketHandler.class);
+		}
 	private static class socketOptions {
 		private static class socketOptionsHolder {
 			static {
@@ -114,13 +114,13 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 
 		public static boolean setAddressPreference(DatagramSocket s, SOCKET_ADDR_PREFERENCE p) {
 			if(!Platform.isLinux())
-			    return false;
+				return false;
 			int fd = getFd(s);
 			if(fd <= 2)
-			    return false;
+				return false;
 			int ret = -1;
 			try {
-			    ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
+				ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
 			} catch(Exception e) { Logger.normal(UdpSocketHandler.class, e.getMessage(),e); } //if it fails that's fine
 			return (ret == 0 ? true : false);
 		}

@@ -164,9 +164,9 @@ public final class SessionManager {
 		 * name.
 		 *
 		 * @param name
-		 *            The name of the attribute to check for
+		 *			The name of the attribute to check for
 		 * @return {@code true} if this session contains an attribute with the
-		 *         given name, {@code false} otherwise
+		 *		 given name, {@code false} otherwise
 		 */
 		public boolean hasAttribute(String name) {
 			return mAttributes.containsKey(name);
@@ -177,7 +177,7 @@ public final class SessionManager {
 		 * no attribute with the given name, {@code null} is returned.
 		 *
 		 * @param name
-		 *            The name of the attribute whose value to get
+		 *			The name of the attribute whose value to get
 		 * @return The value of the attribute, or {@code null}
 		 */
 		public Object getAttribute(String name) {
@@ -188,9 +188,9 @@ public final class SessionManager {
 		 * Sets the value of the attribute with the given name.
 		 *
 		 * @param name
-		 *            The name of the attribute whose value to set
+		 *			The name of the attribute whose value to set
 		 * @param value
-		 *            The new value of the attribute
+		 *			The new value of the attribute
 		 */
 		public void setAttribute(String name, Object value) {
 			mAttributes.put(name, value);
@@ -201,7 +201,7 @@ public final class SessionManager {
 		 * there is no attribute with the given name.
 		 *
 		 * @param name
-		 *            The name of the attribute to remove
+		 *			The name of the attribute to remove
 		 */
 		public void removeAttribute(String name) {
 			mAttributes.remove(name);

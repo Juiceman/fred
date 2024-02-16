@@ -30,7 +30,7 @@ import freenet.support.TimeUtil;
  */
 public abstract class BaseSingleFileFetcher extends SendableGet implements HasKeyListener {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	protected final ClientKey key;
 	protected boolean cancelled;
@@ -42,7 +42,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 	static final SendableRequestItem[] keys = new SendableRequestItem[] { NullSendableRequestItem.nullItem };
 	private int cachedCooldownTries;
 	private long cachedCooldownTime;
-    public transient long cooldownWakeupTime;
+	public transient long cooldownWakeupTime;
 
 	
 	private static volatile boolean logMINOR;
@@ -340,8 +340,8 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		return newKey instanceof NodeSSK ? ((NodeSSK)newKey).getPubKeyHash() : newKey.getRoutingKey();
 	}
 
-    public void onResume(ClientContext context) {
-        schedule(context);
-    }
+	public void onResume(ClientContext context) {
+		schedule(context);
+	}
 
 }

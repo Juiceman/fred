@@ -9,29 +9,29 @@ import java.io.Serializable;
  * Synchronized class, including clone(). */ 
 public interface RunningAverage extends Serializable {
 
-    /**
-     * Copy the RunningAverage (create a snapshot). Deep copy, the new RA won't change when the first one
-     * does. Will synchronize on the original during the copy process.
-     */
-    public RunningAverage clone();
+	/**
+	 * Copy the RunningAverage (create a snapshot). Deep copy, the new RA won't change when the first one
+	 * does. Will synchronize on the original during the copy process.
+	 */
+	public RunningAverage clone();
 
-        /**
-         *
-         * @return
-         */
-        public double currentValue();
+		/**
+		 *
+		 * @return
+		 */
+		public double currentValue();
 
-        /**
-         *
-         * @param d
-         */
-        public void report(double d);
+		/**
+		 *
+		 * @param d
+		 */
+		public void report(double d);
 
-        /**
-         *
-         * @param d
-         */
-        public void report(long d);
+		/**
+		 *
+		 * @param d
+		 */
+		public void report(long d);
 
 	/**
 	 * Get what currentValue() would be if we reported some given value

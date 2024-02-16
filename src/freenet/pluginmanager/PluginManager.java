@@ -113,21 +113,21 @@ public class PluginManager {
 		executor = new SerialExecutor(PriorityLevel.NORM_PRIORITY.value);
 		executor.start(node.executor, "PM callback executor");
 
-        SubConfig pmconfig = node.config.createSubConfig("pluginmanager");
-        pmconfig.register("enabled", true, 0, true, true, "PluginManager.enabled", "PluginManager.enabledLong", new BooleanCallback() {
+		SubConfig pmconfig = node.config.createSubConfig("pluginmanager");
+		pmconfig.register("enabled", true, 0, true, true, "PluginManager.enabled", "PluginManager.enabledLong", new BooleanCallback() {
 
-            @Override
-            public synchronized Boolean get() {
-                return enabled;
-            }
+			@Override
+			public synchronized Boolean get() {
+				return enabled;
+			}
 
-            @Override
-            public void set(Boolean val) throws InvalidConfigValueException,
-                    NodeNeedRestartException {
-                if(enabled != val)
-                    throw new NodeNeedRestartException(l10n("changePluginManagerEnabledInConfig"));
-            }
-		    
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException,
+					NodeNeedRestartException {
+				if(enabled != val)
+					throw new NodeNeedRestartException(l10n("changePluginManagerEnabledInConfig"));
+			}
+			
 		});
 		enabled = pmconfig.getBoolean("enabled");
 		
@@ -198,15 +198,15 @@ public class PluginManager {
 
 		final Semaphore startingPlugins = new Semaphore(0);
 			for(final String name : toStart) {
-			    core.getExecutor().execute(new Runnable() {
+				core.getExecutor().execute(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        startPluginAuto(name, false);
-                        startingPlugins.release();
-                    }
-			        
-			    });
+					@Override
+					public void run() {
+						startPluginAuto(name, false);
+						startingPlugins.release();
+					}
+					
+				});
 			}
 
 		core.getExecutor().execute(new Runnable() {
@@ -222,7 +222,7 @@ public class PluginManager {
 	}
 
 	public void stop(long maxWaitTime) {
-	    if(!enabled) return;
+		if(!enabled) return;
 		// Stop loading plugins.
 		synchronized (loadedPlugins) {
 			stopping = true;
@@ -362,7 +362,7 @@ public class PluginManager {
 	}
 
 	private PluginInfoWrapper realStartPlugin(final PluginDownLoader<?> pdl, final String filename, final boolean store, boolean alwaysDownload) {
-	    if (!enabled) throw new IllegalStateException("Plugins disabled");
+		if (!enabled) throw new IllegalStateException("Plugins disabled");
 		if(filename.trim().length() == 0)
 			return null;
 		final PluginProgress pluginProgress = new PluginProgress(filename, pdl);
@@ -643,7 +643,7 @@ public class PluginManager {
 	 * the current class.
 	 *
 	 * @param key
-	 *            The key to fetch
+	 *			The key to fetch
 	 * @return The translation
 	 */
 	static String l10n(String key) {
@@ -659,11 +659,11 @@ public class PluginManager {
 	 * <code>${<em>pattern</em>}</code> with <code>value</code>.
 	 *
 	 * @param key
-	 *            The key to fetch
+	 *			The key to fetch
 	 * @param patterns
-	 *            The patterns to replace
+	 *			The patterns to replace
 	 * @param values
-	 *            The values to substitute
+	 *			The values to substitute
 	 * @return The translation
 	 */
 	private String l10n(String key, String[] patterns, String[] values) {
@@ -695,7 +695,7 @@ public class PluginManager {
 	 * Removes the cached copy of the given plugin from the plugins/ directory.
 	 *
 	 * @param pluginSpecification
-	 *            The plugin specification
+	 *			The plugin specification
 	 */
 	public void removeCachedCopy(String pluginSpecification) {
 		if(pluginSpecification == null) {
@@ -742,7 +742,7 @@ public class PluginManager {
 
 	/**
 	 * @deprecated will be removed in version 1473.
-     */
+	 */
 	@Deprecated
 	public void addToadletSymlinks(PluginInfoWrapper pi) {
 		synchronized(toadletList) {
@@ -800,18 +800,18 @@ public class PluginManager {
 	}
 
 	/**
-     * Look for PluginInfo for a Plugin with given classname or filename.
-     * 
+	 * Look for PluginInfo for a Plugin with given classname or filename.
+	 * 
 	 * @return the PluginInfo or null if not found
-     * @deprecated
-     *     This function was deprecated because the "or filename" part of the function specification
-     *     was NOT documented before it was deprecated. Thus it is possible that legacy callers of
-     *     the function did wrongly expect or not expect that. When removing this function, please
-     *     review the callers for correctness with regards to that.<br>
-     *     You might replace usage of this function with
-     *     {@link #getPluginInfoByClassName(String)}.
+	 * @deprecated
+	 *	 This function was deprecated because the "or filename" part of the function specification
+	 *	 was NOT documented before it was deprecated. Thus it is possible that legacy callers of
+	 *	 the function did wrongly expect or not expect that. When removing this function, please
+	 *	 review the callers for correctness with regards to that.<br>
+	 *	 You might replace usage of this function with
+	 *	 {@link #getPluginInfoByClassName(String)}.
 	 */
-    @Deprecated
+	@Deprecated
 	public PluginInfoWrapper getPluginInfo(String plugname) {
 		for (PluginInfoWrapper pluginInfoWrapper : loadedPlugins.getLoadedPlugins()) {
 			if (pluginInfoWrapper.getPluginClassName().equals(plugname) || pluginInfoWrapper.getFilename().equals(plugname)) {
@@ -821,15 +821,15 @@ public class PluginManager {
 		return null;
 	}
 
-    /**
-     * @param pluginClassName
-     *     The name of the main class of the plugin - that is the class which implements
-     *     {@link FredPlugin}.
-     * @return
-     *     The {@link PluginInfoWrapper} for the plugin with the given class name, or null if no
-     *     matching plugin was found.
-     */
-    public PluginInfoWrapper getPluginInfoByClassName(String pluginClassName) {
+	/**
+	 * @param pluginClassName
+	 *	 The name of the main class of the plugin - that is the class which implements
+	 *	 {@link FredPlugin}.
+	 * @return
+	 *	 The {@link PluginInfoWrapper} for the plugin with the given class name, or null if no
+	 *	 matching plugin was found.
+	 */
+	public PluginInfoWrapper getPluginInfoByClassName(String pluginClassName) {
 		for (PluginInfoWrapper pluginInfoWrapper : loadedPlugins.getLoadedPlugins()) {
 			if (pluginInfoWrapper.getPluginClassName().equals(pluginClassName)) {
 				return pluginInfoWrapper;
@@ -842,16 +842,16 @@ public class PluginManager {
 	 * look for a FCPPlugin with given classname
 	 * @param plugname
 	 * @return the plugin or null if not found
-     * @deprecated
-     *     The {@link FredPluginFCP} API, which this returns, was deprecated to be replaced by
-     *     {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler}. Plugin authors should
-     *     implement the new interface instead of the old, and this codepath to support plugins
-     *     which implement the old interface should be removed one day. No new code will be needed
-     *     then: The code to use the  new interface already exists in its own codepath - the
-     *     equivalent function for the new API is {link #getPluginFCPServer(String)}, and it is
-     *     already being used automatically for plugins which implement it.
+	 * @deprecated
+	 *	 The {@link FredPluginFCP} API, which this returns, was deprecated to be replaced by
+	 *	 {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler}. Plugin authors should
+	 *	 implement the new interface instead of the old, and this codepath to support plugins
+	 *	 which implement the old interface should be removed one day. No new code will be needed
+	 *	 then: The code to use the  new interface already exists in its own codepath - the
+	 *	 equivalent function for the new API is {link #getPluginFCPServer(String)}, and it is
+	 *	 already being used automatically for plugins which implement it.
 	 */
-    @Deprecated
+	@Deprecated
 	public FredPluginFCP getFCPPlugin(String plugname) {
 		for (PluginInfoWrapper pluginInfoWrapper : loadedPlugins.getLoadedPlugins()) {
 			if (pluginInfoWrapper.isFCPPlugin() && pluginInfoWrapper.getPluginClassName().equals(plugname) && !pluginInfoWrapper.isStopping()) {
@@ -861,26 +861,26 @@ public class PluginManager {
 		return null;
 	}
 
-    /**
-     * Get the {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler} of the plugin with
-     * the given class name.
-     * 
-     * @param pluginClassName
-     *     See {@link #getPluginInfoByClassName(String)}.
-     * @throws PluginNotFoundException
-     *     If the specified plugin is not loaded or does not provide an FCP server.
-     */
-    public FredPluginFCPMessageHandler.ServerSideFCPMessageHandler
-            getPluginFCPServer(String pluginClassName)
-                throws PluginNotFoundException{
-        
-        PluginInfoWrapper piw = getPluginInfoByClassName(pluginClassName);
-        if(piw != null && piw.isFCPServerPlugin()) {
-            return piw.getFCPServerPlugin();
-        } else {
-            throw new PluginNotFoundException(pluginClassName);
-        }
-    }
+	/**
+	 * Get the {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler} of the plugin with
+	 * the given class name.
+	 * 
+	 * @param pluginClassName
+	 *	 See {@link #getPluginInfoByClassName(String)}.
+	 * @throws PluginNotFoundException
+	 *	 If the specified plugin is not loaded or does not provide an FCP server.
+	 */
+	public FredPluginFCPMessageHandler.ServerSideFCPMessageHandler
+			getPluginFCPServer(String pluginClassName)
+				throws PluginNotFoundException{
+		
+		PluginInfoWrapper piw = getPluginInfoByClassName(pluginClassName);
+		if(piw != null && piw.isFCPServerPlugin()) {
+			return piw.getFCPServerPlugin();
+		} else {
+			throw new PluginNotFoundException(pluginClassName);
+		}
+	}
 
 	/**
 	 * look for a Plugin with given classname
@@ -1036,13 +1036,13 @@ public class PluginManager {
 	 * @param pdl
 	 *
 	 * @param name
-	 *            The specification of the plugin
+	 *			The specification of the plugin
 	 * @param alwaysDownload If true, always download a new version anyway.
 	 * This is especially important on Windows, where we will not usually be
 	 * able to delete the file after determining that it is too old.
 	 * @return An instanciated object of the plugin
 	 * @throws PluginNotFoundException
-	 *             If anything goes wrong.
+	 *			 If anything goes wrong.
 	 * @throws PluginAlreadyLoaded if the plugin is already loaded
 	 */
 	private FredPlugin loadPlugin(PluginDownLoader<?> pdl, String name, PluginProgress progress, boolean alwaysDownload) throws PluginNotFoundException, PluginAlreadyLoaded {
@@ -1285,9 +1285,9 @@ public class PluginManager {
 	 * appendix, largest (i.e. newest) first.
 	 *
 	 * @param pluginDirectory
-	 *            The plugin cache directory
+	 *			The plugin cache directory
 	 * @param filename
-	 *            The name of the JAR file
+	 *			The name of the JAR file
 	 * @return All cached instances
 	 */
 	private List<File> getPreviousInstances(File pluginDirectory, final String filename) {
@@ -1395,7 +1395,7 @@ public class PluginManager {
 		 * given name.
 		 *
 		 * @param name
-		 *            The name by which the plugin is loaded
+		 *			The name by which the plugin is loaded
 		 * @param pdl
 		 */
 		PluginProgress(String name, PluginDownLoader<?> pdl) {
@@ -1413,7 +1413,7 @@ public class PluginManager {
 		 * loaded.
 		 *
 		 * @return The time this plugin is already being loaded (in
-		 *         milliseconds)
+		 *		 milliseconds)
 		 */
 		public long getTime() {
 			return System.currentTimeMillis() - startingTime;
@@ -1441,7 +1441,7 @@ public class PluginManager {
 		 * Sets the current state of the plugin start procedure
 		 *
 		 * @param pluginProgress
-		 *            The current state
+		 *			The current state
 		 */
 		void setProgress(ProgressState state) {
 			this.pluginProgress = state;
@@ -1580,9 +1580,9 @@ public class PluginManager {
 			node.nodeUpdater.stopPluginUpdater(wrapper.getFilename());
 	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	public boolean isEnabled() {
+		return enabled;
+	}
 
 	private static class LoadedPlugins {
 

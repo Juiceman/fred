@@ -32,10 +32,10 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	private final boolean isBandwidthIndicator;
 	private final boolean isPortForwardPlugin;
 	private final boolean isMultiplePlugin;
-    /** Use {@link #isFCPServerPlugin} instead. */
-    @Deprecated
-    private final boolean isFCPPlugin;
-    private final boolean isFCPServerPlugin;
+	/** Use {@link #isFCPServerPlugin} instead. */
+	@Deprecated
+	private final boolean isFCPPlugin;
+	private final boolean isFCPServerPlugin;
 	private final boolean isVersionedPlugin;
 	private final boolean isLongVersionedPlugin;
 	private final boolean isThemedPlugin;
@@ -56,19 +56,19 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 		threadName = 'p' + className.replaceAll("^class ", "") + '_' + hashCode();
 		start = System.currentTimeMillis();
 
-        // TODO: Code quality: Do we really need to cache these values? I don't care about the
-        // memory overhead, but it's the pointless clutter it causes in the member variables, while
-        // the information is right there and always accessible in the runtime type of plug.
-        // When fixing this, please also consider the TODO at getFCPServerPlugin(). 
+		// TODO: Code quality: Do we really need to cache these values? I don't care about the
+		// memory overhead, but it's the pointless clutter it causes in the member variables, while
+		// the information is right there and always accessible in the runtime type of plug.
+		// When fixing this, please also consider the TODO at getFCPServerPlugin(). 
 		isBandwidthIndicator = (plug instanceof FredPluginBandwidthIndicator);
 		isPproxyPlugin = (plug instanceof FredPluginHTTP);
 		isThreadlessPlugin = (plug instanceof FredPluginThreadless);
 		isIPDetectorPlugin = (plug instanceof FredPluginIPDetector);
 		isPortForwardPlugin = (plug instanceof FredPluginPortForward);
 		isMultiplePlugin = (plug instanceof FredPluginMultiple);
-        isFCPPlugin = (plug instanceof FredPluginFCP);
-        isFCPServerPlugin
-            = (plug instanceof FredPluginFCPMessageHandler.ServerSideFCPMessageHandler);
+		isFCPPlugin = (plug instanceof FredPluginFCP);
+		isFCPServerPlugin
+			= (plug instanceof FredPluginFCPMessageHandler.ServerSideFCPMessageHandler);
 		isVersionedPlugin = (plug instanceof FredPluginVersioned);
 		isLongVersionedPlugin = (plug instanceof FredPluginRealVersioned);
 		isThemedPlugin = (plug instanceof FredPluginThemed);
@@ -77,7 +77,7 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 		isConfigurablePlugin = (plug instanceof FredPluginConfigurable);
 		if(isConfigurablePlugin) {
 			config = FilePersistentConfig.constructFilePersistentConfig(new File(node.getCfgDir(), "plugin-"+getPluginClassName()+".ini"),
-			             "config options for plugin: "+getPluginClassName());
+						 "config options for plugin: "+getPluginClassName());
 			subconfig = config.createSubConfig(getPluginClassName());
 			((FredPluginConfigurable)plug).setupConfig(subconfig);
 			config.finishedInit();
@@ -246,36 +246,36 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 		return isMultiplePlugin;
 	}
 
-    /**
-     * @deprecated Use {@link #isFCPServerPlugin()}
-     */
-    @Deprecated
-    public boolean isFCPPlugin() {
-        return isFCPPlugin;
-    }
+	/**
+	 * @deprecated Use {@link #isFCPServerPlugin()}
+	 */
+	@Deprecated
+	public boolean isFCPPlugin() {
+		return isFCPPlugin;
+	}
 
-    public boolean isFCPServerPlugin() {
-        return isFCPServerPlugin;
-    }
+	public boolean isFCPServerPlugin() {
+		return isFCPServerPlugin;
+	}
 
-    /**
-     * If {@link #isFCPServerPlugin()} returns true, may be called to obtain the
-     * {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler} of the plugin.<br><br>
-     * 
-     * TODO: Code quality: Currently, all the other is...() functions are used by PluginManager
-     * just to then manually cast the plugin main object to the desired type, i.e. it manually
-     * does what the body of this function does. This restricts the API to require the plugin main
-     * class to implement all the various interfaces. Instead, please add equivalents of this 
-     * function for all the other is...(), and use those new functions everywhere in PluginManager.
-     * This will a preparation for allowing plugins to implement the various interfaces in DIFFERENT
-     * classes than their plugin main class - which will be a good idea for keeping plugin main
-     * classes short.
-     */
-    public FredPluginFCPMessageHandler.ServerSideFCPMessageHandler
-            getFCPServerPlugin() {
+	/**
+	 * If {@link #isFCPServerPlugin()} returns true, may be called to obtain the
+	 * {@link FredPluginFCPMessageHandler.ServerSideFCPMessageHandler} of the plugin.<br><br>
+	 * 
+	 * TODO: Code quality: Currently, all the other is...() functions are used by PluginManager
+	 * just to then manually cast the plugin main object to the desired type, i.e. it manually
+	 * does what the body of this function does. This restricts the API to require the plugin main
+	 * class to implement all the various interfaces. Instead, please add equivalents of this 
+	 * function for all the other is...(), and use those new functions everywhere in PluginManager.
+	 * This will a preparation for allowing plugins to implement the various interfaces in DIFFERENT
+	 * classes than their plugin main class - which will be a good idea for keeping plugin main
+	 * classes short.
+	 */
+	public FredPluginFCPMessageHandler.ServerSideFCPMessageHandler
+			getFCPServerPlugin() {
 
-        return (FredPluginFCPMessageHandler.ServerSideFCPMessageHandler)plug;
-    }
+		return (FredPluginFCPMessageHandler.ServerSideFCPMessageHandler)plug;
+	}
 
 	public boolean isThemedPlugin() {
 		return isThemedPlugin;

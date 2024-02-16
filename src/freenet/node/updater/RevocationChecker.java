@@ -359,14 +359,14 @@ public class RevocationChecker implements ClientGetCallback, RequestClient {
 		if(!manager.isBlown()) return null;
 		synchronized(this) {
 			if(blobBucket != null) {
-			    try {
-			        ByteArrayRandomAccessBuffer t = new ByteArrayRandomAccessBuffer(blobBucket.toByteArray());
-			        t.setReadOnly();
-			        return t;
-			    } catch (IOException e) {
-			        Logger.error(this, "Impossible: "+e, e);
-			        return null;
-			    }
+				try {
+					ByteArrayRandomAccessBuffer t = new ByteArrayRandomAccessBuffer(blobBucket.toByteArray());
+					t.setReadOnly();
+					return t;
+				} catch (IOException e) {
+					Logger.error(this, "Impossible: "+e, e);
+					return null;
+				}
 			}
 		}
 		File f = getBlobFile();
@@ -377,8 +377,8 @@ public class RevocationChecker implements ClientGetCallback, RequestClient {
 			Logger.error(this, "We do not have the blob file for the revocation even though we have successfully downloaded it!", e);
 			return null;
 		} catch (IOException e) {
-            Logger.error(this, "Error reading downloaded revocation blob file: "+e, e);
-            return null;
+			Logger.error(this, "Error reading downloaded revocation blob file: "+e, e);
+			return null;
 		}
 	}
 	
@@ -398,14 +398,14 @@ public class RevocationChecker implements ClientGetCallback, RequestClient {
 		return false;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing. Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing. Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return this;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return this;
+	}
 
 }

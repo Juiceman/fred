@@ -14,7 +14,7 @@ public interface BucketFactory {
 	 * @return
 	 * @throws IOException
 	 */
-    public RandomAccessBucket makeBucket(long size) throws IOException;
-    
+	public RandomAccessBucket makeBucket(long size) throws IOException;
+	
 }
 

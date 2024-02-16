@@ -44,7 +44,7 @@ public class PproxyToadlet extends Toadlet {
 	private static final long MAX_THREADED_UNLOAD_WAIT_TIME = SECONDS.toMillis(60);
 	private final Node node;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -68,8 +68,8 @@ public class PproxyToadlet extends Toadlet {
 
 		MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
 
-        if(!ctx.checkFullAccess(this))
-            return;
+		if(!ctx.checkFullAccess(this))
+			return;
 
 		String path=request.getPath();
 
@@ -198,9 +198,9 @@ public class PproxyToadlet extends Toadlet {
 				HTMLNode infoboxContent = infobox.addChild("div", "class", "infobox-content");
 				infoboxContent.addChild("#", l10n("pluginUnloadedWithName", "name", pluginThreadName));
 				infoboxContent.addChild("br");
-                                infoboxContent.addChild("#", l10n("pluginFilesWarning"));
-                                infoboxContent.addChild("br");
-                                infoboxContent.addChild("br");
+								infoboxContent.addChild("#", l10n("pluginFilesWarning"));
+								infoboxContent.addChild("br");
+								infoboxContent.addChild("br");
 				infoboxContent.addChild("a", "href", "/plugins/", l10n("returnToPluginPage"));
 				writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 				return;
@@ -315,11 +315,11 @@ public class PproxyToadlet extends Toadlet {
 	 * returns the plugin specification used to load the plugin.
 	 * 
 	 * @param pluginManager
-	 *            The plugin manager
+	 *			The plugin manager
 	 * @param pluginThreadName
-	 *            The thread name of the plugin
+	 *			The thread name of the plugin
 	 * @return The plugin specification of the plugin, or <code>null</code> if
-	 *         no plugin was found
+	 *		 no plugin was found
 	 */
 	private String getPluginSpecification(PluginManager pluginManager, String pluginThreadName) {
 		for(PluginInfoWrapper pi: pluginManager.getPlugins()) {
@@ -354,8 +354,8 @@ public class PproxyToadlet extends Toadlet {
 			Logger.minor(this, "Pproxy fetching "+path);
 		try {
 			if (path.isEmpty()) {
-		        if(!ctx.checkFullAccess(this))
-		            return;
+				if(!ctx.checkFullAccess(this))
+					return;
 
 				Iterator<PluginProgress> loadingPlugins = pm.getStartingPlugins().iterator();
 
@@ -466,9 +466,9 @@ public class PproxyToadlet extends Toadlet {
 	 * Shows a list of all currently loading plugins.
 	 * 
 	 * @param pluginManager
-	 *            The plugin manager
+	 *			The plugin manager
 	 * @param contentNode
-	 *            The node to add content to
+	 *			The node to add content to
 	 */
 	private void showStartingPlugins(PluginManager pluginManager, HTMLNode contentNode) {
 		Set<PluginProgress> startingPlugins = pluginManager.getStartingPlugins();

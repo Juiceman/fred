@@ -130,14 +130,14 @@ public class PrioritizedTicker implements Ticker, Runnable {
 						Logger.error(this, "Caught in PacketSender: " + t, t);
 						System.err.println("Caught in PacketSender: " + t);
 						t.printStackTrace();
-                                                System.err.println("Will retry above failed operation...");
-                                                queueTimedJob(r.job, r.name, 200, true, false);
+												System.err.println("Will retry above failed operation...");
+												queueTimedJob(r.job, r.name, 200, true, false);
 					}
 			}
 
 		if(sleepTime > 0) {
 			try {
-			    sleep(sleepTime);
+				sleep(sleepTime);
 			} catch(InterruptedException e) {
 				// Ignore, just wake up. Probably we got interrupt()ed
 				// because a new job came in.
@@ -146,14 +146,14 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	}
 
 	protected void sleep(long sleepTime) throws InterruptedException {
-        if(logMINOR)
-            Logger.minor(this, "Sleeping for " + sleepTime);
-        synchronized(this) {
-            wait(sleepTime);
-        }
-    }
+		if(logMINOR)
+			Logger.minor(this, "Sleeping for " + sleepTime);
+		synchronized(this) {
+			wait(sleepTime);
+		}
+	}
 
-    @Override
+	@Override
 	public void queueTimedJob(Runnable job, long offset) {
 		queueTimedJob(job, "Scheduled job: "+job, offset, false, false);
 	}
@@ -178,7 +178,7 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	public void queueTimedJob(Runnable runner, String name, long offset, boolean runOnTickerAnyway, boolean noDupes) {
 		// Run directly *if* that won't cause any priority problems.
 		long now = System.currentTimeMillis();
-        if(offset < 0) offset = 0;
+		if(offset < 0) offset = 0;
 		queueTimedJobInner(runner, name, now+offset, offset, runOnTickerAnyway, noDupes);
 	}
 
@@ -188,54 +188,54 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	 */
 	@Override
 	public void queueTimedJobAbsolute(Runnable runner, String name, long time, 
-            boolean runOnTickerAnyway, boolean noDupes) {
-	    long now = System.currentTimeMillis();
-	    queueTimedJobInner(runner, name, time, time-now, runOnTickerAnyway, noDupes);
+			boolean runOnTickerAnyway, boolean noDupes) {
+		long now = System.currentTimeMillis();
+		queueTimedJobInner(runner, name, time, time-now, runOnTickerAnyway, noDupes);
 	}
 	
 	/** Queue a job at a specific absolute time. 
 	 * @param runJobAt The absolute time at which the job should run.
 	 * @param offset The offset in milliseconds from "now" (i.e. some recent call to 
 	 * System.currentTimeMillis()). */
-    private void queueTimedJobInner(Runnable runner, String name, long runJobAt, long offset, 
-            boolean runOnTickerAnyway, boolean noDupes) {
-        if(noDupes) runOnTickerAnyway = true;
-        if(offset <= 0 && !runOnTickerAnyway) {
-            if(logMINOR) Logger.minor(this, "Running directly: "+runner);
-            executor.execute(runner, name);
-            return;
-        }
-        Job job = new Job(name, runner);
-        synchronized(timedJobsByTime) {
-            if(noDupes) {
-                Long alreadyQueuedAt = timedJobsQueued.get(job);
-                if(alreadyQueuedAt != null) {
-                    if(alreadyQueuedAt <= runJobAt) {
-                        Logger.normal(this, "Not re-running as already queued: "+runner+" for "+name);
-                        return;
-                    } else {
-                        // Delete the existing job because the new job will run first.
-                        removeQueuedJobInner(job, alreadyQueuedAt);
-                    }
-                }
-            }
-            Object o = timedJobsByTime.get(runJobAt);
-            if(o == null)
-                timedJobsByTime.put(runJobAt, job);
-            else if(o instanceof Job)
-                timedJobsByTime.put(runJobAt, new Job[]{(Job) o, job});
-            else if(o instanceof Job[]) {
-                Job[] r = (Job[]) o;
-                Job[] jobs = Arrays.copyOf(r, r.length+1);
-                jobs[jobs.length - 1] = job;
-                timedJobsByTime.put(runJobAt, jobs);
-            }
-            timedJobsQueued.put(job, runJobAt);
-        }
-        if(offset < MAX_SLEEP_TIME) {
-            wakeUp();
-        }
-    }
+	private void queueTimedJobInner(Runnable runner, String name, long runJobAt, long offset, 
+			boolean runOnTickerAnyway, boolean noDupes) {
+		if(noDupes) runOnTickerAnyway = true;
+		if(offset <= 0 && !runOnTickerAnyway) {
+			if(logMINOR) Logger.minor(this, "Running directly: "+runner);
+			executor.execute(runner, name);
+			return;
+		}
+		Job job = new Job(name, runner);
+		synchronized(timedJobsByTime) {
+			if(noDupes) {
+				Long alreadyQueuedAt = timedJobsQueued.get(job);
+				if(alreadyQueuedAt != null) {
+					if(alreadyQueuedAt <= runJobAt) {
+						Logger.normal(this, "Not re-running as already queued: "+runner+" for "+name);
+						return;
+					} else {
+						// Delete the existing job because the new job will run first.
+						removeQueuedJobInner(job, alreadyQueuedAt);
+					}
+				}
+			}
+			Object o = timedJobsByTime.get(runJobAt);
+			if(o == null)
+				timedJobsByTime.put(runJobAt, job);
+			else if(o instanceof Job)
+				timedJobsByTime.put(runJobAt, new Job[]{(Job) o, job});
+			else if(o instanceof Job[]) {
+				Job[] r = (Job[]) o;
+				Job[] jobs = Arrays.copyOf(r, r.length+1);
+				jobs[jobs.length - 1] = job;
+				timedJobsByTime.put(runJobAt, jobs);
+			}
+			timedJobsQueued.put(job, runJobAt);
+		}
+		if(offset < MAX_SLEEP_TIME) {
+			wakeUp();
+		}
+	}
 	
 	/** Wake up, and run any queued jobs. */
 	void wakeUp() {
@@ -256,11 +256,11 @@ public class PrioritizedTicker implements Ticker, Runnable {
 		}
 	}
 
-    int queuedJobsUniqueTimes() {
-        synchronized(timedJobsByTime) {
-            return timedJobsByTime.size();
-        }
-    }
+	int queuedJobsUniqueTimes() {
+		synchronized(timedJobsByTime) {
+			return timedJobsByTime.size();
+		}
+	}
 
 	@Override
 	/* Remove a queued job.
@@ -271,7 +271,7 @@ public class PrioritizedTicker implements Ticker, Runnable {
 		synchronized(timedJobsByTime) {
 			Long t = timedJobsQueued.remove(job);
 			if(t != null) {
-			    removeQueuedJobInner(job, t);
+				removeQueuedJobInner(job, t);
 			}
 		}
 	}
@@ -283,36 +283,36 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	 * @param t The time at which is it scheduled.
 	 */
 	private void removeQueuedJobInner(Job job, Long t) {
-        Object o = timedJobsByTime.get(t);
-        assert(o != null);
-        if(o instanceof Job) {
-            assert(o.equals(job));
-            timedJobsByTime.remove(t);
-        } else {
-            Job[] jobs = (Job[]) o;
-            if(jobs.length == 1) {
-                assert(jobs[0].equals(job));
-                timedJobsByTime.remove(t);
-            } else {
-                Job[] newJobs = new Job[jobs.length-1];
-                int x = 0;
-                for(Job oldjob : jobs) {
-                    if(oldjob.equals(job)) {
-                        continue;
-                    }
-                    newJobs[x++] = oldjob;
-                    assert(x != jobs.length); // Must be in jobs array.
-                }
-                assert(x != 0); // Not duplicated.
-                if (x == 1) {
-                    timedJobsByTime.put(t, newJobs[0]);
-                } else {
-                    if(x != newJobs.length)
-                        newJobs = Arrays.copyOf(newJobs, x);
-                    timedJobsByTime.put(t, newJobs);
-                    assert(x == jobs.length-1);
-                }
-            }
-        }
-    }
+		Object o = timedJobsByTime.get(t);
+		assert(o != null);
+		if(o instanceof Job) {
+			assert(o.equals(job));
+			timedJobsByTime.remove(t);
+		} else {
+			Job[] jobs = (Job[]) o;
+			if(jobs.length == 1) {
+				assert(jobs[0].equals(job));
+				timedJobsByTime.remove(t);
+			} else {
+				Job[] newJobs = new Job[jobs.length-1];
+				int x = 0;
+				for(Job oldjob : jobs) {
+					if(oldjob.equals(job)) {
+						continue;
+					}
+					newJobs[x++] = oldjob;
+					assert(x != jobs.length); // Must be in jobs array.
+				}
+				assert(x != 0); // Not duplicated.
+				if (x == 1) {
+					timedJobsByTime.put(t, newJobs[0]);
+				} else {
+					if(x != newJobs.length)
+						newJobs = Arrays.copyOf(newJobs, x);
+					timedJobsByTime.put(t, newJobs);
+					assert(x == jobs.length-1);
+				}
+			}
+		}
+	}
 }

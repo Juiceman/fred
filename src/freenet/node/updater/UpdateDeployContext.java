@@ -167,8 +167,8 @@ public class UpdateDeployContext {
 		// able to overwrite either of them, so we'll just restart every 5 minutes forever!
 		
 		while((line = br.readLine()) != null) {
-		    /** The values are case sensitive, but the keys aren't */
-		    String lowcaseLine = line.toLowerCase();
+			/** The values are case sensitive, but the keys aren't */
+			String lowcaseLine = line.toLowerCase();
 			// The classpath numbers are not reliable.
 			// We have to check the content.
 			
@@ -192,42 +192,42 @@ public class UpdateDeployContext {
 						// Is it on the list of dependencies?
 						Dependency dep = findDependencyByRHSFilename(new File(rhs));
 						if(dep != null) {
-						    if(dep.oldFilename() != null)
-						        System.out.println("Found old dependency "+dep.oldFilename());
-						    else
-						        System.out.println("Found new dependency "+dep.newFilename());
+							if(dep.oldFilename() != null)
+								System.out.println("Found old dependency "+dep.oldFilename());
+							else
+								System.out.println("Found new dependency "+dep.newFilename());
 						} else { // dep == null
-						    System.out.println("Found unknown jar in classpath, will keep: "+rhs);
+							System.out.println("Found unknown jar in classpath, will keep: "+rhs);
 							// If not, it's something the user has added, we just keep it.
 							classpath.add(rhs);
 						}
 					}
 				}
 			} else if(lowcaseLine.startsWith("wrapper.java.additional.")) {
-			    // get existing java arguments
-			    line = line.substring("wrapper.java.additional.".length());
-			    int idx = line.indexOf('=');
-			    if(idx != -1) {
+				// get existing java arguments
+				line = line.substring("wrapper.java.additional.".length());
+				int idx = line.indexOf('=');
+				if(idx != -1) {
 				 // Ignore the numbers.
 				 String rhs = line.substring(idx+1);
 				 dontWrite = true;
 				 additionalJavaArguments.add(rhs);
 				 if (rhs.startsWith("-Djava.io.tmpdir=")) {
-				       writtenJnaTmpDir = true;
+					   writtenJnaTmpDir = true;
 				 }
 				 if (rhs.startsWith("--illegal-access=permit")) {
-				       writtenIllegalAccessPermit = true;
+					   writtenIllegalAccessPermit = true;
 				 }
 				 if (rhs.startsWith("--add-opens=")) {
-				       writtenPrivateModulesOpens = true;
+					   writtenPrivateModulesOpens = true;
 				 }
-			    }
+				}
 			} else if(lowcaseLine.equals("wrapper.restart.reload_configuration=true")) {
 				writtenReload = true;
 			} else if(lowcaseLine.startsWith("wrapper.anchorfile=")) {
-			    writtenAnchor = true;
+				writtenAnchor = true;
 			} else if(lowcaseLine.startsWith("wrapper.anchor.poll_interval=")) {
-			    writtenAnchorInterval = true;
+				writtenAnchorInterval = true;
 			}
 			if(!dontWrite)
 				otherLines.add(line);
@@ -244,7 +244,7 @@ public class UpdateDeployContext {
 		// As above, we need to write ALL the dependencies BEFORE we write the main jar.
 		int count = 1; // Classpath is 1-based.
 		for(Dependency d : deps.dependencies) {
-		    System.out.println("Writing dependency "+d.newFilename()+" priority "+d.order());
+			System.out.println("Writing dependency "+d.newFilename()+" priority "+d.order());
 			bw.write("wrapper.java.classpath."+count+"="+d.newFilename()+'\n');
 			count++;
 		}
@@ -277,13 +277,13 @@ public class UpdateDeployContext {
 		}
 		// open internal modules (required for Java 17, only supported since Java 9)
 		if (!writtenPrivateModulesOpens && JVMVersion.supportsModules()) {
-            // WoT: Unable to make field private final java.lang.String java.lang.Enum.name accessible
+			// WoT: Unable to make field private final java.lang.String java.lang.Enum.name accessible
 			bw.write("wrapper.java.additional."+count+"=--add-opens=java.base/java.lang=ALL-UNNAMED"+'\n');
 			count++;
-            // Unable to make public int java.util.Collections$UnmodifiableCollection.size() accessible
+			// Unable to make public int java.util.Collections$UnmodifiableCollection.size() accessible
 			bw.write("wrapper.java.additional."+count+"=--add-opens=java.base/java.util=ALL-UNNAMED"+'\n');
 			count++;
-            // Unable to make field private int java.io.FileDescriptor.fd accessible
+			// Unable to make field private int java.io.FileDescriptor.fd accessible
 			bw.write("wrapper.java.additional."+count+"=--add-opens=java.base/java.io=ALL-UNNAMED"+'\n');
 			count++;
 		}
@@ -296,10 +296,10 @@ public class UpdateDeployContext {
 			bw.write("wrapper.restart.reload_configuration=TRUE\n");
 		}
 		if(!writtenAnchor) {
-		    bw.write("wrapper.anchorfile=Freenet.anchor\n");
+			bw.write("wrapper.anchorfile=Freenet.anchor\n");
 		}
 		if(!writtenAnchorInterval) {
-		    bw.write("wrapper.anchor.poll_interval=1\n");
+			bw.write("wrapper.anchor.poll_interval=1\n");
 		}
 		
 		bw.close();
@@ -331,12 +331,12 @@ public class UpdateDeployContext {
 			if(rhsName.equals(f.getName().toLowerCase())) return dep;
 		}
 		// It may be already on the classpath even though it's a new file officially.
-        for(Dependency dep : deps.dependencies) {
-            File f = dep.newFilename();
-            if(rhs.equals(f)) return dep;
-            if(rhsName.equals(f.getName().toLowerCase())) return dep;
-        }
-        // Slightly more expensive test.
+		for(Dependency dep : deps.dependencies) {
+			File f = dep.newFilename();
+			if(rhs.equals(f)) return dep;
+			if(rhsName.equals(f.getName().toLowerCase())) return dep;
+		}
+		// Slightly more expensive test.
 		for(Dependency dep : deps.dependencies) {
 			Pattern p = dep.regex();
 			if(p != null) {

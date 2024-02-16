@@ -54,14 +54,14 @@ public class SeednodePingTest extends RealNodeTest {
 	static final int DARKNET_PORT = RealNodeULPRTest.DARKNET_PORT_END;
 	static final int OPENNET_PORT = DARKNET_PORT+1;
 
-    public static void main(String[] args) throws FSParseException, IOException, OpennetDisabledException, PeerParseException, InterruptedException, ReferenceSignatureVerificationException, NodeInitException, InvalidThresholdException {
-    	Node node = null;
-    	try {
-    	if(args.length == 1)
-    		STATUS_DIR = new File(args[0]);
-        RandomSource random = NodeStarter.globalTestInit("seednode-pingtest", false, LogLevel.ERROR, "", false);
-        // Create one node
-        Executor executor = new PooledExecutor();
+	public static void main(String[] args) throws FSParseException, IOException, OpennetDisabledException, PeerParseException, InterruptedException, ReferenceSignatureVerificationException, NodeInitException, InvalidThresholdException {
+		Node node = null;
+		try {
+		if(args.length == 1)
+			STATUS_DIR = new File(args[0]);
+		RandomSource random = NodeStarter.globalTestInit("seednode-pingtest", false, LogLevel.ERROR, "", false);
+		// Create one node
+		Executor executor = new PooledExecutor();
 	node = NodeStarter.createTestNode(DARKNET_PORT, OPENNET_PORT, "seednode-pingtest", false, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, false, false, false, false, false, false, 0, false, false, false, false, null);
 	// Connect & ping
 	List<SeedServerTestPeerNode> seedNodes = new ArrayList<SeedServerTestPeerNode>();
@@ -78,12 +78,12 @@ public class SeednodePingTest extends RealNodeTest {
 		}
 	}
 	// Start it
-        node.start(true);
+		node.start(true);
 	//Logger.setupStdoutLogging(LogLevel.MINOR, "freenet:NORMAL,freenet.node.NodeDispatcher:MINOR,freenet.node.FNPPacketMangler:MINOR");
 	Logger.getChain().setThreshold(LogLevel.ERROR); // kill logging
 	Thread.sleep(SECONDS.toMillis(2));
 	if(seedNodes.size() != numberOfNodesInTheFile)
-		    System.out.println("ERROR ADDING SOME OF THE SEEDNODES!!");
+			System.out.println("ERROR ADDING SOME OF THE SEEDNODES!!");
 	System.out.println("Let some time for the "+ seedNodes.size() +" nodes to connect...");
 	Thread.sleep(SECONDS.toMillis(8));
 
@@ -145,62 +145,62 @@ public class SeednodePingTest extends RealNodeTest {
 	for(FATE fate : totals.keySet()) {
 		System.out.println("RESULT:"+fate + " : "+totals.get(fate));
 	}
-    System.out.println("Completed seednodes scan.");
-    // Record statuses.
-    System.out.println("FINAL STATUS:");
-    long writeTime = System.currentTimeMillis();
-    for(SeedServerTestPeerNode peer : seedNodes) {
-    	String status = writeTime+" : "+peer.getIdentityString()+" : "+peer.getFate();
-    	System.out.println(status);
-    	File logFile = new File(STATUS_DIR, peer.getIdentityString());
-    	FileOutputStream fos = new FileOutputStream(logFile, true);
-        OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-    	osw.write(status+"\n");
-    	osw.close();
-    	FileInputStream fis = new FileInputStream(logFile);
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-    	BufferedReader br = new BufferedReader(isr);
-    	String line;
-    	int successes = 0;
-    	int failures = 0;
-    	long lastSuccess = 0;
-    	long firstSample = 0;
-    	long countSince = writeTime - COUNT_SUCCESSES_PERIOD;
-    	do {
-    		line = br.readLine();
-    		if(line == null) break;
-    		String[] results = line.split(" : ");
-    		if(results.length != 3) {
-    			System.err.println("Unable to parse line in "+logFile+" : wrong number of fields : "+results.length+" : "+line);
-    			continue;
-    		}
-    		long time = Long.parseLong(results[0]);
-    		FATE fate = FATE.valueOf(results[2]);
-    		if(firstSample == 0) firstSample = time;
-    		if(fate == FATE.CONNECTED_SUCCESS) {
-    			if(time >= countSince)
-    				successes++;
-    			lastSuccess = time;
-    		} else {
-    			if(time >= countSince)
-    				failures++;
-    		}
-    	} while(line != null);
-    	br.close();
-    	if(firstSample < countSince && successes == 0)
-    		System.err.println("RESULT:"+peer.getIdentityString()+" NOT CONNECTED IN LAST WEEK! LAST CONNECTED: "+(lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER"));
-    	System.out.println(peer.getIdentityString()+" : last success "+(lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER")+" failures in last week: "+failures+" successes in last week: "+successes);
-    }
-    node.park();
-    System.exit(0);
-    } catch (Throwable t) {
-    	System.err.println("CAUGHT: "+t);
-    	t.printStackTrace();
-    	try {
-    		if(node != null)
-    		node.park();
-    	} catch (Throwable t1) {}
-    	System.exit(1);
-    }
-    }
+	System.out.println("Completed seednodes scan.");
+	// Record statuses.
+	System.out.println("FINAL STATUS:");
+	long writeTime = System.currentTimeMillis();
+	for(SeedServerTestPeerNode peer : seedNodes) {
+		String status = writeTime+" : "+peer.getIdentityString()+" : "+peer.getFate();
+		System.out.println(status);
+		File logFile = new File(STATUS_DIR, peer.getIdentityString());
+		FileOutputStream fos = new FileOutputStream(logFile, true);
+		OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+		osw.write(status+"\n");
+		osw.close();
+		FileInputStream fis = new FileInputStream(logFile);
+		InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+		BufferedReader br = new BufferedReader(isr);
+		String line;
+		int successes = 0;
+		int failures = 0;
+		long lastSuccess = 0;
+		long firstSample = 0;
+		long countSince = writeTime - COUNT_SUCCESSES_PERIOD;
+		do {
+			line = br.readLine();
+			if(line == null) break;
+			String[] results = line.split(" : ");
+			if(results.length != 3) {
+				System.err.println("Unable to parse line in "+logFile+" : wrong number of fields : "+results.length+" : "+line);
+				continue;
+			}
+			long time = Long.parseLong(results[0]);
+			FATE fate = FATE.valueOf(results[2]);
+			if(firstSample == 0) firstSample = time;
+			if(fate == FATE.CONNECTED_SUCCESS) {
+				if(time >= countSince)
+					successes++;
+				lastSuccess = time;
+			} else {
+				if(time >= countSince)
+					failures++;
+			}
+		} while(line != null);
+		br.close();
+		if(firstSample < countSince && successes == 0)
+			System.err.println("RESULT:"+peer.getIdentityString()+" NOT CONNECTED IN LAST WEEK! LAST CONNECTED: "+(lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER"));
+		System.out.println(peer.getIdentityString()+" : last success "+(lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER")+" failures in last week: "+failures+" successes in last week: "+successes);
+	}
+	node.park();
+	System.exit(0);
+	} catch (Throwable t) {
+		System.err.println("CAUGHT: "+t);
+		t.printStackTrace();
+		try {
+			if(node != null)
+			node.park();
+		} catch (Throwable t1) {}
+		System.exit(1);
+	}
+	}
 }

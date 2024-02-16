@@ -106,8 +106,8 @@ public class ShortBufferTest {
 		int length = DATA_STRING_1.getBytes().length;
 		
 		// populate length as first 4 bytes
-		data2[0] = (byte)((length & 0xff00)     >>  8);
-		data2[1] = (byte)((length & 0xff)            );
+		data2[0] = (byte)((length & 0xff00)	 >>  8);
+		data2[1] = (byte)((length & 0xff)			);
 		
 		System.arraycopy(data, 0, data2, 2, data.length); // populate rest of content
 		

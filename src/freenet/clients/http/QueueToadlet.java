@@ -161,7 +161,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 	private boolean isReversed = false;
 	private final boolean uploads;
 
-    private static final String KEY_LIST_LOCATION = "listKeys.txt";
+	private static final String KEY_LIST_LOCATION = "listKeys.txt";
 
 	public QueueToadlet(NodeClientCore core, FCPServer fcp, HighLevelSimpleClient client, boolean uploads) {
 		super(client);
@@ -180,7 +180,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 	public void handleMethodPOST(URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
 
 		if(container.publicGatewayMode() && !ctx.isAllowedFullAccess()) {
-		    sendUnauthorizedPage(ctx);
+			sendUnauthorizedPage(ctx);
 			return;
 		}
 
@@ -1079,7 +1079,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 		}
 
 		if(container.publicGatewayMode() && !ctx.isAllowedFullAccess()) {
-		    sendUnauthorizedPage(ctx);
+			sendUnauthorizedPage(ctx);
 			return;
 		}
 
@@ -1220,10 +1220,10 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 		UploadRequestStatus put = (UploadRequestStatus)req;
 				FreenetURI uri = put.getURI();
 		if (uri != null) {
-		    sb.append(uri.toString());
-		    sb.append("\n");
+			sb.append(uri.toString());
+			sb.append("\n");
 		}
-	    }
+		}
 		}
 		return sb.toString();
 	}
@@ -1251,7 +1251,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 			Logger.minor(this, "Request count: "+reqs.length);
 
 		if(reqs.length < 1){
-		    return sendEmptyQueuePage(ctx, pageMaker);
+			return sendEmptyQueuePage(ctx, pageMaker);
 		}
 
 		short lowestQueuedPrio = RequestStarter.PAUSED_PRIORITY_CLASS;
@@ -1269,7 +1269,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 					else // to disk
 						completedDownloadToDisk.add(download);
 				} else if(download.hasFinished()) {
-				    FetchExceptionMode failureCode = download.getFailureCode();
+					FetchExceptionMode failureCode = download.getFailureCode();
 					String mimeType = download.getMIMEType();
 					if(mimeType == null && (failureCode == FetchExceptionMode.CONTENT_VALIDATION_UNKNOWN_MIME || failureCode == FetchExceptionMode.CONTENT_VALIDATION_BAD_MIME)) {
 						Logger.error(this, "MIME type is null but failure code is "+FetchException.getMessage(failureCode)+" for "+download.getIdentifier()+" : "+download.getURI());
@@ -1350,7 +1350,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 			}
 		}
 		if(!added) {
-		    return sendEmptyQueuePage(ctx, pageMaker);
+			return sendEmptyQueuePage(ctx, pageMaker);
 		}
 		Logger.minor(this, "Total queued downloads: "+SizeUtil.formatSize(totalQueuedDownloadSize));
 		Logger.minor(this, "Total queued uploads: "+SizeUtil.formatSize(totalQueuedUploadSize));
@@ -1388,7 +1388,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 					} else if (sortBy.equals("lastActivity")) {
 			result = Fields.compare(firstRequest.getLastSuccess(),
 						secondRequest.getLastSuccess());
-		    } else if (sortBy.equals("lastFailure")) {
+			} else if (sortBy.equals("lastFailure")) {
 			result = Fields.compare(firstRequest.getLastFailure(),
 						secondRequest.getLastFailure());
 					}else
@@ -1540,12 +1540,12 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 		HTMLNode legendTable = legendContent.addChild("table", "class", "queue");
 		HTMLNode legendRow = legendTable.addChild("tr");
 		for(int i=0; i<7; i++){
-		    if(i > RequestStarter.INTERACTIVE_PRIORITY_CLASS || advancedModeEnabled || i <= lowestQueuedPrio)
+			if(i > RequestStarter.INTERACTIVE_PRIORITY_CLASS || advancedModeEnabled || i <= lowestQueuedPrio)
 			legendRow.addChild("td", "class", "priority" + i, priorityClasses[i]);
 		}
 
 		if (SimpleToadletServer.isPanicButtonToBeShown) {
-		    // There may be persistent downloads etc under other PersistentRequestClient's, so still show it.
+			// There may be persistent downloads etc under other PersistentRequestClient's, so still show it.
 			contentNode.addChild(createPanicBox(pageMaker, ctx));
 		}
 
@@ -1690,20 +1690,20 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 			HTMLNode uncompletedContent = pageMaker.getInfobox("requests_in_progress", l10n("wipD", new String[]{ "size" }, new String[]{ String.valueOf(uncompletedDownload.size()) }), contentNode, "download-progressing", false);
 			if (advancedModeEnabled) {
 		uncompletedContent.addChild(
-		    createRequestTable(
+			createRequestTable(
 			pageMaker, ctx, uncompletedDownload,
 			new QueueColumn[] {
-			    QueueColumn.IDENTIFIER, QueueColumn.PRIORITY, QueueColumn.SIZE,
-			    QueueColumn.MIME_TYPE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
-			    /* FIXME: This column has been disabled since it will always show
-			     * "never" even if parts of the file transfer failed due to temporary
-			     * reasons such as "data not found" / "route not found" / etc. This is
-			     * due to shortcomings in the underlying event framework. Please
-			     * re-enable it once the underlying issue is fixed:
-			     * https://bugs.freenetproject.org/view.php?id=6526 */
-			    // QueueColumn.LAST_FAILURE,
-			    QueueColumn.PERSISTENCE, QueueColumn.FILENAME,
-			    QueueColumn.KEY, QueueColumn.COMPAT_MODE },
+				QueueColumn.IDENTIFIER, QueueColumn.PRIORITY, QueueColumn.SIZE,
+				QueueColumn.MIME_TYPE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
+				/* FIXME: This column has been disabled since it will always show
+				 * "never" even if parts of the file transfer failed due to temporary
+				 * reasons such as "data not found" / "route not found" / etc. This is
+				 * due to shortcomings in the underlying event framework. Please
+				 * re-enable it once the underlying issue is fixed:
+				 * https://bugs.freenetproject.org/view.php?id=6526 */
+				// QueueColumn.LAST_FAILURE,
+				QueueColumn.PERSISTENCE, QueueColumn.FILENAME,
+				QueueColumn.KEY, QueueColumn.COMPAT_MODE },
 			priorityClasses, advancedModeEnabled, "uncompleted-download",
 			QueueType.UncompletedDownload)
 		);
@@ -1717,20 +1717,20 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 			HTMLNode uncompletedContent = pageMaker.getInfobox("requests_in_progress", l10n("wipU", new String[]{ "size" }, new String[]{ String.valueOf(uncompletedUpload.size()) }), contentNode, "upload-progressing", false);
 			if (advancedModeEnabled) {
 		uncompletedContent.addChild(
-		    createRequestTable(
+			createRequestTable(
 			pageMaker, ctx, uncompletedUpload,
 			new QueueColumn[] {
-			    QueueColumn.IDENTIFIER, QueueColumn.PRIORITY, QueueColumn.SIZE,
-			    QueueColumn.MIME_TYPE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
-			    /* FIXME: This column has been disabled since it will always show
-			     * "never" even if parts of the file transfer failed due to temporary
-			     * reasons such as "data not found" / "route not found" / etc. This is
-			     * due to shortcomings in the underlying event framework. Please
-			     * re-enable it once the underlying issue is fixed:
-			     * https://bugs.freenetproject.org/view.php?id=6526 */
-			    // QueueColumn.LAST_FAILURE,
-			    QueueColumn.PERSISTENCE, QueueColumn.FILENAME,
-			    QueueColumn.KEY },
+				QueueColumn.IDENTIFIER, QueueColumn.PRIORITY, QueueColumn.SIZE,
+				QueueColumn.MIME_TYPE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
+				/* FIXME: This column has been disabled since it will always show
+				 * "never" even if parts of the file transfer failed due to temporary
+				 * reasons such as "data not found" / "route not found" / etc. This is
+				 * due to shortcomings in the underlying event framework. Please
+				 * re-enable it once the underlying issue is fixed:
+				 * https://bugs.freenetproject.org/view.php?id=6526 */
+				// QueueColumn.LAST_FAILURE,
+				QueueColumn.PERSISTENCE, QueueColumn.FILENAME,
+				QueueColumn.KEY },
 			priorityClasses, advancedModeEnabled, "uncompleted-upload-file",
 			QueueType.UncompletedUpload)
 		);
@@ -1744,19 +1744,19 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 			HTMLNode uncompletedContent = pageMaker.getInfobox("requests_in_progress", l10n("wipDU", new String[]{ "size" }, new String[]{ String.valueOf(uncompletedDirUpload.size()) }), contentNode, "download-progressing upload-progressing", false);
 			if (advancedModeEnabled) {
 		uncompletedContent.addChild(
-		    createRequestTable(
+			createRequestTable(
 			pageMaker, ctx, uncompletedDirUpload,
 			new QueueColumn[] {
-			    QueueColumn.IDENTIFIER, QueueColumn.FILES, QueueColumn.PRIORITY,
-			    QueueColumn.TOTAL_SIZE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
-			    /* FIXME: This column has been disabled since it will always show
-			     * "never" even if parts of the file transfer failed due to temporary
-			     * reasons such as "data not found" / "route not found" / etc. This is
-			     * due to shortcomings in the underlying event framework. Please
-			     * re-enable it once the underlying issue is fixed:
-			     * https://bugs.freenetproject.org/view.php?id=6526 */
-			    // QueueColumn.LAST_FAILURE,
-			    QueueColumn.PERSISTENCE, QueueColumn.KEY },
+				QueueColumn.IDENTIFIER, QueueColumn.FILES, QueueColumn.PRIORITY,
+				QueueColumn.TOTAL_SIZE, QueueColumn.PROGRESS, QueueColumn.LAST_ACTIVITY,
+				/* FIXME: This column has been disabled since it will always show
+				 * "never" even if parts of the file transfer failed due to temporary
+				 * reasons such as "data not found" / "route not found" / etc. This is
+				 * due to shortcomings in the underlying event framework. Please
+				 * re-enable it once the underlying issue is fixed:
+				 * https://bugs.freenetproject.org/view.php?id=6526 */
+				// QueueColumn.LAST_FAILURE,
+				QueueColumn.PERSISTENCE, QueueColumn.KEY },
 			priorityClasses, advancedModeEnabled, "uncompleted-upload-dir",
 			QueueType.UncompletedDirUpload)
 		);
@@ -1778,15 +1778,15 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 	HTMLNode contentNode = page.content;
 	/* add alert summary box */
 	if(ctx.isAllowedFullAccess())
-	    contentNode.addChild(ctx.getAlertManager().createSummary());
+		contentNode.addChild(ctx.getAlertManager().createSummary());
 	HTMLNode infoboxContent = pageMaker.getInfobox("infobox-information", l10n("globalQueueIsEmpty"), contentNode, "queue-empty", true);
 	infoboxContent.addChild("#", l10n("noTaskOnGlobalQueue"));
 	if(!uploads)
-	    contentNode.addChild(createBulkDownloadForm(ctx, pageMaker));
+		contentNode.addChild(createBulkDownloadForm(ctx, pageMaker));
 	return pageNode;
-    }
+	}
 
-    private HTMLNode createReasonCell(String failureReason) {
+	private HTMLNode createReasonCell(String failureReason) {
 		HTMLNode reasonCell = new HTMLNode("td", "class", "request-reason");
 		if (failureReason == null) {
 			reasonCell.addChild("span", "class", "failure_reason_unknown", l10n("unknown"));
@@ -2064,43 +2064,43 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 	 * {@link TimeUtil#formatTime(long)}.
 	 *
 	 * @param now
-	 *	      The current time (for a unified point of reference for the
-	 *	      whole page)
+	 *		  The current time (for a unified point of reference for the
+	 *		  whole page)
 	 * @param lastActivity
-	 *	      The last activity of the request
+	 *		  The last activity of the request
 	 * @return The created table cell HTML node
 	 */
 	private HTMLNode createLastActivityCell(long now, Date lastActivity) {
 		HTMLNode lastActivityCell = new HTMLNode("td", "class", "request-last-activity");
 		if (lastActivity == null) {
-	    // During normal operation, lastActivity will never be null even if there was no
-	    // activity yet. It will default to the Date when the request was added. (See
-	    // ClientRequester.getLatestSuccess() for the usability motivation behind that.)
-	    // lastActivity can however be null if the user had been using a pre-release of
-	    // purge-db4o which did not store the lastActivity Date to the database yet.
-	    // Thus, we initialize to "unknown" instead of "never" to stress that there was possibly
-	    // activity but we cannot know because the Date was not stored yet.
+		// During normal operation, lastActivity will never be null even if there was no
+		// activity yet. It will default to the Date when the request was added. (See
+		// ClientRequester.getLatestSuccess() for the usability motivation behind that.)
+		// lastActivity can however be null if the user had been using a pre-release of
+		// purge-db4o which did not store the lastActivity Date to the database yet.
+		// Thus, we initialize to "unknown" instead of "never" to stress that there was possibly
+		// activity but we cannot know because the Date was not stored yet.
 			lastActivityCell.addChild("i", l10n("lastActivity.unknown"));
 		} else {
-	    lastActivityCell.addChild("#", l10n("lastActivity.ago", "time",
+		lastActivityCell.addChild("#", l10n("lastActivity.ago", "time",
 		TimeUtil.formatTime(now - lastActivity.getTime())));
 		}
 		return lastActivityCell;
 	}
 	
-    /** @see #createLastActivityCell(long, Date) */
-    private HTMLNode createLastFailureCell(long now, Date lastFailure) {
+	/** @see #createLastActivityCell(long, Date) */
+	private HTMLNode createLastFailureCell(long now, Date lastFailure) {
 	HTMLNode lastFailureCell = new HTMLNode("td", "class", "request-last-failure");
 	if (lastFailure == null) {
-	    // This is "never" instead of "unknown" because the backend of RequestStatus uses null
-	    // to signalize that no failure has happened yet.
-	    lastFailureCell.addChild("i", l10n("lastFailure.never"));
+		// This is "never" instead of "unknown" because the backend of RequestStatus uses null
+		// to signalize that no failure has happened yet.
+		lastFailureCell.addChild("i", l10n("lastFailure.never"));
 	} else {
-	    lastFailureCell.addChild("#", l10n("lastFailure.ago", "time",
+		lastFailureCell.addChild("#", l10n("lastFailure.ago", "time",
 		TimeUtil.formatTime(now - lastFailure.getTime())));
 	}
 	return lastFailureCell;
-    }
+	}
 
 	private HTMLNode createRequestTable(PageMaker pageMaker, ToadletContext ctx, List<? extends RequestStatus> requests, QueueColumn[] columns, String[] priorityClasses, boolean advancedModeEnabled, String id, QueueType queueType) {
 		return createRequestTable(pageMaker, ctx, requests, columns, priorityClasses, advancedModeEnabled, id, null, queueType);
@@ -2161,10 +2161,10 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 					headerRow.addChild("th").addChild("a", "href", (isReversed ? "?sortBy=lastActivity" : "?sortBy=lastActivity&reversed"), l10n("lastActivity"));
 					break;
 		case LAST_FAILURE:
-		    headerRow.addChild("th").addChild("a", "href",
-			    (isReversed ? "?sortBy=lastFailure" : "?sortBy=lastFailure&reversed"),
-			    l10n("lastFailure"));
-		    break;
+			headerRow.addChild("th").addChild("a", "href",
+				(isReversed ? "?sortBy=lastFailure" : "?sortBy=lastFailure&reversed"),
+				l10n("lastFailure"));
+			break;
 				case COMPAT_MODE:
 					headerRow.addChild("th", l10n("compatibilityMode"));
 					break;
@@ -2246,7 +2246,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 					case LAST_ACTIVITY:
 						requestRow.addChild(createLastActivityCell(now, clientRequest.getLastSuccess()));
 						break;
-		    case LAST_FAILURE:
+			case LAST_FAILURE:
 			requestRow.addChild(createLastFailureCell(now,
 				clientRequest.getLastFailure()));
 			break;

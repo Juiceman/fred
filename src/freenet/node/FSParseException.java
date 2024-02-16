@@ -9,17 +9,17 @@ package freenet.node;
  */
 public class FSParseException extends Exception {
 	private static final long serialVersionUID = -1;
-    public FSParseException(Exception e) {
-        super(e);
-    }
-    
-    public FSParseException(String msg) {
-        super(msg);
-    }
+	public FSParseException(Exception e) {
+		super(e);
+	}
+	
+	public FSParseException(String msg) {
+		super(msg);
+	}
 
-    public FSParseException(String msg, NumberFormatException e) {
-        super(msg+" : "+e);
-        initCause(e);
-    }
+	public FSParseException(String msg, NumberFormatException e) {
+		super(msg+" : "+e);
+		initCause(e);
+	}
 
 }

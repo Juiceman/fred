@@ -22,7 +22,7 @@ public class DisconnectMessage extends FCPMessage {
 	 * Creates a new disconnect message.
 	 *
 	 * @param simpleFieldSet
-	 *            The field set to create the message from
+	 *			The field set to create the message from
 	 */
 	public DisconnectMessage(SimpleFieldSet simpleFieldSet) {
 		/* do nothing. */
@@ -52,7 +52,7 @@ public class DisconnectMessage extends FCPMessage {
 	 * {@inheritDoc}
 	 *
 	 * @see freenet.clients.fcp.FCPMessage#run(freenet.clients.fcp.FCPConnectionHandler,
-	 *      freenet.node.Node)
+	 *	  freenet.node.Node)
 	 */
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {

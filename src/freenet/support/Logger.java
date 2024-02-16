@@ -378,16 +378,16 @@ public abstract class Logger {
 	 * Log a message
 	 * 
 	 * @param o
-	 *            The object where this message was generated.
+	 *			The object where this message was generated.
 	 * @param source
-	 *            The class where this message was generated.
+	 *			The class where this message was generated.
 	 * @param message
-	 *            A clear and verbose message describing the event
+	 *			A clear and verbose message describing the event
 	 * @param e
-	 *            Logs this exception with the message.
+	 *			Logs this exception with the message.
 	 * @param priority
-	 *            The priority of the mesage, one of LogLevel.ERROR,
-	 *            LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *			The priority of the mesage, one of LogLevel.ERROR,
+	 *			LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 */
 	public abstract void log(
 			Object o,
@@ -408,10 +408,10 @@ public abstract class Logger {
 
 	/**
 	 * Log a message.
-	 * @param source        The source object where this message was generated
+	 * @param source		The source object where this message was generated
 	 * @param message A clear and verbose message describing the event
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
-	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *				 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 **/
 	public abstract void log(Object source, String message, LogLevel priority);
 	
@@ -424,9 +424,9 @@ public abstract class Logger {
 	 * Log a message with an exception.
 	 * @param o   The source object where this message was generated.
 	 * @param message  A clear and verbose message describing the event.
-	 * @param e        Logs this exception with the message.
+	 * @param e		Logs this exception with the message.
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
-	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *				 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 * @see #log(Object o, String message, int priority)
 	 */
 	public abstract void log(Object o, String message, Throwable e, 
@@ -440,10 +440,10 @@ public abstract class Logger {
 	
 	/**
 	 * Log a message from static code.
-	 * @param c        The class where this message was generated.
+	 * @param c		The class where this message was generated.
 	 * @param message  A clear and verbose message describing the event
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
-	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *				 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 */
 	public abstract void log(Class<?> c, String message, LogLevel priority);
 	
@@ -454,11 +454,11 @@ public abstract class Logger {
 
 	/**
 	 * Log a message from static code.
-	 * @param c     The class where this message was generated.
+	 * @param c	 The class where this message was generated.
 	 * @param message A clear and verbose message describing the event
-	 * @param e        Logs this exception with the message.
+	 * @param e		Logs this exception with the message.
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
-	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *				 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 */
 	public abstract void log(Class<?> c, String message, Throwable e,
 			LogLevel priority);
@@ -513,7 +513,7 @@ public abstract class Logger {
 	 * Changes the priority threshold.
 	 * 
 	 * @param thresh
-	 *            The new threshhold
+	 *			The new threshhold
 	 */
 	public abstract void setThreshold(LogLevel thresh);
 	
@@ -526,7 +526,7 @@ public abstract class Logger {
 	 * Changes the priority threshold.
 	 * 
 	 * @param symbolicThreshold
-	 *            The new threshhold, must be one of ERROR,NORMAL etc.. 
+	 *			The new threshhold, must be one of ERROR,NORMAL etc.. 
 	 * @throws InvalidThresholdException 
 	 */
 	public abstract void setThreshold(String symbolicThreshold) throws InvalidThresholdException;
@@ -612,7 +612,7 @@ public abstract class Logger {
 				} catch (IllegalArgumentException e) {
 				} catch (IllegalAccessException e) {
 				}
-                
+				
 				if (!done) Logger.error(this, "No log level field for " + clazz);
 			}
 		};

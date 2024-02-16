@@ -31,9 +31,9 @@ public interface LinkFilterExceptedToadlet {
 	 * Returns whether the given should be excepted from being filtered.
 	 *
 	 * @param link
-	 *            The link to check
+	 *			The link to check
 	 * @return {@code true} if the link should not be filtered, {@code false} if
-	 *         it should be filtered
+	 *		 it should be filtered
 	 */
 	public boolean isLinkExcepted(URI link);
 

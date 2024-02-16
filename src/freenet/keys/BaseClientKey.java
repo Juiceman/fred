@@ -16,9 +16,9 @@ import java.net.MalformedURLException;
  */
 public abstract class BaseClientKey implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static BaseClientKey getBaseKey(FreenetURI origURI) throws MalformedURLException {
+	public static BaseClientKey getBaseKey(FreenetURI origURI) throws MalformedURLException {
 		String keyType = origURI.getKeyType();
 		if("CHK".equals(keyType))
 			return new ClientCHK(origURI);
@@ -34,7 +34,7 @@ public abstract class BaseClientKey implements Serializable {
 	public abstract FreenetURI getURI();
 	
 	protected BaseClientKey() {
-	    // For serialization.
+		// For serialization.
 	}
 
 }

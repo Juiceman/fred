@@ -18,9 +18,9 @@ public class RedirectPluginHTTPException extends PluginHTTPException {
 	 * Creates a new redirect exception.
 	 * 
 	 * @param message
-	 *            The message to put in the reply
+	 *			The message to put in the reply
 	 * @param newLocation
-	 *            The location to redirect to
+	 *			The location to redirect to
 	 */
 	public RedirectPluginHTTPException(String message, String newLocation) {
 		super(message, null);
@@ -31,13 +31,13 @@ public class RedirectPluginHTTPException extends PluginHTTPException {
 	 * Creates a new redirect exception.
 	 * 
 	 * @param message
-	 *            The message to put in the reply
+	 *			The message to put in the reply
 	 * @param location
-	 *            unsued
+	 *			unsued
 	 * @param newLocation
-	 *            The location to redirect to
+	 *			The location to redirect to
 	 * @deprecated use {@link #RedirectPluginHTTPException(String, String)}
-	 *             instead
+	 *			 instead
 	 */
 	@Deprecated
 	public RedirectPluginHTTPException(String message, String location, String newLocation) {

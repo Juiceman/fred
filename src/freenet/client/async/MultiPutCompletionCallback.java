@@ -17,8 +17,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class MultiPutCompletionCallback implements PutCompletionCallback, ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
@@ -210,8 +210,8 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		synchronized(this) {
 			if(state != generator) return;
 			if(encodedKey != null) {
-			    if(key.equals(encodedKey)) return; // Squash duplicated call to onEncode().
-			    else Logger.error(this, "Encoded twice with different keys for "+this+" : "+encodedKey+" -> "+key);
+				if(key.equals(encodedKey)) return; // Squash duplicated call to onEncode().
+				else Logger.error(this, "Encoded twice with different keys for "+this+" : "+encodedKey+" -> "+key);
 			}
 			encodedKey = key;
 		}
@@ -306,26 +306,26 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		cb.onFetchable(this);
 	}
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        for(ClientPutState s : getWaitingFor())
-            s.onResume(context);
-        if(cb != parent) cb.onResume(context);
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		for(ClientPutState s : getWaitingFor())
+			s.onResume(context);
+		if(cb != parent) cb.onResume(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        for(ClientPutState state : getWaitingFor()) {
-            state.onShutdown(context);
-        }
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		for(ClientPutState state : getWaitingFor()) {
+			state.onShutdown(context);
+		}
+	}
 
-    private synchronized List<ClientPutState> getWaitingFor() {
-        return new ArrayList<ClientPutState>(waitingFor);
-    }
+	private synchronized List<ClientPutState> getWaitingFor() {
+		return new ArrayList<ClientPutState>(waitingFor);
+	}
 
 }

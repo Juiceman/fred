@@ -11,8 +11,8 @@ import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 
 class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(ArchiveHandlerImpl.class);

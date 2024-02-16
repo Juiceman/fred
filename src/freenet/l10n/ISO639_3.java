@@ -264,7 +264,7 @@ public final class ISO639_3 {
 	 * @param scope Must not be null.
 	 * @param type Must not be null.
 	 * @return Gets a {@link Hashtable} of language codes with the given scope and type. The key in the returned list is the ID 
-	 * 			of the language code, which is the 3-letter code of ISO639-3. The given Hashtable is free for modification.
+	 *			of the language code, which is the 3-letter code of ISO639-3. The given Hashtable is free for modification.
 	 */
 	public final Hashtable<String, LanguageCode> getLanguagesByScopeAndType(LanguageCode.Scope scope, LanguageCode.Type type) {
 		final Map<String, LanguageCode> all = getLanguages();

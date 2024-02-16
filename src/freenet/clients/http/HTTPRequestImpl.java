@@ -86,7 +86,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	
 	private final String method;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -101,7 +101,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * parameters.
 	 * 
 	 * @param uri
-	 *            the URI being requested
+	 *			the URI being requested
 	 */
 	public HTTPRequestImpl(URI uri, String method) {
 		this.uri = uri;
@@ -193,7 +193,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * parameter map to be filled.
 	 * 
 	 * @param queryString
-	 *            the query string in its raw form (not yet url-decoded)
+	 *			the query string in its raw form (not yet url-decoded)
 	 * @param doUrlDecoding TODO
 	 */
 	private void parseRequestParameters(String queryString, boolean doUrlDecoding, boolean asParts) {
@@ -222,9 +222,9 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * Get the first value of the parameter with the given name.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return the first value or <code>null</code> if the parameter was not
-	 *         set
+	 *		 set
 	 */
 	private String getParameterValue(String name) {
 		if (!this.isParameterSet(name)) {
@@ -243,9 +243,9 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * set at all, you must use {@link #isParameterSet(String)}.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return the list of all values for this parameter that were parsed so
-	 *         far.
+	 *		 far.
 	 */
 	private List<String> getParameterValueList(String name) {
 		List<String> values = this.parameterNameValuesMap.get(name);
@@ -261,9 +261,9 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * the parameters using UTF-8.
 	 *
 	 * @param queryString
-	 *            The query string to decode
+	 *			The query string to decode
 	 * @param doUrlDecoding
-	 *            {@code true} to decode the parameter names and values
+	 *			{@code true} to decode the parameter names and values
 	 * @return The decoded parameters
 	 */
 	public static Map<String, List<String>> parseUriParameters(String queryString, boolean doUrlDecoding) {
@@ -333,10 +333,10 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * Creates a query string from the given parameters.
 	 *
 	 * @param parameterValues
-	 *            The parameters to create a query string from
+	 *			The parameters to create a query string from
 	 * @param doUrlEncoding
-	 *            {@code true} if encoding for HTTP headers, {@code false} to
-	 *            only encode unsafe characters
+	 *			{@code true} if encoding for HTTP headers, {@code false} to
+	 *			only encode unsafe characters
 	 * @return The query string
 	 */
 	public static String createQueryString(Map<String, List<String>> parameterValues, boolean doUrlEncoding) {
@@ -703,7 +703,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 			dis.readFully(buf);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			 Logger.error(this, "Caught IOE:" + ioe.getMessage());
 		} finally {
 			Closer.close(dis);
 			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
@@ -743,8 +743,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 			dis.readFully(buf, 0, buf.length);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
-	         return new byte[0];
+			 Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			 return new byte[0];
 		} finally {
 			Closer.close(dis);
 			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
@@ -804,11 +804,11 @@ public class HTTPRequestImpl implements HTTPRequest {
 		 * data.
 		 * 
 		 * @param filename
-		 *            The name of the file
+		 *			The name of the file
 		 * @param contentType
-		 *            The content type of the file
+		 *			The content type of the file
 		 * @param data
-		 *            The data of the file
+		 *			The data of the file
 		 */
 		public HTTPUploadedFileImpl(String filename, String contentType, Bucket data) {
 			this.filename = filename;

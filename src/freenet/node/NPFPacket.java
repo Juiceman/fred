@@ -53,9 +53,9 @@ class NPFPacket {
 		}
 
 		packet.sequenceNumber = ((plaintext[offset] & 0xFF) << 24)
-		                | ((plaintext[offset + 1] & 0xFF) << 16)
-		                | ((plaintext[offset + 2] & 0xFF) << 8)
-		                | (plaintext[offset + 3] & 0xFF);
+						| ((plaintext[offset + 1] & 0xFF) << 16)
+						| ((plaintext[offset + 2] & 0xFF) << 8)
+						| (plaintext[offset + 3] & 0xFF);
 		offset += 4;
 
 		//Process received acks
@@ -68,9 +68,9 @@ class NPFPacket {
 					for(int i = 0; i < numAckRanges; i++) {
 						if (i == 0) {
 							ack = ((plaintext[offset] & 0xFF) << 24)
-						               | ((plaintext[offset + 1] & 0xFF) << 16)
-						               | ((plaintext[offset + 2] & 0xFF) << 8)
-						               | (plaintext[offset + 3] & 0xFF);
+									   | ((plaintext[offset + 1] & 0xFF) << 16)
+									   | ((plaintext[offset + 2] & 0xFF) << 8)
+									   | (plaintext[offset + 3] & 0xFF);
 							offset += 4;
 						} else {
 							int distanceFromPrevious = (plaintext[offset++] & 0xFF);
@@ -79,9 +79,9 @@ class NPFPacket {
 							} else {
 								// Far offset
 								ack = ((plaintext[offset] & 0xFF) << 24)
-							               | ((plaintext[offset + 1] & 0xFF) << 16)
-							               | ((plaintext[offset + 2] & 0xFF) << 8)
-							               | (plaintext[offset + 3] & 0xFF);
+										   | ((plaintext[offset + 1] & 0xFF) << 16)
+										   | ((plaintext[offset + 2] & 0xFF) << 8)
+										   | (plaintext[offset + 3] & 0xFF);
 								offset += 4;
 							}
 						}
@@ -121,9 +121,9 @@ class NPFPacket {
 				}
 
 				messageID = ((plaintext[offset] & 0x0F) << 24)
-				                | ((plaintext[offset + 1] & 0xFF) << 16)
-				                | ((plaintext[offset + 2] & 0xFF) << 8)
-				                | (plaintext[offset + 3] & 0xFF);
+								| ((plaintext[offset + 1] & 0xFF) << 16)
+								| ((plaintext[offset + 2] & 0xFF) << 8)
+								| (plaintext[offset + 3] & 0xFF);
 				offset += 4;
 			} else {
 				if(plaintext.length < (offset + 2)) {
@@ -137,14 +137,14 @@ class NPFPacket {
 					return packet;
 				}
 				messageID = prevFragmentID + (((plaintext[offset] & 0x0F) << 8)
-				                | (plaintext[offset + 1] & 0xFF));
+								| (plaintext[offset + 1] & 0xFF));
 				offset += 2;
 			}
 			prevFragmentID = messageID;
 
 			int requiredLength = offset
-			                + (shortMessage ? 1 : 2)
-			                + (isFragmented ? (shortMessage ? 1 : 3) : 0);
+							+ (shortMessage ? 1 : 2)
+							+ (isFragmented ? (shortMessage ? 1 : 3) : 0);
 			if(plaintext.length < requiredLength) {
 				packet.error = true;
 				return packet;
@@ -155,7 +155,7 @@ class NPFPacket {
 				fragmentLength = plaintext[offset++] & 0xFF;
 			} else {
 				fragmentLength = ((plaintext[offset] & 0xFF) << 8)
-				                | (plaintext[offset + 1] & 0xFF);
+								| (plaintext[offset + 1] & 0xFF);
 				offset += 2;
 			}
 
@@ -191,7 +191,7 @@ class NPFPacket {
 			offset += fragmentLength;
 
 			packet.fragments.add(new MessageFragment(shortMessage, isFragmented, firstFragment,
-			                messageID, fragmentLength, messageLength, fragmentOffset, fragmentData, null));
+							messageID, fragmentLength, messageLength, fragmentOffset, fragmentData, null));
 		}
 		
 		packet.length = offset;
@@ -225,7 +225,7 @@ class NPFPacket {
 	}
 
 	public int toBytes(byte[] buf, int offset, Random paddingGen) {
-	    int origOffset = offset;
+		int origOffset = offset;
 		buf[offset] = (byte) (sequenceNumber >>> 24);
 		buf[offset + 1] = (byte) (sequenceNumber >>> 16);
 		buf[offset + 2] = (byte) (sequenceNumber >>> 8);
@@ -240,10 +240,10 @@ class NPFPacket {
 				int startRange = 0, endRange = -1;
 				int nextAck = acksIterator.next();
 				for (int i = 0; acksIterator.hasNext(); i++) {
-				    assert(nextAck - endRange >= 0);
+					assert(nextAck - endRange >= 0);
 					if (i == 0 || (nextAck - endRange >= 254)) {
-					    if(i != 0)
-					        buf[offset++] = (byte) 0; // Mark a far offset
+						if(i != 0)
+							buf[offset++] = (byte) 0; // Mark a far offset
 						buf[offset] = (byte) (nextAck >>> 24);
 						buf[offset + 1] = (byte) (nextAck >>> 16);
 						buf[offset + 2] = (byte) (nextAck >>> 8);
@@ -266,7 +266,7 @@ class NPFPacket {
 					// TODO: Add zero-cost dub-acks if any
 				}
 				if (nextAck != endRange) { // Edge-case when the last ack does not fit into previous range
-                    assert(nextAck - endRange >= 0);
+					assert(nextAck - endRange >= 0);
 					if (nextAck - endRange >= 254 && endRange != -1) {
 						buf[offset++] = (byte) 0; // Mark a far offset
 					}
@@ -341,7 +341,7 @@ class NPFPacket {
 			}
 		}
 
-        assert(offset - origOffset == length);
+		assert(offset - origOffset == length);
 
 		if(offset < buf.length) {
 			//More room, so add padding
@@ -389,12 +389,12 @@ class NPFPacket {
 				acks.remove(ack);
 				return false;
 			}
-			//              (start + offset) + (rangeCount-1)    *(1byte deltaFromPrevios + length) + farRangeCount*(flag + 4byte packetSequenceNumber + length)
-			int blockSize = 5                + (nearRangeCount-1)*2                                 + farRangeCount*6;
+			//			  (start + offset) + (rangeCount-1)	*(1byte deltaFromPrevios + length) + farRangeCount*(flag + 4byte packetSequenceNumber + length)
+			int blockSize = 5				+ (nearRangeCount-1)*2								 + farRangeCount*6;
 			int finalLength = length + blockSize - ackBlockByteSize;
 			if(finalLength > maxPacketSize) {
-			    acks.remove(ack);
-			    return false;
+				acks.remove(ack);
+				return false;
 			}
 			length = finalLength;
 			ackBlockByteSize = blockSize;
@@ -453,15 +453,15 @@ class NPFPacket {
 
 	public boolean getError() {
 		return error;
-        }
+		}
 
 	public List<MessageFragment> getFragments() {
 		return fragments;
-        }
+		}
 
 	public int getSequenceNumber() {
 		return sequenceNumber;
-        }
+		}
 
 	public void setSequenceNumber(int sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
@@ -469,7 +469,7 @@ class NPFPacket {
 
 	public SortedSet<Integer> getAcks() {
 		return acks;
-        }
+		}
 
 	public int getLength() {
 		return length;

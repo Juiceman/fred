@@ -60,8 +60,8 @@ import freenet.support.io.InsufficientDiskSpaceException;
  */
 public class SingleFileFetcher extends SimpleSingleFileFetcher {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
@@ -250,8 +250,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 		// Parse metadata
 		try {
 			metadata = Metadata.construct(data);
-            data.free();
-            data = null;
+			data.free();
+			data = null;
 			innerWrapHandleMetadata(false, context);
 		} catch (MetadataParseException e) {
 			onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, e), false, context);
@@ -259,12 +259,12 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 			// This is a metadata error too.
 			onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, e), false, context);
 		} catch (InsufficientDiskSpaceException e) {
-		    onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
+			onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
 		} catch (IOException e) {
 			// Bucket error?
 			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), false, context);
 		} finally {
-		    if(data != null) data.free();
+			if(data != null) data.free();
 		}
 	}
 
@@ -305,16 +305,16 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 			rcb.onFailure(new FetchException(FetchExceptionMode.TOO_BIG, result.size(), (rcb == parent), result.getMimeType()), this, context);
 			result.asBucket().free();
 		} else {
-            // Break locks, don't run filtering on FEC thread etc etc.
-		    context.getJobRunner(persistent()).queueInternal(new PersistentJob() {
+			// Break locks, don't run filtering on FEC thread etc etc.
+			context.getJobRunner(persistent()).queueInternal(new PersistentJob() {
 
-		        @Override
-		        public boolean run(ClientContext context) {
-		            rcb.onSuccess(new SingleFileStreamGenerator(result.asBucket(), persistent), result.getMetadata(), decompressors, SingleFileFetcher.this, context);
-		            return true;
-		        }
+				@Override
+				public boolean run(ClientContext context) {
+					rcb.onSuccess(new SingleFileStreamGenerator(result.asBucket(), persistent), result.getMetadata(), decompressors, SingleFileFetcher.this, context);
+					return true;
+				}
 
-		    });
+			});
 		}
 	}
 
@@ -335,7 +335,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 	 */
 	private synchronized void handleMetadata(final ClientContext context) throws FetchException, MetadataParseException, ArchiveFailureException, ArchiveRestartException {
 		if(uri == null) {
-		    throw new NullPointerException("uri = null on SFI?? "+this);
+			throw new NullPointerException("uri = null on SFI?? "+this);
 		}
 		synchronized(this) {
 			if(cancelled)
@@ -447,7 +447,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 						metadata = Metadata.construct(metadataBucket);
 						metadataBucket.free();
 					} catch (InsufficientDiskSpaceException e) {
-					    throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
+						throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 					} catch (IOException e) {
 						// Bucket error?
 						throw new FetchException(FetchExceptionMode.BUCKET_ERROR, e);
@@ -455,8 +455,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				} else {
 					final boolean persistent = this.persistent;
 					fetchArchive(false, archiveMetadata, ArchiveManager.METADATA_NAME, new ArchiveExtractCallback() {
-                        private static final long serialVersionUID = 1L;
-                        @Override
+						private static final long serialVersionUID = 1L;
+						@Override
 						public void gotBucket(Bucket data, ClientContext context) {
 							if(logMINOR) Logger.minor(this, "gotBucket on "+SingleFileFetcher.this+" persistent="+persistent);
 							try {
@@ -506,7 +506,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 						newMetadata = Metadata.construct(dataBucket);
 						dataBucket.free();
 					} catch (InsufficientDiskSpaceException e) {
-					    throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
+						throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 					} catch (IOException e) {
 						throw new FetchException(FetchExceptionMode.BUCKET_ERROR);
 					}
@@ -520,8 +520,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 					// We enforce this in ArchiveHandler.
 					// Therefore, the archive needs to be fetched.
 					fetchArchive(true, archiveMetadata, filename, new ArchiveExtractCallback() {
-                        private static final long serialVersionUID = 1L;
-                        @Override
+						private static final long serialVersionUID = 1L;
+						@Override
 						public void gotBucket(Bucket data, ClientContext context) {
 							if(logMINOR) Logger.minor(this, "Returning data");
 							final Metadata newMetadata;
@@ -583,7 +583,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 							out = dataBucket;
 						}
 					} catch (InsufficientDiskSpaceException e) {
-					    throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
+						throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 					} catch (IOException e) {
 						throw new FetchException(FetchExceptionMode.BUCKET_ERROR);
 					}
@@ -597,8 +597,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 					// We enforce this in ArchiveHandler.
 					// Therefore, the archive needs to be fetched.
 					fetchArchive(true, archiveMetadata, filename, new ArchiveExtractCallback() {
-                        private static final long serialVersionUID = 1L;
-                        @Override
+						private static final long serialVersionUID = 1L;
+						@Override
 						public void gotBucket(Bucket data, ClientContext context) {
 							if(logMINOR) Logger.minor(this, "Returning data");
 							// Because this will be processed immediately, and because the callback uses a StreamGenerator,
@@ -637,11 +637,11 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				// Break locks. Must not call onFailure(), etc, from within SFF lock.
 				context.getJobRunner(persistent).queueInternal(new PersistentJob() {
 
-				    @Override
-				    public boolean run(ClientContext context) {
-				        f.innerWrapHandleMetadata(true, context);
-				        return true;
-				    }
+					@Override
+					public boolean run(ClientContext context) {
+						f.innerWrapHandleMetadata(true, context);
+						return true;
+					}
 
 				});
 				return;
@@ -790,13 +790,13 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				ClientGetState sf;
 				boolean reallyFinal = isFinal;
 				if(isFinal && !parent.isCurrentState(this)) {
-				    Logger.error(this, "isFinal but not the current state for "+this,
-				            new Exception("error"));
-				    reallyFinal = false;
+					Logger.error(this, "isFinal but not the current state for "+this,
+							new Exception("error"));
+					reallyFinal = false;
 				}
 				sf = new SplitFileFetcher(metadata, rcb, parent, ctx, realTimeFlag,
-				        decompressors, clientMetadata, token, topDontCompress,
-				        topCompatibilityMode, persistent, thisKey, reallyFinal, context);
+						decompressors, clientMetadata, token, topDontCompress,
+						topCompatibilityMode, persistent, thisKey, reallyFinal, context);
 				this.deleteFetchContext = false;
 				parent.onTransition(this, sf, context);
 				sf.schedule(context);
@@ -848,14 +848,14 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 		// We need to transition here, so that everything gets deleted if we are cancelled during the archive fetch phase.
 		parent.onTransition(this, f, context);
 
-        // Break locks. Must not call onFailure(), etc, from within SFF lock.
+		// Break locks. Must not call onFailure(), etc, from within SFF lock.
 		context.getJobRunner(persistent).queueInternal(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                f.innerWrapHandleMetadata(true, context);
-                return true;
-            }
+			@Override
+			public boolean run(ClientContext context) {
+				f.innerWrapHandleMetadata(true, context);
+				return true;
+			}
 
 		});
 	}
@@ -879,8 +879,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 
 	class ArchiveFetcherCallback implements GetCompletionCallback, Serializable {
 
-        private static final long serialVersionUID = 1L;
-        private final boolean wasFetchingFinalData;
+		private static final long serialVersionUID = 1L;
+		private final boolean wasFetchingFinalData;
 		private final String element;
 		private final ArchiveExtractCallback callback;
 		/** For activation we need to know whether we are persistent even though the parent may not have been activated yet */
@@ -958,7 +958,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 							return;
 						}
 					} catch (InsufficientDiskSpaceException e) {
-					    onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), SingleFileFetcher.this, context);
+						onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), SingleFileFetcher.this, context);
 					} catch (IOException e) {
 						onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), SingleFileFetcher.this, context);
 						return;
@@ -1034,8 +1034,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 
 	class MultiLevelMetadataCallback implements GetCompletionCallback, Serializable {
 
-        private static final long serialVersionUID = 1L;
-        private final boolean persistent;
+		private static final long serialVersionUID = 1L;
+		private final boolean persistent;
 		private final FetchContext ctx;
 
 		MultiLevelMetadataCallback() {
@@ -1069,8 +1069,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 					worker.waitFinished();
 					// ClientGetWorkerThread will close output.
 				} else {
-				    streamGenerator.writeTo(output, context);
-				    output.close();
+					streamGenerator.writeTo(output, context);
+					output.close();
 				}
 
 			} catch (Throwable t) {
@@ -1095,8 +1095,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, e), false, context);
 				return;
 			} catch (InsufficientDiskSpaceException e) {
-			    SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
-			    return;
+				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
+				return;
 			} catch (IOException e) {
 				// Bucket error?
 				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), false, context);
@@ -1227,8 +1227,8 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 
 	public static class MyUSKFetcherCallback implements USKFetcherTagCallback, Serializable {
 
-        private static final long serialVersionUID = 1L;
-        final ClientRequester parent;
+		private static final long serialVersionUID = 1L;
+		final ClientRequester parent;
 		final GetCompletionCallback cb;
 		final USK usk;
 		final ArrayList<String> metaStrings;

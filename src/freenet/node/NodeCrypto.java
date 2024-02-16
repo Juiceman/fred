@@ -36,8 +36,8 @@ import freenet.support.io.Closer;
  * @author toad
  */
 public class NodeCrypto {
-    static { Logger.registerClass(NodeCrypto.class); }
-    private static volatile boolean logMINOR;
+	static { Logger.registerClass(NodeCrypto.class); }
+	private static volatile boolean logMINOR;
 
 	/** Length of a node identity */
 	public static final int IDENTITY_LENGTH = 32;
@@ -191,11 +191,11 @@ public class NodeCrypto {
 		}
 		
 		if(ecdsaP256 == null) {
-		    // We don't have a keypair, generate one.
-		    Logger.normal(this, "No ecdsa.P256 field found in noderef: let's generate a new key");
-		    ecdsaP256 = new ECDSA(Curves.P256);
+			// We don't have a keypair, generate one.
+			Logger.normal(this, "No ecdsa.P256 field found in noderef: let's generate a new key");
+			ecdsaP256 = new ECDSA(Curves.P256);
 		}
-        	ecdsaPubKeyHash = SHA256.digest(ecdsaP256.getPublicKey().getEncoded());
+			ecdsaPubKeyHash = SHA256.digest(ecdsaP256.getPublicKey().getEncoded());
 		
 		InsertableClientSSK ark = null;
 
@@ -304,9 +304,9 @@ public class NodeCrypto {
 		} // Don't include IPs for anonymous initiator.
 		// Negotiation types
 		if(!(forARK || forSetup || forAnonInitiator)) {
-		    // We *do* need the location on noderefs exchanged via path folding and announcement.
-		    // This is necessary so we can take the location into account in OpennetManager.wantPeer().
-		    fs.put("location", node.lm.getLocation());
+			// We *do* need the location on noderefs exchanged via path folding and announcement.
+			// This is necessary so we can take the location into account in OpennetManager.wantPeer().
+			fs.put("location", node.lm.getLocation());
 		}
 		fs.putSingle("version", Version.getVersionString()); // Keep, vital that peer know our version. For example, some types may be sent in different formats to different node versions (e.g. Peer).
 		if(!forAnonInitiator)
@@ -325,11 +325,11 @@ public class NodeCrypto {
 				if(myReferenceECDSASignature == null || mySignedReference == null || !mySignedReference.equals(fs.toOrderedString())){
 					mySignedReference = fs.toOrderedString();
 					try {
-					    myReferenceECDSASignature = ecdsaSignRef(mySignedReference);
+						myReferenceECDSASignature = ecdsaSignRef(mySignedReference);
 
-					    // Old nodes will verify the signature including sigP256
-					    fs.putSingle("sigP256", myReferenceECDSASignature);
-					    mySignedReference = fs.toOrderedString();
+						// Old nodes will verify the signature including sigP256
+						fs.putSingle("sigP256", myReferenceECDSASignature);
+						mySignedReference = fs.toOrderedString();
 					} catch (NodeInitException e) {
 						node.exit(e.exitCode);
 					}
@@ -361,7 +361,7 @@ public class NodeCrypto {
 	}
 	
 	private String ecdsaSignRef(String mySignedReference) throws NodeInitException {
-	    if(logMINOR) Logger.minor(this, "Signing reference:\n"+mySignedReference);
+		if(logMINOR) Logger.minor(this, "Signing reference:\n"+mySignedReference);
 
 		byte[] ref = mySignedReference.getBytes(StandardCharsets.UTF_8);
 
@@ -380,11 +380,11 @@ public class NodeCrypto {
 		gis = new DeflaterOutputStream(baos);
 		try {
 			fs.writeTo(gis);
-                } catch (IOException e) {
-                    Logger.error(this, "IOE :"+e.getMessage(), e);
+				} catch (IOException e) {
+					Logger.error(this, "IOE :"+e.getMessage(), e);
 		} finally {
 			Closer.close(gis);
-                        Closer.close(baos);
+						Closer.close(baos);
 		}
 
 		byte[] buf = baos.toByteArray();
@@ -425,7 +425,7 @@ public class NodeCrypto {
 	}
 
 	void addPrivateFields(SimpleFieldSet fs) {
-	    // Let's not add it twice
+		// Let's not add it twice
 		fs.removeSubset("ecdsa");
 		fs.put("ecdsa", ecdsaP256.asFieldSet(true));
 
@@ -436,11 +436,11 @@ public class NodeCrypto {
 	/** Sign data with the node's ECDSA key. The data does not need to be hashed, the signing code
 	 * will handle that for us, using an algorithm appropriate for the keysize. */
 	byte[] ecdsaSign(byte[]... data) {
-	    return ecdsaP256.signToNetworkFormat(data);
+		return ecdsaP256.signToNetworkFormat(data);
 	}
 
 	public ECPublicKey getECDSAP256Pubkey() {
-	    return ecdsaP256.getPublicKey();
+		return ecdsaP256.getPublicKey();
 	}
 
 	public void onSetDropProbability(int val) {
@@ -464,17 +464,17 @@ public class NodeCrypto {
 	}
 
 	public boolean allowConnection(PeerNode pn, FreenetInetAddress addr) {
-    	if(config.oneConnectionPerAddress()) {
-    		// Disallow multiple connections to the same address
+		if(config.oneConnectionPerAddress()) {
+			// Disallow multiple connections to the same address
 			// TODO: this is inadequate for IPv6, should be replaced by
 			// check for "same /64 subnet" [configurable] instead of exact match
-    		if(node.peers.anyConnectedPeerHasAddress(addr, pn) && !detector.includes(addr)
-    				&& addr.isRealInternetAddress(false, false, false)) {
-    			Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn+" : Same IP address as another node");
-    			return false;
-    		}
+			if(node.peers.anyConnectedPeerHasAddress(addr, pn) && !detector.includes(addr)
+					&& addr.isRealInternetAddress(false, false, false)) {
+				Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn+" : Same IP address as another node");
+				return false;
+			}
 		}
-    	return true;
+		return true;
 	}
 
 	/** If oneConnectionPerAddress is not set, but there are peers with the same
@@ -532,7 +532,7 @@ public class NodeCrypto {
 	 * Get my identity.
 	 */
 	public byte[] getIdentity(int negType) {
-	    return ecdsaPubKeyHash;
+		return ecdsaPubKeyHash;
 	}
 
 	public boolean definitelyPortForwarded() {

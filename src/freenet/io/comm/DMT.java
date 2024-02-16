@@ -806,7 +806,7 @@ public class DMT {
 	 * transfer including the (padded) noderef. 
 	 */
 	public final static MessageType FNPOpennetConnectDestinationNew = new MessageType("FNPConnectDestinationNew",
-	        PRIORITY_UNSPECIFIED) {
+			PRIORITY_UNSPECIFIED) {
 		{
 		addField(UID, Long.class); // UID of original message chain
 		addField(TRANSFER_UID, Long.class); // UID of data transfer
@@ -827,7 +827,7 @@ public class DMT {
 	 * from the data source. Starts a bulk data transfer including the (padded) noderef. 
 	 */
 	public final static MessageType FNPOpennetConnectReplyNew = new MessageType("FNPConnectReplyNew",
-	        PRIORITY_UNSPECIFIED) {
+			PRIORITY_UNSPECIFIED) {
 		{
 		addField(UID, Long.class); // UID of original message chain
 		addField(TRANSFER_UID, Long.class); // UID of data transfer
@@ -850,7 +850,7 @@ public class DMT {
 	 * Announcement request. Noderef is attached, will be transferred before anything else is done.
 	 */
 	public final static MessageType FNPOpennetAnnounceRequest = new MessageType("FNPOpennetAnnounceRequest",
-	        PRIORITY_HIGH) {
+			PRIORITY_HIGH) {
 		{
 		addField(UID, Long.class);
 		addField(TRANSFER_UID, Long.class);
@@ -896,7 +896,7 @@ public class DMT {
 	}
 	
 	public final static MessageType FNPOpennetAnnounceCompleted = new MessageType("FNPOpennetAnnounceCompleted",
-	        PRIORITY_UNSPECIFIED) {
+			PRIORITY_UNSPECIFIED) {
 		{
 		addField(UID, Long.class);
 	}};
@@ -919,7 +919,7 @@ public class DMT {
 	}
 	
 	public final static MessageType FNPOpennetNoderefRejected = new MessageType("FNPOpennetNoderefRejected",
-	        PRIORITY_HIGH) {
+			PRIORITY_HIGH) {
 		{
 		addField(UID, Long.class);
 		addField(REJECT_CODE, Integer.class);
@@ -955,7 +955,7 @@ public class DMT {
 	// FIXME get rid???
 	
 	public final static MessageType FNPOpennetAnnounceNodeNotWanted = new MessageType(
-	        "FNPOpennetAnnounceNodeNotWanted", PRIORITY_LOW) {
+			"FNPOpennetAnnounceNodeNotWanted", PRIORITY_LOW) {
 		{
 		addField(UID, Long.class);
 	}};

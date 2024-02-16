@@ -173,14 +173,14 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 
 					@Override
 					public void onSucceeded() {
-                        // We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
+						// We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
 						sched.removeFetchingKey(key);
 						sched.wakeStarter();
 					}
 
 					@Override
 					public void onFailed(LowLevelGetException e) {
-					    // We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
+						// We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
 						sched.removeFetchingKey(key);
 						// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
 						// so wake the starter thread.
@@ -246,7 +246,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
 		if(isEmpty()) {
-		    return Long.MAX_VALUE;
+			return Long.MAX_VALUE;
 		}
 		return 0;
 	}

@@ -11,7 +11,7 @@ import freenet.support.SimpleFieldSet;
 
 public class SimpleProgressMessage extends FCPMessage {
 
-    private final String ident;
+	private final String ident;
 	private final boolean global;
 	private final SplitfileProgressEvent event;
 	
@@ -22,10 +22,10 @@ public class SimpleProgressMessage extends FCPMessage {
 	}
 	
 	protected SimpleProgressMessage() {
-	    // For serialization.
-	    ident = null;
-	    global = false;
-	    event = null;
+		// For serialization.
+		ident = null;
+		global = false;
+		event = null;
 	}
 
 	@Override

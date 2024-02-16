@@ -169,7 +169,7 @@ public class OfficialPlugins {
 		private boolean deprecated;
 		private boolean experimental;
 		private boolean advanced;
-    private boolean unsupported;
+	private boolean unsupported;
 
 		private OfficialPluginBuilder(String name) {
 			this.name = name;
@@ -240,17 +240,17 @@ public class OfficialPlugins {
 			return this;
 		}
 
-    public OfficialPluginBuilder unsupported() {
-      unsupported = true;
-      addCurrentPluginDescription();
-      return this;
-    }
+	public OfficialPluginBuilder unsupported() {
+	  unsupported = true;
+	  addCurrentPluginDescription();
+	  return this;
+	}
 
 		private void addCurrentPluginDescription() {
-            if(recommendedVersion == 0 && minimumVersion > 0)
-                recommendedVersion = minimumVersion;
-            if(minimumVersion == 0 && recommendedVersion > 0)
-                minimumVersion = recommendedVersion;
+			if(recommendedVersion == 0 && minimumVersion > 0)
+				recommendedVersion = minimumVersion;
+			if(minimumVersion == 0 && recommendedVersion > 0)
+				minimumVersion = recommendedVersion;
 			officialPlugins.put(name, createOfficialPluginDescription());
 		}
 
@@ -345,11 +345,11 @@ public class OfficialPlugins {
 		 * mode even though it's not deprecated nor is it experimental.
 		 */
 		public final boolean advanced;
-    /**
-     * If true, the plugin used to be official, but is no longer supported.
-     * These are not shown even in advanced mode.
-     */
-    public final boolean unsupported;
+	/**
+	 * If true, the plugin used to be official, but is no longer supported.
+	 * These are not shown even in advanced mode.
+	 */
+	public final boolean unsupported;
 
 		OfficialPluginDescription(String name, String group, boolean essential, long minVer,
 				long recVer, boolean alwaysFetchLatestVersion, boolean usesXML, FreenetURI uri,
@@ -365,7 +365,7 @@ public class OfficialPlugins {
 			this.deprecated = deprecated;
 			this.experimental = experimental;
 			this.advanced = advanced;
-      this.unsupported = unsupported;
+	  this.unsupported = unsupported;
 
 			if (alwaysFetchLatestVersion && uri != null) {
 				assert(uri.isUSK()) : "Non-USK URIs do not support updates!";

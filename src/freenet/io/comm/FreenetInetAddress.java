@@ -92,7 +92,7 @@ public class FreenetInetAddress {
 	 * Create from serialized form on a DataInputStream.
 	 */
 	public FreenetInetAddress(DataInput dis, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException,
-	        IOException {
+			IOException {
 		int firstByte = dis.readUnsignedByte();
 		byte[] ba;
 		if(firstByte == 255) {
@@ -117,8 +117,8 @@ public class FreenetInetAddress {
 		if(s.length() > 0)
 			name = s;
 		hostname = name;
-        if(checkHostnameOrIPSyntax && null != hostname) {
-        	if(!HostnameUtil.isValidHostname(hostname, true)) throw new HostnameSyntaxException();
+		if(checkHostnameOrIPSyntax && null != hostname) {
+			if(!HostnameUtil.isValidHostname(hostname, true)) throw new HostnameSyntaxException();
 		}
 	}
 
@@ -132,70 +132,70 @@ public class FreenetInetAddress {
 	}
 
 	public FreenetInetAddress(String host, boolean allowUnknown) throws UnknownHostException {
-        InetAddress addr = null;
-        if(host != null){
-        	if(host.startsWith("/")) host = host.substring(1);
-        	host = host.trim();
-        }
-        // if we were created with an explicit IP address, use it as such
-        // debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
-        AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
-        if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
-        if(addressType != AddressIdentifier.AddressType.OTHER) {
-        	// Is an IP address
-            addr = InetAddress.getByName(host);
-            // Don't catch UnknownHostException here, if it happens there's a bug in AddressIdentifier.
-            if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+addr.getHostAddress()+ '\'');
-            if(addr != null) {
-                host = null;
-            } else {
-                addr = null;
-            }
-        }
-        if( addr == null ) {
-        	if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
-        }
-        this._address = addr;
-        this.hostname = host;
-        // we're created with a hostname so delay the lookup of the address
-        // until it's needed to work better with dynamic DNS hostnames
+		InetAddress addr = null;
+		if(host != null){
+			if(host.startsWith("/")) host = host.substring(1);
+			host = host.trim();
+		}
+		// if we were created with an explicit IP address, use it as such
+		// debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
+		AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
+		if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		if(addressType != AddressIdentifier.AddressType.OTHER) {
+			// Is an IP address
+			addr = InetAddress.getByName(host);
+			// Don't catch UnknownHostException here, if it happens there's a bug in AddressIdentifier.
+			if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+addr.getHostAddress()+ '\'');
+			if(addr != null) {
+				host = null;
+			} else {
+				addr = null;
+			}
+		}
+		if( addr == null ) {
+			if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
+		}
+		this._address = addr;
+		this.hostname = host;
+		// we're created with a hostname so delay the lookup of the address
+		// until it's needed to work better with dynamic DNS hostnames
 	}
 
 	public FreenetInetAddress(String host, boolean allowUnknown, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, UnknownHostException {
-        InetAddress addr = null;
-        if(host != null){
-        	if(host.startsWith("/")) host = host.substring(1);
-        	host = host.trim();
-        }
-        // if we were created with an explicit IP address, use it as such
-        // debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
-        AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
-        if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
-        if(addressType != AddressIdentifier.AddressType.OTHER) {
-            try {
-                addr = InetAddress.getByName(host);
-            } catch (UnknownHostException e) {
-            	if(!allowUnknown) throw e;
-                addr = null;
-            }
-            if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+(addr != null ? addr.getHostAddress()+ '\'' : ""));
-            if(addr != null && addr.getHostAddress().equals(host)) {
-            	if(logDEBUG) Logger.debug(this, '\'' +host+"' looks like an IP address");
-                host = null;
-            } else {
-                addr = null;
-            }
-        }
-        if( addr == null ) {
-        	if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
-        }
-        this._address = addr;
-        this.hostname = host;
-        if(checkHostnameOrIPSyntax && null != this.hostname) {
-        	if(!HostnameUtil.isValidHostname(this.hostname, true)) throw new HostnameSyntaxException();
+		InetAddress addr = null;
+		if(host != null){
+			if(host.startsWith("/")) host = host.substring(1);
+			host = host.trim();
 		}
-        // we're created with a hostname so delay the lookup of the address
-        // until it's needed to work better with dynamic DNS hostnames
+		// if we were created with an explicit IP address, use it as such
+		// debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
+		AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
+		if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		if(addressType != AddressIdentifier.AddressType.OTHER) {
+			try {
+				addr = InetAddress.getByName(host);
+			} catch (UnknownHostException e) {
+				if(!allowUnknown) throw e;
+				addr = null;
+			}
+			if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+(addr != null ? addr.getHostAddress()+ '\'' : ""));
+			if(addr != null && addr.getHostAddress().equals(host)) {
+				if(logDEBUG) Logger.debug(this, '\'' +host+"' looks like an IP address");
+				host = null;
+			} else {
+				addr = null;
+			}
+		}
+		if( addr == null ) {
+			if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
+		}
+		this._address = addr;
+		this.hostname = host;
+		if(checkHostnameOrIPSyntax && null != this.hostname) {
+			if(!HostnameUtil.isValidHostname(this.hostname, true)) throw new HostnameSyntaxException();
+		}
+		// we're created with a hostname so delay the lookup of the address
+		// until it's needed to work better with dynamic DNS hostnames
 	}
 	
 	public boolean laxEquals(FreenetInetAddress addr) {
@@ -310,12 +310,12 @@ public class FreenetInetAddress {
 		if (_address != null) {
 			return _address;
 		} else {
-		        if(!doDNSRequest) return null;
-		        InetAddress addr = getHandshakeAddress();
-		        if( addr != null ) {
-		                this._address = addr;
-		        }
-		        return addr;
+				if(!doDNSRequest) return null;
+				InetAddress addr = getHandshakeAddress();
+				if( addr != null ) {
+						this._address = addr;
+				}
+				return addr;
 		}
 	}
 
@@ -325,43 +325,43 @@ public class FreenetInetAddress {
 	 * dyndns address may have changed.
 	 */
 	public InetAddress getHandshakeAddress() {
-	    // Since we're handshaking, hostname-to-IP may have changed
-	    if ((_address != null) && (hostname == null)) {
-	    	if(logMINOR) Logger.minor(this, "hostname is null, returning "+_address);
-	        return _address;
-	    } else {
-	    	if(logMINOR) Logger.minor(this, "Looking up '"+hostname+"' in DNS", new Exception("debug"));
-	        /*
-	         * Peers are constructed from an address once a
-	         * handshake has been completed, so this lookup
-	         * will only be performed during a handshake
-	         * (this method should normally only be called
-	         * from PeerNode.getHandshakeIPs() and once
-	         * each connection from this.getAddress()
-	         * otherwise) - it doesn't mean we perform a
-	         * DNS lookup with every packet we send.
-	         */
-	        try {
-	        	InetAddress[] addresses = InetAddress.getAllByName(hostname);
-	        	if(logMINOR) Logger.minor(this, "Look up got '"+addresses+ '\'');
-	        	if( addresses.length > 1 ) {
-	        		/* sort by IPv6 first */
-	        		Arrays.sort(addresses, InetAddressIpv6FirstComparator.COMPARATOR);
-	        		/*
-	        		 * cache the answer since getHandshakeAddress()
-	        		 * doesn't use the cached value, thus
-	        		 * getHandshakeIPs() should always get the
-	        		 * latest value from DNS (minus Java's caching)
-	        		 */
-	        		this._address = InetAddress.getByAddress(addresses[0].getAddress());
-	        		if(logMINOR) Logger.minor(this, "Setting address to "+_address);
-	        	}
-	        	return addresses[0];
-	        } catch (UnknownHostException e) {
-	        	if(logMINOR) Logger.minor(this, "DNS said hostname '"+hostname+"' is an unknown host, returning null");
-	            return null;
-	        }
-	    }
+		// Since we're handshaking, hostname-to-IP may have changed
+		if ((_address != null) && (hostname == null)) {
+			if(logMINOR) Logger.minor(this, "hostname is null, returning "+_address);
+			return _address;
+		} else {
+			if(logMINOR) Logger.minor(this, "Looking up '"+hostname+"' in DNS", new Exception("debug"));
+			/*
+			 * Peers are constructed from an address once a
+			 * handshake has been completed, so this lookup
+			 * will only be performed during a handshake
+			 * (this method should normally only be called
+			 * from PeerNode.getHandshakeIPs() and once
+			 * each connection from this.getAddress()
+			 * otherwise) - it doesn't mean we perform a
+			 * DNS lookup with every packet we send.
+			 */
+			try {
+				InetAddress[] addresses = InetAddress.getAllByName(hostname);
+				if(logMINOR) Logger.minor(this, "Look up got '"+addresses+ '\'');
+				if( addresses.length > 1 ) {
+					/* sort by IPv6 first */
+					Arrays.sort(addresses, InetAddressIpv6FirstComparator.COMPARATOR);
+					/*
+					 * cache the answer since getHandshakeAddress()
+					 * doesn't use the cached value, thus
+					 * getHandshakeIPs() should always get the
+					 * latest value from DNS (minus Java's caching)
+					 */
+					this._address = InetAddress.getByAddress(addresses[0].getAddress());
+					if(logMINOR) Logger.minor(this, "Setting address to "+_address);
+				}
+				return addresses[0];
+			} catch (UnknownHostException e) {
+				if(logMINOR) Logger.minor(this, "DNS said hostname '"+hostname+"' is an unknown host, returning null");
+				return null;
+			}
+		}
 	}
 
 	@Override
@@ -436,8 +436,8 @@ public class FreenetInetAddress {
 	 * Get a new <code>FreenetInetAddress</code> with host name removed.
 	 * 
 	 * @return a new <code>FreenetInetAddress</code> with host name removed; or {@code null} if no
-	 *         known ip address is associated with this object. You may want to do a
-	 *         <code>getAddress(true)</code> before calling this.
+	 *		 known ip address is associated with this object. You may want to do a
+	 *		 <code>getAddress(true)</code> before calling this.
 	 */
 	public FreenetInetAddress dropHostname() {
 		if(_address == null) {

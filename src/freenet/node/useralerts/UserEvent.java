@@ -17,7 +17,7 @@ public interface UserEvent extends UserAlert {
 		/**
 		 *
 		 * @return true if the unregistration of one event of this type
-		 *         should prevent future events of the same type from being displayed
+		 *		 should prevent future events of the same type from being displayed
 		 */
 		public boolean unregisterIndefinitely() {
 			return unregisterIndefinitely;

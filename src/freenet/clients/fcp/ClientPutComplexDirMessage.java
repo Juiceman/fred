@@ -158,7 +158,7 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 	 */
 	@SuppressWarnings("unchecked")
 	private void convertFilesByNameToManifestElements(HashMap<String, Object> filesByName,
-	        HashMap<String, Object> manifestElements, Node node) throws MessageInvalidException {
+			HashMap<String, Object> manifestElements, Node node) throws MessageInvalidException {
 		
 		for (Map.Entry<String, Object> entry : filesByName.entrySet()) {
 			String tempName = entry.getKey();

@@ -47,134 +47,134 @@ public class TimeUtil {
 	 * @param withSecondFractions if true it displays seconds.milliseconds
 	 * @return the formatted String
 	 */
-    public static String formatTime(long timeInterval, int maxTerms, boolean withSecondFractions) {
-        
-    	if (maxTerms > 6 )
-        	throw new IllegalArgumentException();
-        
-    	StringBuilder sb = new StringBuilder(64);
-        long l = timeInterval;
-        int termCount = 0;
-        //
-        if(l < 0) {
-            sb.append('-');
-            l = l * -1;
-        }
-        if( !withSecondFractions && l < 1000 ) {
-            return "0s";
-        }
-        if(termCount >= maxTerms) {
-            return sb.toString();
-        }
-        //
+	public static String formatTime(long timeInterval, int maxTerms, boolean withSecondFractions) {
+		
+		if (maxTerms > 6 )
+			throw new IllegalArgumentException();
+		
+		StringBuilder sb = new StringBuilder(64);
+		long l = timeInterval;
+		int termCount = 0;
+		//
+		if(l < 0) {
+			sb.append('-');
+			l = l * -1;
+		}
+		if( !withSecondFractions && l < 1000 ) {
+			return "0s";
+		}
+		if(termCount >= maxTerms) {
+			return sb.toString();
+		}
+		//
 		long weeks = DAYS.convert(l, MILLISECONDS) / 7;
 		if (weeks > 0) {
-            sb.append(weeks).append('w');
-            termCount++;
-            l = l - DAYS.toMillis(7 * weeks);
-        }
-        if(termCount >= maxTerms) {
-            return sb.toString();
-        }
-        //
-        long days = DAYS.convert(l, MILLISECONDS);
-        if (days > 0) {
-            sb.append(days).append('d');
-            termCount++;
-            l = l - DAYS.toMillis(days);
-        }
-        if(termCount >= maxTerms) {
-          return sb.toString();
-        }
-        //
-        long hours = HOURS.convert(l, MILLISECONDS);
-        if (hours > 0) {
-            sb.append(hours).append('h');
-            termCount++;
-            l = l - HOURS.toMillis(hours);
-        }
-        if(termCount >= maxTerms) {
-            return sb.toString();
-        }
-        //
-        long minutes = MINUTES.convert(l, MILLISECONDS);
-        if (minutes > 0) {
-            sb.append(minutes).append('m');
-            termCount++;
-            l = l - MINUTES.toMillis(minutes);
-        }
-        if(termCount >= maxTerms) {
-            return sb.toString();
-        }
-        if(withSecondFractions && ((maxTerms - termCount) >= 2)) {
-            if (l > 0) {
-                double fractionalSeconds = l / (1000.0D);
-                DecimalFormat fix3 = new DecimalFormat("0.000");
-                sb.append(fix3.format(fractionalSeconds)).append('s');
-                termCount++;
-                //l = l - ((long)fractionalSeconds * (long)1000);
-            }
-        } else {
-            long seconds = SECONDS.convert(l, MILLISECONDS);
-            if (seconds > 0) {
-                sb.append(seconds).append('s');
-                termCount++;
-                //l = l - ((long)seconds * (long)1000);
-            }
-        }
-        //
-        return sb.toString();
-    }
-    
-    public static String formatTime(long timeInterval) {
-        return formatTime(timeInterval, 2, false);
-    }
-    
-    public static String formatTime(long timeInterval, int maxTerms) {
-        return formatTime(timeInterval, maxTerms, false);
-    }
+			sb.append(weeks).append('w');
+			termCount++;
+			l = l - DAYS.toMillis(7 * weeks);
+		}
+		if(termCount >= maxTerms) {
+			return sb.toString();
+		}
+		//
+		long days = DAYS.convert(l, MILLISECONDS);
+		if (days > 0) {
+			sb.append(days).append('d');
+			termCount++;
+			l = l - DAYS.toMillis(days);
+		}
+		if(termCount >= maxTerms) {
+		  return sb.toString();
+		}
+		//
+		long hours = HOURS.convert(l, MILLISECONDS);
+		if (hours > 0) {
+			sb.append(hours).append('h');
+			termCount++;
+			l = l - HOURS.toMillis(hours);
+		}
+		if(termCount >= maxTerms) {
+			return sb.toString();
+		}
+		//
+		long minutes = MINUTES.convert(l, MILLISECONDS);
+		if (minutes > 0) {
+			sb.append(minutes).append('m');
+			termCount++;
+			l = l - MINUTES.toMillis(minutes);
+		}
+		if(termCount >= maxTerms) {
+			return sb.toString();
+		}
+		if(withSecondFractions && ((maxTerms - termCount) >= 2)) {
+			if (l > 0) {
+				double fractionalSeconds = l / (1000.0D);
+				DecimalFormat fix3 = new DecimalFormat("0.000");
+				sb.append(fix3.format(fractionalSeconds)).append('s');
+				termCount++;
+				//l = l - ((long)fractionalSeconds * (long)1000);
+			}
+		} else {
+			long seconds = SECONDS.convert(l, MILLISECONDS);
+			if (seconds > 0) {
+				sb.append(seconds).append('s');
+				termCount++;
+				//l = l - ((long)seconds * (long)1000);
+			}
+		}
+		//
+		return sb.toString();
+	}
+	
+	public static String formatTime(long timeInterval) {
+		return formatTime(timeInterval, 2, false);
+	}
+	
+	public static String formatTime(long timeInterval, int maxTerms) {
+		return formatTime(timeInterval, maxTerms, false);
+	}
 
-    public static long toMillis(String timeInterval) {
-        byte sign = 1;
-        if (timeInterval.contains("-")) {
-            sign = -1;
-            timeInterval = timeInterval.substring(1);
-        }
+	public static long toMillis(String timeInterval) {
+		byte sign = 1;
+		if (timeInterval.contains("-")) {
+			sign = -1;
+			timeInterval = timeInterval.substring(1);
+		}
 
-        String[] terms = timeInterval.split("(?<=[a-z])");
+		String[] terms = timeInterval.split("(?<=[a-z])");
 
-        long millis = 0;
-        for (String term : terms) {
-            if (term.length() == 0) continue;
+		long millis = 0;
+		for (String term : terms) {
+			if (term.length() == 0) continue;
 
-            char measure = term.charAt(term.length() - 1);
-            switch(measure){
-                case 'w':
-                    millis += 7 * MILLISECONDS.convert(Long.parseLong(term.substring(0, term.length() - 1)), DAYS);
-                    break;
-                case 'd':
-                    millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), DAYS);
-                    break;
-                case 'h':
-                    millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), HOURS);
-                    break;
-                case 'm':
-                    millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), MINUTES);
-                    break;
-                case 's':
-                    if (term.contains(".")) {
-                        millis += Integer.parseInt(term.replaceAll("[a-z.]", ""));
-                    } else {
-                        millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), SECONDS);
-                    }
-                    break;
-                default:
-                    throw new NumberFormatException("Unknown format: " + (sign > 0 ? "" : "-") + timeInterval);
-            }
-        }
+			char measure = term.charAt(term.length() - 1);
+			switch(measure){
+				case 'w':
+					millis += 7 * MILLISECONDS.convert(Long.parseLong(term.substring(0, term.length() - 1)), DAYS);
+					break;
+				case 'd':
+					millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), DAYS);
+					break;
+				case 'h':
+					millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), HOURS);
+					break;
+				case 'm':
+					millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), MINUTES);
+					break;
+				case 's':
+					if (term.contains(".")) {
+						millis += Integer.parseInt(term.replaceAll("[a-z.]", ""));
+					} else {
+						millis += MILLISECONDS.convert(Short.parseShort(term.substring(0, term.length() - 1)), SECONDS);
+					}
+					break;
+				default:
+					throw new NumberFormatException("Unknown format: " + (sign > 0 ? "" : "-") + timeInterval);
+			}
+		}
 
-        return millis * sign;
-    }
+		return millis * sign;
+	}
 
 	/**
 	 * Helper to format time HTTP conform

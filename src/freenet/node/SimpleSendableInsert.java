@@ -24,14 +24,14 @@ import freenet.support.Logger.LogLevel;
  */
 public class SimpleSendableInsert extends SendableInsert {
 
-    private static final long serialVersionUID = 1L;
-    public final KeyBlock block;
+	private static final long serialVersionUID = 1L;
+	public final KeyBlock block;
 	public final short prioClass;
 	private boolean finished;
 	public final RequestClient client;
 	public final ClientRequestScheduler scheduler;
-	      
-        private static volatile boolean logMINOR;
+		  
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -102,7 +102,7 @@ public class SimpleSendableInsert extends SendableInsert {
 				}
 				if(logMINOR) Logger.minor(this, "Request succeeded: "+this);
 				onSuccess(req.token, null, context);
-                sched.removeRunningInsert(SimpleSendableInsert.this, req.token.getKey());
+				sched.removeRunningInsert(SimpleSendableInsert.this, req.token.getKey());
 				return true;
 			}
 
@@ -124,8 +124,8 @@ public class SimpleSendableInsert extends SendableInsert {
 	}
 
 	@Override
-    public ClientRequestSchedulerGroup getSchedulerGroup() {
-	    return null;
+	public ClientRequestSchedulerGroup getSchedulerGroup() {
+		return null;
 	}
 
 	@Override
@@ -165,40 +165,40 @@ public class SimpleSendableInsert extends SendableInsert {
 	
 	// FIXME share with SingleBlockInserter???
 	private static class MySendableRequestItem implements SendableRequestItem, SendableRequestItemKey {
-	    
-	    final SimpleSendableInsert parent;
+		
+		final SimpleSendableInsert parent;
 
-        public MySendableRequestItem(SimpleSendableInsert parent) {
-            this.parent = parent;
-        }
+		public MySendableRequestItem(SimpleSendableInsert parent) {
+			this.parent = parent;
+		}
 
-        @Override
-        public void dump() {
-            // Ignore.
-        }
+		@Override
+		public void dump() {
+			// Ignore.
+		}
 
-        @Override
-        public SendableRequestItemKey getKey() {
-            return this;
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if(o instanceof MySendableRequestItem) {
-                return ((MySendableRequestItem)o).parent == parent;
-            } else return false;
-        }
-        
-        @Override
-        public int hashCode() {
-            return parent.hashCode();
-        }
-	    
+		@Override
+		public SendableRequestItemKey getKey() {
+			return this;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if(o instanceof MySendableRequestItem) {
+				return ((MySendableRequestItem)o).parent == parent;
+			} else return false;
+		}
+		
+		@Override
+		public int hashCode() {
+			return parent.hashCode();
+		}
+		
 	}
 
 	@Override
 	public synchronized SendableRequestItem chooseKey(KeysFetchingLocally keys, ClientContext context) {
-	    MySendableRequestItem mine = new MySendableRequestItem(this);
+		MySendableRequestItem mine = new MySendableRequestItem(this);
 		if(keys.hasInsert(mine))
 			return null;
 		if(finished) return null;
@@ -208,10 +208,10 @@ public class SimpleSendableInsert extends SendableInsert {
 	
 	@Override
 	public synchronized long getWakeupTime(ClientContext context, long now) {
-	    if(isEmpty()) return -1;
-	    if(scheduler.fetchingKeys().hasInsert(new MySendableRequestItem(this)))
-	        return Long.MAX_VALUE;
-	    return 0;
+		if(isEmpty()) return -1;
+		if(scheduler.fetchingKeys().hasInsert(new MySendableRequestItem(this)))
+			return Long.MAX_VALUE;
+		return 0;
 	}
 
 	@Override
@@ -239,9 +239,9 @@ public class SimpleSendableInsert extends SendableInsert {
 		return false;
 	}
 
-    @Override
-    protected void innerOnResume(ClientContext context) throws InsertException {
-        // Do nothing.
-    }
+	@Override
+	protected void innerOnResume(ClientContext context) throws InsertException {
+		// Do nothing.
+	}
 
 }

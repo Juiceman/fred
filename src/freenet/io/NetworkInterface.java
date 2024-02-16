@@ -51,19 +51,19 @@ import freenet.support.Logger.LogLevel;
  * @version $Id$
  */
 public class NetworkInterface implements Closeable {
-    
+	
 	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
-            @Override
+			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-        public static final String DEFAULT_BIND_TO = "127.0.0.1,0:0:0:0:0:0:0:1";
-        
+		public static final String DEFAULT_BIND_TO = "127.0.0.1,0:0:0:0:0:0:0:1";
+		
 	/** Object for synchronisation purpose. */
 	private final Lock lock = new ReentrantLock();
 	
@@ -115,9 +115,9 @@ public class NetworkInterface implements Closeable {
 	 * allows connection filtering on IP address level.
 	 * 
 	 * @param bindTo
-	 *            A comma-separated list of addresses to bind to
+	 *			A comma-separated list of addresses to bind to
 	 * @param allowedHosts
-	 *            A comma-separated list of allowed addresses
+	 *			A comma-separated list of allowed addresses
 	 */
 	protected NetworkInterface(int port, String allowedHosts, Executor executor) throws IOException {
 		this.port = port;
@@ -133,11 +133,11 @@ public class NetworkInterface implements Closeable {
 	 * Sets the list of IP address this network interface binds to.
 	 * 
 	 * @param bindTo
-	 *            A comma-separated list of IP address to bind to
+	 *			A comma-separated list of IP address to bind to
 	 * @return List of addresses that we failed to bind to, or null if completely successful.
 	 */
 	public String[] setBindTo(String bindTo, boolean ignoreUnbindableIP6) {
-                if(bindTo == null || bindTo.isEmpty()) bindTo = NetworkInterface.DEFAULT_BIND_TO;
+				if(bindTo == null || bindTo.isEmpty()) bindTo = NetworkInterface.DEFAULT_BIND_TO;
 		StringTokenizer bindToTokens = new StringTokenizer(bindTo, ",");
 		List<String> bindToTokenList = new ArrayList<String>();
 		List<String> brokenList = null;
@@ -212,9 +212,9 @@ public class NetworkInterface implements Closeable {
 	 * Sets the SO_TIMEOUT value on the server sockets.
 	 * 
 	 * @param timeout
-	 *            The timeout in milliseconds, <code>0</code> to disable
+	 *			The timeout in milliseconds, <code>0</code> to disable
 	 * @throws SocketException
-	 *             if the SO_TIMEOUT value can not be set
+	 *			 if the SO_TIMEOUT value can not be set
 	 * @see ServerSocket#setSoTimeout(int)
 	 */
 	public void setSoTimeout(int timeout) throws SocketException {
@@ -232,7 +232,7 @@ public class NetworkInterface implements Closeable {
 	 * will wait until a connection has been established.
 	 * 
 	 * @return The socket that is connected to the client or null
-     * if the timeout has expired waiting for a connection
+	 * if the timeout has expired waiting for a connection
 	 */
 	public Socket accept() {
 		lock.lock();
@@ -262,7 +262,7 @@ public class NetworkInterface implements Closeable {
 	 * Closes this interface and all underlying server sockets.
 	 * 
 	 * @throws IOException
-	 *             if an I/O exception occurs
+	 *			 if an I/O exception occurs
 	 * @see ServerSocket#close()
 	 */
 	@Override
@@ -343,7 +343,7 @@ public class NetworkInterface implements Closeable {
 		 * Creates a new acceptor on the specified server socket.
 		 * 
 		 * @param serverSocket
-		 *            The server socket to listen on
+		 *			The server socket to listen on
 		 */
 		public Acceptor(ServerSocket serverSocket) {
 			this.serverSocket = serverSocket;
@@ -353,10 +353,10 @@ public class NetworkInterface implements Closeable {
 		 * Sets the SO_TIMEOUT value on this acceptor's server socket.
 		 * 
 		 * @param timeout
-		 *            The timeout in milliseconds, or <code>0</code> to
-		 *            disable
+		 *			The timeout in milliseconds, or <code>0</code> to
+		 *			disable
 		 * @throws SocketException
-		 *             if the SO_TIMEOUT value can not be set
+		 *			 if the SO_TIMEOUT value can not be set
 		 * @see ServerSocket#setSoTimeout(int)
 		 */
 		public void setSoTimeout(int timeout) throws SocketException {
@@ -367,7 +367,7 @@ public class NetworkInterface implements Closeable {
 		 * Closes this acceptor and the underlying server socket.
 		 * 
 		 * @throws IOException
-		 *             if an I/O exception occurs
+		 *			 if an I/O exception occurs
 		 * @see ServerSocket#close()
 		 */
 		public void close() throws IOException {
@@ -383,7 +383,7 @@ public class NetworkInterface implements Closeable {
 		 */
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
+			freenet.support.Logger.OSThread.logPID(this);
 			while (!closed) {
 				try {
 					Socket clientSocket = serverSocket.accept();

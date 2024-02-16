@@ -39,7 +39,7 @@ public class DATASTORE_SIZE implements Step {
 	public void getStep(HTTPRequest request, PageHelper helper) {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("step4Title"));
 		HTMLNode bandwidthInfoboxContent = helper.getInfobox("infobox-header", WizardL10n.l10n("datastoreSize"),
-		        contentNode, null, false);
+				contentNode, null, false);
 
 		bandwidthInfoboxContent.addChild("#", WizardL10n.l10n("datastoreSizeLong"));
 		HTMLNode bandwidthForm = helper.addFormChild(bandwidthInfoboxContent, ".", "dsForm");
@@ -59,12 +59,12 @@ public class DATASTORE_SIZE implements Step {
 		if(!sizeOption.isDefault()) {
 			long current = sizeOption.getValue() + clientCacheSizeOption.getValue() + slashdotCacheSizeOption.getValue();
 			result.addChild("option",
-			        new String[] { "value", "selected" },
-			        new String[] { SizeUtil.formatSize(current), "on" }, WizardL10n.l10n("currentPrefix")+" "+SizeUtil.formatSize(current));
+					new String[] { "value", "selected" },
+					new String[] { SizeUtil.formatSize(current), "on" }, WizardL10n.l10n("currentPrefix")+" "+SizeUtil.formatSize(current));
 		} else if(autodetectedSize != -1) {
 			result.addChild("option",
-			        new String[] { "value", "selected" },
-			        new String[] { SizeUtil.formatSize(autodetectedSize), "on" }, SizeUtil.formatSize(autodetectedSize));
+					new String[] { "value", "selected" },
+					new String[] { SizeUtil.formatSize(autodetectedSize), "on" }, SizeUtil.formatSize(autodetectedSize));
 		}
 		if(autodetectedSize != 512*1024*1024) {
 			result.addChild("option", "value", "512M", "512 MiB");
@@ -76,8 +76,8 @@ public class DATASTORE_SIZE implements Step {
 				result.addChild("option", "value", "2G", "2 GiB");
 			} else {
 				result.addChild("option",
-				        new String[] { "value", "selected" },
-				        new String[] { "2G", "on" }, "2GiB");
+						new String[] { "value", "selected" },
+						new String[] { "2G", "on" }, "2GiB");
 			}
 		}
 		if(maxSize >= 3L*1024*1024*1024) result.addChild("option", "value", "3G", "3 GiB");
@@ -91,11 +91,11 @@ public class DATASTORE_SIZE implements Step {
 		//Put buttons below dropdown.
 		HTMLNode below = bandwidthForm.addChild("div");
 		below.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		below.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	@Override
@@ -107,11 +107,11 @@ public class DATASTORE_SIZE implements Step {
 			firsttime = false;
 		}
 		_setDatastoreSize(request.getPartAsStringFailsafe("ds", 20), firsttime, config, this);
-        if (firsttime) {
-            return FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH.name();
-        } else {
-            return FirstTimeWizardToadlet.WIZARD_STEP.COMPLETE.name();
-        }
+		if (firsttime) {
+			return FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH.name();
+		} else {
+			return FirstTimeWizardToadlet.WIZARD_STEP.COMPLETE.name();
+		}
 	}
 
 
@@ -205,5 +205,5 @@ public class DATASTORE_SIZE implements Step {
    
 	private long canAutoconfigureDatastoreSize() {
 		return DatastoreUtil.autodetectDatastoreSize(core, config);
-    }
+	}
 }

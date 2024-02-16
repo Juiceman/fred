@@ -176,7 +176,7 @@ public class NewPacketFormat implements PacketFormat {
 		List<byte[]> l = packet.getLossyMessages();
 		if(l != null && !l.isEmpty())
 		{
-		    ArrayList<Message> lossyMessages = new ArrayList<>(l.size());
+			ArrayList<Message> lossyMessages = new ArrayList<>(l.size());
 			for(byte[] buf : l) {
 				// FIXME factor out parsing once we are sure these are not bogus.
 				// For now we have to be careful.
@@ -527,8 +527,8 @@ public class NewPacketFormat implements PacketFormat {
 				}
 
 				Logger.minor(this, "Sending packet " + packet.getSequenceNumber() + " ("
-				                + data.length + " bytes) with fragments " + fragments + " and "
-				                + packet.getAcks().size() + " acks on "+this);
+								+ data.length + " bytes) with fragments " + fragments + " and "
+								+ packet.getAcks().size() + " acks on "+this);
 			}
 			pn.sendEncryptedPacket(data);
 		} catch (LocalAddressException e) {
@@ -1011,14 +1011,14 @@ addOldLoop:			for(Map<Integer, MessageWrapper> started : startedByPrio) {
 		ret = Math.min(ret, timeCheckForAcks());
 		
 		if(ret > now) {
-		    // Always wake up after half an RTT, check whether stuff is lost or needs ack'ing.
-		    ret = Math.min(ret, now + Math.min(100, (long)averageRTT()/2));
-		    
-		    if(canSend && DO_KEEPALIVES) {
-		        synchronized(this) {
-		            ret = Math.min(ret, timeLastSentPayload + Node.KEEPALIVE_INTERVAL);
-		        }
-		    }
+			// Always wake up after half an RTT, check whether stuff is lost or needs ack'ing.
+			ret = Math.min(ret, now + Math.min(100, (long)averageRTT()/2));
+			
+			if(canSend && DO_KEEPALIVES) {
+				synchronized(this) {
+					ret = Math.min(ret, timeLastSentPayload + Node.KEEPALIVE_INTERVAL);
+				}
+			}
 		}
 
 		return ret;

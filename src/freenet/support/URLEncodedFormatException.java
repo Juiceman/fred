@@ -10,6 +10,6 @@ package freenet.support;
 public class URLEncodedFormatException extends Exception {
 	private static final long serialVersionUID = -1;
 	
-    URLEncodedFormatException () {}
-    URLEncodedFormatException (String s) { super(s); }
+	URLEncodedFormatException () {}
+	URLEncodedFormatException (String s) { super(s); }
 }

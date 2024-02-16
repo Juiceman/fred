@@ -114,8 +114,8 @@ public class NullBasePeerNode implements BasePeerNode {
 
 	@Override
 	public void verified(SessionKey s) {
-	    if (decryptedMessages == null)
-	        throw new UnsupportedOperationException(); // Not expecting messages.
+		if (decryptedMessages == null)
+			throw new UnsupportedOperationException(); // Not expecting messages.
 	}
 
 	@Override
@@ -142,11 +142,11 @@ public class NullBasePeerNode implements BasePeerNode {
 
 	protected void processDecryptedMessage(byte[] data, int offset, int length,
 			int overhead) {
-	    if (decryptedMessages == null) {
-	        throw new UnsupportedOperationException();
-	    } else {
-	        decryptedMessages.add(java.util.Arrays.copyOfRange(data, offset, offset+length));
-	    }
+		if (decryptedMessages == null) {
+			throw new UnsupportedOperationException();
+		} else {
+			decryptedMessages.add(java.util.Arrays.copyOfRange(data, offset, offset+length));
+		}
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class NullBasePeerNode implements BasePeerNode {
 
 	@Override
 	public void sendEncryptedPacket(byte[] data) throws LocalAddressException {
-	    sentEncryptedPacket = data;
+		sentEncryptedPacket = data;
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import freenet.support.HTMLNode;
 public class LocalDirectoryConfigToadlet extends LocalDirectoryToadlet {
 
 	public LocalDirectoryConfigToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient,
-	        String postTo) {
+			String postTo) {
 		super(core, highLevelSimpleClient, postTo);
 	}
 
@@ -30,10 +30,10 @@ public class LocalDirectoryConfigToadlet extends LocalDirectoryToadlet {
 	@Override
 	protected void createSelectDirectoryButton (HTMLNode formNode, String path, HTMLNode persist) {
 		formNode.addChild("input", new String[] { "type", "name", "value" }, 
-		        new String[] { "submit", selectDir,
-		                NodeL10n.getBase().getString("ConfigToadlet.selectDirectory")});
+				new String[] { "submit", selectDir,
+						NodeL10n.getBase().getString("ConfigToadlet.selectDirectory")});
 		formNode.addChild("input", new String[] { "type", "name", "value" }, 
-		        new String[] { "hidden", filenameField(), path});
+				new String[] { "hidden", filenameField(), path});
 		formNode.addChild(persist);
 	}
 

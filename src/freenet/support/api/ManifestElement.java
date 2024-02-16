@@ -16,9 +16,9 @@ import freenet.support.io.ResumeFailedException;
  */
 public class ManifestElement implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /** Filename */
+	/** Filename */
 	final String name;
 	
 	/** Full name in the container it is inserted as part of. */
@@ -88,17 +88,17 @@ public class ManifestElement implements Serializable {
 		assert(targetURI != null);
 	}
 	
-    public ManifestElement(String name2, String fullName2, String mimeOverride2,
-            FreenetURI targetURI2) {
-        this.name = name2;
-        this.fullName = fullName2;
-        this.mimeOverride = mimeOverride2;
-        this.targetURI = targetURI2;
-        this.data = null;
-        this.dataSize = -1;
-    }
+	public ManifestElement(String name2, String fullName2, String mimeOverride2,
+			FreenetURI targetURI2) {
+		this.name = name2;
+		this.fullName = fullName2;
+		this.mimeOverride = mimeOverride2;
+		this.targetURI = targetURI2;
+		this.data = null;
+		this.dataSize = -1;
+	}
 
-    @Override
+	@Override
 	public int hashCode() {
 		return name.hashCode();
 	}
@@ -147,8 +147,8 @@ public class ManifestElement implements Serializable {
 		return targetURI;
 	}
 
-    public void onResume(ClientContext context) throws ResumeFailedException {
-        if(data != null) data.onResume(context);
-    }
+	public void onResume(ClientContext context) throws ResumeFailedException {
+		if(data != null) data.onResume(context);
+	}
 
 }

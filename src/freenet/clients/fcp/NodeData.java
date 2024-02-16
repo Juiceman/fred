@@ -42,7 +42,7 @@ public class NodeData extends FCPMessage {
 		if(withVolatile) {
 			SimpleFieldSet vol = node.exportVolatileFieldSet();
 			if(!vol.isEmpty()) {
-			 	fs.put("volatile", vol);
+				fs.put("volatile", vol);
 			}
 		}
 		if(identifier != null)

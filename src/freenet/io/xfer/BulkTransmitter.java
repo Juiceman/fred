@@ -65,7 +65,7 @@ public class BulkTransmitter {
 	private static long transfersCompleted;
 	private static long transfersSucceeded;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

@@ -30,7 +30,7 @@ public class RedirectException extends Exception {
 	 * @return The URI to which this Exception shall redirect.
 	 */
 	public URI getTarget() {
-	    return newuri;
+		return newuri;
 	}
 
 }

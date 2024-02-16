@@ -20,7 +20,7 @@ public class PageNode extends InfoboxNode {
 	 * Adds a custom style sheet to the header of the page.
 	 *
 	 * @param customStyleSheet
-	 *            The URL of the custom style sheet
+	 *			The URL of the custom style sheet
 	 */
 	public void addCustomStyleSheet(String customStyleSheet) {
 		addForwardLink("stylesheet", customStyleSheet, "text/css", "screen");
@@ -31,9 +31,9 @@ public class PageNode extends InfoboxNode {
 	 * node.
 	 *
 	 * @param linkType
-	 *            The link type (e.g. "stylesheet" or "shortcut icon")
+	 *			The link type (e.g. "stylesheet" or "shortcut icon")
 	 * @param href
-	 *            The link
+	 *			The link
 	 */
 	public void addForwardLink(String linkType, String href) {
 		addForwardLink(linkType, href, null, null);
@@ -44,13 +44,13 @@ public class PageNode extends InfoboxNode {
 	 * node.
 	 *
 	 * @param linkType
-	 *            The link type (e.g. "stylesheet" or "shortcut icon")
+	 *			The link type (e.g. "stylesheet" or "shortcut icon")
 	 * @param href
-	 *            The link
+	 *			The link
 	 * @param type
-	 *            The type of the referenced data
+	 *			The type of the referenced data
 	 * @param media
-	 *            The media for which this link is valid
+	 *			The media for which this link is valid
 	 */
 	public void addForwardLink(String linkType, String href, String type, String media) {
 		HTMLNode linkNode = headNode.addChild("link", new String[] { "rel", "href" }, new String[] { linkType, href });

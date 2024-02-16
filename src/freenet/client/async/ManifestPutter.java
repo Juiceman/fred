@@ -10,7 +10,7 @@ import freenet.client.InsertException;
 
 public abstract class ManifestPutter extends BaseClientPutter {
 	
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/** Required because {@link Serializable} is implemented by a parent class. */
 	protected ManifestPutter() {

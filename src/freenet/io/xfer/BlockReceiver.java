@@ -220,9 +220,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 		@Override
 		public void onMatched(Message m1) {
-            if(logMINOR)
-            	Logger.minor(this, "Received "+m1);
-            if ((m1 != null) && m1.getSpec().equals(DMT.sendAborted)) {
+			if(logMINOR)
+				Logger.minor(this, "Received "+m1);
+			if ((m1 != null) && m1.getSpec().equals(DMT.sendAborted)) {
 				String desc=m1.getString(DMT.DESCRIPTION);
 				if (desc.indexOf("Upstream")<0)
 					desc="Upstream transmit error: "+desc;
@@ -233,7 +233,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				complete(m1.getInt(DMT.REASON), desc);
 				return;
 			}
-            boolean truncateTimeout = false;
+			boolean truncateTimeout = false;
 			if ((m1 != null) && (m1.getSpec().equals(DMT.packetTransmit))) {
 				// packetTransmit received
 				int packetNo = m1.getInt(DMT.PACKET_NO);

@@ -186,7 +186,7 @@ public interface HighLevelSimpleClient {
 	 * request URI at index 1.
 	 *
 	 * @param docName
-	 *            The document name
+	 *			The document name
 	 * @return An array containing the insert and request URI
 	 */
 	public FreenetURI[] generateKeyPair(String docName);

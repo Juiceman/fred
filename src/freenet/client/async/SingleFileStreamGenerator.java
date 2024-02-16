@@ -22,7 +22,7 @@ public class SingleFileStreamGenerator implements StreamGenerator {
 	final private Bucket bucket;
 	final private boolean persistent;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

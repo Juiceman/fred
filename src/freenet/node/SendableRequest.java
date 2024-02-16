@@ -24,15 +24,15 @@ import freenet.support.Logger.LogLevel;
  */
 public abstract class SendableRequest implements RandomGrabArrayItem, Serializable {
 	
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /** Since we put these into Set's etc, hashCode must be persistent.
+	/** Since we put these into Set's etc, hashCode must be persistent.
 	 * Guaranteed not to be 0 unless this is a persistent object that is deactivated. */
 	private final int hashCode;
 	
 	protected final boolean realTimeFlag;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -162,22 +162,22 @@ public abstract class SendableRequest implements RandomGrabArrayItem, Serializab
 		return super.toString();
 	}
 	
-    @Override
-    public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
-        RandomGrabArray parent = getParentGrabArray();
-        if(parent == null) return false;
-        return parent.reduceWakeupTime(wakeupTime, context);
-    }
+	@Override
+	public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
+		RandomGrabArray parent = getParentGrabArray();
+		if(parent == null) return false;
+		return parent.reduceWakeupTime(wakeupTime, context);
+	}
 
-    @Override
-    public void clearWakeupTime(ClientContext context) {
-        RandomGrabArray parent = getParentGrabArray();
-        if(parent == null) return;
-        parent.clearWakeupTime(context);
-    }
+	@Override
+	public void clearWakeupTime(ClientContext context) {
+		RandomGrabArray parent = getParentGrabArray();
+		if(parent == null) return;
+		parent.clearWakeupTime(context);
+	}
 
-    public ClientRequestSchedulerGroup getSchedulerGroup() {
-        return getClientRequest().getSchedulerGroup();
-    }
+	public ClientRequestSchedulerGroup getSchedulerGroup() {
+		return getClientRequest().getSchedulerGroup();
+	}
 
 }

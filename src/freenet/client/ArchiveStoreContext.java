@@ -33,7 +33,7 @@ class ArchiveStoreContext {
 	 * the inner lock to avoid deadlocks. */
 	private final LinkedList<ArchiveStoreItem> myItems;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

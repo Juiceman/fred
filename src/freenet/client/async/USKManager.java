@@ -255,15 +255,15 @@ public class USKManager {
 					cb.failed(origURI, token, e);
 			}
 
-            @Override
-            public void onResume(ClientContext context) {
-                // Do nothing.
-            }
+			@Override
+			public void onResume(ClientContext context) {
+				// Do nothing.
+			}
 
-            @Override
-            public RequestClient getRequestClient() {
-                return rcBulk;
-            }
+			@Override
+			public RequestClient getRequestClient() {
+				return rcBulk;
+			}
 			
 		}, uri, new FetchContext(backgroundFetchContext, FetchContext.IDENTICAL_MASK), priority, new NullBucket(), null, null);
 		try {
@@ -400,15 +400,15 @@ public class USKManager {
 						updateKnownGood(key, l, context);
 					}
 					
-                    @Override
-                    public void onResume(ClientContext context) {
-                        // Do nothing. Not persistent.
-                    }
+					@Override
+					public void onResume(ClientContext context) {
+						// Do nothing. Not persistent.
+					}
 
-                    @Override
-                    public RequestClient getRequestClient() {
-                        return rcBulk;
-                    }
+					@Override
+					public RequestClient getRequestClient() {
+						return rcBulk;
+					}
 				}, key.getURI().sskForUSK() /* FIXME add getSSKURI() */, fctx, RequestStarter.UPDATE_PRIORITY_CLASS, new NullBucket(), null, null);
 				try {
 					get.start(context);

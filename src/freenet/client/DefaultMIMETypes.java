@@ -787,9 +787,9 @@ public class DefaultMIMETypes {
 		return false;
 	}
 	
-    public static boolean isValidExt(MediaType parsedType, String forceCompatibleExtension) {
-        return isValidExt(parsedType.getPlainType(), forceCompatibleExtension);
-    }
+	public static boolean isValidExt(MediaType parsedType, String forceCompatibleExtension) {
+		return isValidExt(parsedType.getPlainType(), forceCompatibleExtension);
+	}
 	
 	private static final String TOP_LEVEL = "(?>[a-zA-Z-]+)";
 	private static final String CHARS = "(?>[a-zA-Z0-9+_\\-\\.]+)";

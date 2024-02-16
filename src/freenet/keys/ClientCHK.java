@@ -22,136 +22,136 @@ import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
  * a CHKBlock, can be produced by a CHKBlock. 
  */
 public class ClientCHK extends ClientKey implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
-    /** Lazily constructed: the NodeCHK */
-    transient NodeCHK nodeKey;
-    /** Routing key */
-    final byte[] routingKey;
-    /** Decryption key */
-    final byte[] cryptoKey;
-    /** Is the data a control document? */
-    final boolean controlDocument;
-    /** Encryption algorithm */
-    final byte cryptoAlgorithm;
-    /** Compression algorithm, negative means uncompressed */
-    final short compressionAlgorithm;
-    final int hashCode;
-    
-    /* We use EXTRA_LENGTH above for consistency, rather than dis.read etc. Some code depends on this
-     * being accurate. Change those uses if you like. */
-    /** The length of the "extra" bytes in the key */
-    public static final short EXTRA_LENGTH = 5;
-    /** The length of the decryption key */
-    public static final short CRYPTO_KEY_LENGTH = 32;
-    
-    /** Useful for e.g. length checks */
-    public static final ClientCHK TEST_KEY;
-    
-    static {
-        try {
-            TEST_KEY = new ClientCHK(FreenetURI.generateRandomCHK(new Random()));
-        } catch (MalformedURLException e) {
-            throw new Error(e);
-        }
-    }
-    
-    private ClientCHK(ClientCHK key) {
-    	this.routingKey = key.routingKey.clone();
-    	this.nodeKey = null;
-    	this.cryptoKey = key.cryptoKey.clone();
-    	this.controlDocument = key.controlDocument;
-    	this.cryptoAlgorithm = key.cryptoAlgorithm;
-    	this.compressionAlgorithm = key.compressionAlgorithm;
-        hashCode = key.hashCode;
-    }
-    
-    /**
-     * @param routingKey The routing key. This is the overall hash of the
-     * header and content of the key.
-     * @param encKey The decryption key. This is not passed to other nodes
-     * and is extracted from the URI.
-     * @param isCompressed True if the data was gzipped before encoding.
-     * @param isControlDocument True if the document is a Control Document.
-     * These carry metadata, whereas ordinary keys carry data, and have no
-     * type.
-     * @param algo The encryption algorithm's identifier. See ALGO_* for 
-     * values.
-     */
-    public ClientCHK(byte[] routingKey, byte[] encKey,  
-            boolean isControlDocument, byte algo, short compressionAlgorithm) {
-        this.routingKey = routingKey;
-        this.cryptoKey = encKey;
-        this.controlDocument = isControlDocument;
-        this.cryptoAlgorithm = algo;
-        this.compressionAlgorithm = compressionAlgorithm;
-        if(routingKey == null) throw new NullPointerException();
-        hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(encKey) ^ compressionAlgorithm;
-    }
+	
+	private static final long serialVersionUID = 1L;
+	/** Lazily constructed: the NodeCHK */
+	transient NodeCHK nodeKey;
+	/** Routing key */
+	final byte[] routingKey;
+	/** Decryption key */
+	final byte[] cryptoKey;
+	/** Is the data a control document? */
+	final boolean controlDocument;
+	/** Encryption algorithm */
+	final byte cryptoAlgorithm;
+	/** Compression algorithm, negative means uncompressed */
+	final short compressionAlgorithm;
+	final int hashCode;
+	
+	/* We use EXTRA_LENGTH above for consistency, rather than dis.read etc. Some code depends on this
+	 * being accurate. Change those uses if you like. */
+	/** The length of the "extra" bytes in the key */
+	public static final short EXTRA_LENGTH = 5;
+	/** The length of the decryption key */
+	public static final short CRYPTO_KEY_LENGTH = 32;
+	
+	/** Useful for e.g. length checks */
+	public static final ClientCHK TEST_KEY;
+	
+	static {
+		try {
+			TEST_KEY = new ClientCHK(FreenetURI.generateRandomCHK(new Random()));
+		} catch (MalformedURLException e) {
+			throw new Error(e);
+		}
+	}
+	
+	private ClientCHK(ClientCHK key) {
+		this.routingKey = key.routingKey.clone();
+		this.nodeKey = null;
+		this.cryptoKey = key.cryptoKey.clone();
+		this.controlDocument = key.controlDocument;
+		this.cryptoAlgorithm = key.cryptoAlgorithm;
+		this.compressionAlgorithm = key.compressionAlgorithm;
+		hashCode = key.hashCode;
+	}
+	
+	/**
+	 * @param routingKey The routing key. This is the overall hash of the
+	 * header and content of the key.
+	 * @param encKey The decryption key. This is not passed to other nodes
+	 * and is extracted from the URI.
+	 * @param isCompressed True if the data was gzipped before encoding.
+	 * @param isControlDocument True if the document is a Control Document.
+	 * These carry metadata, whereas ordinary keys carry data, and have no
+	 * type.
+	 * @param algo The encryption algorithm's identifier. See ALGO_* for 
+	 * values.
+	 */
+	public ClientCHK(byte[] routingKey, byte[] encKey,  
+			boolean isControlDocument, byte algo, short compressionAlgorithm) {
+		this.routingKey = routingKey;
+		this.cryptoKey = encKey;
+		this.controlDocument = isControlDocument;
+		this.cryptoAlgorithm = algo;
+		this.compressionAlgorithm = compressionAlgorithm;
+		if(routingKey == null) throw new NullPointerException();
+		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(encKey) ^ compressionAlgorithm;
+	}
 
-    public ClientCHK(byte[] routingKey, byte[] encKey, byte[] extra) throws MalformedURLException {
-    	this.routingKey = routingKey;
-    	this.cryptoKey = encKey;
-        if((extra == null) || (extra.length < 5))
-            throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
-        // byte 0 is reserved, for now
-        cryptoAlgorithm = extra[1];
+	public ClientCHK(byte[] routingKey, byte[] encKey, byte[] extra) throws MalformedURLException {
+		this.routingKey = routingKey;
+		this.cryptoKey = encKey;
+		if((extra == null) || (extra.length < 5))
+			throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
+		// byte 0 is reserved, for now
+		cryptoAlgorithm = extra[1];
 		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
 			throw new MalformedURLException("Invalid crypto algorithm");
-        controlDocument = (extra[2] & 0x02) != 0;
-        compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
-        hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
-    }
-    
-    /**
-     * Create from a URI.
-     */
-    public ClientCHK(FreenetURI uri) throws MalformedURLException {
-        if(!uri.getKeyType().equals("CHK"))
-            throw new MalformedURLException("Not CHK");
-        routingKey = uri.getRoutingKey();
-        cryptoKey = uri.getCryptoKey();
-        byte[] extra = uri.getExtra();
-        if((extra == null) || (extra.length < 5))
-            throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
-        // byte 0 is reserved, for now
-        cryptoAlgorithm = extra[1];
+		controlDocument = (extra[2] & 0x02) != 0;
+		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
+		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
+	}
+	
+	/**
+	 * Create from a URI.
+	 */
+	public ClientCHK(FreenetURI uri) throws MalformedURLException {
+		if(!uri.getKeyType().equals("CHK"))
+			throw new MalformedURLException("Not CHK");
+		routingKey = uri.getRoutingKey();
+		cryptoKey = uri.getCryptoKey();
+		byte[] extra = uri.getExtra();
+		if((extra == null) || (extra.length < 5))
+			throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
+		// byte 0 is reserved, for now
+		cryptoAlgorithm = extra[1];
 		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
 			throw new MalformedURLException("Invalid crypto algorithm");
-        controlDocument = (extra[2] & 0x02) != 0;
-        compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
-        hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
-    }
+		controlDocument = (extra[2] & 0x02) != 0;
+		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
+		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
+	}
 
-    /**
-     * Create from a raw binary CHK. This expresses the key information
-     * in as few bytes as possible.
-     * @throws IOException 
-     */
+	/**
+	 * Create from a raw binary CHK. This expresses the key information
+	 * in as few bytes as possible.
+	 * @throws IOException 
+	 */
 	public ClientCHK(DataInputStream dis) throws IOException {
 		byte[] extra = new byte[EXTRA_LENGTH];
 		dis.readFully(extra);
 		// byte 0 is reserved, for now
-        cryptoAlgorithm = extra[1];
+		cryptoAlgorithm = extra[1];
 		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
 			throw new MalformedURLException("Invalid crypto algorithm");
-        compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
-        controlDocument = (extra[2] & 0x02) != 0;
+		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
+		controlDocument = (extra[2] & 0x02) != 0;
 		routingKey = new byte[NodeCHK.KEY_LENGTH];
 		dis.readFully(routingKey);
 		cryptoKey = new byte[CRYPTO_KEY_LENGTH];
 		dis.readFully(cryptoKey);
-        hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
+		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
 	}
 	
 	protected ClientCHK() {
-	    // Only for serialization.
-	    routingKey = null;
-	    cryptoKey = null;
-	    controlDocument = false;
-	    cryptoAlgorithm = 0;
-	    compressionAlgorithm = 0;
-	    hashCode = 0;
+		// Only for serialization.
+		routingKey = null;
+		cryptoKey = null;
+		controlDocument = false;
+		cryptoAlgorithm = 0;
+		compressionAlgorithm = 0;
+		hashCode = 0;
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class ClientCHK extends ClientKey implements Serializable {
 		dos.write(routingKey);
 		dos.write(cryptoKey);
 	}
-    
+	
 	static byte[] lastExtra;
 	
 	public byte[] getExtra() {
@@ -206,12 +206,12 @@ public class ClientCHK extends ClientKey implements Serializable {
 		return extra;
 	}
 	
-    @Override
+	@Override
 	public String toString() {
-        return super.toString()+ ':' +Base64.encode(routingKey)+ ',' +
-        	Base64.encode(cryptoKey)+ ',' +compressionAlgorithm+ ',' +controlDocument+
-                ',' +cryptoAlgorithm;
-    }
+		return super.toString()+ ':' +Base64.encode(routingKey)+ ',' +
+			Base64.encode(cryptoKey)+ ',' +compressionAlgorithm+ ',' +controlDocument+
+				',' +cryptoAlgorithm;
+	}
 
 	@Override
 	public Key getNodeKey(boolean cloneKey) {
@@ -223,23 +223,23 @@ public class ClientCHK extends ClientKey implements Serializable {
 		// Therefore, keeping a NodeCHK as well is a net saving, since it's frequently
 		// asked for. (A SoftReference would cost more).
 		if(nodeKey == null)
-	        nodeKey = new NodeCHK(routingKey, cryptoAlgorithm);
-	    return nodeKey;
+			nodeKey = new NodeCHK(routingKey, cryptoAlgorithm);
+		return nodeKey;
 	}
 	
-    /**
-     * @return URI form of this key.
-     */
-    @Override
+	/**
+	 * @return URI form of this key.
+	 */
+	@Override
 	public FreenetURI getURI() {
-        byte[] extra = getExtra();
-        return new FreenetURI("CHK", null, routingKey, cryptoKey, extra);
-    }
+		byte[] extra = getExtra();
+		return new FreenetURI("CHK", null, routingKey, cryptoKey, extra);
+	}
 
-    /**
-     * Read a raw binary CHK. This is an ultra-compact representation, for
-     * splitfile metadata etc.
-     */
+	/**
+	 * Read a raw binary CHK. This is an ultra-compact representation, for
+	 * splitfile metadata etc.
+	 */
 	public static ClientCHK readRawBinaryKey(DataInputStream dis) throws IOException {
 		return new ClientCHK(dis);
 	}
@@ -282,7 +282,7 @@ public class ClientCHK extends ClientKey implements Serializable {
 		return cryptoKey;
 	}
 	
-    public byte getCryptoAlgorithm() {
-        return cryptoAlgorithm;
-    }
+	public byte getCryptoAlgorithm() {
+		return cryptoAlgorithm;
+	}
 }

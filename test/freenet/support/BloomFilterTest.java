@@ -132,11 +132,11 @@ public class BloomFilterTest {
 		final double limit = p * 1.05 + 1.0 / PASS_FALSE;
 
 		//*-
-		System.out.println("          k = " + K);
-		System.out.println("          q = " + q);
-		System.out.println("          p = " + p);
-		System.out.println("      limit = " + limit);
-		System.out.println("     actual = " + actual);
+		System.out.println("		  k = " + K);
+		System.out.println("		  q = " + q);
+		System.out.println("		  p = " + p);
+		System.out.println("	  limit = " + limit);
+		System.out.println("	 actual = " + actual);
 		System.out.println(" actual / p = " + actual / p);
 		/**/
 

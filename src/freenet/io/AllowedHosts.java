@@ -37,10 +37,10 @@ public class AllowedHosts {
 	 * list is in effect immediately after this method has finished.
 	 * 
 	 * @param allowedHosts
-	 *            The new list of allowed hosts s
+	 *			The new list of allowed hosts s
 	 */
 	public void setAllowedHosts(String allowedHosts) {
-                if(allowedHosts == null || allowedHosts.isEmpty()) allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
+				if(allowedHosts == null || allowedHosts.isEmpty()) allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
 		StringTokenizer allowedHostsTokens = new StringTokenizer(allowedHosts, ",");
 		List<AddressMatcher> newAddressMatchers = new ArrayList<AddressMatcher>();
 		while (allowedHostsTokens.hasMoreTokens()) {

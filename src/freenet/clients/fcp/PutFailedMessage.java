@@ -15,8 +15,8 @@ import freenet.support.SimpleFieldSet;
 
 public class PutFailedMessage extends FCPMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    final InsertExceptionMode code;
+	private static final long serialVersionUID = 1L;
+	final InsertExceptionMode code;
 	final String codeDescription;
 	final String extraDescription;
 	final String shortCodeDescription;

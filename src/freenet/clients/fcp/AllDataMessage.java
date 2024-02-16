@@ -14,8 +14,8 @@ import freenet.support.api.Bucket;
  */
 public class AllDataMessage extends DataCarryingMessage {
 
-    private static final long serialVersionUID = 1L;
-    final long dataLength;
+	private static final long serialVersionUID = 1L;
+	final long dataLength;
 	final boolean global;
 	final String identifier;
 	final long startupTime, completionTime;
@@ -32,13 +32,13 @@ public class AllDataMessage extends DataCarryingMessage {
 	}
 	
 	protected AllDataMessage() {
-	    // For serialization.
-	    dataLength = 0;
-	    global = false;
-	    identifier = null;
-	    startupTime = 0;
-	    completionTime = 0;
-	    mimeType = null;
+		// For serialization.
+		dataLength = 0;
+		global = false;
+		identifier = null;
+		startupTime = 0;
+		completionTime = 0;
+		mimeType = null;
 	}
 
 	@Override

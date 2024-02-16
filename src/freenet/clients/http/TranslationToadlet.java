@@ -42,8 +42,8 @@ public class TranslationToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-        if(!ctx.checkFullAccess(this))
-            return;
+		if(!ctx.checkFullAccess(this))
+			return;
 		
 		boolean showEverything = !request.isParameterSet("toTranslateOnly");
 		
@@ -223,8 +223,8 @@ public class TranslationToadlet extends Toadlet {
 	}
 
 	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-        if(!ctx.checkFullAccess(this))
-            return;
+		if(!ctx.checkFullAccess(this))
+			return;
 		
 		if(request.isPartSet("translating_for")) {
 			final String translateFor = request.getPartAsStringFailsafe("translating_for", 255);

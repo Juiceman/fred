@@ -111,8 +111,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		// produce log and alog tables, needed for multiplying in the
 		// field GF(2^m) (generator = 3)
 		//
-        generateLogAndAlogTables(ROOT);
-        generateSBoxes();
+		generateLogAndAlogTables(ROOT);
+		generateSBoxes();
 
 		//
 		// T-boxes
@@ -123,8 +123,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 				{1, 3, 2, 1},
 				{1, 1, 3, 2}
 		};
-        byte[][] iG = generateInvertedGMatrix(G);
-        generateTBoxes(G, iG);
+		byte[][] iG = generateInvertedGMatrix(G);
+		generateTBoxes(G, iG);
 
 		//
 		// round constants
@@ -182,122 +182,122 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		}
 	}
 
-    private static void generateLogAndAlogTables(int ROOT) {
-        alog[0] = 1;
-        for (int i = 1; i < 256; i++) {
-            int j = (alog[i-1] << 1) ^ alog[i-1];
-            if ((j & 0x100) != 0) j ^= ROOT;
-            alog[i] = j;
-        }
-        for (int i = 1; i < 255; i++) log[alog[i]] = i;
-    }
+	private static void generateLogAndAlogTables(int ROOT) {
+		alog[0] = 1;
+		for (int i = 1; i < 256; i++) {
+			int j = (alog[i-1] << 1) ^ alog[i-1];
+			if ((j & 0x100) != 0) j ^= ROOT;
+			alog[i] = j;
+		}
+		for (int i = 1; i < 255; i++) log[alog[i]] = i;
+	}
 
-    private static void generateSBoxes() {
-        byte[][] A = new byte[][] {
-                {1, 1, 1, 1, 1, 0, 0, 0},
-                {0, 1, 1, 1, 1, 1, 0, 0},
-                {0, 0, 1, 1, 1, 1, 1, 0},
-                {0, 0, 0, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 1, 1, 1, 1},
-                {1, 1, 0, 0, 0, 1, 1, 1},
-                {1, 1, 1, 0, 0, 0, 1, 1},
-                {1, 1, 1, 1, 0, 0, 0, 1}
-        };
-        byte[] B = new byte[] { 0, 1, 1, 0, 0, 0, 1, 1};
+	private static void generateSBoxes() {
+		byte[][] A = new byte[][] {
+				{1, 1, 1, 1, 1, 0, 0, 0},
+				{0, 1, 1, 1, 1, 1, 0, 0},
+				{0, 0, 1, 1, 1, 1, 1, 0},
+				{0, 0, 0, 1, 1, 1, 1, 1},
+				{1, 0, 0, 0, 1, 1, 1, 1},
+				{1, 1, 0, 0, 0, 1, 1, 1},
+				{1, 1, 1, 0, 0, 0, 1, 1},
+				{1, 1, 1, 1, 0, 0, 0, 1}
+		};
+		byte[] B = new byte[] { 0, 1, 1, 0, 0, 0, 1, 1};
 
-        //
-        // substitution box based on F^{-1}(x)
-        //
-        byte[][] box = new byte[256][8];
-        box[1][7] = 1;
-        for (int i = 2; i < 256; i++) {
-            int j = alog[255 - log[i]];
-            for (int t = 0; t < 8; t++)
-                box[i][t] = (byte)((j >>> (7 - t)) & 0x01);
-        }
-        //
-        // affine transform:  box[i] <- B + A*box[i]
-        //
-        byte[][] cox = new byte[256][8];
-        for (int i = 0; i < 256; i++)
-            for (int t = 0; t < 8; t++) {
-                cox[i][t] = B[t];
-                for (int j = 0; j < 8; j++)
-                    cox[i][t] ^= A[t][j] * box[i][j];
-            }
-        //
-        // S-boxes and inverse S-boxes
-        //
-        for (int i = 0; i < 256; i++) {
-            S[i] = (byte)(cox[i][0] << 7);
-            for (int t = 1; t < 8; t++)
-                S[i] ^= cox[i][t] << (7-t);
-            Si[S[i] & 0xFF] = (byte) i;
-        }
-    }
+		//
+		// substitution box based on F^{-1}(x)
+		//
+		byte[][] box = new byte[256][8];
+		box[1][7] = 1;
+		for (int i = 2; i < 256; i++) {
+			int j = alog[255 - log[i]];
+			for (int t = 0; t < 8; t++)
+				box[i][t] = (byte)((j >>> (7 - t)) & 0x01);
+		}
+		//
+		// affine transform:  box[i] <- B + A*box[i]
+		//
+		byte[][] cox = new byte[256][8];
+		for (int i = 0; i < 256; i++)
+			for (int t = 0; t < 8; t++) {
+				cox[i][t] = B[t];
+				for (int j = 0; j < 8; j++)
+					cox[i][t] ^= A[t][j] * box[i][j];
+			}
+		//
+		// S-boxes and inverse S-boxes
+		//
+		for (int i = 0; i < 256; i++) {
+			S[i] = (byte)(cox[i][0] << 7);
+			for (int t = 1; t < 8; t++)
+				S[i] ^= cox[i][t] << (7-t);
+			Si[S[i] & 0xFF] = (byte) i;
+		}
+	}
 
-    private static byte[][] generateInvertedGMatrix(byte[][] gMatrix) {
-        byte[][] AA = new byte[4][8];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) AA[i][j] = gMatrix[i][j];
-            AA[i][i+4] = 1;
-        }
-        byte pivot, tmp;
-        byte[][] iG = new byte[4][4];
-        for (int i = 0; i < 4; i++) {
-            pivot = AA[i][i];
-            if (pivot == 0) {
-                int t = i + 1;
-                while ((AA[t][i] == 0) && (t < 4))
-                    t++;
-                if (t == 4)
-                    throw new RuntimeException("G matrix is not invertible");
-                else {
-                    for (int j = 0; j < 8; j++) {
-                        tmp = AA[i][j];
-                        AA[i][j] = AA[t][j];
-                        AA[t][j] = tmp;
-                    }
-                    pivot = AA[i][i];
-                }
-            }
-            for (int j = 0; j < 8; j++)
-                if (AA[i][j] != 0)
-                    AA[i][j] = (byte)
-                            alog[(255 + log[AA[i][j] & 0xFF] - log[pivot & 0xFF]) % 255];
-            for (int t = 0; t < 4; t++)
-                if (i != t) {
-                    for (int j = i+1; j < 8; j++)
-                        AA[t][j] ^= mul(AA[i][j], AA[t][i]);
-                    AA[t][i] = 0;
-                }
-        }
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++) iG[i][j] = AA[i][j + 4];
+	private static byte[][] generateInvertedGMatrix(byte[][] gMatrix) {
+		byte[][] AA = new byte[4][8];
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) AA[i][j] = gMatrix[i][j];
+			AA[i][i+4] = 1;
+		}
+		byte pivot, tmp;
+		byte[][] iG = new byte[4][4];
+		for (int i = 0; i < 4; i++) {
+			pivot = AA[i][i];
+			if (pivot == 0) {
+				int t = i + 1;
+				while ((AA[t][i] == 0) && (t < 4))
+					t++;
+				if (t == 4)
+					throw new RuntimeException("G matrix is not invertible");
+				else {
+					for (int j = 0; j < 8; j++) {
+						tmp = AA[i][j];
+						AA[i][j] = AA[t][j];
+						AA[t][j] = tmp;
+					}
+					pivot = AA[i][i];
+				}
+			}
+			for (int j = 0; j < 8; j++)
+				if (AA[i][j] != 0)
+					AA[i][j] = (byte)
+							alog[(255 + log[AA[i][j] & 0xFF] - log[pivot & 0xFF]) % 255];
+			for (int t = 0; t < 4; t++)
+				if (i != t) {
+					for (int j = i+1; j < 8; j++)
+						AA[t][j] ^= mul(AA[i][j], AA[t][i]);
+					AA[t][i] = 0;
+				}
+		}
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++) iG[i][j] = AA[i][j + 4];
 
-        return iG;
-    }
+		return iG;
+	}
 
-    private static void generateTBoxes(byte[][] g, byte[][] iG) {
-        for (int t = 0; t < 256; t++) {
-            int s = S[t];
-            T1[t] = mul4(s, g[0]);
-            T2[t] = mul4(s, g[1]);
-            T3[t] = mul4(s, g[2]);
-            T4[t] = mul4(s, g[3]);
+	private static void generateTBoxes(byte[][] g, byte[][] iG) {
+		for (int t = 0; t < 256; t++) {
+			int s = S[t];
+			T1[t] = mul4(s, g[0]);
+			T2[t] = mul4(s, g[1]);
+			T3[t] = mul4(s, g[2]);
+			T4[t] = mul4(s, g[3]);
 
-            s = Si[t];
-            T5[t] = mul4(s, iG[0]);
-            T6[t] = mul4(s, iG[1]);
-            T7[t] = mul4(s, iG[2]);
-            T8[t] = mul4(s, iG[3]);
+			s = Si[t];
+			T5[t] = mul4(s, iG[0]);
+			T6[t] = mul4(s, iG[1]);
+			T7[t] = mul4(s, iG[2]);
+			T8[t] = mul4(s, iG[3]);
 
-            U1[t] = mul4(t, iG[0]);
-            U2[t] = mul4(t, iG[1]);
-            U3[t] = mul4(t, iG[2]);
-            U4[t] = mul4(t, iG[3]);
-        }
-    }
+			U1[t] = mul4(t, iG[0]);
+			U2[t] = mul4(t, iG[1]);
+			U3[t] = mul4(t, iG[2]);
+			U4[t] = mul4(t, iG[3]);
+		}
+	}
 
 	// multiply two elements of GF(2^m)
 	private static int mul(int a, int b) {
@@ -325,8 +325,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	 * Convenience method to encrypt exactly one block of plaintext, assuming
 	 * Rijndael's default block size (128-bit).
 	 *
-	 * @param  in         The plaintext.
-	 * @param  result     The buffer into which to write the resulting ciphertext.
+	 * @param  in		 The plaintext.
+	 * @param  result	 The buffer into which to write the resulting ciphertext.
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for encryption.
 	 */
@@ -341,39 +341,39 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int t0   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[0];
+				(in[inOffset++] & 0xFF)		) ^ Ker[0];
 		int t1   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[1];
+				(in[inOffset++] & 0xFF)		) ^ Ker[1];
 		int t2   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[2];
+				(in[inOffset++] & 0xFF)		) ^ Ker[2];
 		int t3   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[3];
+				(in[inOffset++] & 0xFF)		) ^ Ker[3];
 
 		int a0, a1, a2, a3;
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			Ker = Ke[r];
 		a0   = (T1[(t0 >>> 24) & 0xFF] ^
 				T2[(t1 >>> 16) & 0xFF] ^
 				T3[(t2 >>>  8) & 0xFF] ^
-				T4[ t3         & 0xFF]  ) ^ Ker[0];
+				T4[ t3		 & 0xFF]  ) ^ Ker[0];
 		a1   = (T1[(t1 >>> 24) & 0xFF] ^
 				T2[(t2 >>> 16) & 0xFF] ^
 				T3[(t3 >>>  8) & 0xFF] ^
-				T4[ t0         & 0xFF]  ) ^ Ker[1];
+				T4[ t0		 & 0xFF]  ) ^ Ker[1];
 		a2   = (T1[(t2 >>> 24) & 0xFF] ^
 				T2[(t3 >>> 16) & 0xFF] ^
 				T3[(t0 >>>  8) & 0xFF] ^
-				T4[ t1         & 0xFF]  ) ^ Ker[2];
+				T4[ t1		 & 0xFF]  ) ^ Ker[2];
 		a3   = (T1[(t3 >>> 24) & 0xFF] ^
 				T2[(t0 >>> 16) & 0xFF] ^
 				T3[(t1 >>>  8) & 0xFF] ^
-				T4[ t2         & 0xFF]  ) ^ Ker[3];
+				T4[ t2		 & 0xFF]  ) ^ Ker[3];
 		t0 = a0;
 		t1 = a1;
 		t2 = a2;
@@ -387,22 +387,22 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		result[ 0] = (byte)(S[(t0 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 1] = (byte)(S[(t1 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 2] = (byte)(S[(t2 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 3] = (byte)(S[ t3         & 0xFF] ^  tt        );
+		result[ 3] = (byte)(S[ t3		 & 0xFF] ^  tt		);
 		tt = Ker[1];
 		result[ 4] = (byte)(S[(t1 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 5] = (byte)(S[(t2 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 6] = (byte)(S[(t3 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 7] = (byte)(S[ t0         & 0xFF] ^  tt        );
+		result[ 7] = (byte)(S[ t0		 & 0xFF] ^  tt		);
 		tt = Ker[2];
 		result[ 8] = (byte)(S[(t2 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 9] = (byte)(S[(t3 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[10] = (byte)(S[(t0 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[11] = (byte)(S[ t1         & 0xFF] ^  tt        );
+		result[11] = (byte)(S[ t1		 & 0xFF] ^  tt		);
 		tt = Ker[3];
 		result[12] = (byte)(S[(t3 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[13] = (byte)(S[(t0 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[14] = (byte)(S[(t1 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[15] = (byte)(S[ t2         & 0xFF] ^  tt        );
+		result[15] = (byte)(S[ t2		 & 0xFF] ^  tt		);
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("CT="+toString(result));
 			System.out.println();
@@ -414,8 +414,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	 * Convenience method to encrypt exactly one block of plaintext, assuming
 	 * Rijndael's non-standard block size 256 bit).
 	 *
-	 * @param  in         The plaintext.
-	 * @param  result     The buffer into which to write the resulting ciphertext.
+	 * @param  in		 The plaintext.
+	 * @param  result	 The buffer into which to write the resulting ciphertext.
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for encryption.
 	 */
@@ -430,78 +430,78 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int t0   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[0];
+				(in[inOffset++] & 0xFF)		) ^ Ker[0];
 		int t1   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[1];
+				(in[inOffset++] & 0xFF)		) ^ Ker[1];
 		int t2   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[2];
+				(in[inOffset++] & 0xFF)		) ^ Ker[2];
 		int t3   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[3];
+				(in[inOffset++] & 0xFF)		) ^ Ker[3];
 		int t4   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[4];
+				(in[inOffset++] & 0xFF)		) ^ Ker[4];
 		int t5   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[5];
+				(in[inOffset++] & 0xFF)		) ^ Ker[5];
 		int t6   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[6];
+				(in[inOffset++] & 0xFF)		) ^ Ker[6];
 		int t7   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ker[7];
+				(in[inOffset++] & 0xFF)		) ^ Ker[7];
 
 		int a0, a1, a2, a3, a4, a5, a6, a7;
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			Ker = Ke[r];
 		a0   = (T1[(t0 >>> 24) & 0xFF] ^
 				T2[(t1 >>> 16) & 0xFF] ^
 				T3[(t3 >>>  8) & 0xFF] ^
-				T4[ t4         & 0xFF]  ) ^ Ker[0];
+				T4[ t4		 & 0xFF]  ) ^ Ker[0];
 
 		a1   = (T1[(t1 >>> 24) & 0xFF] ^
 				T2[(t2 >>> 16) & 0xFF] ^
 				T3[(t4 >>>  8) & 0xFF] ^
-				T4[ t5         & 0xFF]  ) ^ Ker[1];
+				T4[ t5		 & 0xFF]  ) ^ Ker[1];
 
 		a2   = (T1[(t2 >>> 24) & 0xFF] ^
 				T2[(t3 >>> 16) & 0xFF] ^
 				T3[(t5 >>>  8) & 0xFF] ^
-				T4[ t6         & 0xFF]  ) ^ Ker[2];
+				T4[ t6		 & 0xFF]  ) ^ Ker[2];
 
 		a3   = (T1[(t3 >>> 24) & 0xFF] ^
 				T2[(t4 >>> 16) & 0xFF] ^
 				T3[(t6 >>>  8) & 0xFF] ^
-				T4[ t7         & 0xFF]  ) ^ Ker[3];
+				T4[ t7		 & 0xFF]  ) ^ Ker[3];
 
 		a4   = (T1[(t4 >>> 24) & 0xFF] ^
 				T2[(t5 >>> 16) & 0xFF] ^
 				T3[(t7 >>>  8) & 0xFF] ^
-				T4[ t0         & 0xFF]  ) ^ Ker[4];
+				T4[ t0		 & 0xFF]  ) ^ Ker[4];
 
 		a5   = (T1[(t5 >>> 24) & 0xFF] ^
 				T2[(t6 >>> 16) & 0xFF] ^
 				T3[(t0 >>>  8) & 0xFF] ^
-				T4[ t1         & 0xFF]  ) ^ Ker[5];
+				T4[ t1		 & 0xFF]  ) ^ Ker[5];
 
 		a6   = (T1[(t6 >>> 24) & 0xFF] ^
 				T2[(t7 >>> 16) & 0xFF] ^
 				T3[(t1 >>>  8) & 0xFF] ^
-				T4[ t2         & 0xFF]  ) ^ Ker[6];
+				T4[ t2		 & 0xFF]  ) ^ Ker[6];
 
 		a7   = (T1[(t7 >>> 24) & 0xFF] ^
 				T2[(t0 >>> 16) & 0xFF] ^
 				T3[(t2 >>>  8) & 0xFF] ^
-				T4[ t3         & 0xFF]  ) ^ Ker[7];
+				T4[ t3		 & 0xFF]  ) ^ Ker[7];
 		t0 = a0;
 		t1 = a1;
 		t2 = a2;
@@ -519,42 +519,42 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		result[ 0] = (byte)(S[(t0 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 1] = (byte)(S[(t1 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 2] = (byte)(S[(t3 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 3] = (byte)(S[ t4         & 0xFF] ^  tt        );
-		tt = Ker[1];             
+		result[ 3] = (byte)(S[ t4		 & 0xFF] ^  tt		);
+		tt = Ker[1];			 
 		result[ 4] = (byte)(S[(t1 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 5] = (byte)(S[(t2 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 6] = (byte)(S[(t4 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 7] = (byte)(S[ t5         & 0xFF] ^  tt        );
-		tt = Ker[2];             
+		result[ 7] = (byte)(S[ t5		 & 0xFF] ^  tt		);
+		tt = Ker[2];			 
 		result[ 8] = (byte)(S[(t2 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 9] = (byte)(S[(t3 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[10] = (byte)(S[(t5 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[11] = (byte)(S[ t6         & 0xFF] ^  tt        );
-		tt = Ker[3];             
+		result[11] = (byte)(S[ t6		 & 0xFF] ^  tt		);
+		tt = Ker[3];			 
 		result[12] = (byte)(S[(t3 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[13] = (byte)(S[(t4 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[14] = (byte)(S[(t6 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[15] = (byte)(S[ t7         & 0xFF] ^  tt        );
-		tt = Ker[4];             
+		result[15] = (byte)(S[ t7		 & 0xFF] ^  tt		);
+		tt = Ker[4];			 
 		result[16] = (byte)(S[(t4 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[17] = (byte)(S[(t5 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[18] = (byte)(S[(t7 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[19] = (byte)(S[ t0         & 0xFF] ^  tt        );
-		tt = Ker[5];             
+		result[19] = (byte)(S[ t0		 & 0xFF] ^  tt		);
+		tt = Ker[5];			 
 		result[20] = (byte)(S[(t5 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[21] = (byte)(S[(t6 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[22] = (byte)(S[(t0 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[23] = (byte)(S[ t1         & 0xFF] ^  tt        );
-		tt = Ker[6];             
+		result[23] = (byte)(S[ t1		 & 0xFF] ^  tt		);
+		tt = Ker[6];			 
 		result[24] = (byte)(S[(t6 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[25] = (byte)(S[(t7 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[26] = (byte)(S[(t1 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[27] = (byte)(S[ t2         & 0xFF] ^  tt        );
-		tt = Ker[7];             
+		result[27] = (byte)(S[ t2		 & 0xFF] ^  tt		);
+		tt = Ker[7];			 
 		result[28] = (byte)(S[(t7 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[29] = (byte)(S[(t0 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[30] = (byte)(S[(t2 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[31] = (byte)(S[ t3         & 0xFF] ^  tt        );
+		result[31] = (byte)(S[ t3		 & 0xFF] ^  tt		);
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("CT="+toString(result));
 			System.out.println();
@@ -565,7 +565,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	 * Convenience method to decrypt exactly one block of plaintext, assuming
 	 * Rijndael's default block size (128-bit).
 	 *
-	 * @param  in         The ciphertext.
+	 * @param  in		 The ciphertext.
 	 * @param  result the resulting ciphertext
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for decryption.
@@ -581,39 +581,39 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int t0   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[0];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[0];
 		int t1   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[1];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[1];
 		int t2   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[2];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[2];
 		int t3   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[3];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[3];
 
 		int a0, a1, a2, a3;
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			Kdr = Kd[r];
 		a0   = (T5[(t0 >>> 24) & 0xFF] ^
 				T6[(t3 >>> 16) & 0xFF] ^
 				T7[(t2 >>>  8) & 0xFF] ^
-				T8[ t1         & 0xFF]  ) ^ Kdr[0];
+				T8[ t1		 & 0xFF]  ) ^ Kdr[0];
 		a1   = (T5[(t1 >>> 24) & 0xFF] ^
 				T6[(t0 >>> 16) & 0xFF] ^
 				T7[(t3 >>>  8) & 0xFF] ^
-				T8[ t2         & 0xFF]  ) ^ Kdr[1];
+				T8[ t2		 & 0xFF]  ) ^ Kdr[1];
 		a2   = (T5[(t2 >>> 24) & 0xFF] ^
 				T6[(t1 >>> 16) & 0xFF] ^
 				T7[(t0 >>>  8) & 0xFF] ^
-				T8[ t3         & 0xFF]  ) ^ Kdr[2];
+				T8[ t3		 & 0xFF]  ) ^ Kdr[2];
 		a3   = (T5[(t3 >>> 24) & 0xFF] ^
 				T6[(t2 >>> 16) & 0xFF] ^
 				T7[(t1 >>>  8) & 0xFF] ^
-				T8[ t0         & 0xFF]  ) ^ Kdr[3];
+				T8[ t0		 & 0xFF]  ) ^ Kdr[3];
 		t0 = a0;
 		t1 = a1;
 		t2 = a2;
@@ -627,22 +627,22 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		result[ 0] = (byte)(Si[(t0 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 1] = (byte)(Si[(t3 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 2] = (byte)(Si[(t2 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 3] = (byte)(Si[ t1         & 0xFF] ^  tt        );
+		result[ 3] = (byte)(Si[ t1		 & 0xFF] ^  tt		);
 		tt = Kdr[1];
 		result[ 4] = (byte)(Si[(t1 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 5] = (byte)(Si[(t0 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 6] = (byte)(Si[(t3 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 7] = (byte)(Si[ t2         & 0xFF] ^  tt        );
+		result[ 7] = (byte)(Si[ t2		 & 0xFF] ^  tt		);
 		tt = Kdr[2];
 		result[ 8] = (byte)(Si[(t2 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 9] = (byte)(Si[(t1 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[10] = (byte)(Si[(t0 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[11] = (byte)(Si[ t3         & 0xFF] ^  tt        );
+		result[11] = (byte)(Si[ t3		 & 0xFF] ^  tt		);
 		tt = Kdr[3];
 		result[12] = (byte)(Si[(t3 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[13] = (byte)(Si[(t2 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[14] = (byte)(Si[(t1 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[15] = (byte)(Si[ t0         & 0xFF] ^  tt        );
+		result[15] = (byte)(Si[ t0		 & 0xFF] ^  tt		);
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("PT="+toString(result));
 			System.out.println();
@@ -653,7 +653,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	 * Convenience method to decrypt exactly one block of plaintext, assuming
 	 * Rijndael's non-standard block size 256 bit.
 	 *
-	 * @param  in         The ciphertext.
+	 * @param  in		 The ciphertext.
 	 * @param  result the resulting ciphertext
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for decryption.
@@ -669,78 +669,78 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int t0   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[0];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[0];
 		int t1   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[1];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[1];
 		int t2   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[2];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[2];
 		int t3   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[3];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[3];
 		int t4   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[4];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[4];
 		int t5   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[5];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[5];
 		int t6   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[6];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[6];
 		int t7   = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Kdr[7];
+				(in[inOffset++] & 0xFF)		) ^ Kdr[7];
 
 		int a0, a1, a2, a3, a4, a5, a6, a7;
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			Kdr = Kd[r];
 		a0   = (T5[(t0 >>> 24) & 0xFF] ^
 				T6[(t7 >>> 16) & 0xFF] ^
 				T7[(t5 >>>  8) & 0xFF] ^
-				T8[ t4         & 0xFF]  ) ^ Kdr[0];
+				T8[ t4		 & 0xFF]  ) ^ Kdr[0];
 
 		a1   = (T5[(t1 >>> 24) & 0xFF] ^
 				T6[(t0 >>> 16) & 0xFF] ^
 				T7[(t6 >>>  8) & 0xFF] ^
-				T8[ t5         & 0xFF]  ) ^ Kdr[1];
+				T8[ t5		 & 0xFF]  ) ^ Kdr[1];
 
 		a2   = (T5[(t2 >>> 24) & 0xFF] ^
 				T6[(t1 >>> 16) & 0xFF] ^
 				T7[(t7 >>>  8) & 0xFF] ^
-				T8[ t6         & 0xFF]  ) ^ Kdr[2];
+				T8[ t6		 & 0xFF]  ) ^ Kdr[2];
 
 		a3   = (T5[(t3 >>> 24) & 0xFF] ^
 				T6[(t2 >>> 16) & 0xFF] ^
 				T7[(t0 >>>  8) & 0xFF] ^
-				T8[ t7         & 0xFF]  ) ^ Kdr[3];
+				T8[ t7		 & 0xFF]  ) ^ Kdr[3];
 
 		a4   = (T5[(t4 >>> 24) & 0xFF] ^
 				T6[(t3 >>> 16) & 0xFF] ^
 				T7[(t1 >>>  8) & 0xFF] ^
-				T8[ t0         & 0xFF]  ) ^ Kdr[4];
+				T8[ t0		 & 0xFF]  ) ^ Kdr[4];
 
 		a5   = (T5[(t5 >>> 24) & 0xFF] ^
 				T6[(t4 >>> 16) & 0xFF] ^
 				T7[(t2 >>>  8) & 0xFF] ^
-				T8[ t1         & 0xFF]  ) ^ Kdr[5];
+				T8[ t1		 & 0xFF]  ) ^ Kdr[5];
 
 		a6   = (T5[(t6 >>> 24) & 0xFF] ^
 				T6[(t5 >>> 16) & 0xFF] ^
 				T7[(t3 >>>  8) & 0xFF] ^
-				T8[ t2         & 0xFF]  ) ^ Kdr[6];
+				T8[ t2		 & 0xFF]  ) ^ Kdr[6];
 
 		a7   = (T5[(t7 >>> 24) & 0xFF] ^
 				T6[(t6 >>> 16) & 0xFF] ^
 				T7[(t4 >>>  8) & 0xFF] ^
-				T8[ t3         & 0xFF]  ) ^ Kdr[7];
+				T8[ t3		 & 0xFF]  ) ^ Kdr[7];
 		t0 = a0;
 		t1 = a1;
 		t2 = a2;
@@ -758,42 +758,42 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		result[ 0] = (byte)(Si[(t0 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 1] = (byte)(Si[(t7 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 2] = (byte)(Si[(t5 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 3] = (byte)(Si[ t4         & 0xFF] ^  tt        );
-		tt = Kdr[1];              
+		result[ 3] = (byte)(Si[ t4		 & 0xFF] ^  tt		);
+		tt = Kdr[1];			  
 		result[ 4] = (byte)(Si[(t1 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 5] = (byte)(Si[(t0 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[ 6] = (byte)(Si[(t6 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[ 7] = (byte)(Si[ t5         & 0xFF] ^  tt        );
-		tt = Kdr[2];              
+		result[ 7] = (byte)(Si[ t5		 & 0xFF] ^  tt		);
+		tt = Kdr[2];			  
 		result[ 8] = (byte)(Si[(t2 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[ 9] = (byte)(Si[(t1 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[10] = (byte)(Si[(t7 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[11] = (byte)(Si[ t6         & 0xFF] ^  tt        );
-		tt = Kdr[3];              
+		result[11] = (byte)(Si[ t6		 & 0xFF] ^  tt		);
+		tt = Kdr[3];			  
 		result[12] = (byte)(Si[(t3 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[13] = (byte)(Si[(t2 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[14] = (byte)(Si[(t0 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[15] = (byte)(Si[ t7         & 0xFF] ^  tt        );
-		tt = Kdr[4];              
+		result[15] = (byte)(Si[ t7		 & 0xFF] ^  tt		);
+		tt = Kdr[4];			  
 		result[16] = (byte)(Si[(t4 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[17] = (byte)(Si[(t3 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[18] = (byte)(Si[(t1 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[19] = (byte)(Si[ t0         & 0xFF] ^  tt        );
-		tt = Kdr[5];              
+		result[19] = (byte)(Si[ t0		 & 0xFF] ^  tt		);
+		tt = Kdr[5];			  
 		result[20] = (byte)(Si[(t5 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[21] = (byte)(Si[(t4 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[22] = (byte)(Si[(t2 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[23] = (byte)(Si[ t1         & 0xFF] ^  tt        );
-		tt = Kdr[6];              
+		result[23] = (byte)(Si[ t1		 & 0xFF] ^  tt		);
+		tt = Kdr[6];			  
 		result[24] = (byte)(Si[(t6 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[25] = (byte)(Si[(t5 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[26] = (byte)(Si[(t3 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[27] = (byte)(Si[ t2         & 0xFF] ^  tt        );
-		tt = Kdr[7];              
+		result[27] = (byte)(Si[ t2		 & 0xFF] ^  tt		);
+		tt = Kdr[7];			  
 		result[28] = (byte)(Si[(t7 >>> 24) & 0xFF] ^ (tt >>> 24));
 		result[29] = (byte)(Si[(t6 >>> 16) & 0xFF] ^ (tt >>> 16));
 		result[30] = (byte)(Si[(t4 >>>  8) & 0xFF] ^ (tt >>>  8));
-		result[31] = (byte)(Si[ t3         & 0xFF] ^  tt        );
+		result[31] = (byte)(Si[ t3		 & 0xFF] ^  tt		);
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("PT="+toString(result));
 			System.out.println();
@@ -818,7 +818,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	/**
 	 * Expand a user-supplied key material into a session key.
 	 *
-	 * @param k        The 128/192/256-bit user-key to use.
+	 * @param k		The 128/192/256-bit user-key to use.
 	 * @param blockSize  The block size in bytes of this Rijndael.
 	 * @exception  InvalidKeyException  If the key is invalid.
 	 */
@@ -874,8 +874,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 			tt = tk[KC - 1];
 			tk[0] ^= (S[(tt >>> 16) & 0xFF] & 0xFF) << 24 ^
 			(S[(tt >>>  8) & 0xFF] & 0xFF) << 16 ^
-			(S[ tt         & 0xFF] & 0xFF) <<  8 ^
-			(S[(tt >>> 24) & 0xFF] & 0xFF)       ^
+			(S[ tt		 & 0xFF] & 0xFF) <<  8 ^
+			(S[(tt >>> 24) & 0xFF] & 0xFF)	   ^
 			(rcon[rconpointer++]   & 0xFF) << 24;
 			if (KC != 8)
 				for (i = 1, j = 0; i < KC; ) {
@@ -894,7 +894,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 					i++;
 				}
 				tt = tk[KC / 2 - 1];
-				tk[KC / 2] ^= (S[ tt         & 0xFF] & 0xFF)       ^
+				tk[KC / 2] ^= (S[ tt		 & 0xFF] & 0xFF)	   ^
 				(S[(tt >>>  8) & 0xFF] & 0xFF) <<  8 ^
 				(S[(tt >>> 16) & 0xFF] & 0xFF) << 16 ^
 				(S[(tt >>> 24) & 0xFF] & 0xFF) << 24;
@@ -912,13 +912,13 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 				Kd[ROUNDS - (t >>> BCshift)][t & (BC-1)] = tk[j];
 			}
 		}
-		for (int r = 1; r < ROUNDS; r++)    // inverse MixColumn where needed
+		for (int r = 1; r < ROUNDS; r++)	// inverse MixColumn where needed
 			for (j = 0; j < BC; j++) {
 				tt = Kd[r][j];
 				Kd[r][j] = U1[(tt >>> 24) & 0xFF] ^
 				U2[(tt >>> 16) & 0xFF] ^
 				U3[(tt >>>  8) & 0xFF] ^
-				U4[ tt         & 0xFF];
+				U4[ tt		 & 0xFF];
 			}
 		// assemble the encryption (Ke) and decryption (Kd) round keys into
 		// one sessionKey object
@@ -930,8 +930,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	/**
 	 * Encrypt exactly one block of plaintext.
 	 *
-	 * @param  in         The plaintext.
-	 * @param  result     The buffer into which to write the resulting ciphertext.
+	 * @param  in		 The plaintext.
+	 * @param  result	 The buffer into which to write the resulting ciphertext.
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for encryption.
 	 * @param  blockSize  The block size in bytes of this Rijndael.
@@ -961,26 +961,26 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int i;
 		int j = 0, tt;
 
-		for (i = 0; i < BC; i++)                   // plaintext to ints + key
+		for (i = 0; i < BC; i++)				   // plaintext to ints + key
 		t[i] = ((in[inOffset++] & 0xFF) << 24 |
 				(in[inOffset++] & 0xFF) << 16 |
 				(in[inOffset++] & 0xFF) <<  8 |
-				(in[inOffset++] & 0xFF)        ) ^ Ke[0][i];
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+				(in[inOffset++] & 0xFF)		) ^ Ke[0][i];
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			for (i = 0; i < BC; i++)
-				a[i] = (T1[(t[ i           ] >>> 24) & 0xFF] ^
+				a[i] = (T1[(t[ i		   ] >>> 24) & 0xFF] ^
 						T2[(t[(i + s1) % BC] >>> 16) & 0xFF] ^
 						T3[(t[(i + s2) % BC] >>>  8) & 0xFF] ^
-						T4[ t[(i + s3) % BC]         & 0xFF]  ) ^ Ke[r][i];
+						T4[ t[(i + s3) % BC]		 & 0xFF]  ) ^ Ke[r][i];
 			System.arraycopy(a, 0, t, 0, BC);
 			if (RDEBUG && (logMINOR)) System.out.println("CT"+r+ '=' +toString(t));
 		}
-		for (i = 0; i < BC; i++) {                   // last round is special
+		for (i = 0; i < BC; i++) {				   // last round is special
 			tt = Ke[ROUNDS][i];
-			result[j++] = (byte)(S[(t[ i           ] >>> 24) & 0xFF] ^ (tt >>> 24));
+			result[j++] = (byte)(S[(t[ i		   ] >>> 24) & 0xFF] ^ (tt >>> 24));
 			result[j++] = (byte)(S[(t[(i + s1) % BC] >>> 16) & 0xFF] ^ (tt >>> 16));
 			result[j++] = (byte)(S[(t[(i + s2) % BC] >>>  8) & 0xFF] ^ (tt >>>  8));
-			result[j++] = (byte)(S[ t[(i + s3) % BC]         & 0xFF] ^ tt);
+			result[j++] = (byte)(S[ t[(i + s3) % BC]		 & 0xFF] ^ tt);
 		}
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("CT="+toString(result));
@@ -992,8 +992,8 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	/**
 	 * Decrypt exactly one block of ciphertext.
 	 *
-	 * @param  in         The ciphertext.
-	 * @param  result     The resulting ciphertext.
+	 * @param  in		 The ciphertext.
+	 * @param  result	 The resulting ciphertext.
 	 * @param  inOffset   Index of in from which to start considering data.
 	 * @param  sessionKey The session key to use for decryption.
 	 * @param  blockSize  The block size in bytes of this Rijndael.
@@ -1024,26 +1024,26 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		int i;
 		int j = 0, tt;
 
-		for (i = 0; i < BC; i++)                   // ciphertext to ints + key
+		for (i = 0; i < BC; i++)				   // ciphertext to ints + key
 			t[i] = ((in[inOffset++] & 0xFF) << 24 |
 					(in[inOffset++] & 0xFF) << 16 |
 					(in[inOffset++] & 0xFF) <<  8 |
-					(in[inOffset++] & 0xFF)        ) ^ Kd[0][i];
-		for (int r = 1; r < ROUNDS; r++) {          // apply round transforms
+					(in[inOffset++] & 0xFF)		) ^ Kd[0][i];
+		for (int r = 1; r < ROUNDS; r++) {		  // apply round transforms
 			for (i = 0; i < BC; i++)
-				a[i] = (T5[(t[ i           ] >>> 24) & 0xFF] ^
+				a[i] = (T5[(t[ i		   ] >>> 24) & 0xFF] ^
 						T6[(t[(i + s1) % BC] >>> 16) & 0xFF] ^
 						T7[(t[(i + s2) % BC] >>>  8) & 0xFF] ^
-						T8[ t[(i + s3) % BC]         & 0xFF]  ) ^ Kd[r][i];
+						T8[ t[(i + s3) % BC]		 & 0xFF]  ) ^ Kd[r][i];
 			System.arraycopy(a, 0, t, 0, BC);
 			if (RDEBUG && (logMINOR)) System.out.println("PT"+r+ '=' +toString(t));
 		}
-		for (i = 0; i < BC; i++) {                   // last round is special
+		for (i = 0; i < BC; i++) {				   // last round is special
 			tt = Kd[ROUNDS][i];
-			result[j++] = (byte)(Si[(t[ i           ] >>> 24) & 0xFF] ^ (tt >>> 24));
+			result[j++] = (byte)(Si[(t[ i		   ] >>> 24) & 0xFF] ^ (tt >>> 24));
 			result[j++] = (byte)(Si[(t[(i + s1) % BC] >>> 16) & 0xFF] ^ (tt >>> 16));
 			result[j++] = (byte)(Si[(t[(i + s2) % BC] >>>  8) & 0xFF] ^ (tt >>>  8));
-			result[j++] = (byte)(Si[ t[(i + s3) % BC]         & 0xFF] ^ tt);
+			result[j++] = (byte)(Si[ t[(i + s3) % BC]		 & 0xFF] ^ tt);
 		}
 		if (RDEBUG && (logMINOR)) {
 			System.out.println("PT="+toString(result));
@@ -1109,10 +1109,10 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	/**
 	 * Return The number of rounds for a given Rijndael's key and block sizes.
 	 *
-	 * @param keySize    The size of the user key material in bytes.
+	 * @param keySize	The size of the user key material in bytes.
 	 * @param blockSize  The desired block size in bytes.
 	 * @return The number of rounds for a given Rijndael's key and
-	 *      block sizes.
+	 *	  block sizes.
 	 */
 	private static int getRounds(int keySize, int blockSize) {
 		switch (keySize) {
@@ -1151,7 +1151,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	private static String byteToString (int n) {
 		char[] buf = {
 				HEX_DIGITS[(n >>> 4) & 0x0F],
-				HEX_DIGITS[ n        & 0x0F]
+				HEX_DIGITS[ n		& 0x0F]
 		};
 		return new String(buf);
 	}
@@ -1180,7 +1180,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 		for (int i = 0, j = 0, k; i < length; ) {
 			k = ba[i++];
 			buf[j++] = HEX_DIGITS[(k >>> 4) & 0x0F];
-			buf[j++] = HEX_DIGITS[ k        & 0x0F];
+			buf[j++] = HEX_DIGITS[ k		& 0x0F];
 		}
 		return new String(buf);
 	}
@@ -1201,7 +1201,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 			buf[j++] = HEX_DIGITS[(k >>> 12) & 0x0F];
 			buf[j++] = HEX_DIGITS[(k >>>  8) & 0x0F];
 			buf[j++] = HEX_DIGITS[(k >>>  4) & 0x0F];
-			buf[j++] = HEX_DIGITS[ k         & 0x0F];
+			buf[j++] = HEX_DIGITS[ k		 & 0x0F];
 		}
 		return new String(buf);
 	}

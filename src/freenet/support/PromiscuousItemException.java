@@ -15,9 +15,9 @@ public class PromiscuousItemException extends RuntimeException {
 
 	private static final long serialVersionUID = -1;
 	
-    PromiscuousItemException(DoublyLinkedList.Item<?> item) {
-        super(item.toString());
-    }
+	PromiscuousItemException(DoublyLinkedList.Item<?> item) {
+		super(item.toString());
+	}
 
 	public PromiscuousItemException(Item<?> item, DoublyLinkedList<?> parent) {
 		super(item.toString()+ ':' +parent);

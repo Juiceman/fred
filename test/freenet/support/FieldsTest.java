@@ -186,7 +186,7 @@ public class FieldsTest {
 	@Test
 	public void testCommaListFromString() {
 		String[] expected = new String[] {"one", "two", "three", "four"};
-		String[] actual = Fields.commaList("one,two,     three    ,  four");
+		String[] actual = Fields.commaList("one,two,	 three	,  four");
 
 		for(int i = 0; i < expected.length; i++) {
 			assertEquals(expected[i], actual[i]);

@@ -36,27 +36,27 @@ public enum TrafficClass {
   public final int value;
 
   TrafficClass(int tc) {
-    value = tc;
+	value = tc;
   }
 
   public static TrafficClass getDefault() {
-    // That's high-throughput, high drop probability
-    return TrafficClass.DSCP_CS1;
+	// That's high-throughput, high drop probability
+	return TrafficClass.DSCP_CS1;
   }
 
   public static TrafficClass fromNameOrValue(String tcName) {
-    int tcParsed = -1;
-    try {
-      tcParsed = Integer.parseInt(tcName);
-    } catch (NumberFormatException e){
-      // it's fine; we might have a name here
-    }
+	int tcParsed = -1;
+	try {
+	  tcParsed = Integer.parseInt(tcName);
+	} catch (NumberFormatException e){
+	  // it's fine; we might have a name here
+	}
 
-    for (TrafficClass t : TrafficClass.values()) {
-      if (t.toString().equalsIgnoreCase(tcName) || t.value == tcParsed) {
-        return t;
-      }
-    }
-    throw new IllegalArgumentException();
+	for (TrafficClass t : TrafficClass.values()) {
+	  if (t.toString().equalsIgnoreCase(tcName) || t.value == tcParsed) {
+		return t;
+	  }
+	}
+	throw new IllegalArgumentException();
   }
 }

@@ -22,8 +22,8 @@ import freenet.support.SimpleFieldSet;
 
 public class GetFailedMessage extends FCPMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    final FetchExceptionMode code;
+	private static final long serialVersionUID = 1L;
+	final FetchExceptionMode code;
 	final String extraDescription;
 	final FailureCodeTracker tracker;
 	final boolean isFatal;
@@ -33,8 +33,8 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	final String expectedMimeType;
 	final boolean finalizedExpected;
 	final FreenetURI redirectURI;
-	       
-        private static volatile boolean logMINOR;
+		   
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -100,20 +100,20 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	}
 	
 	protected GetFailedMessage() {
-	    // For serialization.
-	    code = null;
-	    extraDescription = null;
-	    tracker = null;
-	    isFatal = false;
-	    identifier = null;
-	    global = false;
-	    expectedDataLength = 0;
-	    expectedMimeType = null;
-	    finalizedExpected = false;
-	    redirectURI = null;
+		// For serialization.
+		code = null;
+		extraDescription = null;
+		tracker = null;
+		isFatal = false;
+		identifier = null;
+		global = false;
+		expectedDataLength = 0;
+		expectedMimeType = null;
+		finalizedExpected = false;
+		redirectURI = null;
 	}
 
-    @Override
+	@Override
 	public SimpleFieldSet getFieldSet() {
 		return getFieldSet(true);
 	}
@@ -163,11 +163,11 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	}
 	
 	public String getFailedMessage() {
-	    return FetchException.getMessage(code);
+		return FetchException.getMessage(code);
 	}
 
 	public String getShortFailedMessage() {
-	    return FetchException.getShortMessage(code);
+		return FetchException.getShortMessage(code);
 	}
 	
 	public String getLongFailedMessage() {
@@ -179,61 +179,61 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	
 	static final int VERSION = 1;
 
-    public void writeTo(DataOutputStream dos) throws IOException {
-        dos.writeInt(VERSION);
-        // Do not write anything redundant.
-        dos.writeInt(code.code);
-        writePossiblyNull(extraDescription, dos);
-        dos.writeBoolean(finalizedExpected);
-        writePossiblyNull(redirectURI == null ? null : redirectURI.toString(), dos);
-    }
-    
-    public GetFailedMessage(DataInputStream dis, RequestIdentifier reqID,
-            long expectedSize, String expectedType) throws StorageFormatException, IOException {
-        int version = dis.readInt();
-        if(version != VERSION) throw new StorageFormatException("Bad version in GetFailedMessage");
-        int x = dis.readInt();
-        try {
-            code = FetchExceptionMode.getByCode(x);
-        } catch (IllegalArgumentException e) {
-            throw new StorageFormatException("Bad error code");
-        }
-        this.isFatal = FetchException.isFatal(code);
-        this.extraDescription = readPossiblyNull(dis);
-        this.finalizedExpected = dis.readBoolean();
-        String s = readPossiblyNull(dis);
-        if(s != null) {
-            try {
-                redirectURI = new FreenetURI(s);
-            } catch (MalformedURLException e) {
-                throw new StorageFormatException("Bad redirect URI in GetFailedMessage: "+e);
-            }
-        } else {
-            redirectURI = null;
-        }
-        this.global = reqID.globalQueue;
-        this.identifier = reqID.identifier;
-        this.tracker = null; // Don't save that level of detail.
-        this.expectedDataLength = expectedSize;
-        this.expectedMimeType = expectedType;
-        
-    }
+	public void writeTo(DataOutputStream dos) throws IOException {
+		dos.writeInt(VERSION);
+		// Do not write anything redundant.
+		dos.writeInt(code.code);
+		writePossiblyNull(extraDescription, dos);
+		dos.writeBoolean(finalizedExpected);
+		writePossiblyNull(redirectURI == null ? null : redirectURI.toString(), dos);
+	}
+	
+	public GetFailedMessage(DataInputStream dis, RequestIdentifier reqID,
+			long expectedSize, String expectedType) throws StorageFormatException, IOException {
+		int version = dis.readInt();
+		if(version != VERSION) throw new StorageFormatException("Bad version in GetFailedMessage");
+		int x = dis.readInt();
+		try {
+			code = FetchExceptionMode.getByCode(x);
+		} catch (IllegalArgumentException e) {
+			throw new StorageFormatException("Bad error code");
+		}
+		this.isFatal = FetchException.isFatal(code);
+		this.extraDescription = readPossiblyNull(dis);
+		this.finalizedExpected = dis.readBoolean();
+		String s = readPossiblyNull(dis);
+		if(s != null) {
+			try {
+				redirectURI = new FreenetURI(s);
+			} catch (MalformedURLException e) {
+				throw new StorageFormatException("Bad redirect URI in GetFailedMessage: "+e);
+			}
+		} else {
+			redirectURI = null;
+		}
+		this.global = reqID.globalQueue;
+		this.identifier = reqID.identifier;
+		this.tracker = null; // Don't save that level of detail.
+		this.expectedDataLength = expectedSize;
+		this.expectedMimeType = expectedType;
+		
+	}
 
-    private String readPossiblyNull(DataInputStream dis) throws IOException {
-        if(dis.readBoolean()) {
-            return dis.readUTF();
-        } else {
-            return null;
-        }
-    }
+	private String readPossiblyNull(DataInputStream dis) throws IOException {
+		if(dis.readBoolean()) {
+			return dis.readUTF();
+		} else {
+			return null;
+		}
+	}
 
-    private void writePossiblyNull(String s, DataOutputStream dos) throws IOException {
-        if(s != null) {
-            dos.writeBoolean(true);
-            dos.writeUTF(s);
-        } else {
-            dos.writeBoolean(false);
-        }
-    }
+	private void writePossiblyNull(String s, DataOutputStream dos) throws IOException {
+		if(s != null) {
+			dos.writeBoolean(true);
+			dos.writeUTF(s);
+		} else {
+			dos.writeBoolean(false);
+		}
+	}
 
 }

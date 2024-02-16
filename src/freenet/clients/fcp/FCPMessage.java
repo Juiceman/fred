@@ -36,7 +36,7 @@ public abstract class FCPMessage {
 	public static final String OVERALL_BULK_OUTPUT_CAPACITY_USAGE = "OverallBulkOutputCapacityUsage";
 	
 
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -173,10 +173,10 @@ public abstract class FCPMessage {
 	 * #getFieldSet()}.
 	 *
 	 * @param fcpMessage
-	 *         The FCP message to wrap
+	 *		 The FCP message to wrap
 	 * @param listRequestIdentifier
-	 *         The list request identifier to add (may be {@code null} in which case nothing is
-	 *         added)
+	 *		 The list request identifier to add (may be {@code null} in which case nothing is
+	 *		 added)
 	 * @return The new FCP message
 	 */
 	public static FCPMessage withListRequestIdentifier(final FCPMessage fcpMessage, final String listRequestIdentifier) {

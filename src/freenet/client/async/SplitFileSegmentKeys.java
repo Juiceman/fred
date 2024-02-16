@@ -24,8 +24,8 @@ import freenet.support.Fields;
  */
 public class SplitFileSegmentKeys implements Cloneable, Serializable {
 	
-    private static final long serialVersionUID = 1L;
-    public final int dataBlocks;
+	private static final long serialVersionUID = 1L;
+	public final int dataBlocks;
 	public final int checkBlocks;
 	/** Modern splitfiles have a common decrypt key */
 	public final byte[] commonDecryptKey;
@@ -59,14 +59,14 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 	}
 	
 	protected SplitFileSegmentKeys() {
-        // For serialization.
-	    dataBlocks = 0;
-	    checkBlocks = 0;
-	    commonDecryptKey = null;
-	    commonExtraBytes = null;
-	    routingKeys = null;
-	    decryptKeys = null;
-	    extraBytesForKeys = null;
+		// For serialization.
+		dataBlocks = 0;
+		checkBlocks = 0;
+		commonDecryptKey = null;
+		commonExtraBytes = null;
+		routingKeys = null;
+		decryptKeys = null;
+		extraBytesForKeys = null;
 	}
 
 	public int getBlockNumber(ClientCHK key, boolean[] ignoreSlots) {
@@ -253,15 +253,15 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 		}
 	}
 	
-    public static int storedKeysLength(int dataBlocks, int checkBlocks, boolean commonDecryptKey) {
-        // FIXME URGENT Implement a unit test for storedKeysLength() vs writeKeys() vs readKeys().
-        int blocks = dataBlocks + checkBlocks;
-        if(commonDecryptKey) {
-            return blocks * NodeCHK.KEY_LENGTH;
-        } else {
-            return blocks * (EXTRA_BYTES_LENGTH + NodeCHK.KEY_LENGTH*2);
-        }
-    }
+	public static int storedKeysLength(int dataBlocks, int checkBlocks, boolean commonDecryptKey) {
+		// FIXME URGENT Implement a unit test for storedKeysLength() vs writeKeys() vs readKeys().
+		int blocks = dataBlocks + checkBlocks;
+		if(commonDecryptKey) {
+			return blocks * NodeCHK.KEY_LENGTH;
+		} else {
+			return blocks * (EXTRA_BYTES_LENGTH + NodeCHK.KEY_LENGTH*2);
+		}
+	}
 
 	public int getDataBlocks() {
 		return dataBlocks;
@@ -304,48 +304,48 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 	}
 
 	// Not often used, not very efficient, but overriding equals() requires overriding hashCode().
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + checkBlocks;
-        result = prime * result + Arrays.hashCode(commonDecryptKey);
-        result = prime * result + Arrays.hashCode(commonExtraBytes);
-        result = prime * result + dataBlocks;
-        result = prime * result + Arrays.hashCode(decryptKeys);
-        result = prime * result + Arrays.hashCode(extraBytesForKeys);
-        result = prime * result + Arrays.hashCode(routingKeys);
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + checkBlocks;
+		result = prime * result + Arrays.hashCode(commonDecryptKey);
+		result = prime * result + Arrays.hashCode(commonExtraBytes);
+		result = prime * result + dataBlocks;
+		result = prime * result + Arrays.hashCode(decryptKeys);
+		result = prime * result + Arrays.hashCode(extraBytesForKeys);
+		result = prime * result + Arrays.hashCode(routingKeys);
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SplitFileSegmentKeys other = (SplitFileSegmentKeys) obj;
-        if (checkBlocks != other.checkBlocks)
-            return false;
-        if (!Arrays.equals(commonDecryptKey, other.commonDecryptKey))
-            return false;
-        if (!Arrays.equals(commonExtraBytes, other.commonExtraBytes))
-            return false;
-        if (dataBlocks != other.dataBlocks)
-            return false;
-        if (!Arrays.equals(decryptKeys, other.decryptKeys))
-            return false;
-        if (!Arrays.equals(extraBytesForKeys, other.extraBytesForKeys))
-            return false;
-        if (!Arrays.equals(routingKeys, other.routingKeys))
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SplitFileSegmentKeys other = (SplitFileSegmentKeys) obj;
+		if (checkBlocks != other.checkBlocks)
+			return false;
+		if (!Arrays.equals(commonDecryptKey, other.commonDecryptKey))
+			return false;
+		if (!Arrays.equals(commonExtraBytes, other.commonExtraBytes))
+			return false;
+		if (dataBlocks != other.dataBlocks)
+			return false;
+		if (!Arrays.equals(decryptKeys, other.decryptKeys))
+			return false;
+		if (!Arrays.equals(extraBytesForKeys, other.extraBytesForKeys))
+			return false;
+		if (!Arrays.equals(routingKeys, other.routingKeys))
+			return false;
+		return true;
+	}
 
-    public int totalKeys() {
-        return checkBlocks + dataBlocks;
-    }
+	public int totalKeys() {
+		return checkBlocks + dataBlocks;
+	}
 
 }

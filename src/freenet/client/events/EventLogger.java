@@ -22,14 +22,14 @@ public class EventLogger implements ClientEventListener {
 		this.removeWithProducer = removeWithProducer;
 	}
 	
-    /**
-     * Logs an event
-     * 
-     * @param ce
-     *            The event that occured
-     */
+	/**
+	 * Logs an event
+	 * 
+	 * @param ce
+	 *			The event that occured
+	 */
 	@Override
-    public void receive(ClientEvent ce, ClientContext context) {
-    	Logger.logStatic(ce, ce.getDescription(), logPrio);
-    }
+	public void receive(ClientEvent ce, ClientContext context) {
+		Logger.logStatic(ce, ce.getDescription(), logPrio);
+	}
 }

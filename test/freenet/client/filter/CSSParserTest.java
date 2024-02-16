@@ -104,8 +104,8 @@ public class CSSParserTest {
 		CSS2_SELECTOR.put("h1[foo=\"bar+bar\"] {}", "h1[foo=\"bar+bar\"]");
 		CSS2_SELECTOR.put("h1[foo=\"bar\\\" bar\"] {}", "h1[foo=\"bar\\\" bar\"]");
 		// Wierd one from the CSS spec
-		CSS2_SELECTOR.put("p[example=\"public class foo\\\n{\\\n    private int x;\\\n\\\n    foo(int x) {\\\n        this.x = x;\\\n    }\\\n\\\n}\"] { color: red }",
-				"p[example=\"public class foo{    private int x;    foo(int x) {        this.x = x;    }}\"] { color: red }");
+		CSS2_SELECTOR.put("p[example=\"public class foo\\\n{\\\n	private int x;\\\n\\\n	foo(int x) {\\\n		this.x = x;\\\n	}\\\n\\\n}\"] { color: red }",
+				"p[example=\"public class foo{	private int x;	foo(int x) {		this.x = x;	}}\"] { color: red }");
 		// Escaped anything inside an attribute selector. This is allowed.
 		CSS2_SELECTOR.put("h1[foo=\"hello\\202 \"] {}", "h1[foo=\"hello\\202 \"] {}");
 		// Escaped quotes inside a string inside an attribute selector. This is allowed.
@@ -114,7 +114,7 @@ public class CSSParserTest {
 		// Whitespace before > or +, and selector chaining.
 		CSS2_SELECTOR.put("h1[foo] h2 > p + b { color: green;}", "h1[foo] h2>p+b { color: green;}");
 		CSS2_SELECTOR.put("h1[foo] h2 > p + b:before { color: green;}", "h1[foo] h2>p+b:before { color: green;}");
-		CSS2_SELECTOR.put("table          { border-collapse: collapse; border: 5px solid yellow; } *#col1         { border: 3px solid black; } td             { border: 1px solid red; padding: 1em; } td.cell5       { border: 5px dashed blue; } td.cell6       { border: 5px solid green; }",
+		CSS2_SELECTOR.put("table		  { border-collapse: collapse; border: 5px solid yellow; } *#col1		 { border: 3px solid black; } td			 { border: 1px solid red; padding: 1em; } td.cell5	   { border: 5px dashed blue; } td.cell6	   { border: 5px solid green; }",
 				"table { border-collapse: collapse; border: 5px solid yellow; } *#col1 { border: 3px solid black; } td { border: 1px solid red; padding: 1em; } td.cell5 { border: 5px dashed blue; } td.cell6 { border: 5px solid green; }");
 		CSS2_SELECTOR.put("td { border-right: hidden; border-bottom: hidden }", "td { border-right: hidden; border-bottom: hidden }");
 
@@ -595,11 +595,11 @@ public class CSSParserTest {
 		// Misc
 		propertyTests.put("h2 {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 14px;\n  font-family: Helvetica;\n  font-variant: normal;\n  font-style: normal\n}", "h2 {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 14px;\n  font-family: Helvetica;\n  font-variant: normal;\n  font-style: normal\n}");
 		propertyTests.put("h1 { color: red; font-style: 12pt }", "h1 { color: red; }");
-		propertyTests.put("p { color: blue; font-vendor: any;\n    font-variant: small-caps }", "p { color: blue;\n    font-variant: small-caps }");
+		propertyTests.put("p { color: blue; font-vendor: any;\n	font-variant: small-caps }", "p { color: blue;\n	font-variant: small-caps }");
 		propertyTests.put("em em { font-style: normal }", "em em { font-style: normal }");
 
 		// voice-family
-		propertyTests.put("@media aural { p[character=romeo]\n     { voice-family: \"Laurence Olivier\", charles, male }}", "@media aural { p[character=romeo] { voice-family: \"Laurence Olivier\", charles, male }}");
+		propertyTests.put("@media aural { p[character=romeo]\n	 { voice-family: \"Laurence Olivier\", charles, male }}", "@media aural { p[character=romeo] { voice-family: \"Laurence Olivier\", charles, male }}");
 
 		// Short percentage value
 		propertyTests.put("body { bottom: 1%;}", "body { bottom: 1%;}");
@@ -610,7 +610,7 @@ public class CSSParserTest {
 		// play-during
 		propertyTests.put("@media speech { blockquote.sad { play-during: url(\"violins.aiff\") }}", "@media speech { blockquote.sad { play-during: url(\"violins.aiff\") }}");
 		propertyTests.put("@media speech { blockquote Q   { play-during: url(\"harp.wav\") mix }}", "@media speech { blockquote Q { play-during: url(\"harp.wav\") mix }}");
-		propertyTests.put("@media speech { span.quiet     { play-during: none } }", "@media speech { span.quiet { play-during: none }}");
+		propertyTests.put("@media speech { span.quiet	 { play-during: none } }", "@media speech { span.quiet { play-during: none }}");
 
 		// Grandchildren
 		propertyTests.put("div { color: red;}", "div { color: red;}");
@@ -714,17 +714,17 @@ public class CSSParserTest {
 		propertyTests.put("body { quotes: \"'\" \"'\" }", "body { quotes: \"'\" \"'\" }");
 		propertyTests.put("body:lang(en) { quotes: \"'\" \"'\" \"\\\"\" \"\\\"\" }", "body:lang(en) { quotes: \"'\" \"'\" \"\\\"\" \"\\\"\" }");
 		propertyTests.put("body { quotes: \"'\" \"'\" \"\\\"\" }", "body { }");
-		propertyTests.put("blockquote p:before     { content: open-quote } blockquote p:after      { content: no-close-quote } blockquote p.last:after { content: close-quote }", "blockquote p:before { content: open-quote } blockquote p:after { content: no-close-quote } blockquote p.last:after { content: close-quote }");
-		propertyTests.put("H1:before {\n    content: \"Chapter \" counter(chapter) \". \";\n    counter-increment: chapter;  /* Add 1 to chapter */\n}", "H1:before {\n    content: \"Chapter \" counter(chapter) \". \";\n    counter-increment: chapter;  \n}");
+		propertyTests.put("blockquote p:before	 { content: open-quote } blockquote p:after	  { content: no-close-quote } blockquote p.last:after { content: close-quote }", "blockquote p:before { content: open-quote } blockquote p:after { content: no-close-quote } blockquote p.last:after { content: close-quote }");
+		propertyTests.put("H1:before {\n	content: \"Chapter \" counter(chapter) \". \";\n	counter-increment: chapter;  /* Add 1 to chapter */\n}", "H1:before {\n	content: \"Chapter \" counter(chapter) \". \";\n	counter-increment: chapter;  \n}");
 		propertyTests.put("OL { counter-reset: item }\nLI { display: block }\nLI:before { content: counter(item) \". \"; counter-increment: item }", "OL { counter-reset: item }\nLI { display: block }\nLI:before { content: counter(item) \". \"; counter-increment: item }");
 		propertyTests.put("LI:before { content: counters(item, \".\") }", "LI:before { content: counters(item, \".\") }");
 		propertyTests.put("LI:before { content: counters(item, \".\") \" \" }", "LI:before { content: counters(item, \".\") \" \" }");
 		propertyTests.put("OL { counter-reset: item }\nLI { display: block }\nLI:before { content: counters(item, \".\") \" \"; counter-increment: item }", "OL { counter-reset: item }\nLI { display: block }\nLI:before { content: counters(item, \".\") \" \"; counter-increment: item }");
-		propertyTests.put("H1:before        { content: counter(chno, upper-latin) \". \" }", "H1:before { content: counter(chno, upper-latin) \". \" }");
+		propertyTests.put("H1:before		{ content: counter(chno, upper-latin) \". \" }", "H1:before { content: counter(chno, upper-latin) \". \" }");
 		propertyTests.put("BLOCKQUOTE:after { content: \" [\" counter(bq, lower-greek) \"]\" }", "BLOCKQUOTE:after { content: \" [\" counter(bq, lower-greek) \"]\" }");
 		propertyTests.put("ol { list-style-type: lower-roman }   ", "ol { list-style-type: lower-roman }   ");
 		propertyTests.put("ol { list-style-image: url(ol.png); } ul { list-style-image: none }", "ol { list-style-image: url(\"ol.png\"); } ul { list-style-image: none }");
-		propertyTests.put("ul         { list-style: outside }\nul.compact { list-style: inside }", "ul { list-style: outside }\nul.compact { list-style: inside }");
+		propertyTests.put("ul		 { list-style: outside }\nul.compact { list-style: inside }", "ul { list-style: outside }\nul.compact { list-style: inside }");
 		propertyTests.put("ul { list-style: upper-roman inside url(ul.png) }", "ul { list-style: upper-roman inside url(\"ul.png\") }");
 		propertyTests.put("ol.alpha > li { list-style: lower-alpha }", "ol.alpha>li { list-style: lower-alpha }");
 
@@ -757,21 +757,21 @@ public class CSSParserTest {
 		propertyTests.put("blockquote { letter-spacing: normal }", "blockquote { letter-spacing: normal }");
 		propertyTests.put("h1 { word-spacing: 1em }", "h1 { word-spacing: 1em }");
 		propertyTests.put("h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }",
-                          "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
+						  "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
 		propertyTests.put("h1 { text-transform: uppercase }", "h1 { text-transform: uppercase }");
-		propertyTests.put("pre        { white-space: pre } p          { white-space: normal } td[nowrap] { white-space: nowrap }", "pre { white-space: pre } p { white-space: normal } td[nowrap] { white-space: nowrap }");
+		propertyTests.put("pre		{ white-space: pre } p		  { white-space: normal } td[nowrap] { white-space: nowrap }", "pre { white-space: pre } p { white-space: normal } td[nowrap] { white-space: nowrap }");
 		propertyTests.put("pre[wrap]  { white-space: pre-wrap }", "pre[wrap] { white-space: pre-wrap }");
 		propertyTests.put("th { text-align: center; font-weight: bold }", "th { text-align: center; font-weight: bold }");
 		propertyTests.put("th { vertical-align: baseline } td { vertical-align: middle }", "th { vertical-align: baseline } td { vertical-align: middle }");
 		propertyTests.put("caption { caption-side: top }", "caption { caption-side: top }");
 
 		// Tables
-		propertyTests.put("table    { display: table }\ntr       { display: table-row }\nthead    { display: table-header-group }\ntbody    { display: table-row-group }\ntfoot    { display: table-footer-group }\ncol      { display: table-column }\ncolgroup { display: table-column-group }\ntd, th   { display: table-cell }\ncaption  { display: table-caption }",
+		propertyTests.put("table	{ display: table }\ntr	   { display: table-row }\nthead	{ display: table-header-group }\ntbody	{ display: table-row-group }\ntfoot	{ display: table-footer-group }\ncol	  { display: table-column }\ncolgroup { display: table-column-group }\ntd, th   { display: table-cell }\ncaption  { display: table-caption }",
 				"table { display: table }\ntr { display: table-row }\nthead { display: table-header-group }\ntbody { display: table-row-group }\ntfoot { display: table-footer-group }\ncol { display: table-column }\ncolgroup { display: table-column-group }\ntd, th { display: table-cell }\ncaption { display: table-caption }");
 		propertyTests.put("caption { caption-side: bottom; \n width: auto;\n text-align: left }", "caption { caption-side: bottom; \n width: auto;\n text-align: left }");
 		propertyTests.put("table { table-layout: fixed; margin-left: 2em;margin-right: 2em }", "table { table-layout: fixed; margin-left: 2em;margin-right: 2em }");
 		propertyTests.put("table { border-collapse: collapse; border-spacing: 12em 11cm; border-spacing: 10px; border-spacing: 0; border-spacing: inherit }", "table { border-collapse: collapse; border-spacing: 12em 11cm; border-spacing: 10px; border-spacing: 0; border-spacing: inherit }");
-		propertyTests.put("table      { border: outset 10pt; border-collapse: separate; border-spacing: 15pt } td { border: inset 5pt } td.special { border: inset 10pt }", "table { border: outset 10pt; border-collapse: separate; border-spacing: 15pt } td { border: inset 5pt } td.special { border: inset 10pt }");
+		propertyTests.put("table	  { border: outset 10pt; border-collapse: separate; border-spacing: 15pt } td { border: inset 5pt } td.special { border: inset 10pt }", "table { border: outset 10pt; border-collapse: separate; border-spacing: 15pt } td { border: inset 5pt } td.special { border: inset 10pt }");
 		// Checking properties against elements is invalid because of inheritance. empty-cells applies to td, th only, but if set on table it is inherited, this example taken from CSS2.1 spec.
 		propertyTests.put("table { empty-cells: show }", "table { empty-cells: show }");
 
@@ -779,7 +779,7 @@ public class CSSParserTest {
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) url(hyper.cur) pointer }", ":link { cursor: url(\"example.svg#linkcursor\") url(\"hyper.cur\") pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor), url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\"), url(\"hyper.cur\"), pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2 5, url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\") 2 5, url(\"hyper.cur\"), pointer }");
-                propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
+				propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
 
 		// UI colors
 		propertyTests.put("p { color: WindowText; background-color: Window }", "p { color: WindowText; background-color: Window }");
@@ -804,7 +804,7 @@ public class CSSParserTest {
 		propertyTests.put("@media speech { h1 {cue: url(\"pop.au\") }}", "@media speech { h1 {cue: url(\"pop.au\") }}");
 		propertyTests.put("@media aural { blockquote.sad { play-during: url(\"violins.aiff\") }}", "@media aural { blockquote.sad { play-during: url(\"violins.aiff\") }}");
 		propertyTests.put("@media aural { blockquote Q   { play-during: url(\"harp.wav\") mix }}","@media aural { blockquote Q { play-during: url(\"harp.wav\") mix }}");
-		propertyTests.put("@media speech { span.quiet     { play-during: none }}", "@media speech { span.quiet { play-during: none }}");
+		propertyTests.put("@media speech { span.quiet	 { play-during: none }}", "@media speech { span.quiet { play-during: none }}");
 		propertyTests.put("@media speech { h1   { elevation: above } tr.a { elevation: 60deg } tr.b { elevation: 30deg } tr.c { elevation: level }}", "@media speech { h1 { elevation: above } tr.a { elevation: 60deg } tr.b { elevation: 30deg } tr.c { elevation: level }}");
 		propertyTests.put("@media speech { body { speech-rate: slow } i,em { speech-rate: 450.1 }}","@media speech { body { speech-rate: slow } i,em { speech-rate: 450.1 }}");
 		propertyTests.put("@media speech { body { pitch: x-low } i { pitch: 5kHz } b { pitch: 500Hz }}", "@media speech { body { pitch: x-low } i { pitch: 5kHz } b { pitch: 500Hz }}");

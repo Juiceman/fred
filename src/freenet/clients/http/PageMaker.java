@@ -239,7 +239,7 @@ public final class PageMaker {
 		SubMenu menu = subMenus.get(menutext);
 		// The menu may have already been removed.
 		if(menu != null)
-		    menu.removeNavigationLink(name);
+			menu.removeNavigationLink(name);
 	}
 	
 	public HTMLNode createBackLink(ToadletContext toadletContext, String name) {
@@ -254,9 +254,9 @@ public final class PageMaker {
 	 * Generates an FProxy template page suitable for adding content to.
 	 *
 	 * @param title
-	 *            Title of the page.
+	 *			Title of the page.
 	 * @param ctx
-	 *            ToadletContext to use to render the page.
+	 *			ToadletContext to use to render the page.
 	 * @return A template PageNode.
 	 */
 	public PageNode getPageNode(String title, ToadletContext ctx) {
@@ -268,15 +268,15 @@ public final class PageMaker {
 	 * for adding content to.
 	 *
 	 * @param title
-	 *            Title of the page.
+	 *			Title of the page.
 	 * @param renderNavigationLinks
-	 *            Whether to render navigation links.
+	 *			Whether to render navigation links.
 	 * @param ctx
-	 *            ToadletContext to use to render the page.
+	 *			ToadletContext to use to render the page.
 	 * @return A template PageNode.
 	 * @deprecated Use
-	 *             {@link #getPageNode(String, ToadletContext, RenderParameters)}
-	 *             instead
+	 *			 {@link #getPageNode(String, ToadletContext, RenderParameters)}
+	 *			 instead
 	 */
 	@Deprecated
 	public PageNode getPageNode(String title, boolean renderNavigationLinks, ToadletContext ctx) {
@@ -288,17 +288,17 @@ public final class PageMaker {
 	 * information suitable for adding content to.
 	 *
 	 * @param title
-	 *            Title of the page.
+	 *			Title of the page.
 	 * @param renderNavigationLinks
-	 *            Whether to render navigation links.
+	 *			Whether to render navigation links.
 	 * @param renderStatus
-	 *            Whether to render the status display.
+	 *			Whether to render the status display.
 	 * @param ctx
-	 *            ToadletContext to use to render the page.
+	 *			ToadletContext to use to render the page.
 	 * @return A template PageNode.
 	 * @deprecated Use
-	 *             {@link #getPageNode(String, ToadletContext, RenderParameters)}
-	 *             instead
+	 *			 {@link #getPageNode(String, ToadletContext, RenderParameters)}
+	 *			 instead
 	 */
 	@Deprecated
 	public PageNode getPageNode(String title, boolean renderNavigationLinks, boolean renderStatus, ToadletContext ctx) {
@@ -309,13 +309,13 @@ public final class PageMaker {
 	 * Generates an FProxy template page suitable for adding content to.
 	 *
 	 * @param title
-	 *            Title of the page.
+	 *			Title of the page.
 	 * @param ctx
-	 *            ToadletContext to use to render the page. Can be null, e.g. if the HTML is not 
-	 *            being generated as part of a toadlet request, for example if it's using the old
-	 *            FredPluginHTTP interface.
+	 *			ToadletContext to use to render the page. Can be null, e.g. if the HTML is not 
+	 *			being generated as part of a toadlet request, for example if it's using the old
+	 *			FredPluginHTTP interface.
 	 * @param renderParameters
-	 *            Parameters for inclusion or omission of certain page elements
+	 *			Parameters for inclusion or omission of certain page elements
 	 * @return A template PageNode.
 	 */
 	public PageNode getPageNode(String title, ToadletContext ctx, RenderParameters renderParameters) {
@@ -366,8 +366,8 @@ public final class PageMaker {
 		String activePath = "";
 		if(t != null) activePath = t.path();
 		HTMLNode bodyNode = htmlNode.addChild("body",
-		        new String[] { "class", "id" },
-		        new String[] { "fproxy-page", filterCSSIdentifier("page-"+activePath) });
+				new String[] { "class", "id" },
+				new String[] { "fproxy-page", filterCSSIdentifier("page-"+activePath) });
 		//Add a hidden input that has the request's id
 		if(webPushingEnabled)
 			bodyNode.addChild("input",new String[]{"type","name","value","id"},new String[]{"hidden","requestId",ctx.getUniqueId(),"requestId"});
@@ -694,9 +694,9 @@ public final class PageMaker {
 	 * Returns an infobox with the given style and header.
 	 * 
 	 * @param category
-	 *            The CSS styles, separated by a space (' ')
+	 *			The CSS styles, separated by a space (' ')
 	 * @param header
-	 *            The header HTML node
+	 *			The header HTML node
 	 * @return The infobox
 	 */
 	public InfoboxNode getInfobox(String category, HTMLNode header, String title, boolean isUnique) {
@@ -777,11 +777,11 @@ public final class PageMaker {
 		 * Creates render parameters.
 		 *
 		 * @param renderNavigationLinks
-		 *            {@code true} to include navigation links in the page
+		 *			{@code true} to include navigation links in the page
 		 * @param renderStatus
-		 *            {@code true} to include the status bar in the page
+		 *			{@code true} to include the status bar in the page
 		 * @param renderModeSwitch
-		 *            {@code true} to include the mode switch in the status bar
+		 *			{@code true} to include the mode switch in the status bar
 		 */
 		private RenderParameters(boolean renderNavigationLinks, boolean renderStatus, boolean renderModeSwitch) {
 			this.renderNavigationLinks = renderNavigationLinks;
@@ -797,7 +797,7 @@ public final class PageMaker {
 		 * Returns whether the navigation links should be included in the page.
 		 *
 		 * @return {@code true} if the navigation links should be included in
-		 *         the page, {@code false} otherwise
+		 *		 the page, {@code false} otherwise
 		 */
 		public boolean isRenderNavigationLinks() {
 			return renderNavigationLinks;
@@ -808,8 +808,8 @@ public final class PageMaker {
 		 * navigation links according to the given parameter.
 		 *
 		 * @param renderNavigationLinks
-		 *            {@code true} to render the navigation links, {@code false}
-		 *            otherwise
+		 *			{@code true} to render the navigation links, {@code false}
+		 *			otherwise
 		 * @return A new {@link RenderParameters} object
 		 */
 		public RenderParameters renderNavigationLinks(boolean renderNavigationLinks) {
@@ -820,7 +820,7 @@ public final class PageMaker {
 		 * Returns whether the status bar should be included in the page.
 		 *
 		 * @return {@code true} if the status bar should be included in the
-		 *         page, {@code false} otherwise
+		 *		 page, {@code false} otherwise
 		 */
 		public boolean isRenderStatus() {
 			return renderStatus;
@@ -831,8 +831,8 @@ public final class PageMaker {
 		 * bar according to the given parameter.
 		 *
 		 * @param renderStatus
-		 *            {@code true} to render the status bar, {@code false}
-		 *            otherwise
+		 *			{@code true} to render the status bar, {@code false}
+		 *			otherwise
 		 * @return A new {@link RenderParameters} object
 		 */
 		public RenderParameters renderStatus(boolean renderStatus) {
@@ -843,7 +843,7 @@ public final class PageMaker {
 		 * Returns whether the mode switch should be included in the page.
 		 *
 		 * @return {@code true} if the mode switch should be included in the
-		 *         page, {@code false} otherwise
+		 *		 page, {@code false} otherwise
 		 */
 		public boolean isRenderModeSwitch() {
 			return renderModeSwitch;
@@ -854,8 +854,8 @@ public final class PageMaker {
 		 * switch according to the given parameter.
 		 *
 		 * @param renderModeSwitch
-		 *            {@code true} to render the mode switch, {@code false}
-		 *            otherwise
+		 *			{@code true} to render the mode switch, {@code false}
+		 *			otherwise
 		 * @return A new {@link RenderParameters} object
 		 */
 		public RenderParameters renderModeSwitch(boolean renderModeSwitch) {

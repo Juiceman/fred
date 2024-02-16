@@ -39,7 +39,7 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 	final boolean allowUnreadableFiles;
 	final boolean includeHiddenFiles;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -75,45 +75,45 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 		handler.startClientPutDir(this, buckets, true);
 	}
 
-    /**
-     * Create a map of String -> Bucket for every file in a directory
-     * and its subdirs.
-     * @throws MessageInvalidException 
-     */
-    private HashMap<String, Object> makeBucketsByName(File thisdir, String prefix) throws MessageInvalidException {
-    	
-    	if(logMINOR)
-    		Logger.minor(this, "Listing directory: "+thisdir);
-    	
-    	HashMap<String, Object> ret = new HashMap<String, Object>();
-    	
-    	File filelist[] = thisdir.listFiles();
-    	if(filelist == null)
-    		throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "No such directory!", identifier, global);
-    	for(int i = 0 ; i < filelist.length ; i++) {
-    		if(filelist[i].isHidden() && !includeHiddenFiles) continue;
-                //   Skip unreadable files and dirs
+	/**
+	 * Create a map of String -> Bucket for every file in a directory
+	 * and its subdirs.
+	 * @throws MessageInvalidException 
+	 */
+	private HashMap<String, Object> makeBucketsByName(File thisdir, String prefix) throws MessageInvalidException {
+		
+		if(logMINOR)
+			Logger.minor(this, "Listing directory: "+thisdir);
+		
+		HashMap<String, Object> ret = new HashMap<String, Object>();
+		
+		File filelist[] = thisdir.listFiles();
+		if(filelist == null)
+			throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "No such directory!", identifier, global);
+		for(int i = 0 ; i < filelist.length ; i++) {
+			if(filelist[i].isHidden() && !includeHiddenFiles) continue;
+				//   Skip unreadable files and dirs
 		//   Skip files nonexistant (dangling symlinks) - check last 
-	        if (filelist[i].canRead() && filelist[i].exists()) {
-	        	if (filelist[i].isFile()) {
-	        		File f = filelist[i];
-	        		
-	        		FileBucket bucket = new FileBucket(f, true, false, false, false);
-	        		
-	        		ret.put(f.getName(), new ManifestElement(f.getName(), prefix + f.getName(), bucket, DefaultMIMETypes.guessMIMEType(f.getName(), true), f.length()));
-	        	} else if(filelist[i].isDirectory()) {
-	        		HashMap<String, Object> subdir = makeBucketsByName(new File(thisdir, filelist[i].getName()), prefix
-					        + filelist[i].getName() + '/');
-	        		ret.put(filelist[i].getName(), subdir);
-	        	} else if(!allowUnreadableFiles) {
-	        		throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not directory and not file: "+filelist[i], identifier, global);
-	        	}
-	        } else {
-	        	if(!allowUnreadableFiles)
-	        		throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not readable or doesn't exist: "+filelist[i], identifier, global);
-	        }
-    	}
-    	return ret;
+			if (filelist[i].canRead() && filelist[i].exists()) {
+				if (filelist[i].isFile()) {
+					File f = filelist[i];
+					
+					FileBucket bucket = new FileBucket(f, true, false, false, false);
+					
+					ret.put(f.getName(), new ManifestElement(f.getName(), prefix + f.getName(), bucket, DefaultMIMETypes.guessMIMEType(f.getName(), true), f.length()));
+				} else if(filelist[i].isDirectory()) {
+					HashMap<String, Object> subdir = makeBucketsByName(new File(thisdir, filelist[i].getName()), prefix
+							+ filelist[i].getName() + '/');
+					ret.put(filelist[i].getName(), subdir);
+				} else if(!allowUnreadableFiles) {
+					throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not directory and not file: "+filelist[i], identifier, global);
+				}
+			} else {
+				if(!allowUnreadableFiles)
+					throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not readable or doesn't exist: "+filelist[i], identifier, global);
+			}
+		}
+		return ret;
 	}
 
 	@Override

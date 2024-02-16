@@ -4,7 +4,7 @@ import freenet.l10n.NodeL10n;
 
 public class UnsupportedCharsetInFilterException extends UnsafeContentTypeException {
 
-    final private static long serialVersionUID = 3775454822229213420L;
+	final private static long serialVersionUID = 3775454822229213420L;
 
 	final String charset;
 

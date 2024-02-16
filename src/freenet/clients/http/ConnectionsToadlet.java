@@ -174,8 +174,8 @@ public abstract class ConnectionsToadlet extends Toadlet {
 		this.core = core;
 		this.stats = n.nodeStats;
 		this.peers = n.peers;
-	    REF_LINK = HTMLNode.link(path()+"myref.fref").setReadOnly();
-	    REFTEXT_LINK = HTMLNode.link(path()+"myref.txt").setReadOnly();
+		REF_LINK = HTMLNode.link(path()+"myref.fref").setReadOnly();
+		REFTEXT_LINK = HTMLNode.link(path()+"myref.txt").setReadOnly();
 	}
 
 	abstract SimpleColumn[] endColumnHeaders(boolean advancedModeEnabled);
@@ -188,10 +188,10 @@ public abstract class ConnectionsToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, final HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-        if(!ctx.checkFullAccess(this))
-            return;
+		if(!ctx.checkFullAccess(this))
+			return;
 
-	    String path = uri.getPath();
+		String path = uri.getPath();
 		if(path.endsWith("myref.fref")) {
 			SimpleFieldSet fs = getNoderef();
 			String noderefString = fs.toOrderedStringWithBase64();
@@ -204,7 +204,7 @@ public abstract class ConnectionsToadlet extends Toadlet {
 
 		if(path.endsWith("myref.txt")) {
 			SimpleFieldSet fs = getNoderef();
-            String noderefString = fs.toOrderedStringWithBase64();
+			String noderefString = fs.toOrderedStringWithBase64();
 			writeTextReply(ctx, 200, "OK", noderefString);
 			return;
 		}
@@ -371,8 +371,8 @@ public abstract class ConnectionsToadlet extends Toadlet {
 			if(fProxyJavascriptEnabled) {
 				String js =
 						"  function peerNoteChange() {\n" +
-						"    document.getElementById(\"action\").value = \"update_notes\";" +
-						"    document.getElementById(\"peersForm\").doAction.click();\n" +
+						"	document.getElementById(\"action\").value = \"update_notes\";" +
+						"	document.getElementById(\"peersForm\").doAction.click();\n" +
 						"  }\n";
 				contentNode
 						.addChild("script", "type", "text/javascript")
@@ -604,13 +604,13 @@ public abstract class ConnectionsToadlet extends Toadlet {
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 
 		if(!acceptRefPosts()) {
-		    sendUnauthorizedPage(ctx);
+			sendUnauthorizedPage(ctx);
 			return;
 		}
 		
-        if(!ctx.checkFullAccess(this))
-            return;
-        
+		if(!ctx.checkFullAccess(this))
+			return;
+		
 		if (request.isPartSet("add")) {
 			// add a new node
 			String urltext = request.getPartAsStringFailsafe("url", 200);
@@ -784,10 +784,10 @@ public abstract class ConnectionsToadlet extends Toadlet {
 			}
 			fs.setEndMarker("End"); // It's always End ; the regex above doesn't always grok this
 		} catch (IOException e) {
-            Logger.error(this, "IOException adding reference :" + e.getMessage(), e);
+			Logger.error(this, "IOException adding reference :" + e.getMessage(), e);
 			return PeerAdditionReturnCodes.CANT_PARSE;
 		} catch (Throwable t) {
-		    Logger.error(this, "Internal error adding reference :" + t.getMessage(), t);
+			Logger.error(this, "Internal error adding reference :" + t.getMessage(), t);
 			return PeerAdditionReturnCodes.INTERNAL_ERROR;
 		}
 		PeerNode pn;
@@ -805,7 +805,7 @@ public abstract class ConnectionsToadlet extends Toadlet {
 		} catch (ReferenceSignatureVerificationException e1){
 			return PeerAdditionReturnCodes.INVALID_SIGNATURE;
 		} catch (Throwable t) {
-            Logger.error(this, "Internal error adding reference :" + t.getMessage(), t);
+			Logger.error(this, "Internal error adding reference :" + t.getMessage(), t);
 			return PeerAdditionReturnCodes.INTERNAL_ERROR;
 		}
 		if(Arrays.equals(pn.peerECDSAPubKeyHash, node.getDarknetPubKeyHash())) {
@@ -1192,10 +1192,10 @@ public abstract class ConnectionsToadlet extends Toadlet {
 		return NodeL10n.getBase().getString("DarknetConnectionsToadlet."+string);
 	}
 	
-    private static String l10n(String string, String pattern, String value) {
-        return NodeL10n.getBase().getString("DarknetConnectionsToadlet."+string, pattern, value);
-    }
-    
+	private static String l10n(String string, String pattern, String value) {
+		return NodeL10n.getBase().getString("DarknetConnectionsToadlet."+string, pattern, value);
+	}
+	
 	private String sortString(boolean isReversed, String type) {
 		return (isReversed ? ("?sortBy="+type) : ("?sortBy="+type+"&reversed"));
 	}

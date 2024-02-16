@@ -163,9 +163,9 @@ public class SimpleFieldSetTest {
 		//putting values
 		for (int i = 0; i < methodPairsArray_MultiLevel.length; i++)
 			methodSFS.putSingle(methodPairsArray_MultiLevel[i][0] 
-			                    + SimpleFieldSet.MULTI_LEVEL_CHAR 
-			                    + methodPairsArray_MultiLevel[i][1], 
-			                    methodPairsArray_MultiLevel[i][2]);
+								+ SimpleFieldSet.MULTI_LEVEL_CHAR 
+								+ methodPairsArray_MultiLevel[i][1], 
+								methodPairsArray_MultiLevel[i][2]);
 		//getting subsets and then values
 		for (int i = 0; i < methodPairsArray_MultiLevel.length; i++)
 			assertEquals(
@@ -236,12 +236,12 @@ public class SimpleFieldSetTest {
 		try {
 			methodSampleSFS.put("sample",methodEmptySFS);
 			fail("Expected Exception Error Not Thrown!"); } 
-        catch (IllegalArgumentException anException) {
-            assertNotNull(anException); }
-        try {
-        	methodSampleSFS.tput("sample",methodSampleSFS); }
-        catch (IllegalArgumentException aException) {
-        	fail("Not expected exception thrown : " + aException.getMessage()); }			
+		catch (IllegalArgumentException anException) {
+			assertNotNull(anException); }
+		try {
+			methodSampleSFS.tput("sample",methodSampleSFS); }
+		catch (IllegalArgumentException aException) {
+			fail("Not expected exception thrown : " + aException.getMessage()); }			
 	}
 	
 	/**
@@ -488,8 +488,8 @@ public class SimpleFieldSetTest {
 	@Test
 	public void testSimpleFieldSet_BufferedReaderBooleanBoolean() {
 		String[][] methodStringPairs = SAMPLE_STRING_PAIRS;
-        BufferedReader methodBufferedReader = 
-        	new BufferedReader(new StringReader(sfsReadyString(methodStringPairs)));
+		BufferedReader methodBufferedReader = 
+			new BufferedReader(new StringReader(sfsReadyString(methodStringPairs)));
 		try {
 			SimpleFieldSet methodSFS = new SimpleFieldSet(methodBufferedReader,false,false);
 			for (int i=0; i < methodStringPairs.length; i++)
@@ -759,24 +759,24 @@ public class SimpleFieldSetTest {
 		Iterator<String> itr = methodSFS.keyIterator(methodPrefix);
 		assertTrue(areAllContainedKeys(SAMPLE_STRING_PAIRS,methodPrefix,itr));	
 	}
-        
-        /**
+		
+		/**
 	 * Tests the toplevelIterator given for the
 	 * SimpleFieldSet class.
 	 * It tests hasNext() and next() methods.
-         * 
-         * TODO: improve the test
+		 * 
+		 * TODO: improve the test
 	 */
 	@Test
 	public void testToplevelKeyIterator() {
 		SimpleFieldSet methodSFS = sfsFromSampleStringPairs();
 		Iterator<String> itr = methodSFS.toplevelKeyIterator();
 		
-        for(int i=0; i<3; i++) {
-            assertTrue(itr.hasNext());
-            assertTrue(isAKey(SAMPLE_STRING_PAIRS, "", (String)itr.next()));
-        }
-        assertFalse(itr.hasNext());
+		for(int i=0; i<3; i++) {
+			assertTrue(itr.hasNext());
+			assertTrue(isAKey(SAMPLE_STRING_PAIRS, "", (String)itr.next()));
+		}
+		assertFalse(itr.hasNext());
 	}
 
 	@Test
@@ -833,14 +833,14 @@ public class SimpleFieldSetTest {
 	
 	@Test
 	public void testSplit() {
-	    assertTrue(Arrays.equals(SimpleFieldSet.split("blah"), new String[] { "blah" }));
-	    assertTrue(Arrays.equals(SimpleFieldSet.split("blah; blah"), new String[] { "blah", " blah" }));
-	    assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2"), new String[] { "blah", "1", "2" }));
-	    assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2;"), new String[] { "blah", "1", "2", "" }));
-	    assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2;;"), new String[] { "blah", "1", "2", "", "" }));
-        assertTrue(Arrays.equals(SimpleFieldSet.split(";blah;1;2;;"), new String[] { "", "blah", "1", "2", "", "" }));
-        assertTrue(Arrays.equals(SimpleFieldSet.split(";;blah;1;2;;"), new String[] { "", "", "blah", "1", "2", "", "" }));
-        assertTrue(Arrays.equals(SimpleFieldSet.split(";;;"), new String[] { "", "", "" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split("blah"), new String[] { "blah" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split("blah; blah"), new String[] { "blah", " blah" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2"), new String[] { "blah", "1", "2" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2;"), new String[] { "blah", "1", "2", "" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split("blah;1;2;;"), new String[] { "blah", "1", "2", "", "" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split(";blah;1;2;;"), new String[] { "", "blah", "1", "2", "", "" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split(";;blah;1;2;;"), new String[] { "", "", "blah", "1", "2", "", "" }));
+		assertTrue(Arrays.equals(SimpleFieldSet.split(";;;"), new String[] { "", "", "" }));
 	}
 
 	// This fixes https://freenet.mantishub.io/view.php?id=7197.

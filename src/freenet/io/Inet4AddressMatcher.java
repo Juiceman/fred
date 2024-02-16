@@ -47,7 +47,7 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 * address specification given by <code>cidrHostname</code>.
 	 * 
 	 * @param cidrHostname
-	 *            The address range this matcher matches
+	 *			The address range this matcher matches
 	 */
 	public Inet4AddressMatcher(String cidrHostname) {
 		int slashPosition = cidrHostname.indexOf('/');
@@ -77,13 +77,13 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 * 8 to 15, and the fourth in bits 0 to 7.
 	 * 
 	 * @param address
-	 *            The address to convert
+	 *			The address to convert
 	 * @return The IP address as 32-bit value
 	 * @throws NumberFormatException
-	 *             if a part of the string can not be parsed using
-	 *             {@link Integer#parseInt(java.lang.String)}
+	 *			 if a part of the string can not be parsed using
+	 *			 {@link Integer#parseInt(java.lang.String)}
 	 * @throws java.util.NoSuchElementException
-	 *             if <code>address</code> contains less than 3 dots
+	 *			 if <code>address</code> contains less than 3 dots
 	 */
 	public static int convertToBytes(String address) {
 		StringTokenizer addressTokens = new StringTokenizer(address, ".");
@@ -95,9 +95,9 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 * Checks whether the given address matches this matcher's address.
 	 * 
 	 * @param inetAddress
-	 *            The address to match to this matcher
+	 *			The address to match to this matcher
 	 * @return <code>true</code> if <code>inetAddress</code> matches the
-	 *         specification of this matcher, <code>false</code> otherwise
+	 *		 specification of this matcher, <code>false</code> otherwise
 	 */
 	@Override
 	public boolean matches(InetAddress inetAddress) {
@@ -111,12 +111,12 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 * <code>address</code> to it.
 	 * 
 	 * @param cidrHostname
-	 *            The host specification to match
+	 *			The host specification to match
 	 * @param address
-	 *            The address to match
+	 *			The address to match
 	 * @return <code>true</code> if <code>address</code> matches the
-	 *         specification in <code>cidrHostname</code>, <code>false</code>
-	 *         otherwise
+	 *		 specification in <code>cidrHostname</code>, <code>false</code>
+	 *		 otherwise
 	 * @see #Inet4AddressMatcher(String)
 	 * @see #matches(InetAddress)
 	 */

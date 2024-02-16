@@ -36,10 +36,10 @@ public class RetrievalException extends LightweightException {
 	public static final int IO_ERROR = 3;
 	public static final int SENDER_DIED = 5;
 	public static final int TIMED_OUT = 4;
-    public static final int ALREADY_CACHED = 6;
-    public static final int SENDER_DISCONNECTED = 7;
-    public static final int NO_DATAINSERT = 8;
-    public static final int CANCELLED_BY_RECEIVER = 9;
+	public static final int ALREADY_CACHED = 6;
+	public static final int SENDER_DISCONNECTED = 7;
+	public static final int NO_DATAINSERT = 8;
+	public static final int CANCELLED_BY_RECEIVER = 9;
 	public static final int RECEIVER_DIED = 11;
 	public static final int UNABLE_TO_SEND_BLOCK_WITHIN_TIMEOUT = 12;
 	public static final int GONE_TO_TURTLE_MODE = 13;

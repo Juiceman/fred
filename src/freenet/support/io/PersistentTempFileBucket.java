@@ -12,16 +12,16 @@ import freenet.support.api.RandomAccessBucket;
 
 public class PersistentTempFileBucket extends TempFileBucket implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
-    transient PersistentFileTracker tracker;
-    
-    private static volatile boolean logMINOR;
-    static {
-        Logger.registerClass(PersistentTempFileBucket.class);
-    }
+	private static final long serialVersionUID = 1L;
+	
+	transient PersistentFileTracker tracker;
+	
+	private static volatile boolean logMINOR;
+	static {
+		Logger.registerClass(PersistentTempFileBucket.class);
+	}
 
-    public PersistentTempFileBucket(long id, FilenameGenerator generator, PersistentFileTracker tracker) {
+	public PersistentTempFileBucket(long id, FilenameGenerator generator, PersistentFileTracker tracker) {
 		this(id, generator, tracker, true);
 	}
 	
@@ -31,7 +31,7 @@ public class PersistentTempFileBucket extends TempFileBucket implements Serializ
 	}
 	
 	protected PersistentTempFileBucket() {
-	    // For serialization.
+		// For serialization.
 	}
 	
 	@Override
@@ -44,14 +44,14 @@ public class PersistentTempFileBucket extends TempFileBucket implements Serializ
 	
 	@Override
 	public OutputStream getOutputStreamUnbuffered() throws IOException {
-	    OutputStream os = super.getOutputStreamUnbuffered();
-	    os = new DiskSpaceCheckingOutputStream(os, tracker, getFile(), BUFFER_SIZE);
-	    return os;
+		OutputStream os = super.getOutputStreamUnbuffered();
+		os = new DiskSpaceCheckingOutputStream(os, tracker, getFile(), BUFFER_SIZE);
+		return os;
 	}
 	
 	@Override
 	public OutputStream getOutputStream() throws IOException {
-	    return new BufferedOutputStream(getOutputStreamUnbuffered(), BUFFER_SIZE);
+		return new BufferedOutputStream(getOutputStreamUnbuffered(), BUFFER_SIZE);
 	}
 	
 	/** Must override createShadow() so it creates a persistent bucket, which will have
@@ -65,32 +65,32 @@ public class PersistentTempFileBucket extends TempFileBucket implements Serializ
 		return ret;
 	}
 	
-    @Override
-    protected void innerResume(ClientContext context) throws ResumeFailedException {
-        super.innerResume(context);
-        if(logMINOR) Logger.minor(this, "Resuming "+this, new Exception("debug"));
-        tracker = context.persistentFileTracker;
-        tracker.register(getFile());
-    }
-    
-    @Override
-    protected boolean persistent() {
-        return true;
-    }
-    
-    public static final int MAGIC = 0x2ffdd4cf;
-    
-    protected int magic() {
-        return MAGIC;
-    }
-    
-    protected PersistentTempFileBucket(DataInputStream dis) throws IOException, StorageFormatException {
-        super(dis);
-    }
+	@Override
+	protected void innerResume(ClientContext context) throws ResumeFailedException {
+		super.innerResume(context);
+		if(logMINOR) Logger.minor(this, "Resuming "+this, new Exception("debug"));
+		tracker = context.persistentFileTracker;
+		tracker.register(getFile());
+	}
+	
+	@Override
+	protected boolean persistent() {
+		return true;
+	}
+	
+	public static final int MAGIC = 0x2ffdd4cf;
+	
+	protected int magic() {
+		return MAGIC;
+	}
+	
+	protected PersistentTempFileBucket(DataInputStream dis) throws IOException, StorageFormatException {
+		super(dis);
+	}
 
-    @Override
-    protected long getPersistentTempID() {
-        return filenameID;
-    }
+	@Override
+	protected long getPersistentTempID() {
+		return filenameID;
+	}
 
 }

@@ -30,14 +30,14 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 		// Implement Cloneable to shut up findbugs.
 		return new BootstrappingDecayingRunningAverage(this);
 	}
-    
+	
 	private final double min;
 	private final double max;
 	private double currentValue;
 	private long reports;
 	private int maxReports;
 
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -46,21 +46,21 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 			}
 		});
 	}
-    
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param defaultValue
-	 *                default value
+	 *				default value
 	 * @param min
-	 *                minimum value of input data
+	 *				minimum value of input data
 	 * @param max
-	 *                maxumum value of input data
+	 *				maxumum value of input data
 	 * @param maxReports
 	 *		  number of reports before bootstrapping period ends and decay begins
 	 * @param fs
-	 *                {@link SimpleFieldSet} parameter for this object. Will
-	 *                override other parameters.
+	 *				{@link SimpleFieldSet} parameter for this object. Will
+	 *				override other parameters.
 	 */
 	public BootstrappingDecayingRunningAverage(double defaultValue, double min,
 			double max, int maxReports, SimpleFieldSet fs) {
@@ -78,12 +78,12 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 			}
 		}
 	}
-    
+	
 	/**
 	 * {@inheritDoc}
-         *
-         * @return
-         */
+		 *
+		 * @return
+		 */
 	@Override
 	public synchronized double currentValue() {
 		return currentValue;
@@ -95,9 +95,9 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 	 * Used by {@link DecayingKeyspaceAverage} to normalize the stored averages. Calling this function
 	 * may (purposefully) destroy the utility of the average being kept.
 	 * 
-         * @param d
-         * @return
-         * @see DecayingKeyspaceAverage
+		 * @param d
+		 * @return
+		 * @see DecayingKeyspaceAverage
 	 */
 	protected synchronized double setCurrentValue(double d) {
 		double old=currentValue;
@@ -107,9 +107,9 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 
 	/**
 	 * {@inheritDoc}
-         *
-         * @param d
-         */
+		 *
+		 * @param d
+		 */
 	@Override
 	public synchronized void report(double d) {
 		if(d < min) {
@@ -129,9 +129,9 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 
 	/**
 	 * {@inheritDoc}
-         *
-         * @param d
-         */
+		 *
+		 * @param d
+		 */
 	@Override
 	public void report(long d) {
 		report((double)d);
@@ -139,9 +139,9 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 
 	/**
 	 * {@inheritDoc}
-         *
-         * @param d
-         */
+		 *
+		 * @param d
+		 */
 	@Override
 	public synchronized double valueIfReported(double d) {
 		if(d < min) {
@@ -155,7 +155,7 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 		double decayFactor = 1.0 / (Math.min(reports + 1, maxReports));
 		return (d * decayFactor) + (currentValue * (1-decayFactor));
 	}
-    
+	
 	/**
 	 * Change <code>maxReports</code>.
 	 * 
@@ -190,8 +190,8 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 	 * Export this object as {@link SimpleFieldSet}.
 	 * 
 	 * @param shortLived
-         * 		See {@link SimpleFieldSet#SimpleFieldSet(boolean)}.
-         * @return
+		 *		See {@link SimpleFieldSet#SimpleFieldSet(boolean)}.
+		 * @return
 	 */
 	public synchronized SimpleFieldSet exportFieldSet(boolean shortLived) {
 		SimpleFieldSet fs = new SimpleFieldSet(shortLived);

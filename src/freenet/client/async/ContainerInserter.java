@@ -49,8 +49,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public class ContainerInserter implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -173,7 +173,7 @@ public class ContainerInserter implements ClientPutState, Serializable {
 		InsertBlock block;
 		OutputStream os = null;
 		try {
-		    RandomAccessBucket outputBucket = context.getBucketFactory(persistent).makeBucket(-1);
+			RandomAccessBucket outputBucket = context.getBucketFactory(persistent).makeBucket(-1);
 			os = new BufferedOutputStream(outputBucket.getOutputStream());
 			String mimeType = (archiveType == ARCHIVE_TYPE.TAR ?
 				createTarBucket(os) :
@@ -368,46 +368,46 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	
 	private transient boolean resumed = false;
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        if(cb != null && cb != parent)
-            cb.onResume(context);
-        if(containerItems != null) {
-            for(ContainerElement e : containerItems) {
-                if(e.data != null)
-                    e.data.onResume(context);
-            }
-        }
-        resumeMetadata(origMetadata, context);
-        // Do not call start(). start() immediately transitions to another state.
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static void resumeMetadata(Map<String, Object> map, ClientContext context) throws ResumeFailedException {
-        Map<String, Object> manifestElements = map;
-        for (Object o : manifestElements.values()) {
-            if(o instanceof HashMap) {
-                resumeMetadata((Map<String, Object>)o, context);
-            } else if(o instanceof ManifestElement) {
-                ManifestElement e = (ManifestElement) o;
-                e.onResume(context);
-            } else if(o instanceof Metadata) {
-                // Ignore
-            } else if(o instanceof PutHandler) {
-                PutHandler handler = (PutHandler) o;
-                handler.onResume(context);
-            } else if(o instanceof ManifestElement) {
-                ((ManifestElement)o).onResume(context);
-            } else throw new IllegalArgumentException("Unknown manifest element: "+o);
-        }
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		if(cb != null && cb != parent)
+			cb.onResume(context);
+		if(containerItems != null) {
+			for(ContainerElement e : containerItems) {
+				if(e.data != null)
+					e.data.onResume(context);
+			}
+		}
+		resumeMetadata(origMetadata, context);
+		// Do not call start(). start() immediately transitions to another state.
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void resumeMetadata(Map<String, Object> map, ClientContext context) throws ResumeFailedException {
+		Map<String, Object> manifestElements = map;
+		for (Object o : manifestElements.values()) {
+			if(o instanceof HashMap) {
+				resumeMetadata((Map<String, Object>)o, context);
+			} else if(o instanceof ManifestElement) {
+				ManifestElement e = (ManifestElement) o;
+				e.onResume(context);
+			} else if(o instanceof Metadata) {
+				// Ignore
+			} else if(o instanceof PutHandler) {
+				PutHandler handler = (PutHandler) o;
+				handler.onResume(context);
+			} else if(o instanceof ManifestElement) {
+				((ManifestElement)o).onResume(context);
+			} else throw new IllegalArgumentException("Unknown manifest element: "+o);
+		}
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 }

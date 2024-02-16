@@ -71,15 +71,15 @@ public class IPDetectorPluginManager implements ForwardPortCallback {
 			String keySuffix = maybeForwarded ? "MaybeForwarded" : "NotForwarded";
 			if(portsNotForwarded.length == 1) {
 				NodeL10n.getBase().addL10nSubstitution(div, "IPDetectorPluginManager.forwardPort"+keySuffix, 
-				        new String[] { "port", "link" },
-				        new HTMLNode[] { HTMLNode.text(Math.abs(portsNotForwarded[0])), HTMLNode.link(url) });
+						new String[] { "port", "link" },
+						new HTMLNode[] { HTMLNode.text(Math.abs(portsNotForwarded[0])), HTMLNode.link(url) });
 			} else if(portsNotForwarded.length == 2) {
 				NodeL10n.getBase().addL10nSubstitution(div, "IPDetectorPluginManager.forwardTwoPorts"+keySuffix, 
-				        new String[] { "port1", "port2", "link", "connectivity" },
-				        new HTMLNode[] { HTMLNode.text(Math.abs(portsNotForwarded[0])),
-				                HTMLNode.text(Math.abs(portsNotForwarded[1])),
-				                HTMLNode.link(url),
-				                HTMLNode.link(ConnectivityToadlet.PATH) });
+						new String[] { "port1", "port2", "link", "connectivity" },
+						new HTMLNode[] { HTMLNode.text(Math.abs(portsNotForwarded[0])),
+								HTMLNode.text(Math.abs(portsNotForwarded[1])),
+								HTMLNode.link(url),
+								HTMLNode.link(ConnectivityToadlet.PATH) });
 			} else {
 				Logger.error(this, "Unknown number of ports to forward: "+portsNotForwarded.length);
 			}
@@ -212,19 +212,19 @@ public class IPDetectorPluginManager implements ForwardPortCallback {
 			if(suggestPortForward) {
 				if(portsNotForwarded.length == 1) {
 					NodeL10n.getBase().addL10nSubstitution(div,
-					        "IPDetectorPluginManager.suggestForwardPortWithLink",
-					        new String[] { "link", "port" },
-					        new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape(
-					                "http://wiki.freenetproject.org/FirewallAndRouterIssues")),
-					                HTMLNode.text(portsNotForwarded[0])});
+							"IPDetectorPluginManager.suggestForwardPortWithLink",
+							new String[] { "link", "port" },
+							new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape(
+									"http://wiki.freenetproject.org/FirewallAndRouterIssues")),
+									HTMLNode.text(portsNotForwarded[0])});
 				} else {
 					NodeL10n.getBase().addL10nSubstitution(div,
-					        "IPDetectorPluginManager.suggestForwardTwoPortsWithLink",
-					        new String[] { "link", "port1", "port2" },
-					        new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape(
-					                "http://wiki.freenetproject.org/FirewallAndRouterIssues")),
-					                HTMLNode.text(portsNotForwarded[0]),
-					                HTMLNode.text(portsNotForwarded[1]) });
+							"IPDetectorPluginManager.suggestForwardTwoPortsWithLink",
+							new String[] { "link", "port1", "port2" },
+							new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape(
+									"http://wiki.freenetproject.org/FirewallAndRouterIssues")),
+									HTMLNode.text(portsNotForwarded[0]),
+									HTMLNode.text(portsNotForwarded[1]) });
 				}
 			}
 			return div;
@@ -403,8 +403,8 @@ public class IPDetectorPluginManager implements ForwardPortCallback {
 			// Will be removed when returns in the DetectorRunner
 			runningDetector = runners.get(d);
 		}
-                if(runningDetector != null)
-                    runningDetector.kill();
+				if(runningDetector != null)
+					runningDetector.kill();
 	}
 
 	

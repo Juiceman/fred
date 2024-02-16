@@ -49,7 +49,7 @@ public class PushDataManager {
 	 * An element is updated and needs to be pushed to all requests.
 	 * 
 	 * @param id
-	 *            - The id of the element that changed
+	 *			- The id of the element that changed
 	 */
 	public synchronized void updateElement(String id) {
 		if (logMINOR) {
@@ -93,9 +93,9 @@ public class PushDataManager {
 	 * A pushed element is rendered and needs to be tracked.
 	 * 
 	 * @param requestUniqueId
-	 *            - The requestId that rendered the element
+	 *			- The requestId that rendered the element
 	 * @param element
-	 *            - The element that is rendered
+	 *			- The element that is rendered
 	 */
 	public synchronized void elementRendered(String requestUniqueId, BaseUpdateableElement element) {
 		if(logMINOR){
@@ -132,9 +132,9 @@ public class PushDataManager {
 	 * Returns the element's current state.
 	 * 
 	 * @param requestId
-	 *            - The requestId that needs the element.
+	 *			- The requestId that needs the element.
 	 * @param id
-	 *            - The element's id
+	 *			- The element's id
 	 */
 	public synchronized BaseUpdateableElement getRenderedElement(String requestId, String id) {
 		if(logMINOR){
@@ -154,9 +154,9 @@ public class PushDataManager {
 	 * Fails a request and copies all notifications directed to it to another request. It is invoked when a leadership change occurs.
 	 * 
 	 * @param originalRequestId
-	 *            - The failing leader's id
+	 *			- The failing leader's id
 	 * @param newRequestId
-	 *            - The new leader's id
+	 *			- The new leader's id
 	 * @return Was the failover successful?
 	 */
 	public synchronized boolean failover(String originalRequestId, String newRequestId) {
@@ -182,7 +182,7 @@ public class PushDataManager {
 	 * The request leaves, so it needs to be deleted
 	 * 
 	 * @param requestId
-	 *            - The id of the request that is leaving
+	 *			- The id of the request that is leaving
 	 * @return Was a request deleted?
 	 */
 	public synchronized boolean leaving(String requestId) {
@@ -193,7 +193,7 @@ public class PushDataManager {
 	 * A keepalive received.
 	 * 
 	 * @param requestId
-	 *            - The id of the request that sent the keepalive
+	 *			- The id of the request that sent the keepalive
 	 * @return Was it successful?
 	 */
 	public synchronized boolean keepAliveReceived(String requestId) {
@@ -217,7 +217,7 @@ public class PushDataManager {
 	 * Waits and return the next notification. Calling this method setup the notification list.
 	 * 
 	 * @param requestId
-	 *            - The id of the request
+	 *			- The id of the request
 	 * @return The next notification when present
 	 */
 	public synchronized UpdateEvent getNextNotification(String requestId) {
@@ -250,7 +250,7 @@ public class PushDataManager {
 	 * Deletes a request either because of failing or leaving
 	 * 
 	 * @param requestId
-	 *            - The id of the request
+	 *			- The id of the request
 	 * @return Was a request deleted?
 	 */
 	private synchronized boolean deleteRequest(String requestId) {

@@ -13,14 +13,14 @@ import java.io.IOException;
  * longer reachable.
  */
 public interface RandomAccessBucket extends Bucket {
-    
-    /** Convert the Bucket to a LockableRandomAccessBuffer. Must be efficient, i.e. will not copy 
-     * the data. Freeing the Bucket is unnecessary if you free the LockableRandomAccessBuffer. 
-     * Both the parent Bucket and the return value will be made read only.
-     * @throws IOException */
-    public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException;
-    
-    @Override
-    public RandomAccessBucket createShadow();
+	
+	/** Convert the Bucket to a LockableRandomAccessBuffer. Must be efficient, i.e. will not copy 
+	 * the data. Freeing the Bucket is unnecessary if you free the LockableRandomAccessBuffer. 
+	 * Both the parent Bucket and the return value will be made read only.
+	 * @throws IOException */
+	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException;
+	
+	@Override
+	public RandomAccessBucket createShadow();
 
 }

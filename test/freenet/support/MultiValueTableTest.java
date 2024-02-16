@@ -105,7 +105,7 @@ public class MultiValueTableTest {
 	 * @return the created MultiValueTable
 	 */
 	@SuppressWarnings("unchecked")
-    private MultiValueTable<Object, Object> fillMultiValueTable(Object[][] sampleObjects) {
+	private MultiValueTable<Object, Object> fillMultiValueTable(Object[][] sampleObjects) {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		Iterator<Object> itr;
 		for(int i=0;i<sampleKeyNumber;i++) {
@@ -132,8 +132,8 @@ public class MultiValueTableTest {
 	 * present keys and not present
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testGet() {
+	@Test
+	public void testGet() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		assertNull(methodMVTable.get(new Object()));
 		Object[][] sampleObjects = 
@@ -169,8 +169,8 @@ public class MultiValueTableTest {
 	 * MultiValueTable and not present Elements, too.
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testContainsElement() {
+	@Test
+	public void testContainsElement() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		assertFalse(methodMVTable.containsElement(new Object(),new Object()));
 		Object[][] sampleObjects = 
@@ -189,8 +189,8 @@ public class MultiValueTableTest {
 	 * Tests getAll() method
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testGetAll() {
+	@Test
+	public void testGetAll() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		//TODO: verifies if an Exception is necessary
 		methodMVTable.getAll(new Object());
@@ -211,8 +211,8 @@ public class MultiValueTableTest {
 	 * Tests countAll() method
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testCountAll() {
+	@Test
+	public void testCountAll() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		assertEquals(methodMVTable.countAll(new Object()),0);
 		Object[][] sampleObjects = 
@@ -227,8 +227,8 @@ public class MultiValueTableTest {
 	 * both present and not present keys
 	 */
 	@SuppressWarnings({ "cast", "unchecked" })
-    @Test
-    public void testGetSync() {
+	@Test
+	public void testGetSync() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		assertNull(methodMVTable.getSync(new Object()));
 		Object[][] sampleObjects = 
@@ -243,8 +243,8 @@ public class MultiValueTableTest {
 	 * with a present key and a not present key
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testGetArray() {
+	@Test
+	public void testGetArray() {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		assertNull(methodMVTable.getArray(new Object()));
 		Object[][] sampleObjects = 
@@ -312,8 +312,8 @@ public class MultiValueTableTest {
 	 * removed and if the result of isEmpty() method is correct.
 	 */
 	@SuppressWarnings("unchecked")
-    @Test
-    public void testRemoveElement() {
+	@Test
+	public void testRemoveElement() {
 		Object[][] sampleObjects = 
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		MultiValueTable<Object, Object> methodMVTable = fillMultiValueTable(sampleObjects);

@@ -20,7 +20,7 @@ import freenet.support.io.NativeThread;
  */
 class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	/** The callback */
 	public final USKFetcherCallback callback;
 	/** The original USK */
@@ -133,8 +133,8 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 			finished = true;
 		}
 		if(persistent) {
-		    // This can be called from USKFetcher, in which case we want to run on the 
-		    // PersistentJobRunner.
+			// This can be called from USKFetcher, in which case we want to run on the 
+			// PersistentJobRunner.
 			try {
 				context.jobRunner.queue(new PersistentJob() {
 
@@ -255,15 +255,15 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 		});
 	}
 	
-    @Override
-    public void onResume(ClientContext context) {
-        if(finished) return;
-        start(context.uskManager, context);
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		if(finished) return;
+		start(context.uskManager, context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 	
 }

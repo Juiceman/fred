@@ -21,8 +21,8 @@ public class MergeSFS {
 		if (args.length < 2 || args.length > 3) {
 			System.out.println("Merges changes made in a SFS override file to a SFS source file.");
 			System.out.println("Usage: source-file override-file [--stdout]");
-			System.out.println("    By default the merged file is written to source-file.");
-			System.out.println("    --stdout writes to standard output instead.");
+			System.out.println("	By default the merged file is written to source-file.");
+			System.out.println("	--stdout writes to standard output instead.");
 			return;
 		}
 		File f1 = new File(args[0]);

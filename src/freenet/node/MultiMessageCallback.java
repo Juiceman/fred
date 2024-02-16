@@ -10,10 +10,10 @@ import freenet.io.comm.AsyncMessageCallback;
  * PeerNode pn = ...;
  * MultiMessageCallback mcb = new MultiMessageCallback() {
  *   protected void finish(boolean success) {
- *     // Messages have finished.
+ *	 // Messages have finished.
  *   }
  *   protected void sent(boolean success) {
- *     // Messages have been sent.
+ *	 // Messages have been sent.
  *   }
  * }
  * pn.sendAsync(m1, mcb.make(), ctr);
@@ -21,7 +21,7 @@ import freenet.io.comm.AsyncMessageCallback;
  * mcb.arm();</pre> */
 public abstract class MultiMessageCallback {
 	
-    /** Number of messages that have not yet completed */
+	/** Number of messages that have not yet completed */
 	private int waiting;
 	/** Number of messages that have not yet been sent */
 	private int waitingForSend;
@@ -42,7 +42,7 @@ public abstract class MultiMessageCallback {
 	/** Add another message. You should call arm() after you have added all messages. */
 	public AsyncMessageCallback make() {
 		synchronized(this) {
-		    assert(!armed);
+			assert(!armed);
 			AsyncMessageCallback cb = new AsyncMessageCallback() {
 
 				private boolean finished;
@@ -56,7 +56,7 @@ public abstract class MultiMessageCallback {
 						sent = true;
 						waitingForSend--;
 						if(waitingForSend > 0) return;
-                        if(!armed) return;
+						if(!armed) return;
 						success = !someFailed;
 					}
 					MultiMessageCallback.this.sent(success);

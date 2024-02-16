@@ -200,8 +200,8 @@ public class Base64Test {
 
 			for (int i = 0; i < b.length; i++)
 				assertEquals("data mismatch: index " + i + " of " + b.length + " should be 0x"
-				        + Integer.toHexString(b[i] & 0xFF) + " was 0x" + Integer.toHexString(decoded[i] & 0xFF), b[i],
-				        decoded[i]);
+						+ Integer.toHexString(b[i] & 0xFF) + " was 0x" + Integer.toHexString(decoded[i] & 0xFF), b[i],
+						decoded[i]);
 		}
 	}
 }

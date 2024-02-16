@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 public abstract class BaseClientPutter extends ClientRequester {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/** Required because {@link Serializable} is implemented by the parent class. */
 	protected BaseClientPutter() {

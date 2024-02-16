@@ -543,11 +543,11 @@ public class FailureTable {
 			}
 			Message df = DMT.createFNPCHKDataFound(uid, block.getRawHeaders());
 			source.sendAsync(df, null, senderCounter);
-        	PartiallyReceivedBlock prb =
-        		new PartiallyReceivedBlock(Node.PACKETS_IN_BLOCK, Node.PACKET_SIZE, block.getRawData());
-        	final BlockTransmitter bt =
-        		new BlockTransmitter(node.usm, node.getTicker(), source, uid, prb, senderCounter, BlockTransmitter.NEVER_CASCADE,
-        				new BlockTransmitterCompletion() {
+			PartiallyReceivedBlock prb =
+				new PartiallyReceivedBlock(Node.PACKETS_IN_BLOCK, Node.PACKET_SIZE, block.getRawData());
+			final BlockTransmitter bt =
+				new BlockTransmitter(node.usm, node.getTicker(), source, uid, prb, senderCounter, BlockTransmitter.NEVER_CASCADE,
+						new BlockTransmitterCompletion() {
 
 					@Override
 					public void blockTransferFinished(boolean success) {
@@ -555,7 +555,7 @@ public class FailureTable {
 					}
 					
 				}, realTimeFlag, node.nodeStats);
-        	node.executor.execute(new PrioRunnable() {
+			node.executor.execute(new PrioRunnable() {
 
 				@Override
 				public int getPriority() {
@@ -566,8 +566,8 @@ public class FailureTable {
 				public void run() {
 					bt.sendAsync();
 				}
-        		
-        	}, "CHK offer sender");
+				
+			}, "CHK offer sender");
 		}
 	}
 
@@ -729,8 +729,8 @@ public class FailureTable {
 		}
 		return entry.othersWant(apartFrom);
 	}
-        
-        /** @return The lowest HTL at which any peer has requested this key recently */
+		
+		/** @return The lowest HTL at which any peer has requested this key recently */
 	public short minOfferedHTL(Key key, short htl) {
 		FailureTableEntry entry;
 		synchronized(this) {

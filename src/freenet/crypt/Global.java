@@ -35,7 +35,7 @@ public final class Global {
 	   So we need to keep that code around
 
 	   Ever since 567bf11a954edc31f3b6d4348782792fe7d5bae5 we are truncating all hashes
-	    (in Freenet's case, we are always using a single group: q is constant - see above)
+		(in Freenet's case, we are always using a single group: q is constant - see above)
 	   @see InsertableClientSSK
 
 	   Ever since 2ffce6060b346c3a671887b51849f88482b882a9 we are verifying using both

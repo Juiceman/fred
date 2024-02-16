@@ -29,7 +29,7 @@ public class URLEncoder {
 	 * @param force List of characters (in the form of a string) which must be encoded as well as the built-in.
 	 * @param ascii If true, encode all foreign letters, if false, leave them as is. Set to true if you are
 	 * passing to something that needs ASCII (e.g. HTTP headers), set to false if you are using in an HTML page.
-	 * @return      Encoded version of string
+	 * @return	  Encoded version of string
 	 */
 	public static String encode(String URL, String force, boolean ascii, String extraSafeChars) {
 		StringBuilder enc = new StringBuilder(URL.length());
@@ -62,7 +62,7 @@ public class URLEncoder {
 	 * @param  URL  String to encode
 	 * @param ascii If true, encode all foreign letters, if false, leave them as is. Set to true if you are
 	 * passing to something that needs ASCII (e.g. HTTP headers), set to false if you are using in an HTML page.
-	 * @return      Encoded version of string
+	 * @return	  Encoded version of string
 	 */
 	public static String encode(String s, boolean ascii) {
 		return encode(s, null, ascii);

@@ -233,7 +233,7 @@ public class SSL {
 
 					Class<?> x500NameClazz = Class.forName("sun.security.x509.X500Name");
 					Constructor<?> x500NameCtor = x500NameClazz.getConstructor(String.class, String.class,
-					        String.class, String.class, String.class, String.class);
+							String.class, String.class, String.class, String.class);
 					Object x500Name = x500NameCtor.newInstance(CERTIFICATE_CN, CERTIFICATE_OU, CERTIFICATE_ON, "", "", "");
 					
 					Method certAndKeyGenGenerate = certAndKeyGenClazz.getMethod("generate", int.class);
@@ -244,7 +244,7 @@ public class SSL {
 
 					Certificate[] chain = new Certificate[1];
 					Method certAndKeyGenGetSelfCertificate = certAndKeyGenClazz.getMethod("getSelfCertificate",
-					        x500NameClazz, long.class);
+							x500NameClazz, long.class);
 					chain[0] = (Certificate) certAndKeyGenGetSelfCertificate.invoke(keypair, x500Name,
 						CERTIFICATE_LIFETIME);
 

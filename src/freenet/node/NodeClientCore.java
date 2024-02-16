@@ -192,36 +192,36 @@ public class NodeClientCore implements Persistable {
 		this.pluginStores = new PluginStores(node, installConfig);
 
 		nodeConfig.register("lazyStartDatastoreChecker", false, sortOrder++, true, false,
-				    "NodeClientCore.lazyStartDatastoreChecker",
-				    "NodeClientCore.lazyStartDatastoreCheckerLong",
-				    new BooleanCallback() {
+					"NodeClientCore.lazyStartDatastoreChecker",
+					"NodeClientCore.lazyStartDatastoreCheckerLong",
+					new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    synchronized (NodeClientCore.this) {
-							    return lazyStartDatastoreChecker;
-						    }
-					    }
+						@Override
+						public Boolean get() {
+							synchronized (NodeClientCore.this) {
+								return lazyStartDatastoreChecker;
+							}
+						}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException,
+						@Override
+						public void set(Boolean val)
+								throws InvalidConfigValueException,
 								   NodeNeedRestartException {
-						    synchronized (NodeClientCore.this) {
-							    if (val != lazyStartDatastoreChecker) {
-								    lazyStartDatastoreChecker = val;
-								    throw new NodeNeedRestartException(
-										    l10n("lazyStartDatastoreCheckerMustRestartNode"));
-							    }
-						    }
-					    }
+							synchronized (NodeClientCore.this) {
+								if (val != lazyStartDatastoreChecker) {
+									lazyStartDatastoreChecker = val;
+									throw new NodeNeedRestartException(
+											l10n("lazyStartDatastoreCheckerMustRestartNode"));
+								}
+							}
+						}
 
-				    });
+					});
 		lazyStartDatastoreChecker = nodeConfig.getBoolean("lazyStartDatastoreChecker");
 
 		storeChecker =
 				new DatastoreChecker(node, lazyStartDatastoreChecker, node.executor,
-						     "Datastore checker");
+							 "Datastore checker");
 		byte[] pwdBuf = new byte[16];
 		random.nextBytes(pwdBuf);
 		compressor = new RealCompressor();
@@ -246,9 +246,9 @@ public class NodeClientCore implements Persistable {
 
 		this.tempDir =
 				node.setupProgramDir(installConfig, "tempDir",
-						     node.runDir().file("temp").toString(),
-						     "NodeClientCore.tempDir",
-						     "NodeClientCore.tempDirLong", nodeConfig);
+							 node.runDir().file("temp").toString(),
+							 "NodeClientCore.tempDir",
+							 "NodeClientCore.tempDirLong", nodeConfig);
 
 		// FIXME remove back compatibility hack.
 		File oldTemp = node.runDir().file("temp-" + node.getDarknetPortNumber());
@@ -278,36 +278,36 @@ public class NodeClientCore implements Persistable {
 
 		// Persistent temp files
 		nodeConfig.register("encryptPersistentTempBuckets", true, sortOrder++, true, false,
-				    "NodeClientCore.encryptPersistentTempBuckets",
-				    "NodeClientCore.encryptPersistentTempBucketsLong",
-				    new BooleanCallback() {
+					"NodeClientCore.encryptPersistentTempBuckets",
+					"NodeClientCore.encryptPersistentTempBucketsLong",
+					new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    return (persistentTempBucketFactory == null
-							    ? true : persistentTempBucketFactory
-									    .isEncrypting());
-					    }
+						@Override
+						public Boolean get() {
+							return (persistentTempBucketFactory == null
+								? true : persistentTempBucketFactory
+										.isEncrypting());
+						}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException {
-						    if (get().equals(val) || (
-								    persistentTempBucketFactory
-								    == null))
-							    return;
-						    persistentTempBucketFactory.setEncryption(val);
-						    persistentRAFFactory.setEncryption(val);
-					    }
-				    });
+						@Override
+						public void set(Boolean val)
+								throws InvalidConfigValueException {
+							if (get().equals(val) || (
+									persistentTempBucketFactory
+									== null))
+								return;
+							persistentTempBucketFactory.setEncryption(val);
+							persistentRAFFactory.setEncryption(val);
+						}
+					});
 
 		this.persistentTempDir =
 				node.setupProgramDir(installConfig, "persistentTempDir",
-						     node.userDir().file("persistent-temp")
-								     .toString(),
-						     "NodeClientCore.persistentTempDir",
-						     "NodeClientCore.persistentTempDirLong",
-						     nodeConfig);
+							 node.userDir().file("persistent-temp")
+									 .toString(),
+							 "NodeClientCore.persistentTempDir",
+							 "NodeClientCore.persistentTempDirLong",
+							 nodeConfig);
 
 		fcpPersistentRoot = new PersistentRequestRoot();
 		try {
@@ -364,9 +364,9 @@ public class NodeClientCore implements Persistable {
 		long maxBucketSize = Math.max(32768, (defaultRamBucketPoolSize * 1024 * 1024) / 20);
 
 		nodeConfig.register("maxRAMBucketSize",
-				    SizeUtil.formatSizeWithoutSpace(maxBucketSize), sortOrder++,
-				    true, false, "NodeClientCore.maxRAMBucketSize",
-				    "NodeClientCore.maxRAMBucketSizeLong", new LongCallback() {
+					SizeUtil.formatSizeWithoutSpace(maxBucketSize), sortOrder++,
+					true, false, "NodeClientCore.maxRAMBucketSize",
+					"NodeClientCore.maxRAMBucketSizeLong", new LongCallback() {
 
 					@Override
 					public Long get() {
@@ -386,8 +386,8 @@ public class NodeClientCore implements Persistable {
 				}, true);
 
 		nodeConfig.register("RAMBucketPoolSize", defaultRamBucketPoolSize + "MiB",
-				    sortOrder++, true, false, "NodeClientCore.ramBucketPoolSize",
-				    "NodeClientCore.ramBucketPoolSizeLong", new LongCallback() {
+					sortOrder++, true, false, "NodeClientCore.ramBucketPoolSize",
+					"NodeClientCore.ramBucketPoolSizeLong", new LongCallback() {
 
 					@Override
 					public Long get() {
@@ -408,8 +408,8 @@ public class NodeClientCore implements Persistable {
 				}, true);
 
 		nodeConfig.register("encryptTempBuckets", true, sortOrder++, true, false,
-				    "NodeClientCore.encryptTempBuckets",
-				    "NodeClientCore.encryptTempBucketsLong", new BooleanCallback() {
+					"NodeClientCore.encryptTempBuckets",
+					"NodeClientCore.encryptTempBucketsLong", new BooleanCallback() {
 
 					@Override
 					public Boolean get() {
@@ -433,11 +433,11 @@ public class NodeClientCore implements Persistable {
 		cryptoSecretTransient = new MasterSecret();
 		tempBucketFactory =
 				new TempBucketFactory(node.executor, tempFilenameGenerator,
-						      nodeConfig.getLong("maxRAMBucketSize"),
-						      nodeConfig.getLong("RAMBucketPoolSize"),
-						      node.fastWeakRandom,
-						      nodeConfig.getBoolean("encryptTempBuckets"),
-						      minDiskFreeShortTerm, cryptoSecretTransient);
+							  nodeConfig.getLong("maxRAMBucketSize"),
+							  nodeConfig.getLong("RAMBucketPoolSize"),
+							  node.fastWeakRandom,
+							  nodeConfig.getBoolean("encryptTempBuckets"),
+							  minDiskFreeShortTerm, cryptoSecretTransient);
 
 		bandwidthStatsPutter = new PersistentStatsPutter();
 
@@ -504,15 +504,15 @@ public class NodeClientCore implements Persistable {
 									node.fastWeakRandom);
 		persistentDiskChecker =
 				new DiskSpaceCheckingRandomAccessBufferFactory(raff,
-									       persistentTempDir
-											       .dir(),
-									       minDiskFreeLongTerm
-									       + tempBucketFactory
-											       .getMaxRamUsed());
+										   persistentTempDir
+												   .dir(),
+										   minDiskFreeLongTerm
+										   + tempBucketFactory
+												   .getMaxRamUsed());
 		persistentRAFFactory =
 				new MaybeEncryptedRandomAccessBufferFactory(persistentDiskChecker,
-									    nodeConfig.getBoolean(
-											    "encryptPersistentTempBuckets"));
+										nodeConfig.getBoolean(
+												"encryptPersistentTempBuckets"));
 		persistentTempBucketFactory.setDiskSpaceChecker(persistentDiskChecker);
 		HighLevelSimpleClient client = makeClient((short) 0, false, false);
 		FetchContext defaultFetchContext = client.getFetchContext();
@@ -528,27 +528,27 @@ public class NodeClientCore implements Persistable {
 		// FIXME review thread limits. This isn't just memory, it's CPU and disk as well, so we don't want it too big??
 		// FIXME l10n the errors?
 		nodeConfig.register("memoryLimitedJobThreadLimit", maxMemoryLimitedJobThreads,
-				    sortOrder++, true, false,
-				    "NodeClientCore.memoryLimitedJobThreadLimit",
-				    "NodeClientCore.memoryLimitedJobThreadLimitLong",
-				    new IntCallback() {
+					sortOrder++, true, false,
+					"NodeClientCore.memoryLimitedJobThreadLimit",
+					"NodeClientCore.memoryLimitedJobThreadLimitLong",
+					new IntCallback() {
 
-					    @Override
-					    public Integer get() {
-						    return memoryLimitedJobRunner.getMaxThreads();
-					    }
+						@Override
+						public Integer get() {
+							return memoryLimitedJobRunner.getMaxThreads();
+						}
 
-					    @Override
-					    public void set(Integer val)
-							    throws InvalidConfigValueException,
+						@Override
+						public void set(Integer val)
+								throws InvalidConfigValueException,
 								   NodeNeedRestartException {
-						    if (val < 1)
-							    throw new InvalidConfigValueException(
-									    l10n("memoryLimitedJobThreadLimitMustBe1Plus"));
-						    memoryLimitedJobRunner.setMaxThreads(val);
-					    }
+							if (val < 1)
+								throw new InvalidConfigValueException(
+										l10n("memoryLimitedJobThreadLimitMustBe1Plus"));
+							memoryLimitedJobRunner.setMaxThreads(val);
+						}
 
-				    }, false);
+					}, false);
 		long defaultMemoryLimitedJobMemoryLimit = FECCodec.MIN_MEMORY_ALLOCATION;
 		long overallMemoryLimit = NodeStarter.getMemoryLimitBytes();
 		if (overallMemoryLimit > 512 * 1024 * 1024) {
@@ -557,30 +557,30 @@ public class NodeClientCore implements Persistable {
 					(overallMemoryLimit - 512 * 1024 * 1024) / 20;
 		}
 		nodeConfig.register("memoryLimitedJobMemoryLimit",
-				    defaultMemoryLimitedJobMemoryLimit, sortOrder++, true, false,
-				    "NodeClientCore.memoryLimitedJobMemoryLimit",
-				    "NodeClientCore.memoryLimitedJobMemoryLimitLong",
-				    new LongCallback() {
+					defaultMemoryLimitedJobMemoryLimit, sortOrder++, true, false,
+					"NodeClientCore.memoryLimitedJobMemoryLimit",
+					"NodeClientCore.memoryLimitedJobMemoryLimitLong",
+					new LongCallback() {
 
-					    @Override
-					    public Long get() {
-						    return memoryLimitedJobRunner.getCapacity();
-					    }
+						@Override
+						public Long get() {
+							return memoryLimitedJobRunner.getCapacity();
+						}
 
-					    @Override
-					    public void set(Long val)
-							    throws InvalidConfigValueException,
+						@Override
+						public void set(Long val)
+								throws InvalidConfigValueException,
 								   NodeNeedRestartException {
-						    if (val < FECCodec.MIN_MEMORY_ALLOCATION)
-							    throw new InvalidConfigValueException(
-									    l10n("memoryLimitedJobMemoryLimitMustBeAtLeast",
+							if (val < FECCodec.MIN_MEMORY_ALLOCATION)
+								throw new InvalidConfigValueException(
+										l10n("memoryLimitedJobMemoryLimitMustBeAtLeast",
 										 "min",
 										 SizeUtil.formatSize(
 												 FECCodec.MIN_MEMORY_ALLOCATION)));
-						    memoryLimitedJobRunner.setCapacity(val);
-					    }
+							memoryLimitedJobRunner.setCapacity(val);
+						}
 
-				    }, true);
+					}, true);
 		memoryLimitedJobRunner =
 				new MemoryLimitedJobRunner(
 						nodeConfig.getLong("memoryLimitedJobMemoryLimit"),
@@ -631,7 +631,7 @@ public class NodeClientCore implements Persistable {
 								config, throttleFS, clientContext);
 		} catch (InvalidConfigValueException e1) {
 			throw new NodeInitException(NodeInitException.EXIT_BAD_CONFIG,
-						    e1.toString());
+							e1.toString());
 		}
 
 		clientContext.init(requestStarters, alerts);
@@ -653,7 +653,7 @@ public class NodeClientCore implements Persistable {
 
 					@Override
 					public void onChange(PHYSICAL_THREAT_LEVEL oldLevel,
-							     PHYSICAL_THREAT_LEVEL newLevel) {
+								 PHYSICAL_THREAT_LEVEL newLevel) {
 						if (newLevel == PHYSICAL_THREAT_LEVEL.LOW) {
 							if (tempBucketFactory.isEncrypting()) {
 								tempBucketFactory
@@ -685,7 +685,7 @@ public class NodeClientCore implements Persistable {
 							// May need to change filenames for client.dat* or even create them.
 							try {
 								initStorage(NodeClientCore.this.node
-											    .getDatabaseKey());
+												.getDatabaseKey());
 							} catch (MasterKeysWrongPasswordException e) {
 								NodeClientCore.this.node
 										.setDatabaseAwaitingPassword();
@@ -699,78 +699,78 @@ public class NodeClientCore implements Persistable {
 
 		this.downloadsDir =
 				node.setupProgramDir(nodeConfig, "downloadsDir",
-						     node.userDir().file("downloads").getPath(),
-						     "NodeClientCore.downloadsDir",
-						     "NodeClientCore.downloadsDirLong",
-						     l10n("couldNotFindOrCreateDir"),
-						     (SubConfig) null);
+							 node.userDir().file("downloads").getPath(),
+							 "NodeClientCore.downloadsDir",
+							 "NodeClientCore.downloadsDirLong",
+							 l10n("couldNotFindOrCreateDir"),
+							 (SubConfig) null);
 
 		// Downloads allowed, uploads allowed
 
 		nodeConfig.register("downloadAllowedDirs", new String[]{"all"}, sortOrder++, true,
-				    true, "NodeClientCore.downloadAllowedDirs",
-				    "NodeClientCore.downloadAllowedDirsLong",
-				    new StringArrCallback() {
+					true, "NodeClientCore.downloadAllowedDirs",
+					"NodeClientCore.downloadAllowedDirsLong",
+					new StringArrCallback() {
 
-					    @Override
-					    public String[] get() {
-						    synchronized (NodeClientCore.this) {
-							    if (downloadAllowedEverywhere)
-								    return new String[]{"all"};
-							    String[]
-									    dirs =
-									    new String[downloadAllowedDirs.length
-										       + (includeDownloadDir
+						@Override
+						public String[] get() {
+							synchronized (NodeClientCore.this) {
+								if (downloadAllowedEverywhere)
+									return new String[]{"all"};
+								String[]
+										dirs =
+										new String[downloadAllowedDirs.length
+											   + (includeDownloadDir
 											  ? 1 : 0)];
-							    for (int i = 0;
+								for (int i = 0;
 								 i < downloadAllowedDirs.length;
 								 i++)
-								    dirs[i] =
-										    downloadAllowedDirs[i]
-												    .getPath();
-							    if (includeDownloadDir)
-								    dirs[downloadAllowedDirs.length] =
-										    "downloads";
-							    return dirs;
-						    }
-					    }
+									dirs[i] =
+											downloadAllowedDirs[i]
+													.getPath();
+								if (includeDownloadDir)
+									dirs[downloadAllowedDirs.length] =
+											"downloads";
+								return dirs;
+							}
+						}
 
-					    @Override
-					    public void set(String[] val)
-							    throws InvalidConfigValueException {
-						    setDownloadAllowedDirs(val);
-					    }
-				    });
+						@Override
+						public void set(String[] val)
+								throws InvalidConfigValueException {
+							setDownloadAllowedDirs(val);
+						}
+					});
 		setDownloadAllowedDirs(nodeConfig.getStringArr("downloadAllowedDirs"));
 
 		nodeConfig.register("uploadAllowedDirs", new String[]{"all"}, sortOrder++, true,
-				    true, "NodeClientCore.uploadAllowedDirs",
-				    "NodeClientCore.uploadAllowedDirsLong",
-				    new StringArrCallback() {
+					true, "NodeClientCore.uploadAllowedDirs",
+					"NodeClientCore.uploadAllowedDirsLong",
+					new StringArrCallback() {
 
-					    @Override
-					    public String[] get() {
-						    synchronized (NodeClientCore.this) {
-							    if (uploadAllowedEverywhere)
-								    return new String[]{"all"};
-							    String[]
-									    dirs =
-									    new String[uploadAllowedDirs.length];
-							    for (int i = 0;
+						@Override
+						public String[] get() {
+							synchronized (NodeClientCore.this) {
+								if (uploadAllowedEverywhere)
+									return new String[]{"all"};
+								String[]
+										dirs =
+										new String[uploadAllowedDirs.length];
+								for (int i = 0;
 								 i < uploadAllowedDirs.length; i++)
-								    dirs[i] =
-										    uploadAllowedDirs[i]
-												    .getPath();
-							    return dirs;
-						    }
-					    }
+									dirs[i] =
+											uploadAllowedDirs[i]
+													.getPath();
+								return dirs;
+							}
+						}
 
-					    @Override
-					    public void set(String[] val)
-							    throws InvalidConfigValueException {
-						    setUploadAllowedDirs(val);
-					    }
-				    });
+						@Override
+						public void set(String[] val)
+								throws InvalidConfigValueException {
+							setUploadAllowedDirs(val);
+						}
+					});
 		setUploadAllowedDirs(nodeConfig.getStringArr("uploadAllowedDirs"));
 
 		Logger.normal(this, "Initializing USK Manager");
@@ -778,8 +778,8 @@ public class NodeClientCore implements Persistable {
 		uskManager.init(clientContext);
 
 		nodeConfig.register("maxBackgroundUSKFetchers", "64", sortOrder++, true, false,
-				    "NodeClientCore.maxUSKFetchers",
-				    "NodeClientCore.maxUSKFetchersLong", new IntCallback() {
+					"NodeClientCore.maxUSKFetchers",
+					"NodeClientCore.maxUSKFetchersLong", new IntCallback() {
 
 					@Override
 					public Integer get() {
@@ -807,23 +807,23 @@ public class NodeClientCore implements Persistable {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_TMCI,
-						    "Could not start TMCI: " + e);
+							"Could not start TMCI: " + e);
 		}
 
 		// FCP (including persistent requests so needs to start before FProxy)
 		try {
 			fcpServer =
 					FCPServer.maybeCreate(node, this, node.config,
-							      fcpPersistentRoot);
+								  fcpPersistentRoot);
 			clientContext.setDownloadCache(fcpServer);
 			if (!killedDatabase())
 				fcpServer.load();
 		} catch (IOException e) {
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_FCP,
-						    "Could not start FCP: " + e);
+							"Could not start FCP: " + e);
 		} catch (InvalidConfigValueException e) {
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_FCP,
-						    "Could not start FCP: " + e);
+							"Could not start FCP: " + e);
 		}
 
 		// FProxy
@@ -831,19 +831,19 @@ public class NodeClientCore implements Persistable {
 		this.alerts.register(
 				startingUpAlert =
 						new SimpleUserAlert(true, l10n("startingUpTitle"),
-								    l10n("startingUp"),
-								    l10n("startingUpShort"),
-								    UserAlert.ERROR));
+									l10n("startingUp"),
+									l10n("startingUpShort"),
+									UserAlert.ERROR));
 		this.alerts.register(new SimpleUserAlert(true, NodeL10n.getBase()
 				.getString("QueueToadlet.persistenceBrokenTitle"),
 							 NodeL10n.getBase()
 									 .getString("QueueToadlet.persistenceBroken",
-										    new String[]{"TEMPDIR",
+											new String[]{"TEMPDIR",
 												 "DBFILE"},
-										    new String[]{new File(
-												    FileUtil.getCanonicalFile(
-														    getPersistentTempDir()),
-												    File.separator).toString(),
+											new String[]{new File(
+													FileUtil.getCanonicalFile(
+															getPersistentTempDir()),
+													File.separator).toString(),
 												 new File(FileUtil.getCanonicalFile(
 														 node.getUserDir()),
 													  "client.dat").toString()}
@@ -873,93 +873,93 @@ public class NodeClientCore implements Persistable {
 		toadletContainer.setBucketFactory(tempBucketFactory);
 
 		nodeConfig.register("alwaysCommit", false, sortOrder++, true, false,
-				    "NodeClientCore.alwaysCommit",
-				    "NodeClientCore.alwaysCommitLong",
-				    new BooleanCallback() {
+					"NodeClientCore.alwaysCommit",
+					"NodeClientCore.alwaysCommitLong",
+					new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    return alwaysCommit;
-					    }
+						@Override
+						public Boolean get() {
+							return alwaysCommit;
+						}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException,
+						@Override
+						public void set(Boolean val)
+								throws InvalidConfigValueException,
 								   NodeNeedRestartException {
-						    alwaysCommit = val;
-					    }
+							alwaysCommit = val;
+						}
 
-				    });
+					});
 		alwaysCommit = nodeConfig.getBoolean("alwaysCommit");
 		alerts.register(new DiskSpaceUserAlert(this));
 		alerts.register(new DatastoreTooSmallAlert(this));
 	}
 
 	protected void updatePersistentRAFSpaceLimit() {
-	    // The temp bucket factory may have to migrate everything to disk.
-	    // So we add the RAM limit for the temp factory to the disk limit for the persistent one.
-        if(persistentRAFFactory != null) {
-            long size;
-            synchronized(this) {
-                size = minDiskFreeLongTerm;
-            }
-            size += tempBucketFactory.getMaxRamUsed();
-            persistentDiskChecker.setMinDiskSpace(size);
-        }
-    }
+		// The temp bucket factory may have to migrate everything to disk.
+		// So we add the RAM limit for the temp factory to the disk limit for the persistent one.
+		if(persistentRAFFactory != null) {
+			long size;
+			synchronized(this) {
+				size = minDiskFreeLongTerm;
+			}
+			size += tempBucketFactory.getMaxRamUsed();
+			persistentDiskChecker.setMinDiskSpace(size);
+		}
+	}
 
-    private void initDiskSpaceLimits(SubConfig nodeConfig, int sortOrder) {
-        nodeConfig.register("minDiskFreeLongTerm", "1G", sortOrder++, true, true, "NodeClientCore.minDiskFreeLongTerm", "NodeClientCore.minDiskFreeLongTermLong", new LongCallback() {
+	private void initDiskSpaceLimits(SubConfig nodeConfig, int sortOrder) {
+		nodeConfig.register("minDiskFreeLongTerm", "1G", sortOrder++, true, true, "NodeClientCore.minDiskFreeLongTerm", "NodeClientCore.minDiskFreeLongTermLong", new LongCallback() {
 
-            @Override
-            public Long get() {
-                synchronized(NodeClientCore.this) {
-                    return minDiskFreeLongTerm;
-                }
-            }
+			@Override
+			public Long get() {
+				synchronized(NodeClientCore.this) {
+					return minDiskFreeLongTerm;
+				}
+			}
 
-            @Override
-            public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
-                synchronized(NodeClientCore.this) {
-                    if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
-                    minDiskFreeLongTerm = val;
-                }
-                updatePersistentRAFSpaceLimit();
-            }
+			@Override
+			public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
+				synchronized(NodeClientCore.this) {
+					if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
+					minDiskFreeLongTerm = val;
+				}
+				updatePersistentRAFSpaceLimit();
+			}
 
-        }, true);
-        minDiskFreeLongTerm = nodeConfig.getLong("minDiskFreeLongTerm");
+		}, true);
+		minDiskFreeLongTerm = nodeConfig.getLong("minDiskFreeLongTerm");
 
-        nodeConfig.register("minDiskFreeShortTerm", "512M", sortOrder++, true, true, "NodeClientCore.minDiskFreeShortTerm", "NodeClientCore.minDiskFreeShortTermLong", new LongCallback() {
+		nodeConfig.register("minDiskFreeShortTerm", "512M", sortOrder++, true, true, "NodeClientCore.minDiskFreeShortTerm", "NodeClientCore.minDiskFreeShortTermLong", new LongCallback() {
 
-            @Override
-            public Long get() {
-                synchronized(NodeClientCore.this) {
-                    return minDiskFreeShortTerm;
-                }
-            }
+			@Override
+			public Long get() {
+				synchronized(NodeClientCore.this) {
+					return minDiskFreeShortTerm;
+				}
+			}
 
-            @Override
-            public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
-                synchronized(NodeClientCore.this) {
-                    if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
-                    minDiskFreeShortTerm = val;
-                }
-                tempBucketFactory.setMinDiskSpace(val);
-            }
+			@Override
+			public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
+				synchronized(NodeClientCore.this) {
+					if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
+					minDiskFreeShortTerm = val;
+				}
+				tempBucketFactory.setMinDiskSpace(val);
+			}
 
-        }, true);
-        minDiskFreeShortTerm = nodeConfig.getLong("minDiskFreeShortTerm");
-        // Do not register the UserAlert yet, since we haven't finished constructing stuff it uses.
-    }
+		}, true);
+		minDiskFreeShortTerm = nodeConfig.getLong("minDiskFreeShortTerm");
+		// Do not register the UserAlert yet, since we haven't finished constructing stuff it uses.
+	}
 
 	boolean lateInitDatabase(DatabaseKey databaseKey) throws NodeInitException {
 		System.out.println("Late database initialisation: starting middle phase");
 		try {
-		    initStorage(databaseKey);
+			initStorage(databaseKey);
 		} catch (MasterKeysWrongPasswordException e) {
-		    Logger.error(this, "Impossible: can't load even though have key? "+(databaseKey != null));
-		    return true;
+			Logger.error(this, "Impossible: can't load even though have key? "+(databaseKey != null));
+			return true;
 		}
 		// Don't actually start the database thread yet, messy concurrency issues.
 		fcpServer.load();
@@ -973,36 +973,36 @@ public class NodeClientCore implements Persistable {
 	 * @throws MasterKeysWrongPasswordException If it needs an encryption key.
 	 */
 	private void initStorage(DatabaseKey databaseKey) throws MasterKeysWrongPasswordException {
-	    clientLayerPersister.setFilesAndLoad(node.nodeDir.dir(), "client.dat",
-	            node.wantEncryptedDatabase(), node.wantNoPersistentDatabase(), databaseKey, clientContext, requestStarters, random);
+		clientLayerPersister.setFilesAndLoad(node.nodeDir.dir(), "client.dat",
+				node.wantEncryptedDatabase(), node.wantNoPersistentDatabase(), databaseKey, clientContext, requestStarters, random);
 	}
 
 	/** Must only be called after we have loaded master.keys */
 	private void finishInitStorage() {
-	    boolean success = false;
-	    synchronized(this) {
-	        if(finishedInitStorage || finishingInitStorage) return;
-	        finishingInitStorage = true;
-	    }
-	    try {
-	        persistentTempBucketFactory.completedInit(); // Only GC persistent-temp after a successful load.
-	        success = true;
-	    } finally {
-	        synchronized(this) {
-	            finishingInitStorage = false;
-	            if(success)
-	                finishedInitStorage = true;
-	        }
-	    }
-    }
+		boolean success = false;
+		synchronized(this) {
+			if(finishedInitStorage || finishingInitStorage) return;
+			finishingInitStorage = true;
+		}
+		try {
+			persistentTempBucketFactory.completedInit(); // Only GC persistent-temp after a successful load.
+			success = true;
+		} finally {
+			synchronized(this) {
+				finishingInitStorage = false;
+				if(success)
+					finishedInitStorage = true;
+			}
+		}
+	}
 
-    private static String l10n(String key) {
+	private static String l10n(String key) {
 		return NodeL10n.getBase().getString("NodeClientCore." + key);
 	}
 
-    private static String l10n(String key, String pattern, String value) {
-        return NodeL10n.getBase().getString("NodeClientCore." + key, pattern, value);
-    }
+	private static String l10n(String key, String pattern, String value) {
+		return NodeL10n.getBase().getString("NodeClientCore." + key, pattern, value);
+	}
 
 	public boolean isDownloadDisabled() {
 		return downloadDisabled;
@@ -1055,8 +1055,8 @@ public class NodeClientCore implements Persistable {
 		storeChecker.start();
 		if(fcpServer != null)
 			fcpServer.maybeStart();
-        node.pluginManager.start();
-        node.ipDetector.ipDetectorManager.start();
+		node.pluginManager.start();
+		node.ipDetector.ipDetectorManager.start();
 		if(tmci != null)
 			tmci.start();
 
@@ -1066,14 +1066,14 @@ public class NodeClientCore implements Persistable {
 			public void run() {
 				Logger.normal(this, "Resuming persistent requests");
 				if(node.getDatabaseKey() != null) {
-				    try {
-				        finishInitStorage();
-				    } catch (Throwable t) {
-				        Logger.error(this, "Failed to migrate and/or cleanup persistent temp buckets: "+t, t);
-				        System.err.println("Failed to migrate and/or cleanup persistent temp buckets: "+t);
-				        t.printStackTrace();
-				        // Start the rest of the node anyway ...
-				    }
+					try {
+						finishInitStorage();
+					} catch (Throwable t) {
+						Logger.error(this, "Failed to migrate and/or cleanup persistent temp buckets: "+t, t);
+						System.err.println("Failed to migrate and/or cleanup persistent temp buckets: "+t);
+						t.printStackTrace();
+						// Start the rest of the node anyway ...
+					}
 				}
 				Logger.normal(this, "Completed startup: All persistent requests resumed or restarted");
 				alerts.unregister(startingUpAlert);
@@ -2101,35 +2101,35 @@ public class NodeClientCore implements Persistable {
 		return r.recentlyFailed();
 	}
 
-    public PluginStores getPluginStores() {
-        return pluginStores;
-    }
+	public PluginStores getPluginStores() {
+		return pluginStores;
+	}
 
-    public synchronized long getMinDiskFreeLongTerm() {
-        return minDiskFreeLongTerm;
-    }
+	public synchronized long getMinDiskFreeLongTerm() {
+		return minDiskFreeLongTerm;
+	}
 
-    public synchronized long getMinDiskFreeShortTerm() {
-        return minDiskFreeShortTerm;
-    }
+	public synchronized long getMinDiskFreeShortTerm() {
+		return minDiskFreeShortTerm;
+	}
 
-    public boolean killedDatabase() {
-        return this.clientLayerPersister.isKilledOrNotLoaded();
-    }
+	public boolean killedDatabase() {
+		return this.clientLayerPersister.isKilledOrNotLoaded();
+	}
 
-    public ClientRequest[] getPersistentRequests() {
-        return fcpPersistentRoot.getPersistentRequests();
-    }
+	public ClientRequest[] getPersistentRequests() {
+		return fcpPersistentRoot.getPersistentRequests();
+	}
 
-    public void setupMasterSecret(MasterSecret persistentSecret) {
-        if(clientContext.getPersistentMasterSecret() == null)
-            clientContext.setPersistentMasterSecret(persistentSecret);
-        persistentTempBucketFactory.setMasterSecret(persistentSecret);
-        persistentRAFFactory.setMasterSecret(persistentSecret);
-    }
+	public void setupMasterSecret(MasterSecret persistentSecret) {
+		if(clientContext.getPersistentMasterSecret() == null)
+			clientContext.setPersistentMasterSecret(persistentSecret);
+		persistentTempBucketFactory.setMasterSecret(persistentSecret);
+		persistentRAFFactory.setMasterSecret(persistentSecret);
+	}
 
-    public boolean loadedDatabase() {
-        return clientLayerPersister.hasLoaded();
-    }
+	public boolean loadedDatabase() {
+		return clientLayerPersister.hasLoaded();
+	}
 
 }

@@ -23,7 +23,7 @@ import freenet.support.Logger.LogLevel;
  */
 public abstract class Fields {
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -97,11 +97,11 @@ public abstract class Fields {
 	 * for negative longs values.
 	 *
 	 * @param hex
-	 *            A string in capital or lower case hex, of no more then 16
-	 *            characters.
+	 *			A string in capital or lower case hex, of no more then 16
+	 *			characters.
 	 * @throws NumberFormatException
-	 *             if the string is more than 16 characters long, or if any
-	 *             character is not in the set [0-9a-fA-f]
+	 *			 if the string is more than 16 characters long, or if any
+	 *			 character is not in the set [0-9a-fA-f]
 	 */
 	public static long hexToLong(String hex)
 		throws NumberFormatException {
@@ -130,11 +130,11 @@ public abstract class Fields {
 	 * '-FF' for negative integer values.
 	 *
 	 * @param hex
-	 *            A string in capital or lower case hex, of no more then 16
-	 *            characters.
+	 *			A string in capital or lower case hex, of no more then 16
+	 *			characters.
 	 * @throws NumberFormatException
-	 *             if the string is more than 16 characters long, or if any
-	 *             character is not in the set [0-9a-fA-f]
+	 *			 if the string is more than 16 characters long, or if any
+	 *			 character is not in the set [0-9a-fA-f]
 	 */
 	public static int hexToInt(String hex) throws NumberFormatException {
 		int len = hex.length();
@@ -157,13 +157,13 @@ public abstract class Fields {
 	 * strings "true" and "false".
 	 *
 	 * @param s
-	 *            The string
+	 *			The string
 	 * @param def
-	 *            The default value if the string can't be parsed. If the
-	 *            default is true, it checks that the string is not "false"; if
-	 *            it is false, it checks whether the string is "true".
+	 *			The default value if the string can't be parsed. If the
+	 *			default is true, it checks that the string is not "false"; if
+	 *			it is false, it checks whether the string is "true".
 	 * @return the boolean field value or the default value if the field value
-	 *         couldn't be parsed.
+	 *		 couldn't be parsed.
 	 */
 	/* wooo, rocket science! (this is purely abstraction people) */
 	public static boolean stringToBool(String s, boolean def) {
@@ -191,7 +191,7 @@ public abstract class Fields {
 	 * Converts a boolean to a String of either "true" or "false".
 	 *
 	 * @param b
-	 *            the boolean value to convert.
+	 *			the boolean value to convert.
 	 * @return A "true" or "false" String.
 	 */
 	public static String boolToString(boolean b) {
@@ -672,7 +672,7 @@ public abstract class Fields {
 	/**
 	 * Parse a human-readable string possibly including SI and ICE units into a short.
 	 * @throws NumberFormatException
-	 *             if the string is not parseable
+	 *			 if the string is not parseable
 	 */
 	public static short parseShort(String s) throws NumberFormatException {
 		s = s.replaceFirst("(i)*B$", "");
@@ -732,16 +732,16 @@ public abstract class Fields {
 
 	/**
 	 * Parse a human-readable string possibly including SI and ICE units into an integer.
-     * 
-     * If it is a size (suffix b für bits or B for bytes), the size is returned as bytes.
-     * 8b = 1, 8B = 8.
+	 * 
+	 * If it is a size (suffix b für bits or B for bytes), the size is returned as bytes.
+	 * 8b = 1, 8B = 8.
 	 * @throws NumberFormatException
-	 *             if the string is not parseable
+	 *			 if the string is not parseable
 	 */
 	public static int parseInt(String s) throws NumberFormatException {
-        boolean isSizeInBits = s.endsWith("b");
-        // strip bit/byte suffix
-        s = s.replaceFirst((isSizeInBits ? "(i)*b$" : "(i)*B$"), "");
+		boolean isSizeInBits = s.endsWith("b");
+		// strip bit/byte suffix
+		s = s.replaceFirst((isSizeInBits ? "(i)*b$" : "(i)*B$"), "");
 		int res = 1;
 		int x = s.length() - 1;
 		int idx;
@@ -761,7 +761,7 @@ public abstract class Fields {
 	/**
 	 * Parse a human-readable string possibly including SI and ICE units into a long.
 	 * @throws NumberFormatException
-	 *             if the string is not parseable
+	 *			 if the string is not parseable
 	 */
 	public static long parseLong(String s) throws NumberFormatException {
 		s = s.replaceFirst("(i)*B$", "");
@@ -1017,20 +1017,20 @@ public abstract class Fields {
 		return 0;
 	}
 
-    public static final int compare(Date a, Date b) {
-        // Replace null Dates with real ones so we can use Date.compareTo()
-        a = (a != null ? a : new Date(0));
-        b = (b != null ? b : new Date(0));
-        return a.compareTo(b);
-    }
+	public static final int compare(Date a, Date b) {
+		// Replace null Dates with real ones so we can use Date.compareTo()
+		a = (a != null ? a : new Date(0));
+		b = (b != null ? b : new Date(0));
+		return a.compareTo(b);
+	}
 
 	/** Copy all of the remaining bytes in the buffer to a byte array.
 	 * @param buf The input buffer. Position will be at the limit when returning.
 	 */
 	public static byte[] copyToArray(ByteBuffer buf) {
-	    byte[] ret = new byte[buf.remaining()];
-	    buf.get(ret);
-	    return ret;
+		byte[] ret = new byte[buf.remaining()];
+		buf.get(ret);
+		return ret;
 	}
 
 }

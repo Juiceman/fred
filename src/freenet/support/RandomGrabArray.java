@@ -70,7 +70,7 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 		req.setParentGrabArray(this); // will store() self
 		synchronized(root) {
 			if(context != null) {
-			    clearWakeupTime(context);
+				clearWakeupTime(context);
 			}
 			int x = 0;
 			if(blocks.length == 1 && index < BLOCK_SIZE) {
@@ -406,9 +406,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	}
 
 	public boolean isEmpty() {
-	    synchronized(root) {
-	        return index == 0;
-	    }
+		synchronized(root) {
+			return index == 0;
+		}
 	}
 	
 	public boolean contains(RandomGrabArrayItem item) {
@@ -438,17 +438,17 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	}
 	
 	public int size() {
-	    synchronized(root) {
-	        return index;
-	    }
+		synchronized(root) {
+			return index;
+		}
 	}
 
 	public RandomGrabArrayItem get(int idx) {
-	    synchronized(root) {
-	        int blockNo = idx / BLOCK_SIZE;
-	        RandomGrabArrayItem item = blocks[blockNo].reqs[idx % BLOCK_SIZE];
-	        return item;
-	    }
+		synchronized(root) {
+			int blockNo = idx / BLOCK_SIZE;
+			RandomGrabArrayItem item = blocks[blockNo].reqs[idx % BLOCK_SIZE];
+			return item;
+		}
 	}
 	
 	// REDFLAG this method does not move cooldown items.
@@ -470,65 +470,65 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 
 	@Override
 	public void setParent(RemoveRandomParent newParent) {
-	    synchronized(root) {
-	        this.parent = newParent;
-	    }
+		synchronized(root) {
+			this.parent = newParent;
+		}
 	}
 
-    @Override
-    public RequestSelectionTreeNode getParentGrabArray() {
-        synchronized(root) {
-            return parent;
-        }
-    }
+	@Override
+	public RequestSelectionTreeNode getParentGrabArray() {
+		synchronized(root) {
+			return parent;
+		}
+	}
 
-    @Override
-    public long getWakeupTime(ClientContext context, long now) {
-        synchronized(root) {
-            if(wakeupTime < now) wakeupTime = 0;
-            return wakeupTime;
-        }
-    }
-    
-    /** Set the wakeup time, and update parents recursively if it is reduced. If it is increased
-     * we don't need to bother parents as they will recompute the next time they need to. Only
-     * called by removeRandomExhaustive() i.e. after checking <b>all</b> our 
-     * RandomGrabArrayItem's and finding that none of them are ready to send.
-     * @param wakeupTime
-     * @param context
-     */
-    private void setWakeupTime(long wakeupTime, ClientContext context) {
-        if(logMINOR) Logger.minor(this, "setCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
-        synchronized(root) {
-            if(this.wakeupTime > wakeupTime) {
-                this.wakeupTime = wakeupTime; // Set before calling parent.
-                if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
-            } else {
-                this.wakeupTime = wakeupTime;
-            }
-        }
-    }
+	@Override
+	public long getWakeupTime(ClientContext context, long now) {
+		synchronized(root) {
+			if(wakeupTime < now) wakeupTime = 0;
+			return wakeupTime;
+		}
+	}
+	
+	/** Set the wakeup time, and update parents recursively if it is reduced. If it is increased
+	 * we don't need to bother parents as they will recompute the next time they need to. Only
+	 * called by removeRandomExhaustive() i.e. after checking <b>all</b> our 
+	 * RandomGrabArrayItem's and finding that none of them are ready to send.
+	 * @param wakeupTime
+	 * @param context
+	 */
+	private void setWakeupTime(long wakeupTime, ClientContext context) {
+		if(logMINOR) Logger.minor(this, "setCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		synchronized(root) {
+			if(this.wakeupTime > wakeupTime) {
+				this.wakeupTime = wakeupTime; // Set before calling parent.
+				if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
+			} else {
+				this.wakeupTime = wakeupTime;
+			}
+		}
+	}
 
-    @Override
-    public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
-        if(logMINOR) Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
-        synchronized(root) {
-            if(this.wakeupTime > wakeupTime) {
-                this.wakeupTime = wakeupTime;
-                if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
-                return true;
-            }
-            return false;
-        }
-    }
+	@Override
+	public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
+		if(logMINOR) Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		synchronized(root) {
+			if(this.wakeupTime > wakeupTime) {
+				this.wakeupTime = wakeupTime;
+				if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
+				return true;
+			}
+			return false;
+		}
+	}
 
-    @Override
-    public void clearWakeupTime(ClientContext context) {
-        if(logMINOR) Logger.minor(this, "clearCooldownTime() on "+this);
-        synchronized(root) {
-            wakeupTime = 0;
-            if(parent != null) parent.clearWakeupTime(context);
-        }
-    }
+	@Override
+	public void clearWakeupTime(ClientContext context) {
+		if(logMINOR) Logger.minor(this, "clearCooldownTime() on "+this);
+		synchronized(root) {
+			wakeupTime = 0;
+			if(parent != null) parent.clearWakeupTime(context);
+		}
+	}
 	
 }

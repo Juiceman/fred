@@ -22,8 +22,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class PlainManifestPutter extends BaseManifestPutter {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logDEBUG;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logDEBUG;
 
 	static {
 		Logger.registerClass(PlainManifestPutter.class);
@@ -59,10 +59,10 @@ public class PlainManifestPutter extends BaseManifestPutter {
 		}
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        notifyClients(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		notifyClients(context);
+	}
 }
 

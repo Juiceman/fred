@@ -88,7 +88,7 @@ public class ClientContext {
 	public transient final LinkFilterExceptionProvider linkFilterExceptionProvider;
 	/** Transient version of the PersistentJobRunner, just starts stuff immediately. Helpful for
 	 * avoiding having two different API's, e.g. in SplitFileFetcherStorage. */
-    public PersistentJobRunner dummyJobRunner;
+	public PersistentJobRunner dummyJobRunner;
 
 	private transient final Config config;
 
@@ -144,11 +144,11 @@ public class ClientContext {
 	}
 	
 	public synchronized void setPersistentMasterSecret(MasterSecret secret) {
-	    this.cryptoSecretPersistent = secret;
+		this.cryptoSecretPersistent = secret;
 	}
 	
 	public synchronized MasterSecret getPersistentMasterSecret() {
-	    return cryptoSecretPersistent;
+		return cryptoSecretPersistent;
 	}
 
 	public ClientRequestScheduler getSskFetchScheduler(boolean realTime) {
@@ -293,26 +293,26 @@ public class ClientContext {
 		this.downloadCache = cache;
 	}
 
-    public FetchContext getDefaultPersistentFetchContext() {
-        return new FetchContext(defaultPersistentFetchContext, FetchContext.IDENTICAL_MASK);
-    }
-    
-    public InsertContext getDefaultPersistentInsertContext() {
-        return new InsertContext(defaultPersistentInsertContext, new SimpleEventProducer());
-    }
-    
-    public PersistentJobRunner getJobRunner(boolean persistent) {
-        return persistent ? jobRunner : dummyJobRunner;
-    }
+	public FetchContext getDefaultPersistentFetchContext() {
+		return new FetchContext(defaultPersistentFetchContext, FetchContext.IDENTICAL_MASK);
+	}
+	
+	public InsertContext getDefaultPersistentInsertContext() {
+		return new InsertContext(defaultPersistentInsertContext, new SimpleEventProducer());
+	}
+	
+	public PersistentJobRunner getJobRunner(boolean persistent) {
+		return persistent ? jobRunner : dummyJobRunner;
+	}
 
-    public FileRandomAccessBufferFactory getFileRandomAccessBufferFactory(boolean persistent) {
-        return persistent ? fileRAFPersistent : fileRAFTransient;
-                 
-    }
+	public FileRandomAccessBufferFactory getFileRandomAccessBufferFactory(boolean persistent) {
+		return persistent ? fileRAFPersistent : fileRAFTransient;
+				 
+	}
 
-    public LockableRandomAccessBufferFactory getRandomAccessBufferFactory(boolean persistent) {
-        return persistent ? persistentRAFFactory : tempBucketFactory;
-    }
+	public LockableRandomAccessBufferFactory getRandomAccessBufferFactory(boolean persistent) {
+		return persistent ? persistentRAFFactory : tempBucketFactory;
+	}
 
 	public Config getConfig() {
 		return config;

@@ -9,10 +9,10 @@ import freenet.support.WeakHashSet;
 /** Track a collection of PeerNode's for each status. */
 class PeerStatusTracker<K extends Object> {
 	
-    private static volatile boolean logMINOR;
-    static {
-        Logger.registerClass(PeerManager.class);
-    }
+	private static volatile boolean logMINOR;
+	static {
+		Logger.registerClass(PeerManager.class);
+	}
 
 	/** PeerNode statuses, by status. WARNING: LOCK THIS LAST. Must NOT call PeerNode inside this lock. */
 	private final HashMap<K, WeakHashSet<PeerNode>> statuses;

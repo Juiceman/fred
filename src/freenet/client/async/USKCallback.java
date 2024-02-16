@@ -16,9 +16,9 @@ public interface USKCallback {
 	 * search for any later editions. 
 	 * 
 	 * @param l
-	 *            The edition number.
+	 *			The edition number.
 	 * @param key
-	 *            A copy of the key with new edition set
+	 *			A copy of the key with new edition set
 	 * @param newKnownGood If the highest known good edition (which has actually been
 	 * fetched with what it pointed to) has increased. Otherwise, the highest known
 	 * SSK slot has been increased, from which searches will start, but we do not 

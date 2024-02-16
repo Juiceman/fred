@@ -246,7 +246,7 @@ public class ElementInfo {
 			// CSS selectors (by ignoring it).
 			//
 			// TL;DR: Protecting the user is the main purpose of the CSS ContentFilter, :visited 
-			//        is considered too much of a danger, so we scrub that pseudoclass.
+			//		is considered too much of a danger, so we scrub that pseudoclass.
 			//
 			// [1] http://lcamtuf.coredump.cx/css_calc/
 			"visited"

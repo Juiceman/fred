@@ -19,7 +19,7 @@ import freenet.support.io.ResumeFailedException;
  */
 public abstract class SendableInsert extends SendableRequest {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public SendableInsert(boolean persistent, boolean realTimeFlag) {
 		super(persistent, realTimeFlag);
@@ -70,11 +70,11 @@ public abstract class SendableInsert extends SendableRequest {
 	private transient boolean resumed = false;
 	
 	public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-	    synchronized(this) {
-	        if(resumed) return;
-	        resumed = true;
-	    }
-	    innerOnResume(context);
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		innerOnResume(context);
 	}
 	
 	protected abstract void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException;

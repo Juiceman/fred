@@ -33,13 +33,13 @@ import freenet.support.math.MersenneTwister;
 /** A ClientSSK that has a private key and therefore can be inserted. */
 public class InsertableClientSSK extends ClientSSK {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public final DSAPrivateKey privKey;
+	public final DSAPrivateKey privKey;
 	
 	private static boolean logMINOR;
 	static {
-	    Logger.registerClass(InsertableClientSSK.class);
+		Logger.registerClass(InsertableClientSSK.class);
 	}
 	
 	public InsertableClientSSK(String docName, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey, byte[] cryptoKey, byte cryptoAlgorithm) throws MalformedURLException {
@@ -49,8 +49,8 @@ public class InsertableClientSSK extends ClientSSK {
 	}
 	
 	protected InsertableClientSSK() {
-	    // For serialization.
-	    privKey = null;
+		// For serialization.
+		privKey = null;
 	}
 	
 	public static InsertableClientSSK create(FreenetURI uri) throws MalformedURLException {

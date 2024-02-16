@@ -13,16 +13,16 @@ public class RandomGrabArrayWithObject<T> extends RandomGrabArray implements Rem
 
 	@Override
 	public final T getObject() {
-	    synchronized(root) {
-	        return client;
-	    }
+		synchronized(root) {
+			return client;
+		}
 	}
 
 	@Override
 	public void setObject(T client) {
-	    synchronized(root) {
-	        this.client = client;
-	    }
+		synchronized(root) {
+			this.client = client;
+		}
 	}
 	
 }

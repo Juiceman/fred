@@ -30,8 +30,8 @@ import freenet.support.api.Bucket;
  */
 public abstract class ClientPutBase extends ClientRequest implements ClientPutCallback, ClientEventListener {
 
-    private static final long serialVersionUID = 1L;
-    /** Created new for each ClientPutBase, so we have to delete it in requestWasRemoved() */
+	private static final long serialVersionUID = 1L;
+	/** Created new for each ClientPutBase, so we have to delete it in requestWasRemoved() */
 	final InsertContext ctx;
 
 	// Verbosity bitmasks
@@ -77,24 +77,24 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	private static Map<Integer, UploadFrom> uploadFromByCode = new HashMap<Integer, UploadFrom>();
 	
 	public enum UploadFrom { // Codes must be constant at least for migration
-	    DIRECT(0),
-	    DISK(1),
-	    REDIRECT(2);
-	    
-	    final int code;
-	    
-	    UploadFrom(int code) {
-	        if(uploadFromByCode.containsKey(code)) throw new Error("Duplicate");
-	        uploadFromByCode.put(code, this);
-	        this.code = code;
-	    }
-	    
-	    public static UploadFrom getByCode(int x) {
-	        UploadFrom u = uploadFromByCode.get(x);
-	        if(u == null) throw new IllegalArgumentException();
-	        return u;
-	    }
-	    
+		DIRECT(0),
+		DISK(1),
+		REDIRECT(2);
+		
+		final int code;
+		
+		UploadFrom(int code) {
+			if(uploadFromByCode.containsKey(code)) throw new Error("Duplicate");
+			uploadFromByCode.put(code, this);
+			this.code = code;
+		}
+		
+		public static UploadFrom getByCode(int x) {
+			UploadFrom u = uploadFromByCode.get(x);
+			if(u == null) throw new IllegalArgumentException();
+			return u;
+		}
+		
 	}
 	
 	public ClientPutBase(FreenetURI uri, String identifier, int verbosity, String charset, 
@@ -102,7 +102,7 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 			boolean getCHKOnly, boolean dontCompress, boolean localRequestOnly, int maxRetries, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, String compressorDescriptor, int extraInsertsSingleBlock, int extraInsertsSplitfileHeader, boolean realTimeFlag, InsertContext.CompatibilityMode compatibilityMode, boolean ignoreUSKDatehints, FCPServer server) throws MalformedURLException {
 		super(uri, identifier, verbosity, charset, handler, priorityClass, persistence, realTimeFlag, clientToken, global);
 		ctx = server.core.clientContext.getDefaultPersistentInsertContext();
-        ctx.getCHKOnly = getCHKOnly;
+		ctx.getCHKOnly = getCHKOnly;
 		ctx.dontCompress = dontCompress;
 		ctx.eventProducer.addEventListener(this);
 		ctx.maxInsertRetries = maxRetries;
@@ -119,17 +119,17 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	}
 	
 	protected ClientPutBase() {
-	    // For serialization.
-	    ctx = null;
-	    publicURI = null;
+		// For serialization.
+		ctx = null;
+		publicURI = null;
 	}
 
 	static FreenetURI checkEmptySSK(FreenetURI uri, String filename, ClientContext context) {
 		if("SSK".equals(uri.getKeyType()) && uri.getDocName() == null && uri.getRoutingKey() == null) {
 			if(filename == null || filename.isEmpty()) filename = "key";
 			// SSK@ = use a random SSK.
-	    	InsertableClientSSK key = InsertableClientSSK.createRandom(context.random, "");
-	    	return key.getInsertURI().setDocName(filename);
+			InsertableClientSSK key = InsertableClientSSK.createRandom(context.random, "");
+			return key.getInsertURI().setDocName(filename);
 		} else {
 			return uri;
 		}
@@ -140,7 +140,7 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 			boolean global, boolean getCHKOnly, boolean dontCompress, int maxRetries, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, boolean localRequestOnly, int extraInsertsSingleBlock, int extraInsertsSplitfileHeader, boolean realTimeFlag, String compressorDescriptor, InsertContext.CompatibilityMode compatMode, boolean ignoreUSKDatehints, NodeClientCore core) throws MalformedURLException {
 		super(uri, identifier, verbosity, charset, handler, client, priorityClass, persistence, realTimeFlag, clientToken, global);
 		ctx = core.clientContext.getDefaultPersistentInsertContext();
-        ctx.getCHKOnly = getCHKOnly;
+		ctx.getCHKOnly = getCHKOnly;
 		ctx.dontCompress = dontCompress;
 		ctx.eventProducer.addEventListener(this);
 		ctx.maxInsertRetries = maxRetries;
@@ -168,16 +168,16 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		synchronized(this) {
 			// Including this helps with certain bugs...
 			//progressMessage = null;
-		    started = true; // FIXME remove, used by resuming
+			started = true; // FIXME remove, used by resuming
 			succeeded = true;
 			finished = true;
 			completionTime = System.currentTimeMillis();
 			if(generatedURI == null)
 				Logger.error(this, "No generated URI in onSuccess() for "+this+" from "+state);
 		}
-    if (persistence == Persistence.CONNECTION) {
-      freeData();
-    }
+	if (persistence == Persistence.CONNECTION) {
+	  freeData();
+	}
 		finish();
 		trySendFinalMessage(null, null);
 		if(client != null)
@@ -188,14 +188,14 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	public void onFailure(InsertException e, BaseClientPutter state) {
 		if(finished) return;
 		synchronized(this) {
-		    started = true; // FIXME remove, used by resuming
+			started = true; // FIXME remove, used by resuming
 			finished = true;
 			completionTime = System.currentTimeMillis();
 			putFailedMessage = new PutFailedMessage(e, identifier, global);
 		}
-    if (persistence == Persistence.CONNECTION) {
-      freeData();
-    }
+	if (persistence == Persistence.CONNECTION) {
+	  freeData();
+	}
 		finish();
 		trySendFinalMessage(null, null);
 		if(client != null)
@@ -402,10 +402,10 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	 * @param context Can be null if container is not null.
 	 */
 	private void trySendProgressMessage(final FCPMessage msg, final int verbosity, FCPConnectionOutputHandler handler, ClientContext context) {
-	    synchronized(this) {
-	        if(persistence != Persistence.CONNECTION)
-	            progressMessage = msg;
-	    }
+		synchronized(this) {
+			if(persistence != Persistence.CONNECTION)
+				progressMessage = msg;
+		}
 		if(persistence == Persistence.CONNECTION && handler == null)
 			handler = origHandler.outputHandler;
 		if(handler != null)
@@ -528,10 +528,10 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	}
 	
 	public synchronized void setVarsRestart() {
-	    finished = false;
-	    this.putFailedMessage = null;
-	    this.progressMessage = null;
-	    started = false;
+		finished = false;
+		this.putFailedMessage = null;
+		this.progressMessage = null;
+		started = false;
 	}
 
 }

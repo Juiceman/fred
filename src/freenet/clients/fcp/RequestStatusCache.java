@@ -20,8 +20,8 @@ import freenet.support.io.NoFreeBucket;
 /** Per-PersistentRequestClient cache of status of requests. */
 public class RequestStatusCache {
 	
-    private static volatile boolean logMINOR;
-    
+	private static volatile boolean logMINOR;
+	
 	static {
 		Logger.registerClass(RequestStatusCache.class);
 	}
@@ -46,7 +46,7 @@ public class RequestStatusCache {
 		if(logMINOR) Logger.minor(this, "Starting download "+status.getIdentifier());
 		if(old == status) return;
 		if(old != null)
-		    downloads.remove(old);
+			downloads.remove(old);
 		downloads.add(status);
 		downloadsByURI.put(status.getURI(), status);
 	}
@@ -57,7 +57,7 @@ public class RequestStatusCache {
 		if(old == status) return;
 		if(logMINOR) Logger.minor(this, "Starting upload "+status.getIdentifier());
 		if(old != null)
-		    uploads.remove(old);
+			uploads.remove(old);
 		uploads.add(status);
 		FreenetURI uri = status.getURI();
 		if(uri != null)

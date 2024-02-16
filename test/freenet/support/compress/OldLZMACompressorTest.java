@@ -71,13 +71,13 @@ public class OldLZMACompressorTest {
 		// InsertableClientSSK ik = InsertableClientSSK.createRandom(random, "foo");
 		// SimpleReadOnlyArrayBucket bucket = new SimpleReadOnlyArrayBucket(data);
 		// ClientSSKBlock clientSskBlock = ik.encode(
-		// 		bucket,
-		// 		false,
-		// 		false,
-		// 		(short) -1,
-		// 		bucket.size(),
-		// 		random,
-		// 		COMPRESSOR_TYPE.LZMA.name);
+		//		bucket,
+		//		false,
+		//		false,
+		//		(short) -1,
+		//		bucket.size(),
+		//		random,
+		//		COMPRESSOR_TYPE.LZMA.name);
 		// FreenetURI clientUri = ik.getInsertURI();
 		// byte[] rawBlockData = clientSskBlock.getBlock().getRawData();
 		// byte[] rawBlockHeaders = clientSskBlock.getBlock().getRawHeaders();
@@ -205,7 +205,7 @@ public class OldLZMACompressorTest {
 	@Test
 	public void testByteArrayDecompress() throws IOException, CompressionRatioException {
 
-        // build 5k array
+		// build 5k array
 		byte[] originalUncompressedData = new byte[5 * 1024];
 		for(int i = 0; i < originalUncompressedData.length; i++) {
 			originalUncompressedData[i] = 1;
@@ -221,7 +221,7 @@ public class OldLZMACompressorTest {
 		assertEquals(writtenBytes, originalUncompressedData.length);
 		assertEquals(originalUncompressedData.length, outUncompressedData.length);
 
-        // check each byte is exactly as expected
+		// check each byte is exactly as expected
 		for (int i = 0; i < outUncompressedData.length; i++) {
 			assertEquals(originalUncompressedData[i], outUncompressedData[i]);
 		}

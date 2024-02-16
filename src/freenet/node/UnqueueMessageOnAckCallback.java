@@ -24,40 +24,40 @@ public class UnqueueMessageOnAckCallback implements AsyncMessageCallback {
 		});
 	}
 
-    @Override
+	@Override
 	public String toString() {
 	return super.toString() + ": " +dest + ' ' + Integer.toString(extraPeerDataFileNumber);
-    }
+	}
 
-    DarknetPeerNode dest;
-    int extraPeerDataFileNumber;
+	DarknetPeerNode dest;
+	int extraPeerDataFileNumber;
 
-    public UnqueueMessageOnAckCallback(DarknetPeerNode pn, int extraPeerDataFileNumber) {
+	public UnqueueMessageOnAckCallback(DarknetPeerNode pn, int extraPeerDataFileNumber) {
 	this.dest = pn;
 	this.extraPeerDataFileNumber = extraPeerDataFileNumber;
 	if(logMINOR) {
 		Logger.minor(this, "Created "+this);
 	}
-    }
+	}
 
-    @Override
-    public void sent() {
+	@Override
+	public void sent() {
 	// Ignore
-    }
+	}
 
-    @Override
-    public void acknowledged() {
+	@Override
+	public void acknowledged() {
 	// the message was received, no need to try again.
 	dest.unqueueN2NM(extraPeerDataFileNumber);
-    }
+	}
 
-    @Override
-    public void disconnected() {
+	@Override
+	public void disconnected() {
 	// ignore
-    }
+	}
 
-    @Override
-    public void fatalError() {
+	@Override
+	public void fatalError() {
 	// ignore
-    }
+	}
 }

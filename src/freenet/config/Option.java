@@ -41,7 +41,7 @@ public abstract class Option<T> {
 	final DataType dataType;
 	
 	Option(SubConfig config, String name, ConfigCallback<T> cb, int sortOrder, boolean expert, boolean forceWrite,
-	        String shortDesc, String longDesc, DataType dataType) {
+			String shortDesc, String longDesc, DataType dataType) {
 		this.config = config;
 		this.name = name;
 		this.cb = cb;

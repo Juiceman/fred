@@ -72,7 +72,7 @@ import freenet.support.io.FileUtil;
  *
  * @author Simon Vocella <voxsim@gmail.com>
  *
- *         FIXME lots of repeated code, factor out.
+ *		 FIXME lots of repeated code, factor out.
  */
 public class CachingFreenetStoreTest {
 	
@@ -115,7 +115,7 @@ public class CachingFreenetStoreTest {
 
 	/* Simple test with CHK for CachingFreenetStore */
 	@Test
- 	public void testSimpleCHK() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
+	public void testSimpleCHK() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
 		CHKStore store = new CHKStore();
 		File f = getStorePath("testSimpleCHK");
 		try (SaltedHashFreenetStore<CHKBlock> saltStore = SaltedHashFreenetStore.construct(f, "testCachingFreenetStoreCHK",
@@ -146,7 +146,7 @@ public class CachingFreenetStoreTest {
 	 * than the key being cached), we will pass through immediately.
 	 */
 	@Test
- 	public void testZeroSize() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
+	public void testZeroSize() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
 
 		File f = getStorePath("testZeroSize");
 		CHKStore store = new CHKStore();
@@ -202,7 +202,7 @@ public class CachingFreenetStoreTest {
 	 * pushAll and all blocks is in the *undelying* store and the size is 0
 	 */
 	@Test
- 	public void testOverMaximumSize()
+	public void testOverMaximumSize()
 			throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException, InterruptedException {
 		File f = getStorePath("testOverMaximumSize");
 
@@ -267,7 +267,7 @@ public class CachingFreenetStoreTest {
 	}
 
 	@Test
- 	public void testCollisionsOverMaximumSize()
+	public void testCollisionsOverMaximumSize()
 			throws IOException, SSKEncodeException, InvalidCompressionCodecException, InterruptedException {
 		PubkeyStore pk = new PubkeyStore();
 		new RAMFreenetStore<DSAPublicKey>(pk, 10);
@@ -362,7 +362,7 @@ public class CachingFreenetStoreTest {
 	}
 
 	@Test
- 	public void testSimpleManualWrite()
+	public void testSimpleManualWrite()
 			throws IOException, SSKEncodeException, InvalidCompressionCodecException, InterruptedException {
 
 		PubkeyStore pk = new PubkeyStore();
@@ -426,7 +426,7 @@ public class CachingFreenetStoreTest {
 	 * K. Return 0 rather than removing it. }
 	 */
 	@Test
- 	public void testManualWriteCollision() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
+	public void testManualWriteCollision() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
 			InterruptedException, ExecutionException {
 
 		PubkeyStore pk = new PubkeyStore();
@@ -533,7 +533,7 @@ public class CachingFreenetStoreTest {
 
 	/* Simple test with SSK for CachingFreenetStore */
 	@Test
- 	public void testSimpleSSK() throws IOException, KeyCollisionException, SSKVerifyException, KeyDecodeException,
+	public void testSimpleSSK() throws IOException, KeyCollisionException, SSKVerifyException, KeyDecodeException,
 			SSKEncodeException, InvalidCompressionCodecException {
 
 		final int keys = 5;
@@ -573,7 +573,7 @@ public class CachingFreenetStoreTest {
 
 	/* Test to re-open after close */
 	@Test
- 	public void testOnCloseCHK() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
+	public void testOnCloseCHK() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
 
 		CHKStore store = new CHKStore();
 		File f = getStorePath("testOnCloseCHK");
@@ -636,7 +636,7 @@ public class CachingFreenetStoreTest {
 
 	/* Test whether stuff gets written to disk after the caching period expires */
 	@Test
- 	public void testTimeExpireCHK()
+	public void testTimeExpireCHK()
 			throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException, InterruptedException {
 		File f = getStorePath("testTimeExpireCHK");
 		long delay = 100;
@@ -709,7 +709,7 @@ public class CachingFreenetStoreTest {
 
 	/* Test with SSK to re-open after close */
 	@Test
- 	public void testOnCloseSSK() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
+	public void testOnCloseSSK() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
 			KeyCollisionException, SSKVerifyException, KeyDecodeException {
 		File f = getStorePath("testOnCloseSSK");
 
@@ -780,7 +780,7 @@ public class CachingFreenetStoreTest {
 	 * expires
 	 */
 	@Test
- 	public void testTimeExpireSSK() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
+	public void testTimeExpireSSK() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
 			KeyCollisionException, SSKVerifyException, KeyDecodeException, InterruptedException {
 		File f = getStorePath("testTimeExpireSSK");
 
@@ -840,7 +840,7 @@ public class CachingFreenetStoreTest {
 	}
 
 	@Test
- 	public void testOnCollisionsSSK_useSlotFilter() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
+	public void testOnCollisionsSSK_useSlotFilter() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
 			SSKVerifyException, KeyDecodeException, KeyCollisionException {
 		// With slot filters turned on, it should be cached, it should compare it, and
 		// still not throw if it's the same block.
@@ -848,7 +848,7 @@ public class CachingFreenetStoreTest {
 	}
 
 	@Test
- 	public void testOnCollisionsSSK_dontUseSlotFilter() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
+	public void testOnCollisionsSSK_dontUseSlotFilter() throws IOException, SSKEncodeException, InvalidCompressionCodecException,
 			SSKVerifyException, KeyDecodeException, KeyCollisionException {
 		// With slot filters turned off, it goes straight to disk, because
 		// probablyInStore() always returns true.

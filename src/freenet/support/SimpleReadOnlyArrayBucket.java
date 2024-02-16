@@ -22,8 +22,8 @@ import freenet.support.io.ByteArrayRandomAccessBuffer;
  */
 public class SimpleReadOnlyArrayBucket implements Bucket, RandomAccessBucket {
 
-    private static final long serialVersionUID = 1L;
-    final byte[] buf;
+	private static final long serialVersionUID = 1L;
+	final byte[] buf;
 	final int offset;
 	final int length;
 	
@@ -42,11 +42,11 @@ public class SimpleReadOnlyArrayBucket implements Bucket, RandomAccessBucket {
 		throw new IOException("Read only");
 	}
 
-    @Override
-    public OutputStream getOutputStreamUnbuffered() throws IOException {
-        throw new IOException("Read only");
-    }
-    
+	@Override
+	public OutputStream getOutputStreamUnbuffered() throws IOException {
+		throw new IOException("Read only");
+	}
+	
 	@Override
 	public InputStream getInputStreamUnbuffered() throws IOException {
 		return new ByteArrayInputStream(buf, offset, length);
@@ -54,7 +54,7 @@ public class SimpleReadOnlyArrayBucket implements Bucket, RandomAccessBucket {
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
-	    return getInputStreamUnbuffered();
+		return getInputStreamUnbuffered();
 	}
 
 	@Override
@@ -90,23 +90,23 @@ public class SimpleReadOnlyArrayBucket implements Bucket, RandomAccessBucket {
 		return null;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Not persistent.
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Not persistent.
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public void storeTo(DataOutputStream dos) {
-        // Not persistent.
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void storeTo(DataOutputStream dos) {
+		// Not persistent.
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
-        ByteArrayRandomAccessBuffer raf = new ByteArrayRandomAccessBuffer(buf, offset, length, true);
-        raf.setReadOnly();
-        return raf;
-    }
+	@Override
+	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
+		ByteArrayRandomAccessBuffer raf = new ByteArrayRandomAccessBuffer(buf, offset, length, true);
+		raf.setReadOnly();
+		return raf;
+	}
 
 }

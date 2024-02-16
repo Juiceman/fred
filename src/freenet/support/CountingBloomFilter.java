@@ -27,7 +27,7 @@ public class CountingBloomFilter extends BloomFilter {
 	 * Constructor
 	 * 
 	 * @param length
-	 *            length in bits
+	 *			length in bits
 	 */
 	public CountingBloomFilter(int length, int k) {
 		super(length, k);
@@ -38,9 +38,9 @@ public class CountingBloomFilter extends BloomFilter {
 	 * Constructor
 	 * 
 	 * @param file
-	 *            disk file
+	 *			disk file
 	 * @param length
-	 *            length in bits
+	 *			length in bits
 	 * @throws IOException
 	 */
 	protected CountingBloomFilter(File file, int length, int k) throws IOException {

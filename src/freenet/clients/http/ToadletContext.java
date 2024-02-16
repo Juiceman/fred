@@ -20,38 +20,38 @@ import freenet.support.api.HTTPRequest;
  */
 public interface ToadletContext {
 
-    /**
-     * Write reply headers for generated content (web interface pages) and redirects etc.
-     * @param code HTTP code.
-     * @param desc HTTP code description.
-     * @param mvt Any extra headers. Can be null.
-     * @param mimeType The MIME type of the reply.
-     * @param length The length of the reply.
-     * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
-     * as a whole.
-     */
-    void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length) throws ToadletContextClosedException, IOException;
-    
-    /**
-     * Write reply headers for generated content (web interface pages) and redirects etc.
-     * @param code HTTP code.
-     * @param desc HTTP code description.
-     * @param mvt Any extra headers. Can be null.
-     * @param mimeType The MIME type of the reply.
-     * @param length The length of the reply.
-     * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
-     * as a whole.
-     */
-    void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException;
-    
-    /**
-     * @deprecated
-     * Write reply headers for either generated content (web interface pages) or static content.
-     * Callers should use either sendReplyHeaders() or sendReplyHeadersStatic()!
-     */
-    @Deprecated
-    void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException;
-    
+	/**
+	 * Write reply headers for generated content (web interface pages) and redirects etc.
+	 * @param code HTTP code.
+	 * @param desc HTTP code description.
+	 * @param mvt Any extra headers. Can be null.
+	 * @param mimeType The MIME type of the reply.
+	 * @param length The length of the reply.
+	 * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
+	 * as a whole.
+	 */
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length) throws ToadletContextClosedException, IOException;
+	
+	/**
+	 * Write reply headers for generated content (web interface pages) and redirects etc.
+	 * @param code HTTP code.
+	 * @param desc HTTP code description.
+	 * @param mvt Any extra headers. Can be null.
+	 * @param mimeType The MIME type of the reply.
+	 * @param length The length of the reply.
+	 * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
+	 * as a whole.
+	 */
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException;
+	
+	/**
+	 * @deprecated
+	 * Write reply headers for either generated content (web interface pages) or static content.
+	 * Callers should use either sendReplyHeaders() or sendReplyHeadersStatic()!
+	 */
+	@Deprecated
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException;
+	
 	/**
 	 * Write reply headers with a customised modification time for static content.
 	 * @param code HTTP code.
@@ -92,11 +92,11 @@ public interface ToadletContext {
 	 * Convenience method that simply calls {@link #writeData(byte[], int, int)}.
 	 * 
 	 * @param data
-	 *            The data to write
+	 *			The data to write
 	 * @throws ToadletContextClosedException
-	 *             if the context has already been closed
+	 *			 if the context has already been closed
 	 * @throws IOException
-	 *             if an I/O error occurs
+	 *			 if an I/O error occurs
 	 */
 	void writeData(byte[] data) throws ToadletContextClosedException, IOException;
 
@@ -104,9 +104,9 @@ public interface ToadletContext {
 	 * Write data from a bucket. You must send reply headers first.
 	 *
 	 * @param data The Bucket which contains the data. This function
-	 *        assumes ownership of the Bucket, calling free() on it
-	 *        when done. If this behavior is undesired, callers can
-	 *        wrap their Bucket in a NoFreeBucket.
+	 *		assumes ownership of the Bucket, calling free() on it
+	 *		when done. If this behavior is undesired, callers can
+	 *		wrap their Bucket in a NoFreeBucket.
 	 *
 	 * @see freenet.support.io.NoFreeBucket
 	 */
@@ -148,18 +148,18 @@ public interface ToadletContext {
 	boolean hasFormPassword(HTTPRequest request) throws IOException;
 	
 	   
-    /**
-     * Check a context for whether {@link #isAllowedFullAccess()} is true.
-     * 
-     * If it is false, an error page is sent to the client, and false is returned.
-     * You can then abort processing of the request.
-     * 
-     * @return The return value of {@link #isAllowedFullAccess()}.
-     * @throws IOException See {@link Toadlet#sendUnauthorizedPage(ToadletContext)}
-     * @throws ToadletContextClosedException See {@link Toadlet#sendUnauthorizedPage(ToadletContext)}
-     */
-    boolean checkFullAccess(Toadlet toadlet) throws ToadletContextClosedException, IOException;
-    
+	/**
+	 * Check a context for whether {@link #isAllowedFullAccess()} is true.
+	 * 
+	 * If it is false, an error page is sent to the client, and false is returned.
+	 * You can then abort processing of the request.
+	 * 
+	 * @return The return value of {@link #isAllowedFullAccess()}.
+	 * @throws IOException See {@link Toadlet#sendUnauthorizedPage(ToadletContext)}
+	 * @throws ToadletContextClosedException See {@link Toadlet#sendUnauthorizedPage(ToadletContext)}
+	 */
+	boolean checkFullAccess(Toadlet toadlet) throws ToadletContextClosedException, IOException;
+	
 	/**
 	 * Get the user alert manager.
 	 */

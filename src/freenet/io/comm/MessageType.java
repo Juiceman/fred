@@ -29,7 +29,7 @@ import freenet.support.ShortBuffer;
 
 public class MessageType {
 
-    public static final String VERSION = "$Id: MessageType.java,v 1.6 2005/08/25 17:28:19 amphibian Exp $";
+	public static final String VERSION = "$Id: MessageType.java,v 1.6 2005/08/25 17:28:19 amphibian Exp $";
 
 	private static HashMap<Integer, MessageType> _specs = new HashMap<Integer, MessageType>();
 
@@ -42,7 +42,7 @@ public class MessageType {
 	private final boolean isLossyPacketMessage;
 
 	public MessageType(String name, short priority) {
-	    this(name, priority, false, false);
+		this(name, priority, false, false);
 	}
 	
 	public MessageType(String name, short priority, boolean internal, boolean isLossyPacketMessage) {
@@ -73,10 +73,10 @@ public class MessageType {
 	}
 	
 	public void addRoutedToNodeMessageFields() {
-        addField(DMT.UID, Long.class);
-        addField(DMT.TARGET_LOCATION, Double.class);
-        addField(DMT.HTL, Short.class);
-        addField(DMT.NODE_IDENTITY, ShortBuffer.class);
+		addField(DMT.UID, Long.class);
+		addField(DMT.TARGET_LOCATION, Double.class);
+		addField(DMT.HTL, Short.class);
+		addField(DMT.NODE_IDENTITY, ShortBuffer.class);
 	}
 
 	public boolean checkType(String fieldName, Object fieldValue) {
@@ -86,7 +86,7 @@ public class MessageType {
 		Class<?> defClass = _fields.get(fieldName);
 		if (defClass == null) {
 			throw new IllegalStateException("Cannot set field \"" + fieldName + "\" which is not defined" +
-			                                " in the message type \"" + getName() + "\".");
+											" in the message type \"" + getName() + "\".");
 		}
 		Class<?> valueClass = fieldValue.getClass();
 		if(defClass == valueClass) return true;
@@ -110,7 +110,7 @@ public class MessageType {
 
 	@Override
 	public int hashCode() {
-	    return _name.hashCode();
+		return _name.hashCode();
 	}
 	
 	public static MessageType getSpec(Integer specID, boolean dontLog) {
@@ -138,18 +138,18 @@ public class MessageType {
 		return _linkedListTypes;
 	}
 
-    /**
-     * @return True if this message is internal-only.
-     * If this is the case, any incoming messages in UDP form of this
-     * spec will be silently discarded.
-     */
-    public boolean isInternalOnly() {
-        return internalOnly;
-    }
+	/**
+	 * @return True if this message is internal-only.
+	 * If this is the case, any incoming messages in UDP form of this
+	 * spec will be silently discarded.
+	 */
+	public boolean isInternalOnly() {
+		return internalOnly;
+	}
 	
-    /** @return The default priority for the message type. Messages's don't necessarily
-     * use this: Message.boostPriority() can increase it for a realtime message, for 
-     * instance. */
+	/** @return The default priority for the message type. Messages's don't necessarily
+	 * use this: Message.boostPriority() can increase it for a realtime message, for 
+	 * instance. */
 	public short getDefaultPriority() {
 		return priority;
 	}

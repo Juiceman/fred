@@ -20,7 +20,7 @@ public class BinaryBloomFilter extends BloomFilter {
 	 * Constructor
 	 * 
 	 * @param length
-	 *            length in bits
+	 *			length in bits
 	 */
 	protected BinaryBloomFilter(int length, int k) {
 		super(length, k);
@@ -31,9 +31,9 @@ public class BinaryBloomFilter extends BloomFilter {
 	 * Constructor
 	 * 
 	 * @param file
-	 *            disk file
+	 *			disk file
 	 * @param length
-	 *            length in bits
+	 *			length in bits
 	 * @throws IOException
 	 */
 	protected BinaryBloomFilter(File file, int length, int k) throws IOException {

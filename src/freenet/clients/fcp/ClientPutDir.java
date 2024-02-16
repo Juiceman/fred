@@ -35,8 +35,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class ClientPutDir extends ClientPutBase {
 
-    private static final long serialVersionUID = 1L;
-    private HashMap<String, Object> manifestElements;
+	private static final long serialVersionUID = 1L;
+	private HashMap<String, Object> manifestElements;
 	private ManifestPutter putter;
 	private final String defaultName;
 	private final long totalSize;
@@ -129,12 +129,12 @@ public class ClientPutDir extends ClientPutBase {
 	}
 	
 	protected ClientPutDir() {
-	    // For serialization.
-	    defaultName = null;
-	    totalSize = 0;
-	    numberOfFiles = 0;
-	    wasDiskPut = false;
-	    overrideSplitfileCryptoKey = null;
+		// For serialization.
+		defaultName = null;
+		totalSize = 0;
+		numberOfFiles = 0;
+		wasDiskPut = false;
+		overrideSplitfileCryptoKey = null;
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class ClientPutDir extends ClientPutBase {
 
 		for (File f : files) {
 			
-    		if(f.isHidden() && !includeHiddenFiles) continue;
+			if(f.isHidden() && !includeHiddenFiles) continue;
 
 			if (f.exists() && f.canRead()) {
 				if(f.isFile()) {
@@ -184,9 +184,9 @@ public class ClientPutDir extends ClientPutBase {
 	}
 	
 	private void makePutter(ClientContext context) throws TooManyFilesInsertException {
-	    putter = new DefaultManifestPutter(this,
-	            manifestElements, priorityClass, uri, defaultName, ctx,
-	            persistence == Persistence.FOREVER, overrideSplitfileCryptoKey, context);
+		putter = new DefaultManifestPutter(this,
+				manifestElements, priorityClass, uri, defaultName, ctx,
+				persistence == Persistence.FOREVER, overrideSplitfileCryptoKey, context);
 	}
 
 	@Override
@@ -398,24 +398,24 @@ public class ClientPutDir extends ClientPutBase {
 		}
 		
 		return new UploadDirRequestStatus(
-		    identifier, persistence, started, finished, succeeded, total, min, fetched,
-		    latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
-		    uri, failureCode, failureReasonShort, failureReasonLong, totalSize, numberOfFiles);
+			identifier, persistence, started, finished, succeeded, total, min, fetched,
+			latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
+			uri, failureCode, failureReasonShort, failureReasonLong, totalSize, numberOfFiles);
 	}
 	
 	@Override
 	public void innerResume(ClientContext context) throws ResumeFailedException {
-	    ContainerInserter.resumeMetadata(manifestElements, context);
+		ContainerInserter.resumeMetadata(manifestElements, context);
 	}
 
-    @Override
-    RequestType getType() {
-        return RequestType.PUTDIR;
-    }
+	@Override
+	RequestType getType() {
+		return RequestType.PUTDIR;
+	}
 
-    @Override
-    public boolean fullyResumed() {
-        return false;
-    }
+	@Override
+	public boolean fullyResumed() {
+		return false;
+	}
 
 }

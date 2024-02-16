@@ -61,10 +61,10 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		}
 
 		HTMLNode infoBox = helper.getInfobox("infobox-normal", WizardL10n.l10n("bandwidthLimitRateTitle"),
-		        formNode, null, false);
+				formNode, null, false);
 		NodeL10n.getBase().addL10nSubstitution(infoBox, "FirstTimeWizardToadlet.bandwidthLimitRate",
-		        new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG, 
-		                new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))});
+				new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG, 
+						new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))});
 
 		//Table header
 		HTMLNode table = infoBox.addChild("table");
@@ -101,11 +101,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		HTMLNode customForm = table.addChild("tr");
 		customForm.addChild("td", WizardL10n.l10n("bandwidthCustom"));
 		customForm.addChild("td").addChild("input",
-		        new String[] { "type", "name" },
-		        new String[] { "text", "customDown" });
+				new String[] { "type", "name" },
+				new String[] { "text", "customDown" });
 		customForm.addChild("td").addChild("input",
-		        new String[] { "type", "name" },
-		        new String[] { "text", "customUp" });
+				new String[] { "type", "name" },
+				new String[] { "text", "customUp" });
 		// This is valid if it's filled in. So don't show the selector.
 		// FIXME javascript to auto-select it?
 //		customForm.addChild("td").addChild("input",
@@ -113,11 +113,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 //				new String[] { "radio", "bandwidth", "custom" });
 
 		infoBox.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		infoBox.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 			if (!failedLimits.isEmpty()) {
 				//Some at least one limit failed to parse.
 				return "BANDWIDTH_RATE&parseError=true&parseTarget="+
-				        URLEncoder.encode(failedLimits, true);
+						URLEncoder.encode(failedLimits, true);
 			}
 
 			//Success

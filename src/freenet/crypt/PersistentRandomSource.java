@@ -18,14 +18,14 @@ package freenet.crypt;
  */
 public interface PersistentRandomSource {
 
-    /**
-     * Explanation of the purpose of this mechanism is at its interface
-     * {@link PersistentRandomSource}.
-     * 
-     * @param force
-     *     If false, the implementation might decide to ignore this function call if the seed file
-     *     was written to disk a short time ago already.
-     */
-    void write_seed(boolean force);
+	/**
+	 * Explanation of the purpose of this mechanism is at its interface
+	 * {@link PersistentRandomSource}.
+	 * 
+	 * @param force
+	 *	 If false, the implementation might decide to ignore this function call if the seed file
+	 *	 was written to disk a short time ago already.
+	 */
+	void write_seed(boolean force);
 
 }

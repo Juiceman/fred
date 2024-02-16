@@ -14,19 +14,19 @@ public final class MedianMeanRunningAverage implements RunningAverage, Cloneable
 	final ArrayList<Double> reports;
 	final TrivialRunningAverage mean;
 
-        /**
-         *
-         */
-        public MedianMeanRunningAverage() {
+		/**
+		 *
+		 */
+		public MedianMeanRunningAverage() {
 		reports = new ArrayList<Double>();
 		mean = new TrivialRunningAverage();
 	}
 
-        /**
-         *
-         * @param average
-         */
-        public MedianMeanRunningAverage(MedianMeanRunningAverage average) {
+		/**
+		 *
+		 * @param average
+		 */
+		public MedianMeanRunningAverage(MedianMeanRunningAverage average) {
 		this.mean = new TrivialRunningAverage(average.mean);
 		this.reports = new ArrayList<Double>();
 		reports.addAll(average.reports);
@@ -46,34 +46,34 @@ public final class MedianMeanRunningAverage implements RunningAverage, Cloneable
 		return reports.size();
 	}
 
-        /**
-         *
-         * @return
-         */
-        @Override
-        public synchronized double currentValue() {
+		/**
+		 *
+		 * @return
+		 */
+		@Override
+		public synchronized double currentValue() {
 		int size = reports.size();
 		int middle = size / 2;
 		java.util.Collections.sort(reports);
 		return reports.get(middle);
 	}
 
-        /**
-         *
-         * @param d
-         */
-        @Override
-        public synchronized void report(double d) {
+		/**
+		 *
+		 * @param d
+		 */
+		@Override
+		public synchronized void report(double d) {
 		mean.report(d);
 		reports.add(d);
 	}
 
-        /**
-         *
-         * @param d
-         */
-        @Override
-        public void report(long d) {
+		/**
+		 *
+		 * @param d
+		 */
+		@Override
+		public void report(long d) {
 		report((double)d);
 	}
 
@@ -87,11 +87,11 @@ public final class MedianMeanRunningAverage implements RunningAverage, Cloneable
 		return "Median "+currentValue()+" mean "+mean.currentValue();
 	}
 	
-        /**
-         *
-         * @return
-         */
-        public synchronized double meanValue() {
+		/**
+		 *
+		 * @return
+		 */
+		public synchronized double meanValue() {
 		return mean.currentValue();
 	}
 

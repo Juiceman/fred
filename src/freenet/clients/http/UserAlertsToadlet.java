@@ -26,8 +26,8 @@ public class UserAlertsToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-        if(!ctx.checkFullAccess(this))
-            return;
+		if(!ctx.checkFullAccess(this))
+			return;
 
 		PageNode page = ctx.getPageMaker().getPageNode(l10n("title"), ctx);
 		HTMLNode pageNode = page.outer;
@@ -61,9 +61,9 @@ public class UserAlertsToadlet extends Toadlet {
 		// hard whitelist of allowed origins to avoid https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet
 		// TODO: Parse the URL to ensure that it is a valid fproxy URL
 		if (!("/alerts/".equals(redirect) ||
-		      "/".equals(redirect) ||
-		      "/#bookmarks".equals(redirect))) {
-		    redirect = ".";
+			  "/".equals(redirect) ||
+			  "/#bookmarks".equals(redirect))) {
+			redirect = ".";
 		}
 		headers.put("Location", redirect);
 		

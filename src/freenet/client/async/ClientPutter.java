@@ -28,8 +28,8 @@ import freenet.support.io.ResumeFailedException;
 /** A high level insert. */
 public class ClientPutter extends BaseClientPutter implements PutCompletionCallback {
 
-    private static final long serialVersionUID = 1L;
-    /** Callback for when the insert completes. */
+	private static final long serialVersionUID = 1L;
+	/** Callback for when the insert completes. */
 	final ClientPutCallback client;
 	/** The data to insert. */
 	final RandomAccessBucket data;
@@ -62,7 +62,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	private final long metadataThreshold;
 	private boolean gotFinalMetadata;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -153,7 +153,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 						return false;
 					}
 					if(finished)
-					    startedStarting = false;
+						startedStarting = false;
 					finished = false;
 				}
 				if(startedStarting) {
@@ -295,19 +295,19 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	public void onEncode(BaseClientKey key, ClientPutState state, ClientContext context) {
 		FreenetURI u;
 		synchronized(this) {
-		    u = key.getURI(); 
+			u = key.getURI(); 
 			if(gotFinalMetadata) {
 				Logger.error(this, "Generated URI *and* sent final metadata??? on "+this+" from "+state);
 			}
 			if(targetFilename != null)
 				u = u.pushMetaString(targetFilename);
 			if(this.uri != null) {
-			    if(!this.uri.equals(u)) {
-			        Logger.error(this, "onEncode() called twice with different URIs: "+this.uri+" -> "+u+" for "+this, new Exception("error"));
-			    }
-			    return;
+				if(!this.uri.equals(u)) {
+					Logger.error(this, "onEncode() called twice with different URIs: "+this.uri+" -> "+u+" for "+this, new Exception("error"));
+				}
+				return;
 			}
-            this.uri = u;
+			this.uri = u;
 		}
 		client.onGeneratedURI(u, this);
 	}
@@ -397,7 +397,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			}
 		}
 		if(persistent())
-		    context.jobRunner.setCheckpointASAP();
+			context.jobRunner.setCheckpointASAP();
 		Logger.normal(this, "onTransition: cur=" + currentState + ", old=" + oldState + ", new=" + newState);
 	}
 
@@ -457,19 +457,19 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 
 	@Override
 	protected void innerNotifyClients(ClientContext context) {
-	    SplitfileProgressEvent e;
-	    synchronized(this) {
-	        e = new SplitfileProgressEvent(
-	            this.totalBlocks,
-	            this.successfulBlocks,
-	            this.latestSuccess,
-	            this.failedBlocks,
-	            this.fatallyFailedBlocks,
-	            this.latestFailure,
-	            this.minSuccessBlocks,
-	            this.minSuccessFetchBlocks,
-	            this.blockSetFinalized);
-	    }
+		SplitfileProgressEvent e;
+		synchronized(this) {
+			e = new SplitfileProgressEvent(
+				this.totalBlocks,
+				this.successfulBlocks,
+				this.latestSuccess,
+				this.failedBlocks,
+				this.fatallyFailedBlocks,
+				this.latestFailure,
+				this.minSuccessBlocks,
+				this.minSuccessFetchBlocks,
+				this.blockSetFinalized);
+		}
 		ctx.eventProducer.produceEvent(e, context);
 	}
 
@@ -515,8 +515,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	@Override
 	public void onTransition(ClientGetState oldState, ClientGetState newState, ClientContext context) {
 		// Ignore, at the moment
-	    // This exists here because e.g. USKInserter does requests as well as inserts.
-	    // FIXME I'm not sure that's a good enough reason though! Get rid ...
+		// This exists here because e.g. USKInserter does requests as well as inserts.
+		// FIXME I'm not sure that's a good enough reason though! Get rid ...
 	}
 
 	@Override
@@ -527,41 +527,41 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		System.out.println("Data: "+data);
 	}
 	
-    public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
-        if(client instanceof PersistentClientCallback) {
-            return getClientDetail((PersistentClientCallback)client, checker);
-        } else
-            return new byte[0];
-    }
+	public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
+		if(client instanceof PersistentClientCallback) {
+			return getClientDetail((PersistentClientCallback)client, checker);
+		} else
+			return new byte[0];
+	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        if(currentState != null) {
-            try {
-                currentState.onResume(context);
-            } catch (InsertException e) {
-                this.onFailure(e, null, context);
-                return;
-            }
-        }
-        if(data != null)
-            data.onResume(context);
-        notifyClients(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		if(currentState != null) {
+			try {
+				currentState.onResume(context);
+			} catch (InsertException e) {
+				this.onFailure(e, null, context);
+				return;
+			}
+		}
+		if(data != null)
+			data.onResume(context);
+		notifyClients(context);
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return client;
-    }
-    
-    @Override
-    public void onShutdown(ClientContext context) {
-        ClientPutState state;
-        synchronized(this) {
-            state = currentState;
-        }
-        if(state != null)
-            state.onShutdown(context);
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return client;
+	}
+	
+	@Override
+	public void onShutdown(ClientContext context) {
+		ClientPutState state;
+		synchronized(this) {
+			state = currentState;
+		}
+		if(state != null)
+			state.onShutdown(context);
+	}
 }

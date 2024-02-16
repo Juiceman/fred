@@ -22,7 +22,7 @@ public class IntOption extends Option<Integer> {
 	 */
 	@Deprecated
 	public IntOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder, boolean expert,
-	        boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
+			boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
 		this(conf, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb,
 				isSize ? Dimension.SIZE : Dimension.NOT);
 	}

@@ -34,7 +34,7 @@ public class NodeIPPortDetector {
 	/** Last detected IP address */
 	Peer[] lastPeers;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -128,7 +128,7 @@ public class NodeIPPortDetector {
 				}
 				if(best != null) {
 					if((bestPopularity > 1) || (addrs.length == 0)) {
- 						if(!addresses.contains(best)) {
+						if(!addresses.contains(best)) {
 							Logger.normal(this, "Adding best peer "+best+" ("+bestPopularity+ ')');
 							addresses.add(best);
 						}

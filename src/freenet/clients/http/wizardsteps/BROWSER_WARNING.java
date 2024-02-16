@@ -71,14 +71,14 @@ public class BROWSER_WARNING implements Step {
 
 		if(isRelativelySafe) {
 			infoboxContent.addChild("p", incognito ?
-			        WizardL10n.l10n("browserWarningIncognitoMaybeSafe") :
-			        WizardL10n.l10n("browserWarningMaybeSafe"));
+					WizardL10n.l10n("browserWarningIncognitoMaybeSafe") :
+					WizardL10n.l10n("browserWarningMaybeSafe"));
 		} else {
 			NodeL10n.getBase().addL10nSubstitution(infoboxContent, incognito ?
-			        "FirstTimeWizardToadlet.browserWarningIncognito" :
-			        "FirstTimeWizardToadlet.browserWarning",
-			        new String[] { "bold" },
-			        new HTMLNode[] { HTMLNode.STRONG });
+					"FirstTimeWizardToadlet.browserWarningIncognito" :
+					"FirstTimeWizardToadlet.browserWarning",
+					new String[] { "bold" },
+					new HTMLNode[] { HTMLNode.STRONG });
 		}
 
 		if(incognito) {
@@ -87,16 +87,16 @@ public class BROWSER_WARNING implements Step {
 			infoboxContent.addChild("p", WizardL10n.l10n("browserWarningSuggestion"));
 		}
 		infoboxContent.addChild("p", WizardL10n.l10n("browserImeWarning"));
-        // voice recognition also used for surveillance
+		// voice recognition also used for surveillance
 		infoboxContent.addChild("p", WizardL10n.l10n("browserVoiceRecognitionWarning"));
 
 		HTMLNode form = helper.addFormChild(infoboxContent.addChild("p"), ".", "continueForm");
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	public List<String> oldBrowserWarnings(
@@ -119,10 +119,10 @@ public class BROWSER_WARNING implements Step {
 		if(incognito) {
 			return WizardL10n.l10n("browserWarningIncognitoShort");
 		}
-        if (isRelativelySafe) {
+		if (isRelativelySafe) {
 			return WizardL10n.l10n("browserWarningShortRelativelySafe");
 		}
-        return WizardL10n.l10n("browserWarningShort");
+		return WizardL10n.l10n("browserWarningShort");
 	}
 
 	/**

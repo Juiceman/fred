@@ -65,14 +65,14 @@ public class Version {
 		transitionTime = _cal.getTimeInMillis();
 	}
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logMINOR;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+								logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -172,7 +172,7 @@ public class Version {
 
 	/**
 	 * @return true if requests should be accepted from nodes brandishing this
-	 *         protocol version string
+	 *		 protocol version string
 	 */
 	private static boolean goodProtocol(String prot) {
 		if (prot.equals(protocolVersion)
@@ -185,15 +185,15 @@ public class Version {
 
 	/**
 	 * @return true if requests should be accepted from nodes brandishing this
-	 *         version string
+	 *		 version string
 	 */
 	public static boolean checkGoodVersion(
 		String version) {
-	    if(version == null) {
-	        Logger.error(Version.class, "version == null!",
-	                new Exception("error"));
-	        return false;
-	    }
+		if(version == null) {
+			Logger.error(Version.class, "version == null!",
+					new Exception("error"));
+			return false;
+		}
 		String[] v = Fields.commaList(version);
 
 		if ((v.length < 3) || !goodProtocol(v[2])) {
@@ -247,20 +247,20 @@ public class Version {
 
 	/**
 	 * @return true if requests should be accepted from nodes brandishing this
-	 *         version string, given an arbitrary lastGoodVersion
+	 *		 version string, given an arbitrary lastGoodVersion
 	 */
 	public static boolean checkArbitraryGoodVersion(
 		String version, String lastGoodVersion) {
-	    if(version == null) {
-	        Logger.error(Version.class, "version == null!",
-	                new Exception("error"));
-	        return false;
-	    }
-	    if(lastGoodVersion == null) {
-	        Logger.error(Version.class, "lastGoodVersion == null!",
-	                new Exception("error"));
-	        return false;
-	    }
+		if(version == null) {
+			Logger.error(Version.class, "version == null!",
+					new Exception("error"));
+			return false;
+		}
+		if(lastGoodVersion == null) {
+			Logger.error(Version.class, "lastGoodVersion == null!",
+					new Exception("error"));
+			return false;
+		}
 		String[] v = Fields.commaList(version);
 		String[] lgv = Fields.commaList(lastGoodVersion);
 
@@ -356,11 +356,11 @@ public class Version {
 	 */
 	public static int getArbitraryBuildNumber(
 		String version ) throws VersionParseException {
-	    if(version == null) {
-	        Logger.error(Version.class, "version == null!",
-	                new Exception("error"));
-	        throw new VersionParseException("version == null");
-	    }
+		if(version == null) {
+			Logger.error(Version.class, "version == null!",
+					new Exception("error"));
+			throw new VersionParseException("version == null");
+		}
 		String[] v = Fields.commaList(version);
 
 		if ((v.length < 3) || !goodProtocol(v[2])) {
@@ -449,7 +449,7 @@ public class Version {
 			"Freenet: "
 				+ nodeName
 				+ ' '
-                    + nodeVersion
+					+ nodeVersion
 				+ " (protocol "
 				+ protocolVersion
 				+ ") build "

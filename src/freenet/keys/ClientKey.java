@@ -13,9 +13,9 @@ import java.io.Serializable;
  */
 public abstract class ClientKey extends BaseClientKey implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
 	 * @return a NodeCHK corresponding to this key. Basically keep the 
 	 * routingKey and lose everything else.
 	 */
@@ -28,7 +28,7 @@ public abstract class ClientKey extends BaseClientKey implements Serializable {
 	public abstract ClientKey cloneKey();
 	
 	protected ClientKey() {
-	    // For serialization.
+		// For serialization.
 	}
 
 }

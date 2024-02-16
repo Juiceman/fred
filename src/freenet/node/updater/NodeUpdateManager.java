@@ -238,7 +238,7 @@ public class NodeUpdateManager {
 		// Set default update URI for new nodes depending on JVM version.
 		updaterConfig
 				.register("URI", JVMVersion.needsLegacyUpdater() ? legacyMainJarUSK.toString() : UPDATE_URI,
-				          3, true, true,
+						  3, true, true,
 						"NodeUpdateManager.updateURI",
 						"NodeUpdateManager.updateURILong",
 						new UpdateURICallback());
@@ -401,7 +401,7 @@ public class NodeUpdateManager {
 		final ProgramDirectory directory;
 
 		public SimplePuller(FreenetURI freenetURI, NodeFile file) {
-		    this(freenetURI, file.getFilename(), file.getProgramDirectory(node));
+			this(freenetURI, file.getFilename(), file.getProgramDirectory(node));
 		}
 
 		private SimplePuller(FreenetURI freenetURI, String filename, ProgramDirectory directory) {
@@ -479,15 +479,15 @@ public class NodeUpdateManager {
 			}
 		}
 
-        @Override
-        public void onResume(ClientContext context) {
-            // Not persistent.
-        }
+		@Override
+		public void onResume(ClientContext context) {
+			// Not persistent.
+		}
 
-        @Override
-        public RequestClient getRequestClient() {
-            return node.nonPersistentClientBulk;
-        }
+		@Override
+		public RequestClient getRequestClient() {
+			return node.nonPersistentClientBulk;
+		}
 
 	}
 
@@ -618,15 +618,15 @@ public class NodeUpdateManager {
 	private Message getOldUOMAnnouncement() {
 		boolean mainJarAvailable = transitionMainJarFetcher == null ? false
 				: transitionMainJarFetcher.fetched();
-        return DMT.createUOMAnnouncement(previousMainJarUSK.toString(), revocationURI
-                .toString(), revocationChecker.hasBlown(),
-                mainJarAvailable ? TRANSITION_VERSION : -1,
-                revocationChecker.lastSucceededDelta(), revocationChecker
-                .getRevocationDNFCounter(), revocationChecker
-                .getBlobSize(),
-                mainJarAvailable ? transitionMainJarFetcher.getBlobSize() : -1,
-                (int) node.nodeStats.getNodeAveragePingTime(),
-                (int) node.nodeStats.getBwlimitDelayTime());
+		return DMT.createUOMAnnouncement(previousMainJarUSK.toString(), revocationURI
+				.toString(), revocationChecker.hasBlown(),
+				mainJarAvailable ? TRANSITION_VERSION : -1,
+				revocationChecker.lastSucceededDelta(), revocationChecker
+				.getRevocationDNFCounter(), revocationChecker
+				.getBlobSize(),
+				mainJarAvailable ? transitionMainJarFetcher.getBlobSize() : -1,
+				(int) node.nodeStats.getNodeAveragePingTime(),
+				(int) node.nodeStats.getBwlimitDelayTime());
 	}
 
 	private Message getNewUOMAnnouncement(long blobSize) {
@@ -663,13 +663,13 @@ public class NodeUpdateManager {
 		}
 		long size = canAnnounceUOMNew();
 		try {
-		    if(peer.getVersionNumber() < TRANSITION_VERSION) {
-		        if (sendOld || hasBeenBlown)
-		            peer.sendAsync(getOldUOMAnnouncement(), null, ctr);
-		    } else {
-		        if (sendNew || hasBeenBlown)
-		            peer.sendAsync(getNewUOMAnnouncement(size), null, ctr);
-		    }
+			if(peer.getVersionNumber() < TRANSITION_VERSION) {
+				if (sendOld || hasBeenBlown)
+					peer.sendAsync(getOldUOMAnnouncement(), null, ctr);
+			} else {
+				if (sendNew || hasBeenBlown)
+					peer.sendAsync(getNewUOMAnnouncement(size), null, ctr);
+			}
 		} catch (NotConnectedException e) {
 			// Sad, but ignore it
 		}
@@ -686,9 +686,9 @@ public class NodeUpdateManager {
 	 * Enable or disable auto-update.
 	 *
 	 * @param enable
-	 *            Whether auto-update should be enabled.
+	 *			Whether auto-update should be enabled.
 	 * @throws InvalidConfigValueException
-	 *             If enable=true and we are not running under the wrapper.
+	 *			 If enable=true and we are not running under the wrapper.
 	 */
 	void enable(boolean enable) throws InvalidConfigValueException {
 		// FIXME 194eb7bb6f295e52d18378d805bd315c95030b24 is doubtful and incomplete.
@@ -763,8 +763,8 @@ public class NodeUpdateManager {
 
 	/**
 	 * @param plugName
-	 *            The filename for loading/config purposes for an official
-	 *            plugin. E.g. "Library" (no .jar)
+	 *			The filename for loading/config purposes for an official
+	 *			plugin. E.g. "Library" (no .jar)
 	 */
 	public void startPluginUpdater(String plugName) {
 		if (logMINOR)
@@ -843,13 +843,13 @@ public class NodeUpdateManager {
 	 * Create a NodeUpdateManager. Called by node constructor.
 	 *
 	 * @param node
-	 *            The node object.
+	 *			The node object.
 	 * @param config
-	 *            The global config object. Options will be added to a subconfig
-	 *            called node.updater.
+	 *			The global config object. Options will be added to a subconfig
+	 *			called node.updater.
 	 * @return A new NodeUpdateManager
 	 * @throws InvalidConfigValueException
-	 *             If there is an error in the config.
+	 *			 If there is an error in the config.
 	 */
 	public static NodeUpdateManager maybeCreate(Node node, Config config)
 			throws InvalidConfigValueException {
@@ -893,7 +893,7 @@ public class NodeUpdateManager {
 	 * Set the URfrenet.jar should be updated from.
 	 *
 	 * @param uri
-	 *            The URI to set.
+	 *			The URI to set.
 	 */
 	public void setURI(FreenetURI uri) {
 		// FIXME plugins!!
@@ -924,7 +924,7 @@ public class NodeUpdateManager {
 	 * Set the revocation URI.
 	 *
 	 * @param uri
-	 *            The new revocation URI.
+	 *			The new revocation URI.
 	 */
 	public void setRevocationURI(FreenetURI uri) {
 		synchronized (this) {
@@ -946,8 +946,8 @@ public class NodeUpdateManager {
 	 * Enable or disable auto-update.
 	 *
 	 * @param val
-	 *            If true, enable auto-update (and immediately update if an
-	 *            update is ready). If false, disable it.
+	 *			If true, enable auto-update (and immediately update if an
+	 *			update is ready). If false, disable it.
 	 */
 	public void setAutoUpdateAllowed(boolean val) {
 		synchronized (this) {
@@ -1107,8 +1107,8 @@ public class NodeUpdateManager {
 			}
 
 			synchronized(deployLock()) {
-			    success = innerDeployUpdate(deps);
-			    if(success) waitForever();
+				success = innerDeployUpdate(deps);
+				if(success) waitForever();
 			}
 			// isDeployingUpdate remains true as we are about to restart.
 		} catch (Throwable t) {
@@ -1146,20 +1146,20 @@ public class NodeUpdateManager {
 	 * rather nasty race conditions if we deploy two updates at once.
 	 * @return A mutex for serialising update deployments. */
 	static final Object deployLock() {
-	    return deployLock;
+		return deployLock;
 	}
 
 	/** Does not return. Should be called, inside the deployLock(), if you are in a situation
 	 * where you've deployed an update but the exit hasn't actually happened yet. */
 	static void waitForever() {
-	    while(true) {
-	        System.err.println("Waiting for shutdown after deployed update...");
-	        try {
-                Thread.sleep(60*1000);
-            } catch (InterruptedException e) {
-                // Ignore.
-            }
-	    }
+		while(true) {
+			System.err.println("Waiting for shutdown after deployed update...");
+			try {
+				Thread.sleep(60*1000);
+			} catch (InterruptedException e) {
+				// Ignore.
+			}
+		}
 	}
 
 	/**
@@ -1254,25 +1254,25 @@ public class NodeUpdateManager {
 	 * false if he doesn't, or throws if it fails.
 	 *
 	 * @param mainJar
-	 *            The location of the current jar file.
+	 *			The location of the current jar file.
 	 * @param newMainJar
-	 *            The location of the new jar file.
+	 *			The location of the new jar file.
 	 * @param backupMainJar
-	 *            On Windows, we alternate between freenet.jar and freenet.jar.new, so we do not
-	 *            need to write a backup - the user can rename between these two. On Unix, we
-	 *            copy to freenet.jar.bak before updating, in case something horrible happens.
+	 *			On Windows, we alternate between freenet.jar and freenet.jar.new, so we do not
+	 *			need to write a backup - the user can rename between these two. On Unix, we
+	 *			copy to freenet.jar.bak before updating, in case something horrible happens.
 	 * @param mainUpdater
-	 *            The NodeUpdater for the file in question, so we can ask it to
-	 *            write the file.
+	 *			The NodeUpdater for the file in question, so we can ask it to
+	 *			write the file.
 	 * @param name
-	 *            The name of the jar for logging.
+	 *			The name of the jar for logging.
 	 * @param tryEasyWay
-	 *            If true, attempt to rename the new file directly over the old
-	 *            one. This avoids the need to rewrite the wrapper config file.
+	 *			If true, attempt to rename the new file directly over the old
+	 *			one. This avoids the need to rewrite the wrapper config file.
 	 * @return True if the caller needs to rewrite the config, false if he
-	 *         doesn't (because easy way worked).
+	 *		 doesn't (because easy way worked).
 	 * @throws UpdateFailedException
-	 *             If something breaks.
+	 *			 If something breaks.
 	 */
 	private boolean writeJar(File mainJar, File newMainJar, File backupMainJar,
 			NodeUpdater mainUpdater, String name, boolean tryEasyWay)
@@ -1418,9 +1418,9 @@ public class NodeUpdateManager {
 	 * onDependenciesReady().
 	 *
 	 * @param fetched
-	 *            The build number we have fetched.
+	 *			The build number we have fetched.
 	 * @param result
-	 *            The actual data.
+	 *			The actual data.
 	 */
 	void onDownloadedNewJar(Bucket result, int fetched, File savedBlob) {
 		Bucket delete1 = null;
@@ -1474,9 +1474,9 @@ public class NodeUpdateManager {
 	/**
 	 * @param msg
 	 * @param disabledNotBlown
-	 *            If true, the auto-updating system is broken, and should be
-	 *            disabled, but the problem *could* be local e.g. out of disk
-	 *            space and a node sends us a revocation certificate.
+	 *			If true, the auto-updating system is broken, and should be
+	 *			disabled, but the problem *could* be local e.g. out of disk
+	 *			space and a node sends us a revocation certificate.
 	 */
 	public void blow(String msg, boolean disabledNotBlown) {
 		NodeUpdater main;
@@ -1773,7 +1773,7 @@ public class NodeUpdateManager {
 	 * knows the key).
 	 *
 	 * @param source
-	 *            The node which is claiming this.
+	 *			The node which is claiming this.
 	 */
 	void peerClaimsKeyBlown() {
 		// Note that UpdateOverMandatoryManager manages the list of peers who
@@ -1906,10 +1906,10 @@ public class NodeUpdateManager {
 	 * can upgrade to the new build without dependency issues.
 	 *
 	 * @param deps
-	 *            The dependencies object. Used to rewrite wrapper.conf if
-	 *            necessary. Also contains the build number.
+	 *			The dependencies object. Used to rewrite wrapper.conf if
+	 *			necessary. Also contains the build number.
 	 * @param binaryBlob
-	 *            The binary blob for this build, including the dependencies.
+	 *			The binary blob for this build, including the dependencies.
 	 */
 	public void onDependenciesReady(MainJarDependencies deps) {
 		synchronized (this) {

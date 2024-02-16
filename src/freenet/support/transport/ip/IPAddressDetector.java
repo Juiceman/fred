@@ -33,12 +33,12 @@ public class IPAddressDetector implements Runnable {
 	//private String preferedAddressString = null;
 	private final long interval;
 	private final NodeIPDetector detector;
-        /**
-         * 
-         * @param interval
-         * @param detector
-         */
-        public IPAddressDetector(long interval, NodeIPDetector detector) {
+		/**
+		 * 
+		 * @param interval
+		 * @param detector
+		 */
+		public IPAddressDetector(long interval, NodeIPDetector detector) {
 		this.interval = interval;
 		this.detector = detector;
 	}
@@ -124,31 +124,31 @@ public class IPAddressDetector implements Runnable {
 						this,
 						"Scanning NetworkInterface " + iface.getDisplayName());
 				int ifaceMTU = 0;
-                try {
-                    if (!iface.isLoopback()) {
-                        ifaceMTU = iface.getMTU(); //MTU is retrieved directly instead of using
-                        //a plugin
-                        if (logDEBUG)
-                            Logger.debug(
-                                         this,
-                                         "MTU = " + ifaceMTU);
-                    }
-                } catch (SocketException e) {
-                    Logger.error(
-                                this,
-                                 "SocketException trying to retrieve the MTU NetworkInterfaces: "+e,
-                                 e);
-                    ifaceMTU = 0; //code for ignoring this MTU
-                }
+				try {
+					if (!iface.isLoopback()) {
+						ifaceMTU = iface.getMTU(); //MTU is retrieved directly instead of using
+						//a plugin
+						if (logDEBUG)
+							Logger.debug(
+										 this,
+										 "MTU = " + ifaceMTU);
+					}
+				} catch (SocketException e) {
+					Logger.error(
+								this,
+								 "SocketException trying to retrieve the MTU NetworkInterfaces: "+e,
+								 e);
+					ifaceMTU = 0; //code for ignoring this MTU
+				}
 				Enumeration<InetAddress> ee = iface.getInetAddresses();
 				while (ee.hasMoreElements()) {
-				    
+					
 					InetAddress addr = ee.nextElement();
 					//telling the NodeIPDetector object about the MTU only if MTU != 0
 					// MTU = 0 means error in retrieving it
 					//FIXME: We should(n't) report MTU for local IPs
 					if (ifaceMTU > 0)
-					    detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
+						detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
 
 					if ((addr instanceof Inet6Address) && !(addr.isLinkLocalAddress() || IPUtil.isSiteLocalAddress(addr))) {
 						try {
@@ -197,10 +197,10 @@ public class IPAddressDetector implements Runnable {
 	}
 
 		/**
-         *
-         * @return
-         */
-        protected InetAddress oldDetect() {
+		 *
+		 * @return
+		 */
+		protected InetAddress oldDetect() {
 		boolean shouldLog = Logger.shouldLog(LogLevel.DEBUG, this);
 		if (shouldLog)
 			Logger.debug(
@@ -235,7 +235,7 @@ public class IPAddressDetector implements Runnable {
 	 * Do something with the list of detected IP addresses.
 	 * 
 	 * @param addrs
-	 *            Vector of InetAddresses
+	 *			Vector of InetAddresses
 	 */
 	protected void onGetAddresses(List<InetAddress> addrs) {
 		final boolean logDEBUG = IPAddressDetector.logDEBUG;
@@ -296,10 +296,10 @@ public class IPAddressDetector implements Runnable {
 		}
 	}
 
-        /**
-         *
-         */
-        public void clearCached() {
+		/**
+		 *
+		 */
+		public void clearCached() {
 		lastAddressList = null;
 		lastDetectedTime = -1;
 	}

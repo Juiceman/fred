@@ -31,8 +31,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public abstract class ClientRequester implements Serializable, ClientRequestSchedulerGroup {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	
 	static {
 		Logger.registerClass(ClientRequester.class);
@@ -134,8 +134,8 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	protected int failedBlocks;
 	/** Number of blocks which have failed fatally. */
 	protected int fatallyFailedBlocks;
-    /** @see #getLatestFailure() */
-    protected Date latestFailure = null;
+	/** @see #getLatestFailure() */
+	protected Date latestFailure = null;
 	/** Minimum number of blocks required to succeed for success. */
 	protected int minSuccessBlocks;
 	/** Has totalBlocks stopped growing? */
@@ -144,33 +144,33 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	 * Requests can be satisfied entirely from the datastore sometimes. */
 	protected boolean sentToNetwork;
 	
-    public int getTotalBlocks() {
-        return totalBlocks;
-    }
+	public int getTotalBlocks() {
+		return totalBlocks;
+	}
 
-    /**
-     * UTC Date of latest increase of {@link #successfulBlocks}.<br>
-     * Initialized to current time for usability purposes: This allows the user to sort downloads by
-     * last success in the user interface to determine which ones are stalling - those will be the
-     * ones with the oldest last success date. If we initialized it to "null" only, that would not
-     * be possible: The user couldn't distinguish very old stalling downloads from downloads which
-     * merely had no success yet because they were added a short time ago.<br> */
-    public Date getLatestSuccess() {
-        // clone() because Date is mutable.
-        // Null-check for backwards compatibility: Old serialized versions of objects of this
-        // class might not have this field yet.
-        return latestSuccess != null ? (Date)latestSuccess.clone() : new Date(0);
-    }
+	/**
+	 * UTC Date of latest increase of {@link #successfulBlocks}.<br>
+	 * Initialized to current time for usability purposes: This allows the user to sort downloads by
+	 * last success in the user interface to determine which ones are stalling - those will be the
+	 * ones with the oldest last success date. If we initialized it to "null" only, that would not
+	 * be possible: The user couldn't distinguish very old stalling downloads from downloads which
+	 * merely had no success yet because they were added a short time ago.<br> */
+	public Date getLatestSuccess() {
+		// clone() because Date is mutable.
+		// Null-check for backwards compatibility: Old serialized versions of objects of this
+		// class might not have this field yet.
+		return latestSuccess != null ? (Date)latestSuccess.clone() : new Date(0);
+	}
 
-    /**
-     * UTC Date of latest increase of {@link #failedBlocks} or {@link #fatallyFailedBlocks}.<br>
-     * Null if there was no failure yet. */
-    public Date getLatestFailure() {
-        // clone() because Date is mutable.
-        // Null-check for backwards compatibility: Old serialized versions of objects of this
-        // class might not have this field yet.
-        return latestFailure != null ? (Date)latestFailure.clone() : null;
-    }
+	/**
+	 * UTC Date of latest increase of {@link #failedBlocks} or {@link #fatallyFailedBlocks}.<br>
+	 * Null if there was no failure yet. */
+	public Date getLatestFailure() {
+		// clone() because Date is mutable.
+		// Null-check for backwards compatibility: Old serialized versions of objects of this
+		// class might not have this field yet.
+		return latestFailure != null ? (Date)latestFailure.clone() : null;
+	}
 
 	protected synchronized void resetBlocks() {
 		totalBlocks = 0;
@@ -179,7 +179,7 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		latestSuccess = new Date();
 		failedBlocks = 0;
 		fatallyFailedBlocks = 0;
-        latestFailure = null;
+		latestFailure = null;
 		minSuccessBlocks = 0;
 		blockSetFinalized = false;
 		sentToNetwork = false;
@@ -251,19 +251,19 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	
 	transient static final UserAlert brokenClientAlert = new SimpleUserAlert(true, "Some broken downloads/uploads were cancelled. Please restart them.", "Some downloads/uploads were broken due to a bug (some time before 1287) causing unrecoverable database corruption. They have been cancelled. Please restart them from the Downloads or Uploads page.", "Some downloads/uploads were broken due to a pre-1287 bug, please restart them.", UserAlert.ERROR);
 
-    /** A block failed. Count it and notify our clients. */
-    public void failedBlock(boolean dontNotify, ClientContext context) {
-        synchronized(this) {
-            failedBlocks++;
-            latestFailure = new Date();
-        }
-        if(!dontNotify)
-            notifyClients(context);
-    }
+	/** A block failed. Count it and notify our clients. */
+	public void failedBlock(boolean dontNotify, ClientContext context) {
+		synchronized(this) {
+			failedBlocks++;
+			latestFailure = new Date();
+		}
+		if(!dontNotify)
+			notifyClients(context);
+	}
 
 	/** A block failed. Count it and notify our clients. */
 	public void failedBlock(ClientContext context) {
-	    failedBlock(false, context);
+		failedBlock(false, context);
 	}
 
 	/** A block failed fatally. Count it and notify our clients. */
@@ -291,15 +291,15 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	
 	/** Notify clients by calling innerNotifyClients off-thread. */
 	public final void notifyClients(ClientContext context) {
-	    context.getJobRunner(persistent()).queueNormalOrDrop(new PersistentJob() {
+		context.getJobRunner(persistent()).queueNormalOrDrop(new PersistentJob() {
 
-            @Override
-            public boolean run(ClientContext context) {
-                innerNotifyClients(context);
-                return false;
-            }
-	        
-	    });
+			@Override
+			public boolean run(ClientContext context) {
+				innerNotifyClients(context);
+				return false;
+			}
+			
+		});
 	}
 	
 	/** Notify clients, usually via a SplitfileProgressEvent, of the current progress. Called 
@@ -328,7 +328,7 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		this.cancelled = false;
 		this.failedBlocks = 0;
 		this.fatallyFailedBlocks = 0;
-        this.latestFailure = null;
+		this.latestFailure = null;
 		this.minSuccessBlocks = 0;
 		this.sentToNetwork = false;
 		this.successfulBlocks = 0;
@@ -378,64 +378,64 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		}
 	}
 
-    /** @return A byte[] representing the original client, to be written to the file storing a 
-     * persistent download. E.g. for FCP, this will include the Identifier, whether it is on the 
-     * global queue and the client name. 
-     * @param checker Used to checksum and isolate large components where we can recover if they 
-     * fail.
-     * @throws IOException */
-    public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
-        return new byte[0];
-    }
-    
-    protected static byte[] getClientDetail(PersistentClientCallback callback, ChecksumChecker checker) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        callback.getClientDetail(dos, checker);
-        return baos.toByteArray();
-    }
-    
-    private transient boolean resumed = false;
-    
-    /** Called for a persistent request after startup. Should call notifyClients() at the end,
-     * after the callback has been registered etc. 
-     * @throws ResumeFailedException */
-    public final void onResume(ClientContext context) throws ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        innerOnResume(context);
-    }
+	/** @return A byte[] representing the original client, to be written to the file storing a 
+	 * persistent download. E.g. for FCP, this will include the Identifier, whether it is on the 
+	 * global queue and the client name. 
+	 * @param checker Used to checksum and isolate large components where we can recover if they 
+	 * fail.
+	 * @throws IOException */
+	public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
+		return new byte[0];
+	}
+	
+	protected static byte[] getClientDetail(PersistentClientCallback callback, ChecksumChecker checker) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		callback.getClientDetail(dos, checker);
+		return baos.toByteArray();
+	}
+	
+	private transient boolean resumed = false;
+	
+	/** Called for a persistent request after startup. Should call notifyClients() at the end,
+	 * after the callback has been registered etc. 
+	 * @throws ResumeFailedException */
+	public final void onResume(ClientContext context) throws ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		innerOnResume(context);
+	}
 
-    /** Called by onResume() once and only once after restarting. Must be overridden, and must call
-     * super.innerOnResume(). 
-     * @throws ResumeFailedException */
-    protected void innerOnResume(ClientContext context) throws ResumeFailedException {
-        ClientBaseCallback cb = getCallback();
-        client = cb.getRequestClient();
-        assert(client.persistent());
-        if(sentToNetwork)
-            innerToNetwork(context);
-    }
+	/** Called by onResume() once and only once after restarting. Must be overridden, and must call
+	 * super.innerOnResume(). 
+	 * @throws ResumeFailedException */
+	protected void innerOnResume(ClientContext context) throws ResumeFailedException {
+		ClientBaseCallback cb = getCallback();
+		client = cb.getRequestClient();
+		assert(client.persistent());
+		if(sentToNetwork)
+			innerToNetwork(context);
+	}
 
-    protected abstract ClientBaseCallback getCallback();
+	protected abstract ClientBaseCallback getCallback();
 
-    /** Called just before the final write when shutting down the node. */
-    public void onShutdown(ClientContext context) {
-        // Do nothing.
-    }
+	/** Called just before the final write when shutting down the node. */
+	public void onShutdown(ClientContext context) {
+		// Do nothing.
+	}
 
-    public boolean isCurrentState(ClientGetState state) {
-        return false;
-    }
+	public boolean isCurrentState(ClientGetState state) {
+		return false;
+	}
 
-    /**
-     * Get the group the request belongs to. For single requests (the default) this is the request
-     * itself; for those in a group, such as a site insert, it is a common value between them.
-     */
-    public ClientRequestSchedulerGroup getSchedulerGroup() {
-      return this;
-    }
+	/**
+	 * Get the group the request belongs to. For single requests (the default) this is the request
+	 * itself; for those in a group, such as a site insert, it is a common value between them.
+	 */
+	public ClientRequestSchedulerGroup getSchedulerGroup() {
+	  return this;
+	}
 
 }

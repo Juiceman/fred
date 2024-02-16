@@ -28,13 +28,13 @@ public class PeerMessage extends FCPMessage {
 		if(withMetadata) {
 			SimpleFieldSet meta = pn.exportMetadataFieldSet(System.currentTimeMillis());
 			if(!meta.isEmpty()) {
-			 	fs.put("metadata", meta);
+				fs.put("metadata", meta);
 			}
 		}
 		if(withVolatile) {
 			SimpleFieldSet vol = pn.exportVolatileFieldSet();
 			if(!vol.isEmpty()) {
-			 	fs.put("volatile", vol);
+				fs.put("volatile", vol);
 			}
 		}
 		if(identifier != null)

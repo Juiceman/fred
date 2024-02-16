@@ -83,14 +83,14 @@ public class ToadletContextImpl implements ToadletContext {
 	
 	private URI uri;
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logMINOR;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+								logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -180,33 +180,33 @@ public class ToadletContextImpl implements ToadletContext {
 	}
 
 	public void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length) throws ToadletContextClosedException, IOException {
-	    sendReplyHeaders(code, desc, mvt, mimeType, length, false);
+		sendReplyHeaders(code, desc, mvt, mimeType, length, false);
 	}
 	
 	public void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
-	    boolean enableJavascript = (!forceDisableJavascript) && container.isFProxyJavascriptEnabled();
-	    sendReplyHeaders(code, desc, mvt, mimeType, length, null, false, false, enableJavascript);
+		boolean enableJavascript = (!forceDisableJavascript) && container.isFProxyJavascriptEnabled();
+		sendReplyHeaders(code, desc, mvt, mimeType, length, null, false, false, enableJavascript);
 	}
 
 	@Deprecated
 	public void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException {
-	    if(mTime != null)
-	        sendReplyHeadersStatic(code, desc, mvt, mimeType, length, mTime);
-	    else
-	        sendReplyHeaders(code, desc, mvt, mimeType, length);
+		if(mTime != null)
+			sendReplyHeadersStatic(code, desc, mvt, mimeType, length, mTime);
+		else
+			sendReplyHeaders(code, desc, mvt, mimeType, length);
 	}
 	
 	public void sendReplyHeadersStatic(int replyCode, String replyDescription, MultiValueTable<String,String> mvt, String mimeType, long contentLength, Date mTime) throws ToadletContextClosedException, IOException {
-	    if(mTime == null) throw new IllegalArgumentException();
-	    sendReplyHeaders(replyCode, replyDescription, mvt, mimeType, contentLength, mTime, false, false, false);
+		if(mTime == null) throw new IllegalArgumentException();
+		sendReplyHeaders(replyCode, replyDescription, mvt, mimeType, contentLength, mTime, false, false, false);
 	}
 	
 	@Override
 	public void sendReplyHeadersFProxy(int replyCode, String replyDescription, MultiValueTable<String,String> mvt, String mimeType, long contentLength) throws ToadletContextClosedException, IOException {
-	    boolean enableJavascript = false;
-	    if(container.isFProxyWebPushingEnabled() && container.isFProxyJavascriptEnabled())
-	        enableJavascript = true;
-	    sendReplyHeaders(replyCode, replyDescription, mvt, mimeType, contentLength, null, false, true, enableJavascript);
+		boolean enableJavascript = false;
+		if(container.isFProxyWebPushingEnabled() && container.isFProxyJavascriptEnabled())
+			enableJavascript = true;
+		sendReplyHeaders(replyCode, replyDescription, mvt, mimeType, contentLength, null, false, true, enableJavascript);
 	}
 	
 	private void sendReplyHeaders(int replyCode, String replyDescription, MultiValueTable<String,String> mvt, String mimeType, long contentLength, Date mTime, boolean isOutlinkConfirmationPage, boolean allowFrames, boolean enableJavascript) throws ToadletContextClosedException, IOException {
@@ -266,14 +266,14 @@ public class ToadletContextImpl implements ToadletContext {
 	 * @see ToadletContext#checkFullAccess(Toadlet)
 	 */
 	@Override
-    public boolean checkFullAccess(Toadlet toadlet) throws ToadletContextClosedException, IOException {
-        if(isAllowedFullAccess()) {
-            return true;
-        } else {
-            toadlet.sendUnauthorizedPage(this);
-            return false;
-        }
-    }
+	public boolean checkFullAccess(Toadlet toadlet) throws ToadletContextClosedException, IOException {
+		if(isAllowedFullAccess()) {
+			return true;
+		} else {
+			toadlet.sendUnauthorizedPage(this);
+			return false;
+		}
+	}
 	
 	@Override
 	public boolean hasFormPassword(HTTPRequest request) throws IOException {
@@ -446,21 +446,21 @@ public class ToadletContextImpl implements ToadletContext {
 	}
 	
 	private static String generateCSP(boolean allowScripts, boolean allowFrames) {
-	    StringBuilder sb = new StringBuilder();
-	    // allow access to blobs, because these are purely local
-	    sb.append("default-src 'self' blob:; script-src ");
-	    // "options inline-script" is old syntax needed for older Firefox's.
-	    sb.append(allowScripts
+		StringBuilder sb = new StringBuilder();
+		// allow access to blobs, because these are purely local
+		sb.append("default-src 'self' blob:; script-src ");
+		// "options inline-script" is old syntax needed for older Firefox's.
+		sb.append(allowScripts
 					? "'self' 'unsafe-inline'; options inline-script"
 					: generateRestrictedScriptSrc());
-	    sb.append("; frame-src ");
-        sb.append(allowFrames ? "'self'" : "'none'");
-        sb.append("; object-src 'none'");
-        // Always send unsafe-inline for CSS. This is safe given it can't use external stuff anyway.
-        // It's only strictly needed for fproxy.
-        sb.append("; style-src 'self' 'unsafe-inline'");
-        return sb.toString();
-    }
+		sb.append("; frame-src ");
+		sb.append(allowFrames ? "'self'" : "'none'");
+		sb.append("; object-src 'none'");
+		// Always send unsafe-inline for CSS. This is safe given it can't use external stuff anyway.
+		// It's only strictly needed for fproxy.
+		sb.append("; style-src 'self' 'unsafe-inline'");
+		return sb.toString();
+	}
 
 	private static String generateRestrictedScriptSrc() {
 		// TODO: auto-generate these hashes from the path to the source file
@@ -812,9 +812,9 @@ public class ToadletContextImpl implements ToadletContext {
 	
 	/**
 	 * @param data The Bucket which contains the reply data. This
-	 *        function assumes ownership of the Bucket, calling free()
-	 *        on it when done. If this behavior is undesired, callers
-	 *        can wrap their Bucket in a NoFreeBucket.
+	 *		function assumes ownership of the Bucket, calling free()
+	 *		on it when done. If this behavior is undesired, callers
+	 *		can wrap their Bucket in a NoFreeBucket.
 	 *
 	 * @see freenet.support.io.NoFreeBucket
 	 */

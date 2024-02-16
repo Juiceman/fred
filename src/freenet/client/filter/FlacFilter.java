@@ -22,9 +22,9 @@ public class FlacFilter implements ContentDataFilter {
 	enum State {UNINITIALIZED, STREAMINFO_FOUND, METADATA_FOUND, STREAM_FINISHED};
 
 	public void readFilter(
-      InputStream input, OutputStream output,
-      String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+	  InputStream input, OutputStream output,
+	  String charset, Map<String, String> otherParams,
+	  String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this.getClass());
 		FlacPacketFilter parser = new FlacPacketFilter();
 		DataInputStream in = new DataInputStream(input);

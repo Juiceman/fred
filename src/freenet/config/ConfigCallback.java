@@ -13,9 +13,9 @@ public abstract class ConfigCallback<T> {
 	 * Set the config variable to a new value.
 	 * 
 	 * @param val
-	 *            The new value.
+	 *			The new value.
 	 * @throws InvalidConfigOptionException
-	 *             If the new value is invalid for this particular option.
+	 *			 If the new value is invalid for this particular option.
 	 */
 	public abstract void set(T val) throws InvalidConfigValueException, NodeNeedRestartException;
 	
