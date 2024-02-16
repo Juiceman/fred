@@ -885,11 +885,7 @@ public class PeerMessageQueue {
 			tryRealtimeFirst = false;
 		} else if(queuesByPriority[DMT.PRIORITY_BULK_DATA].isEmpty()) {
 			tryRealtimeFirst = true;
-		} else if(queuesByPriority[DMT.PRIORITY_BULK_DATA].getNextUrgentTime(Long.MAX_VALUE, 0) >= queuesByPriority[DMT.PRIORITY_REALTIME_DATA].getNextUrgentTime(Long.MAX_VALUE, 0)) {
-			tryRealtimeFirst = true;
-		} else {
-			tryRealtimeFirst = false;
-		}
+		} else tryRealtimeFirst = queuesByPriority[DMT.PRIORITY_BULK_DATA].getNextUrgentTime(Long.MAX_VALUE, 0) >= queuesByPriority[DMT.PRIORITY_REALTIME_DATA].getNextUrgentTime(Long.MAX_VALUE, 0);
 		
 		// FIXME token bucket?
 		if(tryRealtimeFirst) {

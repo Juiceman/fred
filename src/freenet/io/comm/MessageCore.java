@@ -54,7 +54,7 @@ public class MessageCore {
 	}
 
 	private Dispatcher _dispatcher;
-	private Executor _executor;
+	private final Executor _executor;
 	/** _filters serves as lock for both */
 	private final LinkedList<MessageFilter> _filters = new LinkedList<MessageFilter>();
 	private final LinkedList<Message> _unclaimed = new LinkedList<Message>();

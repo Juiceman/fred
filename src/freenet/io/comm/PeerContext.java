@@ -33,14 +33,14 @@ public interface PeerContext {
 
 	/** Send a message to the node 
 	 * @return */
-	public MessageItem sendAsync(Message msg, AsyncMessageCallback cb, ByteCounter ctr) throws NotConnectedException;
+	MessageItem sendAsync(Message msg, AsyncMessageCallback cb, ByteCounter ctr) throws NotConnectedException;
 
 	/** Get the current boot ID. This is a random number that changes every time the node starts up. */
-	public long getBootID();
+	long getBootID();
 
 	/** Get the PacketThrottle for the node's current address for the standard packet size (if the
 	 * address changes then we get a new throttle). */
-	public PacketThrottle getThrottle();
+	PacketThrottle getThrottle();
 
 	/** Get the SocketHandler which handles incoming packets from this node */
 	SocketHandler getSocketHandler();

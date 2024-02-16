@@ -12,20 +12,20 @@ public interface AsyncMessageCallback {
      * This DOES NOT MEAN that it has been successfully recieved
      * by the partner node (on a lossy transport).
      */
-    public void sent();
+	void sent();
 
     /** Called when the packet is actually acknowledged by the
      * other node. This is the end of the transaction. On a
      * non-lossy transport this may be called immediately after
      * sent().
      */
-    public void acknowledged();
+	void acknowledged();
 
     /** Called if the node is disconnected while the packet is
      * queued, or after it has been sent. Terminal.
      */
-    public void disconnected();
+	void disconnected();
     
     /** Called if the packet is lost due to an internal error. */
-    public void fatalError();
+	void fatalError();
 }

@@ -222,11 +222,11 @@ public class PartiallyReceivedBlock {
 		return _abortDescription;
 	}
 	
-	public static interface PacketReceivedListener {
+	public interface PacketReceivedListener {
 
-		public void packetReceived(int packetNo);
+		void packetReceived(int packetNo);
 		
-		public void receiveAborted(int reason, String description);
+		void receiveAborted(int reason, String description);
 	}
 
 	public boolean abortedLocally() {

@@ -127,7 +127,7 @@ public class NodeSSK extends Key {
         try {
 			return new NodeSSK(buf2, buf, null, cryptoAlgorithm);
 		} catch (SSKVerifyException e) {
-			throw (AssertionError)new AssertionError("Impossible").initCause(e);
+			throw (AssertionError) new AssertionError("Impossible", e);
 		}
     }
 
@@ -187,9 +187,8 @@ public class NodeSSK extends Key {
 		NodeSSK key = (NodeSSK)o;
 		if(!Arrays.equals(key.encryptedHashedDocname, encryptedHashedDocname)) return false;
 		if(!Arrays.equals(key.pubKeyHash, pubKeyHash)) return false;
-		if(!Arrays.equals(key.routingKey, routingKey)) return false;
+		return Arrays.equals(key.routingKey, routingKey);
 		// cachedNormalizedDouble and pubKey could be negative/null.
-		return true;
 	}
 	
 	@Override

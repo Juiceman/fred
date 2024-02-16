@@ -176,7 +176,7 @@ public class NodeClientCore implements Persistable {
 	static final long MAX_CACHED_ARCHIVE_DATA = 32 * 1024 * 1024; // make a fixed fraction of the store by default? FIXME
 	static final long MAX_ARCHIVED_FILE_SIZE = 1024 * 1024; // arbitrary... FIXME
 	static final int MAX_CACHED_ELEMENTS = 256 * 1024; // equally arbitrary! FIXME hopefully we can cache many of these though
-	private UserAlert startingUpAlert;
+	private final UserAlert startingUpAlert;
 	private boolean alwaysCommit;
 	private final PluginStores pluginStores;
 	private boolean lazyStartDatastoreChecker;
@@ -284,9 +284,8 @@ public class NodeClientCore implements Persistable {
 
 					    @Override
 					    public Boolean get() {
-						    return (persistentTempBucketFactory == null
-							    ? true : persistentTempBucketFactory
-									    .isEncrypting());
+						    return (persistentTempBucketFactory == null || persistentTempBucketFactory
+									.isEncrypting());
 					    }
 
 					    @Override
@@ -413,9 +412,8 @@ public class NodeClientCore implements Persistable {
 
 					@Override
 					public Boolean get() {
-						return (tempBucketFactory == null ? true
-										  : tempBucketFactory
-									.isEncrypting());
+						return (tempBucketFactory == null || tempBucketFactory
+								.isEncrypting());
 					}
 
 					@Override
@@ -703,7 +701,7 @@ public class NodeClientCore implements Persistable {
 						     "NodeClientCore.downloadsDir",
 						     "NodeClientCore.downloadsDirLong",
 						     l10n("couldNotFindOrCreateDir"),
-						     (SubConfig) null);
+						null);
 
 		// Downloads allowed, uploads allowed
 
@@ -858,9 +856,7 @@ public class NodeClientCore implements Persistable {
 				}
 				if (NodeClientCore.this.node.awaitingPassword())
 					return false;
-				if (NodeClientCore.this.node.isStopping())
-					return false;
-				return true;
+				return !NodeClientCore.this.node.isStopping();
 			}
 
 			@Override
@@ -1089,7 +1085,7 @@ public class NodeClientCore implements Persistable {
 
 	public interface SimpleRequestSenderCompletionListener {
 
-		public void completed(boolean success);
+		void completed(boolean success);
 	}
 
 	/** UID -1 is used internally, so never generate it.
@@ -1266,7 +1262,6 @@ public class NodeClientCore implements Persistable {
 						default:
 							Logger.error(this, "Unknown RequestSender code in get"+ (isSSK ? "SSK" : "CHK") +": " + status + " on " + rs);
 							listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
-							return;
 					}
 				}
 			}
@@ -1695,7 +1690,6 @@ public class NodeClientCore implements Persistable {
 
 			if(status == CHKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
-				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
 				if(status == CHKInsertSender.ROUTE_NOT_FOUND)
@@ -1843,7 +1837,6 @@ public class NodeClientCore implements Persistable {
 
 			if(status == SSKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
-				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
 				if(status == CHKInsertSender.ROUTE_NOT_FOUND)
@@ -2083,8 +2076,7 @@ public class NodeClientCore implements Persistable {
 	public boolean wantKey(Key key) {
 		boolean isSSK = key instanceof NodeSSK;
 		if(this.clientContext.getFetchScheduler(isSSK, true).wantKey(key)) return true;
-		if(this.clientContext.getFetchScheduler(isSSK, false).wantKey(key)) return true;
-		return false;
+		return this.clientContext.getFetchScheduler(isSSK, false).wantKey(key);
 	}
 
 	public long checkRecentlyFailed(Key key, boolean realTime) {

@@ -343,8 +343,7 @@ public class LocationManager implements ByteCounter {
                         exception,
                         "Could not create ClientCHK from CHKUri for calculated CHK URI:"
                             + calculatedChkUri);
-                    return;
-                }
+				}
             }
         }
 
@@ -928,7 +927,7 @@ public class LocationManager implements ByteCounter {
 					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.ISO_8859_1));
 					DateFormat df = DateFormat.getDateTimeInstance();
 					df.setTimeZone(TimeZone.getTimeZone("GMT"));
-					bw.write(""+df.format(new Date())+" : "+getLocation()+(randomReset ? " (random reset"+(fromDupLocation?" from duplicated location" : "")+")" : "")+'\n');
+					bw.write(df.format(new Date())+" : "+getLocation()+(randomReset ? " (random reset"+(fromDupLocation?" from duplicated location" : "")+")" : "")+'\n');
 					bw.close();
 					os = null;
 				} catch (IOException e) {
@@ -1090,9 +1089,8 @@ public class LocationManager implements ByteCounter {
 
         //Logger.normal(this, "p="+p+" randProb="+randProb);
 
-        if(randProb < p) return true;
-        return false;
-    }
+		return randProb < p;
+	}
 
     static final double SWAP_ACCEPT_PROB = 0.25;
 

@@ -18,7 +18,7 @@ import freenet.pluginmanager.FredPluginBaseL10n;
  */
 public class PluginL10n {
 
-	private BaseL10n b;
+	private final BaseL10n b;
 
 	/**
 	 * Create a new PluginL10n object using the node's selected

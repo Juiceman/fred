@@ -122,8 +122,7 @@ public class SeedClientPeerNode extends PeerNode {
 			}
 		} else {
 			// Disconnect after an hour in any event.
-			if(System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1))
-				return true;
+			return System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1);
 		}
 		return false;
 	}

@@ -37,7 +37,7 @@ public class ConfigurablePersister extends Persister {
 
 	private void setThrottles(String val) throws InvalidConfigValueException {
 		File f = new File(val);
-		File tmp = new File(f.toString()+".tmp");
+		File tmp = new File(f +".tmp");
 		while(true) {
 			if(f.exists()) {
 				if(!(f.canRead() && f.canWrite()))

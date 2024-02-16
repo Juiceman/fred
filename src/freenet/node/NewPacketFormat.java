@@ -359,7 +359,7 @@ public class NewPacketFormat implements PacketFormat {
 			}
 
 			keyContext.watchListPointer = (keyContext.watchListPointer + moveBy) % keyContext.seqNumWatchList.length;
-			keyContext.watchListOffset = (int) ((0L + keyContext.watchListOffset + moveBy) % NUM_SEQNUMS);
+			keyContext.watchListOffset = (int) (((long) keyContext.watchListOffset + moveBy) % NUM_SEQNUMS);
 		}
 
 		for(int i = 0; i < keyContext.seqNumWatchList.length; i++) {
@@ -370,7 +370,7 @@ public class NewPacketFormat implements PacketFormat {
 						keyContext.seqNumWatchList[index].length))
 				continue;
 			
-			int sequenceNumber = (int) ((0L + keyContext.watchListOffset + i) % NUM_SEQNUMS);
+			int sequenceNumber = (int) (((long) keyContext.watchListOffset + i) % NUM_SEQNUMS);
 			if(logDEBUG) Logger.debug(this, "Received packet matches sequence number " + sequenceNumber);
 			NPFPacket p = decipherFromSeqnum(buf, offset, length, sessionKey, sequenceNumber);
 			if(p != null) {

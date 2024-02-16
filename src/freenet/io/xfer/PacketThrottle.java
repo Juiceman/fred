@@ -119,7 +119,7 @@ public class PacketThrottle {
 
 	@Override
 	public synchronized String toString() {
-		return Double.toString(getBandwidth()) + " k/sec, (w: "
+		return getBandwidth() + " k/sec, (w: "
 				+ _windowSize + ", r:" + _roundTripTime + ", d:"
 				+ (((float) _droppedPackets / (float) _totalPackets)) + ") total="+_totalPackets+" : "+super.toString();
 	}

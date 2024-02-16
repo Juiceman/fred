@@ -56,7 +56,7 @@ public class RequestHandler implements PrioRunnable, ByteCounter, RequestSenderL
 	final long uid;
 	private final short htl;
 	final PeerNode source;
-	private boolean needsPubKey;
+	private final boolean needsPubKey;
 	final Key key;
 	private boolean finalTransferFailed = false;
 	/** The RequestSender, if any */
@@ -188,7 +188,6 @@ public class RequestHandler implements PrioRunnable, ByteCounter, RequestSenderL
 			node.failureTable.onFinalFailure(key, null, htl, htl, FailureTable.RECENTLY_FAILED_TIME, FailureTable.REJECT_TIME, source);
 			sendTerminal(dnf);
 			node.nodeStats.remoteRequest(key instanceof NodeSSK, false, false, htl, key.toNormalizedDouble(), realTimeFlag, false);
-			return;
 		} else {
 			long queueTime = source.getProbableSendQueueTime();
 			synchronized(this) {
@@ -971,7 +970,7 @@ public class RequestHandler implements PrioRunnable, ByteCounter, RequestSenderL
 	}
 	private int sentBytes;
 	private int receivedBytes;
-	private volatile Object bytesSync = new Object();
+	private final Object bytesSync = new Object();
 
 	@Override
 	public void sentBytes(int x) {

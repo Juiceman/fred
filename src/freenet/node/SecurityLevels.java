@@ -62,8 +62,8 @@ public class SecurityLevels {
 	FRIENDS_THREAT_LEVEL friendsThreatLevel;
 	PHYSICAL_THREAT_LEVEL physicalThreatLevel;
 	
-	private MyCallback<NETWORK_THREAT_LEVEL> networkThreatLevelCallback;
-	private MyCallback<PHYSICAL_THREAT_LEVEL> physicalThreatLevelCallback;
+	private final MyCallback<NETWORK_THREAT_LEVEL> networkThreatLevelCallback;
+	private final MyCallback<PHYSICAL_THREAT_LEVEL> physicalThreatLevelCallback;
 	
 	public SecurityLevels(Node node, PersistentConfig config) {
 		this.node = node;

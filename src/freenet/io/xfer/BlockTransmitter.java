@@ -81,20 +81,20 @@ public class BlockTransmitter {
 	private final boolean realTime;
 	final PartiallyReceivedBlock _prb;
 	private Deque<Integer> _unsent;
-	private BlockSenderJob _senderThread = new BlockSenderJob();
+	private final BlockSenderJob _senderThread = new BlockSenderJob();
 	private BitArray _sentPackets;
 	private long timeAllSent = -1;
 	final ByteCounter _ctr;
 	final int PACKET_SIZE;
 	private final ReceiverAbortHandler abortHandler;
-	private HashSet<MessageItem> itemsPending = new HashSet<MessageItem>();
+	private final HashSet<MessageItem> itemsPending = new HashSet<MessageItem>();
 	
 	private final Ticker _ticker;
 	private final Executor _executor;
 	private final BlockTransmitterCompletion _callback;
 	
 	public interface BlockTimeCallback {
-		public void blockTime(long interval, boolean realtime);
+		void blockTime(long interval, boolean realtime);
 	}
 	
 	private final BlockTimeCallback blockTimeCallback;
@@ -434,7 +434,7 @@ public class BlockTransmitter {
 		
 		/** @return True to cancel the PRB and thus cascade the cancel to the downstream
 		 * transfer, false otherwise. */
-		public boolean onAbort();
+		boolean onAbort();
 		
 	}
 	
@@ -458,13 +458,13 @@ public class BlockTransmitter {
 	
 	public interface BlockTransmitterCompletion {
 		
-		public void blockTransferFinished(boolean success);
+		void blockTransferFinished(boolean success);
 		
 	}
 	
 	private PartiallyReceivedBlock.PacketReceivedListener myListener = null;
 
-	private AsyncMessageFilterCallback cbAllReceived = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback cbAllReceived = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message m) {
@@ -518,7 +518,7 @@ public class BlockTransmitter {
 		
 	};
 	
-	private AsyncMessageFilterCallback cbSendAborted = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback cbSendAborted = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message msg) {
@@ -608,7 +608,7 @@ public class BlockTransmitter {
 		
 		try {
 			synchronized(_prb) {
-				_unsent = _prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {;
+				_unsent = _prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {
 
 					@Override
 					public void packetReceived(int packetNo) {
@@ -758,13 +758,13 @@ public class BlockTransmitter {
 			}
 		}
 
-	};
-	
+	}
+
 	private int blockSendsPending = 0;
 	
 	private long lastSentPacket = -1;
 	
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 	
 	/** LOCKING: Must be called with _senderThread held. */
 	private int getNumSent() {

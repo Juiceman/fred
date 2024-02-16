@@ -118,8 +118,7 @@ public class BulkTransmitter {
 							synchronized(BulkTransmitter.this) {
 								if(cancelled || finished) return true;
 							}
-							if(BulkTransmitter.this.prb.isAborted()) return true;
-							return false;
+							return BulkTransmitter.this.prb.isAborted();
 						}
 						@Override
 						public void onTimeout() {
@@ -148,8 +147,7 @@ public class BulkTransmitter {
 								   if (cancelled) return true;
 								   if (finished)  return (System.currentTimeMillis()-finishTime > FINAL_ACK_TIMEOUT);
 							}
-							if(BulkTransmitter.this.prb.isAborted()) return true;
-							return false;
+							return BulkTransmitter.this.prb.isAborted();
 						}
 						@Override
 						public void onTimeout() {

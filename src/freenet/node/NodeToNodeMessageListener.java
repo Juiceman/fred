@@ -6,6 +6,6 @@ package freenet.node;
  */
 public interface NodeToNodeMessageListener {
 	
-	public void handleMessage(byte[] data, boolean fromDarknet, PeerNode source, int type);
+	void handleMessage(byte[] data, boolean fromDarknet, PeerNode source, int type);
 
 }

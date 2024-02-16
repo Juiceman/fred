@@ -37,7 +37,7 @@ public class Inet6AddressMatcher implements AddressMatcher {
 		Arrays.fill(FULL_MASK, (byte) 0xff);
 	}
 	
-	private byte[] address;
+	private final byte[] address;
 	private byte[] netmask;
 
 	public Inet6AddressMatcher(String pattern) {

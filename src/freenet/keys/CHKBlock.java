@@ -137,8 +137,7 @@ public class CHKBlock implements KeyBlock {
 		if(!chk.equals(block.chk)) return false;
 		if(!Arrays.equals(data, block.data)) return false;
 		if(!Arrays.equals(headers, block.headers)) return false;
-		if(hashIdentifier != block.hashIdentifier) return false;
-		return true;
+		return hashIdentifier == block.hashIdentifier;
 	}
 	
 }

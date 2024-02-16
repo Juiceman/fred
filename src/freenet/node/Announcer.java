@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import freenet.io.comm.PeerParseException;
 import freenet.io.comm.ReferenceSignatureVerificationException;
@@ -306,7 +303,7 @@ public class Announcer {
 		return target;
 	}
 
-	private SimpleUserAlert announcementDisabledAlert = 
+	private final SimpleUserAlert announcementDisabledAlert =
 		new SimpleUserAlert(false, l10n("announceDisabledTooOldTitle"), l10n("announceDisabledTooOld"), l10n("announceDisabledTooOldShort"), UserAlert.CRITICAL_ERROR) {
 		
 		@Override
@@ -566,8 +563,7 @@ public class Announcer {
 	}
 
 	private synchronized void addAnnouncedIPs(InetAddress[] addrs) {
-		for (InetAddress addr : addrs)
-	        announcedToIPs.add(addr);
+		Collections.addAll(announcedToIPs, addrs);
 	}
 
 	/**
@@ -615,7 +611,6 @@ public class Announcer {
 				}
 				Logger.normal(this, "Announcement to "+seed.userToString()+" added node "+pn+" for a total of "+announcementAddedNodes+" ("+totalAdded+" from this announcement)");
 				System.out.println("Announcement to "+seed.userToString()+" added node "+pn.userToString()+'.');
-				return;
 			}
 			@Override
 			public void bogusNoderef(String reason) {

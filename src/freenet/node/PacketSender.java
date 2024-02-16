@@ -64,7 +64,7 @@ public class PacketSender implements Runnable {
 	NodeStats stats;
 	long lastReportedNoPackets;
 	long lastReceivedPacketFromAnyNode;
-	private MersenneTwister localRandom;
+	private final MersenneTwister localRandom;
 
 	PacketSender(Node node) {
 		this.node = node;

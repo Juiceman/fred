@@ -310,7 +310,6 @@ public class AddressTracker {
 			FileUtil.renameTo(dataBak, data);
 		} catch (IOException e) {
 			Logger.error(this, "Cannot store packet tracker to disk");
-			return;
 		} finally {
 			if(fos != null)
 				try {

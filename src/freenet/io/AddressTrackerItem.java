@@ -34,11 +34,11 @@ public class AddressTrackerItem {
 	 * certain that there was no packet received. This is typically the startup 
 	 * time of the server socket. It may be later if the cache has to be 
 	 * flushed. */
-	private long timeDefinitelyNoPacketsReceived;
+	private final long timeDefinitelyNoPacketsReceived;
 	/** The earliest time, before timeFirstSentPacket, at which we know for 
 	 * certain that there was no packet sent. This is typically the startup 
 	 * time of the node. It may be later if the cache has to be flushed. */
-	private long timeDefinitelyNoPacketsSent;
+	private final long timeDefinitelyNoPacketsSent;
 	/** The time at which we received the most recent packet */
 	private long timeLastReceivedPacket;
 	/** The time at which we sent the most recent packet */
@@ -48,8 +48,8 @@ public class AddressTrackerItem {
 	/** The total number of packets received from this address */
 	private long packetsReceived;
 	public static final int TRACK_GAPS = 5;
-	private long[] gapLengths;
-	private long[] gapLengthRecvTimes;
+	private final long[] gapLengths;
+	private final long[] gapLengthRecvTimes;
 	private static final long GAP_THRESHOLD = AddressTracker.MAYBE_TUNNEL_LENGTH;
 	static final boolean INCLUDE_RECEIVED_PACKETS = true;
 	

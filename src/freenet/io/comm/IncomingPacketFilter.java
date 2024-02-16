@@ -9,7 +9,7 @@ package freenet.io.comm;
  */
 public interface IncomingPacketFilter {
 
-	public enum DECODED {
+	enum DECODED {
 		DECODED,
 		NOT_DECODED,
 		DIDNT_WANT_OPENNET,

@@ -215,10 +215,8 @@ public class FreenetInetAddress {
 				if((addr._address != null) && (_address == null))
 					_address = addr._address;
 				// Except if we actually do have two different looked-up IPs!
-				if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
-					return false;
+				return (addr._address == null) || (_address == null) || addr._address.equals(_address);
 				// Equal.
-				return true;
 			}
 		}
 		// His hostname might not be null. Not a problem.
@@ -243,20 +241,14 @@ public class FreenetInetAddress {
 			if((addr._address != null) && (_address == null))
 				_address = addr._address;
 			// Except if we actually do have two different looked-up IPs!
-			if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
-				return false;
+			return (addr._address == null) || (_address == null) || addr._address.equals(_address);
 			// Equal.
-			return true;
 		}
 		if(addr.hostname != null)
 			return false;
 
 		// No hostname, go by address.
-		if(!_address.equals(addr._address)) {
-			return false;
-		}
-		
-		return true;
+		return _address.equals(addr._address);
 	}
 
 	public boolean strictEquals(FreenetInetAddress addr) {
@@ -272,10 +264,8 @@ public class FreenetInetAddress {
 			if((addr._address != null) && (_address == null))
 				_address = addr._address;
 			// Except if we actually do have two different looked-up IPs!
-			if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
-				return false;
+			return (addr._address == null) || (_address == null) || addr._address.equals(_address);
 			// Equal.
-			return true;
 		} else if(addr.hostname != null /* && hostname == null */) {
 			return false;
 		}
@@ -283,13 +273,9 @@ public class FreenetInetAddress {
 		// No hostname, go by address.
 		String reverseHostNameISee = getHostName(_address);
 		String reverseHostNameTheySee = getHostName(addr._address);
-		if(reverseHostNameISee == null
-				|| !reverseHostNameISee.equalsIgnoreCase(reverseHostNameTheySee)) {
-			//Logger.minor(this, "Addresses do not match: mine="+getHostName(_address)+" his="+getHostName(addr._address));
-			return false;
-		}
-		
-		return true;
+		//Logger.minor(this, "Addresses do not match: mine="+getHostName(_address)+" his="+getHostName(addr._address));
+		return reverseHostNameISee != null
+				&& reverseHostNameISee.equalsIgnoreCase(reverseHostNameTheySee);
 	}
 
 	/**

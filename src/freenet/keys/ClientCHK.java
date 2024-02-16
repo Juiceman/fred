@@ -270,8 +270,7 @@ public class ClientCHK extends ClientKey implements Serializable {
 		if(cryptoAlgorithm != key.cryptoAlgorithm) return false;
 		if(compressionAlgorithm != key.compressionAlgorithm) return false;
 		if(!Arrays.equals(routingKey, key.routingKey)) return false;
-		if(!Arrays.equals(cryptoKey, key.cryptoKey)) return false;
-		return true;
+		return Arrays.equals(cryptoKey, key.cryptoKey);
 	}
 
 	public byte[] getRoutingKey() {

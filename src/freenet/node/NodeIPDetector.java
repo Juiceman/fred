@@ -98,10 +98,10 @@ public class NodeIPDetector {
 	/** Plugin manager for plugin IP address detectors e.g. STUN */
 	final IPDetectorPluginManager ipDetectorManager;
 	/** UserAlert shown when ipAddressOverride has a hostname/IP address syntax error */
-	private InvalidAddressOverrideUserAlert invalidAddressOverrideAlert;
+	private final InvalidAddressOverrideUserAlert invalidAddressOverrideAlert;
 	private boolean hasValidAddressOverride;
 	/** UserAlert shown when we can't detect an IP address */
-	private IPUndetectedUserAlert primaryIPUndetectedAlert;
+	private final IPUndetectedUserAlert primaryIPUndetectedAlert;
 	// FIXME redundant? see lastIPAddress
 	FreenetInetAddress[] lastIP;
 	/** Set when we have grounds to believe that we may be behind a symmetric NAT. */
@@ -233,7 +233,7 @@ public class NodeIPDetector {
 			}
 		}
 		
-		if((pluginDetectedIPs != null) && (pluginDetectedIPs.length > 0)) {
+		if(pluginDetectedIPs != null) {
 			for(DetectedIP pluginDetectedIP: pluginDetectedIPs) {
 				InetAddress addr = pluginDetectedIP.publicAddress;
 				if(addr == null) continue;
@@ -366,7 +366,7 @@ public class NodeIPDetector {
 	
 	public boolean hasDirectlyDetectedIP() {
 		InetAddress[] addrs = ipDetector.getAddress(node.executor);
-		if(addrs == null || addrs.length == 0) return false;
+		if(addrs == null) return false;
 		for(InetAddress addr: addrs) {
 			if(IPUtil.isValidAddress(addr, false)) {
 				if(logMINOR)

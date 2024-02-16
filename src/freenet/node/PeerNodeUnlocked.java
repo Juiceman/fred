@@ -16,7 +16,7 @@ interface PeerNodeUnlocked {
 
 	WeakReference<? extends PeerNodeUnlocked> getWeakRef();
 	
-	public String shortToString();
+	String shortToString();
 
 	boolean isConnected();
 

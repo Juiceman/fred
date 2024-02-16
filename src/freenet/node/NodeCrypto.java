@@ -74,7 +74,7 @@ public class NodeCrypto {
 	/** The ECDSA/P256 signature of the above fieldset */
 	private String myReferenceECDSASignature = null;
 	/** A synchronization object used while signing the reference fieldset */
-	private volatile Object referenceSync = new Object();
+	private final Object referenceSync = new Object();
 
 	/**
 	 * Get port number from a config, create socket and packet mangler

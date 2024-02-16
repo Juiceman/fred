@@ -49,19 +49,19 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * to stuff required to implement that. */
 public class NodeStats implements Persistable, BlockTimeCallback {
 
-	public static enum RequestType {
+	public enum RequestType {
 		CHK_REQUEST,
 		SSK_REQUEST,
 		CHK_INSERT,
 		SSK_INSERT,
 		CHK_OFFER_FETCH,
-		SSK_OFFER_FETCH;
+		SSK_OFFER_FETCH
 	}
 
 	/** Histogram for request locations. */
 	private static class RequestsByLocation {
 		private final int[] bins;
-		private int count = 0;
+		private final int count = 0;
 
 		/** Constructs a request location histogram with the given number of bins. */
 		RequestsByLocation(int numBins) {
@@ -125,7 +125,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 	private volatile long maxPingTime;
 
 	final Node node;
-	private MemoryChecker myMemoryChecker;
+	private final MemoryChecker myMemoryChecker;
 	public final PeerManager peers;
 
 	final RandomSource hardRandom;
@@ -749,8 +749,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			if(s.maxTransfersOut != maxTransfersOut) return false;
 			if(s.maxTransfersOutPeerLimit != maxTransfersOutPeerLimit) return false;
 			if(s.maxTransfersOutLowerLimit != maxTransfersOutLowerLimit) return false;
-			if(s.maxTransfersOutUpperLimit != maxTransfersOutUpperLimit) return false;
-			return true;
+			return s.maxTransfersOutUpperLimit == maxTransfersOutUpperLimit;
 		}
 		
 		@Override
@@ -1222,9 +1221,9 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			if(logMINOR) Logger.minor(this, "Maybe accepting extra request due to it being in datastore (limit now "+limit+"s)...");
 		}
 		
-		int peers = node.peers.countConnectedPeers() + 2 * node.peers.countConnectedDarknetPeers();;
-		
-		// These limits are by transfers.
+		int peers = node.peers.countConnectedPeers() + 2 * node.peers.countConnectedDarknetPeers();
+
+			// These limits are by transfers.
 		// We limit the total number of transfers running in parallel to ensure
 		// that they don't get starved: The number of seconds a transfer has to
 		// wait (for all the others) before it can send needs to be reasonable.
@@ -1756,11 +1755,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			} else {
 				firstBwlimitDelayTimeThresholdBreak = 0;
 			}
-			if((firstBwlimitDelayTimeThresholdBreak != 0) && ((now - firstBwlimitDelayTimeThresholdBreak) >= MAX_BWLIMIT_DELAY_TIME_ALERT_DELAY)) {
-				bwlimitDelayAlertRelevant = true;
-			} else {
-				bwlimitDelayAlertRelevant = false;
-			}
+			bwlimitDelayAlertRelevant = (firstBwlimitDelayTimeThresholdBreak != 0) && ((now - firstBwlimitDelayTimeThresholdBreak) >= MAX_BWLIMIT_DELAY_TIME_ALERT_DELAY);
 			if(getNodeAveragePingTime() > 2*maxPingTime) {
 				if(firstNodeAveragePingTimeThresholdBreak == 0) {
 					firstNodeAveragePingTimeThresholdBreak = now;
@@ -1768,11 +1763,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			} else {
 				firstNodeAveragePingTimeThresholdBreak = 0;
 			}
-			if((firstNodeAveragePingTimeThresholdBreak != 0) && ((now - firstNodeAveragePingTimeThresholdBreak) >= MAX_NODE_AVERAGE_PING_TIME_ALERT_DELAY)) {
-				nodeAveragePingAlertRelevant = true;
-			} else {
-				nodeAveragePingAlertRelevant = false;
-			}
+			nodeAveragePingAlertRelevant = (firstNodeAveragePingTimeThresholdBreak != 0) && ((now - firstNodeAveragePingTimeThresholdBreak) >= MAX_NODE_AVERAGE_PING_TIME_ALERT_DELAY);
 			if(logDEBUG) Logger.debug(this, "mUPMUAS: "+now+": "+getBwlimitDelayTime()+" >? "+MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD+" since "+firstBwlimitDelayTimeThresholdBreak+" ("+bwlimitDelayAlertRelevant+") "+getNodeAveragePingTime()+" >? "+MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD+" since "+firstNodeAveragePingTimeThresholdBreak+" ("+nodeAveragePingAlertRelevant+ ')');
 			nextPeerManagerUserAlertStatsUpdateTime = now + peerManagerUserAlertStatsUpdateInterval;
 		}
@@ -2065,17 +2056,13 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		fs.put("announceSentBytes", getAnnounceBytesSent());
 
 		String [] routingBackoffReasons = peers.getPeerNodeRoutingBackoffReasons(true);
-		if(routingBackoffReasons.length != 0) {
-			for(String routingBackoffReason: routingBackoffReasons) {
-				fs.put("numberWithRoutingBackoffReasonsRT." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, true));
-			}
+		for (String routingBackoffReason : routingBackoffReasons) {
+			fs.put("numberWithRoutingBackoffReasonsRT." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, true));
 		}
 
 		routingBackoffReasons = peers.getPeerNodeRoutingBackoffReasons(false);
-		if(routingBackoffReasons.length != 0) {
-			for(String routingBackoffReason: routingBackoffReasons) {
-				fs.put("numberWithRoutingBackoffReasonsBulk." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, false));
-			}
+		for (String routingBackoffReason : routingBackoffReasons) {
+			fs.put("numberWithRoutingBackoffReasonsBulk." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, false));
 		}
 
 		double swaps = node.getSwaps();
@@ -3013,8 +3000,8 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		row.addChild("td", TimeUtil.formatTime((long)localSSKFetchTimeAverageRT.currentValue(), 2, true));
 	}
 
-	private HourlyStats hourlyStatsRT;
-	private HourlyStats hourlyStatsBulk;
+	private final HourlyStats hourlyStatsRT;
+	private final HourlyStats hourlyStatsBulk;
 
 	void remoteRequest(boolean ssk, boolean success, boolean local, short htl, double location, boolean realTime, boolean fromOfferedKey) {
 		if(logMINOR) Logger.minor(this, "Remote request: sucess="+success+" htl="+htl+" locally answered="+local+" location of key="+location+" from offered key = "+fromOfferedKey);
@@ -3650,10 +3637,10 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		return 2 * maxPingTime;
 	}
 	
-	private RunningAverage nlmDelayRTLocal = new TrivialRunningAverage();
-	private RunningAverage nlmDelayRTRemote = new TrivialRunningAverage();
-	private RunningAverage nlmDelayBulkLocal = new TrivialRunningAverage();
-	private RunningAverage nlmDelayBulkRemote = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayRTLocal = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayRTRemote = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayBulkLocal = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayBulkRemote = new TrivialRunningAverage();
 
 	public void reportNLMDelay(long waitTime, boolean realTime, boolean local) {
 		if(realTime) {
@@ -3703,7 +3690,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		}
 	}
 
-	private Object slotTimeoutsSync = new Object();
+	private final Object slotTimeoutsSync = new Object();
 	private long fatalTimeoutsInWaitLocal;
 	private long fatalTimeoutsInWaitRemote;
 	private long allocatedSlotLocal;

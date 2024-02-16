@@ -199,9 +199,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	
 	public interface BlockReceiverCompletion {
 
-		public void blockReceived(byte[] buf);
+		void blockReceived(byte[] buf);
 
-		public void blockReceiveFailed(RetrievalException e);
+		void blockReceiveFailed(RetrievalException e);
 
 	}
 	
@@ -216,7 +216,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	
 	private boolean gotAllSent;
 	
-	private AsyncMessageFilterCallback notificationWaiter = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback notificationWaiter = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message m1) {
@@ -325,7 +325,6 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				waitNotification(truncateTimeout);
 			} catch (DisconnectedException e) {
 				onDisconnect(null);
-				return;
 			}
 		}
 		
@@ -390,13 +389,11 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				} catch (DisconnectedException e) {
 					// Ignore
 				}
-				
-				return;
+
 			} catch (AbortedException e) {
 				// We didn't cause it?!
 				Logger.error(this, "Caught in receive - probably a bug as receive sets it: "+e, e);
 				complete(RetrievalException.UNKNOWN, "Aborted?");
-				return;
 			}
 		}
 		
@@ -494,7 +491,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		this.callback = callback;
 		synchronized(_prb) {
 			try {
-				_prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {;
+				_prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {
 
 					@Override
 					public void packetReceived(int packetNo) {
@@ -534,7 +531,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		}
 	}
 	
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 	
 	private void maybeResetDiscardFilter() {
 		long timeleft=discardEndTime-System.currentTimeMillis();

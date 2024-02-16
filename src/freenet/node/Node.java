@@ -565,12 +565,12 @@ public class Node implements TimeSkewDetectorCallback {
 	private int maxSlashdotCacheKeys;
 	static final long PURGE_INTERVAL = SECONDS.toMillis(60);
 
-	private CHKStore chkSlashdotcache;
-	private SlashdotStore<CHKBlock> chkSlashdotcacheStore;
-	private SSKStore sskSlashdotcache;
-	private SlashdotStore<SSKBlock> sskSlashdotcacheStore;
-	private PubkeyStore pubKeySlashdotcache;
-	private SlashdotStore<DSAPublicKey> pubKeySlashdotcacheStore;
+	private final CHKStore chkSlashdotcache;
+	private final SlashdotStore<CHKBlock> chkSlashdotcacheStore;
+	private final SSKStore sskSlashdotcache;
+	private final SlashdotStore<SSKBlock> sskSlashdotcacheStore;
+	private final PubkeyStore pubKeySlashdotcache;
+	private final SlashdotStore<DSAPublicKey> pubKeySlashdotcacheStore;
 
 	/** If false, only ULPRs will use the slashdot cache. If true, everything does. */
 	private boolean useSlashdotCache;
@@ -711,7 +711,7 @@ public class Node implements TimeSkewDetectorCallback {
 	public final long bootID;
 	public final long startupTime;
 
-	private SimpleToadletServer toadlets;
+	private final SimpleToadletServer toadlets;
 
 	public final NodeClientCore clientCore;
 
@@ -806,7 +806,7 @@ public class Node implements TimeSkewDetectorCallback {
 		br.close();
 		// Read contents
 		String[] udp = fs.getAll("physical.udp");
-		if((udp != null) && (udp.length > 0)) {
+		if(udp != null) {
 			for(String udpAddr : udp) {
 				// Just keep the first one with the correct port number.
 				Peer p;
@@ -817,7 +817,7 @@ public class Node implements TimeSkewDetectorCallback {
 					System.err.println("Invalid hostname or IP Address syntax error while parsing our darknet node reference: "+udpAddr);
 					continue;
 				} catch (PeerParseException e) {
-					throw (IOException)new IOException().initCause(e);
+					throw (IOException) new IOException(e);
 				}
 				if(p.getPort() == getDarknetPortNumber()) {
 					// DNSRequester doesn't deal with our own node
@@ -902,7 +902,6 @@ public class Node implements TimeSkewDetectorCallback {
 			FileUtil.renameTo(backup, orig);
 		} catch (IOException ioe) {
 			Logger.error(this, "IOE :"+ioe.getMessage(), ioe);
-			return;
 		} finally {
 			Closer.close(fos);
 		}
@@ -928,10 +927,7 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	public boolean isUsingWrapper(){
-		if(nodeStarter!=null && WrapperManager.isControlledByNativeWrapper())
-			return true;
-		else
-			return false;
+		return nodeStarter != null && WrapperManager.isControlledByNativeWrapper();
 	}
 
 	public NodeStarter getNodeStarter(){
@@ -1106,7 +1102,7 @@ public class Node implements TimeSkewDetectorCallback {
 		isPRNGReady = true;
 		toadlets.getStartupToadlet().setIsPRNGReady();
 		if(weakRandom == null) {
-			byte buffer[] = new byte[16];
+			byte[] buffer = new byte[16];
 			random.nextBytes(buffer);
 			this.fastWeakRandom = new MersenneTwister(buffer);
 		}else
@@ -1707,10 +1703,10 @@ public class Node implements TimeSkewDetectorCallback {
 			} catch (IOException e1) {
 				if(nodeFile.exists() || nodeFileBackup.exists()) {
 					System.err.println("No node file or cannot read, (re)initialising crypto etc");
-					System.err.println(e1.toString());
+					System.err.println(e1);
 					e1.printStackTrace();
 					System.err.println("After:");
-					System.err.println(e.toString());
+					System.err.println(e);
 					e.printStackTrace();
 				} else {
 					System.err.println("Creating new cryptographic keys...");
@@ -2134,10 +2130,7 @@ public class Node implements TimeSkewDetectorCallback {
 				@Override
 				public void onChange(PHYSICAL_THREAT_LEVEL oldLevel, PHYSICAL_THREAT_LEVEL newLevel) {
 					try {
-						if(newLevel == PHYSICAL_THREAT_LEVEL.LOW)
-							nodeConfig.set("storePreallocate", false);
-						else
-							nodeConfig.set("storePreallocate", true);
+						nodeConfig.set("storePreallocate", newLevel != PHYSICAL_THREAT_LEVEL.LOW);
 					} catch (NodeNeedRestartException e) {
 						// Ignore
 					} catch (InvalidConfigValueException e) {
@@ -2680,7 +2673,7 @@ public class Node implements TimeSkewDetectorCallback {
 
 	private boolean checkPeersOffersFrefFiles() {
 		File[] files = runDir.file("peers-offers").listFiles();
-		if (files != null && files.length > 0) {
+		if (files != null) {
 			for (File file : files) {
 				if (file.isFile()) {
 					String filename = file.getName();
@@ -3094,7 +3087,7 @@ public class Node implements TimeSkewDetectorCallback {
 		Logger.normal(this, "Initializing "+type+" Data"+store);
 		System.out.println("Initializing "+type+" Data"+store+" (" + maxStoreKeys + " keys)");
 
-		SaltedHashFreenetStore<T> fs = SaltedHashFreenetStore.<T>construct(getStoreDir(), type+"-"+store, cb,
+		SaltedHashFreenetStore<T> fs = SaltedHashFreenetStore.construct(getStoreDir(), type+"-"+store, cb,
 		        random, maxKeys, storeUseSlotFilters, shutdownHook, storePreallocate, storeSaltHashResizeOnStart && !lateStart, lateStart ? ticker : null, clientCacheMasterKey);
 		cb.setStore(fs);
 		if(cachingFreenetStoreMaxSize > 0)
@@ -4043,7 +4036,7 @@ public class Node implements TimeSkewDetectorCallback {
 		return peers.isOutdated();
 	}
 
-	private Map<Integer, NodeToNodeMessageListener> n2nmListeners = new HashMap<Integer, NodeToNodeMessageListener>();
+	private final Map<Integer, NodeToNodeMessageListener> n2nmListeners = new HashMap<Integer, NodeToNodeMessageListener>();
 
 	public synchronized void registerNodeToNodeMessageListener(int type, NodeToNodeMessageListener listener) {
 		n2nmListeners.put(type, listener);
@@ -4074,7 +4067,7 @@ public class Node implements TimeSkewDetectorCallback {
 		listener.handleMessage(messageData.getData(), fromDarknet, src, type);
 	}
 
-	private NodeToNodeMessageListener diffNoderefListener = new NodeToNodeMessageListener() {
+	private final NodeToNodeMessageListener diffNoderefListener = new NodeToNodeMessageListener() {
 
 		@Override
 		public void handleMessage(byte[] data, boolean fromDarknet, PeerNode src, int type) {
@@ -4093,13 +4086,12 @@ public class Node implements TimeSkewDetectorCallback {
 				src.processDiffNoderef(fs);
 			} catch (FSParseException e) {
 				Logger.error(this, "FSParseException while parsing node to node message data", e);
-				return;
 			}
 		}
 
 	};
 
-	private NodeToNodeMessageListener fproxyN2NMListener = new NodeToNodeMessageListener() {
+	private final NodeToNodeMessageListener fproxyN2NMListener = new NodeToNodeMessageListener() {
 
 		@Override
 		public void handleMessage(byte[] data, boolean fromDarknet, PeerNode src, int type) {
@@ -4300,7 +4292,7 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	// FIXME put this somewhere else
-	private volatile Object statsSync = new Object();
+	private final Object statsSync = new Object();
 
 	/** The total number of bytes of real data i.e.&nbsp;payload sent by the node */
 	private long totalPayloadSent;
@@ -4448,7 +4440,7 @@ public class Node implements TimeSkewDetectorCallback {
 		// Only return true if bindTo is set on all ports which are in use
 		if(!darknetCrypto.getBindTo().isRealInternetAddress(false, true, false)) return false;
 		if(opennet != null) {
-			if(opennet.crypto.getBindTo().isRealInternetAddress(false, true, false)) return false;
+			return !opennet.crypto.getBindTo().isRealInternetAddress(false, true, false);
 		}
 		return true;
 	}
@@ -4705,8 +4697,7 @@ public class Node implements TimeSkewDetectorCallback {
 
 	public boolean awaitingPassword() {
 		if(clientCacheAwaitingPassword) return true;
-		if(databaseAwaitingPassword) return true;
-		return false;
+		return databaseAwaitingPassword;
 	}
 
 	public boolean wantEncryptedDatabase() {
@@ -4803,7 +4794,7 @@ public class Node implements TimeSkewDetectorCallback {
 		registerFriendsVisibilityAlert();
 	}
 	
-	private UserAlert visibilityAlert = new SimpleUserAlert(true, l10n("pleaseSetPeersVisibilityAlertTitle"), l10n("pleaseSetPeersVisibilityAlert"), l10n("pleaseSetPeersVisibilityAlert"), UserAlert.ERROR) {
+	private final UserAlert visibilityAlert = new SimpleUserAlert(true, l10n("pleaseSetPeersVisibilityAlertTitle"), l10n("pleaseSetPeersVisibilityAlert"), l10n("pleaseSetPeersVisibilityAlert"), UserAlert.ERROR) {
 		
 		@Override
 		public void onDismiss() {
@@ -4890,9 +4881,7 @@ public class Node implements TimeSkewDetectorCallback {
 			if(om.announcer != null && om.announcer.isWaitingForUpdater())
 				return true;
 		}
-		if(peers.getPeerNodeStatusSize(PeerManager.PEER_NODE_STATUS_TOO_NEW, true) > PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET)
-			return true;
-		return false;
+		return peers.getPeerNodeStatusSize(PeerManager.PEER_NODE_STATUS_TOO_NEW, true) > PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET;
 	}
 
 

@@ -467,8 +467,7 @@ class FailureTableEntry implements TimedOutNodesList {
 
 	public synchronized boolean isEmpty(long now) {
 		if(requestedNodes.length > 0) return false;
-		if(requestorNodes.length > 0) return false;
-		return true;
+		return requestorNodes.length <= 0;
 	}
 
 	/** Get the timeout time for the given peer, taking HTL into account.

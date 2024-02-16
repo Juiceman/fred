@@ -27,7 +27,7 @@ public class NodeCryptoConfig {
 	private int portNumber;
 	
 	/** Bind address. 0.0.0.0 = all addresses. */
-	private FreenetInetAddress bindTo;
+	private final FreenetInetAddress bindTo;
 	
 	/** If nonzero, 1/dropProbability = probability of UdpSocketHandler dropping a packet (for debugging
 	 * purposes; not static as we may need to simulate some nodes with more loss than others). */

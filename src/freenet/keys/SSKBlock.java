@@ -88,9 +88,8 @@ public class SSKBlock implements KeyBlock {
     		if (block.headers[i] != headers[i]) return false;
     	}
     	//if(!Arrays.equals(block.headers, headers)) return false;
-    	if(!Arrays.equals(block.data, data)) return false;
-    	return true;
-    }
+		return Arrays.equals(block.data, data);
+	}
     
     @Override
 	public int hashCode(){

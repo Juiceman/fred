@@ -410,7 +410,7 @@ public class NodeStarter implements WrapperListener {
          *  LogLevel, String, boolean, RandomSource)} (which you have to do once for each Java VM):
          *  Each one will start with a fresh empty subdirectory for as long as each of them uses a
          *  unique port number. */
-        public File baseDirectory = new File("freenet-test-node-" + UUID.randomUUID().toString());
+        public File baseDirectory = new File("freenet-test-node-" + UUID.randomUUID());
         public boolean disableProbabilisticHTLs;
         public short maxHTL;
         public int dropProb;

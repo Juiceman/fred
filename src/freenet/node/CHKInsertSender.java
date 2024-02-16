@@ -362,7 +362,7 @@ public final class CHKInsertSender extends BaseSender implements PrioRunnable, A
     
     /** List of nodes we are waiting for either a transfer completion
      * notice or a transfer completion from. Also used as a sync object for waiting for transfer completion. */
-    private List<BackgroundTransfer> backgroundTransfers;
+    private final List<BackgroundTransfer> backgroundTransfers;
     
     /** Have all transfers completed and all nodes reported completion status? */
     private boolean allTransfersCompleted;
@@ -931,7 +931,6 @@ public final class CHKInsertSender extends BaseSender implements PrioRunnable, A
 				// Wait for the outgoing transfers to complete.
 				if(!waitForBackgroundTransfers(transfers)) {
 					setTransferTimedOut();
-					return;
 				}
 			} finally {
 				synchronized(CHKInsertSender.this) {

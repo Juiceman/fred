@@ -180,8 +180,7 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 			if(!Arrays.equals(pubKeyHash, u.pubKeyHash)) return false;
 			if(!Arrays.equals(cryptoKey, u.cryptoKey)) return false;
 			if(!siteName.equals(u.siteName)) return false;
-			if(includeVersion && (suggestedEdition != u.suggestedEdition)) return false;
-			return true;
+			return !includeVersion || (suggestedEdition == u.suggestedEdition);
 		}
 		return false;
 	}

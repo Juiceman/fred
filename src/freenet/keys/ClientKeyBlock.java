@@ -22,12 +22,12 @@ public interface ClientKeyBlock {
 	boolean isMetadata();
 
     /** @return The ClientKey for this key. */
-    public ClientKey getClientKey();
+	ClientKey getClientKey();
     
-    public byte[] memoryDecode() throws KeyDecodeException;
+    byte[] memoryDecode() throws KeyDecodeException;
     
     /** @return The underlying KeyBlock. */
-    public KeyBlock getBlock();
+	KeyBlock getBlock();
 
     /** @return The low-level Key for the block. */
 	Key getKey();
@@ -36,10 +36,10 @@ public interface ClientKeyBlock {
 	 * but different keys are not equals(), therefore a ClientKeyBlock and its KeyBlock have to be !equals
 	 * too. Hence it's really a different kind of object, so not a child. */
 	@Override
-	public boolean equals(Object o);
+	boolean equals(Object o);
 	
 	/** Please be consistent with equals() */
 	@Override
-	public int hashCode();
+	int hashCode();
 
 }

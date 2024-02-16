@@ -36,7 +36,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	/** RNG for debugging, used with _dropProbability.
 	 * NOT CRYPTO SAFE. DO NOT USE FOR THINGS THAT NEED CRYPTO SAFE RNG!
 	 */
-	private Random dropRandom;
+	private final Random dropRandom;
 	/** If &gt;0, 1 in _dropProbability chance of dropping a packet; for debugging */
 	private int _dropProbability;
 	// Icky layer violation, but we need to know the Node to work around the EvilJVMBug.
@@ -122,7 +122,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			try {
 			    ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
 			} catch(Exception e) { Logger.normal(UdpSocketHandler.class, e.getMessage(),e); } //if it fails that's fine
-			return (ret == 0 ? true : false);
+			return (ret == 0);
 		}
 	}
 

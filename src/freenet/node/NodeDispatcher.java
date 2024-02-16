@@ -111,7 +111,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	};
 	
 	public interface NodeDispatcherCallback {
-		public void snoop(Message m, Node n);
+		void snoop(Message m, Node n);
 	}
 	
 	@Override
@@ -196,12 +196,12 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			if((OpennetManager.MAX_PEERS_FOR_SCALING < locs.length) && (source.isOpennet())) {
 				if(locs.length > OpennetManager.PANIC_MAX_PEERS) {
 					// This can't happen by accident
-					Logger.error(this, "We received "+locs.length+ " locations from "+source.toString()+"! That should *NOT* happen! Possible attack!");
+					Logger.error(this, "We received "+locs.length+ " locations from "+ source +"! That should *NOT* happen! Possible attack!");
 					source.forceDisconnect();
 					return true;
 				} else {
 					// A few extra can happen by accident. Just use the first 20.
-					Logger.normal(this, "Too many locations from "+source.toString()+" : "+locs.length+" could be an accident, using the first "+OpennetManager.MAX_PEERS_FOR_SCALING);
+					Logger.normal(this, "Too many locations from "+ source +" : "+locs.length+" could be an accident, using the first "+OpennetManager.MAX_PEERS_FOR_SCALING);
 					locs = Arrays.copyOf(locs, OpennetManager.MAX_PEERS_FOR_SCALING);
 				}
 			}
@@ -723,7 +723,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			}
 			AnnouncementCallback cb = null;
 			if(logMINOR) {
-				final String origin = source.toString()+" (htl "+htl+")";
+				final String origin = source +" (htl "+htl+")";
 				// Log the progress of the announcement.
 				// This is similar to Announcer's logging.
 				cb = new AnnouncementCallback() {
@@ -740,7 +740,6 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 							totalAdded++;
 						}
 						Logger.minor(this, "Announcement from "+origin+" added node "+pn+(pn instanceof SeedClientPeerNode ? " (seed server added the peer directly)" : ""));
-						return;
 					}
 					@Override
 					public void bogusNoderef(String reason) {

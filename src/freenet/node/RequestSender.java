@@ -85,7 +85,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
     private final boolean canWriteDatastore;
     
     /** If true, only try to fetch the key from nodes which have offered it */
-    private boolean tryOffersOnly;
+    private final boolean tryOffersOnly;
     
 	private final ArrayList<RequestSenderListener> listeners=new ArrayList<RequestSenderListener>();
 	
@@ -433,8 +433,8 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 			
         	DO action = handleMessage(msg, noReroute, waitingFor, this);
         	
-        	if(action == DO.FINISHED)
-        		return;
+        	if(action == DO.FINISHED) {
+			}
         	else if(action == DO.NEXT_PEER) {
         		if(!noReroute) {
         			// Try another peer
@@ -541,9 +541,9 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 			return super.toString()+":"+waitingFor+":"+noReroute+":"+RequestSender.this;
 		}
     	
-    };
-    
-    enum OFFER_STATUS {
+    }
+
+	enum OFFER_STATUS {
     	FETCHING, // Fetching asynchronously or already fetched.
     	TWO_STAGE_TIMEOUT, // Waiting asynchronously for two stage timeout; remove the offer, but don't unlock the tag.
     	FATAL, // Fatal error, fail the whole request.
@@ -1376,7 +1376,6 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 				finish(VERIFY_FAILURE, next, false);
 			else
 				next.noLongerRoutingTo(origTag, false);
-			return;
 		} catch (KeyCollisionException e) {
 			Logger.normal(this, "Collision on "+this);
 			block = node.fetch((NodeSSK)key, false, canWriteClientCache, canWriteClientCache, canWriteDatastore, false, null);
@@ -1542,9 +1541,9 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
     	}
     }
     
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 	
-	private static MedianMeanRunningAverage avgTimeTakenTransfer = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTakenTransfer = new MedianMeanRunningAverage();
 	
 	private long transferTime;
 	
@@ -1881,7 +1880,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
         return htl;
     }
     
-    final synchronized byte[] getSSKData() {
+    synchronized byte[] getSSKData() {
     	return finalSskData;
     }
     
@@ -2116,7 +2115,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 	}
 	
 	/** If we handled a timeout, and forked, we need to know the original HTL. */
-	protected void onAccepted(PeerNode next, boolean forked, short htl) {
+	private void onAccepted(PeerNode next, boolean forked, short htl) {
 		MainLoopCallback cb;
         synchronized(this) {
         	receivingAsync = true;

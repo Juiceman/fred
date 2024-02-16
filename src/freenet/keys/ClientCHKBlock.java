@@ -152,7 +152,7 @@ public class ClientCHKBlock implements ClientKeyBlock {
         if((size > 32768) || (size < 0)) {
             throw new CHKDecodeException("Invalid size: "+size);
         }
-        return Key.decompress(dontCompress ? false : key.isCompressed(), dbuf, size, bf, 
+        return Key.decompress(!dontCompress && key.isCompressed(), dbuf, size, bf,
         		Math.min(maxLength, CHKBlock.MAX_LENGTH_BEFORE_COMPRESSION), key.compressionAlgorithm, false);
     }
     
@@ -265,7 +265,7 @@ public class ClientCHKBlock implements ClientKeyBlock {
         if(!Arrays.equals(hash, hashCheck)) {
         	throw new CHKDecodeException("HMAC is wrong, wrong decryption key?");
         }
-        return Key.decompress(dontCompress ? false : key.isCompressed(), plaintext, size, bf, 
+        return Key.decompress(!dontCompress && key.isCompressed(), plaintext, size, bf,
         		Math.min(maxLength, CHKBlock.MAX_LENGTH_BEFORE_COMPRESSION), key.compressionAlgorithm, false);
 		} catch(GeneralSecurityException e) {
 			throw new CHKDecodeException("Problem with JCA, should be impossible!", e);
@@ -319,7 +319,7 @@ public class ClientCHKBlock implements ClientKeyBlock {
 		} catch(GeneralSecurityException e) {
 			throw new CHKDecodeException("Problem with JCA, should be impossible!", e);
 		}
-        return Key.decompress(dontCompress ? false : key.isCompressed(), plaintext, size, bf, 
+        return Key.decompress(!dontCompress && key.isCompressed(), plaintext, size, bf,
         		Math.min(maxLength, CHKBlock.MAX_LENGTH_BEFORE_COMPRESSION), key.compressionAlgorithm, false);
     }
 

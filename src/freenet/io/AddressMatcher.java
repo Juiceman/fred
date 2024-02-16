@@ -23,9 +23,9 @@ import java.net.InetAddress;
  * @version $Id$
  */
 public interface AddressMatcher {
-	public boolean matches(InetAddress address);
+	boolean matches(InetAddress address);
 
 	/** Get the human-readable version of the Matcher */
-	public String getHumanRepresentation();
+	String getHumanRepresentation();
 
 }

@@ -9,9 +9,9 @@ package freenet.io.comm;
 public interface ByteCounter {
 	
 	/** Sent some bytes. *Includes* any bytes flagged as already-reported-to-throttle. */
-	public void sentBytes(int x);
+	void sentBytes(int x);
 	
-	public void receivedBytes(int x);
+	void receivedBytes(int x);
 	
 	/**
 	 * Sent payload - only include the number of bytes of actual payload i.e. data from 
@@ -22,6 +22,6 @@ public interface ByteCounter {
 	 *
 	 * @param x Number of bytes sent
 	 */
-	public void sentPayload(int x);
+	void sentPayload(int x);
 
 }

@@ -26,9 +26,9 @@ public class IncomingPacketFilterImpl implements IncomingPacketFilter {
 		});
 	}
 
-	private FNPPacketMangler mangler;
-	private NodeCrypto crypto;
-	private Node node;
+	private final FNPPacketMangler mangler;
+	private final NodeCrypto crypto;
+	private final Node node;
 	private final EntropySource fnpTimingSource;
 
 	public IncomingPacketFilterImpl(FNPPacketMangler mangler, Node node, NodeCrypto crypto) {
