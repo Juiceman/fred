@@ -15,9 +15,9 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 
 	//The iteration order matters, hence a LinkedHashMap
 	protected Map<String, Bucket> buckets = new LinkedHashMap<String, Bucket>();
-	
+
 	protected boolean freeOnSent;
-	
+
 	void setFreeOnSent() {
 		freeOnSent = true;
 	}
@@ -28,21 +28,21 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	protected void writeData(OutputStream os) throws IOException {
-			for(Map.Entry<String, Bucket> entry : buckets.entrySet()) {
-				Bucket bucket = entry.getValue();
-				BucketTools.copyTo(bucket, os, bucket.size());
-				if(freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
-			}
+		for (Map.Entry<String, Bucket> entry : buckets.entrySet()) {
+			Bucket bucket = entry.getValue();
+			BucketTools.copyTo(bucket, os, bucket.size());
+			if (freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
+		}
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		int dataLength = 0;
 		SimpleFieldSet fs = new SimpleFieldSet(true);
-		for(Map.Entry<String, Bucket> entry : buckets.entrySet()) {
+		for (Map.Entry<String, Bucket> entry : buckets.entrySet()) {
 			String field = entry.getKey();
 			Bucket bucket = entry.getValue();
 			fs.put(field + "Length", bucket.size());
@@ -51,15 +51,15 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 		fs.put("DataLength", dataLength);
 		return fs;
 	}
-	
+
 	@Override
 	public long dataLength() {
 		int dataLength = 0;
-		for(Bucket bucket : buckets.values())
+		for (Bucket bucket : buckets.values())
 			dataLength += bucket.size();
 		return dataLength;
 	}
-	
+
 	@Override
 	String getEndString() {
 		return "Data";

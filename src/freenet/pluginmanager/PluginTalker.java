@@ -15,7 +15,6 @@ import freenet.support.api.Bucket;
 
 /**
  * @author saces, xor
- * 
  * @deprecated Use {@link FCPPluginConnection} instead.
  */
 @Deprecated
@@ -34,13 +33,13 @@ public class PluginTalker {
 		pluginName = pluginname2;
 		pluginRef = findPlugin(pluginname2);
 		access = FredPluginFCP.ACCESS_DIRECT;
-		
+
 		// Normally, the clientIdentifier passed to the PluginReplySenderDirect() shall be an identifier of the particular network connection to the client.
 		// But this PluginTalker constructor typically gets called by PluginRespirator.getPluginTalker() which is called directly by client plugins.
 		// So there is no real FCP network connection, the client plugin runs in the same node as the server plugin.
 		// As we have no network connection to pull an ID from, we assume a new client for each call of this constructor by computing a random clientIdentifier.
 		final String clientIdentifier = UUID.randomUUID().toString();
-		
+
 		replysender = new PluginReplySenderDirect(node2, fpt, pluginname2, clientIdentifier, clientSideIdentifier);
 	}
 
@@ -49,10 +48,10 @@ public class PluginTalker {
 		pluginName = pluginname2;
 		pluginRef = findPlugin(pluginname2);
 		access = access2 ? FredPluginFCP.ACCESS_FCP_FULL : FredPluginFCP.ACCESS_FCP_RESTRICTED;
-		
+
 		// FCPConnectionHandler.connectionIdentifier is unique for each network connection of a client, which is exactly what the PluginReplySenderFCP() wants.
 		final String clientIdentifier = handler.connectionIdentifier;
-		
+
 		replysender = new PluginReplySenderFCP(handler, pluginname2, clientIdentifier, clientSideIdentifier);
 	}
 
@@ -77,14 +76,14 @@ public class PluginTalker {
 			}
 		}, "FCPPlugin talk runner for " + pluginName);
 	}
-	
+
 	public void sendSyncInternalOnly(final SimpleFieldSet plugparams, final Bucket data2) {
 		try {
 			FredPluginFCP plug = pluginRef.get();
-			if (plug==null) {
+			if (plug == null) {
 				// FIXME How to get this out to surrounding send(..)?
 				// throw new PluginNotFoundException(How to get this out to surrounding send(..)?);
-				Logger.error(this, "Connection to plugin '"+pluginName+"' lost.", new Exception("FIXME"));
+				Logger.error(this, "Connection to plugin '" + pluginName + "' lost.", new Exception("FIXME"));
 				return;
 			}
 			plug.handle(replysender, plugparams, data2, access);
@@ -93,7 +92,7 @@ public class PluginTalker {
 		} catch (VirtualMachineError vme) {
 			throw vme; // OOM is included here
 		} catch (Throwable t) {
-			Logger.error(this, "Cought error while execute fcp plugin handler for '"+pluginName+"', report it to the plugin author: " + t.getMessage(), t);
+			Logger.error(this, "Cought error while execute fcp plugin handler for '" + pluginName + "', report it to the plugin author: " + t.getMessage(), t);
 		}
 	}
 }

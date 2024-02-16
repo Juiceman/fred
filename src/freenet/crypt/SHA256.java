@@ -1,31 +1,31 @@
 /**
-Cryptix General Licence
-Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000 
-The Cryptix Foundation Limited. All rights reserved.
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions 
-are met:
-1. Redistributions of source code must retain the copyright notice, 
-this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright 
-notice, this list of conditions and the following disclaimer in 
-the documentation and/or other materials provided with the 
-distribution.
-THIS SOFTWARE IS PROVIDED BY THE CRYPTIX FOUNDATION LIMITED ``AS IS'' 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A 
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR 
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF 
-USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * Cryptix General Licence
+ * Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+ * The Cryptix Foundation Limited. All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright notice,
+ * this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE CRYPTIX FOUNDATION LIMITED ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ * <p>
  * Copyright (C) 2000 The Cryptix Foundation Limited. All rights reserved.
- *
+ * <p>
  * Use, modification, copying and distribution of this software is subject to
  * the terms and conditions of the Cryptix General Licence. You should have
  * received a copy of the Cryptix General Licence along with this library;
@@ -50,7 +50,7 @@ import freenet.support.Logger;
 import freenet.support.io.Closer;
 
 /**
- * @author  Jeroen C. van Gelderen (gelderen@cryptix.org)
+ * @author Jeroen C. van Gelderen (gelderen@cryptix.org)
  */
 public class SHA256 {
 	/** Size (in bytes) of this hash */
@@ -68,7 +68,7 @@ public class SHA256 {
 		try {
 			byte[] buf = new byte[4096];
 			int readBytes = is.read(buf);
-			while(readBytes > -1) {
+			while (readBytes > -1) {
 				md.update(buf, 0, readBytes);
 				readBytes = is.read(buf);
 			}
@@ -94,7 +94,7 @@ public class SHA256 {
 				}
 			}
 			return MessageDigest.getInstance("SHA-256", mdProvider);
-		} catch(NoSuchAlgorithmException e2) {
+		} catch (NoSuchAlgorithmException e2) {
 			//TODO: maybe we should point to a HOWTO for freejvms
 			Logger.error(Node.class, "Check your JVM settings especially the JCE!" + e2);
 			System.err.println("Check your JVM settings especially the JCE!" + e2);
@@ -109,10 +109,10 @@ public class SHA256 {
 	 * Must be SHA-256 !
 	 */
 	public static void returnMessageDigest(MessageDigest md256) {
-		if(md256 == null)
+		if (md256 == null)
 			return;
 		String algo = md256.getAlgorithm();
-		if(!(algo.equals("SHA-256") || algo.equals("SHA256")))
+		if (!(algo.equals("SHA-256") || algo.equals("SHA256")))
 			throw new IllegalArgumentException("Should be SHA-256 but is " + algo);
 		md256.reset();
 		digests.add(new SoftReference<>(md256));

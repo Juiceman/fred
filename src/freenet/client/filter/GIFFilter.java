@@ -16,7 +16,7 @@ import freenet.l10n.NodeL10n;
 /**
  * Content filter for GIF's.
  * This throws out all optional non-raster data that it cannot validate.
- *
+ * <p>
  * References:
  * https://www.w3.org/Graphics/GIF/spec-gif87.txt
  * https://www.w3.org/Graphics/GIF/spec-gif89a.txt
@@ -25,15 +25,15 @@ public class GIFFilter implements ContentDataFilter {
 
 	static final int HEADER_SIZE = 6;
 	static final byte[] gif87aHeader =
-		{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'7', (byte)'a' };
+			{(byte) 'G', (byte) 'I', (byte) 'F', (byte) '8', (byte) '7', (byte) 'a'};
 	static final byte[] gif89aHeader =
-		{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'9', (byte)'a' };
+			{(byte) 'G', (byte) 'I', (byte) 'F', (byte) '8', (byte) '9', (byte) 'a'};
 
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		DataInputStream dis = new DataInputStream(input);
 		try {
 			// Check the header
@@ -80,30 +80,40 @@ public class GIFFilter implements ContentDataFilter {
 			this.output = output;
 		}
 
-		/** Checks whether the parsed screen descriptor is valid. */
+		/**
+		 * Checks whether the parsed screen descriptor is valid.
+		 */
 		protected boolean validateScreenDescriptor() {
 			// Not in the specification, but check whether the background color index is within
 			// the bounds of the Global Color Table just to be sure.
 			return screenBackgroundColor < screenColors;
 		}
 
-		/** Checks whether the given image flags are valid. */
+		/**
+		 * Checks whether the given image flags are valid.
+		 */
 		protected boolean validateImageFlags(int imageFlags) {
 			return true;
 		}
 
-		/** Filters the next extension blocks, and skips it when it is unsupported or invalid. */
+		/**
+		 * Filters the next extension blocks, and skips it when it is unsupported or invalid.
+		 */
 		protected void filterExtensionBlock() throws IOException {
 			skipExtensionBlock();
 		}
 
-		/** Signals that image data is found. If the image data is valid, it will be written
-		  * immediately after this method returns. */
+		/**
+		 * Signals that image data is found. If the image data is valid, it will be written
+		 * immediately after this method returns.
+		 */
 		protected void foundImageData(boolean valid) throws IOException {
 			// Do nothing.
 		}
 
-		/** Filters a complete GIF stream; assuming its header has already been read. */
+		/**
+		 * Filters a complete GIF stream; assuming its header has already been read.
+		 */
 		protected final void filter() throws IOException, DataFilterException {
 			readScreenDescriptor();
 			if (!validateScreenDescriptor()) {
@@ -117,7 +127,9 @@ public class GIFFilter implements ContentDataFilter {
 			filterData();
 		}
 
-		/** Reads the screen descriptor from the input and parses it. */
+		/**
+		 * Reads the screen descriptor from the input and parses it.
+		 */
 		private void readScreenDescriptor() throws IOException, DataFilterException {
 			screenWidth = readShort();
 			screenHeight = readShort();
@@ -129,7 +141,9 @@ public class GIFFilter implements ContentDataFilter {
 			screenColors = 1 << bitsPerPixel;
 		}
 
-		/** Writes the previously parsed and validated screen descriptor to the output. */
+		/**
+		 * Writes the previously parsed and validated screen descriptor to the output.
+		 */
 		private void writeScreenDescriptor() throws IOException {
 			writeShort(screenWidth);
 			writeShort(screenHeight);
@@ -138,13 +152,15 @@ public class GIFFilter implements ContentDataFilter {
 			writeByte(screenAspectRatio);
 		}
 
-		/** Looks for data blocks and filters them according to their type. */
+		/**
+		 * Looks for data blocks and filters them according to their type.
+		 */
 		private void filterData() throws IOException, DataFilterException {
 			boolean imageSeen = false;
 			boolean terminated = false;
 			int lastByte;
 			while (!terminated && (lastByte = input.read()) != -1) {
-				switch(lastByte) {
+				switch (lastByte) {
 					case IMAGE_SEPARATOR:
 						imageSeen |= filterImage();
 						break;
@@ -168,7 +184,9 @@ public class GIFFilter implements ContentDataFilter {
 			writeByte(GIF_TERMINATOR);
 		}
 
-		/** Filters a render block. Actual LZW data is *not* checked. */
+		/**
+		 * Filters a render block. Actual LZW data is *not* checked.
+		 */
 		private boolean filterImage() throws IOException, DataFilterException {
 			final int imageLeft = readShort();
 			final int imageTop = readShort();
@@ -205,13 +223,17 @@ public class GIFFilter implements ContentDataFilter {
 			}
 		}
 
-		/** Skips an entire extension block; assumes the extension indicator is already read. */
+		/**
+		 * Skips an entire extension block; assumes the extension indicator is already read.
+		 */
 		private void skipExtensionBlock() throws IOException {
 			skip(1); // extension function
 			skipSubBlocks();
 		}
 
-		/** Skips all subblocks in the input, until the empty terminator subblock is found. */
+		/**
+		 * Skips all subblocks in the input, until the empty terminator subblock is found.
+		 */
 		protected final void skipSubBlocks() throws IOException {
 			int length;
 			while ((length = readByte()) != 0) {
@@ -219,7 +241,9 @@ public class GIFFilter implements ContentDataFilter {
 			}
 		}
 
-		/** Copies all subblocks to the output, until the empty terminator subblock is found. */
+		/**
+		 * Copies all subblocks to the output, until the empty terminator subblock is found.
+		 */
 		protected final void copySubBlocks() throws IOException {
 			int length;
 			while ((length = readByte()) != 0) {
@@ -229,14 +253,18 @@ public class GIFFilter implements ContentDataFilter {
 			writeByte(0);
 		}
 
-		/** Copy a small number of bytes from input to output. */
+		/**
+		 * Copy a small number of bytes from input to output.
+		 */
 		protected final void copy(int length) throws IOException {
 			for (int i = 0; i < length; i++) {
 				writeByte(readByte());
 			}
 		}
 
-		/** Read an unsigned byte from the input. */
+		/**
+		 * Read an unsigned byte from the input.
+		 */
 		protected final int readByte() throws IOException {
 			int val = input.read();
 			if (val == -1) {
@@ -245,12 +273,16 @@ public class GIFFilter implements ContentDataFilter {
 			return val;
 		}
 
-		/** Write an unsigned byte to the output. */
+		/**
+		 * Write an unsigned byte to the output.
+		 */
 		protected final void writeByte(int val) throws IOException {
 			output.write(val & 0xFF);
 		}
 
-		/** Read a number of bytes from the input. */
+		/**
+		 * Read a number of bytes from the input.
+		 */
 		protected final byte[] readBytes(int num) throws IOException {
 			byte[] buf = new byte[num];
 			int remaining = buf.length;
@@ -264,25 +296,33 @@ public class GIFFilter implements ContentDataFilter {
 			return buf;
 		}
 
-		/** Write all given bytes to the output. */
+		/**
+		 * Write all given bytes to the output.
+		 */
 		protected final void writeBytes(byte[] data) throws IOException {
 			output.write(data);
 		}
 
-		/** Read a little-endian unsigned short from the input. */
+		/**
+		 * Read a little-endian unsigned short from the input.
+		 */
 		protected final int readShort() throws IOException {
 			int lsb = readByte();
 			int msb = readByte();
 			return (msb << 8) | lsb;
 		}
 
-		/** Write a little-endian unsigned short to the output. */
+		/**
+		 * Write a little-endian unsigned short to the output.
+		 */
 		protected final void writeShort(int val) throws IOException {
 			output.write(val & 0xFF);
 			output.write((val >>> 8) & 0xFF);
 		}
 
-		/** Skip the given number of bytes of the input. */
+		/**
+		 * Skip the given number of bytes of the input.
+		 */
 		protected final void skip(int num) throws IOException {
 			long remaining = num;
 			long skipped;
@@ -339,13 +379,13 @@ public class GIFFilter implements ContentDataFilter {
 		// Extension function label for application extensions
 		private static final int APPLICATION_LABEL = 0xFF;
 		// Signatures for the Netscape 2.0 / AnimExts 1.0 extensions
-		private static final byte[] NETSCAPE2_0_SIG = new byte[] {
-			(byte)'N', (byte)'E', (byte)'T', (byte)'S', (byte)'C', (byte)'A', (byte)'P',
-			(byte)'E', (byte)'2', (byte)'.', (byte)'0'
+		private static final byte[] NETSCAPE2_0_SIG = new byte[]{
+				(byte) 'N', (byte) 'E', (byte) 'T', (byte) 'S', (byte) 'C', (byte) 'A', (byte) 'P',
+				(byte) 'E', (byte) '2', (byte) '.', (byte) '0'
 		};
-		private static final byte[] ANIMEXTS1_0_SIG = new byte[] {
-			(byte)'A', (byte)'N', (byte)'I', (byte)'M', (byte)'E', (byte)'X', (byte)'T',
-			(byte)'S', (byte)'1', (byte)'.', (byte)'0'
+		private static final byte[] ANIMEXTS1_0_SIG = new byte[]{
+				(byte) 'A', (byte) 'N', (byte) 'I', (byte) 'M', (byte) 'E', (byte) 'X', (byte) 'T',
+				(byte) 'S', (byte) '1', (byte) '.', (byte) '0'
 		};
 
 		private GIF89aValidator(InputStream input, OutputStream output) {
@@ -385,8 +425,10 @@ public class GIFFilter implements ContentDataFilter {
 			}
 		}
 
-		/** Filters an application extension block; assuming its indicator and label are already
-		  * read. Currently the only supported extension is the Loop Extension. */
+		/**
+		 * Filters an application extension block; assuming its indicator and label are already
+		 * read. Currently the only supported extension is the Loop Extension.
+		 */
 		private void filterApplicationBlock() throws IOException {
 			final int length = readByte();
 			final byte[] signature = readBytes(length);
@@ -423,7 +465,9 @@ public class GIFFilter implements ContentDataFilter {
 			}
 		}
 
-		/** Reads a graphic control block; assuming its indicator and label are already read. */
+		/**
+		 * Reads a graphic control block; assuming its indicator and label are already read.
+		 */
 		private void readGraphicControl() throws IOException {
 			if (hasGraphicControl) {
 				// Graphic control may only appear once per render block.
@@ -457,7 +501,9 @@ public class GIFFilter implements ContentDataFilter {
 			hasGraphicControl = true;
 		}
 
-		/** Writes a complete graphic control block. */
+		/**
+		 * Writes a complete graphic control block.
+		 */
 		private void writeGraphicControl() throws IOException {
 			writeByte(EXTENSION_INTRODUCER);
 			writeByte(GRAPHIC_CONTROL_LABEL);
@@ -471,7 +517,7 @@ public class GIFFilter implements ContentDataFilter {
 	}
 
 	private static String l10n(String key) {
-		return NodeL10n.getBase().getString("GIFFilter."+key);
+		return NodeL10n.getBase().getString("GIFFilter." + key);
 	}
 
 	private static void throwDataError(String shortReason, String reason) throws DataFilterException {

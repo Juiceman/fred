@@ -5,7 +5,7 @@ import freenet.client.async.RequestSelectionTreeNode;
 
 public interface RandomGrabArrayItem extends RequestSelectionTreeNode {
 
-    @Override
+	@Override
 	/** @return -1 if the item is no longer needed and should be removed, because it 
 	 * is cancelled, is completing with the blocks it has already, etc. 0 if there are
 	 * requests to send now. Otherwise the time at which there will be more requests to
@@ -17,15 +17,19 @@ public interface RandomGrabArrayItem extends RequestSelectionTreeNode {
 	 * @param container Database handle.
 	 */
 	public long getWakeupTime(ClientContext context, long now);
-	
-	/** Does this RandomGrabArrayItem support remembering where it is registered? */
+
+	/**
+	 * Does this RandomGrabArrayItem support remembering where it is registered?
+	 */
 	public boolean knowsParentGrabArray();
-	
-	/** Notify the item that it has been registered on a specific RandomGrabArray */
+
+	/**
+	 * Notify the item that it has been registered on a specific RandomGrabArray
+	 */
 	public void setParentGrabArray(RandomGrabArray parent);
-	
+
 	@Override
 	/** If the item remembers its parent RandomGrabArray, return it */
 	public RandomGrabArray getParentGrabArray();
-	
+
 }

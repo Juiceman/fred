@@ -18,6 +18,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Sender's representation of a seed node.
+ *
  * @author toad
  */
 public class SeedServerPeerNode extends PeerNode {
@@ -53,14 +54,14 @@ public class SeedServerPeerNode extends PeerNode {
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == this) return true;
+		if (o == this) return true;
 		// Only equal to seednode of its own type.
 		// Different to an OpennetPeerNode with the same identity!
-		if(o instanceof SeedServerPeerNode) {
+		if (o instanceof SeedServerPeerNode) {
 			return super.equals(o);
 		} else return false;
 	}
-	
+
 	@Override
 	public void onSuccess(boolean insert, boolean ssk) {
 		// Ignore
@@ -80,7 +81,7 @@ public class SeedServerPeerNode extends PeerNode {
 	protected void sendInitialMessages() {
 		super.sendInitialMessages();
 		final OpennetManager om = node.getOpennet();
-		if(om == null) {
+		if (om == null) {
 			Logger.normal(this, "Opennet turned off while connecting to seednodes");
 			node.peers.disconnectAndRemove(this, true, true, true);
 		} else {
@@ -92,7 +93,7 @@ public class SeedServerPeerNode extends PeerNode {
 					try {
 						om.announcer.maybeSendAnnouncement();
 					} catch (Throwable t) {
-						Logger.error(this, "Caught "+t, t);
+						Logger.error(this, "Caught " + t, t);
 					}
 				}
 			}, SECONDS.toMillis(5));
@@ -101,19 +102,19 @@ public class SeedServerPeerNode extends PeerNode {
 
 	public InetAddress[] getInetAddresses() {
 		ArrayList<InetAddress> v = new ArrayList<InetAddress>();
-		for(Peer peer: getHandshakeIPs()) {
+		for (Peer peer : getHandshakeIPs()) {
 			FreenetInetAddress fa = peer.getFreenetAddress().dropHostname();
-			if(fa == null) continue;
+			if (fa == null) continue;
 			InetAddress ia = fa.getAddress();
-			if(v.contains(ia)) continue;
+			if (v.contains(ia)) continue;
 			v.add(ia);
 		}
-		if(v.isEmpty()) {
-			Logger.error(this, "No valid addresses for seed node "+this);
+		if (v.isEmpty()) {
+			Logger.error(this, "No valid addresses for seed node " + this);
 		}
 		return v.toArray(new InetAddress[v.size()]);
 	}
-	
+
 	@Override
 	public boolean handshakeUnknownInitiator() {
 		return true;
@@ -130,12 +131,12 @@ public class SeedServerPeerNode extends PeerNode {
 		node.peers.disconnectAndRemove(this, false, false, false);
 		return ret;
 	}
-	
+
 	@Override
 	public boolean shouldDisconnectAndRemoveNow() {
 		OpennetManager om = node.getOpennet();
-		if(om == null) return true;
-		if(!om.announcer.enoughPeers()) return false;
+		if (om == null) return true;
+		if (!om.announcer.enoughPeers()) return false;
 		// We have enough peers, but we might fluctuate a bit.
 		// Drop the connection once we have consistently had enough opennet peers for 5 minutes.
 		return System.currentTimeMillis() - om.announcer.timeGotEnoughPeers() > MINUTES.toMillis(5);
@@ -162,7 +163,7 @@ public class SeedServerPeerNode extends PeerNode {
 		// Disconnect.
 		forceDisconnect();
 	}
-	
+
 	@Override
 	public boolean shallWeRouteAccordingToOurPeersLocation(int htl) {
 		return false; // Irrelevant
@@ -173,19 +174,19 @@ public class SeedServerPeerNode extends PeerNode {
 		return false;
 	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
-        return false; // We do not accept announcements from a seednode.
-    }
+	@Override
+	public boolean canAcceptAnnouncements() {
+		return false; // We do not accept announcements from a seednode.
+	}
 
-    @Override
-    protected void writePeers() {
-        // Do not write peers, seeds are kept separately.
-    }
+	@Override
+	protected void writePeers() {
+		// Do not write peers, seeds are kept separately.
+	}
 
 }

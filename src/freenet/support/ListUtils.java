@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 
 package freenet.support;
+
 import java.util.List;
 import java.util.Random;
 
@@ -14,6 +15,7 @@ public class ListUtils {
 	 * with O(1) get(index) and O(n) remove(index)
 	 * when keeping array order is not important.
 	 * Not synchronized (even with synchronized containers).
+	 *
 	 * @return {@code true} if element was removed.
 	 */
 	public static <E> boolean removeBySwapLast(List<E> a, Object o) {
@@ -31,18 +33,19 @@ public class ListUtils {
 	 * with O(1) get(index) and O(n) remove(index)
 	 * when keeping array order is not important.
 	 * Not synchronized (even with synchronized containers!).
+	 *
 	 * @return moved element that will replace current index or
 	 * removed element if it was last element (and nothing was moved).
 	 * WARNING: returned result is DIFFERENT from List.remove(index)!
 	 * (this is intentional to allow useful optimizations).
 	 * @throws IndexOutOfBoundsException if idx is not valid index
-	 * WARNING: Don't dare to break this method contract!
+	 *                                   WARNING: Don't dare to break this method contract!
 	 */
 	public static <E> E removeBySwapLast(List<E> a, int idx) {
 		int size = a.size();
-		if (idx < 0 || idx >= size) throw new IndexOutOfBoundsException(idx+" out of range [0;"+size+")");
-		E moved = a.remove(size-1);
-		if (idx != size-1)
+		if (idx < 0 || idx >= size) throw new IndexOutOfBoundsException(idx + " out of range [0;" + size + ")");
+		E moved = a.remove(size - 1);
+		if (idx != size - 1)
 			a.set(idx, moved);
 		return moved;
 	}
@@ -50,6 +53,7 @@ public class ListUtils {
 	public static class RandomRemoveResult<E> {
 		public final E removed;
 		public final E moved;
+
 		RandomRemoveResult(E removed, E moved) {
 			this.removed = removed;
 			this.moved = moved;
@@ -64,6 +68,7 @@ public class ListUtils {
 	 * when keeping array order is not important.
 	 * Not synchronized (even with synchronized containers!).
 	 * WARNING: amount of fetched random data is implementation-defined
+	 *
 	 * @return null if list is empty, otherwise RandomRemoveResult(removed_element, moved_element)
 	 */
 	public static <E> RandomRemoveResult<E> removeRandomBySwapLast(Random random, List<E> a) {
@@ -78,6 +83,7 @@ public class ListUtils {
 		E removed = a.get(idx);
 		return new RandomRemoveResult<E>(removed, removeBySwapLast(a, idx));
 	}
+
 	/**
 	 * Removes random element from List by swapping with last element.
 	 * O(1) moves.
@@ -86,6 +92,7 @@ public class ListUtils {
 	 * when keeping array order is not important.
 	 * Not synchronized (even with synchronized containers!).
 	 * WARNING: amount of fetched random data is implementation-defined
+	 *
 	 * @return null if list is empty, removed element otherwise
 	 */
 	public static <E> E removeRandomBySwapLastSimple(Random random, List<E> a) {

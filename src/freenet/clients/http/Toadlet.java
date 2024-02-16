@@ -34,21 +34,24 @@ import freenet.support.api.HTTPRequest;
  * anyway. Also it was supposed to be simpler, which may not be true any more. Many plugins wrap
  * their own API around this!
  * FIXME consider using servlets.
- *
+ * <p>
  * Important API complexity: The methods for handling the actual requests are synthetic:
- *
+ * <p>
  * Methods are handled via handleMethodGET/POST/whatever ( URI uri, HTTPRequest request, ToadletContext ctx )
  * Typically this throws IOException and ToadletContextClosedException.
  */
 public abstract class Toadlet {
 
-	/** Handle a GET request.
+	/**
+	 * Handle a GET request.
 	 * Other methods are accessed via handleMethodPOST etc, invoked via reflection. But all toadlets
 	 * are expected to support GET.
-	 * @param uri The URI being fetched.
+	 *
+	 * @param uri     The URI being fetched.
 	 * @param request The original HTTPRequest, convenient for e.g. fetching ?blah=blah parameters.
-	 * @param ctx The request context. Mainly used for sending a reply; this identifies which
-	 * request we are replying to. Also gives access to lots of important objects e.g. PageMaker. */
+	 * @param ctx     The request context. Mainly used for sending a reply; this identifies which
+	 *                request we are replying to. Also gives access to lots of important objects e.g. PageMaker.
+	 */
 	public abstract void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException;
 
 	public static final String HANDLE_METHOD_PREFIX = "handleMethod";
@@ -57,11 +60,11 @@ public abstract class Toadlet {
 
 	/**
 	 * Primary purpose of this function is being overridden in your Toadlet implementations - for the following purpose:
-	 *
+	 * <p>
 	 * When displaying this Toadlet, the web interface should show the menu from which it was selected as opened, and mark the
 	 * appropriate entry as selected in the menu. This function may return the Toadlet whose menu shall be opened and whose
 	 * entry shall be marked as selected in the menu.
-	 *
+	 * <p>
 	 * It is necessary to have this function instead of just marking <code>Toadlet.this</code> as selected:
 	 * Some Toadlets won't be added to a menu. They will be only accessible through other Toadlets. For example
 	 * a Toadlet for deleting a single download might only be accessible through the Toadlet which shows all downloads.
@@ -69,30 +72,29 @@ public abstract class Toadlet {
 	 * this function is necessary.
 	 *
 	 * @param context Can be used to decide the return value, for example to check session cookies using {@link SessionManager}.
-     * @return
-     *     The result of {@link #showAsToadlet()}, which is <code>this</code> by default.<br>
-     *     This behavior is for backwards compatibility with existing code which overrides that
-     *     function.<br><br>
-     *
-     *     Override this function to return something else for invisible Toadlets as explained
-     *     above.
+	 * @return The result of {@link #showAsToadlet()}, which is <code>this</code> by default.<br>
+	 * This behavior is for backwards compatibility with existing code which overrides that
+	 * function.<br><br>
+	 * <p>
+	 * Override this function to return something else for invisible Toadlets as explained
+	 * above.
 	 */
 	public Toadlet showAsToadlet(ToadletContext context) {
-	    return showAsToadlet();
+		return showAsToadlet();
 	}
 
 	/**
+	 * @return <code>this</code>
 	 * @deprecated Use {@link #showAsToadlet(ToadletContext)} instead. Internally fred will always call that function, which calls this function by default,
-	 *             so old code which only overrides this function still works.
+	 * so old code which only overrides this function still works.
 	 *             TODO: When removing this deprecated function, change {@link #showAsToadlet(ToadletContext)} to return <code>this</code> by default, as
 	 *             already specified in its JavaDoc.
-	 * @return <code>this</code>
 	 */
 	@Deprecated
 	public Toadlet showAsToadlet() {
-        // DO NOT CHANGE THIS ANYMORE: Otherwise showAsToadlet(ToadletContext) will not follow the
-        // contract of its JavaDoc.
-        return this;
+		// DO NOT CHANGE THIS ANYMORE: Otherwise showAsToadlet(ToadletContext) will not follow the
+		// contract of its JavaDoc.
+		return this;
 	}
 
 	/**
@@ -113,11 +115,11 @@ public abstract class Toadlet {
 	private String supportedMethodsCache;
 
 	private static String l10n(String key, String pattern, String value) {
-		return NodeL10n.getBase().getString("Toadlet."+key, new String[] { pattern }, new String[] { value });
+		return NodeL10n.getBase().getString("Toadlet." + key, new String[]{pattern}, new String[]{value});
 	}
 
 	private static String l10n(String key) {
-		return NodeL10n.getBase().getString("Toadlet."+key);
+		return NodeL10n.getBase().getString("Toadlet." + key);
 	}
 
 	/**
@@ -125,7 +127,7 @@ public abstract class Toadlet {
 	 * Should return a string containing the methods supported, separated by commas
 	 * For example: "GET, PUT" (in which case both 'handleMethodGET()' and 'handleMethodPUT()'
 	 * must be implemented).
-	 *
+	 * <p>
 	 * IMPORTANT: This will discover inherited methods because of getMethod()
 	 * below. If you do not want to expose a method implemented by a parent
 	 * class, then *OVERRIDE THIS METHOD*.
@@ -134,7 +136,7 @@ public abstract class Toadlet {
 		if (supportedMethodsCache == null) {
 			Method methlist[] = this.getClass().getMethods();
 			StringBuilder sb = new StringBuilder();
-			for (Method m: methlist) {
+			for (Method m : methlist) {
 				String name = m.getName();
 				if (name.startsWith(HANDLE_METHOD_PREFIX)) {
 					sb.append(name.substring(HANDLE_METHOD_PREFIX.length()));
@@ -143,8 +145,8 @@ public abstract class Toadlet {
 			}
 			if (sb.length() >= 2) {
 				// remove last ", "
-				sb.deleteCharAt(sb.length()-1);
-				sb.deleteCharAt(sb.length()-1);
+				sb.deleteCharAt(sb.length() - 1);
+				sb.deleteCharAt(sb.length() - 1);
 			}
 			supportedMethodsCache = sb.toString();
 		}
@@ -154,10 +156,11 @@ public abstract class Toadlet {
 	/**
 	 * Client calls from the above messages to run a Freenet request.
 	 * This method may block (or suspend).
-	 * @param maxSize Maximum length of returned content.
+	 *
+	 * @param maxSize       Maximum length of returned content.
 	 * @param clientContext Client context object. This should be the same for any group of related requests, but different
-	 * for any two unrelated requests. Request selection round-robin's over these, within any priority and retry count class,
-	 * and above the level of individual block fetches.
+	 *                      for any two unrelated requests. Request selection round-robin's over these, within any priority and retry count class,
+	 *                      and above the level of individual block fetches.
 	 */
 	FetchResult fetch(FreenetURI uri, long maxSize, RequestClient clientContext, FetchContext fctx) throws FetchException {
 		// For now, just run it blocking.
@@ -167,8 +170,10 @@ public abstract class Toadlet {
 		return fw.waitForCompletion();
 
 	}
+
 	/**
 	 * Returns a default FetchContext
+	 *
 	 * @param maxSize The maximum allowable size of the fetch's result
 	 * @return A default FetchContext
 	 */
@@ -185,13 +190,14 @@ public abstract class Toadlet {
 
 	/**
 	 * Write an HTTP response, e.g. a page, an image, an error message, with no special headers.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
+	 *
+	 * @param ctx      The specific request to reply to.
+	 * @param code     The HTTP reply code to use.
 	 * @param mimeType The MIME type of the data we are returning.
-	 * @param desc The HTTP response description for the code.
-	 * @param data The data to write as the response body.
-	 * @param offset The offset within data of the first byte to send.
-	 * @param length The number of bytes of data to send as the response body.
+	 * @param desc     The HTTP response description for the code.
+	 * @param data     The data to write as the response body.
+	 * @param offset   The offset within data of the first byte to send.
+	 * @param length   The number of bytes of data to send as the response body.
 	 */
 	protected void writeReply(ToadletContext ctx, int code, String mimeType, String desc, byte[] data, int offset, int length) throws ToadletContextClosedException, IOException {
 		ctx.sendReplyHeaders(code, desc, null, mimeType, length);
@@ -200,15 +206,15 @@ public abstract class Toadlet {
 
 	/**
 	 * Write an HTTP response, e.g. a page, an image, an error message, with no special headers.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param mimeType The MIME type of the data we are returning.
-	 * @param desc The HTTP response description for the code.
-	 * @param data The Bucket which contains the reply data. This
-	 *        function assumes ownership of the Bucket, calling free()
-	 *        on it when done. If this behavior is undesired, callers
-	 *        can wrap their Bucket in a NoFreeBucket.
 	 *
+	 * @param ctx      The specific request to reply to.
+	 * @param code     The HTTP reply code to use.
+	 * @param mimeType The MIME type of the data we are returning.
+	 * @param desc     The HTTP response description for the code.
+	 * @param data     The Bucket which contains the reply data. This
+	 *                 function assumes ownership of the Bucket, calling free()
+	 *                 on it when done. If this behavior is undesired, callers
+	 *                 can wrap their Bucket in a NoFreeBucket.
 	 * @see freenet.support.io.NoFreeBucket
 	 */
 	protected void writeReply(ToadletContext ctx, int code, String mimeType, String desc, Bucket data) throws ToadletContextClosedException, IOException {
@@ -218,16 +224,16 @@ public abstract class Toadlet {
 	/**
 	 * Write an HTTP response, e.g. a page, an image, an error message, possibly with custom
 	 * headers, for example, we may want to send a redirect, or a file with a specified filename.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param mimeType The MIME type of the data we are returning.
-	 * @param desc The HTTP response description for the code.
-	 * @param headers The additional HTTP headers to send.
-	 * @param data The Bucket which contains the reply data. This
-	 *        function assumes ownership of the Bucket, calling free()
-	 *        on it when done. If this behavior is undesired, callers
-	 *        can wrap their Bucket in a NoFreeBucket.
 	 *
+	 * @param ctx      The specific request to reply to.
+	 * @param code     The HTTP reply code to use.
+	 * @param mimeType The MIME type of the data we are returning.
+	 * @param desc     The HTTP response description for the code.
+	 * @param headers  The additional HTTP headers to send.
+	 * @param data     The Bucket which contains the reply data. This
+	 *                 function assumes ownership of the Bucket, calling free()
+	 *                 on it when done. If this behavior is undesired, callers
+	 *                 can wrap their Bucket in a NoFreeBucket.
 	 * @see freenet.support.io.NoFreeBucket
 	 */
 	protected void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, Bucket data) throws ToadletContextClosedException, IOException {
@@ -237,12 +243,13 @@ public abstract class Toadlet {
 
 	/**
 	 * Write a text-based HTTP response, e.g. a page or an error message, with no special headers.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
+	 *
+	 * @param ctx      The specific request to reply to.
+	 * @param code     The HTTP reply code to use.
 	 * @param mimeType The MIME type of the data we are returning.
-	 * @param desc The HTTP response description for the code.
-	 * @param reply The reply data, as a String (so only use this for text-based replies, e.g.
-	 * HTML, plain text etc).
+	 * @param desc     The HTTP response description for the code.
+	 * @param reply    The reply data, as a String (so only use this for text-based replies, e.g.
+	 *                 HTML, plain text etc).
 	 */
 	protected void writeReply(ToadletContext ctx, int code, String mimeType, String desc, String reply) throws ToadletContextClosedException, IOException {
 		writeReply(ctx, code, mimeType, desc, null, reply, false);
@@ -250,9 +257,10 @@ public abstract class Toadlet {
 
 	/**
 	 * Write an HTTP response as HTML.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param desc The HTTP response description for the code.
+	 *
+	 * @param ctx   The specific request to reply to.
+	 * @param code  The HTTP reply code to use.
+	 * @param desc  The HTTP response description for the code.
 	 * @param reply The HTML page, as a String.
 	 */
 	protected void writeHTMLReply(ToadletContext ctx, int code, String desc, String reply) throws ToadletContextClosedException, IOException {
@@ -261,36 +269,39 @@ public abstract class Toadlet {
 
 	/**
 	 * Write an HTTP response as plain text.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param desc The HTTP response description for the code.
+	 *
+	 * @param ctx   The specific request to reply to.
+	 * @param code  The HTTP reply code to use.
+	 * @param desc  The HTTP response description for the code.
 	 * @param reply The text of the page, as a String.
 	 */
 	protected void writeTextReply(ToadletContext ctx, int code, String desc, String reply) throws ToadletContextClosedException, IOException {
 		writeReply(ctx, code, "text/plain; charset=utf-8", desc, null, reply, true);
 	}
 
-    /**
-     * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
-     * send a redirect, or a file with a specified filename.
-     * @param ctx The specific request to reply to.
-     * @param code The HTTP reply code to use.
-     * @param desc The HTTP response description for the code.
-     * @param headers The additional HTTP headers to send.
-     * @param reply The HTML page, as a String.
-     */
-    protected void writeHTMLReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
-        writeHTMLReply(ctx, code, desc, headers, reply, false);
-    }
+	/**
+	 * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
+	 * send a redirect, or a file with a specified filename.
+	 *
+	 * @param ctx     The specific request to reply to.
+	 * @param code    The HTTP reply code to use.
+	 * @param desc    The HTTP response description for the code.
+	 * @param headers The additional HTTP headers to send.
+	 * @param reply   The HTML page, as a String.
+	 */
+	protected void writeHTMLReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
+		writeHTMLReply(ctx, code, desc, headers, reply, false);
+	}
 
 	/**
 	 * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
 	 * send a redirect, or a file with a specified filename.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param desc The HTTP response description for the code.
+	 *
+	 * @param ctx     The specific request to reply to.
+	 * @param code    The HTTP reply code to use.
+	 * @param desc    The HTTP response description for the code.
 	 * @param headers The additional HTTP headers to send.
-	 * @param reply The HTML page, as a String.
+	 * @param reply   The HTML page, as a String.
 	 */
 	protected void writeHTMLReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
 		writeReply(ctx, code, "text/html; charset=utf-8", desc, headers, reply, forceDisableJavascript);
@@ -299,49 +310,52 @@ public abstract class Toadlet {
 	/**
 	 * Write an HTTP response as plain text, possibly with custom headers, for example, we may want
 	 * to send a redirect, or a file with a specified filename.
-	 * @param ctx The specific request to reply to.
-	 * @param code The HTTP reply code to use.
-	 * @param desc The HTTP response description for the code.
+	 *
+	 * @param ctx     The specific request to reply to.
+	 * @param code    The HTTP reply code to use.
+	 * @param desc    The HTTP response description for the code.
 	 * @param headers The additional HTTP headers to send.
-	 * @param reply The text of the page, as a String.
+	 * @param reply   The text of the page, as a String.
 	 */
 	protected void writeTextReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
 		writeReply(ctx, code, "text/plain; charset=utf-8", desc, headers, reply, true);
 	}
 
 	protected void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
-	    writeReply(context, code, mimeType, desc, headers, reply, false);
+		writeReply(context, code, mimeType, desc, headers, reply, false);
 	}
 
 	protected void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, String reply, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
-	    byte[] buffer = reply.getBytes(StandardCharsets.UTF_8);
-	    writeReply(context, code, mimeType, desc, headers, buffer, 0, buffer.length, forceDisableJavascript);
+		byte[] buffer = reply.getBytes(StandardCharsets.UTF_8);
+		writeReply(context, code, mimeType, desc, headers, buffer, 0, buffer.length, forceDisableJavascript);
 	}
 
 	/**
 	 * Write a generated HTTP response, e.g. a page, an image, an error message, possibly with
 	 * custom headers, for example, we may want to send a redirect, or a file with a specified
 	 * filename. This should not be used for fproxy content i.e. content downloaded from Freenet.
-	 * @param context The specific request to reply to.
-	 * @param code The HTTP reply code to use.
+	 *
+	 * @param context  The specific request to reply to.
+	 * @param code     The HTTP reply code to use.
 	 * @param mimeType The MIME type of the data we are returning.
-	 * @param desc The HTTP response description for the code.
-	 * @param headers The additional HTTP headers to send.
-	 * @param data The data to write as the response body.
-	 * @param offset The offset within data of the first byte to send.
-	 * @param length The number of bytes of data to send as the response body.
+	 * @param desc     The HTTP response description for the code.
+	 * @param headers  The additional HTTP headers to send.
+	 * @param data     The data to write as the response body.
+	 * @param offset   The offset within data of the first byte to send.
+	 * @param length   The number of bytes of data to send as the response body.
 	 */
 	private void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, byte[] buffer, int startIndex, int length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
-	    context.sendReplyHeaders(code, desc, headers, mimeType, length, forceDisableJavascript);
+		context.sendReplyHeaders(code, desc, headers, mimeType, length, forceDisableJavascript);
 		context.writeData(buffer, startIndex, length);
 	}
 
 	/**
 	 * Do a permanent redirect (HTTP Status 301).
-	 *
+	 * <p>
 	 * This will write rudimentary HTML, but typically browsers will follow
 	 * the Location header.
 	 * TODO Refactor with writeTemporaryRedirect.
+	 *
 	 * @param ctx
 	 * @param msg
 	 * @param location
@@ -351,12 +365,12 @@ public abstract class Toadlet {
 	static void writePermanentRedirect(ToadletContext ctx, String msg, String location) throws ToadletContextClosedException, IOException {
 		MultiValueTable<String, String> mvt = new MultiValueTable<String, String>();
 		mvt.put("Location", location);
-		if(msg == null) msg = "";
+		if (msg == null) msg = "";
 		else msg = HTMLEncoder.encode(msg);
 		String redirDoc =
-			"<html><head><title>"+msg+"</title></head><body><h1>" +
-			l10n("permRedirectWithReason", "reason", msg)+
-			"</h1><a href=\""+HTMLEncoder.encode(location)+"\">"+l10n("clickHere")+"</a></body></html>";
+				"<html><head><title>" + msg + "</title></head><body><h1>" +
+						l10n("permRedirectWithReason", "reason", msg) +
+						"</h1><a href=\"" + HTMLEncoder.encode(location) + "\">" + l10n("clickHere") + "</a></body></html>";
 		byte[] buf = redirDoc.getBytes(StandardCharsets.UTF_8);
 		ctx.sendReplyHeaders(301, "Moved Permanently", mvt, "text/html; charset=UTF-8", buf.length);
 		ctx.writeData(buf, 0, buf.length);
@@ -364,12 +378,13 @@ public abstract class Toadlet {
 
 	/**
 	 * Do a temporary redirect (HTTP Status 302).
-	 *
+	 * <p>
 	 * This will write rudimentary HTML, but typically browsers will follow
 	 * the Location header.
 	 * TODO Refactor with writePermanentRedirect.
+	 *
 	 * @param ctx
-	 * @param msg Message to be used in HTML (not visible in general).
+	 * @param msg      Message to be used in HTML (not visible in general).
 	 * @param location New location (URL)
 	 * @throws ToadletContextClosedException
 	 * @throws IOException
@@ -377,13 +392,13 @@ public abstract class Toadlet {
 	protected void writeTemporaryRedirect(ToadletContext ctx, String msg, String location) throws ToadletContextClosedException, IOException {
 		MultiValueTable<String, String> mvt = new MultiValueTable<String, String>();
 		mvt.put("Location", location);
-		if(msg == null) msg = "";
+		if (msg == null) msg = "";
 		else msg = HTMLEncoder.encode(msg);
 		String redirDoc =
-			"<html><head><title>"+msg+"</title></head><body><h1>" +
-			l10n("tempRedirectWithReason", "reason", msg)+
-			"</h1><a href=\""+HTMLEncoder.encode(location)+"\">" +
-			l10n("clickHere") + "</a></body></html>";
+				"<html><head><title>" + msg + "</title></head><body><h1>" +
+						l10n("tempRedirectWithReason", "reason", msg) +
+						"</h1><a href=\"" + HTMLEncoder.encode(location) + "\">" +
+						l10n("clickHere") + "</a></body></html>";
 		byte[] buf = redirDoc.getBytes(StandardCharsets.UTF_8);
 		ctx.sendReplyHeaders(302, "Found", mvt, "text/html; charset=UTF-8", buf.length);
 		ctx.writeData(buf, 0, buf.length);
@@ -416,11 +431,12 @@ public abstract class Toadlet {
 
 	/**
 	 * Send an error page from an exception.
-	 * @param ctx The context object for this request.
-	 * @param desc The title of the error page
+	 *
+	 * @param ctx     The context object for this request.
+	 * @param desc    The title of the error page
 	 * @param message The message to be sent to the user. The stack trace will follow.
-	 * @param t The Throwable which caused the error.
-	 * @throws IOException If there is an error writing the reply.
+	 * @param t       The Throwable which caused the error.
+	 * @throws IOException                   If there is an error writing the reply.
 	 * @throws ToadletContextClosedException If the context has already been closed.
 	 */
 	protected void sendErrorPage(ToadletContext ctx, String desc, String message, Throwable t) throws ToadletContextClosedException, IOException {
@@ -446,17 +462,17 @@ public abstract class Toadlet {
 	}
 
 	/**
-	 * @throws IOException See {@link #sendErrorPage(ToadletContext, int, String, String)}
+	 * @throws IOException                   See {@link #sendErrorPage(ToadletContext, int, String, String)}
 	 * @throws ToadletContextClosedException See {@link #sendErrorPage(ToadletContext, int, String, String)}
 	 */
-    void sendUnauthorizedPage(ToadletContext ctx) throws ToadletContextClosedException, IOException {
-        sendErrorPage(ctx, 403, NodeL10n.getBase().getString("Toadlet.unauthorizedTitle"), NodeL10n.getBase().getString("Toadlet.unauthorized"));
-    }
+	void sendUnauthorizedPage(ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		sendErrorPage(ctx, 403, NodeL10n.getBase().getString("Toadlet.unauthorizedTitle"), NodeL10n.getBase().getString("Toadlet.unauthorized"));
+	}
 
 	protected void writeInternalError(Throwable t, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		Logger.error(this, "Caught "+t, t);
-		String msg = "<html><head><title>"+NodeL10n.getBase().getString("Toadlet.internalErrorTitle")+
-				"</title></head><body><h1>"+NodeL10n.getBase().getString("Toadlet.internalErrorPleaseReport")+"</h1><pre>";
+		Logger.error(this, "Caught " + t, t);
+		String msg = "<html><head><title>" + NodeL10n.getBase().getString("Toadlet.internalErrorTitle") +
+				"</title></head><body><h1>" + NodeL10n.getBase().getString("Toadlet.internalErrorPleaseReport") + "</h1><pre>";
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		while (t != null) {

@@ -40,7 +40,7 @@ public abstract class WebInterfaceToadlet extends Toadlet implements LinkEnabled
 	/**
 	 * returns allways at min a "/", but "/path" is allways without trailing '/'
 	 * so "/path/to/toadlet/blah" and "/path/to/toadlet/blah/" cant be distinguished
-	 * 
+	 *
 	 * @param path
 	 * @return the path without "/path/to/toadlet"
 	 */
@@ -50,7 +50,7 @@ public abstract class WebInterfaceToadlet extends Toadlet implements LinkEnabled
 			return "/";
 		}
 		if (result.endsWith("/")) {
-			result = result.substring(0, result.length()-1);
+			result = result.substring(0, result.length() - 1);
 		}
 		return result;
 	}
@@ -58,13 +58,13 @@ public abstract class WebInterfaceToadlet extends Toadlet implements LinkEnabled
 	/**
 	 * Validates whether the request contains a formPassword which matches {@link NodeClientCore#formPassword}. See the JavaDoc there for an explanation
 	 * of the purpose of this mechanism.
-	 * 
+	 *
 	 * <p><b>ATTENTION</b>: It is critically important to use this function when processing requests which "change the server state". Other words for this
 	 * would be requests which change your database or "write" requests.
 	 * Requests which only read values from the server don't have to validate the form password.</p>
-	 * 
+	 *
 	 * <p>To produce a form which already contains the password, use {@link PluginRespirator#addFormChild(freenet.support.HTMLNode, String, String)}.</p>
-	 * 
+	 *
 	 * @return true if the form password is valid
 	 */
 	protected boolean isFormPassword(HTTPRequest req) {

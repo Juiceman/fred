@@ -10,7 +10,7 @@ public class UnsubscribeUSKMessage extends FCPMessage {
 
 	public UnsubscribeUSKMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		this.identifier = fs.get("Identifier");
-		if(identifier == null)
+		if (identifier == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier!", null, false);
 	}
 

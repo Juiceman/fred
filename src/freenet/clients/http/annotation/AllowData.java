@@ -15,16 +15,16 @@ import java.lang.annotation.Target;
  * to allow payload on the request<BR>
  * <BR>
  * exception: POST is hard coded with force, RFC says it must have data<BR>
- *            so tagging it does not have effect<BR>
+ * so tagging it does not have effect<BR>
  * <BR>
  * <CODE>@AllowData(true)  // request MUST have data</CODE><BR>
  * <CODE>@AllowData(false)  // request CAN have data</CODE>
  * <BR>
- * @author saces
  *
+ * @author saces
  */
-@Target( METHOD )
-@Retention( RUNTIME )
+@Target(METHOD)
+@Retention(RUNTIME)
 @Documented
 public @interface AllowData {
 	boolean value() default false;

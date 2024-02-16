@@ -20,9 +20,13 @@ public enum HashType {
 	ED2K(32, null, 16),
 	TTH(64, null, 24);
 
-	/** Bitmask for aggregation. */
+	/**
+	 * Bitmask for aggregation.
+	 */
 	public final int bitmask;
-	/** Name for MessageDigest purposes. Can contain dashes. */
+	/**
+	 * Name for MessageDigest purposes. Can contain dashes.
+	 */
 	public final String javaName;
 	public final int hashLength;
 
@@ -39,13 +43,13 @@ public enum HashType {
 	}
 
 	public final MessageDigest get() {
-		if(javaName == null) {
-			if(this.name().equals("ED2K"))
+		if (javaName == null) {
+			if (this.name().equals("ED2K"))
 				return new Ed2MessageDigest();
-			if(this.name().equals("TTH"))
+			if (this.name().equals("TTH"))
 				return new TigerTree();
 		}
-		if(name().equals("SHA256")) {
+		if (name().equals("SHA256")) {
 			// Use the pool
 			return freenet.crypt.SHA256.getMessageDigest();
 		} else {
@@ -59,7 +63,7 @@ public enum HashType {
 	}
 
 	public final void recycle(MessageDigest md) {
-		if(this.equals(SHA256)) {
+		if (this.equals(SHA256)) {
 			freenet.crypt.SHA256.returnMessageDigest(md);
 		} // Else no pooling.
 	}

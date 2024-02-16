@@ -11,7 +11,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,7 +31,7 @@ import freenet.io.WritableToDataOutputStream;
  */
 public class ShortBuffer implements WritableToDataOutputStream {
 
-    public static final String VERSION = "$Id: ShortBuffer.java,v 1.2 2005/08/25 17:28:19 amphibian Exp $";
+	public static final String VERSION = "$Id: ShortBuffer.java,v 1.2 2005/08/25 17:28:19 amphibian Exp $";
 
 	private final byte[] _data;
 	private final int _start;
@@ -42,44 +42,45 @@ public class ShortBuffer implements WritableToDataOutputStream {
 	 *
 	 * @param dis to read bytes from
 	 * @throws IllegalArgumentException If the length integer is negative.
-	 * @throws IOException error reading from dis
+	 * @throws IOException              error reading from dis
 	 */
 	public ShortBuffer(DataInput dis) throws IOException {
 		_length = dis.readShort();
-		if(_length < 0)
-			throw new IllegalArgumentException("Negative Length: "+_length);
+		if (_length < 0)
+			throw new IllegalArgumentException("Negative Length: " + _length);
 		_data = new byte[_length];
 		_start = 0;
 		dis.readFully(_data);
 	}
 
 	/**
-	 * Create an empty Buffer */
+	 * Create an empty Buffer
+	 */
 	public ShortBuffer() {
 		_data = new byte[0];
 		_start = 0;
 		_length = 0;
 	}
-	
+
 	/**
 	 * Create a Buffer from a byte array
 	 *
 	 * @param data
 	 */
 	public ShortBuffer(byte[] data) {
-		if(data.length > Short.MAX_VALUE)
-		    throw new IllegalArgumentException("Too big: "+data.length);
+		if (data.length > Short.MAX_VALUE)
+			throw new IllegalArgumentException("Too big: " + data.length);
 		_start = 0;
-		_length = (short)data.length;
+		_length = (short) data.length;
 		_data = data;
 	}
 
 	public ShortBuffer(byte[] data, int start, int length) {
-		if(length > Short.MAX_VALUE || length < 0 || start < 0 || start + length > data.length)
-		    throw new IllegalArgumentException("Invalid Length: start=" + start + ", length=" + length);
+		if (length > Short.MAX_VALUE || length < 0 || start < 0 || start + length > data.length)
+			throw new IllegalArgumentException("Invalid Length: start=" + start + ", length=" + length);
 		_start = start;
 		_data = data;
-		_length = (short)length;
+		_length = (short) length;
 	}
 
 	/**
@@ -93,7 +94,7 @@ public class ShortBuffer implements WritableToDataOutputStream {
 		if ((_start == 0) && (_length == _data.length)) {
 			return _data;
 		} else {
-			return Arrays.copyOfRange(_data, _start, _start+_length);
+			return Arrays.copyOfRange(_data, _start, _start + _length);
 		}
 	}
 
@@ -123,11 +124,11 @@ public class ShortBuffer implements WritableToDataOutputStream {
 	@Override
 	public String toString() {
 		if (this._length > 50) {
-			return "Buffer {"+this._length+ '}';
+			return "Buffer {" + this._length + '}';
 		} else {
-			StringBuilder b = new StringBuilder(this._length*3);
-            b.append('{').append(this._length).append(':');
-			for (int x=0; x<this._length; x++) {
+			StringBuilder b = new StringBuilder(this._length * 3);
+			b.append('{').append(this._length).append(':');
+			for (int x = 0; x < this._length; x++) {
 				b.append(byteAt(x));
 				b.append(' ');
 			}
@@ -161,9 +162,9 @@ public class ShortBuffer implements WritableToDataOutputStream {
 
 	@Override
 	public int hashCode() {
-	    return Fields.hashCode(_data) ^ _start ^ (_length << 16);
+		return Fields.hashCode(_data) ^ _start ^ (_length << 16);
 	}
-	
+
 	public int getLength() {
 		return _length;
 	}

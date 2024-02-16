@@ -15,8 +15,10 @@ public class StoreCallbackStats implements DataStoreStats {
 	private final StoreCallback<?> storeStats;
 	private final StoreLocationStats nodeStats;
 	public final StoreAccessStats sessionAccessStats;
-	/** If the store type does not support this, it will be null, to avoid producing bogus
-	 * numbers. */
+	/**
+	 * If the store type does not support this, it will be null, to avoid producing bogus
+	 * numbers.
+	 */
 	public final StoreAccessStats totalAccessStats;
 
 	public StoreCallbackStats(StoreCallback<?> delegate, StoreLocationStats nodeStats) {
@@ -70,15 +72,15 @@ public class StoreCallbackStats implements DataStoreStats {
 	public double distanceStats() throws StatsNotAvailableException {
 		return nodeStats.distanceStats();
 	}
-	
+
 	@Override
 	public StoreAccessStats getSessionAccessStats() {
 		return sessionAccessStats;
 	}
-	
+
 	@Override
 	public StoreAccessStats getTotalAccessStats() throws StatsNotAvailableException {
-		if(totalAccessStats == null) throw new StatsNotAvailableException();
+		if (totalAccessStats == null) throw new StatsNotAvailableException();
 		return totalAccessStats;
 	}
 }

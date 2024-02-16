@@ -11,8 +11,8 @@ import freenet.support.api.ManifestElement;
 
 /**
  * Helper class to estaminate the container size,
- * @author saces
  *
+ * @author saces
  */
 public final class ContainerSizeEstimator {
 
@@ -33,11 +33,11 @@ public final class ContainerSizeEstimator {
 		}
 
 		public long getSizeTotal() {
-			return _sizeFiles+_sizeSubTrees;
+			return _sizeFiles + _sizeSubTrees;
 		}
 
 		public long getSizeTotalNoLimit() {
-			return _sizeFilesNoLimit+_sizeSubTreesNoLimit;
+			return _sizeFilesNoLimit + _sizeSubTreesNoLimit;
 		}
 
 		public long getSizeFiles() {
@@ -57,7 +57,8 @@ public final class ContainerSizeEstimator {
 		}
 	}
 
-	private ContainerSizeEstimator() {}
+	private ContainerSizeEstimator() {
+	}
 
 	public static ContainerSize getSubTreeSize(HashMap<String, Object> metadata, long maxItemSize, long maxContainerSize, int maxDeep) {
 		ContainerSize result = new ContainerSize();
@@ -65,12 +66,12 @@ public final class ContainerSizeEstimator {
 		return result;
 	}
 
-	private static void getSubTreeSize(HashMap<String, Object> metadata, ContainerSize result, long maxItemSize, long maxContainerSize,int maxDeep) {
+	private static void getSubTreeSize(HashMap<String, Object> metadata, ContainerSize result, long maxItemSize, long maxContainerSize, int maxDeep) {
 		// files
-		for(Map.Entry<String,Object> entry:metadata.entrySet()) {
+		for (Map.Entry<String, Object> entry : metadata.entrySet()) {
 			Object o = entry.getValue();
 			if (o instanceof ManifestElement) {
-				ManifestElement me = (ManifestElement)o;
+				ManifestElement me = (ManifestElement) o;
 				long itemsize = me.getSize();
 				if (itemsize > -1) {
 					result._sizeFilesNoLimit += getContainerItemSize(me.getSize());
@@ -96,14 +97,14 @@ public final class ContainerSizeEstimator {
 		}
 		// sub dirs
 		if (maxDeep > 0) {
-			for(Map.Entry<String,Object> entry:metadata.entrySet()) {
+			for (Map.Entry<String, Object> entry : metadata.entrySet()) {
 				Object o = entry.getValue();
 				if (o instanceof HashMap) {
 					result._sizeSubTrees += 512;
 					@SuppressWarnings("unchecked")
 					HashMap<String, Object> hm = (HashMap<String, Object>) o;
 					ContainerSize tempResult = new ContainerSize();
-					getSubTreeSize(hm, tempResult, maxItemSize, (maxContainerSize-result._sizeSubTrees), maxDeep-1);
+					getSubTreeSize(hm, tempResult, maxItemSize, (maxContainerSize - result._sizeSubTrees), maxDeep - 1);
 					result._sizeSubTrees += tempResult.getSizeTotal();
 					result._sizeSubTreesNoLimit += tempResult.getSizeTotalNoLimit();
 					if (result._sizeSubTrees > maxContainerSize) break;

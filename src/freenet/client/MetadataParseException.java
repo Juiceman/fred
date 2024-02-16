@@ -3,7 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-/** Thrown when Metadata parse fails. */
+/**
+ * Thrown when Metadata parse fails.
+ */
 public class MetadataParseException extends Exception {
 
 	private static final long serialVersionUID = 4910650977022715220L;

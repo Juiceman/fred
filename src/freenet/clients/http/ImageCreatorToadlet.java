@@ -19,16 +19,22 @@ import freenet.support.MultiValueTable;
 import freenet.support.api.Bucket;
 import freenet.support.api.HTTPRequest;
 
-/** This toadlet creates a PNG image with the specified text. */
+/**
+ * This toadlet creates a PNG image with the specified text.
+ */
 public class ImageCreatorToadlet extends Toadlet {
 
 	private static final String ROOT_URL = "/imagecreator/";
 
-	/** The default width */
-	public static final int		DEFAULT_WIDTH	= 100;
+	/**
+	 * The default width
+	 */
+	public static final int DEFAULT_WIDTH = 100;
 
-	/** The default height */
-	public static final int		DEFAULT_HEIGHT	= 100;
+	/**
+	 * The default height
+	 */
+	public static final int DEFAULT_HEIGHT = 100;
 
 	private static final short WIDTH_AND_HEIGHT_LIMIT = 3500;
 
@@ -62,8 +68,8 @@ public class ImageCreatorToadlet extends Toadlet {
 			// The text that will be drawn
 			String text = req.getParam("text");
 			// If width or height is specified, we use it, if not, then we use the default
-			int requiredWidth = req.getParam("width").compareTo("") != 0 ? Integer.parseInt(req.getParam("width").endsWith("px")?req.getParam("width").substring(0, req.getParam("width").length()-2):req.getParam("width")) : DEFAULT_WIDTH;
-			int requiredHeight = req.getParam("height").compareTo("") != 0 ? Integer.parseInt(req.getParam("height").endsWith("px")?req.getParam("height").substring(0, req.getParam("height").length()-2):req.getParam("height")) : DEFAULT_HEIGHT;
+			int requiredWidth = req.getParam("width").compareTo("") != 0 ? Integer.parseInt(req.getParam("width").endsWith("px") ? req.getParam("width").substring(0, req.getParam("width").length() - 2) : req.getParam("width")) : DEFAULT_WIDTH;
+			int requiredHeight = req.getParam("height").compareTo("") != 0 ? Integer.parseInt(req.getParam("height").endsWith("px") ? req.getParam("height").substring(0, req.getParam("height").length() - 2) : req.getParam("height")) : DEFAULT_HEIGHT;
 			// Validate image size
 			if (requiredWidth <= 0 || requiredHeight <= 0) {
 				writeHTMLReply(ctx, 400, "Bad request", "Illegal argument");
@@ -103,7 +109,7 @@ public class ImageCreatorToadlet extends Toadlet {
 	}
 
 	void specifyMaximumFontSizeThatFitsInImage(Graphics2D g2, FontRenderContext fc,
-												int imageWidth, int imageHeight, String text) {
+											   int imageWidth, int imageHeight, String text) {
 		int minFontSize = 1;
 		int maxFontSize = Math.max(imageWidth, imageHeight);
 		int betweenFontSize = betweenFontSize(minFontSize, maxFontSize);

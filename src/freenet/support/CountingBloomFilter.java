@@ -16,18 +16,17 @@ import java.nio.channels.FileChannel.MapMode;
  * @author sdiz
  */
 public class CountingBloomFilter extends BloomFilter {
-	
+
 	private boolean warnOnRemoveFromEmpty;
-	
+
 	public void setWarnOnRemoveFromEmpty() {
 		warnOnRemoveFromEmpty = true;
 	}
-	
+
 	/**
 	 * Constructor
-	 * 
-	 * @param length
-	 *            length in bits
+	 *
+	 * @param length length in bits
 	 */
 	public CountingBloomFilter(int length, int k) {
 		super(length, k);
@@ -36,11 +35,9 @@ public class CountingBloomFilter extends BloomFilter {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param file
-	 *            disk file
-	 * @param length
-	 *            length in bits
+	 *
+	 * @param file   disk file
+	 * @param length length in bits
 	 * @throws IOException
 	 */
 	protected CountingBloomFilter(File file, int length, int k) throws IOException {
@@ -63,7 +60,7 @@ public class CountingBloomFilter extends BloomFilter {
 
 	public CountingBloomFilter(int length, int k, byte[] buffer) {
 		super(length, k);
-		assert(buffer.length == length / 4);
+		assert (buffer.length == length / 4);
 		filter = ByteBuffer.wrap(buffer);
 	}
 
@@ -96,7 +93,7 @@ public class CountingBloomFilter extends BloomFilter {
 
 		if (v == 0 && warnOnRemoveFromEmpty)
 			Logger.error(this, "Unsetting bit but already unset - probable double remove, can cause false negatives, is very bad!", new Exception("error"));
-		
+
 		if (v == 0 || v == 3)
 			return; // overflow / underflow
 

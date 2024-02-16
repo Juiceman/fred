@@ -29,8 +29,8 @@ public class FinishedCompressionMessage extends FCPMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", identifier);
 		fs.put("Codec", codec);
-		if(codec != -1)
-			fs.putSingle("Codec.Name", Compressor.COMPRESSOR_TYPE.getCompressorByMetadataID((short)codec).name());
+		if (codec != -1)
+			fs.putSingle("Codec.Name", Compressor.COMPRESSOR_TYPE.getCompressorByMetadataID((short) codec).name());
 		else
 			fs.putSingle("Codec.Name", "NONE");
 		fs.put("OriginalSize", origSize);

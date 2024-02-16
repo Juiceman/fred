@@ -9,7 +9,6 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * remove a plugin
- * 
  */
 public class RemovePlugin extends FCPMessage {
 
@@ -22,10 +21,10 @@ public class RemovePlugin extends FCPMessage {
 
 	public RemovePlugin(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if(identifier == null)
+		if (identifier == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain an Identifier field", null, false);
 		plugname = fs.get("PluginName");
-		if(plugname == null)
+		if (plugname == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain a PluginName field", identifier, false);
 		maxWaitTime = fs.getInt("MaxWaitTime", 0);
 		purge = fs.getBoolean("Purge", false);
@@ -43,7 +42,7 @@ public class RemovePlugin extends FCPMessage {
 
 	@Override
 	public void run(final FCPConnectionHandler handler, final Node node) throws MessageInvalidException {
-		if(!handler.hasFullAccess()) {
+		if (!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "LoadPlugin requires full access", identifier, false);
 		}
 
@@ -52,7 +51,7 @@ public class RemovePlugin extends FCPMessage {
 			public void run() {
 				PluginInfoWrapper pi = node.pluginManager.getPluginInfo(plugname);
 				if (pi == null) {
-					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '"+ plugname + "' does not exist or is not a FCP plugin", identifier, false));
+					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '" + plugname + "' does not exist or is not a FCP plugin", identifier, false));
 				} else {
 					pi.stopPlugin(node.pluginManager, maxWaitTime, false);
 					if (purge) {

@@ -3,8 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
-/** A KSK. We know the private key from the keyword, so this can be both 
- * requested and inserted. */
+/**
+ * A KSK. We know the private key from the keyword, so this can be both
+ * requested and inserted.
+ */
+
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -18,30 +21,30 @@ import freenet.crypt.SHA256;
 
 public class ClientKSK extends InsertableClientSSK {
 
-    private static final long serialVersionUID = 1L;
-    final String keyword;
-	
+	private static final long serialVersionUID = 1L;
+	final String keyword;
+
 	private ClientKSK(String keyword, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey, byte[] keywordHash) throws MalformedURLException {
 		super(keyword, pubKeyHash, pubKey, privKey, keywordHash, Key.ALGO_AES_PCFB_256_SHA256);
 		this.keyword = keyword;
 	}
-	
+
 	protected ClientKSK() {
-	    // For serialization.
-	    keyword = null;
+		// For serialization.
+		keyword = null;
 	}
 
 	@Override
 	public FreenetURI getURI() {
 		return new FreenetURI("KSK", keyword);
 	}
-	
+
 	public static InsertableClientSSK create(FreenetURI uri) {
-		if(!uri.getKeyType().equals("KSK"))
+		if (!uri.getKeyType().equals("KSK"))
 			throw new IllegalArgumentException();
 		return create(uri.getDocName());
 	}
-	
+
 	public static ClientKSK create(String keyword) {
 		MessageDigest md256 = SHA256.getMessageDigest();
 		try {
@@ -59,5 +62,5 @@ public class ClientKSK extends InsertableClientSSK {
 			SHA256.returnMessageDigest(md256);
 		}
 	}
-	
+
 }

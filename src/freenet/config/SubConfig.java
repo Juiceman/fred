@@ -28,11 +28,12 @@ public class SubConfig implements Comparable<SubConfig> {
 	final String prefix;
 	private boolean hasInitialized;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -63,35 +64,36 @@ public class SubConfig implements Comparable<SubConfig> {
 	}
 
 	public void register(Option<?> o) {
-		synchronized(this) {
-			if(o.name.indexOf(SimpleFieldSet.MULTI_LEVEL_CHAR) != -1)
-				throw new IllegalArgumentException("Option names must not contain "+SimpleFieldSet.MULTI_LEVEL_CHAR);
-			if(map.containsKey(o.name))
-				throw new IllegalArgumentException("Already registered: "+o.name+" on "+this);
+		synchronized (this) {
+			if (o.name.indexOf(SimpleFieldSet.MULTI_LEVEL_CHAR) != -1)
+				throw new IllegalArgumentException("Option names must not contain " + SimpleFieldSet.MULTI_LEVEL_CHAR);
+			if (map.containsKey(o.name))
+				throw new IllegalArgumentException("Already registered: " + o.name + " on " + this);
 			map.put(o.name, o);
 		}
 		config.onRegister(this, o);
 	}
 
 	public void register(String optionName, int defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
-		if(cb == null) cb = new NullIntCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
+		if (cb == null) cb = new NullIntCallback();
 		register(new IntOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb, isSize));
 	}
 
 	public void register(String optionName, long defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
-		if(cb == null) cb = new NullLongCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
+		if (cb == null) cb = new NullLongCallback();
 		register(new LongOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb, isSize));
 	}
 
 	/**
 	 * Registers a bandwidth option.
+	 *
 	 * @see BandwidthOption
 	 */
 	public void register(String optionName, int defaultValue, int sortOrder,
-	                     boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
-		if(cb == null) cb = new NullIntCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
+		if (cb == null) cb = new NullIntCallback();
 		register(new BandwidthOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
 
@@ -108,47 +110,48 @@ public class SubConfig implements Comparable<SubConfig> {
 	 */
 	@Deprecated
 	public void register(String optionName, String defaultValueString, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
-		if(cb == null) cb = new NullIntCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
+		if (cb == null) cb = new NullIntCallback();
 		register(new IntOption(this, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb, isSize));
 	}
 
 	public void register(String optionName, String defaultValueString, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
-		if(cb == null) cb = new NullLongCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
+		if (cb == null) cb = new NullLongCallback();
 		register(new LongOption(this, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb, isSize));
 	}
 
 	/**
 	 * Registers a bandwidth option.
+	 *
 	 * @see BandwidthOption
 	 */
 	public void register(String optionName, String defaultValueString, int sortOrder,
-	                     boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
-		if(cb == null) cb = new NullIntCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, IntCallback cb) {
+		if (cb == null) cb = new NullIntCallback();
 		register(new BandwidthOption(this, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
 
 	public void register(String optionName, boolean defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, BooleanCallback cb) {
-		if(cb == null) cb = new NullBooleanCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, BooleanCallback cb) {
+		if (cb == null) cb = new NullBooleanCallback();
 		register(new BooleanOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
 
 	public void register(String optionName, String defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringCallback cb) {
-		if(cb == null) cb = new NullStringCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringCallback cb) {
+		if (cb == null) cb = new NullStringCallback();
 		register(new StringOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
 
 	public void register(String optionName, short defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, ShortCallback cb, boolean isSize) {
-		if(cb == null) cb = new NullShortCallback();
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, ShortCallback cb, boolean isSize) {
+		if (cb == null) cb = new NullShortCallback();
 		register(new ShortOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb, isSize));
 	}
 
 	public void register(String optionName, String[] defaultValue, int sortOrder,
-			boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringArrCallback cb) {
+						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringArrCallback cb) {
 		register(new StringArrOption(this, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb));
 	}
 
@@ -169,7 +172,7 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public int getInt(String optionName) {
 		IntOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (IntOption) map.get(optionName);
 		}
 		return o.getValue();
@@ -177,7 +180,7 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public long getLong(String optionName) {
 		LongOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (LongOption) map.get(optionName);
 		}
 		return o.getValue();
@@ -185,7 +188,7 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public boolean getBoolean(String optionName) {
 		BooleanOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (BooleanOption) map.get(optionName);
 		}
 		return o.getValue();
@@ -193,7 +196,7 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public String getString(String optionName) {
 		StringOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (StringOption) map.get(optionName);
 		}
 		return o.getValue().trim();
@@ -201,7 +204,7 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public String[] getStringArr(String optionName) {
 		StringArrOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (StringArrOption) map.get(optionName);
 		}
 		return o.getValue();
@@ -209,14 +212,14 @@ public class SubConfig implements Comparable<SubConfig> {
 
 	public short getShort(String optionName) {
 		ShortOption o;
-		synchronized(this) {
+		synchronized (this) {
 			o = (ShortOption) map.get(optionName);
 		}
 		return o.getValue();
 	}
 
 	public Option<?> removeOption(String optionName) {
-		synchronized(this) {
+		synchronized (this) {
 			return map.remove(optionName);
 		}
 	}
@@ -236,29 +239,29 @@ public class SubConfig implements Comparable<SubConfig> {
 	 */
 	public void finishedInitialization() {
 		hasInitialized = true;
-		if(logMINOR)
-			Logger.minor(this, "Finished initialization on "+this+" ("+prefix+')');
+		if (logMINOR)
+			Logger.minor(this, "Finished initialization on " + this + " (" + prefix + ')');
 	}
 
 	/**
 	 * Set options from a SimpleFieldSet. Once we process an option, we must remove it.
 	 */
 	public void setOptions(SimpleFieldSet sfs) {
-		for(Entry<String, Option<?>> entry: map.entrySet()) {
+		for (Entry<String, Option<?>> entry : map.entrySet()) {
 			String key = entry.getKey();
 			Option<?> o = entry.getValue();
 			String val = sfs.get(key);
-			if(val != null) {
+			if (val != null) {
 				try {
 					o.setValue(val);
 				} catch (InvalidConfigValueException e) {
-					String msg = "Invalid config value: "+prefix+SimpleFieldSet.MULTI_LEVEL_CHAR+key+" = "+val+" : error: "+e;
+					String msg = "Invalid config value: " + prefix + SimpleFieldSet.MULTI_LEVEL_CHAR + key + " = " + val + " : error: " + e;
 					Logger.error(this, msg, e);
 					System.err.println(msg); // might be about logging?
 				} catch (NodeNeedRestartException e) {
 					// Impossible
 					String msg = "Impossible: " + prefix + SimpleFieldSet.MULTI_LEVEL_CHAR + key + " = " + val
-					        + " : error: " + e;
+							+ " : error: " + e;
 					Logger.error(this, msg, e);
 				}
 			}
@@ -273,25 +276,25 @@ public class SubConfig implements Comparable<SubConfig> {
 		return exportFieldSet(Config.RequestType.CURRENT_SETTINGS, withDefaults);
 	}
 
-    public SimpleFieldSet exportFieldSet(Config.RequestType configRequestType, boolean withDefaults) {
+	public SimpleFieldSet exportFieldSet(Config.RequestType configRequestType, boolean withDefaults) {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		@SuppressWarnings("unchecked")
-		Map.Entry<String, Option<?>>[] entries = (Map.Entry<String, Option<?>>[])new Map.Entry<?,?>[map.size()];
+		Map.Entry<String, Option<?>>[] entries = (Map.Entry<String, Option<?>>[]) new Map.Entry<?, ?>[map.size()];
 		// FIXME is any locking at all necessary here? After it has finished init, it's constant...
-		synchronized(this) {
+		synchronized (this) {
 			entries = map.entrySet().toArray(entries);
 		}
-		if(logMINOR)
-			Logger.minor(this, "Prefix="+prefix);
-		for(Map.Entry<String, Option<?>> entry: entries) {
+		if (logMINOR)
+			Logger.minor(this, "Prefix=" + prefix);
+		for (Map.Entry<String, Option<?>> entry : entries) {
 			String key = entry.getKey();
 			Option<?> o = entry.getValue();
-			if(logMINOR)
-				Logger.minor(this, "Key="+key+" value="+o.getValueString()+" default="+o.isDefault());
+			if (logMINOR)
+				Logger.minor(this, "Key=" + key + " value=" + o.getValueString() + " default=" + o.isDefault());
 			if (configRequestType == Config.RequestType.CURRENT_SETTINGS && (!withDefaults) && o.isDefault()
-			        && (!o.forceWrite)) {
-				if(logMINOR)
-					Logger.minor(this, "Skipping "+key+" - "+o.isDefault());
+					&& (!o.forceWrite)) {
+				if (logMINOR)
+					Logger.minor(this, "Skipping " + key + " - " + o.isDefault());
 				continue;
 			}
 			switch (configRequestType) {
@@ -320,11 +323,11 @@ public class SubConfig implements Comparable<SubConfig> {
 					fs.putSingle(key, o.getDataTypeStr());
 					break;
 				default:
-					Logger.error(this, "Unknown config request type value: "+configRequestType);
+					Logger.error(this, "Unknown config request type value: " + configRequestType);
 					break;
 			}
-			if(logMINOR)
-				Logger.minor(this, "Key="+prefix+'.'+key+" value="+o.getValueString());
+			if (logMINOR)
+				Logger.minor(this, "Key=" + prefix + '.' + key + " value=" + o.getValueString());
 		}
 		return fs;
 	}
@@ -354,12 +357,13 @@ public class SubConfig implements Comparable<SubConfig> {
 	 * If the option's value is equal to the provided old default, then set it to the
 	 * new default. Used to deal with changes to important options where this is not
 	 * handled automatically because the option's value is written to the .ini.
-	 * @param name The name of the option.
+	 *
+	 * @param name  The name of the option.
 	 * @param value The value of the option.
 	 */
 	public void fixOldDefault(String name, String value) {
 		Option<?> o = map.get(name);
-		if(o.getValueString().equals(value))
+		if (o.getValueString().equals(value))
 			o.setDefault();
 	}
 
@@ -367,16 +371,17 @@ public class SubConfig implements Comparable<SubConfig> {
 	 * If the option's value matches the provided old default regex, then set it to the
 	 * new default. Used to deal with changes to important options where this is not
 	 * handled automatically because the option's value is written to the .ini.
-	 * @param name The name of the option.
+	 *
+	 * @param name  The name of the option.
 	 * @param value The value of the option.
 	 */
 	public void fixOldDefaultRegex(String name, String value) {
 		Option<?> o = map.get(name);
-		if(o.getValueString().matches(value))
+		if (o.getValueString().matches(value))
 			o.setDefault();
 	}
 
-	public String getPrefix(){
+	public String getPrefix() {
 		return prefix;
 	}
 
@@ -389,12 +394,12 @@ public class SubConfig implements Comparable<SubConfig> {
 	}
 
 	public String getRawOption(String name) {
-		if(config instanceof PersistentConfig) {
+		if (config instanceof PersistentConfig) {
 			PersistentConfig pc = (PersistentConfig) config;
-			if(pc.finishedInit)
-				throw new IllegalStateException("getRawOption("+name+") on "+this+" but persistent config has been finishedInit() already!");
+			if (pc.finishedInit)
+				throw new IllegalStateException("getRawOption(" + name + ") on " + this + " but persistent config has been finishedInit() already!");
 			SimpleFieldSet fs = pc.origConfigFileContents;
-			if(fs == null) return null;
+			if (fs == null) return null;
 			return fs.get(prefix + SimpleFieldSet.MULTI_LEVEL_CHAR + name);
 		} else return null;
 	}

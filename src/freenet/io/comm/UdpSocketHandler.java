@@ -33,15 +33,18 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private final InetAddress _bindTo;
 	private final AddressTracker tracker;
 	private IncomingPacketFilter lowLevelFilter;
-	/** RNG for debugging, used with _dropProbability.
+	/**
+	 * RNG for debugging, used with _dropProbability.
 	 * NOT CRYPTO SAFE. DO NOT USE FOR THINGS THAT NEED CRYPTO SAFE RNG!
 	 */
 	private Random dropRandom;
-	/** If &gt;0, 1 in _dropProbability chance of dropping a packet; for debugging */
+	/**
+	 * If &gt;0, 1 in _dropProbability chance of dropping a packet; for debugging
+	 */
 	private int _dropProbability;
 	// Icky layer violation, but we need to know the Node to work around the EvilJVMBug.
 	private final Node node;
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	private boolean _isDone;
 	private volatile boolean _active = true;
@@ -51,14 +54,16 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private long startTime;
 	private final IOStatisticCollector collector;
 
-        static {
-            Logger.registerClass(UdpSocketHandler.class);
-        }
+	static {
+		Logger.registerClass(UdpSocketHandler.class);
+	}
+
 	private static class socketOptions {
 		private static class socketOptionsHolder {
 			static {
 				Native.register(Platform.C_LIBRARY_NAME);
 			}
+
 			private static native int setsockopt(int fd, int level, int option_name, Pointer option_value, int option_len) throws LastErrorException;
 		}
 
@@ -66,18 +71,22 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			IPPROTO_IPV6(0x29);
 
 			final int linux;
+
 			SOCKET_level(int linux) {
 				this.linux = linux;
 			}
 		}
+
 		public enum SOCKET_option_name {
 			IPV6_ADDR_PREFERENCES(0x48); // rfc5014
 
 			final int linux;
+
 			SOCKET_option_name(int linux) {
 				this.linux = linux;
 			}
 		}
+
 		public enum SOCKET_ADDR_PREFERENCE {
 			IPV6_PREFER_SRC_TMP(0x0001),
 			IPV6_PREFER_SRC_PUBLIC(0x0002),
@@ -89,6 +98,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 
 			final SOCKET_option_name option_name = SOCKET_option_name.IPV6_ADDR_PREFERENCES;
 			final int linux;
+
 			SOCKET_ADDR_PREFERENCE(int linux) {
 				this.linux = linux;
 			}
@@ -99,29 +109,31 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			try {
 				Method m = s.getClass().getDeclaredMethod("getImpl");
 				m.setAccessible(true);
-				DatagramSocketImpl impl = (DatagramSocketImpl)m.invoke(s);
+				DatagramSocketImpl impl = (DatagramSocketImpl) m.invoke(s);
 				Field f = DatagramSocketImpl.class.getDeclaredField("fd");
 				f.setAccessible(true);
-				FileDescriptor fdi = (FileDescriptor)f.get(impl);
+				FileDescriptor fdi = (FileDescriptor) f.get(impl);
 				f = FileDescriptor.class.getDeclaredField("fd");
 				f.setAccessible(true);
 				ret = f.getInt(fdi);
 			} catch (Exception e) {
-			   Logger.error(UdpSocketHandler.class, e.getMessage(), e);
+				Logger.error(UdpSocketHandler.class, e.getMessage(), e);
 			}
 			return ret;
 		}
 
 		public static boolean setAddressPreference(DatagramSocket s, SOCKET_ADDR_PREFERENCE p) {
-			if(!Platform.isLinux())
-			    return false;
+			if (!Platform.isLinux())
+				return false;
 			int fd = getFd(s);
-			if(fd <= 2)
-			    return false;
+			if (fd <= 2)
+				return false;
 			int ret = -1;
 			try {
-			    ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
-			} catch(Exception e) { Logger.normal(UdpSocketHandler.class, e.getMessage(),e); } //if it fails that's fine
+				ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
+			} catch (Exception e) {
+				Logger.normal(UdpSocketHandler.class, e.getMessage(), e);
+			} //if it fails that's fine
 			return (ret == 0 ? true : false);
 		}
 	}
@@ -139,7 +151,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		this.listenPort = listenPort;
 		_sock = new DatagramSocket(listenPort, bindto);
 		int sz = _sock.getReceiveBufferSize();
-		if(sz < 65536) {
+		if (sz < 65536) {
 			_sock.setReceiveBufferSize(65536);
 		}
 		try {
@@ -151,10 +163,11 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		try {
 			_sock.setTrafficClass(node.getTrafficClass().value);
 		} catch (SocketException e) {
-			Logger.error(this, "Failed to setTrafficClass with "+node.getTrafficClass().value,e);
+			Logger.error(this, "Failed to setTrafficClass with " + node.getTrafficClass().value, e);
 		}
 		boolean r = socketOptions.setAddressPreference(_sock, socketOptions.SOCKET_ADDR_PREFERENCE.IPV6_PREFER_SRC_PUBLIC);
-		if(logMINOR) Logger.minor(this, "Setting IPV6_PREFER_SRC_PUBLIC for port "+ listenPort + " is a "+(r ? "success" : "failure"));
+		if (logMINOR)
+			Logger.minor(this, "Setting IPV6_PREFER_SRC_PUBLIC for port " + listenPort + " is a " + (r ? "success" : "failure"));
 //		}
 		// Only used for debugging, no need to seed from Yarrow
 		dropRandom = node.fastWeakRandom;
@@ -162,7 +175,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		tracker.startSend(startupTime);
 	}
 
-	/** Must be called, or we will NPE in run() */
+	/**
+	 * Must be called, or we will NPE in run()
+	 */
 	@Override
 	public void setLowLevelFilter(IncomingPacketFilter f) {
 		lowLevelFilter = f;
@@ -187,30 +202,35 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			try {
 				System.err.print(t.getClass().getName());
 				System.err.println();
-			} catch (Throwable tt) {}
+			} catch (Throwable tt) {
+			}
 			try {
 				System.err.print(t.getMessage());
 				System.err.println();
-			} catch (Throwable tt) {}
+			} catch (Throwable tt) {
+			}
 			try {
 				System.gc();
 				System.runFinalization();
 				System.gc();
 				System.runFinalization();
-			} catch (Throwable tt) {}
+			} catch (Throwable tt) {
+			}
 			try {
 				Runtime r = Runtime.getRuntime();
 				System.err.print(r.freeMemory());
 				System.err.println();
 				System.err.print(r.totalMemory());
 				System.err.println();
-			} catch (Throwable tt) {}
+			} catch (Throwable tt) {
+			}
 			try {
 				t.printStackTrace();
-			} catch (Throwable tt) {}
+			} catch (Throwable tt) {
+			}
 		} finally {
-			System.err.println("run() exiting for UdpSocketHandler on port "+_sock.getLocalPort());
-			Logger.error(this, "run() exiting for UdpSocketHandler on port "+_sock.getLocalPort());
+			System.err.println("run() exiting for UdpSocketHandler on port " + _sock.getLocalPort());
+			Logger.error(this, "run() exiting for UdpSocketHandler on port " + _sock.getLocalPort());
 			synchronized (this) {
 				_isDone = true;
 				notifyAll();
@@ -225,7 +245,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			try {
 				realRun(packet);
 			} catch (Throwable t) {
-				System.err.println("Caught "+t);
+				System.err.println("Caught " + t);
 				t.printStackTrace(System.err);
 				Logger.error(this, "Caught " + t, t);
 			}
@@ -241,36 +261,36 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			Peer peer = new Peer(packet.getAddress(), packet.getPort());
 			tracker.receivedPacketFrom(peer);
 			long endTime = System.currentTimeMillis();
-			if(endTime - startTime > 50) {
-				if(endTime-startTime > 3000) {
-					Logger.error(this, "packet creation took "+(endTime-startTime)+"ms");
+			if (endTime - startTime > 50) {
+				if (endTime - startTime > 3000) {
+					Logger.error(this, "packet creation took " + (endTime - startTime) + "ms");
 				} else {
-					if(logMINOR) Logger.minor(this, "packet creation took "+(endTime-startTime)+"ms");
+					if (logMINOR) Logger.minor(this, "packet creation took " + (endTime - startTime) + "ms");
 				}
 			}
 			byte[] data = packet.getData();
 			int offset = packet.getOffset();
 			int length = packet.getLength();
 			try {
-				if(logMINOR) Logger.minor(this, "Processing packet of length "+length+" from "+peer);
+				if (logMINOR) Logger.minor(this, "Processing packet of length " + length + " from " + peer);
 				startTime = System.currentTimeMillis();
 				lowLevelFilter.process(data, offset, length, peer, now);
 				endTime = System.currentTimeMillis();
-				if(endTime - startTime > 50) {
-					if(endTime-startTime > 3000) {
-						Logger.error(this, "processing packet took "+(endTime-startTime)+"ms");
+				if (endTime - startTime > 50) {
+					if (endTime - startTime > 3000) {
+						Logger.error(this, "processing packet took " + (endTime - startTime) + "ms");
 					} else {
-						if(logMINOR) Logger.minor(this, "processing packet took "+(endTime-startTime)+"ms");
+						if (logMINOR) Logger.minor(this, "processing packet took " + (endTime - startTime) + "ms");
 					}
 				}
-				if(logMINOR) Logger.minor(this,
+				if (logMINOR) Logger.minor(this,
 						"Successfully handled packet length " + length);
 			} catch (Throwable t) {
 				Logger.error(this, "Caught " + t + " from "
 						+ lowLevelFilter, t);
 			}
 		} else {
-			if(logDEBUG) Logger.debug(this, "No packet received");
+			if (logDEBUG) Logger.debug(this, "No packet received");
 		}
 	}
 
@@ -292,29 +312,30 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 				throw new RuntimeException(e2);
 			}
 		}
-		if(logMINOR) Logger.minor(this, "Received packet");
+		if (logMINOR) Logger.minor(this, "Received packet");
 		return true;
 	}
 
 	/**
 	 * Send a block of encoded bytes to a peer. This is called by
 	 * send, and by IncomingPacketFilter.processOutgoing(..).
+	 *
 	 * @param blockToSend The data block to send.
 	 * @param destination The peer to send it to.
 	 */
 	@Override
 	public void sendPacket(byte[] blockToSend, Peer destination, boolean allowLocalAddresses) throws LocalAddressException {
-		assert(blockToSend != null);
-		if(!_active) {
+		assert (blockToSend != null);
+		if (!_active) {
 			Logger.error(this, "Trying to send packet but no longer active");
 			// It is essential that for recording accurate AddressTracker data that we don't send any more
 			// packets after shutdown.
 			return;
 		}
 		// there should be no DNS needed here, but go ahead if we can, but complain doing it
-		if( destination.getAddress(false, allowLocalAddresses) == null ) {
+		if (destination.getAddress(false, allowLocalAddresses) == null) {
 			Logger.error(this, "Tried sending to destination without pre-looked up IP address(needs a real Peer.getHostname()): null:" + destination.getPort(), new Exception("error"));
-			if( destination.getAddress(true, allowLocalAddresses) == null ) {
+			if (destination.getAddress(true, allowLocalAddresses) == null) {
 				Logger.error(this, "Tried sending to bad destination address: null:" + destination.getPort(), new Exception("error"));
 				return;
 			}
@@ -326,7 +347,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			}
 		}
 		InetAddress address = destination.getAddress(false, allowLocalAddresses);
-		assert(address != null);
+		assert (address != null);
 		int port = destination.getPort();
 		DatagramPacket packet = new DatagramPacket(blockToSend, blockToSend.length);
 		packet.setAddress(address);
@@ -337,12 +358,13 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			tracker.sentPacketTo(destination);
 			boolean isLocal = (!IPUtil.isValidAddress(address, false)) && (IPUtil.isValidAddress(address, true));
 			collector.addInfo(address, port, 0, getHeadersLength(address) + blockToSend.length, isLocal);
-			if(logMINOR) Logger.minor(this, "Sent packet length "+blockToSend.length+" to "+address+':'+port);
+			if (logMINOR)
+				Logger.minor(this, "Sent packet length " + blockToSend.length + " to " + address + ':' + port);
 		} catch (IOException e) {
-			if(packet.getAddress() instanceof Inet6Address) {
-				Logger.normal(this, "Error while sending packet to IPv6 address: "+destination+": "+e);
+			if (packet.getAddress() instanceof Inet6Address) {
+				Logger.normal(this, "Error while sending packet to IPv6 address: " + destination + ": " + e);
 			} else {
-				Logger.error(this, "Error while sending packet to " + destination+": "+e, e);
+				Logger.error(this, "Error while sending packet to " + destination + ": " + e, e);
 			}
 		}
 	}
@@ -365,7 +387,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	public static final int MIN_MTU = MIN_IPv4_MTU;
 
 	private volatile int maxPacketSize = MAX_ALLOWED_MTU;
-	
+
 	/**
 	 * @return The maximum packet size supported by this SocketManager, not including transport (UDP/IP) headers.
 	 */
@@ -378,12 +400,14 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		int oldSize = maxPacketSize;
 		int newSize = innerCalculateMaxPacketSize();
 		maxPacketSize = newSize;
-		if(oldSize != newSize)
-			System.out.println("Max packet size: "+newSize);
+		if (oldSize != newSize)
+			System.out.println("Max packet size: " + newSize);
 		return maxPacketSize;
 	}
-	
-	/** Recalculate the maximum packet size */
+
+	/**
+	 * Recalculate the maximum packet size
+	 */
 	int innerCalculateMaxPacketSize() { //FIXME: what about passing a peerNode though and doing it on a per-peer basis? How? PMTU would require JNI, although it might be worth it...
 		final int minAdvertisedMTU = node.getMinimumMTU();
 		return maxPacketSize = Math.min(MAX_ALLOWED_MTU, minAdvertisedMTU) - UDP_HEADERS_LENGTH;
@@ -395,12 +419,12 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	}
 
 	public void start() {
-		if(!_active) return;
-		synchronized(this) {
+		if (!_active) return;
+		synchronized (this) {
 			_started = true;
 			startTime = System.currentTimeMillis();
 		}
-		node.executor.execute(this, "UdpSocketHandler for port "+listenPort);
+		node.executor.execute(this, "UdpSocketHandler for port " + listenPort);
 	}
 
 	public void close() {
@@ -409,7 +433,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			_active = false;
 			_sock.close();
 
-			if(!_started) return;
+			if (!_started) return;
 			while (!_isDone) {
 				try {
 					wait(2000);

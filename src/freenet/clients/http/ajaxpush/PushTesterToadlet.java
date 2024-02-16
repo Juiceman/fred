@@ -13,7 +13,9 @@ import freenet.clients.http.ToadletContextClosedException;
 import freenet.clients.http.updateableelements.TesterElement;
 import freenet.support.api.HTTPRequest;
 
-/** This toadlet provides a simple page with pushed elements, making it suitable for automated tests. */
+/**
+ * This toadlet provides a simple page with pushed elements, making it suitable for automated tests.
+ */
 public class PushTesterToadlet extends Toadlet {
 
 	public PushTesterToadlet(HighLevelSimpleClient client) {

@@ -20,7 +20,7 @@ public class SubscribeUSK implements USKProgressCallback {
 	final short prioProgress;
 	final USK usk;
 	final USKCallback toUnsub;
-	
+
 	public SubscribeUSK(SubscribeUSKMessage message, NodeClientCore core, FCPConnectionHandler handler) throws IdentifierCollisionException {
 		this.handler = handler;
 		this.dontPoll = message.dontPoll;
@@ -30,7 +30,7 @@ public class SubscribeUSK implements USKProgressCallback {
 		prio = message.prio;
 		prioProgress = message.prioProgress;
 		handler.addUSKSubscription(identifier, this);
-		if((!message.dontPoll) && message.sparsePoll)
+		if ((!message.dontPoll) && message.sparsePoll)
 			toUnsub = core.uskManager.subscribeSparse(message.key, this, message.ignoreUSKDatehints,
 					handler.getRebootClient().lowLevelClient(message.realTimeFlag));
 		else {
@@ -42,7 +42,7 @@ public class SubscribeUSK implements USKProgressCallback {
 
 	@Override
 	public void onFoundEdition(long l, USK key, ClientContext context, boolean wasMetadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-		if(handler.isClosed()) {
+		if (handler.isClosed()) {
 			core.uskManager.unsubscribe(key, toUnsub);
 			return;
 		}

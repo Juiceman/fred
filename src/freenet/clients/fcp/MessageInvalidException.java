@@ -15,7 +15,7 @@ public class MessageInvalidException extends Exception {
 	final int protocolCode;
 	public final String ident;
 	public final boolean global;
-	
+
 	public MessageInvalidException(int protocolCode, String extra, String ident, boolean global) {
 		super(extra);
 		this.protocolCode = protocolCode;

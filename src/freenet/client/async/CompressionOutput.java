@@ -10,6 +10,7 @@ class CompressionOutput {
 		this.bestCodec = bestCodec2;
 		this.hashes = hashes;
 	}
+
 	final RandomAccessBucket data;
 	final COMPRESSOR_TYPE bestCodec;
 	final HashResult[] hashes;

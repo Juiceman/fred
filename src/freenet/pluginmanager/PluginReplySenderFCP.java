@@ -16,15 +16,15 @@ import freenet.support.api.Bucket;
  */
 @Deprecated
 public class PluginReplySenderFCP extends PluginReplySender {
-	
-	final FCPConnectionHandler handler; 
+
+	final FCPConnectionHandler handler;
 
 	/**
 	 * @see PluginReplySender#PluginReplySender(String, String, String)
 	 */
 	public PluginReplySenderFCP(FCPConnectionHandler handler2, String pluginname2, String clientIdentifier, String clientSideIdentifier) {
 		super(pluginname2, clientIdentifier, clientSideIdentifier);
-		
+
 		handler = handler2;
 	}
 
@@ -33,7 +33,7 @@ public class PluginReplySenderFCP extends PluginReplySender {
 		// like in linux everthing is a file, in Plugintalker everything is a plugin. So it throws PluginNotFoundException
 		// instead fcp connection errors 
 		if (handler.isClosed()) throw new PluginNotFoundException("FCP connection closed");
-        FCPPluginServerMessage reply = new FCPPluginServerMessage(pluginname, clientSideIdentifier, params, bucket);
+		FCPPluginServerMessage reply = new FCPPluginServerMessage(pluginname, clientSideIdentifier, params, bucket);
 		handler.send(reply);
 	}
 }

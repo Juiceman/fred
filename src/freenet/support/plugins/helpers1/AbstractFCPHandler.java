@@ -81,8 +81,8 @@ public abstract class AbstractFCPHandler {
 	}
 
 	protected abstract void handle(PluginReplySender replysender, String command,
-			String identifier, SimpleFieldSet params, Bucket data,
-			int accesstype) throws FCPException, PluginNotFoundException;
+								   String identifier, SimpleFieldSet params, Bucket data,
+								   int accesstype) throws FCPException, PluginNotFoundException;
 
 	public static void sendErrorWithTrace(PluginReplySender replysender, String identifier, Exception error) throws PluginNotFoundException {
 		StringWriter sw = new StringWriter();
@@ -123,7 +123,7 @@ public abstract class AbstractFCPHandler {
 		replysender.send(sfs);
 	}
 
-	public static void sendProgress(PluginReplySender replysender,  String identifier, String description) throws PluginNotFoundException {
+	public static void sendProgress(PluginReplySender replysender, String identifier, String description) throws PluginNotFoundException {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putSingle("Status", "Progress");
 		sfs.putSingle("Identifier", identifier);

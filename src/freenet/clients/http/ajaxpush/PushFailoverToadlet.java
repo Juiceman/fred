@@ -13,10 +13,12 @@ import freenet.clients.http.updateableelements.UpdaterConstants;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** A toadlet that the client can use for push failover. It requires the requestId and originalRequestId parameter. */
+/**
+ * A toadlet that the client can use for push failover. It requires the requestId and originalRequestId parameter.
+ */
 public class PushFailoverToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushFailoverToadlet.class);

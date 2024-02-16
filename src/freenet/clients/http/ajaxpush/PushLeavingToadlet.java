@@ -19,7 +19,7 @@ import freenet.support.api.HTTPRequest;
  */
 public class PushLeavingToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushLeavingToadlet.class);

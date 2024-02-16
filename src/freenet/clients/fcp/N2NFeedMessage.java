@@ -9,7 +9,7 @@ public abstract class N2NFeedMessage extends FeedMessage {
 	protected final long composed, sent, received;
 
 	public N2NFeedMessage(String header, String shortText, String text, short priorityClass, long updatedTime,
-			String sourceNodeName, long composed, long sent, long received) {
+						  String sourceNodeName, long composed, long sent, long received) {
 		super(header, shortText, text, priorityClass, updatedTime);
 		this.sourceNodeName = sourceNodeName;
 		this.composed = composed;

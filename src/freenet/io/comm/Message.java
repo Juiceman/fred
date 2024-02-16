@@ -39,14 +39,14 @@ import freenet.support.Logger.LogLevel;
 
 /**
  * A Message which can be read from and written to a DatagramPacket.
- * 
- * SECURITY REDFLAG WARNING: Messages should normally be recreated rather 
+ * <p>
+ * SECURITY REDFLAG WARNING: Messages should normally be recreated rather
  * than passed on. Messages can contain sub-messages, these are used to
  * avoid having to add whole new message types every time we add one field
- * to a message... Passing on a message as-is means it includes the 
+ * to a message... Passing on a message as-is means it includes the
  * sub-messages, which could lead to e.g. labelling, communication between
  * colluding nodes along a request route, and just wasting bytes.
- * 
+ * <p>
  * FIXME we should get rid of sub-messages.
  *
  * @author ian
@@ -58,9 +58,9 @@ public class Message {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -77,24 +77,24 @@ public class Message {
 	short priority;
 	private boolean needsLoadRT;
 	private boolean needsLoadBulk;
-	
+
 	public static Message decodeMessageFromPacket(byte[] buf, int offset, int length, PeerContext peer, int overhead) {
 		ByteBufferInputStream bb = new ByteBufferInputStream(buf, offset, length);
 		return decodeMessage(bb, peer, length + overhead, true, false, false);
 	}
-	
+
 	public static Message decodeMessageLax(byte[] buf, PeerContext peer, int overhead) {
 		ByteBufferInputStream bb = new ByteBufferInputStream(buf);
 		return decodeMessage(bb, peer, buf.length + overhead, true, false, true);
 	}
 
 	private static Message decodeMessage(ByteBufferInputStream bb, PeerContext peer, int recvByteCount,
-	        boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
+										 boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
 		MessageType mspec;
 		try {
 			mspec = MessageType.getSpec(bb.readInt(), veryLax);
 		} catch (IOException e1) {
-			if (logMINOR) Logger.minor(Message.class,"Failed to read message type: "+e1, e1);
+			if (logMINOR) Logger.minor(Message.class, "Failed to read message type: " + e1, e1);
 			return null;
 		}
 		if (mspec == null) {
@@ -102,7 +102,7 @@ public class Message {
 			return null;
 		}
 		if (mspec.isInternalOnly()) {
-			if(logMINOR) Logger.minor(Message.class, "Internal only message");
+			if (logMINOR) Logger.minor(Message.class, "Internal only message");
 			return null; // silently discard internal-only messages
 		}
 		Message m = new Message(mspec, peer, recvByteCount);
@@ -111,7 +111,7 @@ public class Message {
 				Class<?> type = mspec.getFields().get(name);
 				if (type.equals(LinkedList.class)) { // Special handling for LinkedList to deal with element type
 					m.set(name, Serializer
-					      .readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
+							.readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
 				} else {
 					m.set(name, Serializer.readFromDataInputStream(type, bb));
 				}
@@ -124,30 +124,30 @@ public class Message {
 						if (bb.remaining() < size) return m;
 						bb2 = bb.slice(size);
 					} catch (EOFException e) {
-						if (logMINOR) Logger.minor(Message.class, "No submessages, returning: "+m);
+						if (logMINOR) Logger.minor(Message.class, "No submessages, returning: " + m);
 						return m;
 					}
 					try {
 						Message subMessage = decodeMessage(bb2, peer, 0, false, true, veryLax);
 						if (subMessage == null) return m;
-						if (logMINOR) Logger.minor(Message.class, "Adding submessage: "+subMessage);
+						if (logMINOR) Logger.minor(Message.class, "Adding submessage: " + subMessage);
 						m.addSubMessage(subMessage);
 					} catch (Throwable t) {
-						Logger.error(Message.class, "Failed to read sub-message: "+t, t);
+						Logger.error(Message.class, "Failed to read sub-message: " + t, t);
 					}
 				}
 			}
 		} catch (EOFException e) {
-			String msg = peer.getPeer()+" sent a message packet that ends prematurely while deserialising "+mspec.getName();
+			String msg = peer.getPeer() + " sent a message packet that ends prematurely while deserialising " + mspec.getName();
 			if (inSubMessage) {
-				if (logMINOR) Logger.minor(Message.class, msg+" in sub-message", e);
+				if (logMINOR) Logger.minor(Message.class, msg + " in sub-message", e);
 			} else Logger.error(Message.class, msg, e);
 			return null;
 		} catch (IOException e) {
-			Logger.error(Message.class, "Unexpected IOException: "+e+" reading from buffer stream", e);
+			Logger.error(Message.class, "Unexpected IOException: " + e + " reading from buffer stream", e);
 			return null;
 		}
-		if (logMINOR) Logger.minor(Message.class, "Returning message: "+m+" from "+m.getSource());
+		if (logMINOR) Logger.minor(Message.class, "Returning message: " + m + " from " + m.getSource());
 		return m;
 	}
 
@@ -169,7 +169,9 @@ public class Message {
 		priority = spec.getDefaultPriority();
 	}
 
-	/** Drops sub-messages, and makes it locally originated */
+	/**
+	 * Drops sub-messages, and makes it locally originated
+	 */
 	private Message(Message m) {
 		_spec = m._spec;
 		_sourceRef = null;
@@ -220,13 +222,13 @@ public class Message {
 	}
 
 	public String getString(String key) {
-		return (String)_payload.get(key);
+		return (String) _payload.get(key);
 	}
 
 	public Object getObject(String key) {
 		return _payload.get(key);
 	}
-	
+
 	public byte[] getShortBufferBytes(String key) {
 		ShortBuffer buffer = (ShortBuffer) getObject(key);
 		return buffer.getData();
@@ -276,7 +278,7 @@ public class Message {
 
 	private byte[] encodeToPacket(boolean includeSubMessages, boolean isSubMessage) {
 
-		if (logDEBUG) Logger.debug(this, "My spec code: "+_spec.getName().hashCode()+" for "+_spec.getName());
+		if (logDEBUG) Logger.debug(this, "My spec code: " + _spec.getName().hashCode() + " for " + _spec.getName());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
@@ -304,7 +306,7 @@ public class Message {
 		}
 
 		byte[] buf = baos.toByteArray();
-		if (logDEBUG) Logger.debug(this, "Length: "+buf.length+", hash: "+Fields.hashCode(buf));
+		if (logDEBUG) Logger.debug(this, "Length: " + buf.length + ", hash: " + Fields.hashCode(buf));
 		return buf;
 	}
 
@@ -327,7 +329,7 @@ public class Message {
 	}
 
 	public boolean isInternal() {
-	    return _internal;
+		return _internal;
 	}
 
 	public MessageType getSpec() {
@@ -339,9 +341,9 @@ public class Message {
 	}
 
 	public Object getFromPayload(String fieldName) throws FieldNotSetException {
-		Object r =  _payload.get(fieldName);
+		Object r = _payload.get(fieldName);
 		if (r == null) {
-			throw new FieldNotSetException(fieldName+" not set");
+			throw new FieldNotSetException(fieldName + " not set");
 		}
 		return r;
 	}
@@ -356,6 +358,7 @@ public class Message {
 
 	/**
 	 * Set fields for a routed-to-a-specific-node message.
+	 *
 	 * @param nodeIdentity
 	 */
 	public void setRoutedToNodeFields(long uid, double targetLocation, short htl, byte[] nodeIdentity) {
@@ -384,7 +387,7 @@ public class Message {
 
 	public Message grabSubMessage(MessageType t) {
 		if (_subMessages == null) return null;
-		for (int i=0;i<_subMessages.size();i++) {
+		for (int i = 0; i < _subMessages.size(); i++) {
 			Message m = _subMessages.get(i);
 			if (m.getSpec() == t) {
 				_subMessages.remove(i);
@@ -401,7 +404,7 @@ public class Message {
 	public short getPriority() {
 		return priority;
 	}
-	
+
 	public void boostPriority() {
 		priority--;
 	}
@@ -409,20 +412,22 @@ public class Message {
 	public boolean needsLoadRT() {
 		return needsLoadRT;
 	}
-	
+
 	public boolean needsLoadBulk() {
 		return needsLoadBulk;
 	}
-	
+
 	public void setNeedsLoadRT() {
 		needsLoadRT = true;
 	}
-	
+
 	public void setNeedsLoadBulk() {
 		needsLoadBulk = true;
 	}
 
-	/** Clone the message, clear sub-messages and set originator to self. */
+	/**
+	 * Clone the message, clear sub-messages and set originator to self.
+	 */
 	public Message cloneAndDropSubMessages() {
 		return new Message(this);
 	}

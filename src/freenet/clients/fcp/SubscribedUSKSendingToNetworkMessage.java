@@ -6,11 +6,11 @@ import freenet.support.SimpleFieldSet;
 public class SubscribedUSKSendingToNetworkMessage extends FCPMessage {
 
 	final String identifier;
-	
+
 	SubscribedUSKSendingToNetworkMessage(String id) {
 		identifier = id;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);

@@ -5,10 +5,11 @@ package freenet.node;
 
 /**
  * A Runnable which specifies a priority.
+ *
  * @author toad
  */
 public interface PrioRunnable extends Runnable {
 
 	public int getPriority();
-	
+
 }

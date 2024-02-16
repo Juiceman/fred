@@ -20,16 +20,16 @@ import freenet.support.math.RunningAverage;
 /**
  * Starts requests.
  * Nobody starts a request directly, you have to go through RequestStarter.
- * And you have to provide a RequestStarterClient. We do round robin between 
+ * And you have to provide a RequestStarterClient. We do round robin between
  * clients on the same priority level.
  */
 public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionList {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -38,29 +38,43 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	/*
 	 * Priority classes
 	 */
-	/** Anything more important than FProxy */
+	/**
+	 * Anything more important than FProxy
+	 */
 	public static final short MAXIMUM_PRIORITY_CLASS = 0;
-	/** FProxy etc */
+	/**
+	 * FProxy etc
+	 */
 	public static final short INTERACTIVE_PRIORITY_CLASS = 1;
-	/** FProxy splitfile fetches */
+	/**
+	 * FProxy splitfile fetches
+	 */
 	public static final short IMMEDIATE_SPLITFILE_PRIORITY_CLASS = 2;
-	/** USK updates etc */
+	/**
+	 * USK updates etc
+	 */
 	public static final short UPDATE_PRIORITY_CLASS = 3;
-	/** Bulk splitfile fetches */
+	/**
+	 * Bulk splitfile fetches
+	 */
 	public static final short BULK_SPLITFILE_PRIORITY_CLASS = 4;
-	/** Prefetch */
+	/**
+	 * Prefetch
+	 */
 	public static final short PREFETCH_PRIORITY_CLASS = 5;
-	/** Anything less important than prefetch (redundant??) */
+	/**
+	 * Anything less important than prefetch (redundant??)
+	 */
 	public static final short PAUSED_PRIORITY_CLASS = 6;
-	
+
 	public static final short NUMBER_OF_PRIORITY_CLASSES = PAUSED_PRIORITY_CLASS - MAXIMUM_PRIORITY_CLASS + 1; // include 0 and max !!
-	
-    public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
-    
+
+	public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
+
 	public static boolean isValidPriorityClass(int prio) {
 		return !((prio < MAXIMUM_PRIORITY_CLASS) || (prio > PAUSED_PRIORITY_CLASS));
 	}
-	
+
 	final BaseRequestThrottle throttle;
 	final RunningAverage averageInputBytesPerRequest;
 	final RunningAverage averageOutputBytesPerRequest;
@@ -70,11 +84,11 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	private final boolean isInsert;
 	private final boolean isSSK;
 	final boolean realTime;
-	
+
 	static final int MAX_WAITING_FOR_SLOTS = 50;
-	
-	public RequestStarter(NodeClientCore node, BaseRequestThrottle throttle, String name, 
-			RunningAverage averageOutputBytesPerRequest, RunningAverage averageInputBytesPerRequest, boolean isInsert, boolean isSSK, boolean realTime) {
+
+	public RequestStarter(NodeClientCore node, BaseRequestThrottle throttle, String name,
+						  RunningAverage averageOutputBytesPerRequest, RunningAverage averageInputBytesPerRequest, boolean isInsert, boolean isSSK, boolean realTime) {
 		this.core = node;
 		this.stats = core.nodeStats;
 		this.throttle = throttle;
@@ -89,29 +103,29 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	void setScheduler(RequestScheduler sched) {
 		this.sched = sched;
 	}
-	
+
 	void start() {
 		core.getExecutor().execute(this, name);
 	}
-	
+
 	final String name;
-	
+
 	@Override
 	public String toString() {
 		return name;
 	}
-	
+
 	void realRun() {
 		ChosenBlock req = null;
 		// The last time at which we sent a request or decided not to
 		long cycleTime = System.currentTimeMillis();
-		while(true) {
+		while (true) {
 			// Allow 5 minutes before we start killing requests due to not connecting.
 			OpennetManager om;
-			if(core.node.peers.countConnectedPeers() < 3 && (om = core.node.getOpennet()) != null &&
+			if (core.node.peers.countConnectedPeers() < 3 && (om = core.node.getOpennet()) != null &&
 					System.currentTimeMillis() - om.getCreationTime() < MINUTES.toMillis(5)) {
 				try {
-					synchronized(this) {
+					synchronized (this) {
 						wait(1000);
 					}
 				} catch (InterruptedException e) {
@@ -120,28 +134,28 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 				}
 				continue;
 			}
-			if(req == null) {
+			if (req == null) {
 				req = sched.grabRequest();
 			}
-			if(req != null) {
-				if(logMINOR) Logger.minor(this, "Running "+req+" priority "+req.getPriority());
-				if(!req.localRequestOnly) {
+			if (req != null) {
+				if (logMINOR) Logger.minor(this, "Running " + req + " priority " + req.getPriority());
+				if (!req.localRequestOnly) {
 					// Wait
 					long delay;
 					delay = throttle.getDelay();
-					if(logMINOR) Logger.minor(this, "Delay="+delay+" from "+throttle);
+					if (logMINOR) Logger.minor(this, "Delay=" + delay + " from " + throttle);
 					long sleepUntil = cycleTime + delay;
 					long now;
 					do {
 						now = System.currentTimeMillis();
-						if(now < sleepUntil)
+						if (now < sleepUntil)
 							try {
 								Thread.sleep(sleepUntil - now);
-								if(logMINOR) Logger.minor(this, "Slept: "+(sleepUntil-now)+"ms");
+								if (logMINOR) Logger.minor(this, "Slept: " + (sleepUntil - now) + "ms");
 							} catch (InterruptedException e) {
 								// Ignore
 							}
-					} while(now < sleepUntil);
+					} while (now < sleepUntil);
 				}
 //				if(!doAIMD) {
 //					// Arbitrary limit on number of local requests waiting for slots.
@@ -162,13 +176,13 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 //					if(localRequestsWaitingForSlots > maxWaitingForSlots) continue;
 //				}
 				RejectReason reason;
-				assert(req.realTimeFlag == realTime);
+				assert (req.realTimeFlag == realTime);
 				if (!req.localRequestOnly) {
-					reason = stats.shouldRejectRequest(true, isInsert, isSSK, true, false, null, false, 
+					reason = stats.shouldRejectRequest(true, isInsert, isSSK, true, false, null, false,
 							Node.PREFER_INSERT_DEFAULT && isInsert, req.realTimeFlag, null);
-					if(reason != null) {
-						if(logMINOR)
-							Logger.minor(this, "Not sending local request: "+reason);
+					if (reason != null) {
+						if (logMINOR)
+							Logger.minor(this, "Not sending local request: " + reason);
 						// Wait one throttle-delay before trying again
 						cycleTime = System.currentTimeMillis();
 						continue; // Let local requests compete with all the others
@@ -177,12 +191,12 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 					stats.waitUntilNotOverloaded(isInsert);
 				}
 			} else {
-				if(logMINOR) Logger.minor(this, "Waiting...");				
+				if (logMINOR) Logger.minor(this, "Waiting...");
 				// Always take the lock on RequestStarter first. AFAICS we don't synchronize on RequestStarter anywhere else.
 				// Nested locks here prevent extra latency when there is a race, and therefore allow us to sleep indefinitely
-				synchronized(this) {
+				synchronized (this) {
 					req = sched.grabRequest();
-					if(req == null) {
+					if (req == null) {
 						try {
 							wait();
 						} catch (InterruptedException e) {
@@ -191,56 +205,56 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 					}
 				}
 			}
-			if(req == null) continue;
-			if(!startRequest(req, logMINOR)) {
+			if (req == null) continue;
+			if (!startRequest(req, logMINOR)) {
 				// Don't log if it's a cancelled transient request.
-				if(!((!req.isPersistent()) && req.isCancelled()))
-					Logger.normal(this, "No requests to start on "+req);
+				if (!((!req.isPersistent()) && req.isCancelled()))
+					Logger.normal(this, "No requests to start on " + req);
 			}
-			if(!req.localRequestOnly)
+			if (!req.localRequestOnly)
 				cycleTime = System.currentTimeMillis();
 			req = null;
 		}
 	}
 
 	private boolean startRequest(ChosenBlock req, boolean logMINOR) {
-		if((!req.isPersistent()) && req.isCancelled()) {
+		if ((!req.isPersistent()) && req.isCancelled()) {
 			req.onDumped();
 			return false;
 		}
-		if(req.key != null) {
-			if(!sched.addToFetching(req.key)) {
+		if (req.key != null) {
+			if (!sched.addToFetching(req.key)) {
 				req.onDumped();
 				return false;
 			}
-		} else if(((ChosenBlockImpl)req).request instanceof SendableInsert) {
-			if(!sched.addRunningInsert((SendableInsert)(((ChosenBlockImpl)req).request), req.token.getKey())) {
+		} else if (((ChosenBlockImpl) req).request instanceof SendableInsert) {
+			if (!sched.addRunningInsert((SendableInsert) (((ChosenBlockImpl) req).request), req.token.getKey())) {
 				req.onDumped();
 				return false;
 			}
 		}
-		if(logMINOR) Logger.minor(this, "Running request "+req+" priority "+req.getPriority());
-		core.getExecutor().execute(new SenderThread(req, req.key), "RequestStarter$SenderThread for "+req);
+		if (logMINOR) Logger.minor(this, "Running request " + req + " priority " + req.getPriority());
+		core.getExecutor().execute(new SenderThread(req, req.key), "RequestStarter$SenderThread for " + req);
 		return true;
 	}
 
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
-            while(true) {
-                try {
-                    realRun();
-                } catch (Throwable t) {
-                        Logger.error(this, "Caught "+t, t);
-                }
-            }
+		freenet.support.Logger.OSThread.logPID(this);
+		while (true) {
+			try {
+				realRun();
+			} catch (Throwable t) {
+				Logger.error(this, "Caught " + t, t);
+			}
+		}
 	}
-	
+
 	private class SenderThread implements Runnable {
 
 		private final ChosenBlock req;
 		private final Key key;
-		
+
 		public SenderThread(ChosenBlock req, Key key) {
 			this.req = req;
 			this.key = key;
@@ -248,41 +262,44 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
-		    // FIXME ? key is not known for inserts here
-		    if (key != null)
-		    	stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
-		    if(!req.send(core, sched)) {
-				if(!((!req.isPersistent()) && req.isCancelled()))
-					Logger.error(this, "run() not able to send a request on "+req);
+			freenet.support.Logger.OSThread.logPID(this);
+			// FIXME ? key is not known for inserts here
+			if (key != null)
+				stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
+			if (!req.send(core, sched)) {
+				if (!((!req.isPersistent()) && req.isCancelled()))
+					Logger.error(this, "run() not able to send a request on " + req);
 				else
-					Logger.normal(this, "run() not able to send a request on "+req+" - request was cancelled");
+					Logger.normal(this, "run() not able to send a request on " + req + " - request was cancelled");
 			}
-			if(logMINOR) 
-				Logger.minor(this, "Finished "+req);
+			if (logMINOR)
+				Logger.minor(this, "Finished " + req);
 		}
-		
+
 	}
 
-	/** LOCKING: Caller must avoid locking while calling this function. In particular,
-	 * if the RequestStarter lock is held we will get a deadlock. */
+	/**
+	 * LOCKING: Caller must avoid locking while calling this function. In particular,
+	 * if the RequestStarter lock is held we will get a deadlock.
+	 */
 	public void wakeUp() {
-		synchronized(this) {
+		synchronized (this) {
 			notifyAll();
 		}
 	}
 
-	/** Can this item be excluded, based on e.g. already running requests?
+	/**
+	 * Can this item be excluded, based on e.g. already running requests?
 	 */
 	@Override
 	public long exclude(RandomGrabArrayItem item, ClientContext context, long now) {
-		if(sched.isRunningOrQueuedPersistentRequest((SendableRequest)item)) {
-			Logger.normal(this, "Excluding already-running request: "+item, new Exception("debug"));
+		if (sched.isRunningOrQueuedPersistentRequest((SendableRequest) item)) {
+			Logger.normal(this, "Excluding already-running request: " + item, new Exception("debug"));
 			return Long.MAX_VALUE;
 		}
-		if(isInsert) return -1;
-		if(!(item instanceof BaseSendableGet)) {
-			Logger.error(this, "On a request scheduler, exclude() called with "+item, new Exception("error"));
+		if (isInsert) return -1;
+		if (!(item instanceof BaseSendableGet)) {
+			Logger.error(this, "On a request scheduler, exclude() called with " + item, new Exception("error"));
 			return -1;
 		}
 		BaseSendableGet get = (BaseSendableGet) item;

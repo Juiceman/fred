@@ -19,7 +19,7 @@ import freenet.support.SimpleFieldSet;
 public class PersistentGet extends FCPMessage {
 
 	static final String name = "PersistentGet";
-	
+
 	final String identifier;
 	final FreenetURI uri;
 	final int verbosity;
@@ -34,14 +34,14 @@ public class PersistentGet extends FCPMessage {
 	final boolean binaryBlob;
 	final long maxSize;
 	final boolean realTime;
-	
-	public PersistentGet(String identifier, FreenetURI uri, int verbosity, 
-			short priorityClass, ReturnType returnType, Persistence persistence, 
-			File targetFile, String clientToken, boolean global, boolean started, int maxRetries, boolean binaryBlob, long maxSize, boolean realTime) {
+
+	public PersistentGet(String identifier, FreenetURI uri, int verbosity,
+						 short priorityClass, ReturnType returnType, Persistence persistence,
+						 File targetFile, String clientToken, boolean global, boolean started, int maxRetries, boolean binaryBlob, long maxSize, boolean realTime) {
 		this.identifier = identifier;
 		this.uri = uri;
 		// This has been seen in practice (bug #3606), lets try to get an earlier stack trace...
-		if(uri == null) throw new NullPointerException();
+		if (uri == null) throw new NullPointerException();
 		this.verbosity = verbosity;
 		this.priorityClass = priorityClass;
 		this.returnType = returnType;
@@ -64,11 +64,11 @@ public class PersistentGet extends FCPMessage {
 		fs.put("Verbosity", verbosity);
 		fs.putSingle("ReturnType", returnType.toString().toLowerCase());
 		fs.putSingle("Persistence", persistence.toString().toLowerCase());
-		if(returnType == ReturnType.DISK) {
+		if (returnType == ReturnType.DISK) {
 			fs.putSingle("Filename", targetFile.getAbsolutePath());
 		}
 		fs.put("PriorityClass", priorityClass);
-		if(clientToken != null)
+		if (clientToken != null)
 			fs.putSingle("ClientToken", clientToken);
 		fs.put("Global", global);
 		fs.put("Started", started);

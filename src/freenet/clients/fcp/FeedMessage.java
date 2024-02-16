@@ -9,7 +9,7 @@ import freenet.support.io.ArrayBucket;
 
 public class FeedMessage extends MultipleDataCarryingMessage {
 
-	public static final String NAME="Feed";
+	public static final String NAME = "Feed";
 	//We assume that the header and shortText doesn't contain any newlines
 	private String header;
 	private String shortText;
@@ -48,5 +48,5 @@ public class FeedMessage extends MultipleDataCarryingMessage {
 	public String getName() {
 		return NAME;
 	}
-	
+
 }

@@ -32,6 +32,7 @@ public class LoggingConfigHandler {
 			LoggerHookChain chain = Logger.getChain();
 			return chain.getThresholdNew().name();
 		}
+
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
 			LoggerHookChain chain = Logger.getChain();
@@ -45,10 +46,10 @@ public class LoggingConfigHandler {
 		@Override
 		public String[] getPossibleValues() {
 			LogLevel[] priorities = LogLevel.values();
-			ArrayList<String> values = new ArrayList<String>(priorities.length+1);
-			for(LogLevel p : priorities)
+			ArrayList<String> values = new ArrayList<String>(priorities.length + 1);
+			for (LogLevel p : priorities)
 				values.add(p.name());
-			
+
 			return values.toArray(new String[values.size()]);
 		}
 	}
@@ -63,7 +64,7 @@ public class LoggingConfigHandler {
 	private int maxCachedLogLines;
 	private long maxBacklogNotBusy;
 	private final Executor executor;
-	
+
 	public LoggingConfigHandler(SubConfig loggingConfig, Executor executor) throws InvalidConfigValueException {
 		this.config = loggingConfig;
 		this.executor = executor;
@@ -75,6 +76,7 @@ public class LoggingConfigHandler {
 					public Boolean get() {
 						return fileLoggerHook != null;
 					}
+
 					@Override
 					public void set(Boolean val) throws InvalidConfigValueException {
 						if (val == (fileLoggerHook != null)) return;
@@ -85,9 +87,9 @@ public class LoggingConfigHandler {
 						}
 					}
 				});
-    	
+
 		boolean loggingEnabled = loggingConfig.getBoolean("enabled");
-    	
+
 		loggingConfig.register("dirname", "logs", 2, true, false, "LogConfigHandler.dirName",
 				"LogConfigHandler.dirNameLong",
 				new StringCallback() {
@@ -102,25 +104,25 @@ public class LoggingConfigHandler {
 						if (f.equals(logDir)) return;
 						preSetLogDir(f);
 						// Still here
-						if(fileLoggerHook == null) {
+						if (fileLoggerHook == null) {
 							logDir = f;
 						} else {
 							// Discard old data
-							fileLoggerHook.switchBaseFilename(f.getPath()+File.separator+LOG_PREFIX);
+							fileLoggerHook.switchBaseFilename(f.getPath() + File.separator + LOG_PREFIX);
 							logDir = f;
 							new Deleter(logDir).start();
 						}
 					}
 				});
-    	
+
 		logDir = new File(config.getString("dirname"));
 		if (loggingEnabled) {
 			preSetLogDir(logDir);
 		}
 		// => enableLogger must run preSetLogDir
-		
+
 		// max space used by zipped logs
-    	
+
 		config.register("maxZippedLogsSize", "10M", 3, true, true, "LogConfigHandler.maxZippedLogsSize",
 				"LogConfigHandler.maxZippedLogsSizeLong",
 				new LongCallback() {
@@ -128,30 +130,31 @@ public class LoggingConfigHandler {
 					public Long get() {
 						return maxZippedLogsSize;
 					}
+
 					@Override
 					public void set(Long val) throws InvalidConfigValueException {
 						if (val < 0)
-					        val = 0L;
+							val = 0L;
 						maxZippedLogsSize = val;
 						if (fileLoggerHook != null) {
 							fileLoggerHook.setMaxOldLogsSize(val);
 						}
 					}
 				}, true);
-    	
+
 		maxZippedLogsSize = config.getLong("maxZippedLogsSize");
-    	
+
 		// These two are forced below so we don't need to check them now
-    	
+
 		// priority
-    	
+
 		// Node must override this to minor on testnet.
 		config.register("priority", "warning", 4, false, false, "LogConfigHandler.minLoggingPriority",
 				"LogConfigHandler.minLoggingPriorityLong",
 				new PriorityCallback());
-    	
+
 		// detailed priority
-    	
+
 		config.register("priorityDetail", "", 5, true, false, "LogConfigHandler.detaildPriorityThreshold",
 				"LogConfigHandler.detaildPriorityThresholdLong",
 				new StringCallback() {
@@ -171,9 +174,9 @@ public class LoggingConfigHandler {
 						}
 					}
 				});
-    	
+
 		// interval
-    	
+
 		config.register("interval", "1HOUR", 5, true, false, "LogConfigHandler.rotationInterval",
 				"LogConfigHandler.rotationIntervalLong",
 				new StringCallback() {
@@ -195,9 +198,9 @@ public class LoggingConfigHandler {
 						logRotateInterval = val;
 					}
 				});
-    	
+
 		logRotateInterval = config.getString("interval");
-    	
+
 		// max cached bytes in RAM
 		config.register("maxCachedBytes", "1M", 6, true, false, "LogConfigHandler.maxCachedBytes",
 				"LogConfigHandler.maxCachedBytesLong",
@@ -206,6 +209,7 @@ public class LoggingConfigHandler {
 					public Long get() {
 						return maxCachedLogBytes;
 					}
+
 					@Override
 					public void set(Long val) throws InvalidConfigValueException {
 						if (val < 0) val = 0L;
@@ -214,9 +218,9 @@ public class LoggingConfigHandler {
 						if (fileLoggerHook != null) fileLoggerHook.setMaxListBytes(val);
 					}
 				}, true);
-    	
+
 		maxCachedLogBytes = config.getLong("maxCachedBytes");
-    	
+
 		// max cached lines in RAM
 		config.register("maxCachedLines", "10k", 7, true, false, "LogConfigHandler.maxCachedLines",
 				"LogConfigHandler.maxCachedLinesLong",
@@ -225,19 +229,20 @@ public class LoggingConfigHandler {
 					public Integer get() {
 						return maxCachedLogLines;
 					}
+
 					@Override
 					public void set(Integer val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if(val < 0) val = 0;
-						if(val == maxCachedLogLines) return;
+						if (val < 0) val = 0;
+						if (val == maxCachedLogLines) return;
 						maxCachedLogLines = val;
 						throw new NodeNeedRestartException("logger.maxCachedLogLines");
 					}
 				}, false);
-    	
+
 		maxCachedLogLines = config.getInt("maxCachedLines");
-		
-		config.register("maxBacklogNotBusy", "60000", 8, true, false, "LogConfigHandler.maxBacklogNotBusy", 
-				"LogConfigHandler.maxBacklogNotBusy", 
+
+		config.register("maxBacklogNotBusy", "60000", 8, true, false, "LogConfigHandler.maxBacklogNotBusy",
+				"LogConfigHandler.maxBacklogNotBusy",
 				new LongCallback() {
 
 					@Override
@@ -247,22 +252,22 @@ public class LoggingConfigHandler {
 
 					@Override
 					public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if(val < 0) throw new InvalidConfigValueException("Must be >= 0");
-						if(val == maxBacklogNotBusy) return;
+						if (val < 0) throw new InvalidConfigValueException("Must be >= 0");
+						if (val == maxBacklogNotBusy) return;
 						maxBacklogNotBusy = val;
-						if(fileLoggerHook != null) fileLoggerHook.setMaxBacklogNotBusy(val);
+						if (fileLoggerHook != null) fileLoggerHook.setMaxBacklogNotBusy(val);
 					}
-			
-		}, false);
-    	
+
+				}, false);
+
 		maxBacklogNotBusy = config.getLong("maxBacklogNotBusy");
-		
+
 		if (loggingEnabled) enableLogger();
 		config.finishedInitialization();
 	}
 
 	private final Object enableLoggerLock = new Object();
-	
+
 	/**
 	 * Turn on the logger.
 	 */
@@ -270,45 +275,45 @@ public class LoggingConfigHandler {
 		try {
 			preSetLogDir(logDir);
 		} catch (InvalidConfigValueException e3) {
-			System.err.println("Cannot set log dir: "+logDir+": "+e3);
+			System.err.println("Cannot set log dir: " + logDir + ": " + e3);
 			e3.printStackTrace();
 		}
-		synchronized(enableLoggerLock) {
-			if(fileLoggerHook != null) return;
+		synchronized (enableLoggerLock) {
+			if (fileLoggerHook != null) return;
 			Logger.setupChain();
 			try {
 				config.forceUpdate("priority");
 				config.forceUpdate("priorityDetail");
 			} catch (InvalidConfigValueException e2) {
-				System.err.println("Invalid config value for logger.priority in config file: "+config.getString("priority"));
+				System.err.println("Invalid config value for logger.priority in config file: " + config.getString("priority"));
 				// Leave it at the default.
 			} catch (NodeNeedRestartException e) {
 				// impossible
 				System.err.println("impossible NodeNeedRestartException for logger.priority in config file: "
-				        + config.getString("priority"));
+						+ config.getString("priority"));
 			}
 			FileLoggerHook hook;
 			try {
-				hook = 
-					new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(), 
-				    		"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
-				    		maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
+				hook =
+						new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(),
+								"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true,
+								maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
 			} catch (IOException e) {
-				System.err.println("CANNOT START LOGGER: "+e.getMessage());
+				System.err.println("CANNOT START LOGGER: " + e.getMessage());
 				return;
 			} catch (IntervalParseException e) {
-				System.err.println("INVALID LOGGING INTERVAL: "+e.getMessage());
+				System.err.println("INVALID LOGGING INTERVAL: " + e.getMessage());
 				logRotateInterval = "5MINUTE";
 				try {
-					hook = 
-						new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(), 
-					    		"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
-					    		maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
+					hook =
+							new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(),
+									"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true,
+									maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
 				} catch (IntervalParseException e1) {
-					System.err.println("CANNOT START LOGGER: IMPOSSIBLE: "+e1.getMessage());
+					System.err.println("CANNOT START LOGGER: IMPOSSIBLE: " + e1.getMessage());
 					return;
 				} catch (IOException e1) {
-					System.err.println("CANNOT START LOGGER: "+e1.getMessage());
+					System.err.println("CANNOT START LOGGER: " + e1.getMessage());
 					return;
 				}
 			}
@@ -321,8 +326,8 @@ public class LoggingConfigHandler {
 	}
 
 	protected void disableLogger() {
-		synchronized(enableLoggerLock) {
-			if(fileLoggerHook == null) return;
+		synchronized (enableLoggerLock) {
+			if (fileLoggerHook == null) return;
 			FileLoggerHook hook = fileLoggerHook;
 			Logger.globalRemoveHook(hook);
 			hook.close();
@@ -330,60 +335,62 @@ public class LoggingConfigHandler {
 			Logger.destroyChainIfEmpty();
 		}
 	}
-	
+
 	protected void preSetLogDir(File f) throws InvalidConfigValueException {
 		boolean exists = f.exists();
-		if(exists && !f.isDirectory())
+		if (exists && !f.isDirectory())
 			throw new InvalidConfigValueException("Cannot overwrite a file with a log directory");
-		if(!exists) {
+		if (!exists) {
 			f.mkdir();
 			exists = f.exists();
-			if(!exists || !f.isDirectory())
+			if (!exists || !f.isDirectory())
 				throw new InvalidConfigValueException("Cannot create log directory");
 		}
 	}
-	
+
 	class Deleter implements Runnable {
-		
+
 		File logDir;
-		
+
 		public Deleter(File logDir) {
 			this.logDir = logDir;
 		}
 
 		void start() {
-			executor.execute(this, "Old log directory "+logDir+" deleter");
+			executor.execute(this, "Old log directory " + logDir + " deleter");
 		}
-		
+
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
+			freenet.support.Logger.OSThread.logPID(this);
 			fileLoggerHook.waitForSwitch();
 			delete(logDir);
 		}
 
-		/** @return true if we can't delete due to presence of non-Freenet files */
+		/**
+		 * @return true if we can't delete due to presence of non-Freenet files
+		 */
 		private boolean delete(File dir) {
 			boolean failed = false;
 			File[] files = dir.listFiles();
-			for(File f: files) {
+			for (File f : files) {
 				String s = f.getName();
-				if(s.startsWith("freenet-") && (s.indexOf(".log") != -1)) {
-					if(f.isFile()) {
-						if(!f.delete()) failed = true;
-					} else if(f.isDirectory()) {
-						if(delete(f)) failed = true;
+				if (s.startsWith("freenet-") && (s.indexOf(".log") != -1)) {
+					if (f.isFile()) {
+						if (!f.delete()) failed = true;
+					} else if (f.isDirectory()) {
+						if (delete(f)) failed = true;
 					}
 				} else {
 					failed = true;
 				}
 			}
-			if(!failed) {
+			if (!failed) {
 				failed = !(dir.delete());
 			}
 			return failed;
 		}
-		
+
 	}
 
 	public FileLoggerHook getFileLoggerHook() {
@@ -399,8 +406,8 @@ public class LoggingConfigHandler {
 	}
 
 	public void setMaxZippedLogFiles(String maxSizeAsString) throws InvalidConfigValueException,
-	        NodeNeedRestartException {
+			NodeNeedRestartException {
 		config.set("maxZippedLogsSize", maxSizeAsString);
 	}
-	
+
 }

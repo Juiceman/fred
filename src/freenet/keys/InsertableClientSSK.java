@@ -30,70 +30,72 @@ import freenet.support.api.Bucket;
 import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.math.MersenneTwister;
 
-/** A ClientSSK that has a private key and therefore can be inserted. */
+/**
+ * A ClientSSK that has a private key and therefore can be inserted.
+ */
 public class InsertableClientSSK extends ClientSSK {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public final DSAPrivateKey privKey;
-	
+	public final DSAPrivateKey privKey;
+
 	private static boolean logMINOR;
+
 	static {
-	    Logger.registerClass(InsertableClientSSK.class);
+		Logger.registerClass(InsertableClientSSK.class);
 	}
-	
+
 	public InsertableClientSSK(String docName, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey, byte[] cryptoKey, byte cryptoAlgorithm) throws MalformedURLException {
 		super(docName, pubKeyHash, getExtraBytes(cryptoAlgorithm), pubKey, cryptoKey);
-		if(pubKey == null) throw new NullPointerException();
+		if (pubKey == null) throw new NullPointerException();
 		this.privKey = privKey;
 	}
-	
+
 	protected InsertableClientSSK() {
-	    // For serialization.
-	    privKey = null;
+		// For serialization.
+		privKey = null;
 	}
-	
+
 	public static InsertableClientSSK create(FreenetURI uri) throws MalformedURLException {
-		if(uri.getKeyType().equalsIgnoreCase("KSK"))
+		if (uri.getKeyType().equalsIgnoreCase("KSK"))
 			return ClientKSK.create(uri);
 
-		if(uri.getRoutingKey() == null)
-			throw new MalformedURLException("Insertable SSK URIs must have a private key!: "+uri);
-		if(uri.getCryptoKey() == null)
-			throw new MalformedURLException("Insertable SSK URIs must have a private key!: "+uri);
-		
+		if (uri.getRoutingKey() == null)
+			throw new MalformedURLException("Insertable SSK URIs must have a private key!: " + uri);
+		if (uri.getCryptoKey() == null)
+			throw new MalformedURLException("Insertable SSK URIs must have a private key!: " + uri);
+
 		byte keyType;
 
 		byte[] extra = uri.getExtra();
-		if(uri.getKeyType().equals("SSK")) {
-			if(extra == null)
+		if (uri.getKeyType().equals("SSK")) {
+			if (extra == null)
 				throw new MalformedURLException("Inserting pre-1010 keys not supported");
 			// Formatted exactly as ,extra on fetching
-			if(extra.length < 5)
+			if (extra.length < 5)
 				throw new MalformedURLException("SSK private key ,extra too short");
-			if(extra[1] != 1) {
+			if (extra[1] != 1) {
 				throw new MalformedURLException("SSK not a private key");
 			}
 			keyType = extra[2];
-			if(keyType != Key.ALGO_AES_PCFB_256_SHA256)
+			if (keyType != Key.ALGO_AES_PCFB_256_SHA256)
 				throw new MalformedURLException("Unrecognized crypto type in SSK private key");
+		} else {
+			throw new MalformedURLException("Not a valid SSK insert URI type: " + uri.getKeyType());
 		}
-		else {
-			throw new MalformedURLException("Not a valid SSK insert URI type: "+uri.getKeyType());
-		}
-		
+
 		// Allow docName="" for SSKs. E.g. GenerateSSK returns these; we want to be consistent. 
 		// However, we recommend that you not use this, especially not for a freesite, as 
 		// SSK@blah,blah,blah//filename is confusing for clients, browsers etc.
-		if(uri.getDocName() == null)
+		if (uri.getDocName() == null)
 			throw new MalformedURLException("SSK URIs must have a document name (to avoid ambiguity)");
 		DSAGroup g = Global.DSAgroupBigA;
 		DSAPrivateKey privKey;
 		try {
 			privKey = new DSAPrivateKey(new BigInteger(1, uri.getRoutingKey()), g);
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// DSAPrivateKey is invalid
-			Logger.error(InsertableClientSSK.class, "Caught "+e, e);
+			Logger.error(InsertableClientSSK.class, "Caught " + e, e);
 			throw new MalformedURLException("SSK private key (routing key) is invalid: " + e);
 		}
 		DSAPublicKey pubKey = new DSAPublicKey(g, privKey);
@@ -210,7 +212,7 @@ public class InsertableClientSSK extends ClientSSK {
 			try {
 				return new ClientSSKBlock(data, headers, this, !logMINOR);
 			} catch (SSKVerifyException e) {
-				throw (AssertionError)new AssertionError("Impossible encoding error").initCause(e);
+				throw (AssertionError) new AssertionError("Impossible encoding error").initCause(e);
 			}
 		} finally {
 			SHA256.returnMessageDigest(md256);
@@ -218,18 +220,18 @@ public class InsertableClientSSK extends ClientSSK {
 	}
 
 	private byte[] truncate(byte[] bs, int len) {
-		if(bs.length == len)
+		if (bs.length == len)
 			return bs;
 		else if (bs.length < len) {
 			byte[] buf = new byte[len];
 			System.arraycopy(bs, 0, buf, len - bs.length, bs.length);
 			return buf;
 		} else { // if (bs.length > len) {
-			for(int i=0;i<(bs.length-len);i++) {
-				if(bs[i] != 0)
+			for (int i = 0; i < (bs.length - len); i++) {
+				if (bs[i] != 0)
 					throw new IllegalStateException("Cannot truncate");
 			}
-			return Arrays.copyOfRange(bs, bs.length-len, bs.length);
+			return Arrays.copyOfRange(bs, bs.length - len, bs.length);
 		}
 	}
 
@@ -241,7 +243,7 @@ public class InsertableClientSSK extends ClientSSK {
 		DSAPublicKey pubKey = new DSAPublicKey(g, privKey);
 		try {
 			byte[] pkHash = SHA256.digest(pubKey.asBytes());
-			return new InsertableClientSSK(docName, pkHash, pubKey, privKey, ckey, 
+			return new InsertableClientSSK(docName, pkHash, pubKey, privKey, ckey,
 					Key.ALGO_AES_PCFB_256_SHA256);
 		} catch (MalformedURLException e) {
 			throw new Error(e);
@@ -261,5 +263,5 @@ public class InsertableClientSSK extends ClientSSK {
 	public DSAGroup getCryptoGroup() {
 		return Global.DSAgroupBigA;
 	}
-	
+
 }

@@ -45,6 +45,7 @@ public class BookmarkManager implements RequestClient {
 	private final File backupBookmarksFile;
 	private boolean isSavingBookmarks = false;
 	private boolean isSavingBookmarksLazy = false;
+
 	static {
 		String name = "freenet/clients/http/staticfiles/defaultbookmarks.dat";
 		SimpleFieldSet defaultBookmarks = null;
@@ -55,7 +56,7 @@ public class BookmarkManager implements RequestClient {
 				if (in != null)
 					defaultBookmarks = SimpleFieldSet.readFrom(in, false, false);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Logger.error(BookmarkManager.class, "Error while loading the default bookmark file from " + name + " :" + e.getMessage(), e);
 		} finally {
 			DEFAULT_BOOKMARKS = defaultBookmarks;
@@ -63,10 +64,11 @@ public class BookmarkManager implements RequestClient {
 	}
 
 	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -80,17 +82,17 @@ public class BookmarkManager implements RequestClient {
 
 		try {
 			// Read the backup file if necessary
-			if(!bookmarksFile.exists() || bookmarksFile.length() == 0)
+			if (!bookmarksFile.exists() || bookmarksFile.length() == 0)
 				throw new IOException();
 			Logger.normal(this, "Attempting to read the bookmark file from " + bookmarksFile.toString());
 			SimpleFieldSet sfs = SimpleFieldSet.readFrom(bookmarksFile, false, true);
 			readBookmarks(MAIN_CATEGORY, sfs);
-		} catch(MalformedURLException mue) {
-		} catch(IOException ioe) {
+		} catch (MalformedURLException mue) {
+		} catch (IOException ioe) {
 			Logger.error(this, "Error reading the bookmark file (" + bookmarksFile.toString() + "):" + ioe.getMessage(), ioe);
 
 			try {
-				if(backupBookmarksFile.exists() && backupBookmarksFile.canRead() && backupBookmarksFile.length() > 0) {
+				if (backupBookmarksFile.exists() && backupBookmarksFile.canRead() && backupBookmarksFile.length() > 0) {
 					Logger.normal(this, "Attempting to read the backup bookmark file from " + backupBookmarksFile.toString());
 					SimpleFieldSet sfs = SimpleFieldSet.readFrom(backupBookmarksFile, false, true);
 					readBookmarks(MAIN_CATEGORY, sfs);
@@ -99,7 +101,7 @@ public class BookmarkManager implements RequestClient {
 					// restore the default bookmark set
 					readBookmarks(MAIN_CATEGORY, DEFAULT_BOOKMARKS);
 				}
-			} catch(IOException e) {
+			} catch (IOException e) {
 				Logger.error(this, "Error reading the backup bookmark file !" + e.getMessage(), e);
 			}
 		}
@@ -112,7 +114,8 @@ public class BookmarkManager implements RequestClient {
 		SemiOrderedShutdownHook.get().addEarlyJob(new Thread() {
 			BookmarkManager bm = BookmarkManager.this;
 
-			@Override public void run() {
+			@Override
+			public void run() {
 				bm.storeBookmarks();
 				bm = null;
 			}
@@ -129,7 +132,7 @@ public class BookmarkManager implements RequestClient {
 
 		@Override
 		public void onFoundEdition(long edition, USK key, ClientContext context, boolean wasMetadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-			if(!newKnownGood) {
+			if (!newKnownGood) {
 				FreenetURI uri = key.copy(edition).getURI();
 				node.makeClient(PRIORITY_PROGRESS, false, false).prefetch(uri, MINUTES.toMillis(60), FProxyToadlet.MAX_LENGTH_WITH_PROGRESS, null, PRIORITY_PROGRESS);
 				return;
@@ -137,28 +140,28 @@ public class BookmarkManager implements RequestClient {
 			List<BookmarkItem> items = MAIN_CATEGORY.getAllItems();
 			boolean matched = false;
 			boolean updated = false;
-			for(int i = 0; i < items.size(); i++) {
-				if(!"USK".equals(items.get(i).getKeyType()))
+			for (int i = 0; i < items.size(); i++) {
+				if (!"USK".equals(items.get(i).getKeyType()))
 					continue;
 
 				try {
 					FreenetURI furi = new FreenetURI(items.get(i).getKey());
 					USK usk = USK.create(furi);
 
-					if(usk.equals(key, false)) {
-						if(logMINOR) Logger.minor(this, "Updating bookmark for "+furi+" to edition "+edition);
+					if (usk.equals(key, false)) {
+						if (logMINOR) Logger.minor(this, "Updating bookmark for " + furi + " to edition " + edition);
 						matched = true;
 						BookmarkItem item = items.get(i);
 						updated |= item.setEdition(edition, node);
 						// We may have bookmarked the same site twice, so continue the search.
 					}
-				} catch(MalformedURLException mue) {
+				} catch (MalformedURLException mue) {
 				}
 			}
-			if(updated) {
+			if (updated) {
 				storeBookmarksLazy();
-			} else if(!matched) {
-				Logger.error(this, "No match for bookmark "+key+" edition "+edition);
+			} else if (!matched) {
+				Logger.error(this, "No match for bookmark " + key + " edition " + edition);
 			}
 		}
 
@@ -178,43 +181,43 @@ public class BookmarkManager implements RequestClient {
 	}
 
 	public String parentPath(String path) {
-		if(path.equals("/"))
+		if (path.equals("/"))
 			return "/";
 
 		return path.substring(0, path.substring(0, path.length() - 1).lastIndexOf('/')) + "/";
 	}
 
 	public Bookmark getBookmarkByPath(String path) {
-		synchronized(bookmarks) {
+		synchronized (bookmarks) {
 			return bookmarks.get(path);
 		}
 	}
 
 	public BookmarkCategory getCategoryByPath(String path) {
 		Bookmark cat = getBookmarkByPath(path);
-		if(cat instanceof BookmarkCategory)
+		if (cat instanceof BookmarkCategory)
 			return (BookmarkCategory) cat;
 
 		return null;
 	}
 
 	public BookmarkItem getItemByPath(String path) {
-		if(getBookmarkByPath(path) instanceof BookmarkItem)
+		if (getBookmarkByPath(path) instanceof BookmarkItem)
 			return (BookmarkItem) getBookmarkByPath(path);
 
 		return null;
 	}
 
 	public void addBookmark(String parentPath, Bookmark bookmark) {
-		if(logMINOR)
+		if (logMINOR)
 			Logger.minor(this, "Adding bookmark " + bookmark + " to " + parentPath);
 		BookmarkCategory parent = getCategoryByPath(parentPath);
 		parent.addBookmark(bookmark);
 		putPaths(parentPath + bookmark.getName() + ((bookmark instanceof BookmarkCategory) ? "/" : ""),
-			bookmark);
+				bookmark);
 
-		if(bookmark instanceof BookmarkItem)
-			subscribeToUSK((BookmarkItem)bookmark);
+		if (bookmark instanceof BookmarkItem)
+			subscribeToUSK((BookmarkItem) bookmark);
 	}
 
 	public void renameBookmark(String path, String newName) {
@@ -224,11 +227,11 @@ public class BookmarkManager implements RequestClient {
 		String newPath = path.substring(0, path.indexOf(oldPath)) + '/' + newName + (bookmark instanceof BookmarkCategory ? "/" : "");
 
 		bookmark.setName(newName);
-		synchronized(bookmarks) {
+		synchronized (bookmarks) {
 			Iterator<String> it = bookmarks.keySet().iterator();
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				String s = it.next();
-				if(s.startsWith(path)) {
+				if (s.startsWith(path)) {
 					it.remove();
 				}
 			}
@@ -247,46 +250,46 @@ public class BookmarkManager implements RequestClient {
 
 	public void removeBookmark(String path) {
 		Bookmark bookmark = getBookmarkByPath(path);
-		if(bookmark == null)
+		if (bookmark == null)
 			return;
 
-		if(bookmark instanceof BookmarkCategory) {
+		if (bookmark instanceof BookmarkCategory) {
 			BookmarkCategory cat = (BookmarkCategory) bookmark;
-			for(int i = 0; i < cat.size(); i++)
+			for (int i = 0; i < cat.size(); i++)
 				removeBookmark(path + cat.get(i).getName() + ((cat.get(i) instanceof BookmarkCategory) ? "/"
-					: ""));
+						: ""));
 		} else {
-			if(((BookmarkItem) bookmark).getKeyType().equals("USK")) {
+			if (((BookmarkItem) bookmark).getKeyType().equals("USK")) {
 				try {
 					USK u = ((BookmarkItem) bookmark).getUSK();
-					if(!wantUSK(u, (BookmarkItem)bookmark)) {
+					if (!wantUSK(u, (BookmarkItem) bookmark)) {
 						this.node.uskManager.unsubscribe(u, this.uskCB);
 					}
-				} catch(MalformedURLException mue) {
+				} catch (MalformedURLException mue) {
 				}
 			}
 		}
 
 		getCategoryByPath(parentPath(path)).removeBookmark(bookmark);
-		synchronized(bookmarks) {
+		synchronized (bookmarks) {
 			bookmarks.remove(path);
 		}
 	}
 
 	private boolean wantUSK(USK u, BookmarkItem ignore) {
 		List<BookmarkItem> items = MAIN_CATEGORY.getAllItems();
-		for(BookmarkItem item : items) {
-			if(item == ignore)
+		for (BookmarkItem item : items) {
+			if (item == ignore)
 				continue;
-			if(!"USK".equals(item.getKeyType()))
+			if (!"USK".equals(item.getKeyType()))
 				continue;
 
 			try {
 				FreenetURI furi = new FreenetURI(item.getKey());
 				USK usk = USK.create(furi);
 
-				if(usk.equals(u, false)) return true;
-			} catch(MalformedURLException mue) {
+				if (usk.equals(u, false)) return true;
+			} catch (MalformedURLException mue) {
 			}
 		}
 		return false;
@@ -296,7 +299,7 @@ public class BookmarkManager implements RequestClient {
 		BookmarkCategory parent = getCategoryByPath(parentPath(path));
 		parent.moveBookmarkUp(getBookmarkByPath(path));
 
-		if(store)
+		if (store)
 			storeBookmarks();
 	}
 
@@ -304,16 +307,16 @@ public class BookmarkManager implements RequestClient {
 		BookmarkCategory parent = getCategoryByPath(parentPath(path));
 		parent.moveBookmarkDown(getBookmarkByPath(path));
 
-		if(store)
+		if (store)
 			storeBookmarks();
 	}
 
 	private void putPaths(String path, Bookmark b) {
-		synchronized(bookmarks) {
+		synchronized (bookmarks) {
 			bookmarks.put(path, b);
 		}
-		if(b instanceof BookmarkCategory)
-			for(int i = 0; i < ((BookmarkCategory) b).size(); i++) {
+		if (b instanceof BookmarkCategory)
+			for (int i = 0; i < ((BookmarkCategory) b).size(); i++) {
 				Bookmark child = ((BookmarkCategory) b).get(i);
 				putPaths(path + child.getName() + (child instanceof BookmarkItem ? "" : "/"), child);
 			}
@@ -321,9 +324,9 @@ public class BookmarkManager implements RequestClient {
 	}
 
 	private void removePaths(String path) {
-		if(getBookmarkByPath(path) instanceof BookmarkCategory) {
+		if (getBookmarkByPath(path) instanceof BookmarkCategory) {
 			BookmarkCategory cat = getCategoryByPath(path);
-			for(int i = 0; i < cat.size(); i++)
+			for (int i = 0; i < cat.size(); i++)
 				removePaths(path + cat.get(i).getName() + (cat.get(i) instanceof BookmarkCategory ? "/" : ""));
 		}
 		bookmarks.remove(path);
@@ -332,15 +335,15 @@ public class BookmarkManager implements RequestClient {
 	public FreenetURI[] getBookmarkURIs() {
 		List<BookmarkItem> items = MAIN_CATEGORY.getAllItems();
 		FreenetURI[] uris = new FreenetURI[items.size()];
-		for(int i = 0; i < items.size(); i++)
+		for (int i = 0; i < items.size(); i++)
 			uris[i] = items.get(i).getURI();
 
 		return uris;
 	}
 
 	public void storeBookmarksLazy() {
-		synchronized(bookmarks) {
-			if(isSavingBookmarksLazy) return;
+		synchronized (bookmarks) {
+			if (isSavingBookmarksLazy) return;
 			isSavingBookmarksLazy = true;
 			node.node.ticker.queueTimedJob(new Runnable() {
 
@@ -360,8 +363,8 @@ public class BookmarkManager implements RequestClient {
 	public void storeBookmarks() {
 		Logger.normal(this, "Attempting to save bookmarks to " + bookmarksFile.toString());
 		SimpleFieldSet sfs = null;
-		synchronized(bookmarks) {
-			if(isSavingBookmarks)
+		synchronized (bookmarks) {
+			if (isSavingBookmarks)
 				return;
 			isSavingBookmarks = true;
 
@@ -373,13 +376,13 @@ public class BookmarkManager implements RequestClient {
 			sfs.writeToBigBuffer(fos);
 			fos.close();
 			fos = null;
-			if(!FileUtil.renameTo(backupBookmarksFile, bookmarksFile))
+			if (!FileUtil.renameTo(backupBookmarksFile, bookmarksFile))
 				Logger.error(this, "Unable to rename " + backupBookmarksFile.toString() + " to " + bookmarksFile.toString());
-		} catch(IOException ioe) {
+		} catch (IOException ioe) {
 			Logger.error(this, "An error has occured saving the bookmark file :" + ioe.getMessage(), ioe);
 		} finally {
 			Closer.close(fos);
-			synchronized(bookmarks) {
+			synchronized (bookmarks) {
 				isSavingBookmarks = false;
 			}
 		}
@@ -393,18 +396,19 @@ public class BookmarkManager implements RequestClient {
 	static final short PRIORITY_PROGRESS = RequestStarter.UPDATE_PRIORITY_CLASS;
 
 	private void subscribeToUSK(BookmarkItem item) {
-		if("USK".equals(item.getKeyType()))
+		if ("USK".equals(item.getKeyType()))
 			try {
 				USK u = item.getUSK();
 				this.node.uskManager.subscribe(u, this.uskCB, true, this);
-			} catch(MalformedURLException mue) {}
+			} catch (MalformedURLException mue) {
+			}
 	}
 
 	private synchronized void _innerReadBookmarks(String prefix, BookmarkCategory category, SimpleFieldSet sfs) {
 		boolean hasBeenParsedWithoutAnyProblem = true;
 		boolean isRoot = ("".equals(prefix) && MAIN_CATEGORY.equals(category));
-		synchronized(bookmarks) {
-			if(!isRoot)
+		synchronized (bookmarks) {
+			if (!isRoot)
 				putPaths(prefix + category.name + '/', category);
 
 			if (sfs == null) {
@@ -443,7 +447,7 @@ public class BookmarkManager implements RequestClient {
 			}
 
 		}
-		if(hasBeenParsedWithoutAnyProblem)
+		if (hasBeenParsedWithoutAnyProblem)
 			storeBookmarks();
 	}
 
@@ -452,7 +456,7 @@ public class BookmarkManager implements RequestClient {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 
 		sfs.put("Version", 1);
-		synchronized(bookmarks) {
+		synchronized (bookmarks) {
 			sfs.putAllOverwrite(BookmarkManager.toSimpleFieldSet(MAIN_CATEGORY));
 		}
 
@@ -463,7 +467,7 @@ public class BookmarkManager implements RequestClient {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		List<BookmarkCategory> bc = cat.getSubCategories();
 
-		for(int i = 0; i < bc.size(); i++) {
+		for (int i = 0; i < bc.size(); i++) {
 			BookmarkCategory currentCat = bc.get(i);
 			sfs.put(BookmarkCategory.NAME + i, currentCat.getSimpleFieldSet());
 		}
@@ -471,7 +475,7 @@ public class BookmarkManager implements RequestClient {
 
 
 		List<BookmarkItem> bi = cat.getItems();
-		for(int i = 0; i < bi.size(); i++)
+		for (int i = 0; i < bi.size(); i++)
 			sfs.put(BookmarkItem.NAME + i, bi.get(i).getSimpleFieldSet());
 		sfs.put(BookmarkItem.NAME, bi.size());
 

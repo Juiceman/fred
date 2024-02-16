@@ -11,11 +11,12 @@ import freenet.node.RequestStarter;
  * Interface implemented by USKRetriever clients.
  */
 public interface USKRetrieverCallback {
-	
+
 	/**
 	 * Called when a new edition is found and downloaded.
+	 *
 	 * @param edition The USK edition number.
-	 * @param data The retrieved data.
+	 * @param data    The retrieved data.
 	 */
 	void onFound(USK origUSK, long edition, FetchResult data);
 
@@ -27,7 +28,7 @@ public interface USKRetrieverCallback {
 
 	/**
 	 * Priority at which the polling should run when starting, or immediately after making some progress.
-	 *  You have to return one of the constants from {@link RequestStarter}.
+	 * You have to return one of the constants from {@link RequestStarter}.
 	 */
 	short getPollingPriorityProgress();
 

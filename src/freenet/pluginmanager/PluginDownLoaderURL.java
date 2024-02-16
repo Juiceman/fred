@@ -25,9 +25,9 @@ public class PluginDownLoaderURL extends PluginDownLoader<URL> {
 			// Maybe it's a file?
 			// If we've reached this point then it doesn't exist.
 			File[] roots = File.listRoots();
-			for(File f : roots) {
-				if(source.startsWith(f.getName()) && !new File(source).exists()) {
-					throw new PluginNotFoundException("File not found: "+source);
+			for (File f : roots) {
+				if (source.startsWith(f.getName()) && !new File(source).exists()) {
+					throw new PluginNotFoundException("File not found: " + source);
 				}
 			}
 
@@ -59,43 +59,36 @@ public class PluginDownLoaderURL extends PluginDownLoader<URL> {
 		return null;
 	}
 
-	static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException
-	{
+	static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
 		int redirects = 0;
 		InputStream in = null;
-		do
-		{
-			if (c instanceof HttpURLConnection)
-			{
+		do {
+			if (c instanceof HttpURLConnection) {
 				((HttpURLConnection) c).setInstanceFollowRedirects(false);
 			}
 			// We want to open the input stream before getting headers
 			// because getHeaderField() et al swallow IOExceptions.
 			in = c.getInputStream();
 			redir = false;
-			if (c instanceof HttpURLConnection)
-			{
+			if (c instanceof HttpURLConnection) {
 				HttpURLConnection http = (HttpURLConnection) c;
 				int stat = http.getResponseCode();
 				if (stat >= 300 && stat <= 307 && stat != 306 &&
-						stat != HttpURLConnection.HTTP_NOT_MODIFIED)
-				{
+						stat != HttpURLConnection.HTTP_NOT_MODIFIED) {
 					URL base = http.getURL();
 					String loc = http.getHeaderField("Location");
 					URL target = null;
-					if (loc != null)
-					{
+					if (loc != null) {
 						target = new URL(base, loc);
 					}
 					http.disconnect();
 					// Redirection should be allowed only for HTTP and HTTPS
 					// and should be limited to 5 redirections at most.
 					if (target == null || !(target.getProtocol().equals("http")
-								|| target.getProtocol().equals("https")
-								|| target.getProtocol().equals("ftp"))
-							|| redirects >= 5)
-					{
+							|| target.getProtocol().equals("https")
+							|| target.getProtocol().equals("ftp"))
+							|| redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
 					redir = true;

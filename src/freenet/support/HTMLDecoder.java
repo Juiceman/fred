@@ -4,18 +4,19 @@
 package freenet.support;
 
 //import java.util.HashMap;
+
 import java.util.Map;
 
 /**
  * Description: Utility for converting character references e.g.: &lt; &gt;
  * &quot; &#229; &#1048; &#x6C34;
- * 
+ *
  * @author Yves Lempereur (avian)
  */
 public class HTMLDecoder {
 
 	static Map<String, Character> charTable = HTMLEntities.decodeMap;
-	
+
 	public static String decode(String s) {
 		String t;
 		Character ch;
@@ -42,16 +43,16 @@ public class HTMLDecoder {
 											if (!isHexDigit(d)) {
 												if (d == ';') {
 													t =
-														s.substring(
-															curPos + 2,
-															tmpPos - 1);
+															s.substring(
+																	curPos + 2,
+																	tmpPos - 1);
 													try {
 														i =
-															Integer.parseInt(
-																t,
-																16);
+																Integer.parseInt(
+																		t,
+																		16);
 														if ((i >= 0)
-															&& (i < 65536)) {
+																&& (i < 65536)) {
 															c = (char) i;
 															curPos = tmpPos;
 														}
@@ -69,9 +70,9 @@ public class HTMLDecoder {
 									if (!isDigit(d)) {
 										if (d == ';') {
 											t =
-												s.substring(
-													curPos + 1,
-													tmpPos - 1);
+													s.substring(
+															curPos + 1,
+															tmpPos - 1);
 											try {
 												i = Integer.parseInt(t);
 												if ((i >= 0) && (i < 65536)) {
@@ -138,7 +139,7 @@ public class HTMLDecoder {
 			if (isWhitespace(c)) {
 				while ((curPos < maxPos) && isWhitespace(s.charAt(curPos))) {
 					curPos++;
-                }
+				}
 				c = '\u0020';
 			}
 			sb.append(c);
@@ -148,19 +149,19 @@ public class HTMLDecoder {
 
 	// HTML is very particular about what constitutes white space.
 	public static boolean isWhitespace(char ch) {
-		return 
-			//space
-		    (ch == '\u0020')
-			//Mac newline
-		    || (ch == '\r')
-		    //Unix newline
-			|| (ch == '\n')		
-			//tab
-			|| (ch == '\u0009')
-			//Control
-			|| (ch == '\u000c')
-			//zero width space
-			|| (ch == '\u200b');
+		return
+				//space
+				(ch == '\u0020')
+						//Mac newline
+						|| (ch == '\r')
+						//Unix newline
+						|| (ch == '\n')
+						//tab
+						|| (ch == '\u0009')
+						//Control
+						|| (ch == '\u000c')
+						//zero width space
+						|| (ch == '\u200b');
 	}
 
 }

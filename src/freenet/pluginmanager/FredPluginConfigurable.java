@@ -13,15 +13,15 @@ import freenet.config.SubConfig;
  * configuration. The plugin must implement the @link FredPluginL10n
  * interface, to allow translation of the config parameter
  * descriptions.
- *
+ * <p>
  * The l10n key for the menu label is
  * "ConfigToadlet.full.package.Classname.label". The key for the menu
  * tooltip is "ConfigToadlet.full.package.Classname.tooltip".
- *
+ * <p>
  * The parameters are stored in an unencrypted plaintext file in the
  * node's configuration directory using the filename
  * plugin-full.package.Classname.ini.
- *
+ * <p>
  * Plugins may force a write of the configuration file by calling
  * pluginRespirator.storeConfig(), but this is only necessary if the
  * plugin modifes a parameter behind the user's back.

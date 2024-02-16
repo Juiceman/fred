@@ -10,10 +10,10 @@ import freenet.support.SimpleFieldSet;
 public class RemovePeer extends FCPMessage {
 
 	static final String NAME = "RemovePeer";
-	
+
 	final SimpleFieldSet fs;
 	final String identifier;
-	
+
 	public RemovePeer(SimpleFieldSet fs) {
 		this.fs = fs;
 		identifier = fs.get("Identifier");
@@ -32,15 +32,15 @@ public class RemovePeer extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		if(!handler.hasFullAccess()) {
+		if (!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, NAME + " requires full access", identifier, false);
 		}
 		String nodeIdentifier = fs.get("NodeIdentifier");
-		if( nodeIdentifier == null ) {
+		if (nodeIdentifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NodeIdentifier field missing", identifier, false);
 		}
 		PeerNode pn = node.getPeerNode(nodeIdentifier);
-		if(pn == null) {
+		if (pn == null) {
 			FCPMessage msg = new UnknownNodeIdentifierMessage(nodeIdentifier, identifier);
 			handler.send(msg);
 			return;

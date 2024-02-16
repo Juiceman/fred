@@ -10,7 +10,7 @@ public class IdentifierCollisionMessage extends FCPMessage {
 
 	final String identifier;
 	final boolean global;
-	
+
 	public IdentifierCollisionMessage(String id, boolean global) {
 		this.identifier = id;
 		this.global = global;

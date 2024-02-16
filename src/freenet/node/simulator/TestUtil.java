@@ -15,7 +15,7 @@ public class TestUtil {
 			int opennetPeers = node.peers.countValidPeers();
 			int opennetConns = node.peers.countConnectedOpennetPeers();
 			System.err.println("" + seconds + " : seeds: " + seeds + ", connected: " + seedConns + " opennet: peers: "
-			        + opennetPeers + ", connected: " + opennetConns);
+					+ opennetPeers + ", connected: " + opennetConns);
 			seconds++;
 			if (opennetConns >= targetPeers) {
 				success = true;

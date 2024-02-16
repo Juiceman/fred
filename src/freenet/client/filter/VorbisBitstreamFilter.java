@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import freenet.support.Logger.LogLevel;
 import freenet.support.Logger;
 
-/**An Ogg bitstream parser for the Ogg Vorbis codec
+/**
+ * An Ogg bitstream parser for the Ogg Vorbis codec
+ *
  * @author sajack
  */
 public class VorbisBitstreamFilter extends OggBitstreamFilter {
@@ -24,11 +26,11 @@ public class VorbisBitstreamFilter extends OggBitstreamFilter {
 	@Override
 	OggPage parse(OggPage page) throws IOException {
 		page = super.parse(page);
-		if(!isValidStream) return null;
+		if (!isValidStream) return null;
 		ArrayList<CodecPacket> parsedPackets = new ArrayList<CodecPacket>();
-		for(CodecPacket packet : page.asPackets()) {
+		for (CodecPacket packet : page.asPackets()) {
 			packet = parser.parse(packet);
-			if(packet != null) parsedPackets.add(packet);
+			if (packet != null) parsedPackets.add(packet);
 		}
 		return new OggPage(page, parsedPackets);
 	}

@@ -7,13 +7,13 @@ import freenet.node.useralerts.UserAlertManager;
 import freenet.support.Ticker;
 
 public class ProxyFreenetStore<T extends StorableBlock> implements FreenetStore<T> {
-	
+
 	protected final FreenetStore<T> backDatastore;
 
 	public ProxyFreenetStore(FreenetStore<T> backDatastore) {
 		this.backDatastore = backDatastore;
 	}
-	
+
 	@Override
 	public long getBloomFalsePositive() {
 		return backDatastore.getBloomFalsePositive();
@@ -64,7 +64,7 @@ public class ProxyFreenetStore<T extends StorableBlock> implements FreenetStore<
 	public void setUserAlertManager(UserAlertManager userAlertManager) {
 		this.backDatastore.setUserAlertManager(userAlertManager);
 	}
-	
+
 	@Override
 	public FreenetStore<T> getUnderlyingStore() {
 		return this.backDatastore;
@@ -72,14 +72,14 @@ public class ProxyFreenetStore<T extends StorableBlock> implements FreenetStore<
 
 	@Override
 	public T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote,
-			boolean canReadClientCache, boolean canReadSlashdotCache,
-			boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+				   boolean canReadClientCache, boolean canReadSlashdotCache,
+				   boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
 		return backDatastore.fetch(routingKey, fullKey, dontPromote, canReadClientCache, canReadSlashdotCache, ignoreOldBlocks, meta);
 	}
 
 	@Override
 	public void put(T block, byte[] data, byte[] header, boolean overwrite,
-			boolean oldBlock) throws IOException, KeyCollisionException {
+					boolean oldBlock) throws IOException, KeyCollisionException {
 		backDatastore.put(block, data, header, overwrite, oldBlock);
 	}
 

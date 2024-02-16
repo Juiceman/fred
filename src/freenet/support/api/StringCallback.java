@@ -5,7 +5,9 @@ package freenet.support.api;
 
 import freenet.config.ConfigCallback;
 
-/** Callback (getter/setter) for a string config variable */
+/**
+ * Callback (getter/setter) for a string config variable
+ */
 public abstract class StringCallback extends ConfigCallback<String> {
 
 }

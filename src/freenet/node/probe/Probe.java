@@ -32,7 +32,7 @@ import java.util.TimerTask;
 
 /**
  * Handles starting, routing, and responding to Metropolis-Hastings corrected probes.
- *
+ * <p>
  * Possible future additions to these probes' results include:
  * <ul>
  * <li>Starting a regular request for a key.</li>
@@ -48,9 +48,9 @@ public class Probe implements ByteCounter {
 	private static volatile boolean logWARNING;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logWARNING = Logger.shouldLog(Logger.LogLevel.WARNING, this);
 				logMINOR = Logger.shouldLog(Logger.LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(Logger.LogLevel.DEBUG, this);
@@ -135,6 +135,7 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * Applies multiplicative Gaussian noise of mean 1.0 and the specified sigma to the input value.
+	 *
 	 * @param input Value to apply noise to.
 	 * @param sigma Proportion change at one standard deviation.
 	 * @return Value +/- Gaussian percentage.
@@ -145,6 +146,7 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * Counts as probe request transfer.
+	 *
 	 * @param bytes Bytes received.
 	 */
 	@Override
@@ -154,6 +156,7 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * Counts as probe request transfer.
+	 *
 	 * @param bytes Bytes received.
 	 */
 	@Override
@@ -163,10 +166,12 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * No payload in probes.
+	 *
 	 * @param bytes Ignored.
 	 */
 	@Override
-	public void sentPayload(int bytes) {}
+	public void sentPayload(int bytes) {
+	}
 
 	public Probe(final Node node) {
 		this.node = node;
@@ -177,110 +182,110 @@ public class Probe implements ByteCounter {
 		final SubConfig nodeConfig = node.config.get("node");
 
 		nodeConfig.register("probeBandwidth", true, sortOrder++, true, true, "Node.probeBandwidthShort",
-			"Node.probeBandwidthLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondBandwidth;
-			}
+				"Node.probeBandwidthLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondBandwidth;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondBandwidth = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondBandwidth = val;
+					}
+				});
 		respondBandwidth = nodeConfig.getBoolean("probeBandwidth");
 		nodeConfig.register("probeBuild", true, sortOrder++, true, true, "Node.probeBuildShort",
-			"Node.probeBuildLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondBuild;
-			}
+				"Node.probeBuildLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondBuild;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondBuild = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondBuild = val;
+					}
+				});
 		respondBuild = nodeConfig.getBoolean("probeBuild");
 		nodeConfig.register("probeIdentifier", true, sortOrder++, true, true,
-			"Node.probeRespondIdentifierShort", "Node.probeRespondIdentifierLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondIdentifier;
-			}
+				"Node.probeRespondIdentifierShort", "Node.probeRespondIdentifierLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondIdentifier;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondIdentifier = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondIdentifier = val;
+					}
+				});
 		respondIdentifier = nodeConfig.getBoolean("probeIdentifier");
 		nodeConfig.register("probeLinkLengths", true, sortOrder++, true, true, "Node.probeLinkLengthsShort",
-			"Node.probeLinkLengthsLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondLinkLengths;
-			}
+				"Node.probeLinkLengthsLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondLinkLengths;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondLinkLengths = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondLinkLengths = val;
+					}
+				});
 		respondLinkLengths = nodeConfig.getBoolean("probeLinkLengths");
 		nodeConfig.register("probeLocation", true, sortOrder++, true, true, "Node.probeLocationShort",
-			"Node.probeLocationLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondLocation;
-			}
+				"Node.probeLocationLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondLocation;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondLocation = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondLocation = val;
+					}
+				});
 		respondLocation = nodeConfig.getBoolean("probeLocation");
 		nodeConfig.register("probeStoreSize", true, sortOrder++, true, true, "Node.probeStoreSizeShort",
-			"Node.probeStoreSizeLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondStoreSize;
-			}
+				"Node.probeStoreSizeLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondStoreSize;
+					}
 
-			@Override
-			public void set(Boolean val) {
-				respondStoreSize = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) {
+						respondStoreSize = val;
+					}
+				});
 		respondStoreSize = nodeConfig.getBoolean("probeStoreSize");
 		nodeConfig.register("probeUptime", true, sortOrder++, true, true, "Node.probeUptimeShort",
-			"Node.probeUptimeLong", new BooleanCallback() {
-			@Override
-			public Boolean get() {
-				return respondUptime;
-			}
+				"Node.probeUptimeLong", new BooleanCallback() {
+					@Override
+					public Boolean get() {
+						return respondUptime;
+					}
 
-			@Override
-			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-				respondUptime = val;
-			}
-		});
+					@Override
+					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+						respondUptime = val;
+					}
+				});
 		respondUptime = nodeConfig.getBoolean("probeUptime");
 		nodeConfig.register("probeRejectStats", true, sortOrder++, true, true, "Node.probeRejectStatsShort",
 				"Node.probeRejectStatsLong", new BooleanCallback() {
-				@Override
-				public Boolean get() {
-					return respondRejectStats;
-				}
+					@Override
+					public Boolean get() {
+						return respondRejectStats;
+					}
 
-				@Override
-				public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-					respondRejectStats = val;
-				}
-			});
-			respondRejectStats = nodeConfig.getBoolean("probeRejectStats");
-			
+					@Override
+					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+						respondRejectStats = val;
+					}
+				});
+		respondRejectStats = nodeConfig.getBoolean("probeRejectStats");
+
 		nodeConfig.register("probeOverallBulkOutputCapacityUsage", true, sortOrder++, true, true, "Node.respondOverallBulkOutputCapacityUsage",
 				"Node.respondOverallBulkOutputCapacityUsageLong", new BooleanCallback() {
 
@@ -295,24 +300,24 @@ public class Probe implements ByteCounter {
 							NodeNeedRestartException {
 						respondOverallBulkOutputCapacityUsage = val;
 					}
-			
-		});
+
+				});
 		respondOverallBulkOutputCapacityUsage = nodeConfig.getBoolean("probeOverallBulkOutputCapacityUsage");
 
 		nodeConfig.register("identifier", -1, sortOrder++, true, true, "Node.probeIdentifierShort",
-			"Node.probeIdentifierLong", new LongCallback() {
-			@Override
-			public Long get() {
-				return probeIdentifier;
-			}
+				"Node.probeIdentifierLong", new LongCallback() {
+					@Override
+					public Long get() {
+						return probeIdentifier;
+					}
 
-			@Override
-			public void set(Long val) {
-				probeIdentifier = val;
-				//-1 is reserved for picking a random value; don't pick it randomly.
-				while(probeIdentifier == -1) probeIdentifier = node.random.nextLong();
-			}
-		}, false);
+					@Override
+					public void set(Long val) {
+						probeIdentifier = val;
+						//-1 is reserved for picking a random value; don't pick it randomly.
+						while (probeIdentifier == -1) probeIdentifier = node.random.nextLong();
+					}
+				}, false);
 		probeIdentifier = nodeConfig.getLong("identifier");
 
 		/*
@@ -320,7 +325,7 @@ public class Probe implements ByteCounter {
 		 * an identifier of -1.
 		 */
 		try {
-			if(probeIdentifier == -1) {
+			if (probeIdentifier == -1) {
 				nodeConfig.getOption("identifier").setValue("-1");
 				//TODO: Store config here as it has changed?
 				node.config.store();
@@ -334,7 +339,8 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * Sends an outgoing probe request.
-	 * @param htl htl for this outgoing probe: should be [1, MAX_HTL]
+	 *
+	 * @param htl      htl for this outgoing probe: should be [1, MAX_HTL]
 	 * @param listener will be called with results.
 	 * @see Listener
 	 */
@@ -365,8 +371,9 @@ public class Probe implements ByteCounter {
 
 	/**
 	 * Processes a probe request, calling the listener with any results.
-	 * @param source node from which the probe request was received. If null, it is considered to have been sent
-	 * by the local node.
+	 *
+	 * @param source   node from which the probe request was received. If null, it is considered to have been sent
+	 *                 by the local node.
 	 * @param listener listener for probe response.
 	 */
 	private void request(final Message message, final PeerNode source, final Listener listener) {
@@ -385,14 +392,14 @@ public class Probe implements ByteCounter {
 		if (htl < 1) {
 			if (logWARNING) {
 				Logger.warning(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); discarding.");
+						source.getIdentityString() + " (" + source.userToString() + "); discarding.");
 			}
 			return;
 		} else if (htl > MAX_HTL) {
 			if (logMINOR) {
 				Logger.minor(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
-				    MAX_HTL + ".");
+						source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
+						MAX_HTL + ".");
 			}
 			htl = MAX_HTL;
 		}
@@ -448,7 +455,7 @@ public class Probe implements ByteCounter {
 		htl = probabilisticDecrement(htl);
 		if (htl == 0 || !route(type, uid, htl, listener)) {
 			long wait = WAIT_MAX;
-			while (wait >= WAIT_MAX) wait = (long)(-Math.log(node.random.nextDouble()) * WAIT_BASE / Math.E);
+			while (wait >= WAIT_MAX) wait = (long) (-Math.log(node.random.nextDouble()) * WAIT_BASE / Math.E);
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
@@ -461,6 +468,7 @@ public class Probe implements ByteCounter {
 	/**
 	 * Attempts to route the message to a peer. If the maximum number of send attempts is exceeded, fails with the
 	 * error CANNOT_FORWARD.
+	 *
 	 * @return True if no further action needed; false if HTL decremented to zero and a local response is needed.
 	 */
 	private boolean route(final Type type, final long uid, byte htl, final Listener listener) {
@@ -477,7 +485,7 @@ public class Probe implements ByteCounter {
 			peers = node.getConnectedPeers();
 			degree = peers.length;
 			//Can't handle a probe request if not connected to peers.
-			if (degree == 0 ) {
+			if (degree == 0) {
 				if (logMINOR) {
 					Logger.minor(Probe.class, "Aborting probe request: no connections.");
 				}
@@ -500,7 +508,7 @@ public class Probe implements ByteCounter {
 				 * regardless of its degree.
 				 */
 				if (candidateDegree == 0) acceptProbability = 1.0f;
-				else acceptProbability = (float)degree / candidateDegree;
+				else acceptProbability = (float) degree / candidateDegree;
 
 				if (logDEBUG) Logger.debug(Probe.class, "acceptProbability is " + acceptProbability);
 				if (node.random.nextFloat() < acceptProbability) {
@@ -514,10 +522,12 @@ public class Probe implements ByteCounter {
 						candidate.sendAsync(message, null, this);
 						return true;
 					} catch (NotConnectedException e) {
-						if (logMINOR) Logger.minor(Probe.class, "Peer became disconnected between check and send attempt.", e);
+						if (logMINOR)
+							Logger.minor(Probe.class, "Peer became disconnected between check and send attempt.", e);
 						// Peer no longer connected - sending was not successful. Try again.
 					} catch (DisconnectedException e) {
-						if (logMINOR) Logger.minor(Probe.class, "Peer became disconnected while attempting to add filter.", e);
+						if (logMINOR)
+							Logger.minor(Probe.class, "Peer became disconnected while attempting to add filter.", e);
 						// Peer no longer connected - cannot send. Try again.
 					}
 				} else {
@@ -544,10 +554,10 @@ public class Probe implements ByteCounter {
 	}
 
 	/**
-	 * @param type probe result type requested.
+	 * @param type      probe result type requested.
 	 * @param candidate node to filter for response from.
-	 * @param uid probe request uid, also to be used in any result.
-	 * @param htl current probe HTL; used to calculate timeout.
+	 * @param uid       probe request uid, also to be used in any result.
+	 * @param htl       current probe HTL; used to calculate timeout.
 	 * @return filter for the requested result type, probe error, and probe refusal.
 	 */
 	private static MessageFilter createResponseFilter(final Type type, final PeerNode candidate, final long uid, final byte htl) {
@@ -555,22 +565,41 @@ public class Probe implements ByteCounter {
 		final MessageFilter filter = createFilter(candidate, uid, timeout);
 
 		switch (type) {
-			case BANDWIDTH: filter.setType(DMT.ProbeBandwidth); break;
-			case BUILD: filter.setType(DMT.ProbeBuild); break;
-			case IDENTIFIER: filter.setType(DMT.ProbeIdentifier); break;
-			case LINK_LENGTHS: filter.setType(DMT.ProbeLinkLengths); break;
-			case LOCATION: filter.setType(DMT.ProbeLocation); break;
-			case STORE_SIZE: filter.setType(DMT.ProbeStoreSize); break;
+			case BANDWIDTH:
+				filter.setType(DMT.ProbeBandwidth);
+				break;
+			case BUILD:
+				filter.setType(DMT.ProbeBuild);
+				break;
+			case IDENTIFIER:
+				filter.setType(DMT.ProbeIdentifier);
+				break;
+			case LINK_LENGTHS:
+				filter.setType(DMT.ProbeLinkLengths);
+				break;
+			case LOCATION:
+				filter.setType(DMT.ProbeLocation);
+				break;
+			case STORE_SIZE:
+				filter.setType(DMT.ProbeStoreSize);
+				break;
 			case UPTIME_48H:
-			case UPTIME_7D: filter.setType(DMT.ProbeUptime); break;
-			case REJECT_STATS: filter.setType(DMT.ProbeRejectStats); break;
-			case OVERALL_BULK_OUTPUT_CAPACITY_USAGE: filter.setType(DMT.ProbeOverallBulkOutputCapacityUsage); break;
-			default: throw new UnsupportedOperationException("Missing filter for " + type.name());
+			case UPTIME_7D:
+				filter.setType(DMT.ProbeUptime);
+				break;
+			case REJECT_STATS:
+				filter.setType(DMT.ProbeRejectStats);
+				break;
+			case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
+				filter.setType(DMT.ProbeOverallBulkOutputCapacityUsage);
+				break;
+			default:
+				throw new UnsupportedOperationException("Missing filter for " + type.name());
 		}
 
 		//Refusal or an error should also be listened for so it can be relayed.
 		filter.or(createFilter(candidate, uid, timeout).setType(DMT.ProbeRefused)
-		      .or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
+				.or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
 
 		return filter;
 	}
@@ -596,121 +625,132 @@ public class Probe implements ByteCounter {
 		 * reasonable values.
 		 */
 		switch (type) {
-		case BANDWIDTH:
-			/*
-			 * 5% noise:
-			 * Reasonable output bandwidth limit is 20 KiB and people are likely to set limits in increments
-			 * of 1 KiB. 1 KiB / 20 KiB = 0.05 sigma.
-			 * 1,024 (2^10) bytes per KiB.
-			 */
-			listener.onOutputBandwidth((float)randomNoise((double)node.getOutputBandwidthLimit()/(1 << 10), 0.05));
-			break;
-		case BUILD:
-			listener.onBuild(node.nodeUpdater.getMainVersion());
-			break;
-		case IDENTIFIER:
-			/*
-			 * 5% noise:
-			 * Reasonable uptime percentage is at least ~40 hours a week, or ~20%. This uptime is
-			 * quantized so only something above a full percentage point (0.01 * 168 hours = 1.68 hours) of
-			 * change will be guaranteed (from a percentage with a decimal component close to zero) to be
-			 * reflected. 1% / 20% = 0.05 sigma.
-			 *
-			 * 7-day uptime with random noise, then quantized. Quantization is to make it very, very
-			 * difficult to get useful information out of any given result because it is included with an
-			 * identifier,
-			 */
-			long percent = Math.round(randomNoise(100*node.uptime.getUptimeWeek(), 0.05));
-			//Clamp to byte.
-			if (percent > Byte.MAX_VALUE) percent = Byte.MAX_VALUE;
-			else if (percent < Byte.MIN_VALUE) percent = Byte.MIN_VALUE;
-			listener.onIdentifier(probeIdentifier, (byte)percent);
-			break;
-		case LINK_LENGTHS:
-			PeerNode[] peers = node.getConnectedPeers();
-			float[] linkLengths = new float[peers.length];
-			int i = 0;
-			/*
-			 * 1% noise:
-			 * Link lengths are in the range [0.0, 0.5], and any change is enough to make the
-			 * match not exact between locations. Taking as an example a link length of 0.2. and with the
-			 * assumption that a change of 0.002 is enough to make it still useful for statistics but not
-			 * useful for identification, 0.002 change / 0.2 link length = 0.01 sigma.
-			 */
-			double myLoc = node.getLocation();
-			for (PeerNode peer : peers) {
-				double peerLoc = peer.getLocation();
-				if (Location.isValid(peerLoc)) {
-					linkLengths[i++] = (float)randomNoise(Location.distance(myLoc, peerLoc), 0.01);
+			case BANDWIDTH:
+				/*
+				 * 5% noise:
+				 * Reasonable output bandwidth limit is 20 KiB and people are likely to set limits in increments
+				 * of 1 KiB. 1 KiB / 20 KiB = 0.05 sigma.
+				 * 1,024 (2^10) bytes per KiB.
+				 */
+				listener.onOutputBandwidth((float) randomNoise((double) node.getOutputBandwidthLimit() / (1 << 10), 0.05));
+				break;
+			case BUILD:
+				listener.onBuild(node.nodeUpdater.getMainVersion());
+				break;
+			case IDENTIFIER:
+				/*
+				 * 5% noise:
+				 * Reasonable uptime percentage is at least ~40 hours a week, or ~20%. This uptime is
+				 * quantized so only something above a full percentage point (0.01 * 168 hours = 1.68 hours) of
+				 * change will be guaranteed (from a percentage with a decimal component close to zero) to be
+				 * reflected. 1% / 20% = 0.05 sigma.
+				 *
+				 * 7-day uptime with random noise, then quantized. Quantization is to make it very, very
+				 * difficult to get useful information out of any given result because it is included with an
+				 * identifier,
+				 */
+				long percent = Math.round(randomNoise(100 * node.uptime.getUptimeWeek(), 0.05));
+				//Clamp to byte.
+				if (percent > Byte.MAX_VALUE) percent = Byte.MAX_VALUE;
+				else if (percent < Byte.MIN_VALUE) percent = Byte.MIN_VALUE;
+				listener.onIdentifier(probeIdentifier, (byte) percent);
+				break;
+			case LINK_LENGTHS:
+				PeerNode[] peers = node.getConnectedPeers();
+				float[] linkLengths = new float[peers.length];
+				int i = 0;
+				/*
+				 * 1% noise:
+				 * Link lengths are in the range [0.0, 0.5], and any change is enough to make the
+				 * match not exact between locations. Taking as an example a link length of 0.2. and with the
+				 * assumption that a change of 0.002 is enough to make it still useful for statistics but not
+				 * useful for identification, 0.002 change / 0.2 link length = 0.01 sigma.
+				 */
+				double myLoc = node.getLocation();
+				for (PeerNode peer : peers) {
+					double peerLoc = peer.getLocation();
+					if (Location.isValid(peerLoc)) {
+						linkLengths[i++] = (float) randomNoise(Location.distance(myLoc, peerLoc), 0.01);
+					}
 				}
-			}
-			linkLengths = java.util.Arrays.copyOf(linkLengths, i);
-			java.util.Arrays.sort(linkLengths);
-			listener.onLinkLengths(linkLengths);
-			break;
-		case LOCATION:
-			listener.onLocation((float)node.getLocation());
-			break;
-		case STORE_SIZE:
-			/*
-			 * 5% noise:
-			 * Reasonable datastore size is 20 GiB, and size is likely set in, at most, increments of 1 GiB.
-			 * 1 GiB / 20 GiB = 0.05 sigma.
-			 * 1,073,741,824 bytes (2^30) per GiB.
-			 */
-			listener.onStoreSize((float)randomNoise((double)node.getStoreSize()/(1 << 30), 0.05));
-			break;
-		case UPTIME_48H:
-			/*
-			 * 8% noise:
-			 * Continuing with the assumption that reasonable weekly uptime is around 40 hours, this allows
-			 * for 6 hours per day, 12 hours per 48 hours, or 25%. A half-hour seems a sufficient amount of
-			 * ambiguity, so 0.5 hours / 48 hours ~= 1%, and 1% / 25% = 0.04 sigma.
-			 */
-			listener.onUptime((float)randomNoise(100*node.uptime.getUptime(), 0.04));
-			break;
-		case UPTIME_7D:
-			/*
-			 * 2.4% noise:
-			 * As a 168-hour uptime covers a longer period 1 hour of ambiguity seems sufficient.
-			 * 1 hour / 168 hours ~= 0.6%, and 0.6% / 20% = 0.03 sigma.
-			 */
-			listener.onUptime((float)randomNoise(100*node.uptime.getUptimeWeek(), 0.03));
-			break;
-		case REJECT_STATS:
-			byte[] stats = node.nodeStats.getNoisyRejectStats();
-			listener.onRejectStats(stats);
-			break;
-		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
-			byte bandwidthClass = 
-				DMT.bandwidthClassForCapacityUsage(node.getOutputBandwidthLimit());
-			listener.onOverallBulkOutputCapacity(bandwidthClass, 
-					(float)randomNoise(node.nodeStats.getBandwidthLiabilityUsage(), 0.1));
-			break;
-		default:
-			throw new UnsupportedOperationException("Missing response for " + type.name());
+				linkLengths = java.util.Arrays.copyOf(linkLengths, i);
+				java.util.Arrays.sort(linkLengths);
+				listener.onLinkLengths(linkLengths);
+				break;
+			case LOCATION:
+				listener.onLocation((float) node.getLocation());
+				break;
+			case STORE_SIZE:
+				/*
+				 * 5% noise:
+				 * Reasonable datastore size is 20 GiB, and size is likely set in, at most, increments of 1 GiB.
+				 * 1 GiB / 20 GiB = 0.05 sigma.
+				 * 1,073,741,824 bytes (2^30) per GiB.
+				 */
+				listener.onStoreSize((float) randomNoise((double) node.getStoreSize() / (1 << 30), 0.05));
+				break;
+			case UPTIME_48H:
+				/*
+				 * 8% noise:
+				 * Continuing with the assumption that reasonable weekly uptime is around 40 hours, this allows
+				 * for 6 hours per day, 12 hours per 48 hours, or 25%. A half-hour seems a sufficient amount of
+				 * ambiguity, so 0.5 hours / 48 hours ~= 1%, and 1% / 25% = 0.04 sigma.
+				 */
+				listener.onUptime((float) randomNoise(100 * node.uptime.getUptime(), 0.04));
+				break;
+			case UPTIME_7D:
+				/*
+				 * 2.4% noise:
+				 * As a 168-hour uptime covers a longer period 1 hour of ambiguity seems sufficient.
+				 * 1 hour / 168 hours ~= 0.6%, and 0.6% / 20% = 0.03 sigma.
+				 */
+				listener.onUptime((float) randomNoise(100 * node.uptime.getUptimeWeek(), 0.03));
+				break;
+			case REJECT_STATS:
+				byte[] stats = node.nodeStats.getNoisyRejectStats();
+				listener.onRejectStats(stats);
+				break;
+			case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
+				byte bandwidthClass =
+						DMT.bandwidthClassForCapacityUsage(node.getOutputBandwidthLimit());
+				listener.onOverallBulkOutputCapacity(bandwidthClass,
+						(float) randomNoise(node.nodeStats.getBandwidthLiabilityUsage(), 0.1));
+				break;
+			default:
+				throw new UnsupportedOperationException("Missing response for " + type.name());
 		}
 	}
 
 	private boolean respondTo(Type type) {
-		switch (type){
-		case BANDWIDTH: return respondBandwidth;
-		case BUILD: return respondBuild;
-		case IDENTIFIER: return respondIdentifier;
-		case LINK_LENGTHS: return respondLinkLengths;
-		case LOCATION: return respondLocation;
-		case STORE_SIZE: return respondStoreSize;
-		case UPTIME_48H:
-		case UPTIME_7D: return respondUptime;
-		case REJECT_STATS: return respondRejectStats;
-		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE: return respondOverallBulkOutputCapacityUsage;
-		default: throw new UnsupportedOperationException("Missing permissions check for " + type.name());
+		switch (type) {
+			case BANDWIDTH:
+				return respondBandwidth;
+			case BUILD:
+				return respondBuild;
+			case IDENTIFIER:
+				return respondIdentifier;
+			case LINK_LENGTHS:
+				return respondLinkLengths;
+			case LOCATION:
+				return respondLocation;
+			case STORE_SIZE:
+				return respondStoreSize;
+			case UPTIME_48H:
+			case UPTIME_7D:
+				return respondUptime;
+			case REJECT_STATS:
+				return respondRejectStats;
+			case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
+				return respondOverallBulkOutputCapacityUsage;
+			default:
+				throw new UnsupportedOperationException("Missing permissions check for " + type.name());
 		}
 	}
 
 	/**
 	 * Decrements 20% of the time at HTL 1; otherwise always. This is to protect the responding node, whereas the
 	 * anonymity of the node which initiated the request is not a concern.
+	 *
 	 * @param htl current HTL
 	 * @return new HTL
 	 */
@@ -720,7 +760,7 @@ public class Probe implements ByteCounter {
 			if (node.random.nextFloat() < DECREMENT_PROBABILITY) return 0;
 			return 1;
 		}
-		return (byte)(htl - 1);
+		return (byte) (htl - 1);
 	}
 
 	/**
@@ -745,11 +785,12 @@ public class Probe implements ByteCounter {
 
 		/**
 		 * Parses provided message and calls appropriate Probe.Listener method for the type of result.
+		 *
 		 * @param message Probe result.
 		 */
 		@Override
 		public void onMatched(Message message) {
-			if(logDEBUG) Logger.debug(Probe.class, "Matched " + message.getSpec().getName());
+			if (logDEBUG) Logger.debug(Probe.class, "Matched " + message.getSpec().getName());
 			if (message.getSpec().equals(DMT.ProbeBandwidth)) {
 				listener.onOutputBandwidth(message.getFloat(DMT.OUTPUT_BANDWIDTH_UPPER_LIMIT));
 			} else if (message.getSpec().equals(DMT.ProbeBuild)) {
@@ -778,13 +819,14 @@ public class Probe implements ByteCounter {
 				}
 			} else if (message.getSpec().equals(DMT.ProbeRefused)) {
 				listener.onRefused();
-			}  else {
+			} else {
 				throw new UnsupportedOperationException("Missing handling for " + message.getSpec().getName());
 			}
 		}
 
 		@Override
-		public void onRestarted(PeerContext context) {}
+		public void onRestarted(PeerContext context) {
+		}
 
 		@Override
 		public void onTimeout() {
@@ -824,7 +866,7 @@ public class Probe implements ByteCounter {
 				return;
 			}
 			if (logDEBUG) Logger.debug(Probe.class, "Relaying " + message.getSpec().getName() + " back" +
-			                                          " to " + source.userToString());
+					" to " + source.userToString());
 			try {
 				source.sendAsync(message, null, Probe.this);
 			} catch (NotConnectedException e) {
@@ -879,11 +921,11 @@ public class Probe implements ByteCounter {
 
 		@Override
 		public void onRejectStats(byte[] stats) {
-			if(stats.length < 4) {
-				Logger.warning(this, "Unknown length for stats: "+stats.length);
+			if (stats.length < 4) {
+				Logger.warning(this, "Unknown length for stats: " + stats.length);
 				onError(Error.UNKNOWN, Error.UNKNOWN.code, true);
 			} else {
-				if(stats.length > 4)
+				if (stats.length > 4)
 					stats = Arrays.copyOf(stats, 4);
 				send(DMT.createProbeRejectStats(uid, stats));
 			}
@@ -894,7 +936,7 @@ public class Probe implements ByteCounter {
 				byte bandwidthClassForCapacityUsage, float capacityUsage) {
 			send(DMT.createProbeOverallBulkOutputCapacityUsage(uid, bandwidthClassForCapacityUsage, capacityUsage));
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
 }

@@ -24,13 +24,13 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 
 	@Override
 	protected void drawNameColumn(HTMLNode peerRow,
-			PeerNodeStatus peerNodeStatus, boolean advanced) {
+								  PeerNodeStatus peerNodeStatus, boolean advanced) {
 		// Do nothing - no names on opennet
 	}
 
 	@Override
 	protected void drawPrivateNoteColumn(HTMLNode peerRow,
-			PeerNodeStatus peerNodeStatus, boolean fProxyJavascriptEnabled) {
+										 PeerNodeStatus peerNodeStatus, boolean fProxyJavascriptEnabled) {
 		// Do nothing - no private notes either (no such thing as negative trust in cyberspace)
 	}
 
@@ -62,7 +62,7 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 	@Override
 	protected String getPageTitle(String titleCountString) {
 		return NodeL10n.getBase().getString("OpennetConnectionsToadlet.fullTitle",
-				new String[] {"counts"}, new String[] {titleCountString} );
+				new String[]{"counts"}, new String[]{titleCountString});
 	}
 
 	@Override
@@ -107,19 +107,19 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 		OpennetComparator(String sortBy, boolean reversed) {
 			super(sortBy, reversed);
 		}
-	
+
 		@Override
 		protected int customCompare(PeerNodeStatus firstNode, PeerNodeStatus secondNode, String sortBy) {
-			if(sortBy.equals("successTime")) {
-				long t1 = ((OpennetPeerNodeStatus)firstNode).timeLastSuccess;
-				long t2 = ((OpennetPeerNodeStatus)secondNode).timeLastSuccess;
-				if(t1 > t2) return reversed ? 1 : -1;
-				else if(t2 > t1) return reversed ? -1 : 1;
+			if (sortBy.equals("successTime")) {
+				long t1 = ((OpennetPeerNodeStatus) firstNode).timeLastSuccess;
+				long t2 = ((OpennetPeerNodeStatus) secondNode).timeLastSuccess;
+				if (t1 > t2) return reversed ? 1 : -1;
+				else if (t2 > t1) return reversed ? -1 : 1;
 			}
 			return super.customCompare(firstNode, secondNode, sortBy);
 		}
 	}
-	
+
 	@Override
 	protected Comparator<PeerNodeStatus> comparator(String sortBy, boolean reversed) {
 		return new OpennetComparator(sortBy, reversed);
@@ -127,8 +127,8 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 
 	@Override
 	SimpleColumn[] endColumnHeaders(boolean advancedMode) {
-		if(!advancedMode) return null;
-		return new SimpleColumn[] { 
+		if (!advancedMode) return null;
+		return new SimpleColumn[]{
 				new SimpleColumn() {
 
 					@Override
@@ -137,14 +137,17 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 						long tLastSuccess = status.timeLastSuccess;
 						peerRow.addChild("td", "class", "peer-last-success", tLastSuccess > 0 ? TimeUtil.formatTime(System.currentTimeMillis() - tLastSuccess) : "NEVER");
 					}
+
 					@Override
 					public String getExplanationKey() {
 						return "OpennetConnectionsToadlet.successTime";
 					}
+
 					@Override
 					public String getSortString() {
 						return "successTime";
 					}
+
 					@Override
 					public String getTitleKey() {
 						return "OpennetConnectionsToadlet.successTimeTitle";
@@ -158,7 +161,7 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 	}
 
 	@Override
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, 	RedirectException {
+	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
 		super.handleMethodGET(uri, request, ctx);
 	}
 
@@ -167,5 +170,5 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 			throws ToadletContextClosedException, IOException, RedirectException, ConfigException {
 		super.handleMethodPOST(uri, request, ctx);
 	}
-		
+
 }

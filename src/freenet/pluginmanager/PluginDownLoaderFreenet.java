@@ -50,7 +50,7 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 	@Override
 	InputStream getInputStream(final PluginProgress progress) throws IOException, PluginNotFoundException {
 		FreenetURI uri = getSource();
-		System.out.println("Downloading plugin from Freenet: "+uri);
+		System.out.println("Downloading plugin from Freenet: " + uri);
 		while (true) {
 			try {
 				progress.setDownloading();
@@ -58,17 +58,17 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 
 					@Override
 					public void receive(ClientEvent ce, ClientContext context) {
-						if(ce instanceof SplitfileProgressEvent) {
+						if (ce instanceof SplitfileProgressEvent) {
 							SplitfileProgressEvent split = (SplitfileProgressEvent) ce;
-							if(split.finalizedTotal) {
+							if (split.finalizedTotal) {
 								progress.setDownloadProgress(split.minSuccessfulBlocks, split.succeedBlocks, split.totalBlocks, split.failedBlocks, split.fatallyFailedBlocks, split.finalizedTotal);
 							}
 						}
 					}
-					
+
 				});
 				FetchContext context = hlsc.getFetchContext();
-				if(desperate) {
+				if (desperate) {
 					context.maxNonSplitfileRetries = -1;
 					context.maxSplitfileBlockRetries = -1;
 				}
@@ -87,10 +87,10 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 					uri = e.newURI;
 					continue;
 				}
-				if(e.isFatal())
+				if (e.isFatal())
 					fatalFailure = true;
 				Logger.error(this, "error while fetching plugin: " + getSource(), e);
-				throw new PluginNotFoundException("error while fetching plugin: " + e.getMessage() + " for key "  + getSource(), e);
+				throw new PluginNotFoundException("error while fetching plugin: " + e.getMessage() + " for key " + getSource(), e);
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 
 	@Override
 	void tryCancel() {
-		if(get != null)
+		if (get != null)
 			get.cancel(node.clientCore.clientContext);
 	}
 

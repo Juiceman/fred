@@ -16,10 +16,12 @@ import freenet.support.Base64;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** A toadlet that provides the current data of pushed elements. It requires the requestId and the elementId parameters. */
+/**
+ * A toadlet that provides the current data of pushed elements. It requires the requestId and the elementId parameters.
+ */
 public class PushDataToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushDataToadlet.class);

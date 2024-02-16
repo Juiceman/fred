@@ -27,7 +27,7 @@ import freenet.support.io.FileUtil;
 
 /**
  * Push / Pull test over long period of time
- * 
+ * <p>
  * Unlike LongTermPushPullTest, this only inserts one key per day. That key
  * is then re-pulled at increasing intervals.
  */
@@ -76,8 +76,8 @@ public class LongTermPushRepullTest extends LongTermTest {
 
 			// Create one node
 			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
-			        0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
-			        12 * 1024, true, true, false, false, null);
+					0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
+					12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
 
 			// Start it
@@ -87,24 +87,24 @@ public class LongTermPushRepullTest extends LongTermTest {
 				exitCode = EXIT_FAILED_TARGET;
 				return;
 			}
-				
+
 			long t2 = System.currentTimeMillis();
 			System.out.println("SEED-TIME:" + (t2 - t1));
 			csvLine.add(String.valueOf(t2 - t1));
 
 			// Push one block only.
-			
+
 			RandomAccessBucket data = randomData(node);
 			HighLevelSimpleClient client = node.clientCore.makeClient((short) 0, false, false);
 			FreenetURI uri = new FreenetURI("KSK@" + uid + "-" + dateFormat.format(today.getTime()));
 			System.out.println("PUSHING " + uri);
-			
+
 			try {
 				InsertBlock block = new InsertBlock(data, new ClientMetadata(), uri);
 				t1 = System.currentTimeMillis();
 				client.insert(block, false, null);
 				t2 = System.currentTimeMillis();
-				
+
 				System.out.println("PUSH-TIME-" + ":" + (t2 - t1));
 				csvLine.add(String.valueOf(t2 - t1));
 			} catch (InsertException e) {
@@ -123,8 +123,8 @@ public class LongTermPushRepullTest extends LongTermTest {
 			FileUtil.writeTo(fis, new File(innerDir2, "seednodes.fref"));
 			fis.close();
 			node2 = NodeStarter.createTestNode(DARKNET_PORT2, OPENNET_PORT2, dir.getPath(), false,
-			        Node.DEFAULT_MAX_HTL, 0, random, new PooledExecutor(), 1000, 5 * 1024 * 1024, true, true, true,
-			        true, true, true, true, 12 * 1024, false, true, false, false, null);
+					Node.DEFAULT_MAX_HTL, 0, random, new PooledExecutor(), 1000, 5 * 1024 * 1024, true, true, true,
+					true, true, true, true, 12 * 1024, false, true, false, false, null);
 			node2.start(true);
 
 			t1 = System.currentTimeMillis();
@@ -154,7 +154,7 @@ public class LongTermPushRepullTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-					        && e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
 						e.printStackTrace();
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
@@ -176,24 +176,24 @@ public class LongTermPushRepullTest extends LongTermTest {
 
 			File file = new File(uid + ".csv");
 			writeToStatusLog(file, csvLine);
-			
+
 			System.exit(exitCode);
 		}
 	}
 
 	private static RandomAccessBucket randomData(Node node) throws IOException {
-	    RandomAccessBucket data = node.clientCore.tempBucketFactory.makeBucket(TEST_SIZE);
+		RandomAccessBucket data = node.clientCore.tempBucketFactory.makeBucket(TEST_SIZE);
 		OutputStream os = data.getOutputStream();
 		try {
-		byte[] buf = new byte[4096];
-		for (long written = 0; written < TEST_SIZE;) {
-			node.fastWeakRandom.nextBytes(buf);
-			int toWrite = (int) Math.min(TEST_SIZE - written, buf.length);
-			os.write(buf, 0, toWrite);
-			written += toWrite;
-		}
+			byte[] buf = new byte[4096];
+			for (long written = 0; written < TEST_SIZE; ) {
+				node.fastWeakRandom.nextBytes(buf);
+				int toWrite = (int) Math.min(TEST_SIZE - written, buf.length);
+				os.write(buf, 0, toWrite);
+				written += toWrite;
+			}
 		} finally {
-		os.close();
+			os.close();
 		}
 		return data;
 	}

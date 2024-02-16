@@ -6,12 +6,18 @@ package freenet.client.events;
 public class FinishedCompressionEvent implements ClientEvent {
 
 	static final int code = 0x09;
-	
-	/** Codec, -1 = uncompressed */
+
+	/**
+	 * Codec, -1 = uncompressed
+	 */
 	public final int codec;
-	/** Original size */
+	/**
+	 * Original size
+	 */
 	public final long originalSize;
-	/** Compressed size */
+	/**
+	 * Compressed size
+	 */
 	public final long compressedSize;
 
 	public FinishedCompressionEvent(int codec, long origSize, long compressedSize) {
@@ -22,12 +28,12 @@ public class FinishedCompressionEvent implements ClientEvent {
 
 	@Override
 	public String getDescription() {
-		return "Compressed data: codec="+codec+", origSize="+originalSize+", compressedSize="+compressedSize;
+		return "Compressed data: codec=" + codec + ", origSize=" + originalSize + ", compressedSize=" + compressedSize;
 	}
 
 	@Override
 	public int getCode() {
 		return code;
 	}
-	
+
 }

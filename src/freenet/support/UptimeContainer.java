@@ -11,17 +11,17 @@ import java.io.Serializable;
  * @author Artefact2
  */
 public class UptimeContainer implements Serializable {
-    private static final long serialVersionUID = 1L;
-    public long creationTime = 0;
+	private static final long serialVersionUID = 1L;
+	public long creationTime = 0;
 	public long totalUptime = 0;
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == null) return false;
-	if(o.getClass() == UptimeContainer.class) {
-		UptimeContainer oB = (UptimeContainer) o;
-		return (oB.creationTime == this.creationTime) &&
-			(oB.totalUptime == this.totalUptime);
+		if (o == null) return false;
+		if (o.getClass() == UptimeContainer.class) {
+			UptimeContainer oB = (UptimeContainer) o;
+			return (oB.creationTime == this.creationTime) &&
+					(oB.totalUptime == this.totalUptime);
 		} else return false;
 	}
 
@@ -33,8 +33,8 @@ public class UptimeContainer implements Serializable {
 		return hash;
 	}
 
-    public void addFrom(UptimeContainer latestUptime) {
-        this.creationTime = latestUptime.creationTime;
-        this.totalUptime += latestUptime.totalUptime;
-    }
+	public void addFrom(UptimeContainer latestUptime) {
+		this.creationTime = latestUptime.creationTime;
+		this.totalUptime += latestUptime.totalUptime;
+	}
 }

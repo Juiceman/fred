@@ -5,6 +5,7 @@ package freenet.node;
 
 /**
  * checked exception thrown by Version.getArbitraryBuildNumber()
+ *
  * @author toad
  */
 public class VersionParseException extends Exception {

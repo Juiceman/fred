@@ -21,53 +21,65 @@ import freenet.support.Base64;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 
-/** A pushed image, the progress is shown with the ImageCreatorToadlet */
+/**
+ * A pushed image, the progress is shown with the ImageCreatorToadlet
+ */
 public class ImageElement extends BaseUpdateableElement {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(ImageElement.class);
 	}
 
-	/** The tracker that the Fetcher can be acquired */
-	public FProxyFetchTracker		tracker;
-	/** The original URI */
-	public final FreenetURI			origKey;
-	/** The URI of the download this progress bar shows */
-	public FreenetURI				key;
-	/** The maxSize */
-	public long						maxSize;
-	/** The FetchListener that gets notified when the download progresses */
-	private NotifierFetchListener	fetchListener;
+	/**
+	 * The tracker that the Fetcher can be acquired
+	 */
+	public FProxyFetchTracker tracker;
+	/**
+	 * The original URI
+	 */
+	public final FreenetURI origKey;
+	/**
+	 * The URI of the download this progress bar shows
+	 */
+	public FreenetURI key;
+	/**
+	 * The maxSize
+	 */
+	public long maxSize;
+	/**
+	 * The FetchListener that gets notified when the download progresses
+	 */
+	private NotifierFetchListener fetchListener;
 
-	private ParsedTag				originalImg;
+	private ParsedTag originalImg;
 
 	// FIXME get this from global weakFastRandom ???
-	private final int				randomNumber;
+	private final int randomNumber;
 
-	private boolean					wasError		= false;
+	private boolean wasError = false;
 
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx, boolean pushed){
-		return createImageElement(tracker,key,maxSize,ctx,-1,-1, null, pushed);
+	public static ImageElement createImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx, boolean pushed) {
+		return createImageElement(tracker, key, maxSize, ctx, -1, -1, null, pushed);
 	}
-	
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx,int width,int height, String name, boolean pushed){
-		Map<String,String> attributes=new HashMap<String, String>();
+
+	public static ImageElement createImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx, int width, int height, String name, boolean pushed) {
+		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put("src", key.toString());
-		if(width!=-1){
+		if (width != -1) {
 			attributes.put("width", String.valueOf(width));
 		}
-		if(height!=-1){
+		if (height != -1) {
 			attributes.put("height", String.valueOf(height));
 		}
-		if(name != null) {
+		if (name != null) {
 			attributes.put("alt", name);
 			attributes.put("title", name);
 		}
-		return new ImageElement(tracker,key,maxSize,ctx,new ParsedTag("img", attributes), pushed);
+		return new ImageElement(tracker, key, maxSize, ctx, new ParsedTag("img", attributes), pushed);
 	}
-	
+
 	public ImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx, ParsedTag originalImg, boolean pushed) {
 		super("span", ctx);
 		randomNumber = tracker.makeRandomElementID();
@@ -80,7 +92,7 @@ public class ImageElement extends BaseUpdateableElement {
 		this.key = this.origKey = key;
 		this.maxSize = maxSize;
 		init(pushed);
-		if(!pushed) return;
+		if (!pushed) return;
 		// Creates and registers the FetchListener
 		fetchListener = new NotifierFetchListener(((SimpleToadletServer) ctx.getContainer()).pushDataManager, this);
 		((SimpleToadletServer) ctx.getContainer()).getTicker().queueTimedJob(new Runnable() {
@@ -163,10 +175,10 @@ public class ImageElement extends BaseUpdateableElement {
 				if (attr.containsKey("width") && attr.containsKey("height")) {
 					sizePart = "&width=" + attr.get("width") + "&height=" + attr.get("height");
 				}
-				attr.put("src", "/imagecreator/?text=+"+FProxyToadlet.l10n("imageinitializing")+"+" + sizePart);
+				attr.put("src", "/imagecreator/?text=+" + FProxyToadlet.l10n("imageinitializing") + "+" + sizePart);
 				whenJsEnabled.addChild(makeHtmlNodeForParsedTag(new ParsedTag(originalImg, attr)));
-				whenJsEnabled.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "fetchedBlocks", String.valueOf(0) });
-				whenJsEnabled.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "requiredBlocks", String.valueOf(1) });
+				whenJsEnabled.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "fetchedBlocks", String.valueOf(0)});
+				whenJsEnabled.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "requiredBlocks", String.valueOf(1)});
 
 			}
 		} else {
@@ -206,8 +218,8 @@ public class ImageElement extends BaseUpdateableElement {
 						}
 						attr.put("src", "/imagecreator/?text=" + fetchedPercent + "%25" + sizePart);
 						whenJsEnabled.addChild(makeHtmlNodeForParsedTag(new ParsedTag(originalImg, attr)));
-						whenJsEnabled.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "fetchedBlocks", String.valueOf(fr.fetchedBlocks) });
-						whenJsEnabled.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "requiredBlocks", String.valueOf(fr.requiredBlocks) });
+						whenJsEnabled.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "fetchedBlocks", String.valueOf(fr.fetchedBlocks)});
+						whenJsEnabled.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "requiredBlocks", String.valueOf(fr.requiredBlocks)});
 					}
 				}
 			} finally {
@@ -229,7 +241,7 @@ public class ImageElement extends BaseUpdateableElement {
 			attributeNames.add(att.getKey());
 			attributeValues.add(att.getValue());
 		}
-		return new HTMLNode(pt.element, attributeNames.toArray(new String[] {}), attributeValues.toArray(new String[] {}));
+		return new HTMLNode(pt.element, attributeNames.toArray(new String[]{}), attributeValues.toArray(new String[]{}));
 	}
 
 	@Override

@@ -17,12 +17,13 @@ import freenet.support.Logger;
 
 public abstract class CryptoKey implements CryptoElement, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    protected static final MessageDigest shactx;
+	private static final long serialVersionUID = 1L;
+	protected static final MessageDigest shactx;
+
 	static {
 		try {
 			shactx = MessageDigest.getInstance("SHA1", Util.mdProviders.get("SHA1"));
-		} catch(NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			// impossible
 			throw new Error(e);
 		}
@@ -37,7 +38,7 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 		try {
 			Class<?> keyClass = Class.forName(type);
 			Method m =
-				keyClass.getMethod("read", new Class<?>[] { InputStream.class });
+					keyClass.getMethod("read", new Class<?>[]{InputStream.class});
 			return (CryptoKey) m.invoke(null, dis);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -53,12 +54,14 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 //	public abstract void write(OutputStream o) throws IOException;
 
 	public abstract String keyType();
+
 	public abstract byte[] fingerprint();
+
 	public abstract byte[] asBytes();
 
 	protected byte[] fingerprint(BigInteger[] quantities) {
 		synchronized (shactx) {
-			for (BigInteger quantity: quantities) {
+			for (BigInteger quantity : quantities) {
 				byte[] mpi = Util.MPIbytes(quantity);
 				shactx.update(mpi, 0, mpi.length);
 			}
@@ -80,7 +83,7 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 		return b.toString();
 	}
 
-//	protected void write(OutputStream o, String clazz) throws IOException {
+	//	protected void write(OutputStream o, String clazz) throws IOException {
 //		UTF8.writeWithLength(o, clazz);
 //	}
 //
@@ -88,30 +91,30 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 		String fphex = HexUtil.bytesToHex(fingerprint());
 		StringBuilder b = new StringBuilder(40 + 10);
 		b
-			.append(fphex.substring(0, 4))
-			.append(' ')
-			.append(fphex.substring(4, 8))
-			.append(' ')
-			.append(fphex.substring(8, 12))
-			.append(' ')
-			.append(fphex.substring(12, 16))
-			.append(' ')
-			.append(fphex.substring(16, 20))
-			.append("  ")
-			.append(fphex.substring(20, 24))
-			.append(' ')
-			.append(fphex.substring(24, 28))
-			.append(' ')
-			.append(fphex.substring(28, 32))
-			.append(' ')
-			.append(fphex.substring(32, 36))
-			.append(' ')
-			.append(fphex.substring(36, 40));
+				.append(fphex.substring(0, 4))
+				.append(' ')
+				.append(fphex.substring(4, 8))
+				.append(' ')
+				.append(fphex.substring(8, 12))
+				.append(' ')
+				.append(fphex.substring(12, 16))
+				.append(' ')
+				.append(fphex.substring(16, 20))
+				.append("  ")
+				.append(fphex.substring(20, 24))
+				.append(' ')
+				.append(fphex.substring(24, 28))
+				.append(' ')
+				.append(fphex.substring(28, 32))
+				.append(' ')
+				.append(fphex.substring(32, 36))
+				.append(' ')
+				.append(fphex.substring(36, 40));
 		return b.toString();
 	}
 
 	public static void main(String[] args) throws Exception {
-		for (;;) {
+		for (; ; ) {
 			CryptoKey kp = CryptoKey.read(System.in);
 			System.err.println("-+ " + kp.verboseToString());
 		}

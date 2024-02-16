@@ -11,17 +11,18 @@ public abstract class LoggerHook extends Logger {
 	public static final class DetailedThreshold {
 		final String section;
 		final LogLevel dThreshold;
+
 		public DetailedThreshold(String section, LogLevel thresh) {
 			this.section = section;
 			this.dThreshold = thresh;
 		}
 	}
 
-	protected LoggerHook(LogLevel thresh){
+	protected LoggerHook(LogLevel thresh) {
 		this.threshold = thresh;
 	}
 
-	LoggerHook(String thresh) throws InvalidThresholdException{
+	LoggerHook(String thresh) throws InvalidThresholdException {
 		this.threshold = parseThreshold(thresh.toUpperCase());
 	}
 
@@ -30,18 +31,13 @@ public abstract class LoggerHook extends Logger {
 
 	/**
 	 * Log a message
-	 * 
-	 * @param o
-	 *            The object where this message was generated.
-	 * @param source
-	 *            The class where this message was generated.
-	 * @param message
-	 *            A clear and verbose message describing the event
-	 * @param e
-	 *            Logs this exception with the message.
-	 * @param priority
-	 *            The priority of the mesage, one of LogLevel.ERROR,
-	 *            LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
+	 *
+	 * @param o        The object where this message was generated.
+	 * @param source   The class where this message was generated.
+	 * @param message  A clear and verbose message describing the event
+	 * @param e        Logs this exception with the message.
+	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
+	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 */
 	@Override
 	public abstract void log(
@@ -53,21 +49,23 @@ public abstract class LoggerHook extends Logger {
 
 	/**
 	 * Log a message.
-	 * @param source        The source object where this message was generated
-	 * @param message A clear and verbose message describing the event
+	 *
+	 * @param source   The source object where this message was generated
+	 * @param message  A clear and verbose message describing the event
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
 	 *                 LogLevel.NORMAL, LogLevel.MINOR, or LogLevel.DEBUG.
 	 **/
 	@Override
 	public void log(Object source, String message, LogLevel priority) {
-		if (!instanceShouldLog(priority,source)) return;
-		log(source, source == null ? null : source.getClass(), 
+		if (!instanceShouldLog(priority, source)) return;
+		log(source, source == null ? null : source.getClass(),
 				message, null, priority);
 	}
 
-	/** 
+	/**
 	 * Log a message with an exception.
-	 * @param o   The source object where this message was generated.
+	 *
+	 * @param o        The source object where this message was generated.
 	 * @param message  A clear and verbose message describing the event.
 	 * @param e        Logs this exception with the message.
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
@@ -75,14 +73,15 @@ public abstract class LoggerHook extends Logger {
 	 * @see #log(Object o, String message, int priority)
 	 */
 	@Override
-	public void log(Object o, String message, Throwable e, 
-			LogLevel priority) {
-		if (!instanceShouldLog(priority,o)) return;
+	public void log(Object o, String message, Throwable e,
+					LogLevel priority) {
+		if (!instanceShouldLog(priority, o)) return;
 		log(o, o == null ? null : o.getClass(), message, e, priority);
 	}
 
 	/**
 	 * Log a message from static code.
+	 *
 	 * @param c        The class where this message was generated.
 	 * @param message  A clear and verbose message describing the event
 	 * @param priority The priority of the mesage, one of LogLevel.ERROR,
@@ -90,7 +89,7 @@ public abstract class LoggerHook extends Logger {
 	 */
 	@Override
 	public void log(Class<?> c, String message, LogLevel priority) {
-		if (!instanceShouldLog(priority,c)) return;
+		if (!instanceShouldLog(priority, c)) return;
 		log(null, c, message, null, priority);
 	}
 
@@ -116,9 +115,9 @@ public abstract class LoggerHook extends Logger {
 	public LogLevel getThresholdNew() {
 		return threshold;
 	}
-	
+
 	private LogLevel parseThreshold(String threshold) throws InvalidThresholdException {
-		if(threshold == null) throw new InvalidThresholdException(threshold);
+		if (threshold == null) throw new InvalidThresholdException(threshold);
 		try {
 			return LogLevel.valueOf(threshold.toUpperCase());
 		} catch (IllegalArgumentException e) {
@@ -152,7 +151,7 @@ public abstract class LoggerHook extends Logger {
 		}
 		DetailedThreshold[] newThresholds = new DetailedThreshold[stuff.size()];
 		stuff.toArray(newThresholds);
-		synchronized(this) {
+		synchronized (this) {
 			detailedThresholds = newThresholds;
 		}
 		notifyLogThresholdCallbacks();
@@ -160,13 +159,13 @@ public abstract class LoggerHook extends Logger {
 
 	public String getDetailedThresholds() {
 		DetailedThreshold[] thresh = null;
-		synchronized(this) {
+		synchronized (this) {
 			thresh = detailedThresholds;
 		}
 		if (thresh.length == 0)
 			return "";
 		StringBuilder sb = new StringBuilder();
-		for(DetailedThreshold t: thresh) {
+		for (DetailedThreshold t : thresh) {
 			sb.append(t.section);
 			sb.append(':');
 			sb.append(t.dThreshold);
@@ -190,16 +189,16 @@ public abstract class LoggerHook extends Logger {
 	public boolean instanceShouldLog(LogLevel priority, Class<?> c) {
 		DetailedThreshold[] thresholds;
 		LogLevel thresh;
-		synchronized(this) {
+		synchronized (this) {
 			thresholds = detailedThresholds;
 			thresh = threshold;
 		}
 		if ((c != null) && (thresholds.length > 0)) {
 			String cname = c.getName();
-				for(DetailedThreshold dt : thresholds) {
-					if(cname.startsWith(dt.section))
-						thresh = dt.dThreshold;
-				}
+			for (DetailedThreshold dt : thresholds) {
+				if (cname.startsWith(dt.section))
+					thresh = dt.dThreshold;
+			}
 		}
 		return priority.matchesThreshold(thresh);
 	}
@@ -216,14 +215,14 @@ public abstract class LoggerHook extends Logger {
 		// Call the new callback to avoid code duplication
 		ltc.shouldUpdate();
 	}
-	
+
 	@Override
 	public final void instanceUnregisterLogThresholdCallback(LogThresholdCallback ltc) {
 		thresholdsCallbacks.remove(ltc);
 	}
 
 	private void notifyLogThresholdCallbacks() {
-		for(LogThresholdCallback ltc : thresholdsCallbacks)
+		for (LogThresholdCallback ltc : thresholdsCallbacks)
 			ltc.shouldUpdate();
 	}
 

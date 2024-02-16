@@ -23,13 +23,13 @@ import freenet.support.io.BucketTools;
  * @author saces
  */
 public final class BinaryBlobWriter {
-    
-    private static volatile boolean logMINOR;
 
-    static {
-        Logger.registerClass(BinaryBlobWriter.class);
-    }
-    
+	private static volatile boolean logMINOR;
+
+	static {
+		Logger.registerClass(BinaryBlobWriter.class);
+	}
+
 	private final HashSet<Key> _binaryBlobKeysAddedAlready;
 	private final BucketFactory _bf;
 	private final ArrayList<Bucket> _buckets;
@@ -43,6 +43,7 @@ public final class BinaryBlobWriter {
 
 	/**
 	 * Persistent/'BigFile' constructor
+	 *
 	 * @param bf BucketFactory to generate internal buckets from
 	 */
 	public BinaryBlobWriter(BucketFactory bf) {
@@ -55,6 +56,7 @@ public final class BinaryBlobWriter {
 
 	/**
 	 * Transient constructor
+	 *
 	 * @param out Bucket to write the result to
 	 */
 	public BinaryBlobWriter(Bucket out) {
@@ -68,9 +70,9 @@ public final class BinaryBlobWriter {
 
 	private DataOutputStream getOutputStream() throws IOException, BinaryBlobAlreadyClosedException {
 		if (_finalized) {
-			throw new BinaryBlobAlreadyClosedException("Already finalized (getting final data) on "+this);
+			throw new BinaryBlobAlreadyClosedException("Already finalized (getting final data) on " + this);
 		}
-		if (_stream_cache==null) {
+		if (_stream_cache == null) {
 			if (_isSingleBucket) {
 				_stream_cache = new DataOutputStream(_out.getOutputStream());
 			} else {
@@ -88,20 +90,22 @@ public final class BinaryBlobWriter {
 
 	/**
 	 * Add a block to the binary blob.
+	 *
 	 * @throws IOException
-	 * @throws BinaryBlobAlreadyClosedException 
+	 * @throws BinaryBlobAlreadyClosedException
 	 */
 	public synchronized void addKey(ClientKeyBlock block, ClientContext context) throws IOException, BinaryBlobAlreadyClosedException {
 		Key key = block.getKey();
-		if(_binaryBlobKeysAddedAlready.contains(key)) return;
+		if (_binaryBlobKeysAddedAlready.contains(key)) return;
 		BinaryBlob.writeKey(getOutputStream(), block.getBlock(), key);
 		_binaryBlobKeysAddedAlready.add(key);
 	}
 
 	/**
 	 * finalize the return bucket
+	 *
 	 * @throws IOException
-	 * @throws BinaryBlobAlreadyClosedException 
+	 * @throws BinaryBlobAlreadyClosedException
 	 */
 	public void finalizeBucket() throws IOException, BinaryBlobAlreadyClosedException {
 		if (_finalized) {
@@ -112,14 +116,14 @@ public final class BinaryBlobWriter {
 
 	private void finalizeBucket(boolean mark) throws IOException, BinaryBlobAlreadyClosedException {
 		if (_finalized) throw new BinaryBlobAlreadyClosedException("Already finalized (closing blob - 2).");
-		if(logMINOR) Logger.minor(this, "Finalizing binary blob "+this, new Exception("debug"));
+		if (logMINOR) Logger.minor(this, "Finalizing binary blob " + this, new Exception("debug"));
 		if (!_isSingleBucket) {
-			if (!mark && (_buckets.size()==1)) {
+			if (!mark && (_buckets.size() == 1)) {
 				return;
 			}
 			Bucket out = _bf.makeBucket(-1);
 			getSnapshot(out, mark);
-			for (int i=0,n=_buckets.size(); i<n;i++) {
+			for (int i = 0, n = _buckets.size(); i < n; i++) {
 				_buckets.get(i).free();
 			}
 			if (mark) {
@@ -127,12 +131,12 @@ public final class BinaryBlobWriter {
 			}
 			_buckets.clear();
 			_buckets.add(0, out);
-		} else if (mark){
+		} else if (mark) {
 			DataOutputStream out = new DataOutputStream(getOutputStream());
 			try {
-			BinaryBlob.writeEndBlob(out);
+				BinaryBlob.writeEndBlob(out);
 			} finally {
-			out.close();
+				out.close();
 			}
 		}
 		if (mark) {
@@ -156,14 +160,14 @@ public final class BinaryBlobWriter {
 		}
 		OutputStream out = bucket.getOutputStream();
 		try {
-		for (int i=0,n=_buckets.size(); i<n;i++) {
-			BucketTools.copyTo(_buckets.get(i), out, -1);
-		}
-		if (addEndmarker) {
-			DataOutputStream dout = new DataOutputStream(out);
-			BinaryBlob.writeEndBlob(dout);
-			dout.flush();
-		}
+			for (int i = 0, n = _buckets.size(); i < n; i++) {
+				BucketTools.copyTo(_buckets.get(i), out, -1);
+			}
+			if (addEndmarker) {
+				DataOutputStream dout = new DataOutputStream(out);
+				BinaryBlob.writeEndBlob(dout);
+				dout.flush();
+			}
 		} finally {
 			out.close();
 		}
@@ -187,7 +191,7 @@ public final class BinaryBlobWriter {
 		public BinaryBlobAlreadyClosedException(String message) {
 			super(message);
 		}
-		
+
 	}
 
 	public boolean isFinalized() {

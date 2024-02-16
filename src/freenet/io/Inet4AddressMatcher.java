@@ -31,23 +31,26 @@ import java.util.StringTokenizer;
  * <li>IP address and network mask (<code>192.168.1.2/255.255.255.0</code>)</li>
  * <li>IP address and network mask bits (<code>192.168.1.2/24</code>)</li>
  * </ul>
- * 
+ *
  * @author David Roden &lt;droden@gmail.com&gt;
  * @version $Id$
  */
 public class Inet4AddressMatcher implements AddressMatcher {
-	/** The address of this matcher */
+	/**
+	 * The address of this matcher
+	 */
 	private int address;
 
-	/** The network mask of this matcher */
+	/**
+	 * The network mask of this matcher
+	 */
 	private int networkMask;
 
 	/**
 	 * Creates a new address matcher that matches InetAddress objects to the
 	 * address specification given by <code>cidrHostname</code>.
-	 * 
-	 * @param cidrHostname
-	 *            The address range this matcher matches
+	 *
+	 * @param cidrHostname The address range this matcher matches
 	 */
 	public Inet4AddressMatcher(String cidrHostname) {
 		int slashPosition = cidrHostname.indexOf('/');
@@ -75,15 +78,12 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 * Converts a dotted IP address (a.b.c.d) to a 32-bit value. The first octet
 	 * will be in bits 24 to 31, the second in bits 16 to 23, the third in bits
 	 * 8 to 15, and the fourth in bits 0 to 7.
-	 * 
-	 * @param address
-	 *            The address to convert
+	 *
+	 * @param address The address to convert
 	 * @return The IP address as 32-bit value
-	 * @throws NumberFormatException
-	 *             if a part of the string can not be parsed using
-	 *             {@link Integer#parseInt(java.lang.String)}
-	 * @throws java.util.NoSuchElementException
-	 *             if <code>address</code> contains less than 3 dots
+	 * @throws NumberFormatException            if a part of the string can not be parsed using
+	 *                                          {@link Integer#parseInt(java.lang.String)}
+	 * @throws java.util.NoSuchElementException if <code>address</code> contains less than 3 dots
 	 */
 	public static int convertToBytes(String address) {
 		StringTokenizer addressTokens = new StringTokenizer(address, ".");
@@ -93,11 +93,10 @@ public class Inet4AddressMatcher implements AddressMatcher {
 
 	/**
 	 * Checks whether the given address matches this matcher's address.
-	 * 
-	 * @param inetAddress
-	 *            The address to match to this matcher
+	 *
+	 * @param inetAddress The address to match to this matcher
 	 * @return <code>true</code> if <code>inetAddress</code> matches the
-	 *         specification of this matcher, <code>false</code> otherwise
+	 * specification of this matcher, <code>false</code> otherwise
 	 */
 	@Override
 	public boolean matches(InetAddress inetAddress) {
@@ -109,14 +108,12 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	/**
 	 * Shortcut method for creating a new Inet4AddressMatcher and matching
 	 * <code>address</code> to it.
-	 * 
-	 * @param cidrHostname
-	 *            The host specification to match
-	 * @param address
-	 *            The address to match
+	 *
+	 * @param cidrHostname The host specification to match
+	 * @param address      The address to match
 	 * @return <code>true</code> if <code>address</code> matches the
-	 *         specification in <code>cidrHostname</code>, <code>false</code>
-	 *         otherwise
+	 * specification in <code>cidrHostname</code>, <code>false</code>
+	 * otherwise
 	 * @see #Inet4AddressMatcher(String)
 	 * @see #matches(InetAddress)
 	 */
@@ -126,18 +123,18 @@ public class Inet4AddressMatcher implements AddressMatcher {
 
 	@Override
 	public String getHumanRepresentation() {
-		if(networkMask == -1)
+		if (networkMask == -1)
 			return convertToString(address);
 		else
-			return convertToString(address)+'/'+convertToString(networkMask);
+			return convertToString(address) + '/' + convertToString(networkMask);
 	}
 
 	private String convertToString(int addr) {
 		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<4;i++) {
+		for (int i = 0; i < 4; i++) {
 			int x = addr >>> 24;
 			addr = addr << 8;
-			if(i != 0) sb.append('.');
+			if (i != 0) sb.append('.');
 			sb.append(x);
 		}
 		return sb.toString();

@@ -8,7 +8,7 @@ public class SendingToNetworkMessage extends FCPMessage {
 	public static final String NAME = "SendingToNetwork";
 	final String identifier;
 	final boolean global;
-	
+
 	public SendingToNetworkMessage(String id, boolean global2) {
 		this.identifier = id;
 		this.global = global2;

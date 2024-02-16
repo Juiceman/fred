@@ -6,7 +6,9 @@ package freenet.config;
 
 public interface EnumerableOptionCallback {
 	public String[] getPossibleValues();
-	
-	/** Return the current value */
+
+	/**
+	 * Return the current value
+	 */
 	public String get();
 }

@@ -40,21 +40,21 @@ public class FCPConnectionInputHandler implements Runnable {
 	void start() {
 		if (handler.sock == null)
 			return;
-		handler.server.node.executor.execute(this, "FCP input handler for "+handler.sock.getRemoteSocketAddress());
+		handler.server.node.executor.execute(this, "FCP input handler for " + handler.sock.getRemoteSocketAddress());
 	}
 
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
+		freenet.support.Logger.OSThread.logPID(this);
 		try {
 			realRun();
 		} catch (TooLongException e) {
-			Logger.normal(this, "Caught "+e.getMessage(), e);
+			Logger.normal(this, "Caught " + e.getMessage(), e);
 		} catch (IOException e) {
-			if(logMINOR)
-				Logger.minor(this, "Caught "+e, e);
+			if (logMINOR)
+				Logger.minor(this, "Caught " + e, e);
 		} catch (Throwable t) {
-			Logger.error(this, "Caught "+t, t);
+			Logger.error(this, "Caught " + t, t);
 			t.printStackTrace();
 		}
 		handler.close();
@@ -67,39 +67,39 @@ public class FCPConnectionInputHandler implements Runnable {
 
 		boolean firstMessage = true;
 
-		while(true) {
+		while (true) {
 			SimpleFieldSet fs;
-			if(WrapperManager.hasShutdownHookBeenTriggered()) {
-				FCPMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.SHUTTING_DOWN,true,"The node is shutting down","Node",false);
+			if (WrapperManager.hasShutdownHookBeenTriggered()) {
+				FCPMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.SHUTTING_DOWN, true, "The node is shutting down", "Node", false);
 				handler.send(msg);
 				Closer.close(is);
 				return;
 			}
 			// Read a message
 			String messageType = lis.readLine(128, 128, true);
-			if(messageType == null) {
+			if (messageType == null) {
 				Closer.close(is);
 				return;
 			}
-			if(messageType.isEmpty())
+			if (messageType.isEmpty())
 				continue;
 			fs = new SimpleFieldSet(lis, 4096, 128, true, true, true);
 
 			// check for valid endmarker
 			if (!firstMessage && fs.getEndMarker() != null && (!fs.getEndMarker().startsWith("End")) && (!"Data".equals(fs.getEndMarker()))) {
-				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.MESSAGE_PARSE_ERROR, false, "Invalid end marker: "+fs.getEndMarker(), fs.get("Identifer"), fs.getBoolean("Global", false));
+				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.MESSAGE_PARSE_ERROR, false, "Invalid end marker: " + fs.getEndMarker(), fs.get("Identifer"), fs.getBoolean("Global", false));
 				handler.send(err);
 				continue;
 			}
 
 			FCPMessage msg;
 			try {
-				if(logDEBUG)
-					Logger.debug(this, "Incoming FCP message:\n"+messageType+'\n'+fs.toString());
+				if (logDEBUG)
+					Logger.debug(this, "Incoming FCP message:\n" + messageType + '\n' + fs.toString());
 				msg = FCPMessage.create(messageType, fs, handler.bf, handler.server.core.persistentTempBucketFactory);
-				if(msg == null) continue;
+				if (msg == null) continue;
 			} catch (MessageInvalidException e) {
-				if(firstMessage) {
+				if (firstMessage) {
 					FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.CLIENT_HELLO_MUST_BE_FIRST_MESSAGE, true, null, null, false);
 					handler.send(err);
 					handler.close();
@@ -111,31 +111,31 @@ public class FCPConnectionInputHandler implements Runnable {
 				}
 				continue;
 			}
-			if(firstMessage && !(msg instanceof ClientHelloMessage)) {
+			if (firstMessage && !(msg instanceof ClientHelloMessage)) {
 				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.CLIENT_HELLO_MUST_BE_FIRST_MESSAGE, true, null, null, false);
 				handler.send(err);
 				handler.close();
 				Closer.close(is);
 				return;
 			}
-			if(msg instanceof BaseDataCarryingMessage) {
+			if (msg instanceof BaseDataCarryingMessage) {
 				// FIXME tidy up - coalesce with above and below try { } catch (MIE) {}'s?
 				try {
-					((BaseDataCarryingMessage)msg).readFrom(lis, handler.bf, handler.server);
+					((BaseDataCarryingMessage) msg).readFrom(lis, handler.bf, handler.server);
 				} catch (MessageInvalidException e) {
 					FCPMessage err = new ProtocolErrorMessage(e.protocolCode, false, e.getMessage(), e.ident, e.global);
 					handler.send(err);
 					continue;
 				}
 			}
-			if((!firstMessage) && (msg instanceof ClientHelloMessage)) {
+			if ((!firstMessage) && (msg instanceof ClientHelloMessage)) {
 				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.NO_LATE_CLIENT_HELLOS, false, null, null, false);
 				handler.send(err);
 				continue;
 			}
 			try {
-				if(logDEBUG)
-					Logger.debug(this, "Parsed message: "+msg+" for "+handler);
+				if (logDEBUG)
+					Logger.debug(this, "Parsed message: " + msg + " for " + handler);
 				msg.run(handler, handler.server.node);
 			} catch (MessageInvalidException e) {
 				FCPMessage err = new ProtocolErrorMessage(e.protocolCode, false, e.getMessage(), e.ident, e.global);
@@ -143,7 +143,7 @@ public class FCPConnectionInputHandler implements Runnable {
 				continue;
 			}
 			firstMessage = false;
-			if(handler.isClosed()) {
+			if (handler.isClosed()) {
 				Closer.close(is);
 				return;
 			}

@@ -22,7 +22,7 @@ public class USKFetcherWrapper extends BaseClientGetter {
 	private static final long serialVersionUID = -6416069493740293035L;
 
 	final USK usk;
-	
+
 	public USKFetcherWrapper(USK usk, short prio, final RequestClient client) {
 		super(prio, client);
 		this.usk = usk;
@@ -65,7 +65,7 @@ public class USKFetcherWrapper extends BaseClientGetter {
 
 	@Override
 	public String toString() {
-		return super.toString()+ ':' +usk;
+		return super.toString() + ':' + usk;
 	}
 
 	@Override
@@ -108,13 +108,13 @@ public class USKFetcherWrapper extends BaseClientGetter {
 		// Ignore
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return null;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return null;
+	}
 }
