@@ -3,6 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
+import freenet.client.FetchException.FetchExceptionMode;
+import freenet.client.InsertException.InsertExceptionMode;
+import freenet.support.Logger;
+import freenet.support.SimpleFieldSet;
+import freenet.support.io.StorageFormatException;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,12 +16,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.InsertException.InsertExceptionMode;
-import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
-import freenet.support.io.StorageFormatException;
 
 /**
  * Essentially a map of integer to incrementible integer.
@@ -199,8 +199,8 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 				// prefix.num.Description=<code description>
 				// prefix.num.Count=<count>
 				if (verbose)
-					sfs.putSingle(Integer.toString(code) + ".Description", getMessage(code));
-				sfs.put(Integer.toString(code) + ".Count", item);
+					sfs.putSingle(code + ".Description", getMessage(code));
+				sfs.put(code + ".Count", item);
 			}
 		}
 		return sfs;
@@ -270,8 +270,8 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		return false;
 	}
 
-	private int MAGIC = 0xb605aa08;
-	private int VERSION = 1;
+	private final int MAGIC = 0xb605aa08;
+	private final int VERSION = 1;
 
 	/**
 	 * Get the length of the fixed-size representation produced by writeFixedLengthTo().

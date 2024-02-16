@@ -1,18 +1,12 @@
 package freenet.support.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.Arrays;
-
 import freenet.client.async.ClientContext;
 import freenet.support.api.Bucket;
 import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
+
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * A bucket that stores data in the memory.
@@ -24,7 +18,7 @@ import freenet.support.api.RandomAccessBucket;
 public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 	private static final long serialVersionUID = 1L;
 	private volatile byte[] data;
-	private String name;
+	private final String name;
 	private boolean readOnly;
 	private boolean freed;
 

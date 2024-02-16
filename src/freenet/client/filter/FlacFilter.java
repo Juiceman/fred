@@ -1,17 +1,13 @@
 package freenet.client.filter;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Filters native FLAC data.
@@ -24,12 +20,10 @@ public class FlacFilter implements ContentDataFilter {
 
 	enum State {UNINITIALIZED, STREAMINFO_FOUND, METADATA_FOUND, STREAM_FINISHED}
 
-	;
-
 	public void readFilter(
 			InputStream input, OutputStream output,
 			String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this.getClass());
 		FlacPacketFilter parser = new FlacPacketFilter();
 		DataInputStream in = new DataInputStream(input);
@@ -116,7 +110,7 @@ public class FlacFilter implements ContentDataFilter {
 
 	public void writeFilter(InputStream input, OutputStream output,
 							String charset, HashMap<String, String> otherParams,
-							FilterCallback cb) throws DataFilterException, IOException {
+							FilterCallback cb) throws IOException {
 		// TODO Auto-generated method stub
 
 	}

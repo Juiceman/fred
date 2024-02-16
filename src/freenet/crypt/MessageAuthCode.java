@@ -3,18 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
+import freenet.support.Fields;
+import org.bouncycastle.crypto.generators.Poly1305KeyGenerator;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-
-import org.bouncycastle.crypto.generators.Poly1305KeyGenerator;
-
-import freenet.support.Fields;
+import java.nio.ByteBuffer;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 
 /**
  * The MessageAuthCode class will generate the Message Authentication Code of a given set
@@ -46,7 +44,6 @@ public final class MessageAuthCode {
 		this.key = key;
 		try {
 			if (type.ivlen != -1) {
-				;
 				checkPoly1305Key(key.getEncoded());
 				if (genIV) {
 					genIV();
@@ -145,7 +142,7 @@ public final class MessageAuthCode {
 	 *
 	 * @param encodedKey Key to check
 	 */
-	private final void checkPoly1305Key(byte[] encodedKey) {
+	private void checkPoly1305Key(byte[] encodedKey) {
 		if (type != MACType.Poly1305AES) {
 			throw new UnsupportedTypeException(type);
 		}
@@ -157,7 +154,7 @@ public final class MessageAuthCode {
 	 *
 	 * @param input The byte to add
 	 */
-	public final void addByte(byte input) {
+	public void addByte(byte input) {
 		mac.update(input);
 	}
 
@@ -166,7 +163,7 @@ public final class MessageAuthCode {
 	 *
 	 * @param input The byte[]s to add
 	 */
-	public final void addBytes(byte[]... input) {
+	public void addBytes(byte[]... input) {
 		for (byte[] b : input) {
 			if (b == null) {
 				throw new NullPointerException();
@@ -184,7 +181,7 @@ public final class MessageAuthCode {
 	 *
 	 * @param input The ByteBuffer to be added
 	 */
-	public final void addBytes(ByteBuffer input) {
+	public void addBytes(ByteBuffer input) {
 		mac.update(input);
 	}
 
@@ -196,7 +193,7 @@ public final class MessageAuthCode {
 	 * @param offset What byte to start at
 	 * @param len    How many bytes after offset to add to buffer
 	 */
-	public final void addBytes(byte[] input, int offset, int len) {
+	public void addBytes(byte[] input, int offset, int len) {
 		if (input == null) {
 			throw new NullPointerException();
 		}
@@ -211,7 +208,7 @@ public final class MessageAuthCode {
 	 * @return The Message Authentication Code. Will have a backing array and array offset 0, so
 	 * you can call array() on it if you really must.
 	 */
-	public final ByteBuffer genMac() {
+	public ByteBuffer genMac() {
 		return ByteBuffer.wrap(mac.doFinal());
 	}
 
@@ -224,7 +221,7 @@ public final class MessageAuthCode {
 	 * @param input
 	 * @return The Message Authentication Code
 	 */
-	public final ByteBuffer genMac(byte[]... input) {
+	public ByteBuffer genMac(byte[]... input) {
 		mac.reset();
 		addBytes(input);
 		return genMac();
@@ -238,7 +235,7 @@ public final class MessageAuthCode {
 	 * @param input
 	 * @return The Message Authentication Code
 	 */
-	public final ByteBuffer genMac(ByteBuffer input) {
+	public ByteBuffer genMac(ByteBuffer input) {
 		mac.reset();
 		addBytes(input);
 		return genMac();
@@ -251,7 +248,7 @@ public final class MessageAuthCode {
 	 * @param mac2 Second MAC to be verified
 	 * @return Returns true if the MACs match, otherwise false.
 	 */
-	public final static boolean verify(byte[] mac1, byte[] mac2) {
+	public static boolean verify(byte[] mac1, byte[] mac2) {
 		/*
 		 * An April 2015 patch prevented null input from throwing. JVMs without that patch will
 		 * throw, so the change is included here for consistent behavior.
@@ -275,7 +272,7 @@ public final class MessageAuthCode {
 	 * @param mac2 Second MAC to be verified
 	 * @return Returns true if the MACs match, otherwise false.
 	 */
-	public final static boolean verify(ByteBuffer mac1, ByteBuffer mac2) {
+	public static boolean verify(ByteBuffer mac1, ByteBuffer mac2) {
 		// Must be constant time, or as close as we can
 		return MessageDigest.isEqual(Fields.copyToArray(mac1), Fields.copyToArray(mac2));
 	}
@@ -290,7 +287,7 @@ public final class MessageAuthCode {
 	 * @param data     The data to check the MAC against
 	 * @return Returns true if it is a match, otherwise false.
 	 */
-	public final boolean verifyData(byte[] otherMac, byte[]... data) {
+	public boolean verifyData(byte[] otherMac, byte[]... data) {
 		return verify(Fields.copyToArray(genMac(data)), otherMac);
 	}
 
@@ -304,7 +301,7 @@ public final class MessageAuthCode {
 	 * @param data     The data to check the MAC against
 	 * @return Returns true if it is a match, otherwise false.
 	 */
-	public final boolean verifyData(ByteBuffer otherMac, ByteBuffer data) {
+	public boolean verifyData(ByteBuffer otherMac, ByteBuffer data) {
 		return verify(genMac(data), otherMac);
 	}
 
@@ -313,7 +310,7 @@ public final class MessageAuthCode {
 	 *
 	 * @return Returns the key as a SecretKey
 	 */
-	public final SecretKey getKey() {
+	public SecretKey getKey() {
 		return key;
 	}
 
@@ -322,7 +319,7 @@ public final class MessageAuthCode {
 	 *
 	 * @return Returns the iv as a IvParameterSpec
 	 */
-	public final IvParameterSpec getIv() {
+	public IvParameterSpec getIv() {
 		if (type.ivlen == -1) {
 			throw new UnsupportedTypeException(type);
 		}
@@ -335,7 +332,7 @@ public final class MessageAuthCode {
 	 * @param iv The new iv to use as IvParameterSpec
 	 * @throws InvalidAlgorithmParameterException
 	 */
-	public final void setIV(IvParameterSpec iv) throws InvalidAlgorithmParameterException {
+	public void setIV(IvParameterSpec iv) throws InvalidAlgorithmParameterException {
 		if (type.ivlen == -1) {
 			throw new UnsupportedTypeException(type);
 		}
@@ -352,7 +349,7 @@ public final class MessageAuthCode {
 	 *
 	 * @return The generated IV
 	 */
-	public final IvParameterSpec genIV() {
+	public IvParameterSpec genIV() {
 		if (type.ivlen == -1) {
 			throw new UnsupportedTypeException(type);
 		}

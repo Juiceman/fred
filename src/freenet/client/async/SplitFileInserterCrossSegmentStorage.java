@@ -1,10 +1,5 @@
 package freenet.client.async;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import freenet.client.FECCodec;
 import freenet.client.async.PersistentJobRunner.CheckpointLock;
 import freenet.crypt.ChecksumFailedException;
@@ -18,6 +13,11 @@ import freenet.support.api.LockableRandomAccessBuffer.RAFLock;
 import freenet.support.io.CountedOutputStream;
 import freenet.support.io.NullOutputStream;
 import freenet.support.io.StorageFormatException;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class SplitFileInserterCrossSegmentStorage {
 
@@ -164,7 +164,7 @@ public class SplitFileInserterCrossSegmentStorage {
 		if (cancelled) return;
 		if (encoding) return;
 		encoding = true;
-		long limit = totalBlocks * CHKBlock.DATA_LENGTH +
+		long limit = (long) totalBlocks * CHKBlock.DATA_LENGTH +
 				Math.max(parent.codec.maxMemoryOverheadDecode(dataBlockCount, crossCheckBlockCount),
 						parent.codec.maxMemoryOverheadEncode(dataBlockCount, crossCheckBlockCount));
 		parent.memoryLimitedJobRunner.queueJob(new MemoryLimitedJob(limit) {
@@ -342,8 +342,7 @@ public class SplitFileInserterCrossSegmentStorage {
 	 */
 	public synchronized boolean cancel() {
 		cancelled = true;
-		if (encoding) return false;
-		return true;
+		return !encoding;
 	}
 
 	public synchronized boolean hasCompletedOrFailed() {

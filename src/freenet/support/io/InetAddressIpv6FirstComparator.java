@@ -1,13 +1,13 @@
 package freenet.support.io;
 
-import static freenet.node.NodeStats.DEFAULT_MAX_PING_TIME;
+import freenet.support.Fields;
+import freenet.support.LRUCache;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Comparator;
 
-import freenet.support.Fields;
-import freenet.support.LRUCache;
+import static freenet.node.NodeStats.DEFAULT_MAX_PING_TIME;
 
 /**
  * Comparator for IP addresses that sorts IPv6 before IPv4 to enable

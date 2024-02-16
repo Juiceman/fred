@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public interface CharsetExtractor {
 
-	String getCharset(byte[] input, int length, String parseCharset) throws DataFilterException, IOException;
+	String getCharset(byte[] input, int length, String parseCharset) throws IOException;
 
 	/**
 	 * Inspect the first few bytes of the file for any obvious but
@@ -33,9 +33,9 @@ public interface CharsetExtractor {
 	 * How many bytes must be fed into the CharsetExtractor to figure
 	 * out the charset
 	 */
-	public int getCharsetBufferSize();
+	int getCharsetBufferSize();
 
-	public class BOMDetection {
+	class BOMDetection {
 		/**
 		 * The charset, guessed from the first few characters.
 		 */

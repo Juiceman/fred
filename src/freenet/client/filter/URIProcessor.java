@@ -10,7 +10,7 @@ public interface URIProcessor {
 	/**
 	 * Processes an URI. If it is unsafe, then return null
 	 */
-	public String processURI(String u, String overrideType, boolean noRelative, boolean inline) throws CommentException;
+	String processURI(String u, String overrideType, boolean noRelative, boolean inline) throws CommentException;
 
 	/**
 	 * Makes an URI absolute
@@ -18,6 +18,6 @@ public interface URIProcessor {
 	 * @param uri - The uri to be absolutize
 	 * @return The absolute URI
 	 */
-	public String makeURIAbsolute(String uri) throws URISyntaxException;
+	String makeURIAbsolute(String uri) throws URISyntaxException;
 
 }

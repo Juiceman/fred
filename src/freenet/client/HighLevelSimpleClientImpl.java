@@ -3,20 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
-
 import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.Metadata.DocumentType;
-import freenet.client.async.BaseManifestPutter;
-import freenet.client.async.ClientGetCallback;
-import freenet.client.async.ClientGetter;
-import freenet.client.async.ClientPutCallback;
-import freenet.client.async.ClientPutter;
-import freenet.client.async.DefaultManifestPutter;
-import freenet.client.async.PersistenceDisabledException;
-import freenet.client.async.TooManyFilesInsertException;
+import freenet.client.async.*;
 import freenet.client.events.ClientEventListener;
 import freenet.client.events.ClientEventProducer;
 import freenet.client.events.EventLogger;
@@ -24,11 +13,7 @@ import freenet.client.events.SimpleEventProducer;
 import freenet.crypt.RandomSource;
 import freenet.keys.FreenetURI;
 import freenet.keys.InsertableClientSSK;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestScheduler;
-import freenet.node.RequestStarter;
+import freenet.node.*;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
@@ -37,6 +22,10 @@ import freenet.support.api.RandomAccessBucket;
 import freenet.support.compress.Compressor;
 import freenet.support.io.NullBucket;
 import freenet.support.io.PersistentFileTracker;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
 
 public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, RequestClient, Cloneable {
 
@@ -51,7 +40,7 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	private final ClientEventProducer eventProducer;
 	private long curMaxLength;
 	private long curMaxTempLength;
-	private int curMaxMetadataLength;
+	private final int curMaxMetadataLength;
 	private final RandomSource random;
 	private final boolean realTimeFlag;
 	static final int MAX_RECURSION = 10;

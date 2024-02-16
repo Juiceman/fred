@@ -3,16 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.pluginmanager;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import freenet.clients.fcp.FCPPluginConnection;
 import freenet.clients.fcp.FCPPluginConnection.SendDirection;
 import freenet.clients.fcp.FCPPluginMessage;
 import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
-import freenet.support.api.Bucket;
 import freenet.support.io.NativeThread;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * <i>NOTICE: This API is a rewrite of the whole code for plugin communication. It was added
@@ -109,7 +107,7 @@ public interface FredPluginFCPMessageHandler {
 	 * @see ClientSideFCPMessageHandler
 	 * The opposite version of this interface for client plugins
 	 */
-	public interface ServerSideFCPMessageHandler extends FredPluginFCPMessageHandler {
+	interface ServerSideFCPMessageHandler extends FredPluginFCPMessageHandler {
 		/**
 		 * <p>Is called to handle messages from your clients.<br/>
 		 * <b>Must not</b> block for very long and thus must only do small amounts of processing.
@@ -200,7 +198,7 @@ public interface FredPluginFCPMessageHandler {
 	 * @see ServerSideFCPMessageHandler
 	 * The opposite version of this interface for server plugins
 	 */
-	public interface ClientSideFCPMessageHandler extends FredPluginFCPMessageHandler {
+	interface ClientSideFCPMessageHandler extends FredPluginFCPMessageHandler {
 		/**
 		 * Is called to handle messages from the server after you sent a message to it using a
 		 * {@link FCPPluginConnection}.<br/><br/>
@@ -271,10 +269,10 @@ public interface FredPluginFCPMessageHandler {
 	 * as the individual messages are passed to the implementation of this handler. (Of course
 	 * you are free to ignore this parameter and return the same priority for all messages.)
 	 */
-	public interface PrioritizedMessageHandler {
+	interface PrioritizedMessageHandler {
 		/**
 		 * @see PrioritizedMessageHandler
 		 */
-		public NativeThread.PriorityLevel getPriority(FCPPluginMessage message);
+		NativeThread.PriorityLevel getPriority(FCPPluginMessage message);
 	}
 }

@@ -23,6 +23,6 @@ public interface ClientEventListener {
 	 *                NOTE THAT IT MAY NOT HAVE BEEN GENERATED IN A DATABASE CONTEXT AT ALL:
 	 *                In this case, container will be null, and you should use context to schedule a DBJob.
 	 **/
-	public void receive(ClientEvent ce, ClientContext context);
+	void receive(ClientEvent ce, ClientContext context);
 
 }

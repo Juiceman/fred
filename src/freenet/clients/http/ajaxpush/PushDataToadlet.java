@@ -1,20 +1,16 @@
 package freenet.clients.http.ajaxpush;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-
 import freenet.client.HighLevelSimpleClient;
-import freenet.clients.http.RedirectException;
-import freenet.clients.http.SimpleToadletServer;
-import freenet.clients.http.Toadlet;
-import freenet.clients.http.ToadletContext;
-import freenet.clients.http.ToadletContextClosedException;
+import freenet.clients.http.*;
 import freenet.clients.http.updateableelements.BaseUpdateableElement;
 import freenet.clients.http.updateableelements.UpdaterConstants;
 import freenet.support.Base64;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A toadlet that provides the current data of pushed elements. It requires the requestId and the elementId parameters.

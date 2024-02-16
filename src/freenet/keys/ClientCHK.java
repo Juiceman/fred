@@ -3,6 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
+import freenet.support.Base64;
+import freenet.support.ByteArrayWrapper;
+import freenet.support.Fields;
+import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,11 +16,6 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
-
-import freenet.support.Base64;
-import freenet.support.ByteArrayWrapper;
-import freenet.support.Fields;
-import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 
 /**
  * Client level CHK. Can be converted into a FreenetURI, can be used to decrypt
@@ -291,8 +291,7 @@ public class ClientCHK extends ClientKey implements Serializable {
 		if (cryptoAlgorithm != key.cryptoAlgorithm) return false;
 		if (compressionAlgorithm != key.compressionAlgorithm) return false;
 		if (!Arrays.equals(routingKey, key.routingKey)) return false;
-		if (!Arrays.equals(cryptoKey, key.cryptoKey)) return false;
-		return true;
+		return Arrays.equals(cryptoKey, key.cryptoKey);
 	}
 
 	public byte[] getRoutingKey() {

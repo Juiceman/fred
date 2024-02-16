@@ -5,12 +5,12 @@
  * which is public information and public domain software. */
 package freenet.client;
 
+import freenet.support.Logger;
+import freenet.support.MediaType;
+
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.regex.Pattern;
-
-import freenet.support.Logger;
-import freenet.support.MediaType;
 
 /**
  * Holds the default MIME types.
@@ -25,28 +25,28 @@ public class DefaultMIMETypes {
 	/**
 	 * MIME types: number -> name
 	 */
-	private static Vector<String> mimeTypesByNumber = new Vector<String>();
+	private static final Vector<String> mimeTypesByNumber = new Vector<String>();
 
 	/**
 	 * MIME types: name -> number
 	 */
-	private static HashMap<String, Short> mimeTypesByName = new HashMap<String, Short>();
+	private static final HashMap<String, Short> mimeTypesByName = new HashMap<String, Short>();
 
 	/**
 	 * MIME types by extension. One extension maps to one MIME type, but not necessarily
 	 * the other way around.
 	 */
-	private static HashMap<String, Short> mimeTypesByExtension = new HashMap<String, Short>();
+	private static final HashMap<String, Short> mimeTypesByExtension = new HashMap<String, Short>();
 
 	/**
 	 * Primary extension by MIME type number.
 	 */
-	private static HashMap<Short, String> primaryExtensionByMimeNumber = new HashMap<Short, String>();
+	private static final HashMap<Short, String> primaryExtensionByMimeNumber = new HashMap<Short, String>();
 
 	/**
 	 * All extension (String[]) by MIME type number.
 	 */
-	private static HashMap<Short, String[]> allExtensionsByMimeNumber = new HashMap<Short, String[]>();
+	private static final HashMap<Short, String[]> allExtensionsByMimeNumber = new HashMap<Short, String[]>();
 
 	/**
 	 * Add a MIME type, without any extensions.
@@ -811,9 +811,9 @@ public class DefaultMIMETypes {
 	private static final String TOP_LEVEL = "(?>[a-zA-Z-]+)";
 	private static final String CHARS = "(?>[a-zA-Z0-9+_\\-\\.]+)";
 	private static final String PARAM = "(?>;\\s*" + CHARS + "=" + "((" + CHARS + ")|(\".*\")))";
-	private static Pattern MIME_TYPE = Pattern.compile(TOP_LEVEL + "/" + CHARS + "\\s*" + PARAM + "*");
+	private static final Pattern MIME_TYPE = Pattern.compile(TOP_LEVEL + "/" + CHARS + "\\s*" + PARAM + "*");
 
-	private static Pattern INFOCALYPSE_DIRTY_HACK = Pattern.compile("application/mercurial-bundle;[0-9]{1,6}");
+	private static final Pattern INFOCALYPSE_DIRTY_HACK = Pattern.compile("application/mercurial-bundle;[0-9]{1,6}");
 
 	public static boolean isPlausibleMIMEType(String mimeType) {
 		if (MIME_TYPE.matcher(mimeType).matches()) return true;

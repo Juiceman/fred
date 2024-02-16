@@ -15,7 +15,7 @@ public interface Step {
 	 * @param helper  used to get a style-conforming page content node, forms, and InfoBoxes without access to
 	 *                ToadletContext.
 	 */
-	public void getStep(HTTPRequest request, PageHelper helper);
+	void getStep(HTTPRequest request, PageHelper helper);
 
 	/**
 	 * Performs operations for the step.
@@ -24,5 +24,5 @@ public interface Step {
 	 * @return a destination to redirect to.
 	 * @throws IOException likely a setting failed to apply
 	 */
-	public String postStep(HTTPRequest request) throws IOException;
+	String postStep(HTTPRequest request) throws IOException;
 }

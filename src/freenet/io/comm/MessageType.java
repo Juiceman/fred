@@ -19,19 +19,19 @@
 
 package freenet.io.comm;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import freenet.support.Logger;
 import freenet.support.Serializer;
 import freenet.support.ShortBuffer;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class MessageType {
 
 	public static final String VERSION = "$Id: MessageType.java,v 1.6 2005/08/25 17:28:19 amphibian Exp $";
 
-	private static HashMap<Integer, MessageType> _specs = new HashMap<Integer, MessageType>();
+	private static final HashMap<Integer, MessageType> _specs = new HashMap<Integer, MessageType>();
 
 	private final String _name;
 	private final LinkedList<String> _orderedFields = new LinkedList<String>();
@@ -90,8 +90,7 @@ public class MessageType {
 		}
 		Class<?> valueClass = fieldValue.getClass();
 		if (defClass == valueClass) return true;
-		if (defClass.isAssignableFrom(valueClass)) return true;
-		return false;
+		return defClass.isAssignableFrom(valueClass);
 	}
 
 	public Class<?> typeOf(String field) {

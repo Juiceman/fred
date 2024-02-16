@@ -1,45 +1,10 @@
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import freenet.client.DefaultMIMETypes;
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.FetchResult;
-import freenet.client.HighLevelSimpleClient;
 import freenet.client.async.ClientContext;
-import freenet.client.filter.ContentFilter;
-import freenet.client.filter.FilterMIMEType;
-import freenet.client.filter.FoundURICallback;
-import freenet.client.filter.PushingTagReplacerCallback;
-import freenet.client.filter.UnsafeContentTypeException;
-import freenet.clients.http.ajaxpush.DismissAlertToadlet;
-import freenet.clients.http.ajaxpush.LogWritebackToadlet;
-import freenet.clients.http.ajaxpush.PushDataToadlet;
-import freenet.clients.http.ajaxpush.PushFailoverToadlet;
-import freenet.clients.http.ajaxpush.PushKeepaliveToadlet;
-import freenet.clients.http.ajaxpush.PushLeavingToadlet;
-import freenet.clients.http.ajaxpush.PushNotificationToadlet;
-import freenet.clients.http.ajaxpush.PushTesterToadlet;
+import freenet.client.filter.*;
+import freenet.clients.http.ajaxpush.*;
 import freenet.clients.http.updateableelements.ProgressBarElement;
 import freenet.clients.http.updateableelements.ProgressInfoElement;
 import freenet.clients.http.utils.UriFilterProxyHeaderParser;
@@ -50,25 +15,12 @@ import freenet.crypt.SHA256;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
 import freenet.l10n.NodeL10n;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestClientBuilder;
-import freenet.node.RequestStarter;
+import freenet.node.*;
 import freenet.node.SecurityLevels.NETWORK_THREAT_LEVEL;
 import freenet.node.SecurityLevels.PHYSICAL_THREAT_LEVEL;
 import freenet.pluginmanager.PluginInfoWrapper;
-import freenet.support.HTMLEncoder;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.MediaType;
-import freenet.support.MultiValueTable;
-import freenet.support.SizeUtil;
-import freenet.support.URIPreEncoder;
-import freenet.support.URLEncoder;
 import freenet.support.api.Bucket;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.HTTPRequest;
@@ -76,6 +28,17 @@ import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NoFreeBucket;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public final class FProxyToadlet extends Toadlet implements RequestClient {
 
@@ -158,7 +121,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			Logger.minor(FProxyToadlet.class, "handleDownload(data.size=" + data.size() + ", mimeType=" + mimeType + ", requestedMimeType=" + requestedMimeType + ", forceDownload=" + forceDownload + ", basePath=" + basePath + ", key=" + key);
 		String extrasNoMime = extras; // extras will not include MIME type to start with - REDFLAG maybe it should be an array
 		if (requestedMimeType != null) {
-			if (mimeType == null || !requestedMimeType.equals(mimeType)) {
+			if (!requestedMimeType.equals(mimeType)) {
 				if (extras == null) extras = "";
 				extras = extras + "&type=" + requestedMimeType;
 			}
@@ -200,7 +163,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				option = optionList.addChild("li");
 				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openPossRSSForceDisk", new String[]{"link", "bold"},
 						new HTMLNode[]{
-								HTMLNode.link(basePath + key.toString() + "?forcedownload" + extras),
+								HTMLNode.link(basePath + key + "?forcedownload" + extras),
 								HTMLNode.STRONG
 						});
 				boolean mimeRSS = mimeType.startsWith("application/xml+rss") || mimeType.startsWith("text/xml"); /* blergh! */
@@ -208,12 +171,12 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 					option = optionList.addChild("li");
 					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSForce", new String[]{"link", "bold", "mime"},
 							new HTMLNode[]{
-									HTMLNode.link(basePath + key.toString() + "?force=" + getForceValue(key, now) + extras), HTMLNode.STRONG, HTMLNode.text(mimeType)});
+									HTMLNode.link(basePath + key + "?force=" + getForceValue(key, now) + extras), HTMLNode.STRONG, HTMLNode.text(mimeType)});
 				}
 				option = optionList.addChild("li");
 				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSAsRSS", new String[]{"link", "bold"},
 						new HTMLNode[]{
-								HTMLNode.link(basePath + key.toString() + "?type=application/xml+rss&force=" + getForceValue(key, now) + extrasNoMime),
+								HTMLNode.link(basePath + key + "?type=application/xml+rss&force=" + getForceValue(key, now) + extrasNoMime),
 								HTMLNode.STRONG});
 				addDownloadOptions(ctx, optionList, key, mimeType, true, false, core); // FIXME Or false, false? Or true, true? We don't have filter for rss/atom anyway, so it will be useless - only more confusion and clicking for user. When we *will* have one, we can just get rid of this warning page.
 				if (referrer != null) {
@@ -263,7 +226,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			// was a range request
 			if (rangeStr != null) {
 
-				long range[];
+				long[] range;
 				try {
 					range = parseRange(rangeStr);
 				} catch (HTTPRangeException e) {
@@ -615,7 +578,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		if (container.enableInlinePrefetch()) {
 			fctx.prefetchHook = new FoundURICallback() {
 
-				List<FreenetURI> uris = new ArrayList<FreenetURI>();
+				final List<FreenetURI> uris = new ArrayList<FreenetURI>();
 
 				@Override
 				public void foundURI(FreenetURI uri) {
@@ -728,7 +691,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 						//If the user has enabled javascript, we add a <noscript> http refresh(if he has disabled it in the browser)
 						headNode.addChild("noscript").addChild("meta", "http-equiv", "Refresh").addAttribute("content", "2;URL=" + location);
 						// If pushing is disabled, but js is enabled, then we add the original progresspage.js
-						if ((isWebPushingEnabled = ctx.getContainer().isFProxyWebPushingEnabled()) == false) {
+						if (!(isWebPushingEnabled = ctx.getContainer().isFProxyWebPushingEnabled())) {
 							HTMLNode scriptNode = headNode.addChild("script", "//abc");
 							scriptNode.addAttribute("type", "text/javascript");
 							scriptNode.addAttribute("src", "/static/js/progresspage.js");
@@ -932,24 +895,24 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 					if ((keyUtil = core.node.pluginManager.getPluginInfo("plugins.KeyUtils.KeyUtilsPlugin")) != null) {
 						option = optionList.addChild("li");
 						if (keyUtil.getPluginLongVersion() < 5010)
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/?automf=true&key=" + key.toString())});
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/?automf=true&key=" + key)});
 						else {
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/?key=" + key.toString())});
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/?key=" + key)});
 							option = optionList.addChild("li");
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithSiteExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/Site?key=" + key.toString())});
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithSiteExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyUtils/Site?key=" + key)});
 						}
 					} else if ((keyUtil = core.node.pluginManager.getPluginInfo("plugins.KeyExplorer.KeyExplorer")) != null) {
 						option = optionList.addChild("li");
 						if (keyUtil.getPluginLongVersion() > 4999)
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyExplorer/?automf=true&key=" + key.toString())});
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/KeyExplorer/?automf=true&key=" + key)});
 						else
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/plugins/plugins.KeyExplorer.KeyExplorer/?key=" + key.toString())});
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/plugins/plugins.KeyExplorer.KeyExplorer/?key=" + key)});
 					}
 				}
 				if (filterException != null) {
 					if ((mime.equals("application/x-freenet-index")) && (core.node.pluginManager.isPluginLoaded("plugins.ThawIndexBrowser.ThawIndexBrowser"))) {
 						option = optionList.addChild("li");
-						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openAsThawIndex", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/plugins/plugins.ThawIndexBrowser.ThawIndexBrowser/?key=" + key.toString())});
+						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openAsThawIndex", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/plugins/plugins.ThawIndexBrowser.ThawIndexBrowser/?key=" + key)});
 					}
 					option = optionList.addChild("li");
 					// FIXME: is this safe? See bug #131
@@ -1091,7 +1054,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				FreenetURI furi = new FreenetURI(path);
 				HTTPRequest req = new HTTPRequestImpl(refererURI, "GET");
 				String type = req.getParam("type");
-				referer = "/" + furi.toString();
+				referer = "/" + furi;
 				if (type != null && type.length() > 0)
 					referer += "?type=" + type;
 			} catch (MalformedURLException e) {
@@ -1316,7 +1279,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 	private static long[] parseRange(String hdrrange) throws HTTPRangeException {
 
-		long result[] = new long[2];
+		long[] result = new long[2];
 		try {
 			String[] units = hdrrange.split("=", 2);
 			// FIXME are MBytes and co valid? if so, we need to adjust the values and

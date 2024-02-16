@@ -3,7 +3,19 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http.bookmark;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
+import freenet.client.async.ClientContext;
+import freenet.client.async.USKCallback;
+import freenet.clients.http.FProxyToadlet;
+import freenet.keys.FreenetURI;
+import freenet.keys.USK;
+import freenet.l10n.NodeL10n;
+import freenet.node.*;
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
+import freenet.support.io.Closer;
+import freenet.support.io.FileUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,23 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import freenet.client.async.ClientContext;
-import freenet.client.async.USKCallback;
-import freenet.clients.http.FProxyToadlet;
-import freenet.keys.FreenetURI;
-import freenet.keys.USK;
-import freenet.l10n.NodeL10n;
-import freenet.node.FSParseException;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarter;
-import freenet.node.SemiOrderedShutdownHook;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
-import freenet.support.SimpleFieldSet;
-import freenet.support.io.Closer;
-import freenet.support.io.FileUtil;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class BookmarkManager implements RequestClient {
 
@@ -84,16 +80,16 @@ public class BookmarkManager implements RequestClient {
 			// Read the backup file if necessary
 			if (!bookmarksFile.exists() || bookmarksFile.length() == 0)
 				throw new IOException();
-			Logger.normal(this, "Attempting to read the bookmark file from " + bookmarksFile.toString());
+			Logger.normal(this, "Attempting to read the bookmark file from " + bookmarksFile);
 			SimpleFieldSet sfs = SimpleFieldSet.readFrom(bookmarksFile, false, true);
 			readBookmarks(MAIN_CATEGORY, sfs);
 		} catch (MalformedURLException mue) {
 		} catch (IOException ioe) {
-			Logger.error(this, "Error reading the bookmark file (" + bookmarksFile.toString() + "):" + ioe.getMessage(), ioe);
+			Logger.error(this, "Error reading the bookmark file (" + bookmarksFile + "):" + ioe.getMessage(), ioe);
 
 			try {
 				if (backupBookmarksFile.exists() && backupBookmarksFile.canRead() && backupBookmarksFile.length() > 0) {
-					Logger.normal(this, "Attempting to read the backup bookmark file from " + backupBookmarksFile.toString());
+					Logger.normal(this, "Attempting to read the backup bookmark file from " + backupBookmarksFile);
 					SimpleFieldSet sfs = SimpleFieldSet.readFrom(backupBookmarksFile, false, true);
 					readBookmarks(MAIN_CATEGORY, sfs);
 				} else {
@@ -377,7 +373,7 @@ public class BookmarkManager implements RequestClient {
 			fos.close();
 			fos = null;
 			if (!FileUtil.renameTo(backupBookmarksFile, bookmarksFile))
-				Logger.error(this, "Unable to rename " + backupBookmarksFile.toString() + " to " + bookmarksFile.toString());
+				Logger.error(this, "Unable to rename " + backupBookmarksFile + " to " + bookmarksFile);
 		} catch (IOException ioe) {
 			Logger.error(this, "An error has occured saving the bookmark file :" + ioe.getMessage(), ioe);
 		} finally {

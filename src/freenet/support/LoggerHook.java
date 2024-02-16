@@ -27,7 +27,7 @@ public abstract class LoggerHook extends Logger {
 	}
 
 	public DetailedThreshold[] detailedThresholds = new DetailedThreshold[0];
-	private CopyOnWriteArrayList<LogThresholdCallback> thresholdsCallbacks = new CopyOnWriteArrayList<LogThresholdCallback>();
+	private final CopyOnWriteArrayList<LogThresholdCallback> thresholdsCallbacks = new CopyOnWriteArrayList<LogThresholdCallback>();
 
 	/**
 	 * Log a message
@@ -146,7 +146,7 @@ public abstract class LoggerHook extends Logger {
 			if (x == token.length() - 1)
 				continue;
 			String section = token.substring(0, x);
-			String value = token.substring(x + 1, token.length());
+			String value = token.substring(x + 1);
 			stuff.add(new DetailedThreshold(section, parseThreshold(value.toUpperCase())));
 		}
 		DetailedThreshold[] newThresholds = new DetailedThreshold[stuff.size()];

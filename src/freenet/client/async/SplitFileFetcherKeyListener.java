@@ -1,12 +1,5 @@
 package freenet.client.async;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-
 import freenet.client.FetchException;
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.crypt.ChecksumFailedException;
@@ -21,6 +14,13 @@ import freenet.support.BloomFilter;
 import freenet.support.CountingBloomFilter;
 import freenet.support.Logger;
 import freenet.support.io.StorageFormatException;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 
 public class SplitFileFetcherKeyListener implements KeyListener {
 
@@ -108,7 +108,7 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 		this.persistent = persistent;
 		int mainElementsPerKey = DEFAULT_MAIN_BLOOM_ELEMENTS_PER_KEY;
 		mainBloomK = (int) (mainElementsPerKey * 0.7);
-		long elementsLong = origSize * mainElementsPerKey;
+		long elementsLong = (long) origSize * mainElementsPerKey;
 		// REDFLAG: SIZE LIMIT: 3.36TB limit!
 		if (elementsLong > Integer.MAX_VALUE)
 			throw new FetchException(FetchExceptionMode.TOO_BIG, "Cannot fetch splitfiles with more than " + (Integer.MAX_VALUE / mainElementsPerKey) + " keys! (approx 3.3TB)");

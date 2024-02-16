@@ -1,16 +1,16 @@
 package freenet.node.useralerts;
 
 public interface UserEvent extends UserAlert {
-	public enum Type {
+	enum Type {
 		Announcer(true), GetCompleted, PutCompleted, PutDirCompleted;
 
-		private boolean unregisterIndefinitely;
+		private final boolean unregisterIndefinitely;
 
-		private Type(boolean unregisterIndefinetely) {
+		Type(boolean unregisterIndefinetely) {
 			this.unregisterIndefinitely = unregisterIndefinetely;
 		}
 
-		private Type() {
+		Type() {
 			unregisterIndefinitely = false;
 		}
 
@@ -23,10 +23,8 @@ public interface UserEvent extends UserAlert {
 		}
 	}
 
-	;
-
 	/**
 	 * @return The type of the event
 	 */
-	public Type getEventType();
+	Type getEventType();
 }

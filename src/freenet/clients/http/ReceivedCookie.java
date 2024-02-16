@@ -3,13 +3,13 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
+import freenet.support.Logger;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-
-import freenet.support.Logger;
 
 /**
  * A cookie which the server has received from the client.
@@ -29,7 +29,7 @@ public final class ReceivedCookie extends Cookie {
 
 	private String notValidatedName;
 
-	private Hashtable<String, String> content;
+	private final Hashtable<String, String> content;
 
 
 	/**
@@ -60,7 +60,7 @@ public final class ReceivedCookie extends Cookie {
 	 * @return A list of {@link ReceivedCookie} objects. The validity of their name/value pairs is not deeply checked, their getName() / getValue() might throw!
 	 * @throws ParseException If the general formatting of the cookie is wrong.
 	 */
-	protected static ArrayList<ReceivedCookie> parseHeader(String httpHeader) throws ParseException {
+	static ArrayList<ReceivedCookie> parseHeader(String httpHeader) throws ParseException {
 
 		if (logMINOR)
 			Logger.minor(ReceivedCookie.class, "Received HTTP cookie header:" + httpHeader);

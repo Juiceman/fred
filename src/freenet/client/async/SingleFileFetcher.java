@@ -3,53 +3,29 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.BufferedInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import freenet.client.ArchiveContext;
-import freenet.client.ArchiveExtractCallback;
-import freenet.client.ArchiveFailureException;
-import freenet.client.ArchiveHandler;
-import freenet.client.ArchiveManager;
-import freenet.client.ArchiveRestartException;
-import freenet.client.ClientMetadata;
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.FetchResult;
-import freenet.client.Metadata;
-import freenet.client.MetadataParseException;
 import freenet.client.InsertContext.CompatibilityMode;
 import freenet.crypt.HashResult;
 import freenet.crypt.MultiHashInputStream;
-import freenet.keys.BaseClientKey;
-import freenet.keys.ClientCHK;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientKeyBlock;
-import freenet.keys.ClientSSK;
-import freenet.keys.FreenetURI;
-import freenet.keys.USK;
+import freenet.keys.*;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.compress.Compressor;
-import freenet.support.compress.DecompressorThreadManager;
 import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
+import freenet.support.compress.DecompressorThreadManager;
 import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
 import freenet.support.io.InsufficientDiskSpaceException;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Does most of the complicated metadata handling for fetching single files.
@@ -95,7 +71,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 	 * Archive handler. We can only have one archive handler at a time.
 	 */
 	private ArchiveHandler ah;
-	private int recursionLevel;
+	private final int recursionLevel;
 	/**
 	 * The URI of the currently-being-processed data, for archives etc.
 	 */
@@ -311,14 +287,13 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				// TOO_MANY_PATH_COMPONENTS
 				// report to user
 				if (logMINOR) {
-					Logger.minor(this, "Too many path components: for " + uri + " meta=" + metaStrings.toString());
+					Logger.minor(this, "Too many path components: for " + uri + " meta=" + metaStrings);
 				}
 				FreenetURI tryURI = uri;
 				tryURI = tryURI.dropLastMetaStrings(metaStrings.size());
 				rcb.onFailure(new FetchException(FetchExceptionMode.TOO_MANY_PATH_COMPONENTS, result.size(), (rcb == parent), result.getMimeType(), tryURI), this, context);
 			}
 			result.asBucket().free();
-			return;
 		} else if (result.size() > ctx.maxOutputLength) {
 			rcb.onFailure(new FetchException(FetchExceptionMode.TOO_BIG, result.size(), (rcb == parent), result.getMimeType()), this, context);
 			result.asBucket().free();
@@ -458,7 +433,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 					// Do loop detection on the archive that we are about to fetch.
 					actx.doLoopDetection(thisKey);
 					ah = context.archiveManager.makeHandler(thisKey, metadata.getArchiveType(), metadata.getCompressionCodec(),
-							(parent instanceof ClientGetter ? ((ClientGetter) parent).collectingBinaryBlob() : false), persistent);
+							(parent instanceof ClientGetter && ((ClientGetter) parent).collectingBinaryBlob()), persistent);
 				}
 				archiveMetadata = metadata;
 				metadata = null; // Copied to archiveMetadata, so do not need to clear it
@@ -491,11 +466,9 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 							} catch (MetadataParseException e) {
 								// Invalid metadata
 								onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, e), false, context);
-								return;
 							} catch (IOException e) {
 								// Bucket error?
 								onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), false, context);
-								return;
 							}
 						}
 
@@ -1133,14 +1106,11 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				innerWrapHandleMetadata(true, context);
 			} catch (MetadataParseException e) {
 				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, e), false, context);
-				return;
 			} catch (InsufficientDiskSpaceException e) {
 				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
-				return;
 			} catch (IOException e) {
 				// Bucket error?
 				SingleFileFetcher.this.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), false, context);
-				return;
 			} finally {
 				finalData.free();
 			}
@@ -1208,7 +1178,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 		if (!hasInitialMetadata)
 			key = BaseClientKey.getBaseKey(uri);
 		if ((!uri.hasMetaStrings()) &&
-				ctx.allowSplitfiles == false && ctx.followRedirects == false &&
+				!ctx.allowSplitfiles && !ctx.followRedirects &&
 				key instanceof ClientKey && (!hasInitialMetadata))
 			return new SimpleSingleFileFetcher((ClientKey) key, maxRetries, ctx, requester, cb, isEssential, false, l, context, false, realTimeFlag);
 		if (key instanceof ClientKey || hasInitialMetadata)

@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
+import freenet.client.Metadata.SplitfileAlgorithm;
+import freenet.client.events.ClientEventProducer;
+import freenet.client.events.SimpleEventProducer;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import freenet.client.Metadata.SplitfileAlgorithm;
-import freenet.client.events.ClientEventProducer;
-import freenet.client.events.SimpleEventProducer;
 
 /**
  * Context object for an insert operation, including both simple and multi-file inserts.
@@ -94,7 +94,7 @@ public class InsertContext implements Cloneable, Serializable {
 	 * systems for keys and Metadata, which will be set as appropriate for an insert depending on
 	 * the CompatibilityMode.
 	 */
-	public static enum CompatibilityMode {
+	public enum CompatibilityMode {
 
 		/**
 		 * We do not know.
@@ -349,9 +349,7 @@ public class InsertContext implements Cloneable, Serializable {
 			return false;
 		if (splitfileSegmentCheckBlocks != other.splitfileSegmentCheckBlocks)
 			return false;
-		if (splitfileSegmentDataBlocks != other.splitfileSegmentDataBlocks)
-			return false;
-		return true;
+		return splitfileSegmentDataBlocks == other.splitfileSegmentDataBlocks;
 	}
 
 	public SplitfileAlgorithm getSplitfileAlgorithm() {

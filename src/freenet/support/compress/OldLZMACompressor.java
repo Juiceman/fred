@@ -3,13 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.compress;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-
 import SevenZip.Compression.LZMA.Decoder;
 import SevenZip.Compression.LZMA.Encoder;
 import freenet.support.LogThresholdCallback;
@@ -20,6 +13,8 @@ import freenet.support.api.BucketFactory;
 import freenet.support.io.Closer;
 import freenet.support.io.CountedInputStream;
 import freenet.support.io.CountedOutputStream;
+
+import java.io.*;
 
 public class OldLZMACompressor implements Compressor {
 	private static volatile boolean logMINOR;
@@ -36,7 +31,7 @@ public class OldLZMACompressor implements Compressor {
 	// Copied from EncoderThread. See below re licensing.
 	@Deprecated
 	@Override
-	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength) throws IOException, CompressionOutputSizeException {
+	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength) throws IOException {
 		Logger.warning(this, "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
 		Bucket output;
 		InputStream is = null;
@@ -62,7 +57,7 @@ public class OldLZMACompressor implements Compressor {
 
 	@Deprecated
 	@Override
-	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength) throws IOException, CompressionOutputSizeException {
+	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength) throws IOException {
 		Logger.warning(this, "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
 		CountedInputStream cis = null;
 		CountedOutputStream cos = null;
@@ -89,7 +84,7 @@ public class OldLZMACompressor implements Compressor {
 		throw new UnsupportedEncodingException();
 	}
 
-	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException, CompressionOutputSizeException {
+	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException {
 		Bucket output;
 		if (preferred != null)
 			output = preferred;
@@ -135,7 +130,7 @@ public class OldLZMACompressor implements Compressor {
 	}
 
 	@Override
-	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
+	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException {
 		CountedOutputStream cos = new CountedOutputStream(os);
 		Decoder decoder = new Decoder();
 		decoder.SetDecoderProperties(props);

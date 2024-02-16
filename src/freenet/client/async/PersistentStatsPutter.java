@@ -3,11 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.Serializable;
-
 import freenet.node.Node;
 import freenet.support.BandwidthStatsContainer;
 import freenet.support.UptimeContainer;
+
+import java.io.Serializable;
 
 /**
  * Add/alter the containers contained in the database, so that
@@ -23,8 +23,8 @@ public class PersistentStatsPutter implements Serializable {
 	private long latestNodeBytesOut = 0;
 	private long latestNodeBytesIn = 0;
 	private long latestUptimeVal = 0;
-	private BandwidthStatsContainer latestBW = new BandwidthStatsContainer();
-	private UptimeContainer latestUptime = new UptimeContainer();
+	private final BandwidthStatsContainer latestBW = new BandwidthStatsContainer();
+	private final UptimeContainer latestUptime = new UptimeContainer();
 
 	public BandwidthStatsContainer getLatestBWData() {
 		return this.latestBW;

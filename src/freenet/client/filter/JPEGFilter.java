@@ -3,21 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.CountedInputStream;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Content filter for JPEG's.
@@ -71,14 +66,14 @@ public class JPEGFilter implements ContentDataFilter {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		readFilter(input, output, charset, otherParams, cb, deleteComments, deleteExif);
 		output.flush();
 	}
 
 	public void readFilter(InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
 						   FilterCallback cb, boolean deleteComments, boolean deleteExif)
-			throws DataFilterException, IOException {
+			throws IOException {
 		CountedInputStream cis = new CountedInputStream(input);
 		DataInputStream dis = new DataInputStream(cis);
 		assertHeader(dis, soi);

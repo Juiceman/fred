@@ -3,10 +3,10 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
-import java.io.IOException;
-
 import freenet.support.api.Bucket;
 import freenet.support.api.BucketFactory;
+
+import java.io.IOException;
 
 /**
  * A KeyBlock with a ClientKey. Can be decoded. Not a child of KeyBlock because of issues with equals().
@@ -29,14 +29,14 @@ public interface ClientKeyBlock {
 	/**
 	 * @return The ClientKey for this key.
 	 */
-	public ClientKey getClientKey();
+	ClientKey getClientKey();
 
-	public byte[] memoryDecode() throws KeyDecodeException;
+	byte[] memoryDecode() throws KeyDecodeException;
 
 	/**
 	 * @return The underlying KeyBlock.
 	 */
-	public KeyBlock getBlock();
+	KeyBlock getBlock();
 
 	/**
 	 * @return The low-level Key for the block.
@@ -49,12 +49,12 @@ public interface ClientKeyBlock {
 	 * too. Hence it's really a different kind of object, so not a child.
 	 */
 	@Override
-	public boolean equals(Object o);
+	boolean equals(Object o);
 
 	/**
 	 * Please be consistent with equals()
 	 */
 	@Override
-	public int hashCode();
+	int hashCode();
 
 }

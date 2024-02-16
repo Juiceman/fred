@@ -10,6 +10,6 @@ package freenet.node;
  */
 public interface PrioRunnable extends Runnable {
 
-	public int getPriority();
+	int getPriority();
 
 }

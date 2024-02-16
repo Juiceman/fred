@@ -3,15 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import org.tanukisoftware.wrapper.WrapperListener;
-import org.tanukisoftware.wrapper.WrapperManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Properties;
-import java.util.UUID;
-
 import freenet.config.FreenetFilePersistentConfig;
 import freenet.config.InvalidConfigValueException;
 import freenet.config.PersistentConfig;
@@ -20,15 +11,18 @@ import freenet.crypt.JceLoader;
 import freenet.crypt.RandomSource;
 import freenet.crypt.SSL;
 import freenet.crypt.Yarrow;
-import freenet.support.Executor;
-import freenet.support.JVMVersion;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
 import freenet.support.LoggerHook.InvalidThresholdException;
-import freenet.support.PooledExecutor;
-import freenet.support.ProcessPriority;
-import freenet.support.SimpleFieldSet;
 import freenet.support.io.NativeThread;
+import org.tanukisoftware.wrapper.WrapperListener;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.Properties;
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -416,7 +410,7 @@ public class NodeStarter implements WrapperListener {
 		 * Each one will start with a fresh empty subdirectory for as long as each of them uses a
 		 * unique port number.
 		 */
-		public File baseDirectory = new File("freenet-test-node-" + UUID.randomUUID().toString());
+		public File baseDirectory = new File("freenet-test-node-" + UUID.randomUUID());
 		public boolean disableProbabilisticHTLs;
 		public short maxHTL;
 		public int dropProb;

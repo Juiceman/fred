@@ -18,12 +18,9 @@
 
 package freenet.support;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import freenet.support.io.FileUtil;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -34,8 +31,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-
-import freenet.support.io.FileUtil;
 
 /**
  * Class loader that loads classes from a JAR file. The JAR file gets copied

@@ -3,10 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import freenet.pluginmanager.FredPluginFCPMessageHandler;
 import freenet.pluginmanager.FredPluginFCPMessageHandler.ClientSideFCPMessageHandler;
 import freenet.pluginmanager.FredPluginFCPMessageHandler.ServerSideFCPMessageHandler;
@@ -15,6 +11,10 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An FCP connection between:<br>
@@ -104,7 +104,7 @@ public interface FCPPluginConnection {
 	 * Thus, to prevent us from having to duplicate the send functions, this enum specifies in which
 	 * situation we are.
 	 */
-	public static enum SendDirection {
+	enum SendDirection {
 		ToServer,
 		ToClient;
 
@@ -167,9 +167,9 @@ public interface FCPPluginConnection {
 	 *                  To ensure this, always construct a fresh FCPPluginMessage object when re-sending a
 	 *                  message. If you use the constructor which allows specifying your own identifier, always
 	 *                  generate a fresh, random identifier.<br>
-	 *                                       TODO: Code quality: Add a flag to FCPPluginMessage which marks the message as sent and
-	 *                                       use it to log an error if someone tries to send the same message twice.
-	 *                                       <br><br>
+	 *                                                        TODO: Code quality: Add a flag to FCPPluginMessage which marks the message as sent and
+	 *                                                        use it to log an error if someone tries to send the same message twice.
+	 *                                                        <br><br>
 	 * @throws IOException If the connection has been closed meanwhile.<br/>
 	 *                     This FCPPluginConnection <b>should be</b> considered as dead once this happens, you
 	 *                     should then discard it and obtain a fresh one.
@@ -187,7 +187,7 @@ public interface FCPPluginConnection {
 	 * messages arrived, to ensure a certain order of arrival, or to know the reply to a
 	 * message.
 	 */
-	public void send(SendDirection direction, FCPPluginMessage message) throws IOException;
+	void send(SendDirection direction, FCPPluginMessage message) throws IOException;
 
 	/**
 	 * Same as {@link #send(SendDirection, FCPPluginMessage)} with the {@link SendDirection}
@@ -211,7 +211,7 @@ public interface FCPPluginConnection {
 	 * handlePluginFCPMessage(FCPPluginConnection, FCPPluginMessage)}.<br>
 	 * - from the return value of {@link PluginRespirator#getPluginConnectionByID(UUID)}.<br>
 	 */
-	public void send(FCPPluginMessage message) throws IOException;
+	void send(FCPPluginMessage message) throws IOException;
 
 
 	/**
@@ -359,7 +359,7 @@ public interface FCPPluginConnection {
 	 * @see #send(SendDirection, FCPPluginMessage)
 	 * The non-blocking, asynchronous send() should be used instead of this whenever possible.
 	 */
-	public FCPPluginMessage sendSynchronous(
+	FCPPluginMessage sendSynchronous(
 			SendDirection direction, FCPPluginMessage message, long timeoutNanoSeconds)
 			throws IOException, InterruptedException;
 
@@ -372,7 +372,7 @@ public interface FCPPluginConnection {
 	 * For an explanation of how the default send direction is determined, see
 	 * {@link #send(FCPPluginMessage)}.
 	 */
-	public FCPPluginMessage sendSynchronous(FCPPluginMessage message, long timeoutNanoSeconds)
+	FCPPluginMessage sendSynchronous(FCPPluginMessage message, long timeoutNanoSeconds)
 			throws IOException, InterruptedException;
 
 
@@ -380,11 +380,11 @@ public interface FCPPluginConnection {
 	 * @return A unique identifier among all FCPPluginConnections.
 	 * @see The ID can be used with {@link PluginRespirator#getPluginConnectionByID(UUID)}.
 	 */
-	public UUID getID();
+	UUID getID();
 
 	/**
 	 * @return A verbose String containing the internal state. Useful for debug logs.
 	 */
-	public String toString();
+	String toString();
 
 }

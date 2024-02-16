@@ -3,60 +3,28 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.Enumeration;
-import java.util.Map;
-
 import freenet.crypt.Util;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.FreenetInetAddress;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.Peer;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.io.comm.RetrievalException;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
+import freenet.io.comm.*;
 import freenet.io.xfer.BulkReceiver;
 import freenet.io.xfer.BulkTransmitter;
 import freenet.io.xfer.BulkTransmitter.AllSentCallback;
 import freenet.io.xfer.PartiallyReceivedBulk;
 import freenet.node.OpennetPeerNode.NOT_DROP_REASON;
-import freenet.support.Fields;
-import freenet.support.HTMLNode;
-import freenet.support.LRUQueue;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.SimpleFieldSet;
-import freenet.support.TimeSortedHashtable;
 import freenet.support.io.ByteArrayRandomAccessBuffer;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NativeThread;
 import freenet.support.transport.ip.HostnameSyntaxException;
 import freenet.support.transport.ip.IPUtil;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * Central location for all things opennet.
@@ -398,7 +366,7 @@ public class OpennetManager {
 		br.close();
 		// Read contents
 		String[] udp = fs.getAll("physical.udp");
-		if ((udp != null) && (udp.length > 0)) {
+		if (udp != null) {
 			for (String u : udp) {
 				// Just keep the first one with the correct port number.
 				Peer p;
@@ -409,7 +377,7 @@ public class OpennetManager {
 					System.err.println("Invalid hostname or IP Address syntax error while loading opennet peer node reference: " + u);
 					continue;
 				} catch (PeerParseException e) {
-					throw (IOException) new IOException().initCause(e);
+					throw (IOException) new IOException(e);
 				}
 				if (p.getPort() == crypto.portNumber) {
 					// DNSRequester doesn't deal with our own node
@@ -624,7 +592,7 @@ public class OpennetManager {
 		long now = System.currentTimeMillis();
 		if (logMINOR)
 			Logger.minor(this, "wantPeer(" + (nodeToAddNow != null) + "," + addAtLRU + "," + justChecking + "," + oldOpennetPeer + "," + connectionType + "," + distance + ")");
-		boolean outdated = nodeToAddNow == null ? false : nodeToAddNow.isUnroutableOlderVersion();
+		boolean outdated = nodeToAddNow != null && nodeToAddNow.isUnroutableOlderVersion();
 		if (outdated && logMINOR)
 			Logger.minor(this, "Peer is outdated: " + nodeToAddNow.getVersionNumber() + " for " + connectionType);
 		if (outdated) {
@@ -948,7 +916,7 @@ public class OpennetManager {
 					Logger.minor(this, "Not disconnecting");
 					if (map != null)
 						for (Map.Entry<NOT_DROP_REASON, Integer> entry : map.entrySet()) {
-							Logger.minor(this, "" + entry.getKey() + " : " + entry.getValue());
+							Logger.minor(this, entry.getKey() + " : " + entry.getValue());
 						}
 				}
 				return null;
@@ -983,7 +951,7 @@ public class OpennetManager {
 				Logger.minor(this, "Nothing to drop");
 				if (map != null)
 					for (Map.Entry<NOT_DROP_REASON, Integer> entry : map.entrySet()) {
-						Logger.minor(this, "" + entry.getKey() + " : " + entry.getValue());
+						Logger.minor(this, entry.getKey() + " : " + entry.getValue());
 					}
 			}
 		}

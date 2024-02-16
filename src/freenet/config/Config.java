@@ -3,21 +3,19 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.config;
 
+import freenet.support.Logger;
+
 import java.io.IOException;
 import java.util.LinkedHashMap;
-
-import freenet.support.Logger;
 
 /**
  * Global configuration object for a node. SubConfig's register here.
  * Handles writing to a file etc.
  */
 public class Config {
-	public static enum RequestType {
+	public enum RequestType {
 		CURRENT_SETTINGS, DEFAULT_SETTINGS, SORT_ORDER, EXPERT_FLAG, FORCE_WRITE_FLAG, SHORT_DESCRIPTION, LONG_DESCRIPTION, DATA_TYPE
 	}
-
-	;
 
 	protected final LinkedHashMap<String, SubConfig> configsByPrefix;
 

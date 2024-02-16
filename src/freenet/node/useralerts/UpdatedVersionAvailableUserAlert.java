@@ -3,8 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.useralerts;
 
-import java.io.File;
-
 import freenet.l10n.NodeL10n;
 import freenet.node.Node;
 import freenet.node.updater.NodeUpdateManager;
@@ -12,6 +10,8 @@ import freenet.node.updater.RevocationChecker;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.TimeUtil;
+
+import java.io.File;
 
 public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 	private final NodeUpdateManager updater;

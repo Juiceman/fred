@@ -33,5 +33,5 @@ public interface FredPluginConfigurable extends FredPluginL10n {
 	 * thread. Plugins should register options on the supplied
 	 * SubConfig, but they should not do any other initialization.
 	 */
-	public void setupConfig(SubConfig subconfig);
+	void setupConfig(SubConfig subconfig);
 }

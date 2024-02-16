@@ -15,12 +15,11 @@ class FlacMetadataBlock extends FlacPacket {
 		CUESHEET, PICTURE, UNKNOWN, INVALID
 	}
 
-	;
-	private FlacMetadataBlockHeader header = new FlacMetadataBlockHeader();
+	private final FlacMetadataBlockHeader header = new FlacMetadataBlockHeader();
 
 	FlacMetadataBlock(int header, byte[] payload) {
 		super(payload);
-		this.header.lastMetadataBlock = ((header & 0x80000000) >>> 31) == 1 ? true : false;
+		this.header.lastMetadataBlock = ((header & 0x80000000) >>> 31) == 1;
 		this.header.block_type = (byte) ((header & 0x7F000000) >>> 24);
 		this.header.length = (header & 0x00FFFFFF);
 	}

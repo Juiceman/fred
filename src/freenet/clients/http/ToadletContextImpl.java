@@ -1,11 +1,21 @@
 package freenet.clients.http;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import freenet.clients.http.FProxyFetchInProgress.REFILTER_POLICY;
+import freenet.clients.http.annotation.AllowData;
+import freenet.clients.http.bookmark.BookmarkManager;
+import freenet.l10n.NodeL10n;
+import freenet.node.useralerts.UserAlertManager;
+import freenet.support.*;
+import freenet.support.Logger.LogLevel;
+import freenet.support.api.Bucket;
+import freenet.support.api.BucketFactory;
+import freenet.support.api.HTTPRequest;
+import freenet.support.io.BucketTools;
+import freenet.support.io.FileUtil;
+import freenet.support.io.LineReadingInputStream;
+import freenet.support.io.TooLongException;
+
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -16,33 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.StringJoiner;
-import java.util.TimeZone;
-
-import freenet.clients.http.FProxyFetchInProgress.REFILTER_POLICY;
-import freenet.clients.http.annotation.AllowData;
-import freenet.clients.http.bookmark.BookmarkManager;
-import freenet.l10n.NodeL10n;
-import freenet.node.useralerts.UserAlertManager;
-import freenet.support.HTMLEncoder;
-import freenet.support.HTMLNode;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
-import freenet.support.MultiValueTable;
-import freenet.support.TimeUtil;
-import freenet.support.URIPreEncoder;
-import freenet.support.api.Bucket;
-import freenet.support.api.BucketFactory;
-import freenet.support.api.HTTPRequest;
-import freenet.support.io.BucketTools;
-import freenet.support.io.FileUtil;
-import freenet.support.io.LineReadingInputStream;
-import freenet.support.io.TooLongException;
+import java.util.*;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 
@@ -55,7 +39,7 @@ import static java.util.concurrent.TimeUnit.DAYS;
  */
 public class ToadletContextImpl implements ToadletContext {
 
-	private static final Class<?> HANDLE_PARAMETERS[] = new Class<?>[]{
+	private static final Class<?>[] HANDLE_PARAMETERS = new Class<?>[]{
 			URI.class, HTTPRequest.class, ToadletContext.class
 	};
 
@@ -84,7 +68,7 @@ public class ToadletContextImpl implements ToadletContext {
 	 */
 	private final String uniqueId;
 
-	private URI uri;
+	private final URI uri;
 
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
@@ -181,7 +165,7 @@ public class ToadletContextImpl implements ToadletContext {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		pw.close();
-		String message = "<html><head><title>" + l10n("uriParseErrorTitle") + "</title></head><body><p>" + HTMLEncoder.encode(e.getMessage()) + "</p><pre>\n" + sw.toString();
+		String message = "<html><head><title>" + l10n("uriParseErrorTitle") + "</title></head><body><p>" + HTMLEncoder.encode(e.getMessage()) + "</p><pre>\n" + sw;
 		sendHTMLError(os, 400, "Bad Request", message, shouldDisconnect, null);
 	}
 
@@ -209,9 +193,7 @@ public class ToadletContextImpl implements ToadletContext {
 
 	@Override
 	public void sendReplyHeadersFProxy(int replyCode, String replyDescription, MultiValueTable<String, String> mvt, String mimeType, long contentLength) throws ToadletContextClosedException, IOException {
-		boolean enableJavascript = false;
-		if (container.isFProxyWebPushingEnabled() && container.isFProxyJavascriptEnabled())
-			enableJavascript = true;
+		boolean enableJavascript = container.isFProxyWebPushingEnabled() && container.isFProxyJavascriptEnabled();
 		sendReplyHeaders(replyCode, replyDescription, mvt, mimeType, contentLength, null, false, true, enableJavascript);
 	}
 
@@ -388,18 +370,14 @@ public class ToadletContextImpl implements ToadletContext {
 
 		boolean allowCaching; // For privacy reasons, only static
 		// content may be cached
-		if (mTime == null) {
-			allowCaching = false;
-		} else {
-			allowCaching = true;
-		}
+		allowCaching = mTime != null;
 		String expiresTime;
 		String cacheControl;
 		if (allowCaching) {
 			// use an expiry time of 30 day from now, about the frequency of Freenet releases
 			// Expires is needed for older browsers
 			expiresTime = TimeUtil.makeHTTPDate(System.currentTimeMillis() + DAYS.toMillis(30));
-			cacheControl = "public, max-age=" + String.valueOf(3600 * 24 * 30);
+			cacheControl = "public, max-age=" + 3600 * 24 * 30;
 		} else {
 			expiresTime = "Thu, 01 Jan 1970 00:00:00 GMT";
 			// no-cache for Internet Explorer, no-store for Firefox
@@ -451,20 +429,19 @@ public class ToadletContextImpl implements ToadletContext {
 	}
 
 	private static String generateCSP(boolean allowScripts, boolean allowFrames) {
-		StringBuilder sb = new StringBuilder();
 		// allow access to blobs, because these are purely local
-		sb.append("default-src 'self' blob:; script-src ");
-		// "options inline-script" is old syntax needed for older Firefox's.
-		sb.append(allowScripts
-				? "'self' 'unsafe-inline'; options inline-script"
-				: generateRestrictedScriptSrc());
-		sb.append("; frame-src ");
-		sb.append(allowFrames ? "'self'" : "'none'");
-		sb.append("; object-src 'none'");
-		// Always send unsafe-inline for CSS. This is safe given it can't use external stuff anyway.
-		// It's only strictly needed for fproxy.
-		sb.append("; style-src 'self' 'unsafe-inline'");
-		return sb.toString();
+		String sb = "default-src 'self' blob:; script-src " +
+				// "options inline-script" is old syntax needed for older Firefox's.
+				(allowScripts
+						? "'self' 'unsafe-inline'; options inline-script"
+						: generateRestrictedScriptSrc()) +
+				"; frame-src " +
+				(allowFrames ? "'self'" : "'none'") +
+				"; object-src 'none'" +
+				// Always send unsafe-inline for CSS. This is safe given it can't use external stuff anyway.
+				// It's only strictly needed for fproxy.
+				"; style-src 'self' 'unsafe-inline'";
+		return sb;
 	}
 
 	private static String generateRestrictedScriptSrc() {
@@ -768,7 +745,7 @@ public class ToadletContextImpl implements ToadletContext {
 				}
 			}
 			ctx.setActiveToadlet(t);
-			Object arglist[] = new Object[]{uri, req, ctx};
+			Object[] arglist = new Object[]{uri, req, ctx};
 			m.invoke(t, arglist);
 		} catch (InvocationTargetException ite) {
 			throw ite.getCause();
@@ -800,11 +777,8 @@ public class ToadletContextImpl implements ToadletContext {
 			if (connection.equalsIgnoreCase("keep-alive"))
 				return false;
 		}
-		if (isHTTP10 == true)
-			return true;
-		else
-			// HTTP 1.1
-			return false;
+		// HTTP 1.1
+		return isHTTP10;
 	}
 
 	@Override

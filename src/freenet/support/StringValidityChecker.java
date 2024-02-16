@@ -102,20 +102,20 @@ public final class StringValidityChecker {
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<Character> windowsReservedPrintableFilenameCharacters = new HashSet<Character>(Arrays.asList(
-			new Character[]{'/', '\\', '?', '*', ':', '|', '\"', '<', '>'}));
+			'/', '\\', '?', '*', ':', '|', '\"', '<', '>'));
 
 	/**
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<String> windowsReservedFilenames = new HashSet<String>(Arrays.asList(
-			new String[]{"aux", "clock$", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "con",
-					"lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "nul", "prn"}));
+			"aux", "clock$", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "con",
+			"lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "nul", "prn"));
 
 	/**
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<Character> macOSReservedPrintableFilenameCharacters = new HashSet<Character>(Arrays.asList(
-			new Character[]{':', '/'}));
+			':', '/'));
 
 
 	/**

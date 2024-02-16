@@ -27,8 +27,8 @@ public interface ArchiveHandler {
 	 * @throws FetchException         If the container could not be fetched.
 	 * @throws MetadataParseException If there was an error parsing intermediary metadata.
 	 */
-	public abstract Bucket getMetadata(ArchiveContext archiveContext,
-									   ArchiveManager manager)
+	Bucket getMetadata(ArchiveContext archiveContext,
+					   ArchiveManager manager)
 			throws ArchiveFailureException, ArchiveRestartException,
 			MetadataParseException, FetchException;
 
@@ -44,20 +44,20 @@ public interface ArchiveHandler {
 	 * @throws FetchException
 	 * @throws MetadataParseException
 	 */
-	public abstract Bucket get(String internalName,
-							   ArchiveContext archiveContext, ArchiveManager manager)
+	Bucket get(String internalName,
+			   ArchiveContext archiveContext, ArchiveManager manager)
 			throws ArchiveFailureException, ArchiveRestartException,
 			MetadataParseException, FetchException;
 
 	/**
 	 * Get the archive type.
 	 */
-	public abstract ARCHIVE_TYPE getArchiveType();
+	ARCHIVE_TYPE getArchiveType();
 
 	/**
 	 * Get the key.
 	 */
-	public abstract FreenetURI getKey();
+	FreenetURI getKey();
 
 	/**
 	 * Unpack a fetched archive to cache, and call the callback if there is one.
@@ -70,9 +70,9 @@ public interface ArchiveHandler {
 	 * @throws ArchiveFailureException
 	 * @throws ArchiveRestartException
 	 */
-	public abstract void extractToCache(Bucket bucket, ArchiveContext actx, String element, ArchiveExtractCallback callback, ArchiveManager manager,
-										ClientContext context) throws ArchiveFailureException, ArchiveRestartException;
+	void extractToCache(Bucket bucket, ArchiveContext actx, String element, ArchiveExtractCallback callback, ArchiveManager manager,
+						ClientContext context) throws ArchiveFailureException, ArchiveRestartException;
 
-	public abstract ArchiveHandler cloneHandler();
+	ArchiveHandler cloneHandler();
 
 }

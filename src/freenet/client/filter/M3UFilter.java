@@ -3,17 +3,13 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import freenet.clients.http.ExternalLinkToadlet;
+import freenet.l10n.NodeL10n;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
-
-import freenet.clients.http.ExternalLinkToadlet;
-import freenet.l10n.NodeL10n;
 
 /**
  * Content filter for M3Us
@@ -63,7 +59,7 @@ public class M3UFilter implements ContentDataFilter {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		// TODO: Check the header whether this is an ext m3u.
 		// TODO: Check the EXTINF headers instead of killing comments.
 		// Check whether the line is a comment
@@ -77,11 +73,7 @@ public class M3UFilter implements ContentDataFilter {
 		readcount = dis.read(nextbyte);
 		// read each line manually
 		while (readcount != -1) {
-			if (isCommentStart(nextbyte)) {
-				isComment = true;
-			} else {
-				isComment = false;
-			}
+			isComment = isCommentStart(nextbyte);
 			// skip empty lines
 			if (isNewline(nextbyte)) {
 				readcount = dis.read(nextbyte);

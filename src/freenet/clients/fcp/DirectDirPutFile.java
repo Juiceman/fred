@@ -1,14 +1,14 @@
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.RandomAccessBucket;
 import freenet.support.io.BucketTools;
 import freenet.support.io.NullBucket;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Specialized DirPutFile for direct uploads.
@@ -28,7 +28,7 @@ public class DirectDirPutFile extends DirPutFile {
 		try {
 			length = Long.parseLong(s);
 		} catch (NumberFormatException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Could not parse DataLength: " + e.toString(), identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Could not parse DataLength: " + e, identifier, global);
 		}
 		try {
 			if (length == 0)
@@ -36,7 +36,7 @@ public class DirectDirPutFile extends DirPutFile {
 			else
 				data = bf.makeBucket(length);
 		} catch (IOException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR, "Internal error: could not allocate temp bucket: " + e.toString(), identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR, "Internal error: could not allocate temp bucket: " + e, identifier, global);
 		}
 		String mimeType;
 		if (contentTypeOverride == null)

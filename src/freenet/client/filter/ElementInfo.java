@@ -223,7 +223,7 @@ public class ElementInfo {
 			)));
 
 	public static final Set<String> BANNED_PSEUDOCLASS =
-			Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+			Collections.unmodifiableSet(new HashSet<String>(Collections.singletonList(
 					// :visited is considered harmful as it may leak browser history to an adversary.
 					// This may not be obvious immediately, but :visited gives an adversary the
 					// opportunity to tailor the page to the user's browser history, and may capture
@@ -314,8 +314,7 @@ public class ElementInfo {
 	 * AFAICS only <li>.
 	 */
 	public static boolean tryAutoClose(String element) {
-		if ("li".equals(element)) return true;
-		return false;
+		return "li".equals(element);
 	}
 
 	public static boolean isValidHTMLTag(String tag) {
@@ -412,13 +411,9 @@ public class ElementInfo {
 				return false;
 			}
 
-			if (escape) {
-				// Still in an escape.
-				// Might be dangerous e.g. escaping the ] in E[foo=blah] could change the meaning completely.
-				return false;
-			}
-
-			return true;
+			// Still in an escape.
+			// Might be dangerous e.g. escaping the ] in E[foo=blah] could change the meaning completely.
+			return !escape;
 		}
 	}
 
@@ -456,10 +451,7 @@ public class ElementInfo {
 			return true;
 		else if (cname.indexOf("nth-of-type") != -1 && FilterUtils.isNth(getPseudoClassArg(cname, "nth-of-type")))
 			return true;
-		else if (cname.indexOf("nth-last-of-type") != -1 && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-of-type")))
-			return true;
-
-		return false;
+		else return cname.indexOf("nth-last-of-type") != -1 && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-of-type"));
 	}
 
 	public static String getPseudoClassArg(String cname, String cname_sans_arg) {
@@ -467,7 +459,7 @@ public class ElementInfo {
 		int cnameIndex = cname.indexOf(cname_sans_arg);
 		int firstIndex = cname.indexOf('(');
 		int secondIndex = cname.lastIndexOf(')');
-		if (cname.substring(cnameIndex + cname_sans_arg.length(), firstIndex).trim().isEmpty() && cname.substring(0, cnameIndex).trim().isEmpty() && cname.substring(secondIndex + 1, cname.length()).trim().isEmpty()) {
+		if (cname.substring(cnameIndex + cname_sans_arg.length(), firstIndex).trim().isEmpty() && cname.substring(0, cnameIndex).trim().isEmpty() && cname.substring(secondIndex + 1).trim().isEmpty()) {
 			arg = CSSTokenizerFilter.removeOuterQuotes(cname.substring(firstIndex + 1, secondIndex).trim());
 		}
 		return arg;
@@ -543,13 +535,9 @@ public class ElementInfo {
 			continue;
 		}
 
-		if (escape) {
-			// Still in an escape.
-			// Might be dangerous.
-			return false;
-		}
-
-		return true;
+		// Still in an escape.
+		// Might be dangerous.
+		return !escape;
 	}
 
 	// FIXME get rid of ALLOW_ALL_VALID_STRINGS and isValidStringDecoded or implement something.

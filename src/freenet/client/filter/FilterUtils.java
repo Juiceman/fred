@@ -32,11 +32,11 @@ public class FilterUtils {
 			if (strNumber.indexOf('e') > 0) {
 				containsE = true;
 				strDecimal = strNumber.substring(0, strNumber.indexOf('e'));
-				strInteger = strNumber.substring(strDecimal.indexOf('e') + 1, strNumber.length());
+				strInteger = strNumber.substring(strDecimal.indexOf('e') + 1);
 			} else if (strNumber.indexOf('E') > 0) {
 				containsE = true;
 				strDecimal = strNumber.substring(0, strNumber.indexOf('E'));
-				strInteger = strNumber.substring(strDecimal.indexOf('E') + 1, strNumber.length());
+				strInteger = strNumber.substring(strDecimal.indexOf('E') + 1);
 			} else
 				strDecimal = strNumber;
 			Double.parseDouble(strDecimal);
@@ -121,8 +121,7 @@ public class FilterUtils {
 		}
 		try {
 			int x = Integer.parseInt(lengthValue);
-			if (!units && !isSVG && x != 0) return false;
-			return true;
+			return units || isSVG || x == 0;
 		} catch (Exception e) {
 		}
 		try {
@@ -140,18 +139,18 @@ public class FilterUtils {
 		int index = -1;
 		if (value.indexOf("deg") > -1) {
 			index = value.indexOf("deg");
-			String secondpart = value.substring(index, value.length()).trim();
+			String secondpart = value.substring(index).trim();
 			if (!("deg".equals(secondpart)))
 				isValid = false;
 		} else if (value.indexOf("grad") > -1) {
 			index = value.indexOf("grad");
-			String secondpart = value.substring(index, value.length()).trim();
+			String secondpart = value.substring(index).trim();
 
 			if (!("grad".equals(secondpart)))
 				isValid = false;
 		} else if (value.indexOf("rad") > -1) {
 			index = value.indexOf("rad");
-			String secondpart = value.substring(index, value.length()).trim();
+			String secondpart = value.substring(index).trim();
 
 			if (!("rad".equals(secondpart)))
 				isValid = false;
@@ -423,8 +422,7 @@ public class FilterUtils {
 				return false;
 			}
 
-			if (isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2]) && isNumber(colorParts[3]))
-				return true;
+			return isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2]) && isNumber(colorParts[3]);
 		}
 
 		return false;
@@ -551,14 +549,14 @@ public class FilterUtils {
 		if (value.indexOf("khz") != -1) {
 			int index = value.indexOf("khz");
 			firstPart = value.substring(0, index).trim();
-			if (!("khz".equals(value.substring(index, value.length()).trim()))) {
+			if (!("khz".equals(value.substring(index).trim()))) {
 				isValidFrequency = false;
 			}
 
 		} else if (value.indexOf("hz") != -1) {
 			int index = value.indexOf("hz");
 			firstPart = value.substring(0, index).trim();
-			if (!("hz".equals(value.substring(index, value.length()).trim()))) {
+			if (!("hz".equals(value.substring(index).trim()))) {
 				isValidFrequency = false;
 			}
 
@@ -635,7 +633,7 @@ public class FilterUtils {
 			}
 		}
 		if (isLastElement) {
-			pointPairs.add(value.substring(prev, value.length()));
+			pointPairs.add(value.substring(prev));
 		}
 		return pointPairs.toArray(new String[0]);
 	}
@@ -660,7 +658,7 @@ public class FilterUtils {
 		try {
 			// Strip any leading '+' character, because Integer.parseInt handles it differently between Java 6 (fails) and 7 (succeeds).
 			if (strValue.length() > 1 && strValue.charAt(0) == '+' && Character.isDigit(strValue.charAt(1))) {
-				strValue = strValue.substring(1, strValue.length());
+				strValue = strValue.substring(1);
 			}
 
 			int value = Integer.parseInt(strValue);
@@ -681,9 +679,7 @@ public class FilterUtils {
 				if (aLength == 0 || (aLength == 1 && value.charAt(0) == '-') || isIntegerInRange(value.substring(0, aLength), -MAX_NTH, MAX_NTH)) {
 					int bIndex = nIndex + 1;
 					int bLength = value.length() - bIndex;
-					if (bLength == 0 || ((value.charAt(bIndex) == '+' || value.charAt(bIndex) == '-') && isIntegerInRange(value.substring(bIndex, value.length()), -MAX_NTH, MAX_NTH))) {
-						return true;
-					}
+					return bLength == 0 || ((value.charAt(bIndex) == '+' || value.charAt(bIndex) == '-') && isIntegerInRange(value.substring(bIndex), -MAX_NTH, MAX_NTH));
 				}
 			}
 		}

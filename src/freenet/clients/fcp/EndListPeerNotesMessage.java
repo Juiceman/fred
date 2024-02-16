@@ -10,7 +10,7 @@ public class EndListPeerNotesMessage extends FCPMessage {
 
 	final String nodeIdentifier;
 	static final String name = "EndListPeerNotes";
-	private String identifier;
+	private final String identifier;
 
 	public EndListPeerNotesMessage(String id, String identifier) {
 		this.nodeIdentifier = id;

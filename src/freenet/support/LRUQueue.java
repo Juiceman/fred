@@ -107,7 +107,7 @@ public class LRUQueue<T> {
 
 	private class ItemEnumeration implements Enumeration<T> {
 
-		private Enumeration<QItem<T>> source = list.reverseElements();
+		private final Enumeration<QItem<T>> source = list.reverseElements();
 
 		@Override
 		public boolean hasMoreElements() {

@@ -4,22 +4,14 @@
 
 package freenet.client.filter;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.io.Closer;
 import freenet.support.io.CountedOutputStream;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Filters Ogg container files. These containers contain one or more
@@ -35,7 +27,7 @@ public class OggFilter implements ContentDataFilter {
 	public void readFilter(
 			InputStream input, OutputStream output,
 			String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		HashMap<Integer, OggBitstreamFilter> streamFilters = new HashMap<Integer, OggBitstreamFilter>();
 		LinkedList<OggPage> splitPages = new LinkedList<OggPage>();
 		CountedOutputStream out = new CountedOutputStream(output);
@@ -134,7 +126,7 @@ public class OggFilter implements ContentDataFilter {
 
 	public void writeFilter(InputStream input, OutputStream output,
 							String charset, HashMap<String, String> otherParams,
-							FilterCallback cb) throws DataFilterException, IOException {
+							FilterCallback cb) throws IOException {
 		// TODO Auto-generated method stub
 
 	}

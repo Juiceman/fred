@@ -1,21 +1,17 @@
 package freenet.clients.http.wizardsteps;
 
-import java.io.IOException;
-
 import freenet.clients.http.ExternalLinkToadlet;
 import freenet.clients.http.FirstTimeWizardToadlet;
 import freenet.clients.http.SecurityLevelsToadlet;
 import freenet.l10n.NodeL10n;
-import freenet.node.MasterKeysFileSizeException;
-import freenet.node.MasterKeysWrongPasswordException;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.SecurityLevels;
+import freenet.node.*;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 import freenet.support.io.FileUtil;
 import freenet.support.io.FileUtil.OperatingSystem;
+
+import java.io.IOException;
 
 /**
  * Allows the user to set the physical security level.
@@ -294,9 +290,10 @@ public class SECURITY_PHYSICAL implements Step {
 		if (type == PASSWORD_PROMPT.DECRYPT_WRONG) {
 			System.err.println("Wrong password!");
 		}
-		StringBuilder destination = new StringBuilder(FirstTimeWizardToadlet.WIZARD_STEP.SECURITY_PHYSICAL +
-				"&error=pass&newThreatLevel=").append(newThreatLevel.name()).append("&type=").append(type.name());
-		return destination.toString();
+		String destination = FirstTimeWizardToadlet.WIZARD_STEP.SECURITY_PHYSICAL +
+				"&error=pass&newThreatLevel=" +
+				newThreatLevel.name() + "&type=" + type.name();
+		return destination;
 	}
 
 	public void setThreatLevel(SecurityLevels.PHYSICAL_THREAT_LEVEL newThreatLevel, SecurityLevels.PHYSICAL_THREAT_LEVEL oldThreatLevel) throws IOException {

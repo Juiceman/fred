@@ -1,14 +1,14 @@
 package freenet.node;
 
+import freenet.support.HTMLNode;
+import freenet.support.Logger;
+import freenet.support.math.TrivialRunningAverage;
+
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
-import freenet.support.HTMLNode;
-import freenet.support.Logger;
-import freenet.support.math.TrivialRunningAverage;
 
 /**
  * A record of stats during a single hour
@@ -21,14 +21,14 @@ public class HourlyStatsRecord {
 	/**
 	 * (Logarithmic) routing distances grouped by HTL
 	 */
-	private StatsLine[] byHTL;
+	private final StatsLine[] byHTL;
 
 	/**
 	 * HTL grouped by (logarithmic) routing distance
 	 */
-	private StatsLine[] byDist;
+	private final StatsLine[] byDist;
 
-	private Date beginTime;
+	private final Date beginTime;
 	private final Node node;
 
 	/**
@@ -118,7 +118,7 @@ public class HourlyStatsRecord {
 		Logger.normal(this, toString());
 	}
 
-	private static SimpleDateFormat utcDateTime;
+	private static final SimpleDateFormat utcDateTime;
 
 	static {
 		utcDateTime = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
@@ -236,22 +236,20 @@ public class HourlyStatsRecord {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
 
-			sb.append(chkLocalSuccess.countReports()).append("\t");
-			sb.append(chkRemoteSuccess.countReports()).append("\t");
-			sb.append(chkFailure.countReports()).append("\t");
-			sb.append(sskLocalSuccess.countReports()).append("\t");
-			sb.append(sskRemoteSuccess.countReports()).append("\t");
-			sb.append(sskFailure.countReports()).append("\t");
-
-			sb.append(fix4p.format(fixNaN(chkLocalSuccess.currentValue()))).append("\t");
-			sb.append(fix4p.format(fixNaN(chkRemoteSuccess.currentValue()))).append("\t");
-			sb.append(fix4p.format(fixNaN(chkFailure.currentValue()))).append("\t");
-			sb.append(fix4p.format(fixNaN(sskLocalSuccess.currentValue()))).append("\t");
-			sb.append(fix4p.format(fixNaN(sskRemoteSuccess.currentValue()))).append("\t");
-			sb.append(fix4p.format(fixNaN(sskFailure.currentValue()))).append("\t");
-			return sb.toString();
+			String sb = chkLocalSuccess.countReports() + "\t" +
+					chkRemoteSuccess.countReports() + "\t" +
+					chkFailure.countReports() + "\t" +
+					sskLocalSuccess.countReports() + "\t" +
+					sskRemoteSuccess.countReports() + "\t" +
+					sskFailure.countReports() + "\t" +
+					fix4p.format(fixNaN(chkLocalSuccess.currentValue())) + "\t" +
+					fix4p.format(fixNaN(chkRemoteSuccess.currentValue())) + "\t" +
+					fix4p.format(fixNaN(chkFailure.currentValue())) + "\t" +
+					fix4p.format(fixNaN(sskLocalSuccess.currentValue())) + "\t" +
+					fix4p.format(fixNaN(sskRemoteSuccess.currentValue())) + "\t" +
+					fix4p.format(fixNaN(sskFailure.currentValue())) + "\t";
+			return sb;
 		}
 	}
 }

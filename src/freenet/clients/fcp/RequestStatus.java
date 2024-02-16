@@ -1,12 +1,12 @@
 package freenet.clients.fcp;
 
-import java.util.Date;
-
 import freenet.client.async.ClientRequester;
 import freenet.client.events.SplitfileProgressEvent;
 import freenet.clients.fcp.ClientRequest.Persistence;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
+
+import java.util.Date;
 
 /**
  * The status of a request. Cached copy i.e. can be accessed outside the database thread

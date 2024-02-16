@@ -18,30 +18,15 @@
  */
 package freenet.io.xfer;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import freenet.io.comm.AsyncMessageFilterCallback;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageCore;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.RetrievalException;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
+import freenet.io.comm.*;
 import freenet.node.PeerNode;
 import freenet.node.SyncSendWaitedTooLongException;
-import freenet.support.BitArray;
-import freenet.support.Buffer;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.Ticker;
-import freenet.support.TimeUtil;
 import freenet.support.io.NativeThread;
 import freenet.support.math.MedianMeanRunningAverage;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * IMPORTANT: The receiver can cancel the incoming transfer. This may or may not,
@@ -205,9 +190,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 	public interface BlockReceiverCompletion {
 
-		public void blockReceived(byte[] buf);
+		void blockReceived(byte[] buf);
 
-		public void blockReceiveFailed(RetrievalException e);
+		void blockReceiveFailed(RetrievalException e);
 
 	}
 
@@ -222,7 +207,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 	private boolean gotAllSent;
 
-	private AsyncMessageFilterCallback notificationWaiter = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback notificationWaiter = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message m1) {
@@ -332,7 +317,6 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				waitNotification(truncateTimeout);
 			} catch (DisconnectedException e) {
 				onDisconnect(null);
-				return;
 			}
 		}
 
@@ -398,12 +382,10 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 					// Ignore
 				}
 
-				return;
 			} catch (AbortedException e) {
 				// We didn't cause it?!
 				Logger.error(this, "Caught in receive - probably a bug as receive sets it: " + e, e);
 				complete(RetrievalException.UNKNOWN, "Aborted?");
-				return;
 			}
 		}
 
@@ -502,7 +484,6 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		synchronized (_prb) {
 			try {
 				_prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {
-					;
 
 					@Override
 					public void packetReceived(int packetNo) {
@@ -542,7 +523,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		}
 	}
 
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 
 	private void maybeResetDiscardFilter() {
 		long timeleft = discardEndTime - System.currentTimeMillis();

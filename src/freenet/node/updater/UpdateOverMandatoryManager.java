@@ -3,77 +3,33 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.updater;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.WeakHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.FetchResult;
-import freenet.client.InsertContext;
-import freenet.client.InsertException;
-import freenet.client.async.BaseClientPutter;
-import freenet.client.async.BinaryBlob;
-import freenet.client.async.BinaryBlobFormatException;
-import freenet.client.async.BinaryBlobWriter;
-import freenet.client.async.ClientContext;
-import freenet.client.async.ClientGetCallback;
-import freenet.client.async.ClientGetter;
-import freenet.client.async.ClientPutCallback;
-import freenet.client.async.ClientPutter;
-import freenet.client.async.PersistenceDisabledException;
-import freenet.client.async.SimpleBlockSet;
-import freenet.io.comm.AsyncMessageCallback;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.NotConnectedException;
+import freenet.client.async.*;
+import freenet.io.comm.*;
 import freenet.io.xfer.BulkReceiver;
 import freenet.io.xfer.BulkTransmitter;
 import freenet.io.xfer.PartiallyReceivedBulk;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
-import freenet.node.Node;
-import freenet.node.PeerNode;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarter;
-import freenet.node.Version;
+import freenet.node.*;
 import freenet.node.useralerts.AbstractUserAlert;
 import freenet.node.useralerts.UserAlert;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.Logger;
-import freenet.support.ShortBuffer;
-import freenet.support.SizeUtil;
-import freenet.support.TimeUtil;
-import freenet.support.WeakHashSet;
+import freenet.support.*;
 import freenet.support.api.Bucket;
 import freenet.support.api.RandomAccessBucket;
 import freenet.support.api.RandomAccessBuffer;
-import freenet.support.io.ArrayBucket;
-import freenet.support.io.ByteArrayRandomAccessBuffer;
-import freenet.support.io.Closer;
-import freenet.support.io.FileBucket;
-import freenet.support.io.FileUtil;
-import freenet.support.io.FileRandomAccessBuffer;
+import freenet.support.io.*;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Co-ordinates update over mandatory. Update over mandatory = updating from your peers, even
@@ -1328,7 +1284,6 @@ public class UpdateOverMandatoryManager implements RequestClient {
 			}, updateManager.ctr);
 		} catch (NotConnectedException e) {
 			Logger.error(this, "Peer " + source + " asked us for the blob file for the " + name + " jar, then disconnected when we tried to send the UOMSendingMainJar: " + e, e);
-			return;
 		} catch (RuntimeException e) {
 			source.finishedSendingUOMJar(false);
 			throw e;
@@ -1626,6 +1581,7 @@ public class UpdateOverMandatoryManager implements RequestClient {
 				Matcher mainTempBuildNumberMatcher = mainTempBuildNumberPattern.matcher(fileName);
 				Matcher revocationTempBuildNumberMatcher = revocationTempBuildNumberPattern.matcher(fileName);
 
+				// Temporary file, can be deleted
 				if (mainBuildNumberMatcher.matches()) {
 					try {
 						buildNumberStr = mainBuildNumberMatcher.group(1);
@@ -1636,10 +1592,7 @@ public class UpdateOverMandatoryManager implements RequestClient {
 						Logger.error(this, "Wierd file in persistent temp: " + fileName);
 						return false;
 					}
-				} else if (mainTempBuildNumberMatcher.matches() || revocationTempBuildNumberMatcher.matches()) {
-					// Temporary file, can be deleted
-					return true;
-				}
+				} else return mainTempBuildNumberMatcher.matches() || revocationTempBuildNumberMatcher.matches();
 
 				return false;
 			}

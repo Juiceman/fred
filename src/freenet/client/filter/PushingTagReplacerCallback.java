@@ -1,8 +1,5 @@
 package freenet.client.filter;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
 import freenet.client.filter.HTMLFilter.ParsedTag;
 import freenet.clients.http.FProxyFetchTracker;
 import freenet.clients.http.ToadletContext;
@@ -10,6 +7,9 @@ import freenet.clients.http.updateableelements.ImageElement;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
 import freenet.support.HTMLEncoder;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * This TagReplcaerCallback adds pushing support for freesites, and replaces their img's to pushed ones
@@ -19,15 +19,15 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 	/**
 	 * The FProxyFetchTracker
 	 */
-	private FProxyFetchTracker tracker;
+	private final FProxyFetchTracker tracker;
 	/**
 	 * The maxSize used for fetching
 	 */
-	private long maxSize;
+	private final long maxSize;
 	/**
 	 * The current ToadletContext
 	 */
-	private ToadletContext ctx;
+	private final ToadletContext ctx;
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 						}
 					}
 				}
-			} else if (pt.element.toLowerCase().compareTo("body") == 0 && pt.startSlash == true) {
+			} else if (pt.element.toLowerCase().compareTo("body") == 0 && pt.startSlash) {
 				// After the <body>, we need to insert the requestId and the l10n script
 				return "".concat(/*new XmlAlertElement(ctx).generate()*/"".concat("<input id=\"requestId\" type=\"hidden\" value=\"" + ctx.getUniqueId() + "\" name=\"requestId\"/>")).concat("<script type=\"text/javascript\" language=\"javascript\">".concat(getClientSideLocalizationScript()).concat("</script>")).concat("</body>");
 			} else if (pt.element.toLowerCase().compareTo("head") == 0) {

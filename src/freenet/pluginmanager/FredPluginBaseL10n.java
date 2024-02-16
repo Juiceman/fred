@@ -21,13 +21,13 @@ public interface FredPluginBaseL10n {
 	 *
 	 * @param newLanguage New language to use.
 	 */
-	public void setLanguage(LANGUAGE newLanguage);
+	void setLanguage(LANGUAGE newLanguage);
 
-	public String getL10nFilesBasePath();
+	String getL10nFilesBasePath();
 
-	public String getL10nFilesMask();
+	String getL10nFilesMask();
 
-	public String getL10nOverrideFilesMask();
+	String getL10nOverrideFilesMask();
 
-	public ClassLoader getPluginClassLoader();
+	ClassLoader getPluginClassLoader();
 }

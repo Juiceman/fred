@@ -1,15 +1,15 @@
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.HOURS;
+import freenet.keys.Key;
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import freenet.keys.Key;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
+import static java.util.concurrent.TimeUnit.HOURS;
 
 /**
  * Tracks recent requests for a specific key. If we have recently routed to a specific
@@ -501,8 +501,7 @@ class FailureTableEntry implements TimedOutNodesList {
 
 	public synchronized boolean isEmpty(long now) {
 		if (requestedNodes.length > 0) return false;
-		if (requestorNodes.length > 0) return false;
-		return true;
+		return requestorNodes.length <= 0;
 	}
 
 	/**

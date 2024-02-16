@@ -1,5 +1,10 @@
 package freenet.clients.http.geoip;
 
+import freenet.clients.http.StaticToadlet;
+import freenet.node.Node;
+import freenet.support.HTMLNode;
+import freenet.support.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,11 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import freenet.clients.http.StaticToadlet;
-import freenet.node.Node;
-import freenet.support.HTMLNode;
-import freenet.support.Logger;
 
 public class IPConverter {
 	// Regex indicating ipranges start
@@ -34,7 +34,7 @@ public class IPConverter {
 	// Reference to singleton object
 	private static IPConverter instance;
 	// File containing IP ranges
-	private File dbFile;
+	private final File dbFile;
 	private boolean dbFileCorrupt;
 
 	public enum Country {
@@ -129,7 +129,7 @@ public class IPConverter {
 				"VIRGIN ISLANDS, BRITISH "), VI("VIRGIN ISLANDS, U.S. "), WF(
 				"WALLIS AND FUTUNA "), EH("WESTERN SAHARA "), YE("YEMEN "), ZM(
 				"ZAMBIA "), ZW("ZIMBABWE "), ZZ("NA"), EU("European Union");
-		private String name;
+		private final String name;
 		private boolean hasFlag;
 		private boolean checkedHasFlag;
 

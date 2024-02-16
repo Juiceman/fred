@@ -3,28 +3,21 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import static java.lang.String.format;
-
-import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.List;
-
 import freenet.crypt.RandomSource;
 import freenet.crypt.SHA256;
 import freenet.keys.Key;
 import freenet.keys.KeyBlock;
 import freenet.keys.NodeSSK;
 import freenet.node.SendableGet;
-import freenet.node.SendableRequest;
 import freenet.support.ByteArrayWrapper;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.security.MessageDigest;
+import java.util.*;
+
+import static java.lang.String.format;
 
 /**
  * <p>Tracks exactly which keys we are listening for. This is
@@ -127,7 +120,7 @@ class KeyListenerTracker implements KeySalter {
 				if (o == null) {
 					singleKeyListeners.put(wrapper, listener);
 				} else if (o instanceof KeyListener) {
-					if (listener == (KeyListener) o) return;
+					if (listener == o) return;
 					singleKeyListeners.put(wrapper,
 							new KeyListener[]{(KeyListener) o, listener});
 				} else {
@@ -158,7 +151,7 @@ class KeyListenerTracker implements KeySalter {
 				if (o == null) {
 					// do nothing
 				} else if (o instanceof KeyListener) {
-					if ((ret = (listener == (KeyListener) o)))
+					if ((ret = (listener == o)))
 						singleKeyListeners.remove(wrapper);
 				} else {
 					@SuppressWarnings("unchecked")
@@ -439,9 +432,7 @@ class KeyListenerTracker implements KeySalter {
 			if (reqs == null) {
 				continue;
 			}
-			for (SendableGet req : reqs) {
-				list.add(req);
-			}
+			Collections.addAll(list, reqs);
 		}
 		if (list.isEmpty()) {
 			return null;

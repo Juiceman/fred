@@ -3,48 +3,28 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.util.ArrayList;
-
 import freenet.crypt.CryptFormatException;
 import freenet.crypt.DSAPublicKey;
-import freenet.io.comm.AsyncMessageCallback;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.io.comm.RetrievalException;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
+import freenet.io.comm.*;
 import freenet.io.xfer.BlockReceiver;
 import freenet.io.xfer.BlockReceiver.BlockReceiverCompletion;
 import freenet.io.xfer.BlockReceiver.BlockReceiverTimeoutHandler;
 import freenet.io.xfer.PartiallyReceivedBlock;
-import freenet.keys.CHKBlock;
-import freenet.keys.Key;
-import freenet.keys.KeyVerifyException;
-import freenet.keys.NodeCHK;
-import freenet.keys.NodeSSK;
-import freenet.keys.SSKBlock;
-import freenet.keys.SSKVerifyException;
+import freenet.keys.*;
 import freenet.node.FailureTable.BlockOffer;
 import freenet.node.FailureTable.OfferList;
 import freenet.node.OpennetManager.ConnectionType;
 import freenet.node.OpennetManager.WaitedTooLongForOpennetNoderefException;
 import freenet.store.KeyCollisionException;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.ShortBuffer;
-import freenet.support.SimpleFieldSet;
-import freenet.support.TimeUtil;
 import freenet.support.io.NativeThread;
 import freenet.support.math.MedianMeanRunningAverage;
+
+import java.util.ArrayList;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author amphibian
@@ -91,7 +71,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 	/**
 	 * If true, only try to fetch the key from nodes which have offered it
 	 */
-	private boolean tryOffersOnly;
+	private final boolean tryOffersOnly;
 
 	private final ArrayList<RequestSenderListener> listeners = new ArrayList<RequestSenderListener>();
 
@@ -444,8 +424,8 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 
 			DO action = handleMessage(msg, noReroute, waitingFor, this);
 
-			if (action == DO.FINISHED)
-				return;
+			if (action == DO.FINISHED) {
+			}
 			else if (action == DO.NEXT_PEER) {
 				if (!noReroute) {
 					// Try another peer
@@ -553,8 +533,6 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 		}
 
 	}
-
-	;
 
 	enum OFFER_STATUS {
 		FETCHING, // Fetching asynchronously or already fetched.
@@ -1398,7 +1376,6 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 				finish(VERIFY_FAILURE, next, false);
 			else
 				next.noLongerRoutingTo(origTag, false);
-			return;
 		} catch (KeyCollisionException e) {
 			Logger.normal(this, "Collision on " + this);
 			block = node.fetch((NodeSSK) key, false, canWriteClientCache, canWriteClientCache, canWriteDatastore, false, null);
@@ -1569,9 +1546,9 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 		}
 	}
 
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 
-	private static MedianMeanRunningAverage avgTimeTakenTransfer = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTakenTransfer = new MedianMeanRunningAverage();
 
 	private long transferTime;
 
@@ -1927,7 +1904,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 		return htl;
 	}
 
-	final synchronized byte[] getSSKData() {
+	synchronized byte[] getSSKData() {
 		return finalSskData;
 	}
 
@@ -2165,7 +2142,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 	/**
 	 * If we handled a timeout, and forked, we need to know the original HTL.
 	 */
-	protected void onAccepted(PeerNode next, boolean forked, short htl) {
+	private void onAccepted(PeerNode next, boolean forked, short htl) {
 		MainLoopCallback cb;
 		synchronized (this) {
 			receivingAsync = true;

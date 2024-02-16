@@ -3,17 +3,17 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import freenet.client.InsertContext;
 import freenet.keys.FreenetURI;
 import freenet.support.ContainerSizeEstimator;
-import freenet.support.Logger;
 import freenet.support.ContainerSizeEstimator.ContainerSize;
+import freenet.support.Logger;
 import freenet.support.api.ManifestElement;
 import freenet.support.io.ResumeFailedException;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <P>The default manifest putter. It should be choosen if no alternative putter
@@ -191,7 +191,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 					@SuppressWarnings("unchecked")
 					HashMap<String, Object> hm = (HashMap<String, Object>) o;
 					// It will be possible to make it fit provided there is at least space for every subdir and file to be a redirect/external.
-					if (tmpSize < maxSize - (512 * hm.size())) {
+					if (tmpSize < maxSize - (512L * hm.size())) {
 						// FIXME do we need 512 bytes for the dir entry here?
 						containerBuilder.pushCurrentDir();
 						containerBuilder.makeSubDirCD(name);
@@ -344,7 +344,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 
 			// getSizeFiles() includes 512 bytes for each file over the size limit
-			if (((leftSize.getSizeFiles() - (512 * itemsLeft.size())) == 0) && (leftSize.getSizeFilesNoLimit() > 0)) {
+			if (((leftSize.getSizeFiles() - (512L * itemsLeft.size())) == 0) && (leftSize.getSizeFilesNoLimit() > 0)) {
 				// all items left are to big (or redirect), make all external
 				for (Map.Entry<String, Object> entry : itemsLeft.entrySet()) {
 					String lname = entry.getKey();

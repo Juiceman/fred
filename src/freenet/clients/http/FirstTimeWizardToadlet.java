@@ -3,28 +3,8 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.EnumMap;
-
 import freenet.client.HighLevelSimpleClient;
-import freenet.clients.http.wizardsteps.BANDWIDTH;
-import freenet.clients.http.wizardsteps.BANDWIDTH_MONTHLY;
-import freenet.clients.http.wizardsteps.BANDWIDTH_RATE;
-import freenet.clients.http.wizardsteps.BROWSER_WARNING;
-import freenet.clients.http.wizardsteps.DATASTORE_SIZE;
-import freenet.clients.http.wizardsteps.MISC;
-import freenet.clients.http.wizardsteps.NAME_SELECTION;
-import freenet.clients.http.wizardsteps.OPENNET;
-import freenet.clients.http.wizardsteps.PageHelper;
-import freenet.clients.http.wizardsteps.PersistFields;
-import freenet.clients.http.wizardsteps.SECURITY_NETWORK;
-import freenet.clients.http.wizardsteps.SECURITY_PHYSICAL;
-import freenet.clients.http.wizardsteps.Step;
-import freenet.clients.http.wizardsteps.WELCOME;
+import freenet.clients.http.wizardsteps.*;
 import freenet.config.Config;
 import freenet.config.SubConfig;
 import freenet.l10n.NodeL10n;
@@ -36,6 +16,13 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.BooleanCallback;
 import freenet.support.api.HTTPRequest;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.EnumMap;
 
 /**
  * A first time wizard aimed to ease the configuration of the node.
@@ -304,7 +291,7 @@ public class FirstTimeWizardToadlet extends Toadlet {
 				PrintWriter pw = new PrintWriter(sw);
 				e.printStackTrace(pw);
 				pw.flush();
-				msg.append(sw.toString()).append("</pre>");
+				msg.append(sw).append("</pre>");
 
 				//Include internal exception if one exists.
 				Throwable internal = e.getCause();
@@ -317,7 +304,7 @@ public class FirstTimeWizardToadlet extends Toadlet {
 					pw = new PrintWriter(sw);
 					internal.printStackTrace(pw);
 					pw.flush();
-					msg.append(sw.toString()).append("</pre>");
+					msg.append(sw).append("</pre>");
 				}
 				msg.append("</body></html>");
 				writeHTMLReply(ctx, 500, "Internal Error", msg.toString());

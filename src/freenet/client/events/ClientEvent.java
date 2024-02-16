@@ -13,11 +13,11 @@ public interface ClientEvent {
 	/**
 	 * Returns a string describing the event.
 	 */
-	public String getDescription();
+	String getDescription();
 
 	/**
 	 * Returns a unique code for this event.
 	 */
-	public int getCode();
+	int getCode();
 
 }

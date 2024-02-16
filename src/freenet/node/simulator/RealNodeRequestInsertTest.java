@@ -3,42 +3,30 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.simulator;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-
 import freenet.crypt.DummyRandomSource;
 import freenet.crypt.RandomSource;
 import freenet.io.comm.PeerParseException;
 import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.keys.CHKEncodeException;
-import freenet.keys.ClientCHKBlock;
-import freenet.keys.ClientKSK;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientKeyBlock;
-import freenet.keys.FreenetURI;
-import freenet.keys.InsertableClientSSK;
-import freenet.keys.KeyDecodeException;
-import freenet.keys.SSKEncodeException;
-import freenet.node.FSParseException;
-import freenet.node.LowLevelGetException;
-import freenet.node.Node;
-import freenet.node.NodeInitException;
-import freenet.node.NodeStarter;
+import freenet.keys.*;
+import freenet.node.*;
 import freenet.support.Executor;
 import freenet.support.Logger;
-import freenet.support.PooledExecutor;
 import freenet.support.Logger.LogLevel;
 import freenet.support.LoggerHook.InvalidThresholdException;
+import freenet.support.PooledExecutor;
 import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.FileUtil;
 import freenet.support.math.RunningAverage;
 import freenet.support.math.SimpleRunningAverage;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author amphibian
@@ -144,8 +132,8 @@ public class RealNodeRequestInsertTest extends RealNodeRoutingTest {
 	private final Node[] nodes;
 	private final RandomSource random;
 	private int requestNumber = 0;
-	private RunningAverage requestsAvg = new SimpleRunningAverage(100, 0.0);
-	private String baseString = System.currentTimeMillis() + " ";
+	private final RunningAverage requestsAvg = new SimpleRunningAverage(100, 0.0);
+	private final String baseString = System.currentTimeMillis() + " ";
 	private int insertAttempts = 0;
 	private int fetchSuccesses = 0;
 	private final int targetSuccesses;
@@ -259,7 +247,7 @@ public class RealNodeRequestInsertTest extends RealNodeRoutingTest {
 			if (i != nodes.length - 1)
 				load.append(' ');
 		}
-		System.err.println(load.toString());
+		System.err.println(load);
 		if (totalRunningUIDsAlt != 0)
 			System.err.println("Still running UIDs (alt): " + totalRunningUIDsAlt);
 		if (!runningUIDsList.isEmpty()) {

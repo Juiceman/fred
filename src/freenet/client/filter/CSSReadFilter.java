@@ -3,25 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.Map;
-
 import freenet.support.HexUtil;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.Closer;
 import freenet.support.io.NullWriter;
+
+import java.io.*;
+import java.util.Map;
 
 public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 
@@ -41,7 +31,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		if (logDEBUG)
 			Logger.debug(
 					this,
@@ -69,7 +59,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 	}
 
 	@Override
-	public String getCharset(byte[] input, int length, String charset) throws DataFilterException, IOException {
+	public String getCharset(byte[] input, int length, String charset) throws IOException {
 		if (logDEBUG)
 			Logger.debug(this, "Fetching charset for CSS with initial charset " + charset);
 		if (input.length > getCharsetBufferSize() && logMINOR) {
@@ -125,7 +115,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 	}
 
 	@Override
-	public BOMDetection getCharsetByBOM(byte[] input, int length) throws DataFilterException, IOException {
+	public BOMDetection getCharsetByBOM(byte[] input, int length) throws IOException {
 		if (ContentFilter.startsWith(input, ascii, length))
 			return new BOMDetection("UTF-8", true);
 		if (ContentFilter.startsWith(input, utf16be, length))

@@ -3,29 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import freenet.node.NodeStarter;
+import freenet.support.Fields;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import freenet.node.NodeStarter;
-import freenet.support.Fields;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  * KeyGenUtils offers a set of methods to easily generate Keys and KeyPairs for
@@ -36,7 +27,7 @@ import freenet.support.Fields;
  */
 public final class KeyGenUtils {
 
-	private static BouncyCastleProvider bcProvider = new BouncyCastleProvider();
+	private static final BouncyCastleProvider bcProvider = new BouncyCastleProvider();
 
 	/**
 	 * Returns the Java version as an int value.

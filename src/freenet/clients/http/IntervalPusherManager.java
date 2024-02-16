@@ -1,11 +1,11 @@
 package freenet.clients.http;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import freenet.clients.http.updateableelements.BaseUpdateableElement;
 import freenet.clients.http.updateableelements.PushDataManager;
 import freenet.support.Ticker;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This manager object will push elements at a fixed interval
@@ -30,7 +30,7 @@ public class IntervalPusherManager {
 	/**
 	 * The job, that will refresh the elements
 	 */
-	private Runnable refresherJob =
+	private final Runnable refresherJob =
 			new Runnable() {
 
 				@Override
@@ -50,7 +50,7 @@ public class IntervalPusherManager {
 	/**
 	 * The elements that are pushed at a fixed interval
 	 */
-	private List<BaseUpdateableElement> elements = new CopyOnWriteArrayList<BaseUpdateableElement>();
+	private final List<BaseUpdateableElement> elements = new CopyOnWriteArrayList<BaseUpdateableElement>();
 
 	/**
 	 * Constructor
@@ -69,10 +69,7 @@ public class IntervalPusherManager {
 	 * @param element - The element
 	 */
 	public void registerUpdateableElement(BaseUpdateableElement element) {
-		boolean needsStart = false;
-		if (elements.size() == 0) {
-			needsStart = true;
-		}
+		boolean needsStart = elements.size() == 0;
 		elements.add(element);
 		// If this is the first element, then it starts the ticker
 		if (needsStart) {

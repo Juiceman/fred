@@ -3,15 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import freenet.l10n.NodeL10n;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.Map;
-
-import freenet.l10n.NodeL10n;
 
 /**
  * Content filter for GIF's.
@@ -33,7 +29,7 @@ public class GIFFilter implements ContentDataFilter {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		DataInputStream dis = new DataInputStream(input);
 		try {
 			// Check the header
@@ -114,7 +110,7 @@ public class GIFFilter implements ContentDataFilter {
 		/**
 		 * Filters a complete GIF stream; assuming its header has already been read.
 		 */
-		protected final void filter() throws IOException, DataFilterException {
+		protected final void filter() throws IOException {
 			readScreenDescriptor();
 			if (!validateScreenDescriptor()) {
 				throwDataError(l10n("invalidHeaderTitle"), l10n("invalidHeader"));
@@ -130,7 +126,7 @@ public class GIFFilter implements ContentDataFilter {
 		/**
 		 * Reads the screen descriptor from the input and parses it.
 		 */
-		private void readScreenDescriptor() throws IOException, DataFilterException {
+		private void readScreenDescriptor() throws IOException {
 			screenWidth = readShort();
 			screenHeight = readShort();
 			screenFlags = readByte();
@@ -155,7 +151,7 @@ public class GIFFilter implements ContentDataFilter {
 		/**
 		 * Looks for data blocks and filters them according to their type.
 		 */
-		private void filterData() throws IOException, DataFilterException {
+		private void filterData() throws IOException {
 			boolean imageSeen = false;
 			boolean terminated = false;
 			int lastByte;
@@ -187,7 +183,7 @@ public class GIFFilter implements ContentDataFilter {
 		/**
 		 * Filters a render block. Actual LZW data is *not* checked.
 		 */
-		private boolean filterImage() throws IOException, DataFilterException {
+		private boolean filterImage() throws IOException {
 			final int imageLeft = readShort();
 			final int imageTop = readShort();
 			final int imageWidth = readShort();
@@ -359,7 +355,7 @@ public class GIFFilter implements ContentDataFilter {
 		}
 
 		static void filter(InputStream input, OutputStream output)
-				throws IOException, DataFilterException {
+				throws IOException {
 			new GIF87aValidator(input, output).filter();
 		}
 	}
@@ -393,7 +389,7 @@ public class GIFFilter implements ContentDataFilter {
 		}
 
 		static void filter(InputStream input, OutputStream output)
-				throws IOException, DataFilterException {
+				throws IOException {
 			new GIF89aValidator(input, output).filter();
 		}
 

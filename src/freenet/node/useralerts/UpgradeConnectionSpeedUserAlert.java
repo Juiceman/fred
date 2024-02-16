@@ -9,7 +9,7 @@ import freenet.support.SizeUtil;
 public class UpgradeConnectionSpeedUserAlert extends AbstractUserAlert {
 
 	private final Node node;
-	private BandwidthLimit bandwidthLimit;
+	private final BandwidthLimit bandwidthLimit;
 	private boolean upgraded;
 	private String error;
 

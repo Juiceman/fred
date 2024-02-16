@@ -15,6 +15,6 @@ import freenet.clients.http.PageMaker.THEME;
  */
 public interface FredPluginThemed {
 
-	public void setTheme(THEME theme);
+	void setTheme(THEME theme);
 
 }

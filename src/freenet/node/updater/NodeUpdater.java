@@ -1,38 +1,13 @@
 package freenet.node.updater;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import freenet.client.FetchContext;
 import freenet.client.FetchException;
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.client.FetchResult;
-import freenet.client.async.BinaryBlobWriter;
-import freenet.client.async.ClientContext;
-import freenet.client.async.ClientGetCallback;
-import freenet.client.async.ClientGetter;
-import freenet.client.async.PersistenceDisabledException;
-import freenet.client.async.USKCallback;
+import freenet.client.async.*;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarter;
-import freenet.node.Version;
+import freenet.node.*;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.Ticker;
@@ -43,10 +18,20 @@ import freenet.support.io.FileBucket;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NullOutputStream;
 
+import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 public abstract class NodeUpdater implements ClientGetCallback, USKCallback, RequestClient {
 
 	static private boolean logMINOR;
-	private FetchContext ctx;
+	private final FetchContext ctx;
 	private ClientGetter cg;
 	private FreenetURI URI;
 	private final Ticker ticker;

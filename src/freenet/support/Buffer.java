@@ -19,12 +19,12 @@
 
 package freenet.support;
 
+import freenet.io.WritableToDataOutputStream;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-
-import freenet.io.WritableToDataOutputStream;
 
 /**
  * Wrapper for a byte array which handles serialisation/deserialisation
@@ -151,11 +151,7 @@ public class Buffer implements WritableToDataOutputStream {
 		if (_start != buffer._start) {
 			return false;
 		}
-		if (!Arrays.equals(_data, buffer._data)) {
-			return false;
-		}
-
-		return true;
+		return Arrays.equals(_data, buffer._data);
 	}
 
 	@Override

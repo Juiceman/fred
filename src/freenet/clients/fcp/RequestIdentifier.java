@@ -74,8 +74,7 @@ public final class RequestIdentifier {
 		}
 		if (globalQueue != other.globalQueue)
 			return false;
-		if (!identifier.equals(other.identifier)) return false;
-		return true;
+		return identifier.equals(other.identifier);
 	}
 
 	@Override
@@ -105,8 +104,6 @@ public final class RequestIdentifier {
 		if (globalQueue != other.globalQueue)
 			return false;
 		if (!identifier.equals(other.identifier)) return false;
-		if (type != other.type)
-			return false;
-		return true;
+		return type == other.type;
 	}
 }

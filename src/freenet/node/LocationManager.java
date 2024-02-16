@@ -3,17 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import freenet.client.*;
+import freenet.crypt.RandomSource;
+import freenet.crypt.SHA256;
+import freenet.crypt.Util;
+import freenet.io.comm.*;
+import freenet.keys.*;
+import freenet.support.Base64;
+import freenet.support.*;
+import freenet.support.Logger.LogLevel;
+import freenet.support.io.ArrayBucket;
+import freenet.support.io.Closer;
+import freenet.support.math.BootstrappingDecayingRunningAverage;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,45 +27,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Deque;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
-import freenet.client.FetchException;
-import freenet.client.FetchResult;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.InsertBlock;
-import freenet.client.InsertException;
-import freenet.crypt.RandomSource;
-import freenet.crypt.SHA256;
-import freenet.crypt.Util;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.keys.ClientCHK;
-import freenet.keys.ClientKSK;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientSSK;
-import freenet.keys.FreenetURI;
-import freenet.support.Base64;
-import freenet.support.Fields;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
-import freenet.support.ShortBuffer;
-import freenet.support.TimeSortedHashtable;
-import freenet.support.io.ArrayBucket;
-import freenet.support.io.Closer;
-import freenet.support.math.BootstrappingDecayingRunningAverage;
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * @author amphibian
@@ -356,7 +323,6 @@ public class LocationManager implements ByteCounter {
 							exception,
 							"Could not create ClientCHK from CHKUri for calculated CHK URI:"
 									+ calculatedChkUri);
-					return;
 				}
 			}
 		}
@@ -943,7 +909,7 @@ public class LocationManager implements ByteCounter {
 					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.ISO_8859_1));
 					DateFormat df = DateFormat.getDateTimeInstance();
 					df.setTimeZone(TimeZone.getTimeZone("GMT"));
-					bw.write("" + df.format(new Date()) + " : " + getLocation() + (randomReset ? " (random reset" + (fromDupLocation ? " from duplicated location" : "") + ")" : "") + '\n');
+					bw.write(df.format(new Date()) + " : " + getLocation() + (randomReset ? " (random reset" + (fromDupLocation ? " from duplicated location" : "") + ")" : "") + '\n');
 					bw.close();
 					os = null;
 				} catch (IOException e) {
@@ -1108,8 +1074,7 @@ public class LocationManager implements ByteCounter {
 
 		//Logger.normal(this, "p="+p+" randProb="+randProb);
 
-		if (randProb < p) return true;
-		return false;
+		return randProb < p;
 	}
 
 	static final double SWAP_ACCEPT_PROB = 0.25;

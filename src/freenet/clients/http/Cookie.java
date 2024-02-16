@@ -3,13 +3,13 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
+import freenet.support.TimeUtil;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-
-import freenet.support.TimeUtil;
 
 /**
  * @author xor (xor@freenetproject.org)
@@ -19,7 +19,7 @@ public class Cookie {
 	 * FIXME: Where was this taken from?
 	 */
 	private static final HashSet<Character> invalidValueCharacters =
-			new HashSet<Character>(Arrays.asList(new Character[]{'(', ')', '[', ']', '{', '}', '=', ',', '\"', '/', '\\', '?', '@', ':', ';'}));
+			new HashSet<Character>(Arrays.asList('(', ')', '[', ']', '{', '}', '=', ',', '\"', '/', '\\', '?', '@', ':', ';'));
 
 	/**
 	 * Taken from this discussion:
@@ -33,7 +33,7 @@ public class Cookie {
 	 * <TheSeeker> http://www.ietf.org/rfc/rfc2616.txt
 	 */
 	public static final HashSet<Character> httpSeparatorCharacters =
-			new HashSet<Character>(Arrays.asList(new Character[]{'(', ')', '<', '>', '@', ',', ';', ':', '\\', '\"', '/', '[', ']', '?', '=', '{', '}', ' ', '\t'}));
+			new HashSet<Character>(Arrays.asList('(', ')', '<', '>', '@', ',', ';', ':', '\\', '\"', '/', '[', ']', '?', '=', '{', '}', ' ', '\t'));
 
 
 	protected int version;
@@ -103,10 +103,7 @@ public class Cookie {
 		if (!getPath().toString().equals(other.getPath().toString()))
 			return false;
 
-		if (!getName().equals(other.getName()))
-			return false;
-
-		return true;
+		return getName().equals(other.getName());
 	}
 
 	@Override
@@ -142,7 +139,7 @@ public class Cookie {
 		if (path.isAbsolute())
 			throw new IllegalArgumentException("Illegal cookie path, must be relative: " + path);
 
-		if (path.toString().startsWith("/") == false)
+		if (!path.toString().startsWith("/"))
 			throw new IllegalArgumentException("Illegal cookie path, must start with /: " + path);
 
 		// RFC2965: Path is case sensitive!

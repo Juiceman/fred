@@ -3,13 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.WeakHashMap;
-
 import freenet.crypt.ChecksumChecker;
 import freenet.keys.FreenetURI;
 import freenet.node.RequestClient;
@@ -19,6 +12,13 @@ import freenet.node.useralerts.UserAlert;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.ResumeFailedException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.WeakHashMap;
 
 /**
  * A high level request or insert. This may create any number of low-level requests of inserts,
@@ -301,7 +301,7 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		notifyClients(context);
 	}
 
-	transient static final UserAlert brokenClientAlert = new SimpleUserAlert(true, "Some broken downloads/uploads were cancelled. Please restart them.", "Some downloads/uploads were broken due to a bug (some time before 1287) causing unrecoverable database corruption. They have been cancelled. Please restart them from the Downloads or Uploads page.", "Some downloads/uploads were broken due to a pre-1287 bug, please restart them.", UserAlert.ERROR);
+	static final UserAlert brokenClientAlert = new SimpleUserAlert(true, "Some broken downloads/uploads were cancelled. Please restart them.", "Some downloads/uploads were broken due to a bug (some time before 1287) causing unrecoverable database corruption. They have been cancelled. Please restart them from the Downloads or Uploads page.", "Some downloads/uploads were broken due to a pre-1287 bug, please restart them.", UserAlert.ERROR);
 
 	/**
 	 * A block failed. Count it and notify our clients.
@@ -446,8 +446,8 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		return client.persistent();
 	}
 
-	private static WeakHashMap<ClientRequester, Object> allRequesters = new WeakHashMap<ClientRequester, Object>();
-	private static Object dumbValue = new Object();
+	private static final WeakHashMap<ClientRequester, Object> allRequesters = new WeakHashMap<ClientRequester, Object>();
+	private static final Object dumbValue = new Object();
 	public final long creationTime;
 
 	public static ClientRequester[] getAll() {

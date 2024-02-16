@@ -44,16 +44,13 @@ public class NullBloomFilter extends BloomFilter {
 
 	@Override
 	public void fork(int k) {
-		return;
 	}
 
 	@Override
 	public void discard() {
-		return;
 	}
 
 	@Override
 	public void merge() {
-		return;
 	}
 }

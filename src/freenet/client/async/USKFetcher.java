@@ -3,61 +3,33 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Map.Entry;
-
 import freenet.client.ClientMetadata;
 import freenet.client.FetchContext;
 import freenet.client.FetchException;
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.client.InsertContext.CompatibilityMode;
 import freenet.crypt.HashResult;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientSSK;
-import freenet.keys.ClientSSKBlock;
-import freenet.keys.FreenetURI;
-import freenet.keys.Key;
-import freenet.keys.KeyBlock;
-import freenet.keys.KeyDecodeException;
-import freenet.keys.NodeSSK;
-import freenet.keys.SSKBlock;
-import freenet.keys.SSKVerifyException;
-import freenet.keys.USK;
-import freenet.node.KeysFetchingLocally;
-import freenet.node.LowLevelGetException;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarter;
-import freenet.node.SendableGet;
-import freenet.node.SendableRequestItem;
+import freenet.keys.*;
+import freenet.node.*;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.RemoveRangeArrayList;
 import freenet.support.Logger.LogLevel;
+import freenet.support.RemoveRangeArrayList;
 import freenet.support.api.Bucket;
 import freenet.support.compress.Compressor;
 import freenet.support.compress.DecompressorThreadManager;
 import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
+
+import java.io.*;
+import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * On 0.7, this shouldn't however take more than 10 seconds or so; these are SSKs
@@ -265,7 +237,6 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			} catch (Throwable t) {
 				Logger.error(this, "Caught " + t, t);
 				onFailure(new FetchException(FetchExceptionMode.INTERNAL_ERROR, t), state, context);
-				return;
 			} finally {
 				boolean dbrsFinished;
 				synchronized (USKFetcher.this) {
@@ -576,9 +547,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	private final boolean realTimeFlag;
 
-	private static short DEFAULT_NORMAL_POLL_PRIORITY = RequestStarter.PREFETCH_PRIORITY_CLASS;
+	private static final short DEFAULT_NORMAL_POLL_PRIORITY = RequestStarter.PREFETCH_PRIORITY_CLASS;
 	private short normalPollPriority = DEFAULT_NORMAL_POLL_PRIORITY;
-	private static short DEFAULT_PROGRESS_POLL_PRIORITY = RequestStarter.UPDATE_PRIORITY_CLASS;
+	private static final short DEFAULT_PROGRESS_POLL_PRIORITY = RequestStarter.UPDATE_PRIORITY_CLASS;
 	private short progressPollPriority = DEFAULT_PROGRESS_POLL_PRIORITY;
 
 	private boolean scheduledDBRs;
@@ -1616,8 +1587,6 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	}
 
-	;
-
 
 	@Override
 	public synchronized boolean isCancelled() {
@@ -1751,8 +1720,8 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 		// List of slots since the USKManager's current last known good edition.
 		private final KeyList fromLastKnownSlot;
-		private TreeMap<Long, KeyList> fromSubscribers;
-		private TreeSet<Long> persistentHints = new TreeSet<Long>();
+		private final TreeMap<Long, KeyList> fromSubscribers;
+		private final TreeSet<Long> persistentHints = new TreeSet<Long>();
 		//private ArrayList<KeyList> fromCallbacks;
 
 		// FIXME add more WeakReference<KeyList>'s: one for the origUSK, one for each subscriber who gave an edition number. All of which should disappear on the subscriber going or on the last known superceding.
@@ -1885,7 +1854,7 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		}
 
 		public synchronized long size() {
-			return WATCH_KEYS + fromSubscribers.size() * WATCH_KEYS; // FIXME take overlap into account
+			return WATCH_KEYS + (long) fromSubscribers.size() * WATCH_KEYS; // FIXME take overlap into account
 		}
 
 		/**

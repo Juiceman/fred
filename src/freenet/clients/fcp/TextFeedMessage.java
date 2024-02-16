@@ -1,10 +1,10 @@
 package freenet.clients.fcp;
 
-import java.nio.charset.StandardCharsets;
-
 import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.NullBucket;
+
+import java.nio.charset.StandardCharsets;
 
 public class TextFeedMessage extends N2NFeedMessage {
 

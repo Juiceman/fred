@@ -12,7 +12,7 @@ public interface Ticker {
 	 * @param job    The Runnable to execute.
 	 * @param offset The delay in milliseconds.
 	 */
-	public abstract void queueTimedJob(Runnable job, long offset);
+	void queueTimedJob(Runnable job, long offset);
 
 	/**
 	 * Run a job after a given delay.
@@ -28,17 +28,17 @@ public interface Ticker {
 	 *                          simultaneously! You must ensure adequate locking. Worse, if the job takes an unexpectedly
 	 *                          long time, you could end up with many copies of the job running simultaneously.
 	 */
-	public abstract void queueTimedJob(Runnable job, String name, long offset, boolean runOnTickerAnyway, boolean noDupes);
+	void queueTimedJob(Runnable job, String name, long offset, boolean runOnTickerAnyway, boolean noDupes);
 
 	/**
 	 * Get the underlying Executor.
 	 */
-	public abstract Executor getExecutor();
+	Executor getExecutor();
 
 	/**
 	 * Remove a queued job.
 	 */
-	public abstract void removeQueuedJob(Runnable job);
+	void removeQueuedJob(Runnable job);
 
 	/**
 	 * Run a job at a specified absolute time.
@@ -54,7 +54,7 @@ public interface Ticker {
 	 *                          simultaneously! You must ensure adequate locking. Worse, if the job takes an unexpectedly
 	 *                          long time, you could end up with many copies of the job running simultaneously.
 	 */
-	public abstract void queueTimedJobAbsolute(Runnable runner, String name, long time,
-											   boolean runOnTickerAnyway, boolean noDupes);
+	void queueTimedJobAbsolute(Runnable runner, String name, long time,
+							   boolean runOnTickerAnyway, boolean noDupes);
 
 }

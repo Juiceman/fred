@@ -4,9 +4,9 @@
 
 package freenet.client.filter;
 
-import java.io.IOException;
-
 import freenet.l10n.NodeL10n;
+
+import java.io.IOException;
 
 /**
  * Base class for specific logical bitstream filters. Subclasses should create

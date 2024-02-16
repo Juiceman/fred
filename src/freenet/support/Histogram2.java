@@ -1,4 +1,3 @@
-
 package freenet.support;
 
 import freenet.support.math.RunningAverage;

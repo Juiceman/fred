@@ -18,32 +18,16 @@
  */
 package freenet.io.xfer;
 
-import java.util.HashSet;
-import java.util.Deque;
-
-import freenet.io.comm.AsyncMessageCallback;
-import freenet.io.comm.AsyncMessageFilterCallback;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageCore;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.RetrievalException;
+import freenet.io.comm.*;
 import freenet.node.MessageItem;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
 import freenet.node.PrioRunnable;
-import freenet.support.BitArray;
-import freenet.support.Executor;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.Ticker;
-import freenet.support.TimeUtil;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.NativeThread;
 import freenet.support.math.MedianMeanRunningAverage;
+
+import java.util.Deque;
+import java.util.HashSet;
 
 /**
  * @author ian
@@ -81,20 +65,20 @@ public class BlockTransmitter {
 	private final boolean realTime;
 	final PartiallyReceivedBlock _prb;
 	private Deque<Integer> _unsent;
-	private BlockSenderJob _senderThread = new BlockSenderJob();
+	private final BlockSenderJob _senderThread = new BlockSenderJob();
 	private BitArray _sentPackets;
 	private long timeAllSent = -1;
 	final ByteCounter _ctr;
 	final int PACKET_SIZE;
 	private final ReceiverAbortHandler abortHandler;
-	private HashSet<MessageItem> itemsPending = new HashSet<MessageItem>();
+	private final HashSet<MessageItem> itemsPending = new HashSet<MessageItem>();
 
 	private final Ticker _ticker;
 	private final Executor _executor;
 	private final BlockTransmitterCompletion _callback;
 
 	public interface BlockTimeCallback {
-		public void blockTime(long interval, boolean realtime);
+		void blockTime(long interval, boolean realtime);
 	}
 
 	private final BlockTimeCallback blockTimeCallback;
@@ -456,7 +440,7 @@ public class BlockTransmitter {
 		 * @return True to cancel the PRB and thus cascade the cancel to the downstream
 		 * transfer, false otherwise.
 		 */
-		public boolean onAbort();
+		boolean onAbort();
 
 	}
 
@@ -480,13 +464,13 @@ public class BlockTransmitter {
 
 	public interface BlockTransmitterCompletion {
 
-		public void blockTransferFinished(boolean success);
+		void blockTransferFinished(boolean success);
 
 	}
 
 	private PartiallyReceivedBlock.PacketReceivedListener myListener = null;
 
-	private AsyncMessageFilterCallback cbAllReceived = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback cbAllReceived = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message m) {
@@ -540,7 +524,7 @@ public class BlockTransmitter {
 
 	};
 
-	private AsyncMessageFilterCallback cbSendAborted = new SlowAsyncMessageFilterCallback() {
+	private final AsyncMessageFilterCallback cbSendAborted = new SlowAsyncMessageFilterCallback() {
 
 		@Override
 		public void onMatched(Message msg) {
@@ -633,7 +617,6 @@ public class BlockTransmitter {
 		try {
 			synchronized (_prb) {
 				_unsent = _prb.addListener(myListener = new PartiallyReceivedBlock.PacketReceivedListener() {
-					;
 
 					@Override
 					public void packetReceived(int packetNo) {
@@ -788,13 +771,11 @@ public class BlockTransmitter {
 
 	}
 
-	;
-
 	private int blockSendsPending = 0;
 
 	private long lastSentPacket = -1;
 
-	private static MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
+	private static final MedianMeanRunningAverage avgTimeTaken = new MedianMeanRunningAverage();
 
 	/**
 	 * LOCKING: Must be called with _senderThread held.

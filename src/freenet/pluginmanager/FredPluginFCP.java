@@ -18,9 +18,9 @@ import freenet.support.api.Bucket;
 @Deprecated
 public interface FredPluginFCP {
 
-	public static final int ACCESS_DIRECT = 0;
-	public static final int ACCESS_FCP_RESTRICTED = 1;
-	public static final int ACCESS_FCP_FULL = 2;
+	int ACCESS_DIRECT = 0;
+	int ACCESS_FCP_RESTRICTED = 1;
+	int ACCESS_FCP_FULL = 2;
 
 	/**
 	 * @param replysender interface to send a reply

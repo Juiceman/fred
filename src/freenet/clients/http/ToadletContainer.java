@@ -3,16 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import freenet.clients.http.FProxyFetchInProgress.REFILTER_POLICY;
 import freenet.clients.http.PageMaker.THEME;
 import freenet.pluginmanager.FredPluginL10n;
 import freenet.support.HTMLNode;
 import freenet.support.api.BucketFactory;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Interface for toadlet containers. Toadlets should register here.
@@ -37,7 +37,7 @@ public interface ToadletContainer {
 	 *                  are advised to check for full access themselves, possibly returning a
 	 *                  403 error code.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, boolean fullAccessOnly);
+	void register(Toadlet t, String menu, String urlPrefix, boolean atFront, boolean fullAccessOnly);
 
 	/**
 	 * Registers a Toadlet and optionally adds a navigation link to the menu. All
@@ -64,7 +64,7 @@ public interface ToadletContainer {
 	 * @param cb        A LinkEnabledCalback, allowing fine control of when the navigation
 	 *                  link is visible and when it isn't. Passing null means it is always visible.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb);
+	void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb);
 
 	/**
 	 * Registers a Toadlet and optionally adds a navigation link to the menu. All
@@ -93,9 +93,9 @@ public interface ToadletContainer {
 	 * @param l10n      A FredPluginL10n instance for translating the name and title parameters.
 	 *                  May be null.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n);
+	void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n);
 
-	public void unregister(Toadlet t);
+	void unregister(Toadlet t);
 
 	/**
 	 * Find a Toadlet by URI.
@@ -104,47 +104,47 @@ public interface ToadletContainer {
 	 * @throws RedirectException
 	 * @throws PermanentRedirectException
 	 */
-	public Toadlet findToadlet(URI uri) throws PermanentRedirectException;
+	Toadlet findToadlet(URI uri) throws PermanentRedirectException;
 
 	/**
 	 * Get the name of the theme to be used by all the Toadlets
 	 */
-	public THEME getTheme();
+	THEME getTheme();
 
 	/**
 	 * Get the form password
 	 */
-	public String getFormPassword();
+	String getFormPassword();
 
 	/**
 	 * Is the given IP address allowed full access to the node?
 	 */
-	public boolean isAllowedFullAccess(InetAddress remoteAddr);
+	boolean isAllowedFullAccess(InetAddress remoteAddr);
 
 	/**
 	 * Whether to tell spiders to go away
 	 */
-	public boolean doRobots();
+	boolean doRobots();
 
-	public HTMLNode addFormChild(HTMLNode parentNode, String target, String name);
+	HTMLNode addFormChild(HTMLNode parentNode, String target, String name);
 
-	public boolean enablePersistentConnections();
+	boolean enablePersistentConnections();
 
-	public boolean enableInlinePrefetch();
+	boolean enableInlinePrefetch();
 
-	public boolean enableExtendedMethodHandling();
+	boolean enableExtendedMethodHandling();
 
 	boolean enableCachingForChkAndSskKeys();
 
 	/**
 	 * Get the BucketFactory
 	 */
-	public BucketFactory getBucketFactory();
+	BucketFactory getBucketFactory();
 
 	/**
 	 * Can we deal with POSTs yet?
 	 */
-	public boolean allowPosts();
+	boolean allowPosts();
 
 	/**
 	 * Was public-gateway mode enabled on startup? (Changing it won't take
@@ -153,43 +153,43 @@ public interface ToadletContainer {
 	 * node etc, but everyone else will not have access to the download
 	 * queue or anything else that might conceivably result in a DoS.
 	 */
-	public boolean publicGatewayMode();
+	boolean publicGatewayMode();
 
-	public boolean enableActivelinks();
+	boolean enableActivelinks();
 
-	public boolean sendAllThemes();
+	boolean sendAllThemes();
 
-	public boolean isFProxyJavascriptEnabled();
+	boolean isFProxyJavascriptEnabled();
 
-	public boolean isFProxyWebPushingEnabled();
+	boolean isFProxyWebPushingEnabled();
 
-	public boolean disableProgressPage();
+	boolean disableProgressPage();
 
-	public PageMaker getPageMaker();
+	PageMaker getPageMaker();
 
-	public boolean isAdvancedModeEnabled();
+	boolean isAdvancedModeEnabled();
 
-	public void setAdvancedMode(boolean enabled);
+	void setAdvancedMode(boolean enabled);
 
-	public boolean fproxyHasCompletedWizard();
+	boolean fproxyHasCompletedWizard();
 
 	/**
 	 * What to do when we find cached data on the global queue but it's already been
 	 * filtered, and we want a filtered copy.
 	 */
-	public REFILTER_POLICY getReFilterPolicy();
+	REFILTER_POLICY getReFilterPolicy();
 
-	public File getOverrideFile();
+	File getOverrideFile();
 
-	public String getURL();
+	String getURL();
 
-	public String getURL(String host);
+	String getURL(String host);
 
-	public boolean isSSL();
+	boolean isSSL();
 
 	/**
 	 * Create a unique ID for a ToadletContext
 	 */
-	public long generateUniqueID();
+	long generateUniqueID();
 
 }

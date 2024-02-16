@@ -3,20 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
-import freenet.client.FetchResult;
-import freenet.client.FetchWaiter;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.InsertBlock;
-import freenet.client.InsertException;
+import freenet.client.*;
 import freenet.client.async.ClientGetter;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
@@ -27,6 +14,13 @@ import freenet.support.Logger;
 import freenet.support.MultiValueTable;
 import freenet.support.api.Bucket;
 import freenet.support.api.HTTPRequest;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 /**
  * API similar to Servlets. Originally the reason for not using servlets was to support
@@ -134,7 +128,7 @@ public abstract class Toadlet {
 	 */
 	public final String findSupportedMethods() {
 		if (supportedMethodsCache == null) {
-			Method methlist[] = this.getClass().getMethods();
+			Method[] methlist = this.getClass().getMethods();
 			StringBuilder sb = new StringBuilder();
 			for (Method m : methlist) {
 				String name = m.getName();
@@ -480,7 +474,7 @@ public abstract class Toadlet {
 			t = t.getCause();
 		}
 		pw.flush();
-		msg = msg + sw.toString() + "</pre></body></html>";
+		msg = msg + sw + "</pre></body></html>";
 		writeHTMLReply(ctx, 500, "Internal Error", msg);
 	}
 

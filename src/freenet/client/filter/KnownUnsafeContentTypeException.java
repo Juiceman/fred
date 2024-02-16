@@ -3,12 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.l10n.NodeL10n;
 import freenet.support.HTMLEncoder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class KnownUnsafeContentTypeException extends UnsafeContentTypeException {
 	private static final long serialVersionUID = -1;
@@ -21,11 +21,10 @@ public class KnownUnsafeContentTypeException extends UnsafeContentTypeException 
 
 	@Override
 	public String getMessage() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(l10n("knownUnsafe"));
-		sb.append(l10n("noFilter"));
+		String sb = l10n("knownUnsafe") +
+				l10n("noFilter");
 
-		return sb.toString();
+		return sb;
 	}
 
 	@Override

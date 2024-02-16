@@ -49,11 +49,9 @@ public abstract class Option<T> {
 	protected T defaultValue;
 	protected T currentValue;
 
-	public static enum DataType {
+	public enum DataType {
 		STRING, NUMBER, BOOLEAN, STRING_ARRAY
 	}
-
-	;
 
 	/**
 	 * Data type : used to make it possible to make user inputs more friendly in FCP apps
@@ -198,7 +196,7 @@ public abstract class Option<T> {
 	 */
 	public boolean isDefault() {
 		getValue();
-		return (currentValue == null ? false : currentValue.equals(defaultValue));
+		return (currentValue != null && currentValue.equals(defaultValue));
 	}
 
 	/**

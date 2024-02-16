@@ -3,24 +3,19 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.BufferedInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-
 import freenet.client.filter.CharsetExtractor.BOMDetection;
 import freenet.l10n.NodeL10n;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.FileUtil;
+
+import java.io.*;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 /**
  * Freenet content filter. This doesn't actually do any filtering,
@@ -139,7 +134,7 @@ public class ContentFilter {
 				false, null, null, false));
 
 		// HTML - dangerous if not filtered
-		register(new FilterMIMEType(HTML_MIME_TYPES[0], "html", Arrays.asList(HTML_MIME_TYPES).subList(1, HTML_MIME_TYPES.length).toArray(new String[HTML_MIME_TYPES.length - 1]), new String[]{"htm"},
+		register(new FilterMIMEType(HTML_MIME_TYPES[0], "html", Arrays.copyOfRange(HTML_MIME_TYPES, 1, HTML_MIME_TYPES.length), new String[]{"htm"},
 				false, false /* maybe? */, new HTMLFilter(),
 				true, true, true, true, true, true,
 				l10n("textHtmlReadAdvice"),
@@ -194,7 +189,7 @@ public class ContentFilter {
 			URI baseURI,
 			FoundURICallback cb,
 			TagReplacerCallback trc,
-			String maybeCharset) throws UnsafeContentTypeException, IOException {
+			String maybeCharset) throws IOException {
 		return filter(input, output, typeName, baseURI, null, cb, trc, maybeCharset, null);
 	}
 
@@ -255,7 +250,7 @@ public class ContentFilter {
 	 * Compatibility for plugins: passes schemeHostAndPort null.
 	 */
 	@Deprecated // please move to filter with schemeHostAndPort, called from this method.
-	public static FilterStatus filter(InputStream input, OutputStream output, String typeName, String maybeCharset, FilterCallback filterCallback) throws UnsafeContentTypeException, IOException {
+	public static FilterStatus filter(InputStream input, OutputStream output, String typeName, String maybeCharset, FilterCallback filterCallback) throws IOException {
 		return filter(input, output, typeName, maybeCharset, null, filterCallback);
 	}
 

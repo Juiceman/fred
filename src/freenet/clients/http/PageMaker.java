@@ -1,11 +1,5 @@
 package freenet.clients.http;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import freenet.client.filter.PushingTagReplacerCallback;
 import freenet.l10n.NodeL10n;
 import freenet.node.DarknetPeerNode;
@@ -15,6 +9,12 @@ import freenet.pluginmanager.FredPluginL10n;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple class to output standard heads and tail for web interface pages.
@@ -91,11 +91,11 @@ public final class PageMaker {
 		 */
 		public final boolean fetchKeyBoxAboveBookmarks;
 
-		private THEME(String code, String name, String description) {
+		THEME(String code, String name, String description) {
 			this(code, name, description, false, false);
 		}
 
-		private THEME(String code, String name, String description, boolean forceActivelinks, boolean fetchKeyBoxAboveBookmarks) {
+		THEME(String code, String name, String description, boolean forceActivelinks, boolean fetchKeyBoxAboveBookmarks) {
 			this.code = code;
 			this.name = name;
 			this.description = description;
@@ -130,8 +130,8 @@ public final class PageMaker {
 	private String override;
 	private final Node node;
 
-	private List<SubMenu> menuList = new ArrayList<SubMenu>();
-	private Map<String, SubMenu> subMenus = new HashMap<String, SubMenu>();
+	private final List<SubMenu> menuList = new ArrayList<SubMenu>();
+	private final Map<String, SubMenu> subMenus = new HashMap<String, SubMenu>();
 
 	private static class SubMenu {
 
@@ -189,7 +189,7 @@ public final class PageMaker {
 
 	}
 
-	protected PageMaker(THEME t, Node n) {
+	PageMaker(THEME t, Node n) {
 		setTheme(t);
 		this.node = n;
 	}
@@ -320,7 +320,7 @@ public final class PageMaker {
 	 * @return A template PageNode.
 	 */
 	public PageNode getPageNode(String title, ToadletContext ctx, RenderParameters renderParameters) {
-		boolean fullAccess = ctx == null ? false : ctx.isAllowedFullAccess();
+		boolean fullAccess = ctx != null && ctx.isAllowedFullAccess();
 		HTMLNode pageNode = new HTMLNode.HTMLDoctype("html", "-//W3C//DTD XHTML 1.1//EN");
 		HTMLNode htmlNode = pageNode.addChild("html", "xml:lang", NodeL10n.getBase().getSelectedLanguage().isoCode);
 		HTMLNode headNode = htmlNode.addChild("head");
@@ -466,7 +466,7 @@ public final class PageMaker {
 
 				progressBar.addChild("div", new String[]{"class", "title"}, new String[]{"progress_fraction_finalized", NodeL10n.getBase().getString("StatusBar.connectedPeers", new String[]{"X", "Y"},
 								new String[]{Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.countConnectedOpennetPeers())})},
-						Integer.toString(connectedPeers) + ((totalPeers != Integer.MAX_VALUE) ? " / " + Integer.toString(totalPeers) : ""));
+						connectedPeers + ((totalPeers != Integer.MAX_VALUE) ? " / " + totalPeers : ""));
 			}
 		}
 
@@ -742,10 +742,7 @@ public final class PageMaker {
 
 		if (req.isParameterSet(MODE_SWITCH_PARAMETER)) {
 			mode = req.getIntParam(MODE_SWITCH_PARAMETER, mode);
-			if (mode == MODE_ADVANCED)
-				container.setAdvancedMode(true);
-			else
-				container.setAdvancedMode(false);
+			container.setAdvancedMode(mode == MODE_ADVANCED);
 		}
 
 		return mode;

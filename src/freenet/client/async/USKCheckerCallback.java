@@ -13,38 +13,38 @@ interface USKCheckerCallback {
 	/**
 	 * Data Not Found
 	 */
-	public void onDNF(ClientContext context);
+	void onDNF(ClientContext context);
 
 	/**
 	 * Successfully found the latest version of the key
 	 *
 	 * @param block
 	 */
-	public void onSuccess(ClientSSKBlock block, ClientContext context);
+	void onSuccess(ClientSSKBlock block, ClientContext context);
 
 	/**
 	 * Error committed by author
 	 */
-	public void onFatalAuthorError(ClientContext context);
+	void onFatalAuthorError(ClientContext context);
 
 	/**
 	 * Network on our node or on nodes we have been talking to
 	 */
-	public void onNetworkError(ClientContext context);
+	void onNetworkError(ClientContext context);
 
 	/**
 	 * Request cancelled
 	 */
-	public void onCancelled(ClientContext context);
+	void onCancelled(ClientContext context);
 
 	/**
 	 * Get priority to run the request at
 	 */
-	public short getPriority();
+	short getPriority();
 
 	/**
 	 * Called when we enter a finite cooldown
 	 */
-	public void onEnterFiniteCooldown(ClientContext context);
+	void onEnterFiniteCooldown(ClientContext context);
 
 }

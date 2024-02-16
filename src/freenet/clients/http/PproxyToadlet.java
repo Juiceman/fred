@@ -1,42 +1,23 @@
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import freenet.client.HighLevelSimpleClient;
+import freenet.l10n.NodeL10n;
+import freenet.node.Node;
+import freenet.pluginmanager.*;
+import freenet.pluginmanager.OfficialPlugins.OfficialPluginDescription;
+import freenet.pluginmanager.PluginManager.PluginProgress;
+import freenet.support.*;
+import freenet.support.Logger.LogLevel;
+import freenet.support.api.HTTPRequest;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
-import freenet.client.HighLevelSimpleClient;
-import freenet.l10n.NodeL10n;
-import freenet.node.Node;
-import freenet.pluginmanager.AccessDeniedPluginHTTPException;
-import freenet.pluginmanager.DownloadPluginHTTPException;
-import freenet.pluginmanager.NotFoundPluginHTTPException;
-import freenet.pluginmanager.OfficialPlugins.OfficialPluginDescription;
-import freenet.pluginmanager.PluginHTTPException;
-import freenet.pluginmanager.PluginInfoWrapper;
-import freenet.pluginmanager.PluginManager;
-import freenet.pluginmanager.RedirectPluginHTTPException;
-import freenet.pluginmanager.PluginManager.PluginProgress;
-import freenet.support.HTMLNode;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.MultiValueTable;
-import freenet.support.TimeUtil;
-import freenet.support.Logger.LogLevel;
-import freenet.support.api.HTTPRequest;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class PproxyToadlet extends Toadlet {
 	private static final int MAX_PLUGIN_NAME_LENGTH = 1024;
@@ -212,7 +193,6 @@ public class PproxyToadlet extends Toadlet {
 				tempNode.addChild("#", " ");
 				tempNode.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 				writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-				return;
 			} else if (request.getPartAsStringFailsafe("reload", MAX_PLUGIN_NAME_LENGTH).length() > 0) {
 				PageNode page = pageMaker.getPageNode(l10n("plugins"), ctx);
 				HTMLNode pageNode = page.outer;
@@ -234,7 +214,6 @@ public class PproxyToadlet extends Toadlet {
 				tempNode.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 
 				writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-				return;
 			} else if (request.getPartAsStringFailsafe("update", MAX_PLUGIN_NAME_LENGTH).length() > 0) {
 				// Deploy the plugin update
 				final String pluginFilename = request.getPartAsStringFailsafe("update", MAX_PLUGIN_NAME_LENGTH);
@@ -248,7 +227,6 @@ public class PproxyToadlet extends Toadlet {
 					headers.put("Location", ".");
 					ctx.sendReplyHeaders(302, "Found", headers, null, 0);
 				}
-				return;
 
 			} else if (request.getPartAsStringFailsafe("reloadconfirm", MAX_PLUGIN_NAME_LENGTH).length() > 0) {
 				boolean purge = request.isPartSet("purge");
@@ -276,7 +254,6 @@ public class PproxyToadlet extends Toadlet {
 					headers.put("Location", ".");
 					ctx.sendReplyHeaders(302, "Found", headers, null, 0);
 				}
-				return;
 			} else {
 				// Ignore
 				headers.put("Location", ".");

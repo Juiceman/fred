@@ -3,20 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import freenet.client.ArchiveManager.ARCHIVE_TYPE;
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.client.InsertContext.CompatibilityMode;
@@ -40,6 +26,14 @@ import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 import freenet.support.io.Closer;
 import freenet.support.io.CountedOutputStream;
 import freenet.support.io.NullOutputStream;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Metadata parser/writer class.

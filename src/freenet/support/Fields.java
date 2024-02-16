@@ -1,18 +1,13 @@
 package freenet.support;
 
-import java.nio.ByteBuffer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
-
 import freenet.config.Dimension;
 import freenet.l10n.NodeL10n;
 import freenet.support.Logger.LogLevel;
+
+import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * This class contains static methods used for parsing boolean and unsigned
@@ -414,7 +409,7 @@ public abstract class Fields {
 	 */
 	public static final class ByteArrayComparator implements Comparator<byte[]> {
 		@Override
-		public final int compare(byte[] o1, byte[] o2) {
+		public int compare(byte[] o1, byte[] o2) {
 			return compareBytes(o1, o2);
 		}
 	}

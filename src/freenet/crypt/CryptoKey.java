@@ -3,6 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
+import freenet.support.HexUtil;
+import freenet.support.Logger;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +14,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import freenet.support.HexUtil;
-import freenet.support.Logger;
 
 public abstract class CryptoKey implements CryptoElement, Serializable {
 
@@ -38,7 +38,7 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 		try {
 			Class<?> keyClass = Class.forName(type);
 			Method m =
-					keyClass.getMethod("read", new Class<?>[]{InputStream.class});
+					keyClass.getMethod("read", InputStream.class);
 			return (CryptoKey) m.invoke(null, dis);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,9 +70,7 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 	}
 
 	public String verboseToString() {
-		StringBuilder b = new StringBuilder();
-		b.append(toString()).append('\t').append(fingerprintToString());
-		return b.toString();
+		return String.valueOf(this) + '\t' + fingerprintToString();
 	}
 
 	@Override
@@ -89,28 +87,26 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 //
 	public String fingerprintToString() {
 		String fphex = HexUtil.bytesToHex(fingerprint());
-		StringBuilder b = new StringBuilder(40 + 10);
-		b
-				.append(fphex.substring(0, 4))
-				.append(' ')
-				.append(fphex.substring(4, 8))
-				.append(' ')
-				.append(fphex.substring(8, 12))
-				.append(' ')
-				.append(fphex.substring(12, 16))
-				.append(' ')
-				.append(fphex.substring(16, 20))
-				.append("  ")
-				.append(fphex.substring(20, 24))
-				.append(' ')
-				.append(fphex.substring(24, 28))
-				.append(' ')
-				.append(fphex.substring(28, 32))
-				.append(' ')
-				.append(fphex.substring(32, 36))
-				.append(' ')
-				.append(fphex.substring(36, 40));
-		return b.toString();
+		String b = fphex.substring(0, 4) +
+				' ' +
+				fphex.substring(4, 8) +
+				' ' +
+				fphex.substring(8, 12) +
+				' ' +
+				fphex.substring(12, 16) +
+				' ' +
+				fphex.substring(16, 20) +
+				"  " +
+				fphex.substring(20, 24) +
+				' ' +
+				fphex.substring(24, 28) +
+				' ' +
+				fphex.substring(28, 32) +
+				' ' +
+				fphex.substring(32, 36) +
+				' ' +
+				fphex.substring(36, 40);
+		return b;
 	}
 
 	public static void main(String[] args) throws Exception {

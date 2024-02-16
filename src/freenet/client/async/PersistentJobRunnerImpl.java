@@ -1,13 +1,13 @@
 package freenet.client.async;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import freenet.node.PrioRunnable;
 import freenet.support.Executor;
 import freenet.support.Logger;
 import freenet.support.Ticker;
 import freenet.support.io.NativeThread;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Runs PersistentJob's and periodically, or on demand, suspends all jobs and calls
@@ -43,7 +43,7 @@ public abstract class PersistentJobRunnerImpl implements PersistentJobRunner {
 	/**
 	 * Not to be used by child classes.
 	 */
-	private Object sync = new Object();
+	private final Object sync = new Object();
 	protected Object serializeCheckpoints = new Object();
 	private boolean willCheck = false;
 	/**
@@ -133,7 +133,6 @@ public abstract class PersistentJobRunnerImpl implements PersistentJobRunner {
 		try {
 			queue(job, NativeThread.NORM_PRIORITY);
 		} catch (PersistenceDisabledException e) {
-			return;
 		}
 	}
 

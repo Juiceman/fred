@@ -3,15 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.diagnostics.threads;
 
-import freenet.node.*;
-import freenet.node.diagnostics.*;
-import freenet.support.*;
+import freenet.node.NodeStats;
+import freenet.node.diagnostics.ThreadDiagnostics;
+import freenet.support.PooledExecutor;
+import freenet.support.Ticker;
 
-import java.io.*;
-import java.lang.management.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.*;
-import java.util.concurrent.atomic.*;
-import java.util.stream.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Runnable thread to retrieve node thread's information and compiling it into

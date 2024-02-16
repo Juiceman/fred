@@ -1,9 +1,5 @@
 package freenet.clients.http;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Comparator;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.config.ConfigException;
 import freenet.l10n.NodeL10n;
@@ -15,6 +11,10 @@ import freenet.support.HTMLNode;
 import freenet.support.SimpleFieldSet;
 import freenet.support.TimeUtil;
 import freenet.support.api.HTTPRequest;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Comparator;
 
 public class OpennetConnectionsToadlet extends ConnectionsToadlet implements LinkEnabledCallback {
 

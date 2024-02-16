@@ -1,17 +1,16 @@
 package freenet.support.io;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.TimeUtil;
+import org.tanukisoftware.wrapper.WrapperManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import org.tanukisoftware.wrapper.WrapperManager;
-
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.TimeUtil;
-import freenet.support.Logger.LogLevel;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Tracks the current temporary files settings (dir and prefix), and translates between ID's and
@@ -25,9 +24,9 @@ import freenet.support.Logger.LogLevel;
  */
 public class FilenameGenerator {
 
-	private transient Random random;
-	private String prefix;
-	private File tmpDir;
+	private final transient Random random;
+	private final String prefix;
+	private final File tmpDir;
 
 
 	private static volatile boolean logMINOR;

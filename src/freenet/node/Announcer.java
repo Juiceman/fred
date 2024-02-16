@@ -3,20 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import freenet.io.comm.PeerParseException;
 import freenet.io.comm.ReferenceSignatureVerificationException;
 import freenet.l10n.NodeL10n;
@@ -24,15 +10,15 @@ import freenet.node.useralerts.AbstractUserEvent;
 import freenet.node.useralerts.SimpleUserAlert;
 import freenet.node.useralerts.UserAlert;
 import freenet.node.useralerts.UserEvent;
-import freenet.support.ByteArrayWrapper;
-import freenet.support.HTMLNode;
-import freenet.support.ListUtils;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.SimpleFieldSet;
-import freenet.support.TimeUtil;
 import freenet.support.io.Closer;
 import freenet.support.transport.ip.IPUtil;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -323,7 +309,7 @@ public class Announcer {
 		return target;
 	}
 
-	private SimpleUserAlert announcementDisabledAlert =
+	private final SimpleUserAlert announcementDisabledAlert =
 			new SimpleUserAlert(false, l10n("announceDisabledTooOldTitle"), l10n("announceDisabledTooOld"), l10n("announceDisabledTooOldShort"), UserAlert.CRITICAL_ERROR) {
 
 				@Override
@@ -589,8 +575,7 @@ public class Announcer {
 	}
 
 	private synchronized void addAnnouncedIPs(InetAddress[] addrs) {
-		for (InetAddress addr : addrs)
-			announcedToIPs.add(addr);
+		Collections.addAll(announcedToIPs, addrs);
 	}
 
 	/**
@@ -641,7 +626,6 @@ public class Announcer {
 				}
 				Logger.normal(this, "Announcement to " + seed.userToString() + " added node " + pn + " for a total of " + announcementAddedNodes + " (" + totalAdded + " from this announcement)");
 				System.out.println("Announcement to " + seed.userToString() + " added node " + pn.userToString() + '.');
-				return;
 			}
 
 			@Override

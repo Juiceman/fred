@@ -1,13 +1,13 @@
 package freenet.support.io;
 
+import freenet.client.async.ClientContext;
+import freenet.crypt.MasterSecret;
+import freenet.support.api.LockableRandomAccessBuffer;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-
-import freenet.client.async.ClientContext;
-import freenet.crypt.MasterSecret;
-import freenet.support.api.LockableRandomAccessBuffer;
 
 public class PaddedRandomAccessBuffer implements LockableRandomAccessBuffer, Serializable {
 
@@ -101,10 +101,7 @@ public class PaddedRandomAccessBuffer implements LockableRandomAccessBuffer, Ser
 		if (!raf.equals(other.raf)) {
 			return false;
 		}
-		if (realSize != other.realSize) {
-			return false;
-		}
-		return true;
+		return realSize == other.realSize;
 	}
 
 }

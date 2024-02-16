@@ -1,17 +1,13 @@
 package freenet.support.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-
 import freenet.client.async.ClientContext;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.api.RandomAccessBucket;
+
+import java.io.*;
 
 /*
  *  This code is part of FProxy, an HTTP proxy server for Freenet.
@@ -232,10 +228,7 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 		if (filenameID != other.filenameID) {
 			return false;
 		}
-		if (readOnly != other.readOnly) {
-			return false;
-		}
-		return true;
+		return readOnly == other.readOnly;
 	}
 
 }

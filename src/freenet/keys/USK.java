@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
+import freenet.support.Fields;
+import freenet.support.Logger;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.regex.Pattern;
-
-import freenet.support.Fields;
-import freenet.support.Logger;
 
 /**
  * Updatable Subspace Key.
@@ -187,8 +187,7 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 			if (!Arrays.equals(pubKeyHash, u.pubKeyHash)) return false;
 			if (!Arrays.equals(cryptoKey, u.cryptoKey)) return false;
 			if (!siteName.equals(u.siteName)) return false;
-			if (includeVersion && (suggestedEdition != u.suggestedEdition)) return false;
-			return true;
+			return !includeVersion || (suggestedEdition == u.suggestedEdition);
 		}
 		return false;
 	}

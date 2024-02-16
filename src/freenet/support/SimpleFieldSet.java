@@ -1,35 +1,13 @@
 package freenet.support;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
 import freenet.node.FSParseException;
 import freenet.support.io.Closer;
 import freenet.support.io.LineReader;
 import freenet.support.io.Readers;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static java.util.Collections.emptyMap;
 
@@ -417,7 +395,7 @@ public class SimpleFieldSet {
 		if ((!alwaysUseBase64) && value.indexOf('\n') != -1)
 			throw new IllegalArgumentException("A simplefieldSet can't accept newlines !");
 		if (allowMultiple && (!fromRead) && value.indexOf(MULTI_VALUE_CHAR) != -1) {
-			throw new IllegalArgumentException("Appending a string to a SimpleFieldSet value should not contain the multi-value char \"" + String.valueOf(MULTI_VALUE_CHAR) + "\" but it does: \"" + value + "\" for \"" + key + "\"", new Exception("error"));
+			throw new IllegalArgumentException("Appending a string to a SimpleFieldSet value should not contain the multi-value char \"" + MULTI_VALUE_CHAR + "\" but it does: \"" + value + "\" for \"" + key + "\"", new Exception("error"));
 		}
 		if ((idx = key.indexOf(MULTI_LEVEL_CHAR)) == -1) {
 			if (!shortLived) key = key.intern();

@@ -11,7 +11,7 @@ public class SecondCounterNode extends HTMLNode {
 		super("span", "class", ascending ? "needsIncrement" : "needsDecrement");
 		addChild("input", new String[]{"type", "value"}, new String[]{"hidden", String.valueOf(initialValue)});
 		// If the text has {0}, then it will be replaced by the time. This way text can be present both before and after the counter
-		if (text.contains("{0}") == false) {
+		if (!text.contains("{0}")) {
 			addChild("span", text);
 			addChild("span", TimeUtil.formatTime(initialValue));
 		} else {

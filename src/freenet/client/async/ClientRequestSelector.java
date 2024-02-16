@@ -1,37 +1,16 @@
 package freenet.client.async;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import freenet.client.FetchContext;
 import freenet.crypt.RandomSource;
 import freenet.keys.ClientKey;
 import freenet.keys.Key;
-import freenet.node.BaseSendableGet;
-import freenet.node.KeysFetchingLocally;
-import freenet.node.Node;
-import freenet.node.RequestClient;
-import freenet.node.RequestScheduler;
-import freenet.node.RequestStarter;
-import freenet.node.SendableGet;
-import freenet.node.SendableInsert;
-import freenet.node.SendableRequest;
-import freenet.node.SendableRequestItem;
-import freenet.node.SendableRequestItemKey;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.node.*;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.RandomGrabArray;
-import freenet.support.RandomGrabArrayWithObject;
 import freenet.support.RemoveRandom.RemoveRandomReturn;
-import freenet.support.RemoveRandomParent;
-import freenet.support.SectoredRandomGrabArray;
-import freenet.support.SectoredRandomGrabArraySimple;
-import freenet.support.TimeUtil;
+
+import java.lang.ref.WeakReference;
+import java.util.*;
 
 /**
  * The global request queue. Both transient and persistent requests are kept on this in-RAM
@@ -138,7 +117,7 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * we'd move this to node but only track keys we are fetching at max HTL.
 	 * LOCKING: Always lock this LAST.
 	 */
-	private transient HashSet<Key> keysFetching;
+	private final transient HashSet<Key> keysFetching;
 
 	private transient HashMap<Key, WeakReference<BaseSendableGet>[]> transientRequestsWaitingForKeysFetching;
 
@@ -282,7 +261,7 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 					canWriteClientCache = ((SendableInsert) req).canWriteClientCache();
 					forkOnCacheable = ((SendableInsert) req).forkOnCacheable();
 					localRequestOnly = ((SendableInsert) req).localRequestOnly();
-					realTimeFlag = ((SendableInsert) req).realTimeFlag();
+					realTimeFlag = req.realTimeFlag();
 				} else {
 					canWriteClientCache = false;
 					forkOnCacheable = Node.FORK_ON_CACHEABLE_DEFAULT;
@@ -747,8 +726,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 *                    is activated when it shouldn't be. It is perfectly okay to have req be a
 	 *                    member of maybeActive.
 	 *                    <p>
-	 *                                       FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
-	 *                                       or make req a SendableRequest[] and register them all at once.
+	 *                                                          FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
+	 *                                                          or make req a SendableRequest[] and register them all at once.
 	 */
 	void innerRegister(SendableRequest req, ClientContext context, SendableRequest[] maybeActive) {
 		if (isInsertScheduler && req instanceof BaseSendableGet)

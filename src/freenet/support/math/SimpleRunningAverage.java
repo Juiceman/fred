@@ -3,10 +3,10 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.math;
 
-import java.io.DataOutputStream;
-
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.io.DataOutputStream;
 
 /**
  * Simple running average: linear mean of the last N reports.
@@ -21,10 +21,10 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	double total = 0;
 	int totalReports = 0;
 	final double initValue;
-	private boolean logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+	private final boolean logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 
 	@Override
-	public final SimpleRunningAverage clone() {
+	public SimpleRunningAverage clone() {
 		// Deep copy needed. Implement Cloneable to shut up findbugs.
 		return new SimpleRunningAverage(this);
 	}
@@ -100,7 +100,7 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	/**
 	 * @param value
 	 */
-	protected synchronized void pushValue(double value) {
+	private synchronized void pushValue(double value) {
 		refs[nextSlotPtr] = value;
 		nextSlotPtr++;
 		if (nextSlotPtr >= refs.length) nextSlotPtr = 0;
@@ -109,7 +109,7 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	/**
 	 * @return
 	 */
-	protected synchronized double popValue() {
+	private synchronized double popValue() {
 		return refs[nextSlotPtr];
 	}
 

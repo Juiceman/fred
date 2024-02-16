@@ -3,13 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.compress;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import SevenZip.Compression.LZMA.Decoder;
 import SevenZip.Compression.LZMA.Encoder;
 import SevenZip.ICodeProgress;
@@ -21,6 +14,8 @@ import freenet.support.api.BucketFactory;
 import freenet.support.io.Closer;
 import freenet.support.io.CountedInputStream;
 import freenet.support.io.CountedOutputStream;
+
+import java.io.*;
 
 public class NewLZMACompressor extends AbstractCompressor {
 
@@ -42,7 +37,7 @@ public class NewLZMACompressor extends AbstractCompressor {
 	// Copied from EncoderThread. See below re licensing.
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+			throws IOException {
 		Bucket output;
 		InputStream is = null;
 		OutputStream os = null;
@@ -116,7 +111,7 @@ public class NewLZMACompressor extends AbstractCompressor {
 		return cos.written();
 	}
 
-	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException, CompressionOutputSizeException {
+	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException {
 		Bucket output;
 		if (preferred != null)
 			output = preferred;
@@ -145,7 +140,7 @@ public class NewLZMACompressor extends AbstractCompressor {
 	}
 
 	@Override
-	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
+	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException {
 		byte[] props = new byte[5];
 		DataInputStream dis = new DataInputStream(is);
 		dis.readFully(props);

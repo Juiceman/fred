@@ -1,11 +1,11 @@
 package freenet.clients.http;
 
-import java.io.IOException;
-import java.net.URI;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
+
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * Browser Test Toadlet. Accessible from <code>http://.../test/</code>.

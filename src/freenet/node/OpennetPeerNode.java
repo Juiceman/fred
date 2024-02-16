@@ -138,8 +138,7 @@ public class OpennetPeerNode extends PeerNode {
 	 * Is the SimpleFieldSet a valid noderef?
 	 */
 	public static boolean validateRef(SimpleFieldSet ref) {
-		if (!ref.getBoolean("opennet", false)) return false;
-		return true;
+		return ref.getBoolean("opennet", false);
 	}
 
 	@Override
@@ -191,12 +190,9 @@ public class OpennetPeerNode extends PeerNode {
 			// UOM transfers can take ages, but there has to be some limit...
 			return true;
 		}
-		if (timeSinceSentUOM() < SECONDS.toMillis(60)) {
-			// Let it finish.
-			// 60 seconds extra to ensure it has time to parse the jar and start fetching dependencies.
-			return false;
-		}
-		return true;
+		// Let it finish.
+		// 60 seconds extra to ensure it has time to parse the jar and start fetching dependencies.
+		return timeSinceSentUOM() >= SECONDS.toMillis(60);
 	}
 
 	@Override

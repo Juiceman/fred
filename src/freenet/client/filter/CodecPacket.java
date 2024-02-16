@@ -31,8 +31,7 @@ public class CodecPacket {
 		if (obj == null) return false;
 		if (!(obj instanceof CodecPacket)) return false;
 		CodecPacket other = (CodecPacket) obj;
-		if (!Arrays.equals(payload, other.payload)) return false;
-		return true;
+		return Arrays.equals(payload, other.payload);
 	}
 
 

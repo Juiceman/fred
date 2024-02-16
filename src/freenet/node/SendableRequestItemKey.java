@@ -15,10 +15,9 @@ public interface SendableRequestItemKey {
 	 * You must implement this!
 	 */
 	@Override
-	public boolean equals(Object o);
+	boolean equals(Object o);
 
 	@Override
-	/** You must implement this! */
-	public int hashCode();
+	/** You must implement this! */ int hashCode();
 
 }

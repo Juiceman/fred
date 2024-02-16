@@ -3,10 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 import freenet.client.HighLevelSimpleClientImpl;
 import freenet.client.InsertContext;
 import freenet.client.async.PersistenceDisabledException;
@@ -23,6 +19,10 @@ import freenet.support.api.RandomAccessBucket;
 import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.io.FileBucket;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * ClientPut

@@ -12,7 +12,7 @@ public class SingleKeyListener implements KeyListener {
 	private final Key key;
 	private final BaseSingleFileFetcher fetcher;
 	private boolean done;
-	private short prio;
+	private final short prio;
 	private final boolean persistent;
 
 	public SingleKeyListener(Key key, BaseSingleFileFetcher fetcher, short prio, boolean persistent) {

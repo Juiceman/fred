@@ -3,13 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.io;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-
 import freenet.crypt.EncryptedRandomAccessBucket;
 import freenet.crypt.MasterSecret;
 import freenet.crypt.RandomSource;
@@ -19,6 +12,13 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.RandomAccessBucket;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 /**
  * Handles persistent temp files. These are used for e.g. persistent downloads. These are
@@ -53,11 +53,11 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	/**
 	 * Cryptographically strong random number generator
 	 */
-	private transient RandomSource strongPRNG;
+	private final transient RandomSource strongPRNG;
 	/**
 	 * Weak but fast random number generator.
 	 */
-	private transient Random weakPRNG;
+	private final transient Random weakPRNG;
 
 	/**
 	 * Buckets to free. When buckets are freed, we write them to this list, and delete the files *after*
@@ -121,9 +121,7 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 				if (!pathname.exists() || pathname.isDirectory())
 					return false;
 				String name = pathname.getName();
-				if (name.startsWith(prefix))
-					return true;
-				return false;
+				return name.startsWith(prefix);
 			}
 		});
 		for (File f : files) {

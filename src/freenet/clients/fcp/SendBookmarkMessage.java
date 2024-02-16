@@ -1,13 +1,13 @@
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-
 import freenet.keys.FreenetURI;
 import freenet.node.DarknetPeerNode;
 import freenet.support.SimpleFieldSet;
 import freenet.support.io.BucketTools;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 
 public class SendBookmarkMessage extends SendPeerMessage {
 

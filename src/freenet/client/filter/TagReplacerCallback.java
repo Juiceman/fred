@@ -13,5 +13,5 @@ public interface TagReplacerCallback {
 	 * @param uriProcessor - The URIProcessor that helps with URI transformations
 	 * @return the replacement for the tag, or null if not needed
 	 */
-	public String processTag(ParsedTag pt, URIProcessor uriProcessor);
+	String processTag(ParsedTag pt, URIProcessor uriProcessor);
 }

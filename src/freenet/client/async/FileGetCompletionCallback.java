@@ -1,8 +1,8 @@
 package freenet.client.async;
 
-import java.io.File;
-
 import freenet.client.ClientMetadata;
+
+import java.io.File;
 
 /**
  * If a request will return the downloaded data to a file (not a temporary file), and if the data
@@ -27,7 +27,7 @@ public interface FileGetCompletionCallback extends GetCompletionCallback {
 	 * @return The final target File, or null if the download isn't to a (non-temporary) file,
 	 * the target file can't be used for temporary storage etc. The returned file must be absolute.
 	 */
-	public File getCompletionFile();
+	File getCompletionFile();
 
 	/**
 	 * Call when the download has completed and the tempFile contains the downloaded data, but
@@ -43,7 +43,7 @@ public interface FileGetCompletionCallback extends GetCompletionCallback {
 	 *                 factories etc. Not static because we want to be able to run multiple nodes in one VM for
 	 *                 tests etc.
 	 */
-	public void onSuccess(File tempFile, long length, ClientMetadata metadata,
-						  ClientGetState state, ClientContext context);
+	void onSuccess(File tempFile, long length, ClientMetadata metadata,
+				   ClientGetState state, ClientContext context);
 
 }

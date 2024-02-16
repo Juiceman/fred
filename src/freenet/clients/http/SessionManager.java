@@ -3,22 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.HOURS;
+import freenet.support.LRUMap;
+import freenet.support.Logger;
+import freenet.support.StringValidityChecker;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import freenet.support.LRUMap;
-import freenet.support.Logger;
-import freenet.support.StringValidityChecker;
+import static java.util.concurrent.TimeUnit.HOURS;
 
 /**
  * A basic session manager for cookie-based HTTP session.
@@ -71,7 +65,7 @@ public final class SessionManager {
 		if (myCookiePath.isAbsolute())
 			throw new IllegalArgumentException("Illegal cookie path, must be relative: " + myCookiePath);
 
-		if (myCookiePath.toString().startsWith("/") == false)
+		if (!myCookiePath.toString().startsWith("/"))
 			throw new IllegalArgumentException("Illegal cookie path, must start with /: " + myCookiePath);
 
 		// FIXME: The new constructor was written at 2010-11-15. Uncomment the following safety check after we gave plugins some time to migrate
@@ -413,7 +407,7 @@ public final class SessionManager {
 		while (sessions.hasMoreElements()) {
 			Session session = sessions.nextElement();
 
-			if (mSessionsByID.containsKey(session.getID()) == false) {
+			if (!mSessionsByID.containsKey(session.getID())) {
 				Logger.error(this, "Sessions by user ID hashtable contains deleted session, removing it: " + session);
 
 				mSessionsByUserID.remove(session.getUserID());

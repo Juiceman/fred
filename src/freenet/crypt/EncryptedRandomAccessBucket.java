@@ -1,40 +1,23 @@
 package freenet.crypt;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.util.Arrays;
-
-import javax.crypto.SecretKey;
-
-import org.bouncycastle.crypto.SkippingStreamCipher;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
-
 import freenet.client.async.ClientContext;
 import freenet.crypt.EncryptedRandomAccessBuffer.kdfInput;
 import freenet.support.Fields;
 import freenet.support.Logger;
 import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
-import freenet.support.io.BucketTools;
-import freenet.support.io.FilenameGenerator;
-import freenet.support.io.NullInputStream;
-import freenet.support.io.PersistentFileTracker;
-import freenet.support.io.ResumeFailedException;
-import freenet.support.io.StorageFormatException;
+import freenet.support.io.*;
+import org.bouncycastle.crypto.SkippingStreamCipher;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
+
+import javax.crypto.SecretKey;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.util.Arrays;
 
 /**
  * A Bucket encrypted using the same format as an EncryptedRandomAccessBuffer, which can therefore
@@ -270,7 +253,7 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 			this.cipherRead = cipher;
 		}
 
-		private byte[] one = new byte[1];
+		private final byte[] one = new byte[1];
 
 		@Override
 		public int read() throws IOException {

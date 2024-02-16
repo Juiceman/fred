@@ -1,18 +1,18 @@
 package freenet.clients.fcp;
 
-import java.nio.charset.StandardCharsets;
-
 import freenet.node.Node;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
 
+import java.nio.charset.StandardCharsets;
+
 public class FeedMessage extends MultipleDataCarryingMessage {
 
 	public static final String NAME = "Feed";
 	//We assume that the header and shortText doesn't contain any newlines
-	private String header;
-	private String shortText;
+	private final String header;
+	private final String shortText;
 
 	private final short priorityClass;
 	private final long updatedTime;

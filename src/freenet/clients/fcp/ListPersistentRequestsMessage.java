@@ -86,8 +86,6 @@ public class ListPersistentRequestsMessage extends FCPMessage {
 
 	}
 
-	;
-
 	public static abstract class TransientListJob extends ListJob implements Runnable {
 
 		final ClientContext context;

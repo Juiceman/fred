@@ -1,6 +1,8 @@
 package freenet.clients.http.wizardsteps;
 
-import freenet.clients.http.*;
+import freenet.clients.http.ConfigToadlet;
+import freenet.clients.http.FirstTimeWizardNewToadlet;
+import freenet.clients.http.FirstTimeWizardToadlet;
 import freenet.config.Config;
 import freenet.config.EnumerableOptionCallback;
 import freenet.config.Option;

@@ -1,18 +1,10 @@
 package freenet.node;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Map;
-
 import freenet.io.comm.DMT;
-import freenet.support.DoublyLinkedList;
-import freenet.support.DoublyLinkedListImpl;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.MutableBoolean;
+
+import java.util.*;
 
 /**
  * Queue of messages to send to a node. Ordered first by priority then by time.
@@ -925,11 +917,7 @@ public class PeerMessageQueue {
 			tryRealtimeFirst = false;
 		} else if (queuesByPriority[DMT.PRIORITY_BULK_DATA].isEmpty()) {
 			tryRealtimeFirst = true;
-		} else if (queuesByPriority[DMT.PRIORITY_BULK_DATA].getNextUrgentTime(Long.MAX_VALUE, 0) >= queuesByPriority[DMT.PRIORITY_REALTIME_DATA].getNextUrgentTime(Long.MAX_VALUE, 0)) {
-			tryRealtimeFirst = true;
-		} else {
-			tryRealtimeFirst = false;
-		}
+		} else tryRealtimeFirst = queuesByPriority[DMT.PRIORITY_BULK_DATA].getNextUrgentTime(Long.MAX_VALUE, 0) >= queuesByPriority[DMT.PRIORITY_REALTIME_DATA].getNextUrgentTime(Long.MAX_VALUE, 0);
 
 		// FIXME token bucket?
 		if (tryRealtimeFirst) {

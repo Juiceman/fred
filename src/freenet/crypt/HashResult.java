@@ -3,16 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.Arrays;
-
 import freenet.support.HexUtil;
 import freenet.support.Logger;
+
+import java.io.*;
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 public class HashResult implements Comparable<HashResult>, Cloneable, Serializable {
 
@@ -38,8 +34,7 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	protected HashResult(HashType hashType, byte[] bs, boolean testing) {
 		this.type = hashType;
 		this.result = bs;
-		if (!testing)
-			assert (bs.length == type.hashLength);
+		assert testing || (bs.length == type.hashLength);
 	}
 
 	protected HashResult() {

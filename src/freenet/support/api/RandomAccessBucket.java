@@ -22,9 +22,9 @@ public interface RandomAccessBucket extends Bucket {
 	 *
 	 * @throws IOException
 	 */
-	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException;
+	LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException;
 
 	@Override
-	public RandomAccessBucket createShadow();
+	RandomAccessBucket createShadow();
 
 }

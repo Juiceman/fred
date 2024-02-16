@@ -3,12 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.api;
 
-import java.io.Serializable;
-
-import freenet.client.async.ClientContext;
 import freenet.client.DefaultMIMETypes;
+import freenet.client.async.ClientContext;
 import freenet.keys.FreenetURI;
 import freenet.support.io.ResumeFailedException;
+
+import java.io.Serializable;
 
 /**
  * Represents an element in a manifest. Fed to *ManifestPutter. An element can be a file or a
@@ -127,7 +127,7 @@ public class ManifestElement implements Serializable {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o instanceof ManifestElement) {
-			if (((ManifestElement) o).name.equals(name)) return true;
+			return ((ManifestElement) o).name.equals(name);
 		}
 		return false;
 	}

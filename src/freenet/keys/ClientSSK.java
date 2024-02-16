@@ -3,11 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Arrays;
-
 import freenet.crypt.DSAPublicKey;
 import freenet.crypt.SHA256;
 import freenet.crypt.UnsupportedCipherException;
@@ -15,6 +10,11 @@ import freenet.crypt.ciphers.Rijndael;
 import freenet.support.Fields;
 import freenet.support.HexUtil;
 import freenet.support.Logger;
+
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 /**
  * Client-level SSK, i.e. a low level SSK with the decryption key needed to
@@ -186,7 +186,7 @@ public class ClientSSK extends ClientKey {
 			return cloneKey ? nodeKey.cloneKey() : nodeKey;
 		} catch (SSKVerifyException e) {
 			Logger.error(this, "Have already verified and yet it fails!: " + e);
-			throw (AssertionError) new AssertionError("Have already verified and yet it fails!").initCause(e);
+			throw (AssertionError) new AssertionError("Have already verified and yet it fails!", e);
 		}
 	}
 
@@ -217,7 +217,6 @@ public class ClientSSK extends ClientKey {
 		if (!docName.equals(key.docName)) return false;
 		if (!Arrays.equals(pubKeyHash, key.pubKeyHash)) return false;
 		if (!Arrays.equals(cryptoKey, key.cryptoKey)) return false;
-		if (!Arrays.equals(ehDocname, key.ehDocname)) return false;
-		return true;
+		return Arrays.equals(ehDocname, key.ehDocname);
 	}
 }

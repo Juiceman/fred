@@ -16,12 +16,12 @@
 
 package freenet.io;
 
+import freenet.io.AddressIdentifier.AddressType;
+
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-
-import freenet.io.AddressIdentifier.AddressType;
 
 /**
  * @author David Roden &lt;droden@gmail.com&gt;
@@ -38,7 +38,7 @@ public class Inet6AddressMatcher implements AddressMatcher {
 		Arrays.fill(FULL_MASK, (byte) 0xff);
 	}
 
-	private byte[] address;
+	private final byte[] address;
 	private byte[] netmask;
 
 	public Inet6AddressMatcher(String pattern) {

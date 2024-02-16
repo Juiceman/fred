@@ -1,13 +1,13 @@
 package freenet.clients.http.utils;
 
+import freenet.config.Option;
+import freenet.support.MultiValueTable;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import freenet.config.Option;
-import freenet.support.MultiValueTable;
 
 public class UriFilterProxyHeaderParser {
 	private UriFilterProxyHeaderParser() {

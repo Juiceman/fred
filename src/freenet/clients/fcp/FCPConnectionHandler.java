@@ -1,21 +1,5 @@
 package freenet.clients.fcp;
 
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import freenet.client.async.ClientContext;
 import freenet.client.async.PersistenceDisabledException;
 import freenet.client.async.PersistentJob;
@@ -34,6 +18,14 @@ import freenet.support.api.BucketFactory;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NativeThread;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FCPConnectionHandler implements Closeable {
 	private static final class DirectoryAccess {
@@ -385,7 +377,6 @@ public class FCPConnectionHandler implements Closeable {
 			Logger.normal(this, "Identifier collision on " + this);
 			FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
 			outputHandler.queue(msg);
-			return;
 		} else {
 			cg.start(server.core.clientContext);
 		}
@@ -499,7 +490,6 @@ public class FCPConnectionHandler implements Closeable {
 				cp.freeData();
 			else
 				message.freeData();
-			return;
 		} else {
 			Logger.minor(this, "Starting " + cp);
 			cp.start(server.core.clientContext);
@@ -605,7 +595,6 @@ public class FCPConnectionHandler implements Closeable {
 			outputHandler.queue(failedMessage);
 			if (cp != null)
 				cp.cancel(server.core.clientContext);
-			return;
 		} else {
 			if (logMINOR)
 				Logger.minor(this, "Starting " + cp);
@@ -808,7 +797,7 @@ public class FCPConnectionHandler implements Closeable {
 				bos.write(result.readContent.getBytes(StandardCharsets.UTF_8));
 				bos.flush();
 			} catch (IOException e) {
-				Logger.error(this, "Got a IOE while creating the file (" + readFile.toString() + " ! " + e.getMessage());
+				Logger.error(this, "Got a IOE while creating the file (" + readFile + " ! " + e.getMessage());
 			} finally {
 				Closer.close(bos);
 				Closer.close(fos);

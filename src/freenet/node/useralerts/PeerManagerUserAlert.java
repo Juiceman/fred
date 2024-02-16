@@ -3,13 +3,13 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.useralerts;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-
 import freenet.l10n.NodeL10n;
 import freenet.node.NodeStats;
 import freenet.node.PeerManager;
 import freenet.node.updater.NodeUpdateManager;
 import freenet.support.HTMLNode;
+
+import static java.util.concurrent.TimeUnit.DAYS;
 
 public class PeerManagerUserAlert extends AbstractUserAlert {
 

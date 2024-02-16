@@ -1,13 +1,13 @@
 package freenet.node;
 
-import java.io.File;
-import java.io.IOException;
-
 import freenet.config.InvalidConfigValueException;
 import freenet.config.SubConfig;
 import freenet.l10n.NodeL10n;
 import freenet.support.Ticker;
 import freenet.support.api.StringCallback;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ConfigurablePersister extends Persister {
 
@@ -37,7 +37,7 @@ public class ConfigurablePersister extends Persister {
 
 	private void setThrottles(String val) throws InvalidConfigValueException {
 		File f = new File(val);
-		File tmp = new File(f.toString() + ".tmp");
+		File tmp = new File(f + ".tmp");
 		while (true) {
 			if (f.exists()) {
 				if (!(f.canRead() && f.canWrite()))

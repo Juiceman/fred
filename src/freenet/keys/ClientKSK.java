@@ -8,16 +8,15 @@ package freenet.keys;
  * requested and inserted.
  */
 
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-
-import freenet.support.math.MersenneTwister;
-
 import freenet.crypt.DSAPrivateKey;
 import freenet.crypt.DSAPublicKey;
 import freenet.crypt.Global;
 import freenet.crypt.SHA256;
+import freenet.support.math.MersenneTwister;
+
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 public class ClientKSK extends InsertableClientSSK {
 

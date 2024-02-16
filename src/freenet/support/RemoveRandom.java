@@ -10,7 +10,7 @@ public interface RemoveRandom extends RequestSelectionTreeNode {
 	/**
 	 * Either a RandomGrabArrayItem or the time at which we should try again.
 	 */
-	public static final class RemoveRandomReturn {
+	final class RemoveRandomReturn {
 		public final RandomGrabArrayItem item;
 		public final long wakeupTime;
 
@@ -29,8 +29,8 @@ public interface RemoveRandom extends RequestSelectionTreeNode {
 	 * Return a random RandomGrabArrayItem, or a time at which there will be one, or null
 	 * if the RGA is empty and should be removed by the parent.
 	 */
-	public RemoveRandomReturn removeRandom(RandomGrabArrayItemExclusionList excluding, ClientContext context, long now);
+	RemoveRandomReturn removeRandom(RandomGrabArrayItemExclusionList excluding, ClientContext context, long now);
 
-	public void setParent(RemoveRandomParent newTopLevel);
+	void setParent(RemoveRandomParent newTopLevel);
 
 }

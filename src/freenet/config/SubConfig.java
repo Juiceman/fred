@@ -3,20 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.config;
 
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
+import freenet.support.api.*;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
-import freenet.support.Logger.LogLevel;
-import freenet.support.api.BooleanCallback;
-import freenet.support.api.IntCallback;
-import freenet.support.api.LongCallback;
-import freenet.support.api.ShortCallback;
-import freenet.support.api.StringArrCallback;
-import freenet.support.api.StringCallback;
 
 /**
  * A specific configuration block.

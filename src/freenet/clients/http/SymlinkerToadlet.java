@@ -1,11 +1,5 @@
 package freenet.clients.http;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.config.InvalidConfigValueException;
 import freenet.config.SubConfig;
@@ -14,6 +8,12 @@ import freenet.node.Node;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.StringArrCallback;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Symlinker Toadlet
@@ -49,10 +49,10 @@ public class SymlinkerToadlet extends Toadlet {
 					}
 				});
 
-		String fns[] = tslconfig.getStringArr("symlinks");
+		String[] fns = tslconfig.getStringArr("symlinks");
 		if (fns != null) {
 			for (String fn : fns) {
-				String tuple[] = fn.split("#");
+				String[] tuple = fn.split("#");
 				if (tuple.length == 2)
 					addLink(tuple[0], tuple[1], false);
 			}
@@ -67,11 +67,7 @@ public class SymlinkerToadlet extends Toadlet {
 	public boolean addLink(String alias, String target, boolean store) {
 		boolean ret;
 		synchronized (linkMap) {
-			if (alias.equals(linkMap.put(alias, target))) {
-				ret = true;
-			} else {
-				ret = false;
-			}
+			ret = alias.equals(linkMap.put(alias, target));
 			Logger.normal(this, "Adding link: " + alias + " => " + target);
 		}
 		if (store) node.clientCore.storeConfig();
@@ -82,10 +78,7 @@ public class SymlinkerToadlet extends Toadlet {
 		boolean ret;
 		synchronized (linkMap) {
 			Object o;
-			if ((o = linkMap.remove(alias)) != null)
-				ret = true;
-			else
-				ret = false;
+			ret = (o = linkMap.remove(alias)) != null;
 
 			Logger.normal(this, "Removing link: " + alias + " => " + o);
 		}
@@ -94,7 +87,7 @@ public class SymlinkerToadlet extends Toadlet {
 	}
 
 	private String[] getConfigLoadString() {
-		String retarr[] = new String[linkMap.size()];
+		String[] retarr = new String[linkMap.size()];
 		synchronized (linkMap) {
 			int i = 0;
 			for (Map.Entry<String, String> entry : linkMap.entrySet()) {

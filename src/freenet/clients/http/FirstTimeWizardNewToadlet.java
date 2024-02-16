@@ -117,7 +117,7 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 
 		private String bandwidthMonthlyLimit = "500";
 
-		private String storageLimit;
+		private final String storageLimit;
 
 		private final String minStorageLimit = String.format(Locale.ENGLISH, "%.2f", (float) MIN_STORAGE_LIMIT / DatastoreUtil.oneGiB);
 
@@ -129,7 +129,7 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 
 		private String uploadLimitDetected;
 
-		private Map<String, String> errors = new HashMap<>();
+		private final Map<String, String> errors = new HashMap<>();
 
 		FormModel() {
 			float storage = 100;

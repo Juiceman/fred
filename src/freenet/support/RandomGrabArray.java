@@ -1,14 +1,13 @@
 package freenet.support;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.util.Arrays;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.client.async.ClientContext;
 import freenet.client.async.ClientRequestSelector;
 import freenet.client.async.RequestSelectionTreeNode;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.util.Arrays;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * An array which supports very fast remove-and-return-a-random-element.

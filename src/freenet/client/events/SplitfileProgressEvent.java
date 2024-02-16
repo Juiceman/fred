@@ -3,12 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.events;
 
-import java.util.Date;
-
 import freenet.client.async.ClientRequester;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.util.Date;
 
 public class SplitfileProgressEvent implements ClientEvent {
 

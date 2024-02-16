@@ -1,15 +1,14 @@
 package freenet.clients.http.utils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import freenet.l10n.NodeL10n;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class L10nExtension extends AbstractExtension {
 

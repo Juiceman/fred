@@ -7,7 +7,8 @@ import freenet.node.useralerts.UpgradeConnectionSpeedUserAlert;
 import freenet.pluginmanager.FredPluginBandwidthIndicator;
 import freenet.support.Logger;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class BandwidthManager {
 

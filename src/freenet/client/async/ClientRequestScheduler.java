@@ -7,19 +7,7 @@ import freenet.client.FetchException;
 import freenet.crypt.RandomSource;
 import freenet.keys.Key;
 import freenet.keys.KeyBlock;
-import freenet.node.BaseSendableGet;
-import freenet.node.KeysFetchingLocally;
-import freenet.node.LowLevelGetException;
-import freenet.node.LowLevelPutException;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.PrioRunnable;
-import freenet.node.RequestScheduler;
-import freenet.node.RequestStarter;
-import freenet.node.SendableGet;
-import freenet.node.SendableInsert;
-import freenet.node.SendableRequest;
-import freenet.node.SendableRequestItemKey;
+import freenet.node.*;
 import freenet.support.Fields;
 import freenet.support.IdentityHashSet;
 import freenet.support.Logger;
@@ -341,8 +329,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 	@Override
 	public boolean wantKey(Key key) {
 		if (schedTransient.anyProbablyWantKey(key, clientContext)) return true;
-		if (schedCore != null && schedCore.anyProbablyWantKey(key, clientContext)) return true;
-		return false;
+		return schedCore != null && schedCore.anyProbablyWantKey(key, clientContext);
 	}
 
 	/**

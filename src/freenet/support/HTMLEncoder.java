@@ -75,8 +75,8 @@ public class HTMLEncoder {
 	}
 
 	private final static class CharTable {
-		private char[] chars;
-		private String[] strings;
+		private final char[] chars;
+		private final String[] strings;
 		private int modulo = 0;
 
 		public CharTable(HashMap<Character, String> map) {

@@ -1,61 +1,30 @@
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
-
 import freenet.client.DefaultMIMETypes;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.FreenetInetAddress;
-import freenet.io.comm.Message;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.Peer;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.io.comm.RetrievalException;
+import freenet.io.comm.*;
 import freenet.io.xfer.BulkReceiver;
 import freenet.io.xfer.BulkTransmitter;
 import freenet.io.xfer.PartiallyReceivedBulk;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
-import freenet.node.useralerts.AbstractUserAlert;
-import freenet.node.useralerts.BookmarkFeedUserAlert;
-import freenet.node.useralerts.DownloadFeedUserAlert;
-import freenet.node.useralerts.N2NTMUserAlert;
-import freenet.node.useralerts.UserAlert;
+import freenet.node.useralerts.*;
 import freenet.support.Base64;
-import freenet.support.HTMLNode;
-import freenet.support.IllegalBase64Exception;
-import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
-import freenet.support.SizeUtil;
+import freenet.support.*;
 import freenet.support.api.HTTPUploadedFile;
 import freenet.support.api.RandomAccessBuffer;
 import freenet.support.io.BucketTools;
 import freenet.support.io.ByteArrayRandomAccessBuffer;
 import freenet.support.io.FileRandomAccessBuffer;
 import freenet.support.io.FileUtil;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
+import static java.util.concurrent.TimeUnit.DAYS;
 
 public class DarknetPeerNode extends PeerNode {
 
@@ -96,7 +65,7 @@ public class DarknetPeerNode extends PeerNode {
 	/**
 	 * Extra peer data file numbers
 	 */
-	private LinkedHashSet<Integer> extraPeerDataFileNumbers;
+	private final LinkedHashSet<Integer> extraPeerDataFileNumbers;
 
 	/**
 	 * Private comment on the peer for /friends/ page
@@ -111,7 +80,7 @@ public class DarknetPeerNode extends PeerNode {
 	/**
 	 * Queued-to-send N2NM extra peer data file numbers
 	 */
-	private LinkedHashSet<Integer> queuedToSendN2NMExtraPeerDataFileNumbers;
+	private final LinkedHashSet<Integer> queuedToSendN2NMExtraPeerDataFileNumbers;
 
 	private FRIEND_TRUST trustLevel;
 
@@ -573,7 +542,7 @@ public class DarknetPeerNode extends PeerNode {
 				gotError = true;
 			}
 		} catch (FSParseException e2) {
-			Logger.error(this, "Could not parse extra peer data: " + e2 + '\n' + fs.toString(), e2);
+			Logger.error(this, "Could not parse extra peer data: " + e2 + '\n' + fs, e2);
 			gotError = true;
 		}
 		return !gotError;
@@ -642,11 +611,11 @@ public class DarknetPeerNode extends PeerNode {
 			}
 			return true;
 		} else if (extraPeerDataType == Node.EXTRA_PEER_DATA_TYPE_BOOKMARK) {
-			Logger.normal(this, "Read friend bookmark" + fs.toString());
+			Logger.normal(this, "Read friend bookmark" + fs);
 			handleFproxyBookmarkFeed(fs, fileNumber);
 			return true;
 		} else if (extraPeerDataType == Node.EXTRA_PEER_DATA_TYPE_DOWNLOAD) {
-			Logger.normal(this, "Read friend download" + fs.toString());
+			Logger.normal(this, "Read friend download" + fs);
 			handleFproxyDownloadFeed(fs, fileNumber);
 			return true;
 		}
@@ -1749,7 +1718,7 @@ public class DarknetPeerNode extends PeerNode {
 
 	@Override
 	public String userToString() {
-		return "" + getPeer() + " : " + getName();
+		return getPeer() + " : " + getName();
 	}
 
 	@Override
@@ -1848,8 +1817,7 @@ public class DarknetPeerNode extends PeerNode {
 	@Override
 	public boolean shallWeRouteAccordingToOurPeersLocation(int htl) {
 		if (!node.shallWeRouteAccordingToOurPeersLocation(htl)) return false; // Globally disabled
-		if (trustLevel == FRIEND_TRUST.LOW) return false;
-		return true;
+		return trustLevel != FRIEND_TRUST.LOW;
 	}
 
 	public void setTrustLevel(FRIEND_TRUST trust) {

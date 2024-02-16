@@ -3,14 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.util.Arrays;
-
 import freenet.crypt.CryptFormatException;
 import freenet.crypt.DSAPublicKey;
 import freenet.crypt.SHA256;
@@ -29,6 +21,10 @@ import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.ArrayBucketFactory;
 import freenet.support.io.BucketTools;
+
+import java.io.*;
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 /**
  * @author amphibian
@@ -174,7 +170,7 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 		if (maxLength < 0)
 			throw new IllegalArgumentException("maxlength=" + maxLength);
 		if (input.length < inputLength)
-			throw new IndexOutOfBoundsException("" + input.length + "<" + inputLength);
+			throw new IndexOutOfBoundsException(input.length + "<" + inputLength);
 		if (isCompressed) {
 			if (logMINOR)
 				Logger.minor(Key.class, "Decompressing " + inputLength + " bytes in decode with codec " + compressionAlgorithm);

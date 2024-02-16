@@ -3,35 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.store.saltedhash;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.OverlappingFileLockException;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.crypt.BlockCipher;
 import freenet.crypt.DSAPublicKey;
 import freenet.crypt.UnsupportedCipherException;
@@ -45,22 +16,29 @@ import freenet.node.stats.StoreAccessStats;
 import freenet.node.useralerts.AbstractUserAlert;
 import freenet.node.useralerts.UserAlert;
 import freenet.node.useralerts.UserAlertManager;
-import freenet.store.BlockMetadata;
-import freenet.store.FreenetStore;
-import freenet.store.KeyCollisionException;
-import freenet.store.StorableBlock;
-import freenet.store.StoreCallback;
-import freenet.support.Fields;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.Logger;
+import freenet.store.*;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.Ticker;
-import freenet.support.WrapperKeepalive;
 import freenet.support.io.Closer;
 import freenet.support.io.Fallocate;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NativeThread;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.OverlappingFileLockException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.*;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Index-less data store based on salted hash.
@@ -99,7 +77,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 	 * If true, don't create a slot filter, don't keep it up to date, don't
 	 * do anything with it.
 	 */
-	private boolean slotFilterDisabled;
+	private final boolean slotFilterDisabled;
 	/**
 	 * If true, then treat the slot filter as authoritative. If the slot filter
 	 * gives a certain content for a particular slot, assume it is right. This
@@ -139,7 +117,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 	/**
 	 * true if close() hase been called
 	 */
-	private AtomicBoolean closeCalled = new AtomicBoolean(false);
+	private final AtomicBoolean closeCalled = new AtomicBoolean(false);
 
 	/**
 	 * If we have no space in this store, try writing it to the alternate store,
@@ -1107,7 +1085,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 			final long newHdLen = (headerBlockLength + dataBlockLength + hdPadding) * storeMaxEntries;
 
 			if (preallocate) {
-				try (WrapperKeepalive wrapperKeepalive = new WrapperKeepalive();) {
+				try (WrapperKeepalive wrapperKeepalive = new WrapperKeepalive()) {
 					wrapperKeepalive.start();
 					if (oldMetaLen < newMetaLen) {
 						// freenet-mobile-changed: Passing file descriptor to avoid using reflection
@@ -1302,11 +1280,11 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 
 	// ------------- Store resizing
 	private long prevStoreSize = 0;
-	private Lock cleanerLock = new ReentrantLock(); // local to this datastore
-	private Condition cleanerCondition = cleanerLock.newCondition();
-	private static Lock cleanerGlobalLock = new ReentrantLock(); // global across all datastore
-	private Cleaner cleanerThread;
-	private CleanerStatusUserAlert cleanerStatusUserAlert;
+	private final Lock cleanerLock = new ReentrantLock(); // local to this datastore
+	private final Condition cleanerCondition = cleanerLock.newCondition();
+	private static final Lock cleanerGlobalLock = new ReentrantLock(); // global across all datastore
+	private final Cleaner cleanerThread;
+	private final CleanerStatusUserAlert cleanerStatusUserAlert;
 
 	private final Entry NOT_MODIFIED = new Entry();
 
@@ -1422,7 +1400,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 			System.out.println("Resizing datastore " + name);
 
 			BatchProcessor<T> resizeProcesser = new BatchProcessor<T>() {
-				Deque<Entry> oldEntryList = new LinkedList<Entry>();
+				final Deque<Entry> oldEntryList = new LinkedList<Entry>();
 
 				@Override
 				public void init() {
@@ -1833,7 +1811,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 	}
 
 	private final class CleanerStatusUserAlert extends AbstractUserAlert {
-		private Cleaner cleaner;
+		private final Cleaner cleaner;
 
 		private CleanerStatusUserAlert(Cleaner cleaner) {
 			this.cleaner = cleaner;
@@ -1979,9 +1957,9 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 
 	// ------------- Locking
 	volatile boolean shutdown = false;
-	private LockManager lockManager;
-	private ReadWriteLock configLock = new ReentrantReadWriteLock();
-	private Condition resizeCompleteCondition = configLock.writeLock().newCondition();
+	private final LockManager lockManager;
+	private final ReadWriteLock configLock = new ReentrantReadWriteLock();
+	private final Condition resizeCompleteCondition = configLock.writeLock().newCondition();
 
 	/**
 	 * Lock all possible offsets of a key. This method would release the locks if any locking
@@ -2124,11 +2102,11 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 	}
 
 	// ------------- Statistics (a.k.a. lies)
-	private AtomicLong hits = new AtomicLong();
-	private AtomicLong misses = new AtomicLong();
-	private AtomicLong writes = new AtomicLong();
-	private AtomicLong keyCount = new AtomicLong();
-	private AtomicLong bloomFalsePos = new AtomicLong();
+	private final AtomicLong hits = new AtomicLong();
+	private final AtomicLong misses = new AtomicLong();
+	private final AtomicLong writes = new AtomicLong();
+	private final AtomicLong keyCount = new AtomicLong();
+	private final AtomicLong bloomFalsePos = new AtomicLong();
 
 	private long initialHits;
 	private long initialMisses;
@@ -2213,9 +2191,7 @@ public class SaltedHashFreenetStore<T extends StorableBlock> implements FreenetS
 				if (validCache && likelyMatch) return true;
 			}
 
-			if (anyNotValid) return true;
-
-			return false;
+			return anyNotValid;
 		} finally {
 			configLock.readLock().unlock();
 		}

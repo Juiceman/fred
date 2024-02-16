@@ -3,42 +3,21 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import freenet.support.*;
+import freenet.support.Logger.LogLevel;
+import freenet.support.api.*;
+import freenet.support.io.BucketTools;
+import freenet.support.io.Closer;
+import freenet.support.io.LineReadingInputStream;
+
+import javax.naming.SizeLimitExceededException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.Map.Entry;
-
-import javax.naming.SizeLimitExceededException;
-
-import freenet.support.Fields;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.MultiValueTable;
-import freenet.support.SimpleReadOnlyArrayBucket;
-import freenet.support.URLEncoder;
-import freenet.support.Logger.LogLevel;
-import freenet.support.api.Bucket;
-import freenet.support.api.BucketFactory;
-import freenet.support.api.HTTPRequest;
-import freenet.support.api.HTTPUploadedFile;
-import freenet.support.api.RandomAccessBucket;
-import freenet.support.io.BucketTools;
-import freenet.support.io.Closer;
-import freenet.support.io.LineReadingInputStream;
 
 /**
  * Used for passing all HTTP request information to the FredPlugin that handles
@@ -60,7 +39,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	/**
 	 * the original URI as given to the constructor
 	 */
-	private URI uri;
+	private final URI uri;
 
 	/**
 	 * The headers sent by the client
@@ -70,19 +49,19 @@ public class HTTPRequestImpl implements HTTPRequest {
 	/**
 	 * The data sent in the connection
 	 */
-	private Bucket data;
+	private final Bucket data;
 
 	/**
 	 * A hashmap of buckets that we use to store all the parts for a multipart/form-data request
 	 */
-	private HashMap<String, RandomAccessBucket> parts;
+	private final HashMap<String, RandomAccessBucket> parts;
 
 	private boolean freedParts;
 
 	/**
 	 * A map for uploaded files.
 	 */
-	private Map<String, HTTPUploadedFileImpl> uploadedFiles = new HashMap<String, HTTPUploadedFileImpl>();
+	private final Map<String, HTTPUploadedFileImpl> uploadedFiles = new HashMap<String, HTTPUploadedFileImpl>();
 
 	private final BucketFactory bucketfactory;
 
@@ -879,7 +858,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	public boolean isChrome() {
 		String ua = getHeader("user-agent");
 		if (ua != null) {
-			if (ua.contains("Chrome")) return true;
+			return ua.contains("Chrome");
 		}
 		return false;
 	}

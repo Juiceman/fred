@@ -3,19 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import org.tanukisoftware.wrapper.WrapperManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Random;
-
 import freenet.client.filter.HTMLFilter;
 import freenet.client.filter.LinkFilterExceptionProvider;
 import freenet.clients.http.FProxyFetchInProgress.REFILTER_POLICY;
@@ -40,19 +27,23 @@ import freenet.node.SecurityLevels.NETWORK_THREAT_LEVEL;
 import freenet.node.SecurityLevels.PHYSICAL_THREAT_LEVEL;
 import freenet.node.useralerts.UserAlertManager;
 import freenet.pluginmanager.FredPluginL10n;
-import freenet.support.Executor;
-import freenet.support.HTMLNode;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.Ticker;
-import freenet.support.api.BooleanCallback;
-import freenet.support.api.BucketFactory;
-import freenet.support.api.IntCallback;
-import freenet.support.api.LongCallback;
-import freenet.support.api.StringCallback;
+import freenet.support.api.*;
 import freenet.support.io.ArrayBucketFactory;
 import freenet.support.io.NativeThread;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * The Toadlet (HTTP) Server
@@ -82,7 +73,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	// Socket / Binding
 	private final int port;
 	private String bindTo;
-	private String allowedHosts;
+	private final String allowedHosts;
 	private NetworkInterface networkInterface;
 	private boolean ssl = false;
 	public static final int DEFAULT_FPROXY_PORT = 8888;
@@ -435,8 +426,6 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 
 	}
 
-	;
-
 	public void createFproxy() {
 		NodeClientCore core = this.core;
 		Node node = core.node;
@@ -565,7 +554,8 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 
 					@Override
 					public void set(Boolean value) {
-						if (value == SimpleToadletServer.isPanicButtonToBeShown) return;
+						if (value == SimpleToadletServer.isPanicButtonToBeShown) {
+						}
 						else SimpleToadletServer.isPanicButtonToBeShown = value;
 					}
 				});
@@ -580,7 +570,8 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 
 					@Override
 					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if (val == SimpleToadletServer.noConfirmPanic) return;
+						if (val == SimpleToadletServer.noConfirmPanic) {
+						}
 						else SimpleToadletServer.noConfirmPanic = val;
 					}
 				});

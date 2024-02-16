@@ -127,7 +127,7 @@ public class ClientMetadata implements Cloneable, Serializable {
 		}
 	}
 
-	private static int VERSION = 1;
-	private static int MAGIC = 0x021441fe8;
+	private static final int VERSION = 1;
+	private static final int MAGIC = 0x021441fe8;
 
 }

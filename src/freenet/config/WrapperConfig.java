@@ -1,22 +1,13 @@
 package freenet.config;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.node.NodeInitException;
 import freenet.support.Logger;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.util.HashMap;
 
 /**
  * Class to allow us to easily change wrapper properties.
@@ -25,7 +16,7 @@ import freenet.support.io.FileUtil;
  */
 public class WrapperConfig {
 
-	private static HashMap<String, String> overrides = new HashMap<String, String>();
+	private static final HashMap<String, String> overrides = new HashMap<String, String>();
 
 	public static String getWrapperProperty(String name) {
 		synchronized (WrapperConfig.class) {

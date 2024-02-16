@@ -1,7 +1,5 @@
 package freenet.node.useralerts;
 
-import java.io.File;
-
 import freenet.clients.fcp.FCPMessage;
 import freenet.clients.fcp.FeedMessage;
 import freenet.l10n.NodeL10n;
@@ -9,6 +7,8 @@ import freenet.node.NodeClientCore;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.io.FilenameGenerator;
+
+import java.io.File;
 
 /**
  * Tell the user when there is insufficient disk space for either short term (transient requests,
@@ -45,7 +45,7 @@ public class DiskSpaceUserAlert implements UserAlert {
 		PERSISTENT_COMPLETION;
 
 		public String getExplanation() {
-			return l10n("explanation." + toString());
+			return l10n("explanation." + this);
 		}
 	}
 
@@ -92,13 +92,12 @@ public class DiskSpaceUserAlert implements UserAlert {
 	@Override
 	public String getText() {
 		Status status = getStatus();
-		StringBuffer sb = new StringBuffer();
-		sb.append(l10n("notEnoughSpaceIn", "where", getWhere(status).toString()));
-		sb.append(" ");
-		sb.append(status.getExplanation());
-		sb.append(" ");
-		sb.append(l10n("action"));
-		return sb.toString();
+		String sb = l10n("notEnoughSpaceIn", "where", getWhere(status).toString()) +
+				" " +
+				status.getExplanation() +
+				" " +
+				l10n("action");
+		return sb;
 	}
 
 	private File getWhere(Status status) {

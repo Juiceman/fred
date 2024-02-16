@@ -15,7 +15,7 @@ public interface FilterCallback {
 	 * @param overrideType Force the return type.
 	 * @throws CommentException If the URI is nvalid or unacceptable in some way.
 	 */
-	public String processURI(String uri, String overrideType) throws CommentException;
+	String processURI(String uri, String overrideType) throws CommentException;
 
 	/**
 	 * Process a URI.
@@ -26,7 +26,7 @@ public interface FilterCallback {
 	 * @param inline       inline URIs may be prefetched while filtering
 	 * @throws CommentException If the URI is nvalid or unacceptable in some way.
 	 */
-	public String processURI(String uri, String overrideType, boolean noRelative, boolean inline) throws CommentException;
+	String processURI(String uri, String overrideType, boolean noRelative, boolean inline) throws CommentException;
 
 	/**
 	 * Process a URI forcing the host.
@@ -36,13 +36,13 @@ public interface FilterCallback {
 	 * @param inline       inline URIs may be prefetched while filtering
 	 * @throws CommentException If the URI is nvalid or unacceptable in some way.
 	 */
-	public String processURI(String uri, String overrideType, String forceSchemeHostAndPort, boolean inline) throws CommentException;
+	String processURI(String uri, String overrideType, String forceSchemeHostAndPort, boolean inline) throws CommentException;
 
 	/**
 	 * Process a base URI in the page. Not only is this filtered, it affects all
 	 * relative uri's on the page.
 	 */
-	public String onBaseHref(String baseHref);
+	String onBaseHref(String baseHref);
 
 	/**
 	 * Process plain-text. Notification only; can't modify.
@@ -53,7 +53,7 @@ public interface FilterCallback {
 	 * necessary (e.g. HTMLDecoder). It must be re-encoded if it is sent out as
 	 * text to a browser.
 	 */
-	public void onText(String s, String type);
+	void onText(String s, String type);
 
 	/**
 	 * Process a form on the page.
@@ -63,7 +63,7 @@ public interface FilterCallback {
 	 * @return The new action URI, or null if the form is not allowed.
 	 * @throws CommentException
 	 */
-	public String processForm(String method, String action) throws CommentException;
+	String processForm(String method, String action) throws CommentException;
 
 	/**
 	 * Process a tag. If it needs changing, then return the changed
@@ -72,8 +72,8 @@ public interface FilterCallback {
 	 * @param pt - The tag to be replaced
 	 * @return The new tag, or null, if it doesn't need changing
 	 */
-	public String processTag(ParsedTag pt);
+	String processTag(ParsedTag pt);
 
-	public void onFinished();
+	void onFinished();
 
 }

@@ -1,11 +1,5 @@
 package freenet.node.updater;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Properties;
-
 import freenet.client.FetchContext;
 import freenet.client.FetchException;
 import freenet.client.FetchException.FetchExceptionMode;
@@ -16,8 +10,8 @@ import freenet.client.async.ClientGetter;
 import freenet.client.events.ClientEvent;
 import freenet.client.events.ClientEventListener;
 import freenet.client.events.SplitfileProgressEvent;
-import freenet.clients.fcp.FCPMessage;
 import freenet.clients.fcp.ClientPut.COMPRESS_STATE;
+import freenet.clients.fcp.FCPMessage;
 import freenet.clients.http.QueueToadlet;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
@@ -37,6 +31,12 @@ import freenet.support.io.Closer;
 import freenet.support.io.FileBucket;
 import freenet.support.io.FileUtil;
 import freenet.support.io.InsufficientDiskSpaceException;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Properties;
 
 public class MainJarUpdater extends NodeUpdater implements Deployer {
 
@@ -91,8 +91,8 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 
 	// Dependency handling.
 
-	private HashSet<DependencyJarFetcher> fetchers = new HashSet<DependencyJarFetcher>();
-	private HashSet<DependencyJarFetcher> essentialFetchers = new HashSet<DependencyJarFetcher>();
+	private final HashSet<DependencyJarFetcher> fetchers = new HashSet<DependencyJarFetcher>();
+	private final HashSet<DependencyJarFetcher> essentialFetchers = new HashSet<DependencyJarFetcher>();
 
 	protected void parseDependencies(Properties props, int build) {
 		synchronized (fetchers) {

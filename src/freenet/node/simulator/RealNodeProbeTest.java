@@ -174,7 +174,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			}
 		};
 
-		final Type types[] = {
+		final Type[] types = {
 				Type.BANDWIDTH,
 				Type.BUILD,
 				Type.IDENTIFIER,
@@ -231,7 +231,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 				} else nodes[index].startProbe(htl, random.nextLong(), types[selection], print);
 			} catch (Exception e) {
 				//If a non-number is entered or one outside the bounds.
-				System.out.print(e.toString());
+				System.out.print(e);
 				e.printStackTrace();
 				//Return isn't enough to exit: the nodes are still in the background.
 				System.exit(0);

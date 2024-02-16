@@ -1,20 +1,14 @@
 package freenet.support.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Random;
-
 import freenet.client.async.ClientContext;
 import freenet.support.Logger;
 import freenet.support.WrapperKeepalive;
 import freenet.support.api.LockableRandomAccessBuffer;
+
+import java.io.*;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Random;
 
 /**
  * Random access files with a limited number of open files, using a pool.
@@ -454,10 +448,7 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 		if (readOnly != other.readOnly) {
 			return false;
 		}
-		if (secureDelete != other.secureDelete) {
-			return false;
-		}
-		return true;
+		return secureDelete == other.secureDelete;
 	}
 
 }

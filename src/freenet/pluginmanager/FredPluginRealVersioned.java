@@ -9,7 +9,7 @@ public interface FredPluginRealVersioned {
 	 * The version of the plugin in a form that is easy to compare: a long!
 	 * Version 150 will always be later than version 20.
 	 */
-	public long getRealVersion();
+	long getRealVersion();
 
 	// There is no point in reporting the dependancies or the minimum node version,
 	// because we have already been loaded!

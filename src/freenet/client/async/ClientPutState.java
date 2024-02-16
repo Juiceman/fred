@@ -16,23 +16,23 @@ public interface ClientPutState {
 	/**
 	 * Get the BaseClientPutter responsible for this request state.
 	 */
-	public abstract BaseClientPutter getParent();
+	BaseClientPutter getParent();
 
 	/**
 	 * Cancel the request.
 	 */
-	public abstract void cancel(ClientContext context);
+	void cancel(ClientContext context);
 
 	/**
 	 * Schedule the request.
 	 */
-	public abstract void schedule(ClientContext context) throws InsertException;
+	void schedule(ClientContext context) throws InsertException;
 
 	/**
 	 * Get the token, an object which is passed around with the insert and may be
 	 * used by callers.
 	 */
-	public Object getToken();
+	Object getToken();
 
 	/**
 	 * Called on restarting the node for a persistent request. The request must re-schedule
@@ -42,11 +42,11 @@ public interface ClientPutState {
 	 * @throws InsertException
 	 * @throws ResumeFailedException
 	 */
-	public void onResume(ClientContext context) throws InsertException, ResumeFailedException;
+	void onResume(ClientContext context) throws InsertException, ResumeFailedException;
 
 	/**
 	 * Called just before the final write of client.dat before the node shuts down. Should write
 	 * any dirty data to disk etc.
 	 */
-	public void onShutdown(ClientContext context);
+	void onShutdown(ClientContext context);
 }

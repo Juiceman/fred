@@ -1,12 +1,11 @@
 package freenet.client;
 
-import java.lang.ref.SoftReference;
-
 import com.onionnetworks.fec.PureCode;
 import com.onionnetworks.util.Buffer;
-
 import freenet.client.InsertContext.CompatibilityMode;
 import freenet.support.LRUMap;
+
+import java.lang.ref.SoftReference;
 
 public class OnionFECCodec extends FECCodec {
 
@@ -149,7 +148,7 @@ public class OnionFECCodec extends FECCodec {
 		int n = dataBlocks + checkBlocks;
 		int k = dataBlocks;
 		int matrixSize = n * k * 2; // char[] of n*k
-		return matrixSize * 3; // Very approximately, the last one absorbing some columns and fixed overhead.
+		return matrixSize * 3L; // Very approximately, the last one absorbing some columns and fixed overhead.
 	}
 
 	@Override
@@ -157,7 +156,7 @@ public class OnionFECCodec extends FECCodec {
 		int n = dataBlocks + checkBlocks;
 		int k = dataBlocks;
 		int matrixSize = n * k * 2; // char[] of n*k
-		return matrixSize * 3; // Very approximately, the last one absorbing some columns and fixed overhead.
+		return matrixSize * 3L; // Very approximately, the last one absorbing some columns and fixed overhead.
 	}
 
 	@Override

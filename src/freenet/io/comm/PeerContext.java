@@ -3,11 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.io.comm;
 
-import java.lang.ref.WeakReference;
-
 import freenet.io.xfer.PacketThrottle;
 import freenet.node.MessageItem;
 import freenet.node.OutgoingPacketMangler;
+
+import java.lang.ref.WeakReference;
 
 /**
  * @author amphibian
@@ -44,18 +44,18 @@ public interface PeerContext {
 	 *
 	 * @return
 	 */
-	public MessageItem sendAsync(Message msg, AsyncMessageCallback cb, ByteCounter ctr) throws NotConnectedException;
+	MessageItem sendAsync(Message msg, AsyncMessageCallback cb, ByteCounter ctr) throws NotConnectedException;
 
 	/**
 	 * Get the current boot ID. This is a random number that changes every time the node starts up.
 	 */
-	public long getBootID();
+	long getBootID();
 
 	/**
 	 * Get the PacketThrottle for the node's current address for the standard packet size (if the
 	 * address changes then we get a new throttle).
 	 */
-	public PacketThrottle getThrottle();
+	PacketThrottle getThrottle();
 
 	/**
 	 * Get the SocketHandler which handles incoming packets from this node

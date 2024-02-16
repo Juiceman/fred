@@ -5,10 +5,10 @@
 package freenet.config;
 
 public interface EnumerableOptionCallback {
-	public String[] getPossibleValues();
+	String[] getPossibleValues();
 
 	/**
 	 * Return the current value
 	 */
-	public String get();
+	String get();
 }

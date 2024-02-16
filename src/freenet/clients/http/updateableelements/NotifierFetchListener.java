@@ -7,9 +7,9 @@ import freenet.clients.http.FProxyFetchListener;
  */
 public class NotifierFetchListener implements FProxyFetchListener {
 
-	private PushDataManager pushManager;
+	private final PushDataManager pushManager;
 
-	private BaseUpdateableElement element;
+	private final BaseUpdateableElement element;
 
 	public NotifierFetchListener(PushDataManager pushManager, BaseUpdateableElement element) {
 		this.pushManager = pushManager;

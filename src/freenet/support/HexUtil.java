@@ -1,12 +1,12 @@
 package freenet.support;
 
+import freenet.support.Logger.LogLevel;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.BitSet;
-
-import freenet.support.Logger.LogLevel;
 
 /**
  * Number in hexadecimal format are used throughout Freenet.
@@ -122,8 +122,7 @@ public class HexUtil {
 			for (int j = 0; j < 8; j++) {
 				int idx = i * 8 + j;
 				boolean val =
-						idx > size - 1 ? false :
-								ba.get(idx);
+						idx <= size - 1 && ba.get(idx);
 				s |= val ? (1 << j) : 0;
 				if (logDEBUG) sb.append(val ? '1' : '0');
 			}
@@ -131,7 +130,7 @@ public class HexUtil {
 			b[i] = (byte) s;
 		}
 		if (logDEBUG) Logger.debug(HexUtil.class, "bytes: " + bytesAlloc + " returned from bitsToBytes("
-				+ ba + ',' + size + "): " + bytesToHex(b) + " for " + sb.toString());
+				+ ba + ',' + size + "): " + bytesToHex(b) + " for " + sb);
 		return b;
 	}
 

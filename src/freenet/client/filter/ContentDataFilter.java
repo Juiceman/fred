@@ -6,7 +6,6 @@ package freenet.client.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -48,7 +47,7 @@ public interface ContentDataFilter {
 	@Deprecated
 	default void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			FilterCallback cb) throws DataFilterException, IOException {
+			FilterCallback cb) throws IOException {
 		readFilter(input, output, charset, otherParams, null, cb);
 	}
 

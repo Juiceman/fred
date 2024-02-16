@@ -1,10 +1,5 @@
 package freenet.client.filter;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.Arrays;
-
 import freenet.client.filter.FlacMetadataBlock.BlockType;
 import freenet.client.filter.FlacMetadataBlock.FlacMetadataBlockHeader;
 import freenet.crypt.HashResult;
@@ -12,12 +7,16 @@ import freenet.crypt.HashType;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 public class FlacPacketFilter implements CodecPacketFilter {
 	boolean streamValid = true;
 
 	enum State {UNINITIALIZED, STREAMINFO_FOUND, METADATA_FOUND}
 
-	;
 	State currentState = State.UNINITIALIZED;
 
 	int minimumBlockSize;

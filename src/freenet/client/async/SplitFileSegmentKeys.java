@@ -1,5 +1,10 @@
 package freenet.client.async;
 
+import freenet.keys.ClientCHK;
+import freenet.keys.NodeCHK;
+import freenet.support.Fields;
+import freenet.support.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,11 +12,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import freenet.keys.ClientCHK;
-import freenet.keys.NodeCHK;
-import freenet.support.Logger;
-import freenet.support.Fields;
 
 /**
  * Contains the keys for a splitfile segment, in an efficient compressed form. These are
@@ -350,9 +350,7 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 			return false;
 		if (!Arrays.equals(extraBytesForKeys, other.extraBytesForKeys))
 			return false;
-		if (!Arrays.equals(routingKeys, other.routingKeys))
-			return false;
-		return true;
+		return Arrays.equals(routingKeys, other.routingKeys);
 	}
 
 	public int totalKeys() {

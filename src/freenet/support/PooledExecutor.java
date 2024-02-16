@@ -3,15 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
+import freenet.node.PrioRunnable;
+import freenet.support.Logger.LogLevel;
+import freenet.support.io.NativeThread;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-import freenet.node.PrioRunnable;
-import freenet.support.Logger.LogLevel;
-import freenet.support.io.NativeThread;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Pooled Executor implementation. Create a thread when we need one, let them die

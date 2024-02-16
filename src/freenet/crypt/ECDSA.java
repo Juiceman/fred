@@ -1,16 +1,11 @@
 package freenet.crypt;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Provider;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
+import freenet.node.FSParseException;
+import freenet.support.Base64;
+import freenet.support.Logger;
+import freenet.support.SimpleFieldSet;
+
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
@@ -18,11 +13,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
-
-import freenet.node.FSParseException;
-import freenet.support.Base64;
-import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
 
 public class ECDSA {
 	public final Curves curve;
@@ -50,9 +40,9 @@ public class ECDSA {
 		 */
 		public final int maxSigSize;
 
-		protected final Provider kgProvider;
-		protected final Provider kfProvider;
-		protected final Provider sigProvider;
+		private final Provider kgProvider;
+		private final Provider kfProvider;
+		private final Provider sigProvider;
 
 		/**
 		 * Verify KeyPairGenerator and KeyFactory work correctly
@@ -91,7 +81,7 @@ public class ECDSA {
 				throw new Error("Verification failed");
 		}
 
-		private Curves(String name, String defaultHashAlgorithm, int modulusSize, int maxSigSize) {
+		Curves(String name, String defaultHashAlgorithm, int modulusSize, int maxSigSize) {
 			this.spec = new ECGenParameterSpec(name);
 			Signature sig = null;
 			KeyFactory kf = null;

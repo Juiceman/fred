@@ -28,7 +28,7 @@ public interface KeyListener {
 	 * @return True if we probably want the key. False if we definitely don't
 	 * want it.
 	 */
-	public boolean probablyWantKey(Key key, byte[] saltedKey);
+	boolean probablyWantKey(Key key, byte[] saltedKey);
 
 	/**
 	 * Do we want the key? This is called by the ULPR code, because fetching the
@@ -38,18 +38,18 @@ public interface KeyListener {
 	 * @return -1 if we don't want the key, otherwise the priority of the request
 	 * interested in the key.
 	 */
-	public short definitelyWantKey(Key key, byte[] saltedKey, ClientContext context);
+	short definitelyWantKey(Key key, byte[] saltedKey, ClientContext context);
 
 	/**
 	 * Find the requests related to a specific key, used in retrying after cooldown.
 	 * Caller should call probablyWantKey() first.
 	 */
-	public SendableGet[] getRequestsForKey(Key key, byte[] saltedKey, ClientContext context);
+	SendableGet[] getRequestsForKey(Key key, byte[] saltedKey, ClientContext context);
 
 	/**
 	 * Handle the found data, if we really want it.
 	 */
-	public boolean handleBlock(Key key, byte[] saltedKey, KeyBlock found, ClientContext context);
+	boolean handleBlock(Key key, byte[] saltedKey, KeyBlock found, ClientContext context);
 
 	/**
 	 * Is this related to a persistent request?
@@ -63,7 +63,7 @@ public interface KeyListener {
 	 */
 	short getPriorityClass();
 
-	public long countKeys();
+	long countKeys();
 
 	/**
 	 * @return The parent HasKeyListener. This does mean it will be pinned in
@@ -71,25 +71,25 @@ public interface KeyListener {
 	 * LOCKING: Should avoid external locking if possible. Will be called
 	 * within the CRSBase lock.
 	 */
-	public HasKeyListener getHasKeyListener();
+	HasKeyListener getHasKeyListener();
 
 	/**
 	 * Deactivate the request once it has been removed.
 	 */
-	public void onRemove();
+	void onRemove();
 
 	/**
 	 * Has the request finished? If every key has been found, or enough keys have
 	 * been found, return true so that the caller can remove it from the list.
 	 */
-	public boolean isEmpty();
+	boolean isEmpty();
 
-	public boolean isSSK();
+	boolean isSSK();
 
 	/**
 	 * @return non-null if only key with (isSSK() ? pubKeyHash : routingKey) wanted.
 	 * Must match getHasKeyListener().getWantedKey().
 	 */
-	public byte[] getWantedKey();
+	byte[] getWantedKey();
 
 }

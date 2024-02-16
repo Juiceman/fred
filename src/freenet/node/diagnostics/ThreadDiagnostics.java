@@ -3,7 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.diagnostics;
 
-import freenet.node.diagnostics.threads.*;
+import freenet.node.diagnostics.threads.NodeThreadSnapshot;
 
 public interface ThreadDiagnostics {
 	NodeThreadSnapshot getThreadSnapshot();

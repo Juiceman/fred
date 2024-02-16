@@ -3,23 +3,17 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.useralerts;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import freenet.clients.fcp.FCPConnectionHandler;
 import freenet.l10n.NodeL10n;
 import freenet.node.NodeClientCore;
 import freenet.support.Base64;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Collection of UserAlert's.
@@ -357,11 +351,11 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		summaryBox.addChild("div", "class", "infobox-header", l10n("alertsTitle"));
 		HTMLNode summaryContent = summaryBox.addChild("div", "class", "infobox-content");
 		if (!oneLine) {
-			summaryContent.addChild("#", alertSummaryString.toString() + separator + " ");
+			summaryContent.addChild("#", alertSummaryString + separator + " ");
 			NodeL10n.getBase().addL10nSubstitution(summaryContent, "UserAlertManager.alertsOnAlertsPage",
 					new String[]{"link"}, new HTMLNode[]{ALERTS_LINK});
 		} else {
-			summaryContent.addChild("a", "href", "/alerts/", NodeL10n.getBase().getString("StatusBar.alerts") + " " + alertSummaryString.toString());
+			summaryContent.addChild("a", "href", "/alerts/", NodeL10n.getBase().getString("StatusBar.alerts") + " " + alertSummaryString);
 		}
 		summaryBox.addAttribute("id", "messages-summary-box");
 		return summaryBox;

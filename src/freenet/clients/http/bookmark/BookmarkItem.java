@@ -3,8 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http.bookmark;
 
-import java.net.MalformedURLException;
-
 import freenet.client.async.ClientGetter;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
@@ -17,6 +15,8 @@ import freenet.node.useralerts.UserAlertManager;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
+
+import java.net.MalformedURLException;
 
 public class BookmarkItem extends Bookmark {
 	public static final String NAME = "Bookmark";
@@ -258,10 +258,7 @@ public class BookmarkItem extends Bookmark {
 				return true;
 			if (b.desc == null || desc == null)
 				return false;
-			if (!b.desc.equals(desc)) {
-				return false;
-			}
-			return true;
+			return b.desc.equals(desc);
 		} else {
 			return false;
 		}

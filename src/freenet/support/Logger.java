@@ -1,21 +1,15 @@
 package freenet.support;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import freenet.support.FileLoggerHook.IntervalParseException;
+import freenet.support.LoggerHook.InvalidThresholdException;
+import freenet.support.io.Closer;
+
+import java.io.*;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.PatternSyntaxException;
-
-import freenet.support.FileLoggerHook.IntervalParseException;
-import freenet.support.LoggerHook.InvalidThresholdException;
-import freenet.support.io.Closer;
 
 /**
  * @author Iakin
@@ -23,11 +17,11 @@ import freenet.support.io.Closer;
 public abstract class Logger {
 	public final static class OSThread {
 
-		private static boolean getPIDEnabled = false;
-		private static boolean getPPIDEnabled = false;
-		private static boolean logToFileEnabled = false;
-		private static LogLevel logToFileVerbosity = LogLevel.DEBUG;
-		private static boolean logToStdOutEnabled = false;
+		private static final boolean getPIDEnabled = false;
+		private static final boolean getPPIDEnabled = false;
+		private static final boolean logToFileEnabled = false;
+		private static final LogLevel logToFileVerbosity = LogLevel.DEBUG;
+		private static final boolean logToStdOutEnabled = false;
 		private static boolean procSelfStatEnabled = false;
 
 		/**
@@ -600,7 +594,7 @@ public abstract class Logger {
 	 */
 	public static void registerClass(final Class<?> clazz) {
 		LogThresholdCallback ltc = new LogThresholdCallback() {
-			WeakReference<Class<?>> ref = new WeakReference<Class<?>>(clazz);
+			final WeakReference<Class<?>> ref = new WeakReference<Class<?>>(clazz);
 
 			@Override
 			public void shouldUpdate() {

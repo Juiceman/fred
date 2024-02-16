@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.math;
 
+import freenet.node.TimeSkewDetectorCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import freenet.node.TimeSkewDetectorCallback;
-import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
-import freenet.support.Logger.LogLevel;
 
 /**
  * Time decaying running average.
@@ -28,7 +28,7 @@ public final class TimeDecayingRunningAverage implements RunningAverage, Cloneab
 	static final int MAGIC = 0x5ff4ac94;
 
 	@Override
-	public final TimeDecayingRunningAverage clone() {
+	public TimeDecayingRunningAverage clone() {
 		// Override clone to synchronize, as per comments in RunningAverage.
 		// Implement Cloneable to shut up findbugs.
 		synchronized (this) {

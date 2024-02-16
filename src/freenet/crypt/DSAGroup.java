@@ -3,15 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-
 import freenet.node.FSParseException;
 import freenet.support.Base64;
 import freenet.support.HexUtil;
 import freenet.support.IllegalBase64Exception;
 import freenet.support.SimpleFieldSet;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
 
 /**
  * Holds DSA group parameters. These are the public (possibly shared) values
@@ -91,7 +91,7 @@ public class DSAGroup extends CryptoKey {
 
 	@Override
 	public byte[] fingerprint() {
-		BigInteger fp[] = new BigInteger[3];
+		BigInteger[] fp = new BigInteger[3];
 		fp[0] = p;
 		fp[1] = q;
 		fp[2] = g;

@@ -1,24 +1,15 @@
 package freenet.crypt;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Provider;
-import java.security.PublicKey;
+import freenet.support.Logger;
+
+import javax.crypto.KeyAgreement;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
-
-import javax.crypto.KeyAgreement;
-
-import freenet.support.Logger;
 
 public class ECDH {
 
@@ -34,9 +25,9 @@ public class ECDH {
 
 		public final ECGenParameterSpec spec;
 		private KeyPairGenerator keygenCached;
-		protected final Provider kgProvider;
-		protected final Provider kfProvider;
-		protected final Provider kaProvider;
+		private final Provider kgProvider;
+		private final Provider kfProvider;
+		private final Provider kaProvider;
 		/**
 		 * Expected size of a pubkey
 		 */
@@ -80,7 +71,7 @@ public class ECDH {
 			ka.generateSecret();
 		}
 
-		private Curves(String name, int modulusSize, int derivedSecretSize) {
+		Curves(String name, int modulusSize, int derivedSecretSize) {
 			this.spec = new ECGenParameterSpec(name);
 			KeyAgreement ka = null;
 			KeyFactory kf = null;

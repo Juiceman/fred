@@ -1,12 +1,5 @@
 package freenet.node;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
-
 import freenet.config.InvalidConfigValueException;
 import freenet.config.NodeNeedRestartException;
 import freenet.config.SubConfig;
@@ -23,27 +16,21 @@ import freenet.node.SecurityLevels.NETWORK_THREAT_LEVEL;
 import freenet.node.stats.StatsNotAvailableException;
 import freenet.node.stats.StoreLocationStats;
 import freenet.store.StoreCallback;
-import freenet.support.HTMLNode;
-import freenet.support.Histogram2;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.SimpleFieldSet;
-import freenet.support.StringCounter;
-import freenet.support.TimeUtil;
 import freenet.support.api.BooleanCallback;
 import freenet.support.api.IntCallback;
 import freenet.support.api.LongCallback;
-import freenet.support.math.BootstrappingDecayingRunningAverage;
-import freenet.support.math.DecayingKeyspaceAverage;
-import freenet.support.math.RunningAverage;
-import freenet.support.math.TimeDecayingRunningAverage;
-import freenet.support.math.TrivialRunningAverage;
+import freenet.support.math.*;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * Node (as opposed to NodeClientCore) level statistics. Includes shouldRejectRequest(), but not limited
@@ -51,13 +38,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class NodeStats implements Persistable, BlockTimeCallback {
 
-	public static enum RequestType {
+	public enum RequestType {
 		CHK_REQUEST,
 		SSK_REQUEST,
 		CHK_INSERT,
 		SSK_INSERT,
 		CHK_OFFER_FETCH,
-		SSK_OFFER_FETCH;
+		SSK_OFFER_FETCH
 	}
 
 	/**
@@ -65,7 +52,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 	 */
 	private static class RequestsByLocation {
 		private final int[] bins;
-		private int count = 0;
+		private final int count = 0;
 
 		/**
 		 * Constructs a request location histogram with the given number of bins.
@@ -156,7 +143,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 	private volatile long maxPingTime;
 
 	final Node node;
-	private MemoryChecker myMemoryChecker;
+	private final MemoryChecker myMemoryChecker;
 	public final PeerManager peers;
 
 	final RandomSource hardRandom;
@@ -826,8 +813,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			if (s.maxTransfersOut != maxTransfersOut) return false;
 			if (s.maxTransfersOutPeerLimit != maxTransfersOutPeerLimit) return false;
 			if (s.maxTransfersOutLowerLimit != maxTransfersOutLowerLimit) return false;
-			if (s.maxTransfersOutUpperLimit != maxTransfersOutUpperLimit) return false;
-			return true;
+			return s.maxTransfersOutUpperLimit == maxTransfersOutUpperLimit;
 		}
 
 		@Override
@@ -1317,7 +1303,6 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			}
 
 			int peers = node.peers.countConnectedPeers() + 2 * node.peers.countConnectedDarknetPeers();
-			;
 
 			// These limits are by transfers.
 			// We limit the total number of transfers running in parallel to ensure
@@ -1857,11 +1842,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			} else {
 				firstBwlimitDelayTimeThresholdBreak = 0;
 			}
-			if ((firstBwlimitDelayTimeThresholdBreak != 0) && ((now - firstBwlimitDelayTimeThresholdBreak) >= MAX_BWLIMIT_DELAY_TIME_ALERT_DELAY)) {
-				bwlimitDelayAlertRelevant = true;
-			} else {
-				bwlimitDelayAlertRelevant = false;
-			}
+			bwlimitDelayAlertRelevant = (firstBwlimitDelayTimeThresholdBreak != 0) && ((now - firstBwlimitDelayTimeThresholdBreak) >= MAX_BWLIMIT_DELAY_TIME_ALERT_DELAY);
 			if (getNodeAveragePingTime() > 2 * maxPingTime) {
 				if (firstNodeAveragePingTimeThresholdBreak == 0) {
 					firstNodeAveragePingTimeThresholdBreak = now;
@@ -1869,11 +1850,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 			} else {
 				firstNodeAveragePingTimeThresholdBreak = 0;
 			}
-			if ((firstNodeAveragePingTimeThresholdBreak != 0) && ((now - firstNodeAveragePingTimeThresholdBreak) >= MAX_NODE_AVERAGE_PING_TIME_ALERT_DELAY)) {
-				nodeAveragePingAlertRelevant = true;
-			} else {
-				nodeAveragePingAlertRelevant = false;
-			}
+			nodeAveragePingAlertRelevant = (firstNodeAveragePingTimeThresholdBreak != 0) && ((now - firstNodeAveragePingTimeThresholdBreak) >= MAX_NODE_AVERAGE_PING_TIME_ALERT_DELAY);
 			if (logDEBUG)
 				Logger.debug(this, "mUPMUAS: " + now + ": " + getBwlimitDelayTime() + " >? " + MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD + " since " + firstBwlimitDelayTimeThresholdBreak + " (" + bwlimitDelayAlertRelevant + ") " + getNodeAveragePingTime() + " >? " + MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD + " since " + firstNodeAveragePingTimeThresholdBreak + " (" + nodeAveragePingAlertRelevant + ')');
 			nextPeerManagerUserAlertStatsUpdateTime = now + peerManagerUserAlertStatsUpdateInterval;
@@ -2168,17 +2145,13 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		fs.put("announceSentBytes", getAnnounceBytesSent());
 
 		String[] routingBackoffReasons = peers.getPeerNodeRoutingBackoffReasons(true);
-		if (routingBackoffReasons.length != 0) {
-			for (String routingBackoffReason : routingBackoffReasons) {
-				fs.put("numberWithRoutingBackoffReasonsRT." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, true));
-			}
+		for (String routingBackoffReason : routingBackoffReasons) {
+			fs.put("numberWithRoutingBackoffReasonsRT." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, true));
 		}
 
 		routingBackoffReasons = peers.getPeerNodeRoutingBackoffReasons(false);
-		if (routingBackoffReasons.length != 0) {
-			for (String routingBackoffReason : routingBackoffReasons) {
-				fs.put("numberWithRoutingBackoffReasonsBulk." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, false));
-			}
+		for (String routingBackoffReason : routingBackoffReasons) {
+			fs.put("numberWithRoutingBackoffReasonsBulk." + routingBackoffReason, peers.getPeerNodeRoutingBackoffReasonSize(routingBackoffReason, false));
 		}
 
 		double swaps = node.getSwaps();
@@ -3116,8 +3089,8 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		row.addChild("td", TimeUtil.formatTime((long) localSSKFetchTimeAverageRT.currentValue(), 2, true));
 	}
 
-	private HourlyStats hourlyStatsRT;
-	private HourlyStats hourlyStatsBulk;
+	private final HourlyStats hourlyStatsRT;
+	private final HourlyStats hourlyStatsBulk;
 
 	void remoteRequest(boolean ssk, boolean success, boolean local, short htl, double location, boolean realTime, boolean fromOfferedKey) {
 		if (logMINOR)
@@ -3760,10 +3733,10 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		return 2 * maxPingTime;
 	}
 
-	private RunningAverage nlmDelayRTLocal = new TrivialRunningAverage();
-	private RunningAverage nlmDelayRTRemote = new TrivialRunningAverage();
-	private RunningAverage nlmDelayBulkLocal = new TrivialRunningAverage();
-	private RunningAverage nlmDelayBulkRemote = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayRTLocal = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayRTRemote = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayBulkLocal = new TrivialRunningAverage();
+	private final RunningAverage nlmDelayBulkRemote = new TrivialRunningAverage();
 
 	public void reportNLMDelay(long waitTime, boolean realTime, boolean local) {
 		if (realTime) {
@@ -3814,7 +3787,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		}
 	}
 
-	private Object slotTimeoutsSync = new Object();
+	private final Object slotTimeoutsSync = new Object();
 	private long fatalTimeoutsInWaitLocal;
 	private long fatalTimeoutsInWaitRemote;
 	private long allocatedSlotLocal;

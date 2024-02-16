@@ -1,17 +1,16 @@
 package freenet.crypt.ciphers;
 
-import java.security.InvalidKeyException;
-import java.security.GeneralSecurityException;
-import java.security.Provider;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
 import freenet.crypt.BlockCipher;
 import freenet.crypt.JceLoader;
 import freenet.crypt.UnsupportedCipherException;
 import freenet.support.Logger;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.Provider;
 
 /*
   This code is part of the Java Adaptive Network Client by Ian Clarke. 

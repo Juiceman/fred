@@ -3,19 +3,18 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
 import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
 import freenet.support.io.Closer;
 import freenet.support.io.LineReadingInputStream;
 import freenet.support.io.TooLongException;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FCPConnectionInputHandler implements Runnable {
 	private static volatile boolean logMINOR;
@@ -95,7 +94,7 @@ public class FCPConnectionInputHandler implements Runnable {
 			FCPMessage msg;
 			try {
 				if (logDEBUG)
-					Logger.debug(this, "Incoming FCP message:\n" + messageType + '\n' + fs.toString());
+					Logger.debug(this, "Incoming FCP message:\n" + messageType + '\n' + fs);
 				msg = FCPMessage.create(messageType, fs, handler.bf, handler.server.core.persistentTempBucketFactory);
 				if (msg == null) continue;
 			} catch (MessageInvalidException e) {

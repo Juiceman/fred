@@ -93,7 +93,7 @@ public interface PersistentJobRunner {
 	 * @throws PersistenceDisabledException If we are unable to lock because the system is shutting
 	 *                                      down.
 	 */
-	public CheckpointLock lock() throws PersistenceDisabledException;
+	CheckpointLock lock() throws PersistenceDisabledException;
 
 	/**
 	 * For persistent requests, return true if the bloom filter salt has changed when loading the

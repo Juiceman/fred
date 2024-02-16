@@ -1,7 +1,5 @@
 package freenet.clients.http.wizardsteps;
 
-import static freenet.support.io.DatastoreUtil.oneGiB;
-
 import freenet.clients.http.FirstTimeWizardToadlet;
 import freenet.config.Config;
 import freenet.config.ConfigException;
@@ -20,7 +18,7 @@ import freenet.support.io.DatastoreUtil;
 
 import java.io.File;
 
-import java.io.File;
+import static freenet.support.io.DatastoreUtil.oneGiB;
 
 /**
  * Allows the user to select datastore size, considering available storage space when offering options.
@@ -101,11 +99,8 @@ public class DATASTORE_SIZE implements Step {
 	@Override
 	public String postStep(HTTPRequest request) {
 		// drop down options may be 6 chars or less, but formatted ones e.g. old value if re-running can be more
-		boolean firsttime = true;
+		boolean firsttime = !request.isPartSet("singlestep");
 
-		if (request.isPartSet("singlestep")) {
-			firsttime = false;
-		}
 		_setDatastoreSize(request.getPartAsStringFailsafe("ds", 20), firsttime, config, this);
 		if (firsttime) {
 			return FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH.name();

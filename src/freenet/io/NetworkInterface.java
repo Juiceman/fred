@@ -16,32 +16,20 @@
 
 package freenet.io;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.io.AddressIdentifier.AddressType;
 import freenet.support.Executor;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Replacement for {@link ServerSocket} that can handle multiple bind addresses

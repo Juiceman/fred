@@ -14,7 +14,7 @@ import java.util.Comparator;
 public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 
 	private final byte[] buf;
-	private int hashCode;
+	private final int hashCode;
 
 	public static final Comparator<ByteArrayWrapper> FAST_COMPARATOR = new Comparator<ByteArrayWrapper>() {
 

@@ -3,9 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.diagnostics;
 
-import freenet.node.diagnostics.threads.*;
-import freenet.support.Ticker;
 import freenet.node.NodeStats;
+import freenet.node.diagnostics.threads.DefaultThreadDiagnostics;
+import freenet.support.Ticker;
 
 /**
  * @author desyncr

@@ -1,9 +1,9 @@
 package freenet.client.async;
 
-import java.util.function.Supplier;
-
 import freenet.node.Location;
 import freenet.node.NodeStarter;
+
+import java.util.function.Supplier;
 
 /**
  * Specialize Healing to the fraction of the keyspace in which we would receive the inserts

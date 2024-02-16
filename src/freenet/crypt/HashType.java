@@ -3,12 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+import freenet.support.Logger;
 import org.bitpedia.util.TigerTree;
 
-import freenet.support.Logger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public enum HashType {
 	// warning: keep in sync with Util.mdProviders!
@@ -30,13 +29,13 @@ public enum HashType {
 	public final String javaName;
 	public final int hashLength;
 
-	private HashType(int bitmask, int hashLength) {
+	HashType(int bitmask, int hashLength) {
 		this.bitmask = bitmask;
 		this.javaName = super.name();
 		this.hashLength = hashLength;
 	}
 
-	private HashType(int bitmask, String name, int hashLength) {
+	HashType(int bitmask, String name, int hashLength) {
 		this.bitmask = bitmask;
 		this.javaName = name;
 		this.hashLength = hashLength;

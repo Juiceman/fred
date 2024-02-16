@@ -1,9 +1,9 @@
 package freenet.support;
 
-import static com.sun.jna.Platform.isAndroid;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.sun.jna.Platform.isAndroid;
 
 /**
  * JVM version utilities.

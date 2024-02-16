@@ -46,7 +46,7 @@ public class SentTimeCache {
 	/**
 	 * The inner cache.
 	 */
-	private BoundedSentTimeMap cache;
+	private final BoundedSentTimeMap cache;
 
 	/**
 	 * Constructs a sent time cache with the given maximal capacity.

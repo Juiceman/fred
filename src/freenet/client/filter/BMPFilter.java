@@ -3,16 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Map;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.io.FileUtil;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author kurmiashish
@@ -85,7 +81,7 @@ public class BMPFilter implements ContentDataFilter {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		DataInputStream dis = new DataInputStream(input);
 		dis.mark(54);
 		byte[] StartWord = new byte[2];

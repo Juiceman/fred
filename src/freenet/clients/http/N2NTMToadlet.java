@@ -3,19 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.l10n.NodeL10n;
-import freenet.node.DarknetPeerNode;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.NodeStarter;
-import freenet.node.PeerManager;
+import freenet.node.*;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.MultiValueTable;
@@ -23,9 +13,15 @@ import freenet.support.SizeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+
 public class N2NTMToadlet extends Toadlet {
-	private Node node;
-	private LocalFileN2NMToadlet browser;
+	private final Node node;
+	private final LocalFileN2NMToadlet browser;
 
 	protected N2NTMToadlet(Node n, NodeClientCore core,
 						   HighLevelSimpleClient client) {
@@ -86,7 +82,7 @@ public class N2NTMToadlet extends Toadlet {
 		ctx.sendReplyHeaders(302, "Found", headers, null, 0);
 	}
 
-	private String l10n(String key, String pattern[], String value[]) {
+	private String l10n(String key, String[] pattern, String[] value) {
 		return NodeL10n.getBase().getString("N2NTMToadlet." + key, pattern, value);
 	}
 

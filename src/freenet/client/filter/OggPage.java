@@ -4,6 +4,10 @@
 
 package freenet.client.filter;
 
+import freenet.l10n.NodeL10n;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -12,10 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import freenet.l10n.NodeL10n;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
 
 /**
  * Represents a single page of an Ogg bitstream
@@ -29,7 +29,7 @@ public class OggPage {
 	 * are XORed with
 	 * See: http://www.ross.net/crc/download/crc_v3.txt
 	 */
-	static final private int crc_lookup[] = new int[]{
+	static final private int[] crc_lookup = new int[]{
 			0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
 			0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
 			0x2608edb8, 0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61,
@@ -207,8 +207,7 @@ public class OggPage {
 	 */
 	public boolean headerValid() {
 		if (version != 0) return false;
-		if (!Arrays.equals(checksum, calculateCRC())) return false;
-		return true;
+		return Arrays.equals(checksum, calculateCRC());
 	}
 
 	public boolean isPacketContinued() {

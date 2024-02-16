@@ -1,10 +1,10 @@
 package freenet.support;
 
-import java.util.Arrays;
-
 import freenet.client.async.ClientContext;
 import freenet.client.async.ClientRequestSelector;
 import freenet.client.async.RequestSelectionTreeNode;
+
+import java.util.Arrays;
 
 /**
  * Like RandomGrabArray, but there is an equal chance of any given client's requests being

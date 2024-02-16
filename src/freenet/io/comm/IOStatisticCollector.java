@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.io.comm;
 
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
 
 public class IOStatisticCollector {
 	public static final int STATISTICS_ENTRIES = 10;
@@ -77,7 +77,7 @@ public class IOStatisticCollector {
 	}
 
 	private long[] _getTotalIO() {
-		long ret[] = new long[2];
+		long[] ret = new long[2];
 		synchronized (this) {
 			ret[0] = totalbytesout;
 			ret[1] = totalbytesin;
@@ -93,14 +93,14 @@ public class IOStatisticCollector {
 
 	private int[][] _getTotalStatistics() {
 		//String[] keys = (String[])targets.keySet().toArray();
-		int ret[][] = new int[STATISTICS_ENTRIES][2];
+		int[][] ret = new int[STATISTICS_ENTRIES][2];
 		for (int i = 0; i < STATISTICS_ENTRIES; i++) {
 			ret[i][0] = ret[i][1] = 0;
 		}
 
 		for (Map.Entry<String, StatisticEntry> entry : targets.entrySet()) {
-			int inres[] = entry.getValue().getRecieved();
-			int outres[] = entry.getValue().getSent();
+			int[] inres = entry.getValue().getRecieved();
+			int[] outres = entry.getValue().getSent();
 			for (int i = 0; i < STATISTICS_ENTRIES; i++) {
 				ret[i][1] += inres[i];
 				ret[i][0] += outres[i];
@@ -118,8 +118,8 @@ public class IOStatisticCollector {
 		final double divby = STATISTICS_DURATION_S * 1024;
 		for (Map.Entry<String, StatisticEntry> entry : targets.entrySet()) {
 			String key = entry.getKey();
-			int inres[] = entry.getValue().getRecieved();
-			int outres[] = entry.getValue().getSent();
+			int[] inres = entry.getValue().getRecieved();
+			int[] outres = entry.getValue().getSent();
 			System.err.print((key + "          ").substring(0, 22) + ": ");
 			int tin = 0;
 			int tout = 0;
@@ -149,7 +149,7 @@ public class IOStatisticCollector {
 			if (keys == null) return; // Why aren't we iterating there ?
 			for (int i = 0; i < keys.length; i++) {
 				Object key = keys[i];
-				if (targets.get(key).rotate() == false)
+				if (!targets.get(key).rotate())
 					targets.remove(key);
 			}
 			// FIXME: debugging
@@ -183,8 +183,8 @@ public class IOStatisticCollector {
 
 
 	private static class StatisticEntry {
-		private int recieved[];
-		private int sent[];
+		private final int[] recieved;
+		private final int[] sent;
 
 		public StatisticEntry() {
 			// Create a new array and clear it

@@ -26,5 +26,5 @@ public interface HasKeyListener {
 	/**
 	 * @return non-null if only key with (isSSK() ? pubKeyHash : routingKey) wanted.
 	 */
-	public byte[] getWantedKey();
+	byte[] getWantedKey();
 }

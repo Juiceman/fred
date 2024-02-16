@@ -3,19 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import freenet.config.InvalidConfigValueException;
-import freenet.config.NodeNeedRestartException;
-import freenet.node.*;
-import freenet.node.useralerts.UpgradeConnectionSpeedUserAlert;
-import freenet.support.*;
-import org.tanukisoftware.wrapper.WrapperManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-
 import freenet.client.ClientMetadata;
 import freenet.client.HighLevelSimpleClient;
 import freenet.client.InsertBlock;
@@ -25,15 +12,28 @@ import freenet.clients.http.PageMaker.RenderParameters;
 import freenet.clients.http.bookmark.BookmarkCategory;
 import freenet.clients.http.bookmark.BookmarkItem;
 import freenet.clients.http.bookmark.BookmarkManager;
+import freenet.config.InvalidConfigValueException;
+import freenet.config.NodeNeedRestartException;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
+import freenet.node.*;
+import freenet.node.useralerts.UpgradeConnectionSpeedUserAlert;
 import freenet.node.useralerts.UserAlert;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.RandomAccessBucket;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.LineReadingInputStream;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public class WelcomeToadlet extends Toadlet {
 
@@ -65,7 +65,6 @@ public class WelcomeToadlet extends Toadlet {
 		MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
 		headers.put("Location", "/");
 		ctx.sendReplyHeaders(302, "Found", headers, null, 0);
-		return;
 	}
 
 	private void addCategoryToList(BookmarkCategory cat, HTMLNode list, boolean noActiveLinks, ToadletContext ctx) {
@@ -227,7 +226,6 @@ public class WelcomeToadlet extends Toadlet {
 				}
 			}
 			writePermanentRedirect(ctx, l10n("disabledAlert"), (validAlertsRemaining > 0 ? "/alerts/" : "/"));
-			return;
 		} else if (request.isPartSet("key") && request.isPartSet("filename")) {
 			if (!ctx.checkFormPassword(request)) return;
 			// FIXME do we still use this? where?
@@ -281,7 +279,6 @@ public class WelcomeToadlet extends Toadlet {
 			writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 			request.freeParts();
 			bucket.free();
-			return;
 		} else if (request.isPartSet("key")) {
 			if (!ctx.checkFormPassword(request)) return;
 			String key;
@@ -292,7 +289,6 @@ public class WelcomeToadlet extends Toadlet {
 				return;
 			}
 			writeTemporaryRedirect(ctx, "OK", key);
-			return;
 		} else if (request.isPartSet("exit")) {
 			PageNode page = ctx.getPageMaker().getPageNode(l10n("shutdownConfirmTitle"), ctx);
 			HTMLNode pageNode = page.outer;
@@ -303,7 +299,6 @@ public class WelcomeToadlet extends Toadlet {
 			shutdownForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 			shutdownForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "shutdownconfirm", l10n("shutdown")});
 			writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-			return;
 		} else if (request.isPartSet("shutdownconfirm")) {
 			if (!ctx.checkFormPassword(request)) return;
 			MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
@@ -316,7 +311,6 @@ public class WelcomeToadlet extends Toadlet {
 					node.exit("Shutdown from fproxy");
 				}
 			}, 1);
-			return;
 		} else if (request.isPartSet("restart")) {
 			PageNode page = ctx.getPageMaker().getPageNode(l10n("restartConfirmTitle"), ctx);
 			HTMLNode pageNode = page.outer;
@@ -327,7 +321,6 @@ public class WelcomeToadlet extends Toadlet {
 			restartForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 			restartForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "restartconfirm", l10n("restart")});
 			writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-			return;
 		} else if (request.isPartSet("restartconfirm")) {
 			if (!ctx.checkFormPassword(request)) return;
 			MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
@@ -340,13 +333,12 @@ public class WelcomeToadlet extends Toadlet {
 					node.getNodeStarter().restart();
 				}
 			}, 1);
-			return;
 		} else if (request.isPartSet("dismiss-events")) {
 			if (!ctx.checkFormPassword(request)) return;
 			String alertsToDump = request.getPartAsStringFailsafe("events", Integer.MAX_VALUE);
 			String[] alertAnchors = alertsToDump.split(",");
 			HashSet<String> toDump = new HashSet<String>();
-			for (String alertAnchor : alertAnchors) toDump.add(alertAnchor);
+			Collections.addAll(toDump, alertAnchors);
 			ctx.getAlertManager().dumpEvents(toDump);
 			redirectToRoot(ctx);
 		} else if (request.isPartSet("upgradeConnectionSpeed")) {

@@ -6,10 +6,9 @@ package freenet.support;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
-
-import com.sun.jna.win32.*;
-import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.win32.StdCallLibrary;
 
 /**
  * A class to control the global priority of the current process.
@@ -28,7 +27,7 @@ public class ProcessPriority {
 
 	/// Windows interface (kernel32.dll) ///
 	public interface WindowsHolder extends StdCallLibrary {
-		WindowsHolder INSTANCE = (WindowsHolder) Native.loadLibrary("kernel32", WindowsHolder.class);
+		WindowsHolder INSTANCE = Native.loadLibrary("kernel32", WindowsHolder.class);
 
 		boolean SetPriorityClass(HANDLE hProcess, DWORD dwPriorityClass);
 

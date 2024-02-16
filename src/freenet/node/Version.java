@@ -3,13 +3,13 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import freenet.support.Fields;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Central spot for stuff related to the versioning of the codebase.
@@ -198,12 +198,9 @@ public class Version {
 	 * protocol version string
 	 */
 	private static boolean goodProtocol(String prot) {
-		if (prot.equals(protocolVersion)
-// uncomment next line to accept stable, see also explainBadVersion() below
-//			|| prot.equals(stableProtocolVersion)
-		)
-			return true;
-		return false;
+		// uncomment next line to accept stable, see also explainBadVersion() below
+		//			|| prot.equals(stableProtocolVersion)
+		return prot.equals(protocolVersion);
 	}
 
 	/**

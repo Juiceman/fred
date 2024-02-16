@@ -1,18 +1,5 @@
 package freenet.node.simulator;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-
-import freenet.support.math.MersenneTwister;
-
 import freenet.client.FetchException;
 import freenet.client.HighLevelSimpleClient;
 import freenet.crypt.RandomSource;
@@ -20,13 +7,19 @@ import freenet.keys.FreenetURI;
 import freenet.node.Node;
 import freenet.node.NodeInitException;
 import freenet.node.NodeStarter;
+import freenet.support.Logger.LogLevel;
+import freenet.support.LoggerHook.InvalidThresholdException;
 import freenet.support.PooledExecutor;
 import freenet.support.SimpleFieldSet;
 import freenet.support.TimeUtil;
-import freenet.support.Logger.LogLevel;
-import freenet.support.LoggerHook.InvalidThresholdException;
 import freenet.support.io.FileUtil;
 import freenet.support.io.LineReadingInputStream;
+import freenet.support.math.MersenneTwister;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Insert a random block of data to an established node via FCP, then

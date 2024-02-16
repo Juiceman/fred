@@ -3,6 +3,8 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.l10n;
 
+import freenet.support.io.Closer;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,8 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
-
-import freenet.support.io.Closer;
 
 /**
  * Provides the content of the ISO639-3 standard for language codes.
@@ -59,7 +59,7 @@ public final class ISO639_3 {
 		 */
 		public final String part1;
 
-		public static enum Scope {
+		public enum Scope {
 			Individual,
 			Macrolanguage,
 			Special;
@@ -72,14 +72,12 @@ public final class ISO639_3 {
 			}
 		}
 
-		;
-
 		/**
 		 * The scope of the language, never null.
 		 */
 		public final Scope scope;
 
-		public static enum Type {
+		public enum Type {
 			Ancient,
 			Constructed,
 			Extinct,
@@ -255,7 +253,7 @@ public final class ISO639_3 {
 	 * @return Returns the map of all ISO639-3 language codes. The key in the returned list is the ID of the language code,
 	 * which is the 3-letter code of ISO639-3. The given map is unmodifiable since it is used for the cache.
 	 */
-	public final Map<String, LanguageCode> getLanguages() {
+	public Map<String, LanguageCode> getLanguages() {
 		return allLanguagesCache;
 	}
 
@@ -267,7 +265,7 @@ public final class ISO639_3 {
 	 * @return Gets a {@link Hashtable} of language codes with the given scope and type. The key in the returned list is the ID
 	 * of the language code, which is the 3-letter code of ISO639-3. The given Hashtable is free for modification.
 	 */
-	public final Hashtable<String, LanguageCode> getLanguagesByScopeAndType(LanguageCode.Scope scope, LanguageCode.Type type) {
+	public Hashtable<String, LanguageCode> getLanguagesByScopeAndType(LanguageCode.Scope scope, LanguageCode.Type type) {
 		final Map<String, LanguageCode> all = getLanguages();
 		final Hashtable<String, LanguageCode> result = new Hashtable<String, LanguageCode>();
 
@@ -282,7 +280,7 @@ public final class ISO639_3 {
 	/**
 	 * @return The special symbolic language code which is supposed to be a category for multiple languages.
 	 */
-	public final LanguageCode getMultilingualCode() {
+	public LanguageCode getMultilingualCode() {
 		return getLanguages().get("mul");
 
 	}

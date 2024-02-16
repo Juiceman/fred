@@ -12,8 +12,8 @@ public interface GetPubkey {
 	 * @param canWriteDatastore  If this is a request with high HTL, we can't promote it.
 	 * @return A public key, or null.
 	 */
-	public abstract DSAPublicKey getKey(byte[] hash,
-										boolean canReadClientCache, boolean forULPR, BlockMetadata meta);
+	DSAPublicKey getKey(byte[] hash,
+						boolean canReadClientCache, boolean forULPR, BlockMetadata meta);
 
 	/**
 	 * Cache a public key.
@@ -28,8 +28,8 @@ public interface GetPubkey {
 	 *                            nearby.
 	 * @param forULPR
 	 */
-	public abstract void cacheKey(byte[] hash, DSAPublicKey key, boolean deep,
-								  boolean canWriteClientCache, boolean canWriteDatastore,
-								  boolean forULPR, boolean writeLocalToDatastore);
+	void cacheKey(byte[] hash, DSAPublicKey key, boolean deep,
+				  boolean canWriteClientCache, boolean canWriteDatastore,
+				  boolean forULPR, boolean writeLocalToDatastore);
 
 }

@@ -3,11 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bouncycastle.crypto.SkippingStreamCipher;
 import org.bouncycastle.crypto.engines.ChaChaEngine;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Stores information about the algorithms used, the version number, and the footer length for a
@@ -36,8 +36,8 @@ public enum EncryptedRandomAccessBufferType {
 	 * @param macType      Alg to use for MAC generation
 	 * @param macLen       The length of the MAC output in bytes
 	 */
-	private EncryptedRandomAccessBufferType(int bitmask, int magAndVerLen, CryptByteBufferType type,
-											MACType macType, int macLen) {
+	EncryptedRandomAccessBufferType(int bitmask, int magAndVerLen, CryptByteBufferType type,
+									MACType macType, int macLen) {
 		this.bitmask = bitmask;
 		this.encryptType = type;
 		this.encryptKey = type.keyType;

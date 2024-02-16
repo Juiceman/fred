@@ -39,7 +39,7 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	/**
 	 * The address of this matcher
 	 */
-	private int address;
+	private final int address;
 
 	/**
 	 * The network mask of this matcher

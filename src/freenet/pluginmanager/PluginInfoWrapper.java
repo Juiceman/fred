@@ -1,10 +1,5 @@
 package freenet.pluginmanager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-
 import freenet.clients.http.ConfigToadlet;
 import freenet.config.Config;
 import freenet.config.FilePersistentConfig;
@@ -14,6 +9,11 @@ import freenet.node.Node;
 import freenet.support.JarClassLoader;
 import freenet.support.Logger;
 import freenet.support.io.Closer;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashSet;
 
 public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 
@@ -101,7 +101,7 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 
 	@Override
 	public String toString() {
-		return "ID: \"" + threadName + "\", Name: " + className + ", Started: " + (new Date(start)).toString();
+		return "ID: \"" + threadName + "\", Name: " + className + ", Started: " + (new Date(start));
 	}
 
 	public String getThreadName() {

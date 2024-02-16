@@ -3,43 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.http;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-
-import freenet.client.DefaultMIMETypes;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.HighLevelSimpleClientImpl;
-import freenet.client.InsertContext;
 import freenet.client.InsertContext.CompatibilityMode;
-import freenet.client.MetadataUnresolvedException;
 import freenet.client.async.ClientContext;
 import freenet.client.async.PersistenceDisabledException;
 import freenet.client.async.PersistentJob;
@@ -47,23 +13,10 @@ import freenet.client.async.TooManyFilesInsertException;
 import freenet.client.filter.ContentFilter;
 import freenet.client.filter.FilterMIMEType;
 import freenet.client.filter.KnownUnsafeContentTypeException;
-import freenet.clients.fcp.ClientGet;
-import freenet.clients.fcp.ClientPut;
+import freenet.clients.fcp.*;
 import freenet.clients.fcp.ClientPut.COMPRESS_STATE;
 import freenet.clients.fcp.ClientPutBase.UploadFrom;
-import freenet.clients.fcp.ClientPutDir;
-import freenet.clients.fcp.ClientRequest;
 import freenet.clients.fcp.ClientRequest.Persistence;
-import freenet.clients.fcp.DownloadRequestStatus;
-import freenet.clients.fcp.FCPServer;
-import freenet.clients.fcp.IdentifierCollisionException;
-import freenet.clients.fcp.MessageInvalidException;
-import freenet.clients.fcp.NotAllowedException;
-import freenet.clients.fcp.RequestCompletionCallback;
-import freenet.clients.fcp.RequestStatus;
-import freenet.clients.fcp.UploadDirRequestStatus;
-import freenet.clients.fcp.UploadFileRequestStatus;
-import freenet.clients.fcp.UploadRequestStatus;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
 import freenet.node.DarknetPeerNode;
@@ -73,23 +26,21 @@ import freenet.node.RequestStarter;
 import freenet.node.SecurityLevels.PHYSICAL_THREAT_LEVEL;
 import freenet.node.useralerts.StoringUserEvent;
 import freenet.node.useralerts.UserAlert;
-import freenet.support.Fields;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.MultiValueTable;
-import freenet.support.SizeUtil;
-import freenet.support.TimeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 import freenet.support.api.RandomAccessBucket;
-import freenet.support.io.BucketTools;
-import freenet.support.io.Closer;
-import freenet.support.io.FileBucket;
-import freenet.support.io.FileUtil;
-import freenet.support.io.NativeThread;
+import freenet.support.io.*;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 public class QueueToadlet extends Toadlet implements RequestCompletionCallback, LinkEnabledCallback {
 
@@ -128,7 +79,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 		final boolean isFailed;
 		final boolean isUpload;
 
-		private QueueType(boolean isCompleted, boolean isFailed, boolean isUpload) {
+		QueueType(boolean isCompleted, boolean isFailed, boolean isUpload) {
 			this.isCompleted = isCompleted;
 			this.isFailed = isFailed;
 			this.isUpload = isUpload;
@@ -140,7 +91,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 	private static final int MAX_TYPE_LENGTH = 1024;
 	static final int MAX_KEY_LENGTH = 1024 * 1024;
 
-	private NodeClientCore core;
+	private final NodeClientCore core;
 	final FCPServer fcp;
 	private FileInsertWizardToadlet fiw;
 
@@ -217,7 +168,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 				}
 				MultiValueTable<String, String> responseHeaders = new MultiValueTable<String, String>();
 				responseHeaders.put("Location", LocalFileInsertToadlet.PATH + "?key=" + insertURI.toASCIIString() +
-						"&compress=" + String.valueOf(request.getPartAsStringFailsafe("compress", 128).length() > 0) +
+						"&compress=" + (request.getPartAsStringFailsafe("compress", 128).length() > 0) +
 						"&compatibilityMode=" + request.getPartAsStringFailsafe("compatibilityMode", 100) +
 						"&overrideSplitfileKey=" + request.getPartAsStringFailsafe("overrideSplitfileKey", 65));
 				ctx.sendReplyHeaders(302, "Found", responseHeaders, null, 0);
@@ -1222,7 +1173,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 				UploadRequestStatus put = (UploadRequestStatus) req;
 				FreenetURI uri = put.getURI();
 				if (uri != null) {
-					sb.append(uri.toString());
+					sb.append(uri);
 					sb.append("\n");
 				}
 			}
@@ -1837,13 +1788,13 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 
 			NumberFormat nf = NumberFormat.getInstance();
 			nf.setMaximumFractionDigits(1);
-			String prefix = '(' + Integer.toString(fetched) + "/ " + Integer.toString(min) + "): ";
+			String prefix = '(' + Integer.toString(fetched) + "/ " + min + "): ";
 			if (finalized) {
 				progressBar.addChild("div", new String[]{"class", "title"}, new String[]{"progress_fraction_finalized", prefix + l10n("progressbarAccurate")}, nf.format((int) ((fetched / (double) min) * 1000) / 10.0) + '%');
 			} else {
 				String text = nf.format((int) ((fetched / (double) min) * 1000) / 10.0) + '%';
 				if (!finalized)
-					text = "" + fetched + " (" + text + "??)";
+					text = fetched + " (" + text + "??)";
 				progressBar.addChild("div", new String[]{"class", "title"}, new String[]{"progress_fraction_not_finalized", prefix + NodeL10n.getBase().getString(upload ? "QueueToadlet.uploadProgressbarNotAccurate" : "QueueToadlet.progressbarNotAccurate")}, text);
 			}
 		}
@@ -2188,7 +2139,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 					case SIZE:
 						boolean isFinal = true;
 						if (clientRequest instanceof DownloadRequestStatus)
-							isFinal = ((DownloadRequestStatus) clientRequest).isTotalFinalized();
+							isFinal = clientRequest.isTotalFinalized();
 						requestRow.addChild(createSizeCell(clientRequest.getDataSize(), isFinal, advancedModeEnabled));
 						break;
 					case MIME_TYPE:
@@ -2203,7 +2154,7 @@ public class QueueToadlet extends Toadlet implements RequestCompletionCallback, 
 						break;
 					case KEY:
 						if (clientRequest instanceof DownloadRequestStatus) {
-							requestRow.addChild(createKeyCell(((DownloadRequestStatus) clientRequest).getURI(), false));
+							requestRow.addChild(createKeyCell(clientRequest.getURI(), false));
 						} else if (clientRequest instanceof UploadFileRequestStatus) {
 							requestRow.addChild(createKeyCell(((UploadFileRequestStatus) clientRequest).getFinalURI(), false));
 						} else {

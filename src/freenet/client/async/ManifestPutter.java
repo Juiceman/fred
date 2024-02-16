@@ -3,11 +3,10 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
+import freenet.client.InsertException;
 import freenet.node.RequestClient;
 
 import java.io.Serializable;
-
-import freenet.client.InsertException;
 
 public abstract class ManifestPutter extends BaseClientPutter {
 

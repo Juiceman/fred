@@ -1,9 +1,9 @@
 package freenet.client.async;
 
+import freenet.node.KeysFetchingLocally;
+
 import java.io.IOException;
 import java.util.Random;
-
-import freenet.node.KeysFetchingLocally;
 
 public class SplitFileFetcherSegmentBlockChooser extends CooldownBlockChooser {
 
@@ -26,9 +26,7 @@ public class SplitFileFetcherSegmentBlockChooser extends CooldownBlockChooser {
 		if (chosen == ignoreLastBlock) return false;
 		try {
 			SplitFileSegmentKeys keys = segment.getSegmentKeys();
-			if (keysFetching.hasKey(keys.getNodeKey(chosen, null, false), segment.parent.fetcher.getSendableGet()))
-				return false;
-			return true;
+			return !keysFetching.hasKey(keys.getNodeKey(chosen, null, false), segment.parent.fetcher.getSendableGet());
 		} catch (final IOException e) {
 			segment.parent.jobRunner.queueNormalOrDrop(new PersistentJob() {
 

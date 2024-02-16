@@ -1,19 +1,5 @@
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.*;
-
 import freenet.client.FetchException;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.fcp.AddPeer;
@@ -27,30 +13,27 @@ import freenet.io.comm.ReferenceSignatureVerificationException;
 import freenet.io.xfer.PacketThrottle;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
-import freenet.node.DarknetPeerNode;
-import freenet.node.DarknetPeerNode.FRIEND_VISIBILITY;
+import freenet.node.*;
 import freenet.node.DarknetPeerNode.FRIEND_TRUST;
-import freenet.node.FSParseException;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.NodeFile;
-import freenet.node.NodeStats;
-import freenet.node.PeerManager;
-import freenet.node.PeerNode;
+import freenet.node.DarknetPeerNode.FRIEND_VISIBILITY;
 import freenet.node.PeerNode.IncomingLoadSummaryStats;
-import freenet.node.PeerNodeStatus;
-import freenet.node.Version;
-import freenet.support.Fields;
-import freenet.support.HTMLNode;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.MultiValueTable;
-import freenet.support.SimpleFieldSet;
-import freenet.support.SizeUtil;
-import freenet.support.TimeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * Base class for DarknetConnectionsToadlet and OpennetConnectionsToadlet
@@ -1038,7 +1021,7 @@ public abstract class ConnectionsToadlet extends Toadlet {
 			if ((backoff > 0) && (backoff < 1000)) {
 				backoff = 1000;
 			}
-			backoffCell.addChild("#", ' ' + String.valueOf(backoff / 1000) + '/' + String.valueOf(peerNodeStatus.getRoutingBackoffLength(true) / 1000));
+			backoffCell.addChild("#", ' ' + String.valueOf(backoff / 1000) + '/' + peerNodeStatus.getRoutingBackoffLength(true) / 1000);
 			backoffCell.addChild("#", (peerNodeStatus.getLastBackoffReason(true) == null) ? "" : ('/' + (peerNodeStatus.getLastBackoffReason(true))));
 
 			// backoff column
@@ -1049,7 +1032,7 @@ public abstract class ConnectionsToadlet extends Toadlet {
 			if ((backoff > 0) && (backoff < 1000)) {
 				backoff = 1000;
 			}
-			backoffCell.addChild("#", ' ' + String.valueOf(backoff / 1000) + '/' + String.valueOf(peerNodeStatus.getRoutingBackoffLength(false) / 1000));
+			backoffCell.addChild("#", ' ' + String.valueOf(backoff / 1000) + '/' + peerNodeStatus.getRoutingBackoffLength(false) / 1000);
 			backoffCell.addChild("#", (peerNodeStatus.getLastBackoffReason(false) == null) ? "" : ('/' + (peerNodeStatus.getLastBackoffReason(false))));
 
 			// overload probability column

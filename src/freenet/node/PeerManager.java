@@ -3,45 +3,21 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import freenet.io.comm.AsyncMessageCallback;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.FreenetInetAddress;
-import freenet.io.comm.Message;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.Peer;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
+import freenet.io.comm.*;
 import freenet.keys.Key;
 import freenet.node.DarknetPeerNode.FRIEND_TRUST;
 import freenet.node.DarknetPeerNode.FRIEND_VISIBILITY;
 import freenet.node.useralerts.DroppedOldPeersUserAlert;
 import freenet.node.useralerts.PeerManagerUserAlert;
-import freenet.support.ByteArrayWrapper;
-import freenet.support.Logger;
-import freenet.support.ShortBuffer;
-import freenet.support.SimpleFieldSet;
-import freenet.support.TimeUtil;
+import freenet.support.*;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NativeThread;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -188,7 +164,7 @@ public class PeerManager {
 	 * interface for listening for all of them. (Possibly excluding
 	 * status changes on seed servers and seed clients).
 	 */
-	private List<PeerStatusChangeListener> listeners = new CopyOnWriteArrayList<PeerStatusChangeListener>();
+	private final List<PeerStatusChangeListener> listeners = new CopyOnWriteArrayList<PeerStatusChangeListener>();
 
 	/**
 	 * Create a PeerManager by reading a list of peers from
@@ -288,22 +264,22 @@ public class PeerManager {
 					} else
 						addPeer(pn, true, false);
 				} catch (FSParseException e2) {
-					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs.toString(), e2);
+					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs, e2);
 					System.err.println("Cannot parse a friend from the peers file: " + e2);
 					someBroken = true;
 					continue;
 				} catch (PeerParseException e2) {
-					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs.toString(), e2);
+					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs, e2);
 					System.err.println("Cannot parse a friend from the peers file: " + e2);
 					someBroken = true;
 					continue;
 				} catch (ReferenceSignatureVerificationException e2) {
-					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs.toString(), e2);
+					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs, e2);
 					System.err.println("Cannot parse a friend from the peers file: " + e2);
 					someBroken = true;
 					continue;
 				} catch (RuntimeException e2) {
-					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs.toString(), e2);
+					Logger.error(this, "Could not parse peer: " + e2 + '\n' + fs, e2);
 					System.err.println("Cannot parse a friend from the peers file: " + e2);
 					someBroken = true;
 					continue;
@@ -430,8 +406,10 @@ public class PeerManager {
 		boolean isInPeers = false;
 		synchronized (this) {
 			for (PeerNode myPeer : myPeers) {
-				if (myPeer == pn)
+				if (myPeer == pn) {
 					isInPeers = true;
+					break;
+				}
 			}
 			if (pn instanceof DarknetPeerNode)
 				((DarknetPeerNode) pn).removeExtraPeerDataDir();
@@ -497,8 +475,10 @@ public class PeerManager {
 		synchronized (this) {
 			boolean isInPeers = false;
 			for (PeerNode connectedPeer : connectedPeers) {
-				if (connectedPeer == pn)
+				if (connectedPeer == pn) {
 					isInPeers = true;
+					break;
+				}
 			}
 			if (!isInPeers)
 				return false;
@@ -1598,7 +1578,7 @@ public class PeerManager {
 				}
 				Logger.error(this, "Cannot write file: " + e, e);
 				f.delete();
-				return; // don't overwrite old file!
+				// don't overwrite old file!
 			} finally {
 				Closer.close(w);
 				Closer.close(fos);
@@ -2315,11 +2295,11 @@ public class PeerManager {
 	/**
 	 * A listener interface that can be used to be notified about peer status change events
 	 */
-	public static interface PeerStatusChangeListener {
+	public interface PeerStatusChangeListener {
 		/**
 		 * Peers status have changed
 		 */
-		public void onPeerStatusChange();
+		void onPeerStatusChange();
 	}
 
 	/**

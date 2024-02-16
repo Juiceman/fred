@@ -3,17 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-import java.util.EnumMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import freenet.clients.fcp.FCPPluginMessage.ClientPermissions;
 import freenet.node.NodeStarter;
 import freenet.node.PrioRunnable;
@@ -30,6 +19,17 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.PooledExecutor;
 import freenet.support.SimpleFieldSet;
 import freenet.support.io.NativeThread;
+
+import java.io.IOException;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.EnumMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <b>Please first read the JavaDoc of the interface {@link FCPPluginConnection} which specifies
@@ -126,7 +126,7 @@ final class FCPPluginConnectionImpl implements FCPPluginConnection {
 	 * Used as performance optimization to prevent construction of the log strings if it is not
 	 * necessary.
 	 */
-	private static transient volatile boolean logDEBUG = false;
+	private static final boolean logDEBUG = false;
 
 	/**
 	 * Automatically set to true by {@link Logger} if the log level is set to
@@ -134,7 +134,7 @@ final class FCPPluginConnectionImpl implements FCPPluginConnection {
 	 * Used as performance optimization to prevent construction of the log strings if it is not
 	 * necessary.
 	 */
-	private static transient volatile boolean logMINOR = false;
+	private static final boolean logMINOR = false;
 
 	static {
 		// Necessary for automatic setting of logDEBUG and logMINOR
@@ -782,7 +782,7 @@ final class FCPPluginConnectionImpl implements FCPPluginConnection {
 						// quickly instead of having to wait for the timeout because no reply
 						// arrives.
 						reply = FCPPluginMessage.constructReplyMessage(message, null, null, false,
-								"InternalError", errorMessage + "; Throwable = " + e.toString());
+								"InternalError", errorMessage + "; Throwable = " + e);
 					}
 				}
 

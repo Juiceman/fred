@@ -3,9 +3,8 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.Mac;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Keeps track of properties of different Message Authentication Code
@@ -35,7 +34,7 @@ public enum MACType {
 	 * @param mac     Name of the algorithm that java uses.
 	 * @param type    The type of key the alg requires
 	 */
-	private MACType(int bitmask, String mac, KeyType type) {
+	MACType(int bitmask, String mac, KeyType type) {
 		this.bitmask = bitmask;
 		this.mac = mac;
 		ivlen = -1;
@@ -50,7 +49,7 @@ public enum MACType {
 	 * @param ivlen   Length of the IV
 	 * @param type    The type of key the alg requires
 	 */
-	private MACType(int bitmask, String mac, int ivlen, KeyType type) {
+	MACType(int bitmask, String mac, int ivlen, KeyType type) {
 		this.bitmask = bitmask;
 		this.mac = mac;
 		this.ivlen = ivlen;

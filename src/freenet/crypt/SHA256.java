@@ -33,6 +33,12 @@
  */
 package freenet.crypt;
 
+import freenet.node.Node;
+import freenet.node.NodeInitException;
+import freenet.support.Logger;
+import freenet.support.io.Closer;
+import org.tanukisoftware.wrapper.WrapperManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -41,13 +47,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
-import freenet.node.Node;
-import freenet.node.NodeInitException;
-import freenet.support.Logger;
-import freenet.support.io.Closer;
 
 /**
  * @author Jeroen C. van Gelderen (gelderen@cryptix.org)

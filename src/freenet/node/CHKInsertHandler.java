@@ -3,17 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.RetrievalException;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
+import freenet.io.comm.*;
 import freenet.io.xfer.AbortedException;
 import freenet.io.xfer.BlockReceiver;
 import freenet.io.xfer.BlockReceiver.BlockReceiverCompletion;
@@ -26,9 +16,11 @@ import freenet.store.KeyCollisionException;
 import freenet.support.HexUtil;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.ShortBuffer;
 import freenet.support.Logger.LogLevel;
+import freenet.support.ShortBuffer;
 import freenet.support.io.NativeThread;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author amphibian
@@ -55,14 +47,14 @@ public class CHKInsertHandler implements PrioRunnable, ByteCounter {
 	final PeerNode source;
 	final NodeCHK key;
 	final long startTime;
-	private short htl;
+	private final short htl;
 	private CHKInsertSender sender;
 	private byte[] headers;
 	private BlockReceiver br;
 	private Thread runThread;
 	PartiallyReceivedBlock prb;
 	final InsertTag tag;
-	private boolean canWriteDatastore;
+	private final boolean canWriteDatastore;
 	private final boolean forkOnCacheable;
 	private final boolean preferInsert;
 	private final boolean ignoreLowBackoff;
@@ -314,7 +306,7 @@ public class CHKInsertHandler implements PrioRunnable, ByteCounter {
 	private void handleNoDataInsert() {
 		try {
 			// Nodes wait until they have the DataInsert before forwarding, so there is absolutely no excuse: There is a local problem here!
-			if (source.isConnected() && (startTime > (source.timeLastConnectionCompleted() + Node.HANDSHAKE_TIMEOUT * 4)))
+			if (source.isConnected() && (startTime > (source.timeLastConnectionCompleted() + Node.HANDSHAKE_TIMEOUT * 4L)))
 				Logger.warning(this, "Did not receive DataInsert on " + uid + " from " + source + " !");
 			Message tooSlow = DMT.createFNPRejectedTimeout(uid);
 			source.sendAsync(tooSlow, null, this);
@@ -368,19 +360,16 @@ public class CHKInsertHandler implements PrioRunnable, ByteCounter {
 				}
 
 			}, this);
-			return;
 		} catch (NotConnectedException e) {
 			if (logMINOR) Logger.minor(this, "Lost connection to source");
-			return;
 		} catch (DisconnectedException e) {
 			if (logMINOR) Logger.minor(this, "Lost connection to source");
-			return;
 		}
 	}
 
 	private boolean canCommit = false;
 	private boolean sentCompletion = false;
-	private Object sentCompletionLock = new Object();
+	private final Object sentCompletionLock = new Object();
 
 	/**
 	 * If canCommit, and we have received all the data, and it
@@ -620,7 +609,6 @@ public class CHKInsertHandler implements PrioRunnable, ByteCounter {
 
 					if (!prb.abortedLocally())
 						node.nodeStats.failedBlockReceive(false, false, realTimeFlag, false);
-					return;
 				}
 
 			});
@@ -681,7 +669,7 @@ public class CHKInsertHandler implements PrioRunnable, ByteCounter {
 		return NativeThread.HIGH_PRIORITY;
 	}
 
-	private BlockReceiverTimeoutHandler myTimeoutHandler = new BlockReceiverTimeoutHandler() {
+	private final BlockReceiverTimeoutHandler myTimeoutHandler = new BlockReceiverTimeoutHandler() {
 
 		/** We timed out waiting for a block from the request sender. We do not know 
 		 * whether it is the fault of the request sender or that of some previous node.

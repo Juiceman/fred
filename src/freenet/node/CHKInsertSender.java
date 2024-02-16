@@ -3,21 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import freenet.io.comm.AsyncMessageCallback;
-import freenet.io.comm.ByteCounter;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.NotConnectedException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.SlowAsyncMessageFilterCallback;
+import freenet.io.comm.*;
 import freenet.io.xfer.AbortedException;
 import freenet.io.xfer.BlockTransmitter;
 import freenet.io.xfer.BlockTransmitter.BlockTransmitterCompletion;
@@ -27,6 +13,12 @@ import freenet.keys.CHKVerifyException;
 import freenet.keys.NodeCHK;
 import freenet.support.Logger;
 import freenet.support.io.NativeThread;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public final class CHKInsertSender extends BaseSender implements PrioRunnable, AnyInsertSender, ByteCounter {
 
@@ -392,7 +384,7 @@ public final class CHKInsertSender extends BaseSender implements PrioRunnable, A
 	 * List of nodes we are waiting for either a transfer completion
 	 * notice or a transfer completion from. Also used as a sync object for waiting for transfer completion.
 	 */
-	private List<BackgroundTransfer> backgroundTransfers;
+	private final List<BackgroundTransfer> backgroundTransfers;
 
 	/**
 	 * Have all transfers completed and all nodes reported completion status?
@@ -990,7 +982,6 @@ public final class CHKInsertSender extends BaseSender implements PrioRunnable, A
 			// Wait for the outgoing transfers to complete.
 			if (!waitForBackgroundTransfers(transfers)) {
 				setTransferTimedOut();
-				return;
 			}
 		} finally {
 			synchronized (CHKInsertSender.this) {

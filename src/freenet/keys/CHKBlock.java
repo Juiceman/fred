@@ -3,11 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.keys;
 
-import java.security.MessageDigest;
-import java.util.Arrays;
-
 import freenet.crypt.SHA256;
 import freenet.support.Fields;
+
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 /**
  * @author amphibian
@@ -137,8 +137,7 @@ public class CHKBlock implements KeyBlock {
 		if (!chk.equals(block.chk)) return false;
 		if (!Arrays.equals(data, block.data)) return false;
 		if (!Arrays.equals(headers, block.headers)) return false;
-		if (hashIdentifier != block.hashIdentifier) return false;
-		return true;
+		return hashIdentifier == block.hashIdentifier;
 	}
 
 }

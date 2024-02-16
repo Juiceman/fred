@@ -1,29 +1,11 @@
 package freenet.client.async;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import freenet.client.FetchException;
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.client.Metadata.SplitfileAlgorithm;
 import freenet.client.async.PersistentJobRunner.CheckpointLock;
 import freenet.crypt.ChecksumFailedException;
-import freenet.keys.CHKBlock;
-import freenet.keys.CHKDecodeException;
-import freenet.keys.CHKEncodeException;
-import freenet.keys.CHKVerifyException;
-import freenet.keys.ClientCHK;
-import freenet.keys.ClientCHKBlock;
-import freenet.keys.Key;
-import freenet.keys.NodeCHK;
+import freenet.keys.*;
 import freenet.node.KeysFetchingLocally;
 import freenet.support.Logger;
 import freenet.support.MemoryLimitedChunk;
@@ -31,6 +13,13 @@ import freenet.support.MemoryLimitedJob;
 import freenet.support.MemoryLimitedJobRunner;
 import freenet.support.api.LockableRandomAccessBuffer.RAFLock;
 import freenet.support.io.StorageFormatException;
+
+import java.io.*;
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Represents a single segment, in memory and on disk. Handles storage and decoding. Note that the
@@ -204,7 +193,7 @@ public class SplitFileFetcherSegmentStorage {
 		this.segmentBlockDataOffset = segmentDataOffset;
 		if (segmentCrossCheckDataOffset == -1) {
 			segmentCrossCheckDataOffset =
-					segmentBlockDataOffset + dataBlocks * CHKBlock.DATA_LENGTH;
+					segmentBlockDataOffset + (long) dataBlocks * CHKBlock.DATA_LENGTH;
 		}
 		this.segmentCrossCheckBlockDataOffset = segmentCrossCheckDataOffset;
 		this.segmentKeyListOffset = segmentKeysOffset;
@@ -339,7 +328,7 @@ public class SplitFileFetcherSegmentStorage {
 			if (tryDecode) return true;
 			tryDecode = true;
 		}
-		long limit = totalBlocks() * CHKBlock.DATA_LENGTH +
+		long limit = (long) totalBlocks() * CHKBlock.DATA_LENGTH +
 				Math.max(parent.fecCodec.maxMemoryOverheadDecode(blocksForDecode(), checkBlocks),
 						parent.fecCodec.maxMemoryOverheadEncode(blocksForDecode(), checkBlocks));
 		final int prio = parent.getPriorityClass();
@@ -894,13 +883,13 @@ public class SplitFileFetcherSegmentStorage {
 
 	long blockOffset(int slotNumber) {
 		if (slotNumber < dataBlocks) {
-			return segmentBlockDataOffset + slotNumber * CHKBlock.DATA_LENGTH;
+			return segmentBlockDataOffset + (long) slotNumber * CHKBlock.DATA_LENGTH;
 		} else if (slotNumber >= (dataBlocks + crossSegmentCheckBlocks)) {
 			slotNumber -= crossSegmentCheckBlocks;
-			return segmentBlockDataOffset + slotNumber * CHKBlock.DATA_LENGTH;
+			return segmentBlockDataOffset + (long) slotNumber * CHKBlock.DATA_LENGTH;
 		} else {
 			slotNumber -= dataBlocks;
-			return segmentCrossCheckBlockDataOffset + slotNumber * CHKBlock.DATA_LENGTH;
+			return segmentCrossCheckBlockDataOffset + (long) slotNumber * CHKBlock.DATA_LENGTH;
 		}
 	}
 
@@ -929,7 +918,6 @@ public class SplitFileFetcherSegmentStorage {
 			}
 			metadataDirty = false;
 		}
-		return;
 	}
 
 	/**

@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public interface RandomAccessBuffer extends Closeable {
 
-	public long size();
+	long size();
 
 	/**
 	 * Read a block of data from a specific location in the file. Guaranteed to read the whole
@@ -29,17 +29,17 @@ public interface RandomAccessBuffer extends Closeable {
 	 * @throws IOException              If we were unable to read the required number of bytes etc.
 	 * @throws IllegalArgumentException If fileOffset is negative.
 	 */
-	public void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException;
+	void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException;
 
-	public void pwrite(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException;
+	void pwrite(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException;
 
 	@Override
-	public void close();
+	void close();
 
 	/**
 	 * Free the underlying resources. May do nothing in some implementations. You should make sure
 	 * the object can be GC'ed as well.
 	 */
-	public void free();
+	void free();
 
 }

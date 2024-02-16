@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.File;
-import java.io.IOException;
-
 import freenet.clients.fcp.FCPConnectionHandler.DDACheckJob;
 import freenet.node.Node;
 import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.io.FileUtil;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * client -> node: DDARequest { WantRead=true, WantWrite=true, Dir=/tmp/blah }
@@ -45,7 +45,7 @@ public class TestDDACompleteMessage extends FCPMessage {
 		boolean isWriteAllowed = false;
 
 		if (checkJob.readFilename != null) {
-			isReadAllowed = (readContentFromClient != null) && (checkJob.readContent.equals(readContentFromClient));
+			isReadAllowed = (checkJob.readContent.equals(readContentFromClient));
 			// cleanup in any case : we created it!... let's hope the client will do the same on its side.
 			checkJob.readFilename.delete();
 			sfs.putSingle(READ_ALLOWED, String.valueOf(isReadAllowed));

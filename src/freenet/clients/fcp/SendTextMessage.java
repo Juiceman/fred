@@ -1,11 +1,11 @@
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import freenet.node.DarknetPeerNode;
 import freenet.support.SimpleFieldSet;
 import freenet.support.io.BucketTools;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 // FIXME proper support for sending large files.
 // FIXME with confirmation on the other side like darknet transfers.

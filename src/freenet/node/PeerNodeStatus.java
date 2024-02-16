@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import java.net.InetAddress;
-import java.util.Map;
-
 import freenet.clients.http.DarknetConnectionsToadlet;
 import freenet.io.comm.FreenetInetAddress;
 import freenet.io.comm.Peer;
 import freenet.io.xfer.PacketThrottle;
 import freenet.node.PeerNode.IncomingLoadSummaryStats;
+
+import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * Contains various status information for a {@link PeerNode}. Used e.g. in
@@ -74,36 +74,36 @@ public class PeerNodeStatus {
 	private final double backedOffPercentRT;
 	private final double backedOffPercentBulk;
 
-	private String lastBackoffReasonRT;
-	private String lastBackoffReasonBulk;
+	private final String lastBackoffReasonRT;
+	private final String lastBackoffReasonBulk;
 
-	private long timeLastRoutable;
+	private final long timeLastRoutable;
 
-	private long timeLastConnectionCompleted;
+	private final long timeLastConnectionCompleted;
 
-	private long peerAddedTime;
+	private final long peerAddedTime;
 
-	private Map<String, Long> localMessagesReceived;
+	private final Map<String, Long> localMessagesReceived;
 
-	private Map<String, Long> localMessagesSent;
+	private final Map<String, Long> localMessagesSent;
 
 	private final int hashCode;
 
 	private final double pReject;
 
-	private long totalBytesIn;
+	private final long totalBytesIn;
 
-	private long totalBytesOut;
+	private final long totalBytesOut;
 
-	private long totalBytesInSinceStartup;
+	private final long totalBytesInSinceStartup;
 
-	private long totalBytesOutSinceStartup;
+	private final long totalBytesOutSinceStartup;
 
-	private double percentTimeRoutableConnection;
+	private final double percentTimeRoutableConnection;
 
-	private PacketThrottle throttle;
+	private final PacketThrottle throttle;
 
-	private long clockDelta;
+	private final long clockDelta;
 
 	private final boolean recordStatus;
 

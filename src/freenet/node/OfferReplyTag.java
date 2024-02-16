@@ -19,10 +19,9 @@ public class OfferReplyTag extends UIDTag {
 
 	@Override
 	public void logStillPresent(Long uid) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("Still present after ").append(TimeUtil.formatTime(age()));
-		sb.append(" : ssk=").append(ssk);
-		Logger.error(this, sb.toString());
+		String sb = "Still present after " + TimeUtil.formatTime(age()) +
+				" : ssk=" + ssk;
+		Logger.error(this, sb);
 	}
 
 	@Override

@@ -11,14 +11,14 @@ import freenet.store.StorableBlock;
  */
 public interface KeyBlock extends StorableBlock {
 
-	final static int HASH_SHA256 = 1;
+	int HASH_SHA256 = 1;
 
-	public Key getKey();
+	Key getKey();
 
-	public byte[] getRawHeaders();
+	byte[] getRawHeaders();
 
-	public byte[] getRawData();
+	byte[] getRawData();
 
-	public byte[] getPubkeyBytes();
+	byte[] getPubkeyBytes();
 
 }

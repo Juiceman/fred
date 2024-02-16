@@ -1,11 +1,13 @@
 package freenet.client.filter;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.Predicate;
-
 import freenet.support.Logger;
 import freenet.support.io.BitInputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 import static freenet.support.PredicateUtil.not;
 

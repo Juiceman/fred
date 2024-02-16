@@ -192,7 +192,7 @@ public class FilterMessage extends DataCarryingMessage {
 		handler.send(response);
 	}
 
-	private FilterStatus applyFilter(InputStream input, OutputStream output, ClientContext clientContext) throws MessageInvalidException, UnsafeContentTypeException, IOException {
+	private FilterStatus applyFilter(InputStream input, OutputStream output, ClientContext clientContext) throws MessageInvalidException, IOException {
 		URI fakeUri;
 		try {
 			fakeUri = new URI("http://127.0.0.1:8888/");

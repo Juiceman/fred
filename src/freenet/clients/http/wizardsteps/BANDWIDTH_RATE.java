@@ -1,7 +1,5 @@
 package freenet.clients.http.wizardsteps;
 
-import java.text.DecimalFormat;
-
 import freenet.clients.http.FirstTimeWizardToadlet;
 import freenet.config.Config;
 import freenet.config.InvalidConfigValueException;
@@ -10,6 +8,8 @@ import freenet.node.NodeClientCore;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.support.*;
 import freenet.support.api.HTTPRequest;
+
+import java.text.DecimalFormat;
 
 /**
  * Allows the user to set bandwidth limits with an emphasis on limiting to certain download and upload rates.

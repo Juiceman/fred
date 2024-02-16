@@ -3,41 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.updater;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.client.FetchException;
 import freenet.crypt.SHA256;
 import freenet.keys.FreenetURI;
@@ -53,6 +18,19 @@ import freenet.support.io.FileUtil;
 import freenet.support.io.FileUtil.CPUArchitecture;
 import freenet.support.io.FileUtil.OperatingSystem;
 import freenet.support.io.NativeThread;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Parses the dependencies.properties file and ensures we have all the
@@ -158,9 +136,9 @@ public class MainJarDependenciesChecker {
 	}
 
 	interface Deployer {
-		public void deploy(MainJarDependencies deps);
+		void deploy(MainJarDependencies deps);
 
-		public JarFetcher fetch(FreenetURI uri, File downloadTo, long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException;
+		JarFetcher fetch(FreenetURI uri, File downloadTo, long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException;
 
 		/**
 		 * Called by cleanup with the dependencies we can serve for the current version.
@@ -169,13 +147,13 @@ public class MainJarDependenciesChecker {
 		 *                     listed in the dependencies file.
 		 * @param filename     The local file to serve it from.
 		 */
-		public void addDependency(byte[] expectedHash, File filename);
+		void addDependency(byte[] expectedHash, File filename);
 
 		/**
 		 * We have just downloaded a dependency needed for the current build. Reannounce to tell
 		 * our peers about it.
 		 */
-		public void reannounce();
+		void reannounce();
 
 		/**
 		 * A multi-file update (e.g. wrapper update) is ready to deploy. It may need a restart.
@@ -185,17 +163,17 @@ public class MainJarDependenciesChecker {
 		 *
 		 * @param atomicDeployer
 		 */
-		public void multiFileReplaceReadyToDeploy(AtomicDeployer atomicDeployer);
+		void multiFileReplaceReadyToDeploy(AtomicDeployer atomicDeployer);
 	}
 
 	interface JarFetcher {
-		public void cancel();
+		void cancel();
 	}
 
 	interface JarFetcherCallback {
-		public void onSuccess();
+		void onSuccess();
 
-		public void onFailure(FetchException e);
+		void onFailure(FetchException e);
 	}
 
 	/**
@@ -209,20 +187,20 @@ public class MainJarDependenciesChecker {
 		/**
 		 * The old filename, if known. This will be in wrapper.conf.
 		 */
-		private File oldFilename;
+		private final File oldFilename;
 		/**
 		 * The new filename, to which we will download the file.
 		 */
-		private File newFilename;
+		private final File newFilename;
 		/**
 		 * Pattern to recognise filenames for this dependency in the last resort.
 		 */
-		private Pattern regex;
+		private final Pattern regex;
 		/**
 		 * Priority of the dependency within the wrapper.conf classpath. Smaller value = earlier
 		 * in the classpath = used first.
 		 */
-		private int order;
+		private final int order;
 
 		private Dependency(File oldFilename, File newFilename, Pattern regex, int order) {
 			this.oldFilename = oldFilename;
@@ -431,9 +409,7 @@ public class MainJarDependenciesChecker {
 				String name = arg0.getName().toLowerCase();
 				if (!(name.endsWith(".jar") || name.endsWith(".jar.new"))) return false;
 				// FIXME similar checks elsewhere, factor out?
-				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new"))
-					return false;
-				return true;
+				return !name.equals("freenet.jar") && !name.equals("freenet.jar.new") && !name.equals("freenet-stable-latest.jar") && !name.equals("freenet-stable-latest.jar.new");
 			}
 
 		});
@@ -604,7 +580,7 @@ public class MainJarDependenciesChecker {
 				continue;
 			}
 			// Check the version currently in use.
-			if (currentFile != null && validFile(currentFile, expectedHash, size, executable)) {
+			if (validFile(currentFile, expectedHash, size, executable)) {
 				System.out.println("Existing version of " + currentFile + " is OK for update.");
 				// Use it.
 				if (type == DEPENDENCY_TYPE.CLASSPATH)
@@ -723,9 +699,7 @@ public class MainJarDependenciesChecker {
 				// Ignore non-jars regardless of what the regex says.
 				if (!name.endsWith(".jar")) return false;
 				// FIXME similar checks elsewhere, factor out?
-				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new"))
-					return false;
-				return true;
+				return !name.equals("freenet.jar") && !name.equals("freenet.jar.new") && !name.equals("freenet-stable-latest.jar") && !name.equals("freenet-stable-latest.jar.new");
 			}
 
 		});
@@ -1813,8 +1787,7 @@ public class MainJarDependenciesChecker {
 
 	private synchronized boolean ready() {
 		if (broken) return false;
-		if (!downloaders.isEmpty()) return false;
-		return true;
+		return downloaders.isEmpty();
 	}
 
 	public synchronized boolean isBroken() {

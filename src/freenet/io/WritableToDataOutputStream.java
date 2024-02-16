@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 public interface WritableToDataOutputStream {
 
-	public static final String VERSION = "$Id: WritableToDataOutputStream.java,v 1.1 2005/01/29 19:12:10 amphibian Exp $";
+	String VERSION = "$Id: WritableToDataOutputStream.java,v 1.1 2005/01/29 19:12:10 amphibian Exp $";
 
-	public void writeToDataOutputStream(DataOutputStream stream) throws IOException;
+	void writeToDataOutputStream(DataOutputStream stream) throws IOException;
 }

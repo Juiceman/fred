@@ -1,14 +1,14 @@
 package freenet.client.async;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import freenet.keys.ClientSSK;
 import freenet.keys.FreenetURI;
 import freenet.keys.InsertableUSK;
 import freenet.keys.USK;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Utility class for date-based edition hints
@@ -39,7 +39,7 @@ public class USKDateHint {
 		}
 	}
 
-	private GregorianCalendar cal;
+	private final GregorianCalendar cal;
 
 	private USKDateHint() {
 		cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.US);
@@ -70,7 +70,7 @@ public class USKDateHint {
 	 * Return the data to insert to each hint slot.
 	 */
 	public String getData(long edition) {
-		return "HINT\n" + Long.toString(edition) + "\n" + get(Type.DAY) + "\n";
+		return "HINT\n" + edition + "\n" + get(Type.DAY) + "\n";
 	}
 
 	static final String PREFIX = "-DATEHINT-";

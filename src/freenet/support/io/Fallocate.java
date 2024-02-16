@@ -2,15 +2,14 @@ package freenet.support.io;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
+import freenet.support.Logger;
+import freenet.support.math.MersenneTwister;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-
-import freenet.support.Logger;
-import freenet.support.math.MersenneTwister;
 
 /**
  * Provides access to operating system-specific {@code fallocate} and

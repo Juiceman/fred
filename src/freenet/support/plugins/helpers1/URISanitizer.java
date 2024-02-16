@@ -3,17 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.plugins.helpers1;
 
-import java.net.MalformedURLException;
-import java.util.List;
-
 import freenet.keys.FreenetURI;
 import freenet.support.Logger;
+
+import java.net.MalformedURLException;
+import java.util.List;
 
 public class URISanitizer {
 
 	public enum Options {NOMETASTRINGS, SSKFORUSK}
-
-	;
 
 	public static FreenetURI sanitizeURI(String key, Options... options) throws MalformedURLException {
 		return sanitizeURI(null, key, false, options);

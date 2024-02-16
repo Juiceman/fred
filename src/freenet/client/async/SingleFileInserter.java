@@ -1,22 +1,12 @@
 package freenet.client.async;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-
-import freenet.client.ClientMetadata;
-import freenet.client.InsertBlock;
-import freenet.client.InsertContext;
-import freenet.client.InsertException;
-import freenet.client.InsertException.InsertExceptionMode;
-import freenet.client.Metadata;
-import freenet.client.MetadataUnresolvedException;
 import freenet.client.ArchiveManager.ARCHIVE_TYPE;
+import freenet.client.*;
 import freenet.client.InsertContext.CompatibilityMode;
+import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.Metadata.DocumentType;
-import freenet.client.events.FinishedCompressionEvent;
 import freenet.client.events.ExpectedHashesEvent;
+import freenet.client.events.FinishedCompressionEvent;
 import freenet.client.events.StartedCompressionEvent;
 import freenet.crypt.HashResult;
 import freenet.crypt.HashType;
@@ -36,6 +26,11 @@ import freenet.support.io.BucketTools;
 import freenet.support.io.NotPersistentBucket;
 import freenet.support.io.NullOutputStream;
 import freenet.support.io.ResumeFailedException;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.HashMap;
 
 /**
  * Attempt to insert a file. May include metadata.
@@ -321,7 +316,7 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				} catch (MetadataUnresolvedException e) {
 					// Impossible, we're not inserting a manifest.
 					Logger.error(this, "Caught " + e, e);
-					throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Got MetadataUnresolvedException in SingleFileInserter: " + e.toString(), null);
+					throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Got MetadataUnresolvedException in SingleFileInserter: " + e, null);
 				}
 				ClientPutState metaPutter = createInserter(parent, metadataBucket, (short) -1, ctx, mcb, true, (int) origSize, -1, true, context, true, false);
 				if (logMINOR)
@@ -329,7 +324,7 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				mcb.addURIGenerator(metaPutter);
 				mcb.add(dataPutter);
 				cb.onTransition(this, mcb, context);
-				Logger.minor(this, "" + mcb + " : data " + dataPutter + " meta " + metaPutter);
+				Logger.minor(this, mcb + " : data " + dataPutter + " meta " + metaPutter);
 				mcb.arm(context);
 				dataPutter.schedule(context);
 				if (ctx.earlyEncode && metaPutter instanceof SingleBlockInserter)

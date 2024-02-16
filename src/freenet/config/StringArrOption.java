@@ -1,12 +1,12 @@
 package freenet.config;
 
-import java.util.Arrays;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.URLDecoder;
 import freenet.support.URLEncodedFormatException;
 import freenet.support.URLEncoder;
 import freenet.support.api.StringArrCallback;
+
+import java.util.Arrays;
 
 public class StringArrOption extends Option<String[]> {
 	public static final String delimiter = ";";
@@ -71,6 +71,6 @@ public class StringArrOption extends Option<String[]> {
 	@Override
 	public boolean isDefault() {
 		getValue();
-		return currentValue == null ? false : Arrays.equals(currentValue, defaultValue);
+		return currentValue != null && Arrays.equals(currentValue, defaultValue);
 	}
 }

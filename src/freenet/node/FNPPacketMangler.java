@@ -3,6 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
+import freenet.crypt.*;
+import freenet.crypt.ECDSA.Curves;
+import freenet.crypt.ciphers.Rijndael;
+import freenet.io.AddressTracker;
+import freenet.io.AddressTracker.Status;
+import freenet.io.comm.*;
+import freenet.io.comm.IncomingPacketFilter.DECODED;
+import freenet.io.comm.Peer.LocalAddressException;
+import freenet.node.OpennetManager.ConnectionType;
+import freenet.support.*;
+import freenet.support.io.FileUtil;
+import freenet.support.io.InetAddressComparator;
+import freenet.support.io.NativeThread;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -12,45 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import freenet.crypt.BlockCipher;
-import freenet.crypt.ECDH;
-import freenet.crypt.ECDHLightContext;
-import freenet.crypt.ECDSA;
-import freenet.crypt.ECDSA.Curves;
-import freenet.crypt.HMAC;
-import freenet.crypt.KeyAgreementSchemeContext;
-import freenet.crypt.PCFBMode;
-import freenet.crypt.SHA256;
-import freenet.crypt.UnsupportedCipherException;
-import freenet.crypt.Util;
-import freenet.crypt.ciphers.Rijndael;
-import freenet.io.AddressTracker;
-import freenet.io.AddressTracker.Status;
-import freenet.io.comm.FreenetInetAddress;
-import freenet.io.comm.IncomingPacketFilter.DECODED;
-import freenet.io.comm.PacketSocketHandler;
-import freenet.io.comm.Peer;
-import freenet.io.comm.Peer.LocalAddressException;
-import freenet.io.comm.PeerContext;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.io.comm.SocketHandler;
-import freenet.node.OpennetManager.ConnectionType;
-import freenet.support.ByteArrayWrapper;
-import freenet.support.Fields;
-import freenet.support.HexUtil;
-import freenet.support.LRUMap;
-import freenet.support.Logger;
-import freenet.support.SerialExecutor;
-import freenet.support.SimpleFieldSet;
-import freenet.support.TimeUtil;
-import freenet.support.io.FileUtil;
-import freenet.support.io.InetAddressComparator;
-import freenet.support.io.NativeThread;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * @author amphibian
@@ -489,7 +465,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 		final int setupType = payload[3];
 
 		if (logMINOR)
-			Logger.minor(this, "Received anonymous auth packet (phase=" + packetType + ", v=" + version + ", nt=" + negType + ", setup type=" + setupType + ") from " + replyTo + "");
+			Logger.minor(this, "Received anonymous auth packet (phase=" + packetType + ", v=" + version + ", nt=" + negType + ", setup type=" + setupType + ") from " + replyTo);
 
 		if (version != 1) {
 			Logger.error(this, "Decrypted auth packet but invalid version: " + version);
@@ -551,7 +527,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 		final int setupType = payload[3];
 
 		if (logMINOR)
-			Logger.minor(this, "Received anonymous auth packet (phase=" + packetType + ", v=" + version + ", nt=" + negType + ", setup type=" + setupType + ") from " + replyTo + "");
+			Logger.minor(this, "Received anonymous auth packet (phase=" + packetType + ", v=" + version + ", nt=" + negType + ", setup type=" + setupType + ") from " + replyTo);
 
 		if (version != 1) {
 			Logger.error(this, "Decrypted auth packet but invalid version: " + version);
@@ -620,7 +596,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 			if (last > 0) {
 				delta = TimeUtil.formatTime(now - last, 2, true) + " ago";
 			}
-			Logger.minor(this, "Received auth packet for " + pn.getPeer() + " (phase=" + packetType + ", v=" + version + ", nt=" + negType + ") (last packet sent " + delta + ") from " + replyTo + "");
+			Logger.minor(this, "Received auth packet for " + pn.getPeer() + " (phase=" + packetType + ", v=" + version + ", nt=" + negType + ") (last packet sent " + delta + ") from " + replyTo);
 		}
 
 		/* Format:
@@ -636,7 +612,6 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 		if (negType >= 0 && negType < 10) {
 			// negType 0 through 5 no longer supported, used old FNP.
 			Logger.warning(this, "Old neg type " + negType + " not supported");
-			return;
 		} else if (negType == 10) {
 			// negType == 10 => Changes the method of ack encoding (from single-ack to cummulative range acks)
 			// negType == 9 => Lots of changes:
@@ -669,7 +644,6 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 			 */
 			if (packetType < 0 || packetType > 3) {
 				Logger.error(this, "Unknown PacketType" + packetType + "from" + replyTo + "from" + pn);
-				return;
 			} else authHandlingThread.execute(new Runnable() {
 
 				@Override
@@ -710,7 +684,6 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 			});
 		} else {
 			Logger.error(this, "Decrypted auth packet but unknown negotiation type " + negType + " from " + replyTo + " possibly from " + pn);
-			return;
 		}
 	}
 
@@ -782,7 +755,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 	}
 
 	private long lastLoggedNoContexts = -1;
-	private static long LOG_NO_CONTEXTS_INTERVAL = MINUTES.toMillis(1);
+	private static final long LOG_NO_CONTEXTS_INTERVAL = MINUTES.toMillis(1);
 
 	private void handleNoContextsException(NoContextsException e,
 										   freenet.node.FNPPacketMangler.NoContextsException.CONTEXT context) {
@@ -1920,7 +1893,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 			String delta = "never";
 			long last = pn.lastSentPacketTime();
 			delta = TimeUtil.formatTime(now - last, 2, true) + " ago";
-			Logger.minor(this, "Sending auth packet for " + String.valueOf(pn.getPeer()) + " (phase=" + phase + ", ver=" + version + ", nt=" + negType + ") (last packet sent " + delta + ") to " + replyTo + " data.length=" + data.length + " to " + replyTo);
+			Logger.minor(this, "Sending auth packet for " + pn.getPeer() + " (phase=" + phase + ", ver=" + version + ", nt=" + negType + ") (last packet sent " + delta + ") to " + replyTo + " data.length=" + data.length + " to " + replyTo);
 		}
 		sendAuthPacket(output, pn.outgoingSetupCipher, pn, replyTo, false);
 	}
@@ -2010,9 +1983,7 @@ public class FNPPacketMangler implements OutgoingPacketMangler {
 	 * caused by a handshake across a restart boundary?
 	 */
 	private boolean shouldLogErrorInHandshake(long now) {
-		if (now - node.startupTime < Node.HANDSHAKE_TIMEOUT * 2)
-			return false;
-		return true;
+		return now - node.startupTime >= Node.HANDSHAKE_TIMEOUT * 2L;
 	}
 
 	/* (non-Javadoc)

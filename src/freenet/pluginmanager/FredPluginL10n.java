@@ -13,7 +13,7 @@ import freenet.l10n.BaseL10n.LANGUAGE;
  */
 public interface FredPluginL10n {
 
-	public String getString(String key);
+	String getString(String key);
 
-	public void setLanguage(LANGUAGE newLanguage);
+	void setLanguage(LANGUAGE newLanguage);
 }

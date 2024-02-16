@@ -1,17 +1,5 @@
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import freenet.config.InvalidConfigValueException;
 import freenet.config.SubConfig;
 import freenet.io.comm.FreenetInetAddress;
@@ -34,6 +22,14 @@ import freenet.support.io.NativeThread;
 import freenet.support.transport.ip.HostnameSyntaxException;
 import freenet.support.transport.ip.IPAddressDetector;
 import freenet.support.transport.ip.IPUtil;
+
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Detect the IP address of the node. Doesn't return port numbers, doesn't have access to per-port
@@ -120,12 +116,12 @@ public class NodeIPDetector {
 	/**
 	 * UserAlert shown when ipAddressOverride has a hostname/IP address syntax error
 	 */
-	private InvalidAddressOverrideUserAlert invalidAddressOverrideAlert;
+	private final InvalidAddressOverrideUserAlert invalidAddressOverrideAlert;
 	private boolean hasValidAddressOverride;
 	/**
 	 * UserAlert shown when we can't detect an IP address
 	 */
-	private IPUndetectedUserAlert primaryIPUndetectedAlert;
+	private final IPUndetectedUserAlert primaryIPUndetectedAlert;
 	// FIXME redundant? see lastIPAddress
 	FreenetInetAddress[] lastIP;
 	/**
@@ -266,7 +262,7 @@ public class NodeIPDetector {
 			}
 		}
 
-		if ((pluginDetectedIPs != null) && (pluginDetectedIPs.length > 0)) {
+		if (pluginDetectedIPs != null) {
 			for (DetectedIP pluginDetectedIP : pluginDetectedIPs) {
 				InetAddress addr = pluginDetectedIP.publicAddress;
 				if (addr == null) continue;
@@ -399,7 +395,7 @@ public class NodeIPDetector {
 
 	public boolean hasDirectlyDetectedIP() {
 		InetAddress[] addrs = ipDetector.getAddress(node.executor);
-		if (addrs == null || addrs.length == 0) return false;
+		if (addrs == null) return false;
 		for (InetAddress addr : addrs) {
 			if (IPUtil.isValidAddress(addr, false)) {
 				if (logMINOR)

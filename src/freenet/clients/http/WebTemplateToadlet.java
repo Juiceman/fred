@@ -1,17 +1,10 @@
 package freenet.clients.http;
 
-import com.mitchellbosecke.pebble.extension.AbstractExtension;
-import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.utils.PebbleUtils;
-import freenet.l10n.NodeL10n;
 import freenet.support.HTMLNode;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 
 abstract class WebTemplateToadlet extends Toadlet {

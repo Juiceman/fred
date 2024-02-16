@@ -3,14 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import freenet.client.async.BlockSet;
 import freenet.client.events.ClientEventProducer;
 import freenet.client.events.SimpleEventProducer;
@@ -19,6 +11,10 @@ import freenet.client.filter.TagReplacerCallback;
 import freenet.node.RequestScheduler;
 import freenet.support.api.BucketFactory;
 import freenet.support.io.StorageFormatException;
+
+import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Context for a Fetcher. Contains all the settings a Fetcher needs to know
@@ -635,11 +631,8 @@ public class FetchContext implements Cloneable, Serializable {
 		} else if (!tagReplacer.equals(other.tagReplacer))
 			return false;
 		if (schemeHostAndPort == null) {
-			if (other.schemeHostAndPort != null)
-				return false;
-		} else if (!schemeHostAndPort.equals(other.schemeHostAndPort))
-			return false;
-		return true;
+			return other.schemeHostAndPort == null;
+		} else return schemeHostAndPort.equals(other.schemeHostAndPort);
 	}
 
 

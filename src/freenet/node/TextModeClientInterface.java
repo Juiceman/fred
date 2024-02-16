@@ -1,42 +1,7 @@
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.NumberFormat;
-import java.util.HashMap;
-
-import freenet.client.ClientMetadata;
-import freenet.client.DefaultMIMETypes;
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.FetchResult;
-import freenet.client.FetchWaiter;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.InsertBlock;
-import freenet.client.InsertException;
 import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.async.ClientGetter;
 import freenet.client.async.DumperSnoopMetadata;
@@ -51,17 +16,22 @@ import freenet.keys.FreenetURI;
 import freenet.keys.InsertableClientSSK;
 import freenet.node.DarknetPeerNode.FRIEND_TRUST;
 import freenet.node.DarknetPeerNode.FRIEND_VISIBILITY;
-import freenet.support.HexUtil;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.SimpleFieldSet;
-import freenet.support.SizeUtil;
 import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
 import freenet.support.io.FileBucket;
+
+import java.io.*;
+import java.net.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
+import java.util.HashMap;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * @author amphibian
@@ -274,7 +244,10 @@ public class TextModeClientInterface implements Runnable {
 					// Look for escape codes
 					if (b == '\n') continue;
 					if (b == '\r') continue;
-					if (b < 32) evil = true;
+					if (b < 32) {
+						evil = true;
+						break;
+					}
 				}
 				if (evil) {
 					System.err.println("Data may contain escape codes which could cause the terminal to run arbitrary commands! Save it to a file if you must with GETFILE:");
@@ -334,7 +307,10 @@ public class TextModeClientInterface implements Runnable {
 					// Look for escape codes
 					if (b == '\n') continue;
 					if (b == '\r') continue;
-					if (b < 32) evil = true;
+					if (b < 32) {
+						evil = true;
+						break;
+					}
 				}
 				if (evil) {
 					System.err.println("Data may contain escape codes which could cause the terminal to run arbitrary commands! Save it to a file if you must with GETFILE:");
@@ -474,27 +450,19 @@ public class TextModeClientInterface implements Runnable {
 			w.flush();
 			return false;
 		} else if (uline.startsWith("SHUTDOWN")) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Shutting node down.\r\n");
-			w.write(sb.toString());
+			w.write("Shutting node down.\r\n");
 			w.flush();
 			n.exit("Shutdown from console");
 		} else if (uline.startsWith("RESTART")) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Restarting the node.\r\n");
-			w.write(sb.toString());
+			w.write("Restarting the node.\r\n");
 			w.flush();
 			n.getNodeStarter().restart();
 		} else if (uline.startsWith("QUIT") && (core.directTMCI == this)) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("QUIT command not available in console mode.\r\n");
-			w.write(sb.toString());
+			w.write("QUIT command not available in console mode.\r\n");
 			w.flush();
 			return false;
 		} else if (uline.startsWith("QUIT")) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Closing connection.\r\n");
-			w.write(sb.toString());
+			w.write("Closing connection.\r\n");
 			w.flush();
 			return true;
 		} else if (uline.startsWith("MEMSTAT")) {
@@ -513,19 +481,18 @@ public class TextModeClientInterface implements Runnable {
 			while (tg.getParent() != null) tg = tg.getParent();
 			int threadCount = tg.activeCount();
 
-			StringBuilder sb = new StringBuilder();
-			sb.append("Used Java memory:\u00a0" + SizeUtil.formatSize(usedJavaMem, true) + "\r\n");
-			sb.append("Allocated Java memory:\u00a0" + SizeUtil.formatSize(allocatedJavaMem, true) + "\r\n");
-			sb.append("Maximum Java memory:\u00a0" + SizeUtil.formatSize(maxJavaMem, true) + "\r\n");
-			sb.append("Running threads:\u00a0" + thousendPoint.format(threadCount) + "\r\n");
-			sb.append("Available CPUs:\u00a0" + availableCpus + "\r\n");
-			sb.append("Java Version:\u00a0" + System.getProperty("java.version") + "\r\n");
-			sb.append("JVM Vendor:\u00a0" + System.getProperty("java.vendor") + "\r\n");
-			sb.append("JVM Version:\u00a0" + System.getProperty("java.version") + "\r\n");
-			sb.append("OS Name:\u00a0" + System.getProperty("os.name") + "\r\n");
-			sb.append("OS Version:\u00a0" + System.getProperty("os.version") + "\r\n");
-			sb.append("OS Architecture:\u00a0" + System.getProperty("os.arch") + "\r\n");
-			w.write(sb.toString());
+			String sb = "Used Java memory:\u00a0" + SizeUtil.formatSize(usedJavaMem, true) + "\r\n" +
+					"Allocated Java memory:\u00a0" + SizeUtil.formatSize(allocatedJavaMem, true) + "\r\n" +
+					"Maximum Java memory:\u00a0" + SizeUtil.formatSize(maxJavaMem, true) + "\r\n" +
+					"Running threads:\u00a0" + thousendPoint.format(threadCount) + "\r\n" +
+					"Available CPUs:\u00a0" + availableCpus + "\r\n" +
+					"Java Version:\u00a0" + System.getProperty("java.version") + "\r\n" +
+					"JVM Vendor:\u00a0" + System.getProperty("java.vendor") + "\r\n" +
+					"JVM Version:\u00a0" + System.getProperty("java.version") + "\r\n" +
+					"OS Name:\u00a0" + System.getProperty("os.name") + "\r\n" +
+					"OS Version:\u00a0" + System.getProperty("os.version") + "\r\n" +
+					"OS Architecture:\u00a0" + System.getProperty("os.arch") + "\r\n";
+			w.write(sb);
 			w.flush();
 			return false;
 		} else if (uline.startsWith("HELP")) {
@@ -1044,7 +1011,7 @@ public class TextModeClientInterface implements Runnable {
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 
-		File filelist[] = thisdir.listFiles();
+		File[] filelist = thisdir.listFiles();
 		if (filelist == null)
 			throw new IllegalArgumentException("No such directory");
 		for (int i = 0; i < filelist.length; i++) {

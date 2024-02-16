@@ -3,21 +3,16 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.compress;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-
 import freenet.support.Logger;
 import freenet.support.api.Bucket;
 import freenet.support.api.BucketFactory;
 import freenet.support.io.CountedOutputStream;
 import freenet.support.io.HeaderStreams;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * * {@link Compressor} for BZip2 streams.
@@ -32,7 +27,7 @@ public class Bzip2Compressor extends AbstractCompressor {
 
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+			throws IOException {
 		Bucket output = bf.makeBucket(maxWriteLength);
 		try (InputStream is = data.getInputStream();
 			 OutputStream os = output.getOutputStream()) {
@@ -88,7 +83,7 @@ public class Bzip2Compressor extends AbstractCompressor {
 	}
 
 	@Override
-	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
+	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException {
 		BZip2CompressorInputStream bz2is = new BZip2CompressorInputStream(HeaderStreams.augInput(BZ_HEADER, is));
 		long written = 0;
 		int bufSize = 32768;

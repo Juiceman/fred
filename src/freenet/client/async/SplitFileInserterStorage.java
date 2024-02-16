@@ -1,28 +1,10 @@
 package freenet.client.async;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
 import freenet.client.ArchiveManager.ARCHIVE_TYPE;
-import freenet.client.ClientMetadata;
-import freenet.client.FECCodec;
-import freenet.client.FailureCodeTracker;
-import freenet.client.InsertContext;
-import freenet.client.InsertException.InsertExceptionMode;
-import freenet.client.Metadata;
+import freenet.client.*;
 import freenet.client.InsertContext.CompatibilityMode;
-import freenet.client.InsertException;
+import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.Metadata.SplitfileAlgorithm;
-import freenet.client.MetadataParseException;
 import freenet.client.async.SplitFileInserterSegmentStorage.BlockInsert;
 import freenet.client.async.SplitFileInserterSegmentStorage.MissingKeyException;
 import freenet.crypt.ChecksumChecker;
@@ -32,27 +14,20 @@ import freenet.crypt.MasterSecret;
 import freenet.keys.CHKBlock;
 import freenet.keys.ClientCHK;
 import freenet.node.KeysFetchingLocally;
-import freenet.support.HexUtil;
-import freenet.support.Logger;
-import freenet.support.MemoryLimitedJobRunner;
-import freenet.support.RandomArrayIterator;
-import freenet.support.Ticker;
+import freenet.support.*;
 import freenet.support.api.Bucket;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.LockableRandomAccessBuffer;
-import freenet.support.api.LockableRandomAccessBufferFactory;
 import freenet.support.api.LockableRandomAccessBuffer.RAFLock;
+import freenet.support.api.LockableRandomAccessBufferFactory;
 import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
-import freenet.support.io.ArrayBucket;
-import freenet.support.io.ArrayBucketFactory;
-import freenet.support.io.BucketTools;
-import freenet.support.io.FilenameGenerator;
-import freenet.support.io.PersistentFileTracker;
-import freenet.support.io.NullBucket;
-import freenet.support.io.RAFInputStream;
-import freenet.support.io.ResumeFailedException;
-import freenet.support.io.StorageFormatException;
+import freenet.support.io.*;
 import freenet.support.math.MersenneTwister;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Similar to SplitFileFetcherStorage. The status of a splitfile insert,
@@ -533,13 +508,13 @@ public class SplitFileInserterStorage {
 		if (crossSegments != null) {
 			for (int i = 0; i < crossSegments.length; i++) {
 				offsetCrossSegmentBlocks[i] = ptr;
-				ptr += crossSegments[i].crossCheckBlockCount * CHKBlock.DATA_LENGTH;
+				ptr += (long) crossSegments[i].crossCheckBlockCount * CHKBlock.DATA_LENGTH;
 			}
 		}
 
 		for (int i = 0; i < segments.length; i++) {
 			offsetSegmentCheckBlocks[i] = ptr;
-			ptr += segments[i].checkBlockCount * CHKBlock.DATA_LENGTH;
+			ptr += (long) segments[i].checkBlockCount * CHKBlock.DATA_LENGTH;
 		}
 
 		if (persistent) {
@@ -1352,14 +1327,14 @@ public class SplitFileInserterStorage {
 		assert (segNo >= 0 && segNo < crossSegments.length);
 		assert (checkBlockNo >= 0 && checkBlockNo < crossCheckBlocks);
 		assert (buf.length == CHKBlock.DATA_LENGTH);
-		long offset = offsetCrossSegmentBlocks[segNo] + checkBlockNo * CHKBlock.DATA_LENGTH;
+		long offset = offsetCrossSegmentBlocks[segNo] + (long) checkBlockNo * CHKBlock.DATA_LENGTH;
 		raf.pwrite(offset, buf, 0, buf.length);
 	}
 
 	public byte[] readCheckBlock(int segNo, int checkBlockNo) throws IOException {
 		assert (segNo >= 0 && segNo < crossSegments.length);
 		assert (checkBlockNo >= 0 && checkBlockNo < crossCheckBlocks);
-		long offset = offsetCrossSegmentBlocks[segNo] + checkBlockNo * CHKBlock.DATA_LENGTH;
+		long offset = offsetCrossSegmentBlocks[segNo] + (long) checkBlockNo * CHKBlock.DATA_LENGTH;
 		byte[] buf = new byte[CHKBlock.DATA_LENGTH];
 		raf.pread(offset, buf, 0, buf.length);
 		return buf;
@@ -1394,7 +1369,7 @@ public class SplitFileInserterStorage {
 				return buf;
 			}
 		}
-		long offset = underlyingOffsetDataSegments[segNo] + blockNo * CHKBlock.DATA_LENGTH;
+		long offset = underlyingOffsetDataSegments[segNo] + (long) blockNo * CHKBlock.DATA_LENGTH;
 		assert (offset < dataLength);
 		assert (offset + buf.length <= dataLength);
 		originalData.pread(offset, buf, 0, buf.length);
@@ -1405,7 +1380,7 @@ public class SplitFileInserterStorage {
 		assert (segNo >= 0 && segNo < segments.length);
 		assert (checkBlockNo >= 0 && checkBlockNo < segments[segNo].checkBlockCount);
 		assert (buf.length == CHKBlock.DATA_LENGTH);
-		long offset = offsetSegmentCheckBlocks[segNo] + checkBlockNo * CHKBlock.DATA_LENGTH;
+		long offset = offsetSegmentCheckBlocks[segNo] + (long) checkBlockNo * CHKBlock.DATA_LENGTH;
 		raf.pwrite(offset, buf, 0, buf.length);
 	}
 
@@ -1413,7 +1388,7 @@ public class SplitFileInserterStorage {
 		assert (segNo >= 0 && segNo < segments.length);
 		assert (checkBlockNo >= 0 && checkBlockNo < segments[segNo].checkBlockCount);
 		byte[] buf = new byte[CHKBlock.DATA_LENGTH];
-		long offset = offsetSegmentCheckBlocks[segNo] + checkBlockNo * CHKBlock.DATA_LENGTH;
+		long offset = offsetSegmentCheckBlocks[segNo] + (long) checkBlockNo * CHKBlock.DATA_LENGTH;
 		raf.pread(offset, buf, 0, buf.length);
 		return buf;
 	}
@@ -1455,7 +1430,7 @@ public class SplitFileInserterStorage {
 		assert (buf.length == SplitFileInserterSegmentStorage.getKeyLength(this));
 		assert (segNo >= 0 && segNo < segments.length);
 		assert (blockNo >= 0 && blockNo < segments[segNo].totalBlockCount);
-		long fileOffset = this.offsetSegmentKeys[segNo] + keyLength * blockNo;
+		long fileOffset = this.offsetSegmentKeys[segNo] + (long) keyLength * blockNo;
 		if (logDEBUG)
 			Logger.debug(this, "Writing key for block " + blockNo + " for segment " + segNo + " of " + this + " to " + fileOffset);
 		raf.pwrite(fileOffset, buf, 0, buf.length);
@@ -1463,7 +1438,7 @@ public class SplitFileInserterStorage {
 
 	byte[] innerReadSegmentKey(int segNo, int blockNo) throws IOException {
 		byte[] buf = new byte[keyLength];
-		long fileOffset = this.offsetSegmentKeys[segNo] + keyLength * blockNo;
+		long fileOffset = this.offsetSegmentKeys[segNo] + (long) keyLength * blockNo;
 		if (logDEBUG)
 			Logger.debug(this, "Reading key for block " + blockNo + " for segment " + segNo + " of " + this + " to " + fileOffset);
 		raf.pread(fileOffset, buf, 0, buf.length);

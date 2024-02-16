@@ -7,6 +7,6 @@ public interface ExecutorIdleCallback {
 	 * this will be called on the thread which runs the jobs, but after that the thread
 	 * may change.
 	 */
-	public void onIdle();
+	void onIdle();
 
 }

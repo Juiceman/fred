@@ -14,7 +14,7 @@ public interface SendableRequestItem {
 	 * Called when a request is abandoned. Whether this is called on
 	 * a successful request is up to the SendableRequestSender.
 	 */
-	public void dump();
+	void dump();
 
 	/**
 	 * Get a lightweight object for tracking which SendableRequestItem's
@@ -22,6 +22,6 @@ public interface SendableRequestItem {
 	 * SendableRequest is expensive, you may want to define a separate key
 	 * type (especially for transient inserts).
 	 */
-	public SendableRequestItemKey getKey();
+	SendableRequestItemKey getKey();
 
 }

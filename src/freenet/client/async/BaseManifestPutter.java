@@ -3,25 +3,10 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import freenet.client.ClientMetadata;
-import freenet.client.DefaultMIMETypes;
-import freenet.client.InsertBlock;
-import freenet.client.InsertContext;
-import freenet.client.InsertContext.CompatibilityMode;
-import freenet.client.InsertException;
-import freenet.client.InsertException.InsertExceptionMode;
-import freenet.client.Metadata;
-import freenet.client.MetadataUnresolvedException;
 import freenet.client.ArchiveManager.ARCHIVE_TYPE;
+import freenet.client.*;
+import freenet.client.InsertContext.CompatibilityMode;
+import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.Metadata.DocumentType;
 import freenet.client.Metadata.SimpleManifestComposer;
 import freenet.client.events.SplitfileProgressEvent;
@@ -34,6 +19,10 @@ import freenet.support.api.BucketFactory;
 import freenet.support.api.ManifestElement;
 import freenet.support.api.RandomAccessBucket;
 import freenet.support.io.ResumeFailedException;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * <P>Base class for site insertion.
@@ -157,7 +146,6 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 						tryStartParentContainer(parentPutHandler, context);
 					} catch (InsertException e) {
 						fail(e, context);
-						return;
 					}
 				}
 			}
@@ -240,7 +228,6 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 							resolve(e, context);
 						} catch (IOException e1) {
 							fail(new InsertException(InsertExceptionMode.BUCKET_ERROR, e1, null), context);
-							return;
 						} catch (InsertException e1) {
 							fail(e1, context);
 						}
@@ -255,7 +242,6 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 					tryStartParentContainer(parentPutHandler, context);
 				} catch (InsertException e) {
 					fail(e, context);
-					return;
 				}
 			} else {
 				throw new RuntimeException("Neiter container nor freeform mode. Hu?");
@@ -337,7 +323,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 		 * a normal ( freeform) redirect
 		 */
 		public JokerPutHandler(BaseManifestPutter bmp, String name, FreenetURI targetURI2, ClientMetadata cm2) {
-			super(bmp, null, name, null, (Metadata) null, cm2);
+			super(bmp, null, name, null, null, cm2);
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI2, cm2);
 			metadata = m;
 		}
@@ -346,7 +332,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 		 * an archive redirect
 		 */
 		public JokerPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, ClientMetadata cm2) {
-			super(bmp, parent, name, name, (Metadata) null, cm2);
+			super(bmp, parent, name, name, null, cm2);
 			// we dont know the final uri, so preconstructing the metadata does not help here			Metadata m = new Metadata(Metadata.SIMPLE_REDIRECT, null, null, FreenetURI.EMPTY_CHK_URI, cm2);
 		}
 
@@ -354,7 +340,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 		 * a short symlink
 		 */
 		public JokerPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, String target) {
-			super(bmp, parent, name, name, (Metadata) null, null);
+			super(bmp, parent, name, name, null, null);
 			Metadata m = new Metadata(DocumentType.SYMBOLIC_SHORTLINK, null, null, target, null);
 			metadata = m;
 		}
@@ -745,31 +731,31 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	/**
 	 * put is finalized if empty
 	 */
-	private HashSet<PutHandler> putHandlerWaitingForBlockSets;
+	private final HashSet<PutHandler> putHandlerWaitingForBlockSets;
 	/**
 	 * if empty put is fetchable
 	 */
-	private HashSet<PutHandler> putHandlersWaitingForFetchable;
-	private HashSet<PutHandler> runningPutHandlers;
+	private final HashSet<PutHandler> putHandlersWaitingForFetchable;
+	private final HashSet<PutHandler> runningPutHandlers;
 
 	// container stuff, all fields can be null'ed in freeform mode
 	private ContainerBuilder rootContainerBuilder;
 	private ContainerPutHandler rootContainerPutHandler;
-	private HashSet<PutHandler> containerPutHandlers;
-	private HashMap<PutHandler, HashSet<PutHandler>> perContainerPutHandlersWaitingForMetadata;
+	private final HashSet<PutHandler> containerPutHandlers;
+	private final HashMap<PutHandler, HashSet<PutHandler>> perContainerPutHandlersWaitingForMetadata;
 	/**
 	 * PutHandler: the *PutHandler
 	 * HashMap<String, Object>: the 'metadata dir' that contains the item inserted by PutHandler
 	 * the *PutHandler fills in its result here (Metadata)
 	 */
-	private HashMap<PutHandler, HashMap<String, Object>> putHandlersTransformMap;
-	private HashMap<ArchivePutHandler, ArrayList<PutHandler>> putHandlersArchiveTransformMap;
+	private final HashMap<PutHandler, HashMap<String, Object>> putHandlersTransformMap;
+	private final HashMap<ArchivePutHandler, ArrayList<PutHandler>> putHandlersArchiveTransformMap;
 
 	// freeform stuff, all fields can be null'ed in container mode
 	private FreeFormBuilder rootBuilder;
 	private MetaPutHandler rootMetaPutHandler;
 	private HashMap<String, Object> rootDir;
-	private HashSet<PutHandler> putHandlersWaitingForMetadata;
+	private final HashSet<PutHandler> putHandlersWaitingForMetadata;
 
 	private FreenetURI finalURI;
 	private final FreenetURI targetURI;
@@ -1032,7 +1018,6 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 			rootMetaPutHandler.start(context);
 		} catch (InsertException e) {
 			fail(e, context);
-			return;
 		}
 	}
 
@@ -1436,7 +1421,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 		private static final long serialVersionUID = 1L;
 
-		protected FreeFormBuilder() {
+		private FreeFormBuilder() {
 			rootDir = new HashMap<String, Object>();
 			currentDir = rootDir;
 		}

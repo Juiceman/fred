@@ -1,16 +1,16 @@
 package freenet.clients.fcp;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
 import freenet.node.Node;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
 import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
 import freenet.support.api.BucketFactory;
 import freenet.support.io.PersistentTempBucketFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public abstract class FCPMessage {
 	/*
@@ -58,7 +58,7 @@ public abstract class FCPMessage {
 		os.write((getName() + '\n').getBytes(StandardCharsets.UTF_8));
 		os.write(msg.getBytes(StandardCharsets.UTF_8));
 		if (logDEBUG) {
-			Logger.debug(this, "Outgoing FCP message:\n" + getName() + '\n' + sfs.toString());
+			Logger.debug(this, "Outgoing FCP message:\n" + getName() + '\n' + sfs);
 			Logger.debug(this, "Being handled by " + this);
 		}
 	}

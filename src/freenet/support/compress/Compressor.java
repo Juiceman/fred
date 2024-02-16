@@ -3,14 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.compress;
 
+import freenet.support.Logger;
+import freenet.support.api.Bucket;
+import freenet.support.api.BucketFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
-import freenet.support.Logger;
-import freenet.support.api.Bucket;
-import freenet.support.api.BucketFactory;
 
 /**
  * A data compressor. Contains methods to get all data compressors.
@@ -160,13 +160,13 @@ public interface Compressor {
 
 		@Override
 		public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-				throws IOException, CompressionOutputSizeException {
+				throws IOException {
 			return compressor.compress(data, bf, maxReadLength, maxWriteLength);
 		}
 
 		@Override
 		public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength)
-				throws IOException, CompressionOutputSizeException {
+				throws IOException {
 			return compressor.compress(is, os, maxReadLength, maxWriteLength);
 		}
 
@@ -178,7 +178,7 @@ public interface Compressor {
 		}
 
 		@Override
-		public long decompress(InputStream input, OutputStream output, long maxLength, long maxEstimateSizeLength) throws IOException, CompressionOutputSizeException {
+		public long decompress(InputStream input, OutputStream output, long maxLength, long maxEstimateSizeLength) throws IOException {
 			return compressor.decompress(input, output, maxLength, maxEstimateSizeLength);
 		}
 

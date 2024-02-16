@@ -1,13 +1,7 @@
 package freenet.clients.http.updateableelements;
 
 import freenet.client.FetchContext;
-import freenet.clients.http.FProxyFetchInProgress;
-import freenet.clients.http.FProxyFetchResult;
-import freenet.clients.http.FProxyFetchTracker;
-import freenet.clients.http.FProxyFetchWaiter;
-import freenet.clients.http.FProxyToadlet;
-import freenet.clients.http.SimpleToadletServer;
-import freenet.clients.http.ToadletContext;
+import freenet.clients.http.*;
 import freenet.clients.http.complexhtmlnodes.SecondCounterNode;
 import freenet.keys.FreenetURI;
 import freenet.support.Base64;
@@ -19,15 +13,15 @@ import freenet.support.SizeUtil;
  */
 public class ProgressInfoElement extends BaseUpdateableElement {
 
-	private FProxyFetchTracker tracker;
+	private final FProxyFetchTracker tracker;
 	private final FreenetURI key;
 	private final FetchContext fctx;
-	private long maxSize;
+	private final long maxSize;
 	private NotifierFetchListener fetchListener;
 	/**
 	 * It displays more info on advanced mode
 	 */
-	private boolean isAdvancedMode;
+	private final boolean isAdvancedMode;
 
 	public ProgressInfoElement(FProxyFetchTracker tracker, FreenetURI key, FetchContext fctx, long maxSize, boolean isAdvancedMode, ToadletContext ctx, boolean pushed) {
 		super("span", ctx);

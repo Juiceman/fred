@@ -15,7 +15,7 @@ public interface DataStoreStats {
 
 	long dataSize();
 
-	public double utilization();
+	double utilization();
 
 	double avgLocation() throws StatsNotAvailableException;
 

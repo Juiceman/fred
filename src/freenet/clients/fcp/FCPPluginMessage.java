@@ -3,18 +3,18 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.util.UUID;
-
 import freenet.pluginmanager.FredPluginFCPMessageHandler;
 import freenet.support.SimpleFieldSet;
 import freenet.support.StringValidityChecker;
 import freenet.support.api.Bucket;
 
+import java.util.UUID;
+
 /**
  * Container class for both incoming and outgoing FCP messages.
  */
 public final class FCPPluginMessage {
-	public static enum ClientPermissions {
+	public enum ClientPermissions {
 		/**
 		 * The client is connected by network and the owner of the node has configured
 		 * restricted access for the client's IP
@@ -33,8 +33,6 @@ public final class FCPPluginMessage {
 		 */
 		ACCESS_DIRECT
 	}
-
-	;
 
 	/**
 	 * The permissions of the client which sent the messages. Null for server-to-client and
@@ -151,7 +149,7 @@ public final class FCPPluginMessage {
 		assert (params != null || data != null || success != null)
 				: "Messages should not be empty";
 
-		assert (errorCode == null || (success != null && success == false))
+		assert (errorCode == null || (success != null && !success))
 				: "errorCode should only be provided for reply messages which indicate failure.";
 
 		assert (errorCode == null ||

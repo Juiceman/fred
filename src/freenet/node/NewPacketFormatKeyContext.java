@@ -1,16 +1,16 @@
 package freenet.node;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import freenet.io.xfer.PacketThrottle;
 import freenet.node.NewPacketFormat.SentPacket;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.SentTimeCache;
 import freenet.support.Logger.LogLevel;
+import freenet.support.SentTimeCache;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * NewPacketFormat's context for each SessionKey. Specifically, packet numbers are unique
@@ -310,7 +310,7 @@ public class NewPacketFormatKeyContext {
 			}
 		}
 		if (count > 0 && logMINOR)
-			Logger.minor(this, "" + count + " packets in flight with threshold " + maxDelay + "ms");
+			Logger.minor(this, count + " packets in flight with threshold " + maxDelay + "ms");
 		if (bigLostCount != 0 && pn != null) {
 			PacketThrottle throttle = pn.getThrottle();
 			if (throttle != null) {

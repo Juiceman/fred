@@ -5,29 +5,29 @@ package freenet.node;
  */
 public interface AnnouncementCallback {
 
-	public void completed();
+	void completed();
 
-	public void bogusNoderef(String reason);
+	void bogusNoderef(String reason);
 
-	public void nodeFailed(PeerNode pn, String reason);
+	void nodeFailed(PeerNode pn, String reason);
 
 	/* RNF */
-	public void noMoreNodes();
+	void noMoreNodes();
 
-	public void addedNode(PeerNode pn);
+	void addedNode(PeerNode pn);
 
-	public void nodeNotWanted();
+	void nodeNotWanted();
 
 	/**
 	 * Node valid but locally not added e.g. because we already have it
 	 */
-	public void nodeNotAdded();
+	void nodeNotAdded();
 
-	public void acceptedSomewhere();
+	void acceptedSomewhere();
 
 	/**
 	 * Relayed a valid noderef to the (downstream) node which started the announcement
 	 */
-	public void relayedNoderef();
+	void relayedNoderef();
 
 }

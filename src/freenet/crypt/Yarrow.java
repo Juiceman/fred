@@ -3,32 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
-import static java.util.concurrent.TimeUnit.HOURS;
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.io.Closer;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
-import freenet.support.io.Closer;
+import static java.util.concurrent.TimeUnit.HOURS;
 
 /**
  * An implementation of the Yarrow PRNG in Java.
@@ -369,7 +357,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		return rv;
 	}
 
-	static final int bitTable[][] = {{0, 0x0}, {
+	static final int[][] bitTable = {{0, 0x0}, {
 			1, 0x1
 	}, {
 			1, 0x3

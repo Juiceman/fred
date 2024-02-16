@@ -3,20 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.CRC32;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.HexUtil;
 import freenet.support.LogThresholdCallback;
@@ -25,6 +11,12 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.io.Closer;
 import freenet.support.io.FileBucket;
+
+import java.io.*;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.zip.CRC32;
 
 /**
  * Content filter for PNG's. Only allows valid chunks (valid CRC, known chunk type).
@@ -78,14 +70,14 @@ public class PNGFilter implements ContentDataFilter {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		readFilter(input, output, charset, otherParams, cb, deleteText, deleteTimestamp, checkCRCs);
 		output.flush();
 	}
 
 	public void readFilter(InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
 						   FilterCallback cb, boolean deleteText, boolean deleteTimestamp, boolean checkCRCs)
-			throws DataFilterException, IOException {
+			throws IOException {
 		DataInputStream dis = null;
 		boolean hasSeenIHDR = false;
 		boolean hasSeenIEND = false;
@@ -182,7 +174,7 @@ public class PNGFilter implements ContentDataFilter {
 					dos.write(crcLengthBytes);
 
 				if (checkCRCs) {
-					long readCRC = (((crcLengthBytes[0] & 0xff) << 24) + ((crcLengthBytes[1] & 0xff) << 16)
+					long readCRC = (((long) (crcLengthBytes[0] & 0xff) << 24) + ((crcLengthBytes[1] & 0xff) << 16)
 							+ ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
 					CRC32 crc = new CRC32();
 					crc.update(chunkTypeBytes);
@@ -206,8 +198,8 @@ public class PNGFilter implements ContentDataFilter {
 						throwError("Duplicate IHDR", "Two IHDR chunks detected!!");
 					if (length != 13)
 						throwError("IHDR length!= 13", "The length of the IHDR file is not 13");
-					long width = ((chunkData[0] & 0xff) << 24) + ((chunkData[1] & 0xff) << 16) + ((chunkData[2] & 0xff) << 8) + (chunkData[3] & 0xff);
-					long height = ((chunkData[4] & 0xff) << 24) + ((chunkData[5] & 0xff) << 16) + ((chunkData[6] & 0xff) << 8) + (chunkData[7] & 0xff);
+					long width = ((long) (chunkData[0] & 0xff) << 24) + ((chunkData[1] & 0xff) << 16) + ((chunkData[2] & 0xff) << 8) + (chunkData[3] & 0xff);
+					long height = ((long) (chunkData[4] & 0xff) << 24) + ((chunkData[5] & 0xff) << 16) + ((chunkData[6] & 0xff) << 8) + (chunkData[7] & 0xff);
 					if (width < 1 || height < 1)
 						throwError("Width or Height is invalid", "Width or Height is invalid (<1)");
 					int bitDepth = chunkData[8];
@@ -257,8 +249,10 @@ public class PNGFilter implements ContentDataFilter {
 
 				if (!validChunkType) {
 					for (int i = 0; i < HARMLESS_CHUNK_TYPES.length; i++) {
-						if (HARMLESS_CHUNK_TYPES[i].equals(chunkTypeString))
+						if (HARMLESS_CHUNK_TYPES[i].equals(chunkTypeString)) {
 							validChunkType = true;
+							break;
+						}
 					}
 				}
 
@@ -294,7 +288,7 @@ public class PNGFilter implements ContentDataFilter {
 				throwError("Missing IEND", "Missing IEND");
 			if (!hasSeenIHDR)
 				throwError("Missing IHDR", "Missing IHDR");
-			return; // Strip everything after IEND.
+			// Strip everything after IEND.
 		} catch (ArrayIndexOutOfBoundsException e) {
 			throwError("ArrayIndexOutOfBoundsException while filtering", "ArrayIndexOutOfBoundsException while filtering");
 		} catch (NegativeArraySizeException e) {
@@ -332,7 +326,7 @@ public class PNGFilter implements ContentDataFilter {
 		return NodeL10n.getBase().getString("PNGFilter." + key);
 	}
 
-	public static void main(String arg[]) throws Throwable {
+	public static void main(String[] arg) throws Throwable {
 		final File fin = new File("/tmp/test.png");
 		final File fout = new File("/tmp/test2.png");
 		fout.delete();

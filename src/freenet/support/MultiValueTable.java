@@ -15,8 +15,8 @@ import java.util.Vector;
  */
 
 public class MultiValueTable<K, V> {
-	private Hashtable<K, Vector<V>> table;
-	private int ies;
+	private final Hashtable<K, Vector<V>> table;
+	private final int ies;
 
 	public MultiValueTable() {
 		this(16, 3);
@@ -200,7 +200,7 @@ public class MultiValueTable<K, V> {
 
 	private class MultiValueEnumeration implements Enumeration<V> {
 		private Enumeration<V> current;
-		private Enumeration<Vector<V>> global;
+		private final Enumeration<Vector<V>> global;
 
 		public MultiValueEnumeration() {
 			synchronized (table) {

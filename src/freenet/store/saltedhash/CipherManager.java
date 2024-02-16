@@ -3,12 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.store.saltedhash;
 
-import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
-
 import freenet.crypt.BlockCipher;
 import freenet.crypt.PCFBMode;
 import freenet.crypt.SHA256;
@@ -17,6 +11,12 @@ import freenet.crypt.ciphers.Rijndael;
 import freenet.node.MasterKeys;
 import freenet.support.ByteArrayWrapper;
 import freenet.support.Logger;
+
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Cipher Manager
@@ -29,12 +29,12 @@ public class CipherManager {
 	/**
 	 * The actual salt. 16 bytes.
 	 */
-	private byte[] salt;
+	private final byte[] salt;
 
 	/**
 	 * The original on-disk salt, may be encrypted. 16 bytes.
 	 */
-	private byte[] diskSalt;
+	private final byte[] diskSalt;
 
 	CipherManager(byte[] salt, byte[] diskSalt) {
 		assert salt.length == 0x10;
@@ -55,7 +55,7 @@ public class CipherManager {
 	 * Cache for digested keys
 	 */
 	@SuppressWarnings("serial")
-	private Map<ByteArrayWrapper, byte[]> digestRoutingKeyCache = new LinkedHashMap<ByteArrayWrapper, byte[]>() {
+	private final Map<ByteArrayWrapper, byte[]> digestRoutingKeyCache = new LinkedHashMap<ByteArrayWrapper, byte[]>() {
 		@Override
 		protected boolean removeEldestEntry(Map.Entry<ByteArrayWrapper, byte[]> eldest) {
 			return size() > 128;
@@ -124,10 +124,7 @@ public class CipherManager {
 
 		if (!entry.isEncrypted) {
 			// Already decrypted
-			if (Arrays.equals(entry.plainRoutingKey, routingKey))
-				return true;
-			else
-				return false;
+			return Arrays.equals(entry.plainRoutingKey, routingKey);
 		}
 
 		if (entry.plainRoutingKey != null) {

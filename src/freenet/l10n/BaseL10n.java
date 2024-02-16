@@ -3,18 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.l10n;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.NoSuchElementException;
-
 import freenet.clients.http.TranslationToadlet;
 import freenet.support.HTMLEncoder;
 import freenet.support.HTMLNode;
@@ -22,6 +10,12 @@ import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * This is the core of all the localization stuff. This method can get
@@ -105,7 +99,7 @@ public class BaseL10n {
 		public final String isoCode;
 		public final String[] aliases;
 
-		private LANGUAGE(String shortCode, String fullName, String isoCode, String[] aliases) {
+		LANGUAGE(String shortCode, String fullName, String isoCode, String[] aliases) {
 			this.shortCode = shortCode;
 			this.fullName = fullName;
 			this.isoCode = isoCode;
@@ -223,13 +217,13 @@ public class BaseL10n {
 	}
 
 	private LANGUAGE lang;
-	private String l10nFilesBasePath;
-	private String l10nFilesMask;
-	private String l10nOverrideFilesMask;
+	private final String l10nFilesBasePath;
+	private final String l10nFilesMask;
+	private final String l10nOverrideFilesMask;
 	private SimpleFieldSet currentTranslation = null;
 	private SimpleFieldSet fallbackTranslation = null;
 	private SimpleFieldSet translationOverride;
-	private ClassLoader cl;
+	private final ClassLoader cl;
 
 	private static ClassLoader getClassLoaderFallback() {
 		ClassLoader _cl;
@@ -444,7 +438,6 @@ public class BaseL10n {
 		try {
 			// We don't set deleteOnExit on it : if the save operation fails, we want a backup
 			File tempFile = File.createTempFile(finalFile.getName(), ".bak", finalFile.getParentFile());
-			;
 			Logger.minor(this.getClass(), "The temporary filename is : " + tempFile);
 
 			fos = new FileOutputStream(tempFile);

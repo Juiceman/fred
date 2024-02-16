@@ -3,12 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-import java.util.HashMap;
-
 import freenet.client.filter.DataFilterException;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
 import freenet.support.Logger;
+
+import java.util.HashMap;
 
 /**
  * Thrown when a high-level request (fetch) fails. Indicates why, whether it is worth retrying, and may give a
@@ -384,22 +384,21 @@ public class FetchException extends Exception implements Cloneable {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(200);
-		sb.append("FetchException:");
-		sb.append(getMessage(mode));
-		sb.append(':');
-		sb.append(newURI);
-		sb.append(':');
-		sb.append(expectedSize);
-		sb.append(':');
-		sb.append(expectedMimeType);
-		sb.append(':');
-		sb.append(finalizedSizeAndMimeType);
-		sb.append(':');
-		sb.append(errorCodes);
-		sb.append(':');
-		sb.append(extraMessage);
-		return sb.toString();
+		String sb = "FetchException:" +
+				getMessage(mode) +
+				':' +
+				newURI +
+				':' +
+				expectedSize +
+				':' +
+				expectedMimeType +
+				':' +
+				finalizedSizeAndMimeType +
+				':' +
+				errorCodes +
+				':' +
+				extraMessage;
+		return sb;
 	}
 
 	public String toUserFriendlyString() {
@@ -426,7 +425,7 @@ public class FetchException extends Exception implements Cloneable {
 			new HashMap<Integer, FetchExceptionMode>();
 
 	// Modes should stay the same even if we remove some elements.
-	public static enum FetchExceptionMode {
+	public enum FetchExceptionMode {
 
 		// FIXME many of these are not used any more
 

@@ -1,33 +1,9 @@
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import freenet.client.ClientMetadata;
-import freenet.client.DefaultMIMETypes;
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
+import freenet.client.*;
 import freenet.client.FetchException.FetchExceptionMode;
-import freenet.client.FetchResult;
-import freenet.client.async.CacheFetchResult;
-import freenet.client.async.ClientContext;
-import freenet.client.async.ClientGetCallback;
-import freenet.client.async.ClientGetter;
-import freenet.client.async.PersistenceDisabledException;
-import freenet.client.events.ClientEvent;
-import freenet.client.events.ClientEventListener;
-import freenet.client.events.ExpectedFileSizeEvent;
-import freenet.client.events.ExpectedMIMEEvent;
-import freenet.client.events.SendingToNetworkEvent;
-import freenet.client.events.SplitfileProgressEvent;
+import freenet.client.async.*;
+import freenet.client.events.*;
 import freenet.client.filter.ContentFilter;
 import freenet.client.filter.FilterMIMEType;
 import freenet.client.filter.UnknownContentTypeException;
@@ -39,6 +15,17 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.io.Closer;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Fetching a page for a browser.
@@ -166,7 +153,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	/**
 	 * Stores the fetch context this class was created with
 	 */
-	private FetchContext fctx;
+	private final FetchContext fctx;
 	private boolean cancelled = false;
 	private final RequestClient rc;
 
@@ -367,11 +354,9 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 			String finalMIME = result.getMimeType();
 			if (fctx.overrideMIME.equals(finalMIME))
 				return true;
-			else if (ContentFilter.stripMIMEType(finalMIME).equals(fctx.overrideMIME) && fctx.charset == null)
-				return true;
+			else return ContentFilter.stripMIMEType(finalMIME).equals(fctx.overrideMIME) && fctx.charset == null;
 			// FIXME we could make this work in a few more cases... it doesn't matter much though as usually people don't override the MIME type!
 		}
-		return false;
 	}
 
 	@Override
@@ -423,7 +408,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		for (FProxyFetchWaiter w : waiting) {
 			w.wakeUp(finished);
 		}
-		if (finished == true) {
+		if (finished) {
 			for (FProxyFetchListener l : new ArrayList<FProxyFetchListener>(listener)) {
 				l.onEvent();
 			}
@@ -545,9 +530,8 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 			hasNotifiedFailure = true;
 			return true;
 		}
-		if (failed != null && (System.currentTimeMillis() - timeFailed < 1000 || fetched < 2)) // Once for javascript and once for the user when it re-pulls.
-			return true;
-		return false;
+		// Once for javascript and once for the user when it re-pulls.
+		return failed != null && (System.currentTimeMillis() - timeFailed < 1000 || fetched < 2);
 	}
 
 	public synchronized boolean hasNotifiedFailure() {
@@ -607,8 +591,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		if (this.fctx.charset == null && context.charset != null) return false;
 		if (this.fctx.charset != null && !this.fctx.charset.equals(context.charset)) return false;
 		if (this.fctx.overrideMIME == null && context.overrideMIME != null) return false;
-		if (this.fctx.overrideMIME != null && !this.fctx.overrideMIME.equals(context.overrideMIME)) return false;
-		return true;
+		return this.fctx.overrideMIME == null || this.fctx.overrideMIME.equals(context.overrideMIME);
 	}
 
 	@Override

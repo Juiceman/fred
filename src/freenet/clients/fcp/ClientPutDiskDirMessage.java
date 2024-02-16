@@ -3,12 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.clients.fcp;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-
 import freenet.client.DefaultMIMETypes;
 import freenet.node.Node;
 import freenet.support.LogThresholdCallback;
@@ -18,6 +12,12 @@ import freenet.support.SimpleFieldSet;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.ManifestElement;
 import freenet.support.io.FileBucket;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
 
 /**
  * Insert a directory from disk as a manifest.
@@ -89,7 +89,7 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 
-		File filelist[] = thisdir.listFiles();
+		File[] filelist = thisdir.listFiles();
 		if (filelist == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "No such directory!", identifier, global);
 		for (int i = 0; i < filelist.length; i++) {

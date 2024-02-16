@@ -16,18 +16,13 @@
 
 package freenet.io;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.net.ssl.SSLServerSocket;
-
 import freenet.crypt.SSL;
 import freenet.support.Executor;
+
+import javax.net.ssl.SSLServerSocket;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.*;
 
 /**
  * An SSL extension to the {@link NetworkInterface}

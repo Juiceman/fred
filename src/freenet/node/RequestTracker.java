@@ -1,17 +1,13 @@
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import freenet.keys.NodeCHK;
 import freenet.support.Logger;
 import freenet.support.Ticker;
+
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class RequestTracker {
 
@@ -551,7 +547,7 @@ public class RequestTracker {
 		ticker.queueTimedJob(deadUIDChecker, TIMEOUT);
 	}
 
-	private Runnable deadUIDChecker = new Runnable() {
+	private final Runnable deadUIDChecker = new Runnable() {
 		@Override
 		public void run() {
 			try {
@@ -807,7 +803,7 @@ public class RequestTracker {
 				this.runningSSKPutUIDsBulk.size() + this.runningSSKOfferReplyUIDsBulk.size() + this.runningCHKOfferReplyUIDsBulk.size();
 	}
 
-	private ArrayList<Long> completedBuffer = new ArrayList<Long>();
+	private final ArrayList<Long> completedBuffer = new ArrayList<Long>();
 
 	// Every this many slots, we tell all the PeerMessageQueue's to remove the old Items for the ID's in question.
 	// This prevents memory DoS amongst other things.

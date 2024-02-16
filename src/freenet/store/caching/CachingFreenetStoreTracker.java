@@ -1,9 +1,9 @@
 package freenet.store.caching;
 
-import java.util.ArrayList;
-
 import freenet.support.Logger;
 import freenet.support.Ticker;
+
+import java.util.ArrayList;
 
 /**
  * Tracks the memory used by a bunch of CachingFreenetStore's, and writes blocks to disk when full or
@@ -19,12 +19,12 @@ public class CachingFreenetStoreTracker {
 	 * Number of keys that it's pushed to the *underlying* store in the add function.
 	 * FIXME make this configurable???
 	 */
-	private static int numberOfKeysToWrite = 20;
+	private static final int numberOfKeysToWrite = 20;
 
 	/**
 	 * Lower threshold, when it will start a write job, but still accept the data.
 	 */
-	private static double lowerThreshold = 0.9;
+	private static final double lowerThreshold = 0.9;
 
 	private final long maxSize;
 	private final long period;

@@ -299,8 +299,7 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 		T next = i.getNext();
 		T prev = i.getPrev();
 
-		if ((next == null) && (prev == null)) // only item in list
-			assert size == 1;
+		assert (next != null) || (prev != null) || size == 1;
 
 		if (next == null) { // last item
 			assert _lastItem == i;
@@ -531,7 +530,7 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	@Override
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
-			private Enumeration<T> e = forwardElements();
+			private final Enumeration<T> e = forwardElements();
 
 			@Override
 			public boolean hasNext() {

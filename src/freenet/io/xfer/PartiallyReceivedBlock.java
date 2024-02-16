@@ -18,14 +18,14 @@
  */
 package freenet.io.xfer;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-
 import freenet.support.Buffer;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
+
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * @author ian
@@ -224,11 +224,11 @@ public class PartiallyReceivedBlock {
 		return _abortDescription;
 	}
 
-	public static interface PacketReceivedListener {
+	public interface PacketReceivedListener {
 
-		public void packetReceived(int packetNo);
+		void packetReceived(int packetNo);
 
-		public void receiveAborted(int reason, String description);
+		void receiveAborted(int reason, String description);
 	}
 
 	public boolean abortedLocally() {

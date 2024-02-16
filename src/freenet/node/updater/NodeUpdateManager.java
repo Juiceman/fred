@@ -1,16 +1,5 @@
 package freenet.node.updater;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
-
 import freenet.client.FetchContext;
 import freenet.client.FetchException;
 import freenet.client.FetchResult;
@@ -29,16 +18,7 @@ import freenet.io.comm.Message;
 import freenet.io.comm.NotConnectedException;
 import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
-import freenet.node.Node;
-import freenet.node.NodeFile;
-import freenet.node.NodeInitException;
-import freenet.node.NodeStarter;
-import freenet.node.OpennetManager;
-import freenet.node.PeerNode;
-import freenet.node.ProgramDirectory;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarter;
-import freenet.node.Version;
+import freenet.node.*;
 import freenet.node.updater.MainJarDependenciesChecker.MainJarDependencies;
 import freenet.node.updater.UpdateDeployContext.UpdateCatastropheException;
 import freenet.node.useralerts.RevocationKeyFoundUserAlert;
@@ -56,6 +36,15 @@ import freenet.support.api.StringCallback;
 import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * <p>Supervises NodeUpdater's. Enables us to easily update multiple files, change
@@ -173,7 +162,7 @@ public class NodeUpdateManager {
 	private boolean updateSeednodes;
 	private boolean updateInstallers;
 	// FIXME make configurable
-	private boolean updateIPToCountry = true;
+	private final boolean updateIPToCountry = true;
 
 	/**
 	 * Is there a new main jar ready to deploy?
@@ -589,8 +578,7 @@ public class NodeUpdateManager {
 	}
 
 	void broadcastUOMAnnouncesOld() {
-		boolean mainJarAvailable = transitionMainJarFetcher == null ? false
-				: transitionMainJarFetcher.fetched();
+		boolean mainJarAvailable = transitionMainJarFetcher != null && transitionMainJarFetcher.fetched();
 		Message msg;
 		if (!mainJarAvailable) return;
 		synchronized (broadcastUOMAnnouncesSync) {
@@ -641,8 +629,7 @@ public class NodeUpdateManager {
 	}
 
 	private Message getOldUOMAnnouncement() {
-		boolean mainJarAvailable = transitionMainJarFetcher == null ? false
-				: transitionMainJarFetcher.fetched();
+		boolean mainJarAvailable = transitionMainJarFetcher != null && transitionMainJarFetcher.fetched();
 		return DMT.createUOMAnnouncement(previousMainJarUSK.toString(), revocationURI
 						.toString(), revocationChecker.hasBlown(),
 				mainJarAvailable ? TRANSITION_VERSION : -1,
@@ -1911,10 +1898,8 @@ public class NodeUpdateManager {
 			// We are a seednode.
 			// Normally this means we won't send UOM.
 			// However, if something breaks severely, we need an escape route.
-			if (node.getUptime() > MINUTES.toMillis(5)
-					&& node.peers.countCompatibleRealPeers() == 0)
-				return false;
-			return true;
+			return node.getUptime() <= MINUTES.toMillis(5)
+					|| node.peers.countCompatibleRealPeers() != 0;
 		}
 		return false;
 	}

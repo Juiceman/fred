@@ -3,36 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.pluginmanager;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.Semaphore;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.fcp.ClientPut;
 import freenet.clients.http.PageMaker.THEME;
@@ -45,28 +15,31 @@ import freenet.crypt.SHA256;
 import freenet.keys.FreenetURI;
 import freenet.l10n.BaseL10n.LANGUAGE;
 import freenet.l10n.NodeL10n;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestClientBuilder;
-import freenet.node.RequestStarter;
+import freenet.node.*;
 import freenet.node.useralerts.AbstractUserAlert;
 import freenet.node.useralerts.UserAlert;
 import freenet.pluginmanager.OfficialPlugins.OfficialPluginDescription;
 import freenet.pluginmanager.PluginManager.PluginProgress.ProgressState;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.JarClassLoader;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.SerialExecutor;
-import freenet.support.Ticker;
 import freenet.support.api.BooleanCallback;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.StringArrCallback;
 import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 import freenet.support.io.NativeThread.PriorityLevel;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class PluginManager {
 
@@ -77,8 +50,8 @@ public class PluginManager {
 	private final LoadedPlugins loadedPlugins = new LoadedPlugins();
 	final Node node;
 	private final NodeClientCore core;
-	private boolean logMINOR;
-	private boolean logDEBUG;
+	private final boolean logMINOR;
+	private final boolean logDEBUG;
 	private final HighLevelSimpleClient client;
 
 	private static PluginManager selfinstance = null;
@@ -87,7 +60,7 @@ public class PluginManager {
 
 	private final SerialExecutor executor;
 
-	private boolean alwaysLoadOfficialPluginsFromCentralServer = false;
+	private final boolean alwaysLoadOfficialPluginsFromCentralServer = false;
 
 	static final short PRIO = RequestStarter.INTERACTIVE_PRIORITY_CLASS;
 	/**
@@ -744,7 +717,7 @@ public class PluginManager {
 	public void addToadletSymlinks(PluginInfoWrapper pi) {
 		synchronized (toadletList) {
 			try {
-				String targets[] = pi.getPluginToadletSymlinks();
+				String[] targets = pi.getPluginToadletSymlinks();
 				if (targets == null)
 					return;
 
@@ -767,7 +740,7 @@ public class PluginManager {
 		synchronized (toadletList) {
 			String rm = null;
 			try {
-				String targets[] = pi.getPluginToadletSymlinks();
+				String[] targets = pi.getPluginToadletSymlinks();
 				if (targets == null)
 					return;
 
@@ -1369,7 +1342,7 @@ public class PluginManager {
 		/**
 		 * The starting time.
 		 */
-		private long startingTime = System.currentTimeMillis();
+		private final long startingTime = System.currentTimeMillis();
 		/**
 		 * The current state.
 		 */
@@ -1377,7 +1350,7 @@ public class PluginManager {
 		/**
 		 * The name by which the plugin is loaded.
 		 */
-		private String name;
+		private final String name;
 		/**
 		 * Total. Might be bytes, might be blocks.
 		 */

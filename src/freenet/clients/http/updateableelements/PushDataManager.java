@@ -1,13 +1,13 @@
 package freenet.clients.http.updateableelements;
 
+import freenet.support.Logger;
+import freenet.support.Ticker;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import freenet.support.Logger;
-import freenet.support.Ticker;
 
 /**
  * A manager class that manages all the pushing. All it's public method must be synchronized to maintain consistency.
@@ -23,34 +23,34 @@ public class PushDataManager {
 	/**
 	 * What notifications are waiting for the leader
 	 */
-	private Map<String, List<UpdateEvent>> awaitingNotifications = new HashMap<String, List<UpdateEvent>>();
+	private final Map<String, List<UpdateEvent>> awaitingNotifications = new HashMap<String, List<UpdateEvent>>();
 
 	/**
 	 * What elements are on the page
 	 */
-	private Map<String, List<BaseUpdateableElement>> pages = new HashMap<String, List<BaseUpdateableElement>>();
+	private final Map<String, List<BaseUpdateableElement>> pages = new HashMap<String, List<BaseUpdateableElement>>();
 
 	/**
 	 * What pages are on the element. It is redundant with the pages map.
 	 */
-	private Map<String, List<String>> elements = new HashMap<String, List<String>>();
+	private final Map<String, List<String>> elements = new HashMap<String, List<String>>();
 
 	/**
 	 * Stores whether a keepalive was received for a request since the Cleaner last run
 	 */
-	private Map<String, Boolean> isKeepaliveReceived = new HashMap<String, Boolean>();
+	private final Map<String, Boolean> isKeepaliveReceived = new HashMap<String, Boolean>();
 
-	private Map<String, Boolean> isFirstKeepaliveReceived = new HashMap<String, Boolean>();
+	private final Map<String, Boolean> isFirstKeepaliveReceived = new HashMap<String, Boolean>();
 
 	/**
 	 * The Cleaner that runs periodically and cleanes the failing requests
 	 */
-	private Ticker cleaner;
+	private final Ticker cleaner;
 
 	/**
 	 * A task for the Cleaner that the Cleaner invokes
 	 */
-	private CleanerTimerTask cleanerTask = new CleanerTimerTask();
+	private final CleanerTimerTask cleanerTask = new CleanerTimerTask();
 
 	/**
 	 * The Cleaner only runs when needed. If this field is true, then the Cleaner is scheduled to run
@@ -71,7 +71,7 @@ public class PushDataManager {
 			Logger.minor(this, "Element updated id:" + id);
 		}
 		boolean needsUpdate = false;
-		if (elements.containsKey(id) == false) {
+		if (!elements.containsKey(id)) {
 			if (logMINOR) {
 				Logger.minor(this, "Element is updating, but not present on elements! elements:" + elements + " pages:" + pages + " awaitingNotifications:" + awaitingNotifications);
 			}
@@ -84,7 +84,7 @@ public class PushDataManager {
 //			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
 				List<UpdateEvent> notificationList = entry.getValue();
 				UpdateEvent updateEvent = new UpdateEvent(reqId, id);
-				if (notificationList.contains(updateEvent) == false) {
+				if (!notificationList.contains(updateEvent)) {
 					notificationList.add(updateEvent);
 					if (logMINOR) {
 						Logger.minor(this, "Notification(" + updateEvent + ") added to a notification list for " + entry.getKey());
@@ -115,24 +115,24 @@ public class PushDataManager {
 			Logger.minor(this, "Element is rendered in page:" + requestUniqueId + " element:" + element);
 		}
 		// Add to the pages
-		if (pages.containsKey(requestUniqueId) == false) {
+		if (!pages.containsKey(requestUniqueId)) {
 			pages.put(requestUniqueId, new ArrayList<BaseUpdateableElement>());
 		}
 		pages.get(requestUniqueId).add(element);
 		// Add to the elements
 		String id = element.getUpdaterId(requestUniqueId);
-		if (elements.containsKey(id) == false) {
+		if (!elements.containsKey(id)) {
 			elements.put(id, new ArrayList<String>());
 		}
 		elements.get(id).add(requestUniqueId);
 		// The request needs to be tracked
 		isKeepaliveReceived.put(requestUniqueId, true);
 
-		if (awaitingNotifications.containsKey(requestUniqueId) == false) {
+		if (!awaitingNotifications.containsKey(requestUniqueId)) {
 			awaitingNotifications.put(requestUniqueId, new ArrayList<UpdateEvent>());
 		}
 		// If the Cleaner isn't running, then we schedule it to clear this request if failing
-		if (isScheduled == false) {
+		if (!isScheduled) {
 			if (logMINOR) {
 				Logger.minor(this, "Cleaner is queued(1) time:" + System.currentTimeMillis());
 			}
@@ -208,7 +208,7 @@ public class PushDataManager {
 			Logger.minor(this, "Keepalive is received for page:" + requestId);
 		}
 		// If the request is already deleted, then fail
-		if (isKeepaliveReceived.containsKey(requestId) == false) {
+		if (!isKeepaliveReceived.containsKey(requestId)) {
 			if (logMINOR) {
 				Logger.minor(this, "Keepalive failed");
 			}
@@ -231,7 +231,7 @@ public class PushDataManager {
 			Logger.minor(this, "Polling for notification:" + requestId);
 		}
 		while (awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() == 0 || // No notifications 
-				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId) == false)) { // Not asked us yet
+				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && !isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId))) { // Not asked us yet
 			try {
 				wait();
 			} catch (InterruptedException ie) {
@@ -264,7 +264,7 @@ public class PushDataManager {
 		if (logMINOR) {
 			Logger.minor(this, "DeleteRequest with requestId:" + requestId);
 		}
-		if (isKeepaliveReceived.containsKey(requestId) == false) {
+		if (!isKeepaliveReceived.containsKey(requestId)) {
 			if (logMINOR) {
 				Logger.minor(this, "Request already cleaned, doing nothing");
 			}
@@ -302,8 +302,8 @@ public class PushDataManager {
 	 * An event that tells the client what and how it should be updated
 	 */
 	public class UpdateEvent {
-		private String requestId;
-		private String elementId;
+		private final String requestId;
+		private final String elementId;
 
 		private UpdateEvent(String requestId, String elementId) {
 			this.requestId = requestId;
@@ -323,9 +323,7 @@ public class PushDataManager {
 			if (obj == this) return true;
 			if (obj instanceof UpdateEvent) {
 				UpdateEvent o = (UpdateEvent) obj;
-				if (o.getRequestId().compareTo(requestId) == 0 && o.getElementId().compareTo(elementId) == 0) {
-					return true;
-				}
+				return o.getRequestId().compareTo(requestId) == 0 && o.getElementId().compareTo(elementId) == 0;
 			}
 			return false;
 		}
@@ -353,7 +351,7 @@ public class PushDataManager {
 				}
 				isScheduled = false;
 				for (Entry<String, Boolean> entry : new HashMap<String, Boolean>(isKeepaliveReceived).entrySet()) {
-					if (entry.getValue() == false) {
+					if (!entry.getValue()) {
 						if (logMINOR) {
 							Logger.minor(this, "Cleaner cleaned request:" + entry.getKey());
 						}

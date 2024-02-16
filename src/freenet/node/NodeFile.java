@@ -35,7 +35,7 @@ public enum NodeFile {
 		return dir.getDir(node);
 	}
 
-	private NodeFile(InstallDirectory dir, String filename) {
+	NodeFile(InstallDirectory dir, String filename) {
 		this.dir = dir;
 		this.filename = filename;
 	}

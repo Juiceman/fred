@@ -1,40 +1,16 @@
 package freenet.clients.http;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.management.*;
-import java.net.URI;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.*;
-
 import freenet.client.HighLevelSimpleClient;
 import freenet.client.async.PersistenceDisabledException;
-import freenet.clients.fcp.DownloadRequestStatus;
-import freenet.clients.fcp.FCPServer;
-import freenet.clients.fcp.RequestStatus;
-import freenet.clients.fcp.UploadDirRequestStatus;
-import freenet.clients.fcp.UploadFileRequestStatus;
+import freenet.clients.fcp.*;
 import freenet.config.SubConfig;
 import freenet.io.xfer.BlockReceiver;
 import freenet.io.xfer.BlockTransmitter;
 import freenet.l10n.BaseL10n;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.NodeStarter;
-import freenet.node.NodeStats;
-import freenet.node.OpennetManager;
-import freenet.node.PeerManager;
-import freenet.node.PeerNodeStatus;
-import freenet.node.RequestTracker;
-import freenet.node.Version;
-import freenet.node.diagnostics.*;
-import freenet.node.diagnostics.threads.*;
+import freenet.node.*;
+import freenet.node.diagnostics.ThreadDiagnostics;
+import freenet.node.diagnostics.threads.NodeThreadInfo;
+import freenet.node.diagnostics.threads.NodeThreadSnapshot;
 import freenet.node.stats.DataStoreInstanceType;
 import freenet.node.stats.DataStoreStats;
 import freenet.node.stats.StatsNotAvailableException;
@@ -44,6 +20,17 @@ import freenet.pluginmanager.PluginManager;
 import freenet.support.BandwidthStatsContainer;
 import freenet.support.SizeUtil;
 import freenet.support.api.HTTPRequest;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DiagnosticToadlet extends Toadlet {
 
@@ -187,13 +174,13 @@ public class DiagnosticToadlet extends Toadlet {
 				if (numCHKInserts > 0 || numSSKInserts > 0) {
 					textBuilder.append(l10n("activityInserts",
 							new String[]{"CHKhandlers", "SSKhandlers", "local"},
-							new String[]{Integer.toString(numCHKInserts), Integer.toString(numSSKInserts), Integer.toString(numLocalCHKInserts) + "/" + Integer.toString(numLocalSSKInserts)})
+							new String[]{Integer.toString(numCHKInserts), Integer.toString(numSSKInserts), numLocalCHKInserts + "/" + numLocalSSKInserts})
 							+ "\n");
 				}
 				if (numCHKRequests > 0 || numSSKRequests > 0) {
 					textBuilder.append(l10n("activityRequests",
 							new String[]{"CHKhandlers", "SSKhandlers", "local"},
-							new String[]{Integer.toString(numCHKRequests), Integer.toString(numSSKRequests), Integer.toString(numLocalCHKRequests) + "/" + Integer.toString(numLocalSSKRequests)})
+							new String[]{Integer.toString(numCHKRequests), Integer.toString(numSSKRequests), numLocalCHKRequests + "/" + numLocalSSKRequests})
 							+ "\n");
 				}
 				if (numTransferringRequests > 0 || numTransferringRequestHandlers > 0) {
@@ -219,10 +206,7 @@ public class DiagnosticToadlet extends Toadlet {
 				@Override
 				public int compare(PeerNodeStatus firstNode, PeerNodeStatus secondNode) {
 					int statusDifference = firstNode.getStatusValue() - secondNode.getStatusValue();
-					if (statusDifference != 0) {
-						return statusDifference;
-					}
-					return 0;
+					return statusDifference;
 				}
 			});
 			int numberOfConnected = getPeerStatusCount(peerNodeStatuses, PeerManager.PEER_NODE_STATUS_CONNECTED);

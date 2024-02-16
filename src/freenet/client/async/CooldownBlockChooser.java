@@ -32,7 +32,7 @@ public class CooldownBlockChooser extends SimpleBlockChooser {
 	/**
 	 * Time at which each block becomes fetchable again. 0 means it is fetchable now.
 	 */
-	private long[] blockCooldownTimes;
+	private final long[] blockCooldownTimes;
 	/**
 	 * Current time, updated at the beginning of chooseKey().
 	 */

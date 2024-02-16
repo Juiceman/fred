@@ -1,9 +1,9 @@
 package freenet.crypt;
 
-import java.security.interfaces.ECPublicKey;
-
 import freenet.support.HexUtil;
 import freenet.support.Logger;
+
+import java.security.interfaces.ECPublicKey;
 
 public class ECDHLightContext extends KeyAgreementSchemeContext {
 	static {
@@ -17,9 +17,7 @@ public class ECDHLightContext extends KeyAgreementSchemeContext {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
+		return super.toString();
 	}
 
 	public ECDHLightContext(ECDH.Curves curve) {

@@ -1,13 +1,5 @@
 package freenet.client.async;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
-
 import freenet.client.FECCodec;
 import freenet.client.InsertException;
 import freenet.client.InsertException.InsertExceptionMode;
@@ -29,6 +21,10 @@ import freenet.support.api.LockableRandomAccessBuffer.RAFLock;
 import freenet.support.io.CountedOutputStream;
 import freenet.support.io.NullOutputStream;
 import freenet.support.io.StorageFormatException;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * A single segment within a splitfile to be inserted.
@@ -396,14 +392,12 @@ public class SplitFileInserterSegmentStorage {
 			}
 		} catch (IOException e) {
 			parent.failOnDiskError(e);
-			return;
 		} catch (MissingKeyException e) {
 			// Easy to recover so may as well...
 			Logger.error(this, "Missing key even though segment encoded. Recovering by re-encoding...");
 			synchronized (this) {
 				encoded = false;
 			}
-			return;
 		}
 	}
 
@@ -430,7 +424,7 @@ public class SplitFileInserterSegmentStorage {
 		if (encoding) return;
 		encoding = true;
 		int totalBlockCount = dataBlockCount + checkBlockCount + crossCheckBlockCount;
-		long limit = totalBlockCount * CHKBlock.DATA_LENGTH +
+		long limit = (long) totalBlockCount * CHKBlock.DATA_LENGTH +
 				Math.max(parent.codec.maxMemoryOverheadDecode(dataBlockCount, crossCheckBlockCount),
 						parent.codec.maxMemoryOverheadEncode(dataBlockCount, crossCheckBlockCount));
 		if (logMINOR) Logger.minor(this, "Scheduling encode on " + this + " at priority " + prio +
@@ -712,8 +706,7 @@ public class SplitFileInserterSegmentStorage {
 		if (encoded) return true; // No more encoding jobs will run.
 		if (encoding) return false; // Waiting for job to finish.
 		if (cancelled) return true;
-		if (blockChooser.hasSucceededAll()) return true;
-		return false;
+		return blockChooser.hasSucceededAll();
 	}
 
 	/**
@@ -726,8 +719,7 @@ public class SplitFileInserterSegmentStorage {
 	public synchronized boolean cancel() {
 		if (cancelled) return false;
 		cancelled = true;
-		if (hasCompletedOrFailed()) return true;
-		return false;
+		return hasCompletedOrFailed();
 	}
 
 	public synchronized BlockInsert chooseBlock() {

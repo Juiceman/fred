@@ -3,26 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.io;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Method;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.util.Random;
-
+import freenet.client.DefaultMIMETypes;
+import freenet.node.NodeStarter;
+import freenet.support.LogThresholdCallback;
+import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
+import freenet.support.StringValidityChecker;
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.engines.AESFastEngine;
 import org.bouncycastle.crypto.io.CipherInputStream;
@@ -30,12 +16,14 @@ import org.bouncycastle.crypto.modes.SICBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-import freenet.client.DefaultMIMETypes;
-import freenet.node.NodeStarter;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
-import freenet.support.StringValidityChecker;
-import freenet.support.Logger.LogLevel;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Random;
 
 final public class FileUtil {
 
@@ -77,7 +65,7 @@ final public class FileUtil {
 		return lis;
 	}
 
-	public static enum OperatingSystem {
+	public enum OperatingSystem {
 		Unknown(false, false, false), // Special-cased in filename sanitising code.
 		MacOS(false, true, true), // OS/X in that it can run scripts.
 		Linux(false, false, true),
@@ -95,12 +83,9 @@ final public class FileUtil {
 			this.isUnix = unix;
 		}
 
-		;
 	}
 
-	;
-
-	public static enum CPUArchitecture {
+	public enum CPUArchitecture {
 		Unknown,
 		X86,
 		X86_64,
@@ -263,8 +248,7 @@ final public class FileUtil {
 		if (isParentInner(poss, filename)) return true;
 		if (isParentInner(poss, canonFile)) return true;
 		if (isParentInner(canon, filename)) return true;
-		if (isParentInner(canon, canonFile)) return true;
-		return false;
+		return isParentInner(canon, canonFile);
 	}
 
 	private static boolean isParentInner(File possParent, File filename) {
@@ -392,7 +376,7 @@ final public class FileUtil {
 		}
 	}
 
-	public static boolean writeTo(InputStream input, File target) throws FileNotFoundException, IOException {
+	public static boolean writeTo(InputStream input, File target) throws IOException {
 		DataInputStream dis = null;
 		FileOutputStream fos = null;
 		File file = File.createTempFile("temp", ".tmp", target.getParentFile());
@@ -817,7 +801,7 @@ final public class FileUtil {
 	}
 
 	private static CipherInputStream cis;
-	private static ZeroInputStream zis = new ZeroInputStream();
+	private static final ZeroInputStream zis = new ZeroInputStream();
 	private static long cisCounter;
 
 	/**

@@ -1,18 +1,10 @@
 package freenet.client.filter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
-
 import freenet.l10n.NodeL10n;
 import freenet.support.Logger;
+
+import java.io.*;
+import java.util.Map;
 
 public class MP3Filter implements ContentDataFilter {
 
@@ -91,11 +83,11 @@ public class MP3Filter implements ContentDataFilter {
 	public void readFilter(
 			InputStream input, OutputStream output,
 			String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		filter(input, output);
 	}
 
-	public void filter(InputStream input, OutputStream output) throws DataFilterException, IOException {
+	public void filter(InputStream input, OutputStream output) throws IOException {
 		//FIXME: Add support for free formatted files(highly uncommon)
 		DataInputStream in = new DataInputStream(input);
 		DataOutputStream out = new DataOutputStream(output);
@@ -239,7 +231,6 @@ public class MP3Filter implements ContentDataFilter {
 
 			out.flush();
 			Logger.normal(this, totalFrames + " frames, of which " + totalCRCs + " had a CRC");
-			return;
 		}
 	}
 
@@ -247,7 +238,7 @@ public class MP3Filter implements ContentDataFilter {
 		return NodeL10n.getBase().getString("MP3Filter." + key);
 	}
 
-	public static void main(String[] args) throws DataFilterException, IOException {
+	public static void main(String[] args) throws IOException {
 		File f = new File(args[0]);
 		FileInputStream fis = new FileInputStream(f);
 		File out = new File(args[0] + ".filtered.mp3");

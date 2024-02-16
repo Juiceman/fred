@@ -3,11 +3,11 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.crypt;
 
+import freenet.support.HexUtil;
+import net.i2p.util.NativeBigInteger;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-
-import net.i2p.util.NativeBigInteger;
-import freenet.support.HexUtil;
 
 /**
  * The Hash class will generate the hash value of a given set of bytes and also verify that
@@ -39,7 +39,7 @@ public final class Hash {
 	 *
 	 * @return The generated hash of all the bytes added since last reset.
 	 */
-	public final byte[] genHash() {
+	public byte[] genHash() {
 		byte[] result = digest.digest();
 		if (type == HashType.ED2K) {
 			//ED2K does not reset after generating a digest. Work around this issue
@@ -59,7 +59,7 @@ public final class Hash {
 	 * @param input The bytes to hash
 	 * @return The generated hash of the data
 	 */
-	public final byte[] genHash(byte[]... input) {
+	public byte[] genHash(byte[]... input) {
 		digest.reset();
 		addBytes(input);
 		return genHash();
@@ -73,7 +73,7 @@ public final class Hash {
 	 * @return The generated hash as a HashResult of all the bytes added
 	 * since last reset.
 	 */
-	public final HashResult genHashResult() {
+	public HashResult genHashResult() {
 		return new HashResult(type, genHash());
 	}
 
@@ -86,7 +86,7 @@ public final class Hash {
 	 * @param input The bytes to hash
 	 * @return The generated hash as a HashResult of the data
 	 */
-	public final HashResult genHashResult(byte[]... input) {
+	public HashResult genHashResult(byte[]... input) {
 		digest.reset();
 		addBytes(input);
 		return genHashResult();
@@ -100,7 +100,7 @@ public final class Hash {
 	 * @return The generated hash as a hex string of all the bytes added since
 	 * last reset.
 	 */
-	public final String genHexHash() {
+	public String genHexHash() {
 		return HexUtil.bytesToHex(genHash());
 	}
 
@@ -112,7 +112,7 @@ public final class Hash {
 	 * @return The generated hash as a NativeBigInteger of all the bytes added
 	 * since last reset.
 	 */
-	public final NativeBigInteger genNativeBigIntegerHash() {
+	public NativeBigInteger genNativeBigIntegerHash() {
 		return new NativeBigInteger(1, genHash());
 	}
 
@@ -125,7 +125,7 @@ public final class Hash {
 	 * @param input The bytes to hash
 	 * @return The generated hash as a NativeBigInteger of the data
 	 */
-	public final NativeBigInteger genNativeBigIntegerHash(byte[]... data) {
+	public NativeBigInteger genNativeBigIntegerHash(byte[]... data) {
 		digest.reset();
 		addBytes(data);
 		return genNativeBigIntegerHash();
@@ -136,7 +136,7 @@ public final class Hash {
 	 *
 	 * @param input Byte to be added to hash
 	 */
-	public final void addByte(byte input) {
+	public void addByte(byte input) {
 		digest.update(input);
 	}
 
@@ -145,7 +145,7 @@ public final class Hash {
 	 *
 	 * @param input The byte[]s to add
 	 */
-	public final void addBytes(byte[]... input) {
+	public void addBytes(byte[]... input) {
 		for (byte[] b : input) {
 			digest.update(b);
 		}
@@ -160,7 +160,7 @@ public final class Hash {
 	 *
 	 * @param input The ByteBuffer to be hashed
 	 */
-	public final void addBytes(ByteBuffer input) {
+	public void addBytes(ByteBuffer input) {
 		digest.update(input);
 	}
 
@@ -172,7 +172,7 @@ public final class Hash {
 	 * @param offset Where the first byte to hash is
 	 * @param len    How many bytes after the offset to add to hash.
 	 */
-	public final void addBytes(byte[] input, int offset, int len) {
+	public void addBytes(byte[] input, int offset, int len) {
 		digest.update(input, offset, len);
 	}
 
@@ -187,7 +187,7 @@ public final class Hash {
 	 * @return Returns true if the generated hash matches the passed in hash.
 	 * Otherwise returns false.
 	 */
-	public final boolean verify(byte[] hash, byte[]... data) {
+	public boolean verify(byte[] hash, byte[]... data) {
 		return MessageDigest.isEqual(hash, genHash(data));
 	}
 
@@ -199,7 +199,7 @@ public final class Hash {
 	 * @param hash2 The second hash to be compared
 	 * @return Returns true if the hashes are the same. Otherwise returns false.
 	 */
-	public final static boolean verify(HashResult hash1, HashResult hash2) {
+	public static boolean verify(HashResult hash1, HashResult hash2) {
 		return hash1.equals(hash2);
 	}
 
@@ -211,7 +211,7 @@ public final class Hash {
 	 * @param input The data to check against the HashResult
 	 * @return Returns true if HashResult matches the generated HashResult of the data.
 	 */
-	public final static boolean verify(HashResult hash, byte[]... input) {
+	public static boolean verify(HashResult hash, byte[]... input) {
 		HashType type = hash.type;
 		Hash h = new Hash(type);
 		return verify(hash, new HashResult(type, h.genHash(input)));

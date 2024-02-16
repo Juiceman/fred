@@ -1,5 +1,9 @@
 package freenet.store.saltedhash;
 
+import freenet.support.Fields;
+import freenet.support.Logger;
+import freenet.support.Ticker;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -8,10 +12,6 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import freenet.support.Fields;
-import freenet.support.Logger;
-import freenet.support.Ticker;
 
 /**
  * A large resizable block of int's, which is persisted to disk with a specific policy,
@@ -175,7 +175,7 @@ public class ResizablePersistentIntBuffer {
 		}
 	}
 
-	private Runnable writer = new Runnable() {
+	private final Runnable writer = new Runnable() {
 
 		public void run() {
 			Logger.normal(this, "Writing slot cache " + ResizablePersistentIntBuffer.this);
@@ -283,7 +283,7 @@ public class ResizablePersistentIntBuffer {
 			this.size = size;
 			buffer = Arrays.copyOf(buffer, size);
 			try {
-				raf.setLength(size * 4);
+				raf.setLength(size * 4L);
 				writeBuffer();
 			} catch (IOException e) {
 				Logger.error(this, "Failed to change size or write during resize on " + filename + " : " + e, e);

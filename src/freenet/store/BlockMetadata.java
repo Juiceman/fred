@@ -14,7 +14,7 @@ public final class BlockMetadata {
 	 */
 	private boolean oldBlock;
 
-	public final void reset() {
+	public void reset() {
 		oldBlock = false;
 	}
 
@@ -23,11 +23,11 @@ public final class BlockMetadata {
 	 * it was only cached because of writing everything to the datastore including local
 	 * and nearby requests.
 	 */
-	public final boolean isOldBlock() {
+	public boolean isOldBlock() {
 		return oldBlock;
 	}
 
-	public final void setOldBlock() {
+	public void setOldBlock() {
 		oldBlock = true;
 	}
 

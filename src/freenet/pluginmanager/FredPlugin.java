@@ -14,7 +14,7 @@ public interface FredPlugin {
 	/**
 	 * Shut down the plugin.
 	 */
-	public void terminate();
+	void terminate();
 
 	/**
 	 * Run the plugin. Called after node startup. Should be able to access
@@ -23,5 +23,5 @@ public interface FredPlugin {
 	 * function. Threadless plugins will not terminate until they are
 	 * explicitly unloaded.
 	 */
-	public void runPlugin(PluginRespirator pr);
+	void runPlugin(PluginRespirator pr);
 }

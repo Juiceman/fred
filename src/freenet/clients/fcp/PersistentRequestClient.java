@@ -1,12 +1,5 @@
 package freenet.clients.fcp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import freenet.client.FetchException.FetchExceptionMode;
 import freenet.client.InsertException.InsertExceptionMode;
 import freenet.client.async.ClientContext;
@@ -20,6 +13,8 @@ import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
+
+import java.util.*;
 
 /**
  * An FCP client.
@@ -93,8 +88,8 @@ public class PersistentRequestClient {
 	 */
 	private transient LinkedList<PersistentRequestClient> clientsWatching;
 	private final Object clientsWatchingLock = new Object();
-	private RequestClient lowLevelClient;
-	private RequestClient lowLevelClientRT;
+	private final RequestClient lowLevelClient;
+	private final RequestClient lowLevelClientRT;
 	private transient List<RequestCompletionCallback> completionCallbacks;
 	/**
 	 * The cache where ClientRequests report their progress
@@ -572,7 +567,6 @@ public class PersistentRequestClient {
 						clientRequestsByIdentifier.get(identifier));
 			else {
 				Logger.error(this, "Adding the same identifier twice: " + identifier);
-				return;
 			}
 		} else {
 			clientRequestsByIdentifier.put(identifier, clientRequest);

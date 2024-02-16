@@ -5,11 +5,7 @@ import freenet.client.FetchException;
 import freenet.client.async.SplitFileFetcherStorage.SplitFileFetcherStorageKey;
 import freenet.keys.ClientKey;
 import freenet.keys.Key;
-import freenet.node.KeysFetchingLocally;
-import freenet.node.LowLevelGetException;
-import freenet.node.RequestClient;
-import freenet.node.SendableGet;
-import freenet.node.SendableRequestItem;
+import freenet.node.*;
 import freenet.support.Logger;
 
 /**
@@ -72,7 +68,6 @@ public class SplitFileFetcherGet extends SendableGet implements HasKeyListener {
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
 		long wakeTime = storage.getCooldownWakeupTime(now);
-		if (wakeTime == 0) return 0;
 		return wakeTime;
 	}
 

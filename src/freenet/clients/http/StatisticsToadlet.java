@@ -1,42 +1,15 @@
 package freenet.clients.http;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.IOException;
-import java.net.URI;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import freenet.client.async.ClientRequester;
 import freenet.client.HighLevelSimpleClient;
+import freenet.client.async.ClientRequester;
 import freenet.config.SubConfig;
 import freenet.crypt.ciphers.Rijndael;
 import freenet.io.comm.IncomingPacketFilterImpl;
 import freenet.io.xfer.BlockReceiver;
 import freenet.io.xfer.BlockTransmitter;
-import freenet.l10n.NodeL10n;
 import freenet.keys.FreenetURI;
-import freenet.node.Location;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.NodeStarter;
-import freenet.node.NodeStats;
-import freenet.node.OpennetManager;
-import freenet.node.PeerManager;
-import freenet.node.PeerNodeStatus;
-import freenet.node.RequestClient;
-import freenet.node.RequestStarterGroup;
-import freenet.node.RequestTracker;
-import freenet.node.Version;
+import freenet.l10n.NodeL10n;
+import freenet.node.*;
 import freenet.node.stats.DataStoreInstanceType;
 import freenet.node.stats.DataStoreStats;
 import freenet.node.stats.StatsNotAvailableException;
@@ -47,6 +20,15 @@ import freenet.support.SizeUtil;
 import freenet.support.TimeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.io.NativeThread;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.*;
 
 public class StatisticsToadlet extends Toadlet {
 
@@ -147,10 +129,7 @@ public class StatisticsToadlet extends Toadlet {
 				@Override
 				public int compare(PeerNodeStatus firstNode, PeerNodeStatus secondNode) {
 					int statusDifference = firstNode.getStatusValue() - secondNode.getStatusValue();
-					if (statusDifference != 0) {
-						return statusDifference;
-					}
-					return 0;
+					return statusDifference;
 				}
 			});
 
@@ -698,12 +677,10 @@ public class StatisticsToadlet extends Toadlet {
 				row.addChild("td", s);
 			} catch (Throwable t) {
 				// FIXME shouldn't happen...
-				row.addChild("td", "ERROR: " + request.getClass().toString());
+				row.addChild("td", "ERROR: " + request.getClass());
 			}
 			long diff = now - request.creationTime;
-			StringBuilder sb = new StringBuilder();
-			sb.append(TimeUtil.formatTime(diff, 2));
-			row.addChild("td", sb.toString());
+			row.addChild("td", TimeUtil.formatTime(diff, 2));
 			row.addChild("td", Short.toString(request.getPriorityClass()));
 			row.addChild("td", client == null ? "?" : Boolean.toString(client.realTimeFlag()));
 			FreenetURI uri = request.getURI(); // getURI() sometimes returns null, eg for ClientPutters
@@ -852,7 +829,7 @@ public class StatisticsToadlet extends Toadlet {
 		for (STMessageCount messageCountItem : unclaimedFIFOMessageCountsArray) {
 			int thisMessageCount = messageCountItem.messageCount;
 			double thisMessagePercentOfTotal = ((double) thisMessageCount) / ((double) totalCount);
-			unclaimedFIFOMessageCountsList.addChild("li", "" + messageCountItem.messageName + ":\u00a0" + thisMessageCount + "\u00a0(" + fix3p1pct.format(thisMessagePercentOfTotal) + ')');
+			unclaimedFIFOMessageCountsList.addChild("li", messageCountItem.messageName + ":\u00a0" + thisMessageCount + "\u00a0(" + fix3p1pct.format(thisMessagePercentOfTotal) + ')');
 		}
 		unclaimedFIFOMessageCountsList.addChild("li", "Unclaimed Messages Considered:\u00a0" + totalCount);
 
@@ -1183,12 +1160,12 @@ public class StatisticsToadlet extends Toadlet {
 			if (numCHKInserts > 0 || numSSKInserts > 0) {
 				activityList.addChild("li", NodeL10n.getBase().getString("StatisticsToadlet.activityInserts",
 						new String[]{"CHKhandlers", "SSKhandlers", "local"},
-						new String[]{Integer.toString(numCHKInserts), Integer.toString(numSSKInserts), Integer.toString(numLocalCHKInserts) + "/" + Integer.toString(numLocalSSKInserts)}));
+						new String[]{Integer.toString(numCHKInserts), Integer.toString(numSSKInserts), numLocalCHKInserts + "/" + numLocalSSKInserts}));
 			}
 			if (numCHKRequests > 0 || numSSKRequests > 0) {
 				activityList.addChild("li", NodeL10n.getBase().getString("StatisticsToadlet.activityRequests",
 						new String[]{"CHKhandlers", "SSKhandlers", "local"},
-						new String[]{Integer.toString(numCHKRequests), Integer.toString(numSSKRequests), Integer.toString(numLocalCHKRequests) + "/" + Integer.toString(numLocalSSKRequests)}));
+						new String[]{Integer.toString(numCHKRequests), Integer.toString(numSSKRequests), numLocalCHKRequests + "/" + numLocalSSKRequests}));
 			}
 			if (numTransferringRequests > 0 || numTransferringRequestHandlers > 0) {
 				activityList.addChild("li", NodeL10n.getBase().getString("StatisticsToadlet.transferringRequests",
@@ -1327,7 +1304,7 @@ public class StatisticsToadlet extends Toadlet {
 		double thisThreadPercentOfTotal;
 		for (ThreadBunch bunch : bunches) {
 			thisThreadPercentOfTotal = ((double) bunch.count) / ((double) totalCount);
-			threadUsageList.addChild("li", "" + bunch.name + ":\u00a0" + Integer.toString(bunch.count) + "\u00a0(" + fix3p1pct.format(thisThreadPercentOfTotal) + ')');
+			threadUsageList.addChild("li", bunch.name + ":\u00a0" + bunch.count + "\u00a0(" + fix3p1pct.format(thisThreadPercentOfTotal) + ')');
 		}
 	}
 

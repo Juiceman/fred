@@ -1,20 +1,20 @@
 package freenet.node.simulator;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import freenet.crypt.RandomSource;
 import freenet.node.Node;
 import freenet.node.NodeInitException;
 import freenet.node.NodeStarter;
 import freenet.support.Executor;
 import freenet.support.Logger;
-import freenet.support.PooledExecutor;
-import freenet.support.TimeUtil;
 import freenet.support.Logger.LogLevel;
 import freenet.support.LoggerHook.InvalidThresholdException;
+import freenet.support.PooledExecutor;
+import freenet.support.TimeUtil;
 import freenet.support.io.FileUtil;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class BootstrapSeedTest {
 
@@ -69,7 +69,7 @@ public class BootstrapSeedTest {
 				int seedConns = node.peers.getConnectedSeedServerPeersVector(null).size();
 				int opennetPeers = node.peers.countValidPeers();
 				int opennetConns = node.peers.countConnectedOpennetPeers();
-				System.err.println("" + seconds + " : seeds: " + seeds + ", connected: " + seedConns
+				System.err.println(seconds + " : seeds: " + seeds + ", connected: " + seedConns
 						+ " opennet: peers: " + opennetPeers + ", connected: " + opennetConns);
 				seconds++;
 				if (opennetConns >= targetPeers) {

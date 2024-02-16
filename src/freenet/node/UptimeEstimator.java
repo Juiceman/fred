@@ -3,22 +3,15 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DecimalFormat;
-
 import freenet.support.Fields;
 import freenet.support.Logger;
 import freenet.support.Ticker;
 import freenet.support.io.Closer;
+
+import java.io.*;
+import java.text.DecimalFormat;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * A class to estimate the node's average uptime. Every 5 minutes (with a fixed offset), we write
@@ -39,11 +32,11 @@ public class UptimeEstimator implements Runnable {
 	/**
 	 * For each 5 minute slot in the last 48 hours, were we online?
 	 */
-	private boolean[] wasOnline = new boolean[48 * 12]; //48 hours * 12 5-minute slots/hour
+	private final boolean[] wasOnline = new boolean[48 * 12]; //48 hours * 12 5-minute slots/hour
 	/**
 	 * Whether the node was online for each 5 minute slot in the last week,
 	 */
-	private boolean[] wasOnlineWeek = new boolean[7 * 24 * 12]; //7 days/week * 24 hours/day * 12 5-minute slots/hour
+	private final boolean[] wasOnlineWeek = new boolean[7 * 24 * 12]; //7 days/week * 24 hours/day * 12 5-minute slots/hour
 
 	/**
 	 * Which slot are we up to? We rotate around the array. Slots before us are before us,
@@ -54,18 +47,18 @@ public class UptimeEstimator implements Runnable {
 	/**
 	 * The file we are writing to
 	 */
-	private File logFile;
+	private final File logFile;
 
 	/**
 	 * The previous file. We have read this. When logFile reaches 48 hours, we dump the prevFile,
 	 * move the logFile over it, and write to a new logFile.
 	 */
-	private File prevFile;
+	private final File prevFile;
 
 	/**
 	 * We write to disk every 5 minutes. The offset is derived from the node's identity.
 	 */
-	private long timeOffset;
+	private final long timeOffset;
 
 	public UptimeEstimator(ProgramDirectory runDir, Ticker ticker, byte[] bs) {
 		this.ticker = ticker;

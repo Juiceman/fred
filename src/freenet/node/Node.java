@@ -4,85 +4,16 @@
 /* Freenet 0.7 node. */
 package freenet.node;
 
-import static freenet.node.stats.DataStoreKeyType.CHK;
-import static freenet.node.stats.DataStoreKeyType.PUB_KEY;
-import static freenet.node.stats.DataStoreKeyType.SSK;
-import static freenet.node.stats.DataStoreType.CACHE;
-import static freenet.node.stats.DataStoreType.CLIENT;
-import static freenet.node.stats.DataStoreType.SLASHDOT;
-import static freenet.node.stats.DataStoreType.STORE;
-import static freenet.support.io.DatastoreUtil.oneGiB;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Random;
-import java.util.Set;
-
-import freenet.config.*;
-import freenet.node.diagnostics.*;
-import freenet.node.useralerts.*;
-import freenet.support.io.*;
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.client.FetchContext;
 import freenet.clients.fcp.FCPMessage;
 import freenet.clients.fcp.FeedMessage;
 import freenet.clients.http.SecurityLevelsToadlet;
 import freenet.clients.http.SimpleToadletServer;
-import freenet.crypt.DSAPublicKey;
-import freenet.crypt.ECDH;
-import freenet.crypt.MasterSecret;
-import freenet.crypt.PersistentRandomSource;
-import freenet.crypt.RandomSource;
-import freenet.crypt.Yarrow;
-import freenet.io.comm.DMT;
-import freenet.io.comm.DisconnectedException;
-import freenet.io.comm.FreenetInetAddress;
-import freenet.io.comm.IOStatisticCollector;
-import freenet.io.comm.Message;
-import freenet.io.comm.MessageCore;
-import freenet.io.comm.MessageFilter;
-import freenet.io.comm.Peer;
-import freenet.io.comm.PeerParseException;
-import freenet.io.comm.ReferenceSignatureVerificationException;
-import freenet.io.comm.TrafficClass;
-import freenet.io.comm.UdpSocketHandler;
+import freenet.config.*;
+import freenet.crypt.*;
+import freenet.io.comm.*;
 import freenet.io.xfer.PartiallyReceivedBlock;
-import freenet.keys.CHKBlock;
-import freenet.keys.CHKVerifyException;
-import freenet.keys.ClientCHK;
-import freenet.keys.ClientCHKBlock;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientKeyBlock;
-import freenet.keys.ClientSSK;
-import freenet.keys.ClientSSKBlock;
-import freenet.keys.Key;
-import freenet.keys.KeyBlock;
-import freenet.keys.KeyVerifyException;
-import freenet.keys.NodeCHK;
-import freenet.keys.NodeSSK;
-import freenet.keys.SSKBlock;
-import freenet.keys.SSKVerifyException;
+import freenet.keys.*;
 import freenet.l10n.BaseL10n;
 import freenet.l10n.NodeL10n;
 import freenet.node.DarknetPeerNode.FRIEND_TRUST;
@@ -91,6 +22,8 @@ import freenet.node.NodeDispatcher.NodeDispatcherCallback;
 import freenet.node.OpennetManager.ConnectionType;
 import freenet.node.SecurityLevels.NETWORK_THREAT_LEVEL;
 import freenet.node.SecurityLevels.PHYSICAL_THREAT_LEVEL;
+import freenet.node.diagnostics.DefaultNodeDiagnostics;
+import freenet.node.diagnostics.NodeDiagnostics;
 import freenet.node.probe.Listener;
 import freenet.node.probe.Type;
 import freenet.node.stats.DataStoreInstanceType;
@@ -98,48 +31,33 @@ import freenet.node.stats.DataStoreStats;
 import freenet.node.stats.NotAvailNodeStoreStats;
 import freenet.node.stats.StoreCallbackStats;
 import freenet.node.updater.NodeUpdateManager;
+import freenet.node.useralerts.*;
 import freenet.pluginmanager.ForwardPort;
 import freenet.pluginmanager.PluginManager;
-import freenet.store.BlockMetadata;
-import freenet.store.CHKStore;
-import freenet.store.FreenetStore;
-import freenet.store.KeyCollisionException;
-import freenet.store.NullFreenetStore;
-import freenet.store.PubkeyStore;
-import freenet.store.RAMFreenetStore;
-import freenet.store.SSKStore;
-import freenet.store.SlashdotStore;
-import freenet.store.StorableBlock;
-import freenet.store.StoreCallback;
+import freenet.store.*;
 import freenet.store.caching.CachingFreenetStore;
 import freenet.store.caching.CachingFreenetStoreTracker;
 import freenet.store.saltedhash.ResizablePersistentIntBuffer;
 import freenet.store.saltedhash.SaltedHashFreenetStore;
-import freenet.support.Executor;
-import freenet.support.Fields;
-import freenet.support.HTMLNode;
-import freenet.support.HexUtil;
-import freenet.support.JVMVersion;
-import freenet.support.LogThresholdCallback;
-import freenet.support.Logger;
+import freenet.support.*;
 import freenet.support.Logger.LogLevel;
-import freenet.support.PooledExecutor;
-import freenet.support.PrioritizedTicker;
-import freenet.support.ShortBuffer;
-import freenet.support.SimpleFieldSet;
-import freenet.support.Ticker;
-import freenet.support.TokenBucket;
-import freenet.support.api.BooleanCallback;
-import freenet.support.api.IntCallback;
-import freenet.support.api.LongCallback;
-import freenet.support.api.ShortCallback;
-import freenet.support.api.StringCallback;
-import freenet.support.io.ArrayBucketFactory;
-import freenet.support.io.Closer;
-import freenet.support.io.FileUtil;
-import freenet.support.io.NativeThread;
+import freenet.support.api.*;
+import freenet.support.io.*;
 import freenet.support.math.MersenneTwister;
 import freenet.support.transport.ip.HostnameSyntaxException;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.*;
+
+import static freenet.node.stats.DataStoreKeyType.*;
+import static freenet.node.stats.DataStoreType.*;
+import static freenet.support.io.DatastoreUtil.oneGiB;
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * @author amphibian
@@ -633,12 +551,12 @@ public class Node implements TimeSkewDetectorCallback {
 	private int maxSlashdotCacheKeys;
 	static final long PURGE_INTERVAL = SECONDS.toMillis(60);
 
-	private CHKStore chkSlashdotcache;
-	private SlashdotStore<CHKBlock> chkSlashdotcacheStore;
-	private SSKStore sskSlashdotcache;
-	private SlashdotStore<SSKBlock> sskSlashdotcacheStore;
-	private PubkeyStore pubKeySlashdotcache;
-	private SlashdotStore<DSAPublicKey> pubKeySlashdotcacheStore;
+	private final CHKStore chkSlashdotcache;
+	private final SlashdotStore<CHKBlock> chkSlashdotcacheStore;
+	private final SSKStore sskSlashdotcache;
+	private final SlashdotStore<SSKBlock> sskSlashdotcacheStore;
+	private final PubkeyStore pubKeySlashdotcache;
+	private final SlashdotStore<DSAPublicKey> pubKeySlashdotcacheStore;
 
 	/**
 	 * If false, only ULPRs will use the slashdot cache. If true, everything does.
@@ -841,7 +759,7 @@ public class Node implements TimeSkewDetectorCallback {
 	public final long bootID;
 	public final long startupTime;
 
-	private SimpleToadletServer toadlets;
+	private final SimpleToadletServer toadlets;
 
 	public final NodeClientCore clientCore;
 
@@ -945,7 +863,7 @@ public class Node implements TimeSkewDetectorCallback {
 		br.close();
 		// Read contents
 		String[] udp = fs.getAll("physical.udp");
-		if ((udp != null) && (udp.length > 0)) {
+		if (udp != null) {
 			for (String udpAddr : udp) {
 				// Just keep the first one with the correct port number.
 				Peer p;
@@ -956,7 +874,7 @@ public class Node implements TimeSkewDetectorCallback {
 					System.err.println("Invalid hostname or IP Address syntax error while parsing our darknet node reference: " + udpAddr);
 					continue;
 				} catch (PeerParseException e) {
-					throw (IOException) new IOException().initCause(e);
+					throw (IOException) new IOException(e);
 				}
 				if (p.getPort() == getDarknetPortNumber()) {
 					// DNSRequester doesn't deal with our own node
@@ -1041,7 +959,6 @@ public class Node implements TimeSkewDetectorCallback {
 			FileUtil.renameTo(backup, orig);
 		} catch (IOException ioe) {
 			Logger.error(this, "IOE :" + ioe.getMessage(), ioe);
-			return;
 		} finally {
 			Closer.close(fos);
 		}
@@ -1068,10 +985,7 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	public boolean isUsingWrapper() {
-		if (nodeStarter != null && WrapperManager.isControlledByNativeWrapper())
-			return true;
-		else
-			return false;
+		return nodeStarter != null && WrapperManager.isControlledByNativeWrapper();
 	}
 
 	public NodeStarter getNodeStarter() {
@@ -1247,7 +1161,7 @@ public class Node implements TimeSkewDetectorCallback {
 		isPRNGReady = true;
 		toadlets.getStartupToadlet().setIsPRNGReady();
 		if (weakRandom == null) {
-			byte buffer[] = new byte[16];
+			byte[] buffer = new byte[16];
 			random.nextBytes(buffer);
 			this.fastWeakRandom = new MersenneTwister(buffer);
 		} else
@@ -1852,10 +1766,10 @@ public class Node implements TimeSkewDetectorCallback {
 			} catch (IOException e1) {
 				if (nodeFile.exists() || nodeFileBackup.exists()) {
 					System.err.println("No node file or cannot read, (re)initialising crypto etc");
-					System.err.println(e1.toString());
+					System.err.println(e1);
 					e1.printStackTrace();
 					System.err.println("After:");
-					System.err.println(e.toString());
+					System.err.println(e);
 					e.printStackTrace();
 				} else {
 					System.err.println("Creating new cryptographic keys...");
@@ -2284,10 +2198,7 @@ public class Node implements TimeSkewDetectorCallback {
 				@Override
 				public void onChange(PHYSICAL_THREAT_LEVEL oldLevel, PHYSICAL_THREAT_LEVEL newLevel) {
 					try {
-						if (newLevel == PHYSICAL_THREAT_LEVEL.LOW)
-							nodeConfig.set("storePreallocate", false);
-						else
-							nodeConfig.set("storePreallocate", true);
+						nodeConfig.set("storePreallocate", newLevel != PHYSICAL_THREAT_LEVEL.LOW);
 					} catch (NodeNeedRestartException e) {
 						// Ignore
 					} catch (InvalidConfigValueException e) {
@@ -2831,7 +2742,7 @@ public class Node implements TimeSkewDetectorCallback {
 
 	private boolean checkPeersOffersFrefFiles() {
 		File[] files = runDir.file("peers-offers").listFiles();
-		if (files != null && files.length > 0) {
+		if (files != null) {
 			for (File file : files) {
 				if (file.isFile()) {
 					String filename = file.getName();
@@ -3250,7 +3161,7 @@ public class Node implements TimeSkewDetectorCallback {
 		Logger.normal(this, "Initializing " + type + " Data" + store);
 		System.out.println("Initializing " + type + " Data" + store + " (" + maxStoreKeys + " keys)");
 
-		SaltedHashFreenetStore<T> fs = SaltedHashFreenetStore.<T>construct(getStoreDir(), type + "-" + store, cb,
+		SaltedHashFreenetStore<T> fs = SaltedHashFreenetStore.construct(getStoreDir(), type + "-" + store, cb,
 				random, maxKeys, storeUseSlotFilters, shutdownHook, storePreallocate, storeSaltHashResizeOnStart && !lateStart, lateStart ? ticker : null, clientCacheMasterKey);
 		cb.setStore(fs);
 		if (cachingFreenetStoreMaxSize > 0)
@@ -4219,7 +4130,7 @@ public class Node implements TimeSkewDetectorCallback {
 		return peers.isOutdated();
 	}
 
-	private Map<Integer, NodeToNodeMessageListener> n2nmListeners = new HashMap<Integer, NodeToNodeMessageListener>();
+	private final Map<Integer, NodeToNodeMessageListener> n2nmListeners = new HashMap<Integer, NodeToNodeMessageListener>();
 
 	public synchronized void registerNodeToNodeMessageListener(int type, NodeToNodeMessageListener listener) {
 		n2nmListeners.put(type, listener);
@@ -4250,7 +4161,7 @@ public class Node implements TimeSkewDetectorCallback {
 		listener.handleMessage(messageData.getData(), fromDarknet, src, type);
 	}
 
-	private NodeToNodeMessageListener diffNoderefListener = new NodeToNodeMessageListener() {
+	private final NodeToNodeMessageListener diffNoderefListener = new NodeToNodeMessageListener() {
 
 		@Override
 		public void handleMessage(byte[] data, boolean fromDarknet, PeerNode src, int type) {
@@ -4269,13 +4180,12 @@ public class Node implements TimeSkewDetectorCallback {
 				src.processDiffNoderef(fs);
 			} catch (FSParseException e) {
 				Logger.error(this, "FSParseException while parsing node to node message data", e);
-				return;
 			}
 		}
 
 	};
 
-	private NodeToNodeMessageListener fproxyN2NMListener = new NodeToNodeMessageListener() {
+	private final NodeToNodeMessageListener fproxyN2NMListener = new NodeToNodeMessageListener() {
 
 		@Override
 		public void handleMessage(byte[] data, boolean fromDarknet, PeerNode src, int type) {
@@ -4477,7 +4387,7 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	// FIXME put this somewhere else
-	private volatile Object statsSync = new Object();
+	private final Object statsSync = new Object();
 
 	/**
 	 * The total number of bytes of real data i.e.&nbsp;payload sent by the node
@@ -4662,7 +4572,7 @@ public class Node implements TimeSkewDetectorCallback {
 		// Only return true if bindTo is set on all ports which are in use
 		if (!darknetCrypto.getBindTo().isRealInternetAddress(false, true, false)) return false;
 		if (opennet != null) {
-			if (opennet.crypto.getBindTo().isRealInternetAddress(false, true, false)) return false;
+			return !opennet.crypto.getBindTo().isRealInternetAddress(false, true, false);
 		}
 		return true;
 	}
@@ -4922,8 +4832,7 @@ public class Node implements TimeSkewDetectorCallback {
 
 	public boolean awaitingPassword() {
 		if (clientCacheAwaitingPassword) return true;
-		if (databaseAwaitingPassword) return true;
-		return false;
+		return databaseAwaitingPassword;
 	}
 
 	public boolean wantEncryptedDatabase() {
@@ -5025,7 +4934,7 @@ public class Node implements TimeSkewDetectorCallback {
 		registerFriendsVisibilityAlert();
 	}
 
-	private UserAlert visibilityAlert = new SimpleUserAlert(true, l10n("pleaseSetPeersVisibilityAlertTitle"), l10n("pleaseSetPeersVisibilityAlert"), l10n("pleaseSetPeersVisibilityAlert"), UserAlert.ERROR) {
+	private final UserAlert visibilityAlert = new SimpleUserAlert(true, l10n("pleaseSetPeersVisibilityAlertTitle"), l10n("pleaseSetPeersVisibilityAlert"), l10n("pleaseSetPeersVisibilityAlert"), UserAlert.ERROR) {
 
 		@Override
 		public void onDismiss() {
@@ -5114,9 +5023,7 @@ public class Node implements TimeSkewDetectorCallback {
 			if (om.announcer != null && om.announcer.isWaitingForUpdater())
 				return true;
 		}
-		if (peers.getPeerNodeStatusSize(PeerManager.PEER_NODE_STATUS_TOO_NEW, true) > PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET)
-			return true;
-		return false;
+		return peers.getPeerNodeStatusSize(PeerManager.PEER_NODE_STATUS_TOO_NEW, true) > PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET;
 	}
 
 

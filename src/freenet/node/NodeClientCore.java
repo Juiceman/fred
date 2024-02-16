@@ -1,26 +1,7 @@
 package freenet.node;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
-
-import freenet.client.ArchiveManager;
-import freenet.client.FECCodec;
-import freenet.client.FetchContext;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.HighLevelSimpleClientImpl;
-import freenet.client.InsertContext;
-import freenet.client.async.ClientContext;
-import freenet.client.async.ClientLayerPersister;
-import freenet.client.async.ClientRequestScheduler;
-import freenet.client.async.DatastoreChecker;
-import freenet.client.async.HealingDecisionSupplier;
-import freenet.client.async.HealingQueue;
-import freenet.client.async.PersistentStatsPutter;
-import freenet.client.async.SimpleHealingQueue;
-import freenet.client.async.USKManager;
+import freenet.client.*;
+import freenet.client.async.*;
 import freenet.client.events.SimpleEventProducer;
 import freenet.client.filter.FilterCallback;
 import freenet.client.filter.FoundURICallback;
@@ -40,53 +21,25 @@ import freenet.crypt.MasterSecret;
 import freenet.crypt.RandomSource;
 import freenet.io.xfer.AbortedException;
 import freenet.io.xfer.PartiallyReceivedBlock;
-import freenet.keys.CHKBlock;
-import freenet.keys.CHKVerifyException;
-import freenet.keys.ClientCHK;
-import freenet.keys.ClientCHKBlock;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientKeyBlock;
-import freenet.keys.ClientSSK;
-import freenet.keys.ClientSSKBlock;
-import freenet.keys.FreenetURI;
-import freenet.keys.Key;
-import freenet.keys.KeyBlock;
-import freenet.keys.NodeSSK;
-import freenet.keys.SSKBlock;
-import freenet.keys.SSKVerifyException;
+import freenet.keys.*;
 import freenet.l10n.NodeL10n;
 import freenet.node.SecurityLevels.PHYSICAL_THREAT_LEVEL;
-import freenet.node.useralerts.DatastoreTooSmallAlert;
-import freenet.node.useralerts.DiskSpaceUserAlert;
-import freenet.node.useralerts.SimpleUserAlert;
-import freenet.node.useralerts.UserAlert;
-import freenet.node.useralerts.UserAlertManager;
+import freenet.node.useralerts.*;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.pluginmanager.PluginStores;
 import freenet.store.KeyCollisionException;
-import freenet.support.Base64;
-import freenet.support.Executor;
-import freenet.support.Logger;
-import freenet.support.MemoryLimitedJobRunner;
-import freenet.support.SimpleFieldSet;
-import freenet.support.SizeUtil;
-import freenet.support.Ticker;
-import freenet.support.api.BooleanCallback;
-import freenet.support.api.HTTPRequest;
-import freenet.support.api.IntCallback;
-import freenet.support.api.LongCallback;
-import freenet.support.api.StringArrCallback;
+import freenet.support.*;
+import freenet.support.api.*;
 import freenet.support.compress.Compressor;
 import freenet.support.compress.RealCompressor;
-import freenet.support.io.DiskSpaceCheckingRandomAccessBufferFactory;
-import freenet.support.io.FileUtil;
-import freenet.support.io.FilenameGenerator;
-import freenet.support.io.MaybeEncryptedRandomAccessBufferFactory;
-import freenet.support.io.NativeThread;
-import freenet.support.io.PersistentTempBucketFactory;
-import freenet.support.io.PooledFileRandomAccessBufferFactory;
-import freenet.support.io.TempBucketFactory;
+import freenet.support.io.*;
 import freenet.support.plugins.helpers1.WebInterfaceToadlet;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -182,7 +135,7 @@ public class NodeClientCore implements Persistable {
 	static final long MAX_CACHED_ARCHIVE_DATA = 32 * 1024 * 1024; // make a fixed fraction of the store by default? FIXME
 	static final long MAX_ARCHIVED_FILE_SIZE = 1024 * 1024; // arbitrary... FIXME
 	static final int MAX_CACHED_ELEMENTS = 256 * 1024; // equally arbitrary! FIXME hopefully we can cache many of these though
-	private UserAlert startingUpAlert;
+	private final UserAlert startingUpAlert;
 	private boolean alwaysCommit;
 	private final PluginStores pluginStores;
 	private boolean lazyStartDatastoreChecker;
@@ -290,8 +243,7 @@ public class NodeClientCore implements Persistable {
 
 					@Override
 					public Boolean get() {
-						return (persistentTempBucketFactory == null
-								? true : persistentTempBucketFactory
+						return (persistentTempBucketFactory == null || persistentTempBucketFactory
 								.isEncrypting());
 					}
 
@@ -419,8 +371,7 @@ public class NodeClientCore implements Persistable {
 
 					@Override
 					public Boolean get() {
-						return (tempBucketFactory == null ? true
-								: tempBucketFactory
+						return (tempBucketFactory == null || tempBucketFactory
 								.isEncrypting());
 					}
 
@@ -709,7 +660,7 @@ public class NodeClientCore implements Persistable {
 						"NodeClientCore.downloadsDir",
 						"NodeClientCore.downloadsDirLong",
 						l10n("couldNotFindOrCreateDir"),
-						(SubConfig) null);
+						null);
 
 		// Downloads allowed, uploads allowed
 
@@ -864,9 +815,7 @@ public class NodeClientCore implements Persistable {
 				}
 				if (NodeClientCore.this.node.awaitingPassword())
 					return false;
-				if (NodeClientCore.this.node.isStopping())
-					return false;
-				return true;
+				return !NodeClientCore.this.node.isStopping();
 			}
 
 			@Override
@@ -1099,7 +1048,7 @@ public class NodeClientCore implements Persistable {
 
 	public interface SimpleRequestSenderCompletionListener {
 
-		public void completed(boolean success);
+		void completed(boolean success);
 	}
 
 	/**
@@ -1279,7 +1228,6 @@ public class NodeClientCore implements Persistable {
 						default:
 							Logger.error(this, "Unknown RequestSender code in get" + (isSSK ? "SSK" : "CHK") + ": " + status + " on " + rs);
 							listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
-							return;
 					}
 				}
 			}
@@ -1709,7 +1657,6 @@ public class NodeClientCore implements Persistable {
 
 			if (status == CHKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
-				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
 				if (status == CHKInsertSender.ROUTE_NOT_FOUND)
@@ -1857,7 +1804,6 @@ public class NodeClientCore implements Persistable {
 
 			if (status == SSKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
-				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
 				if (status == CHKInsertSender.ROUTE_NOT_FOUND)
@@ -2103,8 +2049,7 @@ public class NodeClientCore implements Persistable {
 	public boolean wantKey(Key key) {
 		boolean isSSK = key instanceof NodeSSK;
 		if (this.clientContext.getFetchScheduler(isSSK, true).wantKey(key)) return true;
-		if (this.clientContext.getFetchScheduler(isSSK, false).wantKey(key)) return true;
-		return false;
+		return this.clientContext.getFetchScheduler(isSSK, false).wantKey(key);
 	}
 
 	public long checkRecentlyFailed(Key key, boolean realTime) {

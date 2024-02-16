@@ -53,7 +53,7 @@ public final class Global {
 		return m.toByteArray();
 	}
 
-	public static final DSAParameters getDSAgroupBigAParameters() {
+	public static DSAParameters getDSAgroupBigAParameters() {
 		return new DSAParameters(DSAgroupBigA.getP(), DSAgroupBigA.getQ(), DSAgroupBigA.getG());
 	}
 }

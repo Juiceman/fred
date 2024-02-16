@@ -1,28 +1,21 @@
 package freenet.support.compress;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import freenet.support.Logger;
 import freenet.support.api.Bucket;
 import freenet.support.api.BucketFactory;
 import freenet.support.api.RandomAccessBucket;
-import freenet.support.api.RandomAccessBuffer;
-import freenet.support.io.ArrayBucket;
 import freenet.support.io.Closer;
 import freenet.support.io.CountedOutputStream;
+
+import java.io.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class GzipCompressor extends AbstractCompressor {
 
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+			throws IOException {
 		RandomAccessBucket output = bf.makeBucket(maxWriteLength);
 		InputStream is = null;
 		OutputStream os = null;
@@ -91,7 +84,7 @@ public class GzipCompressor extends AbstractCompressor {
 	}
 
 	@Override
-	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
+	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException {
 		GZIPInputStream gis = new GZIPInputStream(is);
 		long written = 0;
 		int bufSize = 32768;

@@ -1,8 +1,8 @@
 package freenet.node;
 
-import java.lang.ref.WeakReference;
-
 import freenet.keys.Key;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Methods on PeerNode that don't need any significant locking. Used by FailureTableEntry to
@@ -18,7 +18,7 @@ interface PeerNodeUnlocked {
 
 	WeakReference<? extends PeerNodeUnlocked> getWeakRef();
 
-	public String shortToString();
+	String shortToString();
 
 	boolean isConnected();
 

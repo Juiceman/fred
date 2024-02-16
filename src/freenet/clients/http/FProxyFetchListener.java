@@ -7,6 +7,6 @@ public interface FProxyFetchListener {
 	/**
 	 * Will be called when the fetch's status is changed
 	 */
-	public void onEvent();
+	void onEvent();
 
 }

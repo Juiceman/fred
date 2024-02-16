@@ -1,16 +1,15 @@
 package freenet.clients.http.utils;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import freenet.support.HTMLNode;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Map;
 
 public class PebbleUtils {
 	private static final String TEMPLATE_ROOT_PATH = "freenet/clients/http/templates/";

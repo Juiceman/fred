@@ -3,9 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.Serializable;
-import java.util.List;
-
 import freenet.client.ClientMetadata;
 import freenet.client.FetchException;
 import freenet.client.InsertContext.CompatibilityMode;
@@ -13,6 +10,9 @@ import freenet.crypt.HashResult;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
 import freenet.support.compress.Compressor;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Passes everything through, except that is updates the lastKnownGood on the USKManager,

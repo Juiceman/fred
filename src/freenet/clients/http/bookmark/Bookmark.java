@@ -27,9 +27,7 @@ public abstract class Bookmark {
 			return true;
 		if (o instanceof Bookmark) {
 			Bookmark b = (Bookmark) o;
-			if (!b.name.equals(name))
-				return false;
-			return true;
+			return b.name.equals(name);
 		} else
 			return false;
 	}

@@ -26,7 +26,7 @@ public class UnqueueMessageOnAckCallback implements AsyncMessageCallback {
 
 	@Override
 	public String toString() {
-		return super.toString() + ": " + dest + ' ' + Integer.toString(extraPeerDataFileNumber);
+		return super.toString() + ": " + dest + ' ' + extraPeerDataFileNumber;
 	}
 
 	DarknetPeerNode dest;

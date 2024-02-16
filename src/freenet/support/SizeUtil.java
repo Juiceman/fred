@@ -40,7 +40,7 @@ public class SizeUtil {
 
 		if (s == 1)  // Bytes? Then we don't need real numbers with a comma
 		{
-			return new String[]{(negative ? "-" : "") + String.valueOf(bytes), SizeUtil.suffixes[0]};
+			return new String[]{(negative ? "-" : "") + bytes, SizeUtil.suffixes[0]};
 		} else {
 			double mantissa = (double) bytes / (double) s;
 			String o = String.valueOf(mantissa);

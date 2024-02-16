@@ -1,22 +1,5 @@
 package freenet.support.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Vector;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.client.async.ClientContext;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
@@ -24,6 +7,11 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Vector;
 
 public abstract class BaseFileBucket implements RandomAccessBucket {
 	private static volatile boolean logMINOR;
@@ -184,8 +172,8 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	 */
 	class FileBucketOutputStream extends FileOutputStream {
 
-		private long restartCount;
-		private File tempfile;
+		private final long restartCount;
+		private final File tempfile;
 		private boolean closed;
 
 		protected FileBucketOutputStream(
@@ -269,7 +257,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 
 		@Override
 		public String toString() {
-			return super.toString() + ":" + BaseFileBucket.this.toString();
+			return super.toString() + ":" + BaseFileBucket.this;
 		}
 	}
 
@@ -292,7 +280,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 
 		@Override
 		public String toString() {
-			return super.toString() + ":" + BaseFileBucket.this.toString();
+			return super.toString() + ":" + BaseFileBucket.this;
 		}
 	}
 
@@ -430,8 +418,8 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 		Bucket[] buckets = new Bucket[bucketCount];
 		File file = getFile();
 		for (int i = 0; i < buckets.length; i++) {
-			long startAt = 1L * i * splitSize;
-			long endAt = Math.min(startAt + splitSize * 1L, length);
+			long startAt = (long) i * splitSize;
+			long endAt = Math.min(startAt + (long) splitSize, length);
 			long len = endAt - startAt;
 			buckets[i] = new ReadOnlyFileSliceBucket(file, startAt, len);
 		}

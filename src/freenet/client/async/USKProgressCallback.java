@@ -7,13 +7,13 @@ public interface USKProgressCallback extends USKCallback {
 	 * requests. There might be a long gap between this callback and the time
 	 * at which we actually start a network level request.
 	 */
-	public void onSendingToNetwork(ClientContext context);
+	void onSendingToNetwork(ClientContext context);
 
 	/**
 	 * Called when we have checked the datastore, and all our polling requests
 	 * have gone into cooldown, and all our random future edition probes have
 	 * completed.
 	 */
-	public void onRoundFinished(ClientContext context);
+	void onRoundFinished(ClientContext context);
 
 }

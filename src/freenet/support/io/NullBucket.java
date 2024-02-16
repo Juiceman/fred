@@ -3,16 +3,12 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.io;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-
 import freenet.client.async.ClientContext;
 import freenet.support.api.Bucket;
 import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
+
+import java.io.*;
 
 public class NullBucket implements Bucket, Serializable, RandomAccessBucket {
 

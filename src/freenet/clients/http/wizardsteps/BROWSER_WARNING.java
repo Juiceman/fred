@@ -1,12 +1,12 @@
 package freenet.clients.http.wizardsteps;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import freenet.clients.http.FirstTimeWizardToadlet;
 import freenet.l10n.NodeL10n;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This step gives the user information about browser usage.

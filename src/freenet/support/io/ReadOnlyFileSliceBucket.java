@@ -3,19 +3,10 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.support.io;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-
 import freenet.client.async.ClientContext;
 import freenet.support.api.Bucket;
+
+import java.io.*;
 
 /**
  * FIXME: implement a hash verifying version of this.
@@ -75,7 +66,7 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 
 	private class MyInputStream extends InputStream {
 
-		private RandomAccessFile f;
+		private final RandomAccessFile f;
 		private long ptr; // relative to startAt
 
 		MyInputStream() throws IOException {

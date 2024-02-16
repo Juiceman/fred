@@ -1,21 +1,19 @@
 package freenet.store;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 import freenet.node.stats.StoreAccessStats;
 import freenet.node.useralerts.UserAlertManager;
 import freenet.support.Ticker;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * Datastore interface
  */
 public interface FreenetStore<T extends StorableBlock> extends Closeable {
-	public enum StoreType {
+	enum StoreType {
 		CHK, PUBKEY, SSK
 	}
-
-	;
 
 	/**
 	 * Retrieve a block. Use the StoreCallback to convert it to the appropriate type of block.
@@ -44,8 +42,8 @@ public interface FreenetStore<T extends StorableBlock> extends Closeable {
 	 * @throws KeyCollisionException If the key already exists and <code>callback.collisionPossible()</code> is
 	 *                               <code>true</code>.
 	 */
-	public void put(T block, byte[] data, byte[] header,
-					boolean overwrite, boolean oldBlock) throws IOException, KeyCollisionException;
+	void put(T block, byte[] data, byte[] header,
+			 boolean overwrite, boolean oldBlock) throws IOException, KeyCollisionException;
 
 	/**
 	 * Change the store size.
@@ -55,19 +53,19 @@ public interface FreenetStore<T extends StorableBlock> extends Closeable {
 	 * @throws IOException
 	 * @throws DatabaseException
 	 */
-	public void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException;
+	void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException;
 
-	public long getMaxKeys();
+	long getMaxKeys();
 
-	public long hits();
+	long hits();
 
-	public long misses();
+	long misses();
 
-	public long writes();
+	long writes();
 
-	public long keyCount();
+	long keyCount();
 
-	public long getBloomFalsePositive();
+	long getBloomFalsePositive();
 
 	/**
 	 * Check if a routing key probably
@@ -75,17 +73,17 @@ public interface FreenetStore<T extends StorableBlock> extends Closeable {
 	 * @param routingkey
 	 * @return <code>false</code> <b>only</b> if the key does not exist in store.
 	 */
-	public boolean probablyInStore(byte[] routingKey);
+	boolean probablyInStore(byte[] routingKey);
 
-	public abstract StoreAccessStats getSessionAccessStats();
+	StoreAccessStats getSessionAccessStats();
 
-	public abstract StoreAccessStats getTotalAccessStats();
+	StoreAccessStats getTotalAccessStats();
 
-	public boolean start(Ticker ticker, boolean longStart) throws IOException;
+	boolean start(Ticker ticker, boolean longStart) throws IOException;
 
-	public void close();
+	void close();
 
-	public void setUserAlertManager(UserAlertManager userAlertManager);
+	void setUserAlertManager(UserAlertManager userAlertManager);
 
-	public FreenetStore<T> getUnderlyingStore();
+	FreenetStore<T> getUnderlyingStore();
 }

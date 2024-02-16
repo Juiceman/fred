@@ -3,41 +3,14 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-
 import freenet.client.FailureCodeTracker;
 import freenet.client.InsertContext;
-import freenet.client.InsertException;
 import freenet.client.InsertContext.CompatibilityMode;
+import freenet.client.InsertException;
 import freenet.client.InsertException.InsertExceptionMode;
 import freenet.crypt.RandomSource;
-import freenet.keys.CHKEncodeException;
-import freenet.keys.ClientCHKBlock;
-import freenet.keys.ClientKey;
-import freenet.keys.ClientKeyBlock;
-import freenet.keys.ClientSSK;
-import freenet.keys.ClientSSKBlock;
-import freenet.keys.FreenetURI;
-import freenet.keys.InsertableClientSSK;
-import freenet.keys.KeyBlock;
-import freenet.keys.KeyDecodeException;
-import freenet.keys.KeyEncodeException;
-import freenet.keys.KeyVerifyException;
-import freenet.keys.SSKBlock;
-import freenet.keys.SSKEncodeException;
-import freenet.node.KeysFetchingLocally;
-import freenet.node.LowLevelPutException;
-import freenet.node.Node;
-import freenet.node.NodeClientCore;
-import freenet.node.RequestClient;
-import freenet.node.RequestScheduler;
-import freenet.node.SendableInsert;
-import freenet.node.SendableRequestItem;
-import freenet.node.SendableRequestItemKey;
-import freenet.node.SendableRequestSender;
+import freenet.keys.*;
+import freenet.node.*;
 import freenet.store.KeyCollisionException;
 import freenet.support.Fields;
 import freenet.support.LogThresholdCallback;
@@ -47,6 +20,11 @@ import freenet.support.api.Bucket;
 import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.io.BucketTools;
 import freenet.support.io.ResumeFailedException;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.Arrays;
 
 /**
  * Insert a single block.
@@ -87,8 +65,8 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	final boolean isMetadata;
 	final int sourceLength;
 	private int consecutiveRNFs;
-	private boolean isSSK;
-	private boolean freeData;
+	private final boolean isSSK;
+	private final boolean freeData;
 	private int completedInserts;
 	final int extraInserts;
 	final byte[] cryptoKey;
@@ -136,7 +114,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		if (sourceData == null) throw new NullPointerException();
 		this.isMetadata = isMetadata;
 		this.sourceLength = sourceLength;
-		isSSK = uri.getKeyType().toUpperCase().equals("SSK");
+		isSSK = uri.getKeyType().equalsIgnoreCase("SSK");
 		if (addToParent) {
 			parent.addMustSucceedBlocks(1);
 			parent.notifyClients(context);
@@ -173,7 +151,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			int sourceLength,
 			String compressorDescriptor,
 			byte cryptoAlgorithm,
-			byte[] cryptoKey) throws InsertException, CHKEncodeException, IOException, SSKEncodeException, MalformedURLException, InvalidCompressionCodecException {
+			byte[] cryptoKey) throws InsertException, CHKEncodeException, IOException, SSKEncodeException, InvalidCompressionCodecException {
 		String uriType = uri.getKeyType();
 		if (uriType.equals("CHK")) {
 			return ClientCHKBlock.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, compressorDescriptor,
@@ -471,17 +449,17 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 							block.cryptoAlgorithm, block.cryptoKey);
 					b = encodedBlock.getBlock();
 				} catch (CHKEncodeException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				} catch (SSKEncodeException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				} catch (MalformedURLException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				} catch (InsertException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				} catch (IOException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				} catch (InvalidCompressionCodecException e) {
-					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
+					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e + ":" + e.getMessage(), e);
 				}
 				if (b == null) {
 					Logger.error(this, "Asked to send empty block", new Exception("error"));
@@ -697,7 +675,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		@Override
 		public boolean equals(Object o) {
 			if (o instanceof BlockItemKey) {
-				if (((BlockItemKey) o).parent == parent) return true;
+				return ((BlockItemKey) o).parent == parent;
 			}
 			return false;
 		}

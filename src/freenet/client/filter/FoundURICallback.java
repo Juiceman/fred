@@ -3,9 +3,9 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.filter;
 
-import java.net.URI;
-
 import freenet.keys.FreenetURI;
+
+import java.net.URI;
 
 public interface FoundURICallback {
 
@@ -13,17 +13,17 @@ public interface FoundURICallback {
 	 * Called when a Freenet URI is found.
 	 *
 	 * @param uri The URI.
-	 *                       FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
+	 *                                  FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
 	 */
-	public void foundURI(FreenetURI uri);
+	void foundURI(FreenetURI uri);
 
 	/**
 	 * Called when a Freenet URI is found.
 	 *
 	 * @param uri The URI.
-	 *                       FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
+	 *                                  FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
 	 */
-	public void foundURI(FreenetURI uri, boolean inline);
+	void foundURI(FreenetURI uri, boolean inline);
 
 	/**
 	 * Called when some plain text is processed. This is used typically by
@@ -39,8 +39,8 @@ public interface FoundURICallback {
 	 *                page are resolved. It defaults to the URI of the page but can be overridden
 	 *                by base href in html, for example.
 	 */
-	public void onText(String text, String type, URI baseURI);
+	void onText(String text, String type, URI baseURI);
 
-	public void onFinishedPage();
+	void onFinishedPage();
 
 }

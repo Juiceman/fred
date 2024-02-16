@@ -22,6 +22,6 @@ public interface CodecPacketFilter {
 	 * @return Whether packet was properly validated
 	 * @throws IOException
 	 */
-	public abstract CodecPacket parse(CodecPacket packet) throws IOException;
+	CodecPacket parse(CodecPacket packet) throws IOException;
 
 }

@@ -19,17 +19,17 @@
 
 package freenet.io.comm;
 
+import freenet.io.WritableToDataOutputStream;
+import freenet.support.io.InetAddressIpv6FirstComparator;
+import freenet.support.transport.ip.HostnameSyntaxException;
+import freenet.support.transport.ip.IPUtil;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
-
-import freenet.io.WritableToDataOutputStream;
-import freenet.support.io.InetAddressIpv6FirstComparator;
-import freenet.support.transport.ip.HostnameSyntaxException;
-import freenet.support.transport.ip.IPUtil;
 
 /**
  * @author ian
@@ -159,9 +159,7 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.laxEquals(peer.addr))
-			return false;
-		return true;
+		return addr.laxEquals(peer.addr);
 	}
 
 	// FIXME same issues as with FreenetInetAddress.laxEquals/equals/strictEquals
@@ -179,9 +177,7 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.equals(peer.addr))
-			return false;
-		return true;
+		return addr.equals(peer.addr);
 	}
 
 	public boolean strictEquals(Object o) {
@@ -198,9 +194,7 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.strictEquals(peer.addr))
-			return false;
-		return true;
+		return addr.strictEquals(peer.addr);
 	}
 
 	/**

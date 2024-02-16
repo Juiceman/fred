@@ -24,9 +24,7 @@ public class DataStoreInstanceType {
 		DataStoreInstanceType that = (DataStoreInstanceType) o;
 
 		if (key != that.key) return false;
-		if (store != that.store) return false;
-
-		return true;
+		return store == that.store;
 	}
 
 	@Override

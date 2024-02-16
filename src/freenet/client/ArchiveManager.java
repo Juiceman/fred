@@ -3,24 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-
 import freenet.client.async.ClientContext;
 import freenet.keys.FreenetURI;
 import freenet.support.ExceptionWrapper;
@@ -37,6 +19,18 @@ import freenet.support.io.BucketTools;
 import freenet.support.io.Closer;
 import freenet.support.io.SkipShieldingInputStream;
 import net.contrapunctus.lzma.LzmaInputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Cache of recently decoded archives:
@@ -65,7 +59,7 @@ public class ArchiveManager {
 		 */
 		private static final ARCHIVE_TYPE[] values = values();
 
-		private ARCHIVE_TYPE(short metadataID, String[] mimeTypes) {
+		ARCHIVE_TYPE(short metadataID, String[] mimeTypes) {
 			this.metadataID = metadataID;
 			this.mimeTypes = mimeTypes;
 		}
@@ -640,7 +634,7 @@ public class ArchiveManager {
 				// Last char
 				after = "";
 			} else
-				after = name.substring(x + 1, name.length());
+				after = name.substring(x + 1);
 			Object o = dir.get(before);
 			if (o == null) {
 				dir.put(before, o = new HashMap<String, Object>());

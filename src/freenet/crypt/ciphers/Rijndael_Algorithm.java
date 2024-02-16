@@ -4,9 +4,9 @@
  */
 package freenet.crypt.ciphers;
 
-import java.security.InvalidKeyException;
-
 import freenet.support.Logger;
+
+import java.security.InvalidKeyException;
 
 //...........................................................................
 
@@ -311,7 +311,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 	private static byte[][] generateInvertedGMatrix(byte[][] gMatrix) {
 		byte[][] AA = new byte[4][8];
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) AA[i][j] = gMatrix[i][j];
+			System.arraycopy(gMatrix[i], 0, AA[i], 0, 4);
 			AA[i][i + 4] = 1;
 		}
 		byte pivot, tmp;
@@ -345,7 +345,7 @@ final class Rijndael_Algorithm // implicit no-argument constructor
 				}
 		}
 		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++) iG[i][j] = AA[i][j + 4];
+			System.arraycopy(AA[i], 4, iG[i], 0, 4);
 
 		return iG;
 	}

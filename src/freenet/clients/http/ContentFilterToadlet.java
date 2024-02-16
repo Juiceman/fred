@@ -1,19 +1,11 @@
 package freenet.clients.http;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import freenet.client.DefaultMIMETypes;
 import freenet.client.HighLevelSimpleClient;
 import freenet.client.filter.ContentFilter;
+import freenet.client.filter.ContentFilter.FilterStatus;
 import freenet.client.filter.FilterOperation;
 import freenet.client.filter.UnsafeContentTypeException;
-import freenet.client.filter.ContentFilter.FilterStatus;
 import freenet.l10n.NodeL10n;
 import freenet.node.NodeClientCore;
 import freenet.support.HTMLNode;
@@ -26,6 +18,10 @@ import freenet.support.io.Closer;
 import freenet.support.io.FileBucket;
 import freenet.support.io.FileUtil;
 
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Allows the user to run the content filter on a file and view the result.
  */
@@ -35,7 +31,7 @@ public class ContentFilterToadlet extends Toadlet implements LinkEnabledCallback
 	/**
 	 * What to do the the output from the content filter.
 	 */
-	public static enum ResultHandling {
+	public enum ResultHandling {
 		DISPLAY,
 		SAVE
 	}
@@ -106,7 +102,6 @@ public class ContentFilterToadlet extends Toadlet implements LinkEnabledCallback
 					} else {
 						writeBadRequestError(l10n("errorBadRequestTitle"), l10n("errorBadRequest"), ctx, true);
 					}
-					return;
 				}
 				// Filter button on local file browser
 			} else if (request.isPartSet(LocalFileBrowserToadlet.selectFile)) {
@@ -323,7 +318,7 @@ public class ContentFilterToadlet extends Toadlet implements LinkEnabledCallback
 	}
 
 	private FilterStatus applyFilter(Bucket input, Bucket output, String mimeType, FilterOperation operation, NodeClientCore core)
-			throws UnsafeContentTypeException, IOException {
+			throws IOException {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		try {
@@ -337,7 +332,7 @@ public class ContentFilterToadlet extends Toadlet implements LinkEnabledCallback
 	}
 
 	private FilterStatus applyFilter(InputStream input, OutputStream output, String mimeType, FilterOperation operation, NodeClientCore core)
-			throws UnsafeContentTypeException, IOException {
+			throws IOException {
 		URI fakeUri;
 		try {
 			fakeUri = new URI("http://127.0.0.1:8888/");

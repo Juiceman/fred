@@ -17,11 +17,11 @@
 
 package freenet.client.filter;
 
-import java.net.URI;
-
 import freenet.clients.http.LinkFilterExceptedToadlet;
 import freenet.clients.http.SimpleToadletServer;
 import freenet.clients.http.Toadlet;
+
+import java.net.URI;
 
 /**
  * Provides link filter exceptions to the content filter.
@@ -41,6 +41,6 @@ public interface LinkFilterExceptionProvider {
 	 * @return {@code true} if the link should not be filtered, {@code false} if
 	 * it should be filtered
 	 */
-	public boolean isLinkExcepted(URI link);
+	boolean isLinkExcepted(URI link);
 
 }

@@ -29,7 +29,7 @@ public interface FredPluginHTTP {
 	 * @throws PluginHTTPException             for any other failure, treated as a 400
 	 *                                         error.
 	 */
-	public String handleHTTPGet(HTTPRequest request) throws PluginHTTPException;
+	String handleHTTPGet(HTTPRequest request) throws PluginHTTPException;
 
-	public String handleHTTPPost(HTTPRequest request) throws PluginHTTPException;
+	String handleHTTPPost(HTTPRequest request) throws PluginHTTPException;
 }

@@ -3,15 +3,6 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.node.simulator;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import java.io.File;
-import java.time.Clock;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import freenet.crypt.DummyRandomSource;
 import freenet.crypt.RandomSource;
 import freenet.node.LocationManager;
@@ -26,6 +17,14 @@ import freenet.support.io.FileUtil;
 import freenet.support.math.BootstrappingDecayingRunningAverage;
 import freenet.support.math.RunningAverage;
 import freenet.support.math.SimpleRunningAverage;
+
+import java.io.File;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * @author ArneBab
@@ -164,7 +163,7 @@ public class RealNodePitchBlackMitigationTest extends RealNodeTest {
 		Logger.globalSetThreshold(LogLevel.WARNING);
 
 		// set the time to yesterday to have pitch black information
-		nodes[0].lm.setClockForTesting(Clock.offset(Clock.systemDefaultZone(), Duration.ofDays(-1)));
+		LocationManager.setClockForTesting(Clock.offset(Clock.systemDefaultZone(), Duration.ofDays(-1)));
 		// shift forward one day per 5 minutes
 		Runnable dayIncrementingJob = new Runnable() {
 			@Override
@@ -172,8 +171,8 @@ public class RealNodePitchBlackMitigationTest extends RealNodeTest {
 				nodes[0].ticker.queueTimedJob(
 						this,
 						PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY);
-				nodes[0].lm.setClockForTesting(Clock.offset(
-						nodes[0].lm.getClockForTesting(),
+				LocationManager.setClockForTesting(Clock.offset(
+						LocationManager.getClockForTesting(),
 						Duration.ofDays(1)));
 			}
 		};
@@ -182,8 +181,8 @@ public class RealNodePitchBlackMitigationTest extends RealNodeTest {
 				PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY);
 
 		// start the nodes and adjust mitigation times
-		nodes[0].lm.PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY = PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY;
-		nodes[0].lm.PITCH_BLACK_MITIGATION_STARTUP_DELAY = PITCH_BLACK_MITIGATION_STARTUP_DELAY;
+		LocationManager.PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY = PITCH_BLACK_MITIGATION_FREQUENCY_ONE_DAY;
+		LocationManager.PITCH_BLACK_MITIGATION_STARTUP_DELAY = PITCH_BLACK_MITIGATION_STARTUP_DELAY;
 		for (int i = 0; i < NUMBER_OF_NODES; i++) {
 			System.err.println("Starting node " + i);
 			nodes[i].start(false);

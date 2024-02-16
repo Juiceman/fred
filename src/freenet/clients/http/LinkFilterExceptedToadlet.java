@@ -34,6 +34,6 @@ public interface LinkFilterExceptedToadlet {
 	 * @return {@code true} if the link should not be filtered, {@code false} if
 	 * it should be filtered
 	 */
-	public boolean isLinkExcepted(URI link);
+	boolean isLinkExcepted(URI link);
 
 }

@@ -5,17 +5,17 @@ package freenet.node;
 
 public interface AnyInsertSender {
 
-	public abstract int getStatus();
+	int getStatus();
 
-	public abstract short getHTL();
+	short getHTL();
 
 	/**
 	 * @return The current status as a string
 	 */
-	public abstract String getStatusString();
+	String getStatusString();
 
-	public abstract boolean sentRequest();
+	boolean sentRequest();
 
-	public abstract long getUID();
+	long getUID();
 
 }

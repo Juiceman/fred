@@ -5,8 +5,8 @@ package freenet.support.math;
 
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
-import freenet.support.SimpleFieldSet;
 import freenet.support.Logger.LogLevel;
+import freenet.support.SimpleFieldSet;
 
 /**
  * Exponential decay "running average".
@@ -26,7 +26,7 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 	private static final long serialVersionUID = -1;
 
 	@Override
-	public final BootstrappingDecayingRunningAverage clone() {
+	public BootstrappingDecayingRunningAverage clone() {
 		// Override clone() for locking; BDRAs are self-synchronized.
 		// Implement Cloneable to shut up findbugs.
 		return new BootstrappingDecayingRunningAverage(this);
@@ -96,7 +96,7 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 	 * @return
 	 * @see DecayingKeyspaceAverage
 	 */
-	protected synchronized double setCurrentValue(double d) {
+	synchronized double setCurrentValue(double d) {
 		double old = currentValue;
 		currentValue = d;
 		return old;

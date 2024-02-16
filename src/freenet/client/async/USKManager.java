@@ -3,20 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package freenet.client.async;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
-
-import freenet.client.FetchContext;
-import freenet.client.FetchException;
-import freenet.client.FetchResult;
-import freenet.client.HighLevelSimpleClient;
-import freenet.client.NullClientCallback;
+import freenet.client.*;
 import freenet.clients.http.FProxyToadlet;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
@@ -30,6 +17,11 @@ import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.NullBucket;
+
+import java.net.MalformedURLException;
+import java.util.*;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Tracks the latest version of every known USK.
@@ -414,7 +406,6 @@ public class USKManager {
 						if (e.newURI != null) {
 							if (logMINOR) Logger.minor(this, "Prefetch succeeded with redirect for " + key);
 							updateKnownGood(key, l, context);
-							return;
 						} else {
 							if (logMINOR) Logger.minor(this, "Prefetch failed later: " + e + " for " + key, e);
 							// Ignore

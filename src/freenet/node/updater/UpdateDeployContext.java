@@ -1,20 +1,5 @@
 package freenet.node.updater;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.regex.Pattern;
-
-import org.tanukisoftware.wrapper.WrapperManager;
-
 import freenet.l10n.NodeL10n;
 import freenet.node.NodeInitException;
 import freenet.node.NodeStarter;
@@ -23,6 +8,12 @@ import freenet.node.updater.MainJarDependenciesChecker.MainJarDependencies;
 import freenet.support.JVMVersion;
 import freenet.support.Logger;
 import freenet.support.io.Closer;
+import org.tanukisoftware.wrapper.WrapperManager;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Handles the wrapper.conf, essentially.

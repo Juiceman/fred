@@ -2,44 +2,18 @@
 
 package freenet.client.filter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import freenet.clients.http.ToadletContextImpl;
+import freenet.l10n.NodeL10n;
+import freenet.support.*;
+import freenet.support.Logger.LogLevel;
+import freenet.support.io.NullWriter;
+
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.MalformedInputException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
-import java.util.StringTokenizer;
-
-import freenet.clients.http.ToadletContextImpl;
-import freenet.l10n.NodeL10n;
-import freenet.support.HTMLDecoder;
-import freenet.support.HTMLEncoder;
-import freenet.support.Logger;
-import freenet.support.Logger.LogLevel;
-import freenet.support.URLDecoder;
-import freenet.support.URLEncodedFormatException;
-import freenet.support.io.NullWriter;
 
 public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
@@ -77,7 +51,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	@Override
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			String schemeHostAndPort, FilterCallback cb) throws IOException {
 		if (cb == null) cb = new NullFilterCallback();
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
@@ -100,7 +74,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	}
 
 	@Override
-	public String getCharset(byte[] input, int length, String parseCharset) throws DataFilterException, IOException {
+	public String getCharset(byte[] input, int length, String parseCharset) throws IOException {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		if (logMINOR) Logger.minor(this, "getCharset(): default=" + parseCharset);
 		if (length > getCharsetBufferSize() && Logger.shouldLog(LogLevel.MINOR, this)) {
@@ -196,7 +170,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			return openElements.peek();
 		}
 
-		void run() throws IOException, DataFilterException {
+		void run() throws IOException {
 
 			/**
 			 * TOKENIZE Modes:
@@ -495,7 +469,6 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					w.write("</" + openElements.pop() + ">");
 			}
 			w.flush();
-			return;
 		}
 
 		int mode;
@@ -600,7 +573,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	}
 
 	String processTag(List<String> splitTag, Writer w, HTMLParseContext pc)
-			throws IOException, DataFilterException {
+			throws IOException {
 		// First, check that it is a recognized tag
 		if (logDEBUG) {
 			for (int i = 0; i < splitTag.size(); i++)
@@ -623,7 +596,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					pc.headEnded = true;
 					if (pc.onlyDetectingCharset) pc.failedDetectCharset = true;
 					//If we found a <title> or a <meta> without a <head>, then we need to add them to a <head>
-				} else if ((t.element.compareTo("meta") == 0 || t.element.compareTo("title") == 0) && pc.wasHeadElementFound == false) {
+				} else if ((t.element.compareTo("meta") == 0 || t.element.compareTo("title") == 0) && !pc.wasHeadElementFound) {
 					pc.openElements.push("head");
 					pc.wasHeadElementFound = true;
 					String headContent = pc.cb.processTag(new ParsedTag("head", new HashMap<String, String>()));
@@ -641,7 +614,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					if (pc.onlyDetectingCharset) pc.failedDetectCharset = true;
 					pc.openElements.pop();
 					//If we found a <body> and no <head> before it, then we insert it
-				} else if (t.element.compareTo("body") == 0 && pc.wasHeadElementFound == false) {
+				} else if (t.element.compareTo("body") == 0 && !pc.wasHeadElementFound) {
 					pc.wasHeadElementFound = true;
 					String headContent = pc.cb.processTag(new ParsedTag("head", new HashMap<String, String>()));
 					if (headContent != null) {
@@ -664,7 +637,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					String newContent = pc.cb.processTag(t);
 					if (newContent != null) {
 						w.write(newContent);
-						if (t.endSlash == false) {
+						if (!t.endSlash) {
 							pc.openElements.push(t.element);
 						}
 					} else {
@@ -713,7 +686,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			if (s.charAt(s.length() - 1) == '-')
 				s.setLength(s.length() - 1);
 		}
-		if (logDEBUG) Logger.debug(this, "Saving comment: " + s.toString());
+		if (logDEBUG) Logger.debug(this, "Saving comment: " + s);
 		if (pc.expectingBadComment)
 			return; // ignore it
 
@@ -2130,24 +2103,19 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			this.allowedAttrs = new HashSet<String>();
 			this.parsedAttrs = new HashSet<String>();
 			if (allowedAttrs != null) {
-				for (String allowedAttr : allowedAttrs)
-					this.allowedAttrs.add(allowedAttr);
+				Collections.addAll(this.allowedAttrs, allowedAttrs);
 			}
 			this.uriAttrs = new HashSet<String>();
 			if (uriAttrs != null) {
-				for (String uriAttr : uriAttrs)
-					this.uriAttrs.add(uriAttr);
+				Collections.addAll(this.uriAttrs, uriAttrs);
 			}
 			this.inlineURIAttrs = new HashSet<String>();
 			if (inlineURIAttrs != null) {
-				for (String inlineURIAttr : inlineURIAttrs)
-					this.inlineURIAttrs.add(inlineURIAttr);
+				Collections.addAll(this.inlineURIAttrs, inlineURIAttrs);
 			}
 			this.booleanAttrs = new HashSet<String>();
 			if (booleanAttrs != null) {
-				for (int x = 0; x < booleanAttrs.length; x++) {
-					this.booleanAttrs.add(booleanAttrs[x]);
-				}
+				Collections.addAll(this.booleanAttrs, booleanAttrs);
 			}
 		}
 
@@ -2186,7 +2154,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							if (idx == s.length() - 1)
 								y = "";
 							else
-								y = s.substring(idx + 1, s.length());
+								y = s.substring(idx + 1);
 							y = stripQuotes(y);
 							h.remove(x);
 							h.put(x, y);
@@ -2493,9 +2461,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				String[] inlineURIAttrs, String[] booleanAttrs) {
 			super(tag, allowedAttrs, uriAttrs, inlineURIAttrs, booleanAttrs);
 			allowedHTMLTags.add(tag);
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -2632,9 +2598,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				String[] inlineURIAttrs,
 				String[] eventAttrs) {
 			super(tag, allowedAttrs, uriAttrs, inlineURIAttrs, eventAttrs, null);
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -2808,7 +2772,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		private static final HashSet<String> standardRelTypes = new HashSet<String>();
 
 		static {
-			for (String s : new String[]{
+			Collections.addAll(standardRelTypes, new String[]{
 					"alternate",
 					"start",
 					"next",
@@ -2823,8 +2787,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					"appendix",
 					"help",
 					"bookmark"
-			})
-				standardRelTypes.add(s);
+			});
 		}
 
 		private boolean isStandardLinkType(String token) {
@@ -2853,9 +2816,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				String[] eventAttrs,
 				String[] booleanAttrs) {
 			super(tag, allowedAttrs, uriAttrs, inlineURIAttrs, eventAttrs, booleanAttrs);
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -2893,9 +2854,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				String[] uriAttrs,
 				String[] eventAttrs) {
 			super(tag, allowedAttrs, uriAttrs, null, eventAttrs, null);
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -2928,7 +2887,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 	static class InputTagVerifier extends CoreTagVerifier {
 		private final HashSet<String> allowedTypes;
-		private String[] types = new String[]{
+		private final String[] types = new String[]{
 				"text",
 				"password",
 				"checkbox",
@@ -2950,9 +2909,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			super(tag, allowedAttrs, uriAttrs, inlineURIAttrs, eventAttrs, null);
 			this.allowedTypes = new HashSet<String>();
 			if (types != null) {
-				for (String type : types) {
-					this.allowedTypes.add(type);
-				}
+				Collections.addAll(this.allowedTypes, types);
 			}
 		}
 
@@ -2982,9 +2939,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		MetaTagVerifier() {
 			super("meta", new String[]{"id"});
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -3052,7 +3007,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						boolean detected = false;
 						for (String allowedContentType : allowedContentTypes) {
 							if (typesplit[0].equalsIgnoreCase(allowedContentType)) {
-								if ((typesplit[1] == null) || (pc.charset != null && typesplit[1]
+								if ((typesplit[1] == null) || (typesplit[1]
 										.equalsIgnoreCase(pc.charset))) {
 									hn.put("http-equiv", http_equiv);
 									hn.put("content", typesplit[0]
@@ -3108,7 +3063,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								try {
 									String url = sanitizeURI(after, null, null, null, pc.cb, false);
 									hn.put("http-equiv", "refresh");
-									hn.put("content", "" + seconds + "; url=" + HTMLEncoder.encode(url));
+									hn.put("content", seconds + "; url=" + HTMLEncoder.encode(url));
 								} catch (CommentException e) {
 									pc.writeAfterTag.append("<!-- " + e.getMessage() + "-->");
 									// Delete
@@ -3270,9 +3225,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		HtmlTagVerifier() {
 			super("html", new String[]{"id", "version"});
-			for (String attr : locallyVerifiedAttrs) {
-				parsedAttrs.add(attr);
-			}
+			Collections.addAll(parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -3295,9 +3248,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		BaseHrefTagVerifier(String tag, String[] allowedAttrs, String[] uriAttrs) {
 			super(tag, allowedAttrs, uriAttrs, null, emptyStringArray);
-			for (String attr : locallyVerifiedAttrs) {
-				this.parsedAttrs.add(attr);
-			}
+			Collections.addAll(this.parsedAttrs, locallyVerifiedAttrs);
 		}
 
 		@Override
@@ -3404,9 +3355,10 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	// A simple string splitter
 	// StringTokenizer doesn't work well for our purpose. (avian)
 	static class StringFieldParser {
-		private String str;
-		private int maxPos, curPos;
-		private char c;
+		private final String str;
+		private final int maxPos;
+		private int curPos;
+		private final char c;
 
 		public StringFieldParser(String str) {
 			this(str, '\t');

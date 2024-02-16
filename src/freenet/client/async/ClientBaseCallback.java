@@ -18,11 +18,11 @@ public interface ClientBaseCallback {
 	 *
 	 * @param context
 	 */
-	public void onResume(ClientContext context) throws ResumeFailedException;
+	void onResume(ClientContext context) throws ResumeFailedException;
 
 	/**
 	 * Get the RequestClient context object used to indicate which requests are related to each
 	 * other for scheduling purposes.
 	 */
-	public RequestClient getRequestClient();
+	RequestClient getRequestClient();
 }

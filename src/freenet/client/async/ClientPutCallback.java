@@ -20,7 +20,7 @@ public interface ClientPutCallback extends ClientBaseCallback {
 	 * @param state The original BaseClientPutter object which was returned by the .insert() method which
 	 *              started this insert. Can be casted to the return type of that .insert().
 	 */
-	public void onGeneratedURI(FreenetURI uri, BaseClientPutter state);
+	void onGeneratedURI(FreenetURI uri, BaseClientPutter state);
 
 	/**
 	 * Called when we are returning metadata rather than a URI. This only happens
@@ -33,7 +33,7 @@ public interface ClientPutCallback extends ClientBaseCallback {
 	 * @param state    The original BaseClientPutter object which was returned by the .insert() method which
 	 *                 started this insert. Can be casted to the return type of that .insert().
 	 */
-	public void onGeneratedMetadata(Bucket metadata, BaseClientPutter state);
+	void onGeneratedMetadata(Bucket metadata, BaseClientPutter state);
 
 	/**
 	 * Called when the inserted data is fetchable (just a hint, don't rely on this).
@@ -41,7 +41,7 @@ public interface ClientPutCallback extends ClientBaseCallback {
 	 * @param state The original BaseClientPutter object which was returned by the .insert() method which
 	 *              started this insert. Can be casted to the return type of that .insert().
 	 */
-	public void onFetchable(BaseClientPutter state);
+	void onFetchable(BaseClientPutter state);
 
 	/**
 	 * Called on successful insert.
@@ -50,7 +50,7 @@ public interface ClientPutCallback extends ClientBaseCallback {
 	 * @param state The original BaseClientPutter object which was returned by the .insert() method which
 	 *              started this insert. Can be casted to the return type of that .insert() (to obtain the Bucket).
 	 */
-	public void onSuccess(BaseClientPutter state);
+	void onSuccess(BaseClientPutter state);
 
 	/**
 	 * Called on failed/canceled insert.
@@ -59,5 +59,5 @@ public interface ClientPutCallback extends ClientBaseCallback {
 	 * @param state The original BaseClientPutter object which was returned by the .insert() method which
 	 *              started this insert. Can be casted to the return type of that .insert() (to obtain the Bucket).
 	 */
-	public void onFailure(InsertException e, BaseClientPutter state);
+	void onFailure(InsertException e, BaseClientPutter state);
 }

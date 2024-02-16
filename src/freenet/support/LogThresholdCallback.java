@@ -11,5 +11,4 @@ public class LogThresholdCallback {
 	public void shouldUpdate() {
 	}
 
-	;
 }

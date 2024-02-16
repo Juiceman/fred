@@ -22,16 +22,16 @@ import java.nio.charset.StandardCharsets;
 public class Base64 {
 	static final Charset UTF8 = StandardCharsets.UTF_8;
 
-	private static char[] base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~-".toCharArray();
+	private static final char[] base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~-".toCharArray();
 
-	private static char[] base64StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	private static final char[] base64StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 
 	/**
 	 * A reverse lookup table to convert base64 letters back into the
 	 * a 6-bit sequence.
 	 */
-	private static byte[] base64Reverse;
-	private static byte[] base64StandardReverse;
+	private static final byte[] base64Reverse;
+	private static final byte[] base64StandardReverse;
 
 	// Populate the base64Reverse lookup table from the base64Alphabet table.
 	static {

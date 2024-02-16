@@ -1,13 +1,13 @@
 package freenet.client.async;
 
-import java.io.Serializable;
-
 import freenet.client.FetchContext;
 import freenet.keys.USK;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.NativeThread;
+
+import java.io.Serializable;
 
 /**
  * Not the actual fetcher. Just a tag associating a USK with the client that should be called when
@@ -46,11 +46,11 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	/**
 	 * Priority
 	 */
-	private short priority;
-	private long token;
+	private final short priority;
+	private final long token;
 	private transient USKFetcher fetcher;
-	private short pollingPriorityNormal;
-	private short pollingPriorityProgress;
+	private final short pollingPriorityNormal;
+	private final short pollingPriorityProgress;
 	private boolean finished;
 	private final boolean ownFetchContext;
 	private final boolean checkStoreOnly;

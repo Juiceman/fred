@@ -1,12 +1,8 @@
 package freenet.support;
 
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import freenet.support.Logger.LogLevel;
+
+import java.util.*;
 
 /**
  * An LRU map from K to V. That is, when a mapping is added, it is
@@ -180,7 +176,7 @@ public class LRUMap<K, V> {
 	}
 
 	private class ItemEnumeration implements Enumeration<K> {
-		private Enumeration<QItem<K, V>> source = list.reverseElements();
+		private final Enumeration<QItem<K, V>> source = list.reverseElements();
 
 		@Override
 		public boolean hasMoreElements() {
@@ -198,7 +194,7 @@ public class LRUMap<K, V> {
 	}
 
 	private class ValuesEnumeration implements Enumeration<V> {
-		private Enumeration<QItem<K, V>> source = list.reverseElements();
+		private final Enumeration<QItem<K, V>> source = list.reverseElements();
 
 		@Override
 		public boolean hasMoreElements() {

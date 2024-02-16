@@ -5,7 +5,8 @@ import freenet.config.Config;
 import freenet.config.InvalidConfigValueException;
 import freenet.l10n.NodeL10n;
 import freenet.node.NodeClientCore;
-import freenet.support.*;
+import freenet.support.HTMLNode;
+import freenet.support.URLEncoder;
 import freenet.support.api.HTTPRequest;
 import freenet.support.io.DatastoreUtil;
 
@@ -63,7 +64,7 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 		for (long cap : caps) {
 			HTMLNode row = table.addChild("tr");
 			//ISPs are likely to list limits in GB instead of GiB, so display GB here.
-			row.addChild("td", String.valueOf(cap) + " GB");
+			row.addChild("td", cap + " GB");
 			HTMLNode selectForm = helper.addFormChild(row.addChild("td"), ".", "limit");
 			selectForm.addChild("input",
 					new String[]{"type", "name", "value"},

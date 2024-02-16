@@ -5,20 +5,6 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.DatagramSocketImpl;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.Random;
-
 import freenet.io.AddressTracker;
 import freenet.io.comm.Peer.LocalAddressException;
 import freenet.node.Node;
@@ -26,6 +12,13 @@ import freenet.node.PrioRunnable;
 import freenet.support.Logger;
 import freenet.support.io.NativeThread;
 import freenet.support.transport.ip.IPUtil;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.*;
+import java.util.Random;
 
 public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, PortForwardSensitiveSocketHandler {
 
@@ -37,7 +30,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	 * RNG for debugging, used with _dropProbability.
 	 * NOT CRYPTO SAFE. DO NOT USE FOR THINGS THAT NEED CRYPTO SAFE RNG!
 	 */
-	private Random dropRandom;
+	private final Random dropRandom;
 	/**
 	 * If &gt;0, 1 in _dropProbability chance of dropping a packet; for debugging
 	 */
@@ -134,7 +127,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			} catch (Exception e) {
 				Logger.normal(UdpSocketHandler.class, e.getMessage(), e);
 			} //if it fails that's fine
-			return (ret == 0 ? true : false);
+			return (ret == 0);
 		}
 	}
 

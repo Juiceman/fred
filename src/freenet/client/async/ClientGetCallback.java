@@ -15,11 +15,11 @@ public interface ClientGetCallback extends ClientBaseCallback {
 	 * Called on successful fetch. Caller should schedule a job on the Ticker
 	 * or Executor (on the ClientContext) if it needs to do much work.
 	 */
-	public void onSuccess(FetchResult result, ClientGetter state);
+	void onSuccess(FetchResult result, ClientGetter state);
 
 	/**
 	 * Called on failed/canceled fetch. Caller should schedule a job on the Ticker
 	 * or Executor (on the ClientContext) if it needs to do much work.
 	 */
-	public void onFailure(FetchException e, ClientGetter state);
+	void onFailure(FetchException e, ClientGetter state);
 }

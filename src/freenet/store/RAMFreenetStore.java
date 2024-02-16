@@ -1,9 +1,5 @@
 package freenet.store;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-
 import freenet.keys.KeyVerifyException;
 import freenet.node.stats.StoreAccessStats;
 import freenet.node.useralerts.UserAlertManager;
@@ -11,6 +7,10 @@ import freenet.support.ByteArrayWrapper;
 import freenet.support.LRUMap;
 import freenet.support.Logger;
 import freenet.support.Ticker;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
 
 /**
  * LRU in memory store.
@@ -105,7 +105,7 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 			if (callback.collisionPossible()) {
 				boolean equals = Arrays.equals(oldBlock.data, data) &&
 						Arrays.equals(oldBlock.header, header) &&
-						(storeFullKeys ? Arrays.equals(oldBlock.fullKey, fullKey) : true);
+						(!storeFullKeys || Arrays.equals(oldBlock.fullKey, fullKey));
 				if (equals) {
 					if (!isOldBlock)
 						oldBlock.oldBlock = false;

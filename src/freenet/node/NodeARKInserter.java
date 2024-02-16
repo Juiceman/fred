@@ -3,26 +3,22 @@
  */
 package freenet.node;
 
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-
 import freenet.client.InsertContext;
 import freenet.client.InsertException;
-import freenet.client.async.BaseClientPutter;
-import freenet.client.async.ClientContext;
-import freenet.client.async.ClientPutCallback;
-import freenet.client.async.ClientPutter;
-import freenet.client.async.PersistenceDisabledException;
+import freenet.client.async.*;
 import freenet.io.comm.Peer;
 import freenet.io.comm.PeerParseException;
 import freenet.keys.FreenetURI;
 import freenet.keys.InsertableClientSSK;
 import freenet.support.Logger;
+import freenet.support.Logger.LogLevel;
 import freenet.support.SimpleFieldSet;
 import freenet.support.SimpleReadOnlyArrayBucket;
-import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.api.RandomAccessBucket;
+
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
@@ -85,7 +81,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		if (entries != null) {
 			SimpleFieldSet fs = new SimpleFieldSet(true);
 			fs.putOverwrite("physical.udp", entries);
-			if (logMINOR) Logger.minor(this, darknetOpennetString + " ref's physical.udp is '" + fs.toString() + "'");
+			if (logMINOR) Logger.minor(this, darknetOpennetString + " ref's physical.udp is '" + fs + "'");
 			node.peers.locallyBroadcastDiffNodeRef(fs, !crypto.isOpennet, crypto.isOpennet);
 		} else {
 			if (logMINOR) Logger.minor(this, darknetOpennetString + " ref's physical.udp is null");
