@@ -53,12 +53,15 @@ import freenet.support.io.Closer;
  * @author Jeroen C. van Gelderen (gelderen@cryptix.org)
  */
 public class SHA256 {
-	/** Size (in bytes) of this hash */
+	/**
+	 * Size (in bytes) of this hash
+	 */
 	private static final int HASH_SIZE = 32;
 	private static final Queue<SoftReference<MessageDigest>> digests = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * It won't reset the Message Digest for you!
+	 *
 	 * @param InputStream
 	 * @param MessageDigest
 	 * @return

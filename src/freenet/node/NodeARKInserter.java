@@ -38,7 +38,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	/**
 	 * @param node
-	 * @param old If true, use the old ARK rather than the new ARK
+	 * @param old  If true, use the old ARK rather than the new ARK
 	 */
 	NodeARKInserter(Node node, NodeCrypto crypto, NodeIPPortDetector detector, boolean enableARKs) {
 		this.node = node;

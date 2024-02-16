@@ -167,9 +167,9 @@ public interface FCPPluginConnection {
 	 *                  To ensure this, always construct a fresh FCPPluginMessage object when re-sending a
 	 *                  message. If you use the constructor which allows specifying your own identifier, always
 	 *                  generate a fresh, random identifier.<br>
-	 *                      TODO: Code quality: Add a flag to FCPPluginMessage which marks the message as sent and
-	 *                      use it to log an error if someone tries to send the same message twice.
-	 *                      <br><br>
+	 *                                       TODO: Code quality: Add a flag to FCPPluginMessage which marks the message as sent and
+	 *                                       use it to log an error if someone tries to send the same message twice.
+	 *                                       <br><br>
 	 * @throws IOException If the connection has been closed meanwhile.<br/>
 	 *                     This FCPPluginConnection <b>should be</b> considered as dead once this happens, you
 	 *                     should then discard it and obtain a fresh one.

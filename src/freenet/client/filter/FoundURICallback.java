@@ -13,7 +13,7 @@ public interface FoundURICallback {
 	 * Called when a Freenet URI is found.
 	 *
 	 * @param uri The URI.
-	 *            FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
+	 *                       FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
 	 */
 	public void foundURI(FreenetURI uri);
 
@@ -21,7 +21,7 @@ public interface FoundURICallback {
 	 * Called when a Freenet URI is found.
 	 *
 	 * @param uri The URI.
-	 *            FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
+	 *                       FIXME: Indicate the type of the link e.g. inline image, hyperlink, etc??
 	 */
 	public void foundURI(FreenetURI uri, boolean inline);
 

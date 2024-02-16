@@ -747,8 +747,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 *                    is activated when it shouldn't be. It is perfectly okay to have req be a
 	 *                    member of maybeActive.
 	 *                    <p>
-	 *                    FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
-	 *                    or make req a SendableRequest[] and register them all at once.
+	 *                                       FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
+	 *                                       or make req a SendableRequest[] and register them all at once.
 	 */
 	void innerRegister(SendableRequest req, ClientContext context, SendableRequest[] maybeActive) {
 		if (isInsertScheduler && req instanceof BaseSendableGet)
