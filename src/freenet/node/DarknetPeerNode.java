@@ -41,7 +41,7 @@ import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
 import freenet.node.useralerts.AbstractUserAlert;
 import freenet.node.useralerts.BookmarkFeedUserAlert;
-import freenet.node.useralerts.DownloadFeedUserAlert;
+               import freenet.node.useralerts.DownloadFeedUserAlert;
 import freenet.node.useralerts.N2NTMUserAlert;
 import freenet.node.useralerts.UserAlert;
 import freenet.support.Base64;
@@ -109,7 +109,7 @@ public class DarknetPeerNode extends PeerNode {
 		private static final FRIEND_TRUST[] valuesBackwards;
 		static {
 			final FRIEND_TRUST[] values = values();
-			valuesBackwards = new FRIEND_TRUST[values.length];
+valuesBackwards = new FRIEND_TRUST[values.length];
 			for(int i=0;i<values.length;i++)
 				valuesBackwards[i] = values[values.length-i-1];
 		}
