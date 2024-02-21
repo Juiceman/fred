@@ -83,7 +83,7 @@ public class Announcer {
 	protected void start() {
 		if(!node.isOpennetEnabled()) return;
 		int darkPeers = node.peers.getDarknetPeers().length;
-		int openPeers = node.peers.getOpennetPeers().length;
+int openPeers = node.peers.getOpennetPeers().length;
 		int oldOpenPeers = om.countOldOpennetPeers();
 		if(darkPeers + openPeers + oldOpenPeers == 0) {
 			// We know opennet is enabled.
