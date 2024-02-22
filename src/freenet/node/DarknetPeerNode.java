@@ -41,7 +41,7 @@ import freenet.keys.FreenetURI;
 import freenet.l10n.NodeL10n;
 import freenet.node.useralerts.AbstractUserAlert;
 import freenet.node.useralerts.BookmarkFeedUserAlert;
-import freenet.node.useralerts.DownloadFeedUserAlert;
+               import freenet.node.useralerts.DownloadFeedUserAlert;
 import freenet.node.useralerts.N2NTMUserAlert;
 import freenet.node.useralerts.UserAlert;
 import freenet.support.Base64;
@@ -109,9 +109,9 @@ public class DarknetPeerNode extends PeerNode {
 		private static final FRIEND_TRUST[] valuesBackwards;
 		static {
 			final FRIEND_TRUST[] values = values();
-			valuesBackwards = new FRIEND_TRUST[values.length];
+valuesBackwards = new FRIEND_TRUST[values.length];
 			for(int i=0;i<values.length;i++)
-				valuesBackwards[i] = values[values.length-i-1];
+	  			valuesBackwards[i] = values[values.length-i-1];
 		}
 
 		public static FRIEND_TRUST[] valuesBackwards() {
@@ -126,7 +126,7 @@ public class DarknetPeerNode extends PeerNode {
 
 	public enum FRIEND_VISIBILITY {
 		YES((short)0), // Visible
-		NAME_ONLY((short)1), // Only the name is visible, but other friends can ask for a connection
+	  	NAME_ONLY((short)1), // Only the name is visible, but other friends can ask for a connection
 		NO((short)2); // Not visible to our other friends at all
 
 		/** The codes are persistent and used to communicate between nodes, so they must not change.
@@ -137,7 +137,7 @@ public class DarknetPeerNode extends PeerNode {
 			this.code = code;
 		}
 
-		public boolean isStricterThan(FRIEND_VISIBILITY theirVisibility) {
+public boolean isStricterThan(FRIEND_VISIBILITY theirVisibility) {
 			if(theirVisibility == null) return true;
 			// Higher number = more strict.
 			return theirVisibility.code < code;
