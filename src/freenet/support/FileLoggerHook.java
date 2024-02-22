@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ArrayDeque;
 import java.util.Calendar;
-import java.util.Date;
+	import java.util.Date;
 import java.util.Deque;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -53,7 +53,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	private volatile boolean closed = false;
 	private boolean closedFinished = false;
 
-	protected int INTERVAL = Calendar.MINUTE;
+	  protected int INTERVAL = Calendar.MINUTE;
 	protected int INTERVAL_MULTIPLIER = 5;
 	
 	private static final Charset ENCODING = StandardCharsets.UTF_8;
@@ -77,7 +77,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	static synchronized void getUName() {
 		if(!uname.equals("unknown")) return;
 		System.out.println("Getting uname for logging");
-		try {
+try {
 			InetAddress addr = InetAddress.getLocalHost();
 			if (addr != null) {
 				uname =
