@@ -2,6 +2,9 @@ name: Java Code Style Format
 
 on:
   pull_request:
+  push:
+    branches:
+      - next
   
 jobs:
   format:
