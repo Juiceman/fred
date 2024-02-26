@@ -200,9 +200,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				Closer.close(dis);
 				Closer.close(fis);
 			}
-			if (
-				canBlock
-			) try { // Read some bits from /dev/random
+			if (canBlock) try { // Read some bits from /dev/random
 				fis = new FileInputStream("/dev/random");
 				dis = new DataInputStream(fis);
 				dis.readFully(buf);
@@ -216,8 +214,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				Closer.close(fis);
 			}
 			fis = null;
-		} else // Anyway, Windows's CAPI won't block. // Force generateSeed(), since we can't read random data from anywhere else.
-		canBlock = true;
+		} else canBlock = true; // Anyway, Windows's CAPI won't block. // Force generateSeed(), since we can't read random data from anywhere else.
 		if (canBlock) {
 			// SecureRandom hopefully acts as a proxy for CAPI on Windows
 			buf = sr.generateSeed(32);
@@ -597,8 +594,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 			}
 			if (
 				DEBUG
-			) // "+slow_entropy, LogLevel.NORMAL); //	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
-			System.err.println(
+			) System.err.println( // "+slow_entropy, LogLevel.NORMAL); //	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
 				"Fast pool: " + fast_entropy + "\tSlow pool: " + slow_entropy
 			);
 		}

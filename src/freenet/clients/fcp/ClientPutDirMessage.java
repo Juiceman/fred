@@ -159,9 +159,7 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 			}
 		}
 		String maxRetriesString = fs.get("MaxRetries");
-		if (
-			maxRetriesString == null
-		) maxRetries = 0; // default to 0
+		if (maxRetriesString == null) maxRetries = 0; // default to 0
 		else {
 			try {
 				maxRetries = Integer.parseInt(maxRetriesString, 10);

@@ -975,9 +975,7 @@ public class BlockTransmitter {
 					}
 				}
 			}
-			if (
-				!failed
-			) _ctr.sentPayload(PACKET_SIZE); // Everything is throttled, but payload is not reported.
+			if (!failed) _ctr.sentPayload(PACKET_SIZE); // Everything is throttled, but payload is not reported.
 			if (callCallback) {
 				callCallback(success);
 			}

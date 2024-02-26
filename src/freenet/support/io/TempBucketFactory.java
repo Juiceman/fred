@@ -164,9 +164,7 @@ public class TempBucketFactory
 			Bucket toMigrate = null;
 			long size;
 			synchronized (this) {
-				if (
-					!isRAMBucket() || hasBeenFreed
-				) return false; // Nothing to migrate! We don't want to switch back to ram, do we?
+				if (!isRAMBucket() || hasBeenFreed) return false; // Nothing to migrate! We don't want to switch back to ram, do we?
 				toMigrate = currentBucket;
 				RandomAccessBucket tempFB = _makeFileBucket();
 				size = currentSize;

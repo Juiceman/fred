@@ -396,9 +396,7 @@ public class FreenetURI
 		int x = URI.indexOf('?');
 		if (x > -1) URI = URI.substring(0, x);
 
-		if (
-			URI.indexOf('@') < 0 || URI.indexOf('/') < 0
-		) try { // Encoded URL?
+		if (URI.indexOf('@') < 0 || URI.indexOf('/') < 0) try { // Encoded URL?
 			URI = URLDecoder.decode(URI, false);
 		} catch (URLEncodedFormatException e) {
 			throw new MalformedURLException(

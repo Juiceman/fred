@@ -356,9 +356,7 @@ public abstract class UIDTag {
 						expected = false;
 					}
 				}
-				if (
-					!expected
-				) Logger.error( // Fork succeeds can't happen for fetch-offered-keys.
+				if (!expected) Logger.error( // Fork succeeds can't happen for fetch-offered-keys.
 					this,
 					"Unlocked handler but still fetching offered keys from " +
 					fetchingOfferedKeyFrom +

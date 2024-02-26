@@ -1086,7 +1086,7 @@ final class Rijndael_Algorithm { // implicit no-argument constructor
 		final int BCshift;
 		if (BC == 4) BCshift = 2;
 		else if (BC == 8) BCshift = 3;
-		else/* Note: original code supported block size 192 bits */ throw new InvalidKeyException(
+		else /* Note: original code supported block size 192 bits */throw new InvalidKeyException(
 			"Unsupported block size: " + blockSize
 		);
 		int[][] Ke = new int[ROUNDS + 1][BC]; // encryption round keys

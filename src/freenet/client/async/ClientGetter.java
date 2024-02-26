@@ -1188,9 +1188,7 @@ public class ClientGetter
 	private void checkCompatibleExtension(String mimeType)
 		throws FetchException {
 		FilterMIMEType type = ContentFilter.getMIMEType(mimeType);
-		if (
-			type == null
-		) return; // Not our problem, will be picked up elsewhere.
+		if (type == null) return; // Not our problem, will be picked up elsewhere.
 		if (
 			!DefaultMIMETypes.isValidExt(mimeType, forceCompatibleExtension)
 		) throw new FetchException(

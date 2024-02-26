@@ -100,9 +100,10 @@ public class RequestStatusCache {
 		UploadRequestStatus status =
 			(UploadRequestStatus) requestsByIdentifier.get(identifier);
 		if (status == null) return; // Can happen during cancel etc.
-		if (
-			status.getFinalURI() == null
-		) uploadsByFinalURI.put(finalURI, status); // No final URI set yet, put into the index.
+		if (status.getFinalURI() == null) uploadsByFinalURI.put(
+			finalURI,
+			status
+		); // No final URI set yet, put into the index.
 		status.setFinalURI(finalURI);
 	}
 
@@ -225,9 +226,7 @@ public class RequestStatusCache {
 		RequestStatus status = requestsByIdentifier.get(identifier);
 		if (status == null) return; // Can happen during cancel etc.
 
-		if (
-			!started
-		) status.restart(false); // Caller should call with false first, so we only need to unset finished when setting started=false.
+		if (!started) status.restart(false); // Caller should call with false first, so we only need to unset finished when setting started=false.
 		else status.setStarted(started); // Already restarted, just set started = true.
 	}
 

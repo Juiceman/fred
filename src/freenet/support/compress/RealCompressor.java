@@ -109,8 +109,7 @@ public class RealCompressor {
 			(!osName.contains("Windows") &&
 				(osName.toLowerCase().indexOf("mac os x") > 0)) ||
 			(!NativeThread.usingNativeCode())
-		) // Also, on non-Windows, we need the native threads library to be working. // OS/X niceness is really weak, so we don't want any more background CPU load than necessary
-		maxRunningThreads = 1;
+		) maxRunningThreads = 1; // Also, on non-Windows, we need the native threads library to be working. // OS/X niceness is really weak, so we don't want any more background CPU load than necessary
 		else {
 			// Most other OSs will have reasonable niceness, so go by RAM.
 			Runtime r = Runtime.getRuntime();

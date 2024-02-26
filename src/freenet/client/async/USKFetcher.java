@@ -1476,9 +1476,10 @@ public class USKFetcher
 		for (USKAttempt attempt : attempts) attempt.cancel(context);
 		for (USKAttempt p : polling) p.cancel(context);
 		for (DBRAttempt a : atts) a.cancel(context);
-		if (
-			storeChecker != null
-		) storeChecker.unregister(context, storeChecker.getPriorityClass()); // Remove from the store checker queue.
+		if (storeChecker != null) storeChecker.unregister(
+			context,
+			storeChecker.getPriorityClass()
+		); // Remove from the store checker queue.
 		if (data != null) data.free();
 	}
 

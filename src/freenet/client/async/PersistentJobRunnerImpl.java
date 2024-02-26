@@ -175,9 +175,7 @@ public abstract class PersistentJobRunnerImpl implements PersistentJobRunner {
 	public void handleCompletion(boolean ret, int threadPriority) {
 		synchronized (sync) {
 			runningJobs--;
-			if (
-				runningJobs == 0
-			) sync.notifyAll(); // Even if not going to checkpoint indirectly, somebody might be waiting, need to notify.
+			if (runningJobs == 0) sync.notifyAll(); // Even if not going to checkpoint indirectly, somebody might be waiting, need to notify.
 			if (!enableCheckpointing) {
 				if (logMINOR) Logger.minor(this, "Not enableCheckpointing yet");
 				return;

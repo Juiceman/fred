@@ -314,9 +314,7 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				} else if (m1 != null && m1.getSpec().equals(DMT.allSent)) {
 					synchronized (BlockReceiver.this) {
 						if (completed) return;
-						if (
-							gotAllSent
-						) truncateTimeout = true; // Multiple allSent's don't extend the timeouts.
+						if (gotAllSent) truncateTimeout = true; // Multiple allSent's don't extend the timeouts.
 						gotAllSent = true;
 					}
 				}

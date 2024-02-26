@@ -733,9 +733,8 @@ public class SaltedHashFreenetStore<T extends StorableBlock>
 					// Distribute overwrites evenly between the right store and the wrong store.
 					int a = OPTION_MAX_PROBE;
 					int b = wrongStoreCount;
-					if (
-						random.nextInt(a + b) < b
-					) indexToOverwrite = firstWrongStoreIndex; // Allow the overwrite to happen in the wrong store.
+					if (random.nextInt(a + b) < b) indexToOverwrite =
+						firstWrongStoreIndex; // Allow the overwrite to happen in the wrong store.
 					else return false; // Force the overwrite to happen in the right store.
 				} else {
 					// By default, overwrite offset[0] when not writing to wrong store.

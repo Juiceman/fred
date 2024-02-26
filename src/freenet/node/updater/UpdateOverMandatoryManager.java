@@ -1359,9 +1359,7 @@ public class UpdateOverMandatoryManager implements RequestClient {
 				@Override
 				public void run() {
 					try {
-						if (
-							br.receive()
-						) processRevocationBlob(temp, source); // Success!
+						if (br.receive()) processRevocationBlob(temp, source); // Success!
 						else {
 							Logger.error(
 								this,
@@ -2252,9 +2250,12 @@ public class UpdateOverMandatoryManager implements RequestClient {
 							nodesSendingMainJar.add(source);
 						}
 						success = br.receive();
-						if (
-							success
-						) processMainJarBlob(temp, source, version, jarURI); // Success!
+						if (success) processMainJarBlob(
+							temp,
+							source,
+							version,
+							jarURI
+						); // Success!
 						else {
 							Logger.error(
 								this,

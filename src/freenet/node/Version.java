@@ -352,10 +352,7 @@ public class Version {
 		String[] v = Fields.commaList(version);
 
 		if ((v.length < 3) || !goodProtocol(v[2])) {
-			return (
-				"Required protocol version is " + protocolVersion
-			)//						+ " or " + stableProtocolVersion // uncomment next line if accepting stable, see also goodProtocol() above
-			;
+			return ("Required protocol version is " + protocolVersion); //						+ " or " + stableProtocolVersion // uncomment next line if accepting stable, see also goodProtocol() above
 		}
 		if (sameVersion(v)) {
 			try {

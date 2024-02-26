@@ -71,9 +71,7 @@ public final class DecayingKeyspaceAverage
 	 */
 	@Override
 	public synchronized void report(double d) {
-		if (
-			(d < 0.0) || (d > 1.0)
-		) throw new IllegalArgumentException( //Just because we use non-normalized locations doesn't mean we can accept them.
+		if ((d < 0.0) || (d > 1.0)) throw new IllegalArgumentException( //Just because we use non-normalized locations doesn't mean we can accept them.
 			"Not a valid normalized key: " + d
 		);
 		double superValue = avg.currentValue();

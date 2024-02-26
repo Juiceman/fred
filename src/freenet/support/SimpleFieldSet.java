@@ -895,9 +895,7 @@ public class SimpleFieldSet {
 						// If we have a retval, and we have a next value, return
 						if (ret != null) return ret;
 						ret = subIterator.next();
-						if (
-							subIterator.hasNext()
-						) if (ret != null) return ret; // If we have a retval, and we have a next value, return
+						if (subIterator.hasNext()) if (ret != null) return ret; // If we have a retval, and we have a next value, return
 					}
 					// Otherwise, we need to get a new subIterator (or hasNext() will return false)
 					subIterator = null;

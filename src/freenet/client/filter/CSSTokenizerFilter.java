@@ -6111,15 +6111,9 @@ class CSSTokenizerFilter {
 		) {
 			// It is a string.
 			// Anything is allowed in a string...
-			if (
-				c == '\r' || c == '\n' || c == '\f'
-			) return true; // Except newlines.
-			else if (
-				c == stringChar
-			) return true; // And the quote itself.
-			else if (
-				c < 32 || (c >= (char) 0x0080 && !unicode)
-			) return true; // And control chars, and anything outside Basic Latin (unless we know the output charset is unicode-complete).
+			if (c == '\r' || c == '\n' || c == '\f') return true; // Except newlines.
+			else if (c == stringChar) return true; // And the quote itself.
+			else if (c < 32 || (c >= (char) 0x0080 && !unicode)) return true; // And control chars, and anything outside Basic Latin (unless we know the output charset is unicode-complete).
 			return false;
 		}
 

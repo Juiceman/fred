@@ -189,9 +189,7 @@ public class OpennetPeerNode extends PeerNode {
 	private boolean shouldDisconnectTooOld() {
 		long uptime =
 			System.currentTimeMillis() - timeLastConnectionCompleted();
-		if (
-			uptime < SECONDS.toMillis(30)
-		) return false; // Allow 30 seconds to send the UOM request.
+		if (uptime < SECONDS.toMillis(30)) return false; // Allow 30 seconds to send the UOM request.
 		// FIXME remove, paranoia
 		if (uptime < HOURS.toMillis(1)) return false;
 		NodeUpdateManager updater = node.nodeUpdater;

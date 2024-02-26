@@ -950,7 +950,7 @@ public class PluginManager {
 
 		int lastSlash = pluginSpecification.lastIndexOf('/');
 		String pluginFilename;
-		if (lastSlash == -1)/* Windows, maybe? */ lastSlash =
+		if (lastSlash == -1) /* Windows, maybe? */lastSlash =
 			pluginSpecification.lastIndexOf('\\');
 		File pluginDirectory = node.getPluginDir();
 		if (lastSlash == -1) {

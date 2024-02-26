@@ -173,9 +173,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 			global
 		);
 		String maxSizeString = fs.get("MaxSize");
-		if (
-			maxSizeString == null
-		) maxSize = Long.MAX_VALUE; // default to unlimited
+		if (maxSizeString == null) maxSize = Long.MAX_VALUE; // default to unlimited
 		else {
 			try {
 				maxSize = Long.parseLong(maxSizeString, 10);
@@ -195,9 +193,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 			}
 		}
 		String maxTempSizeString = fs.get("MaxTempSize");
-		if (
-			maxTempSizeString == null
-		) maxTempSize = Long.MAX_VALUE; // default to unlimited
+		if (maxTempSizeString == null) maxTempSize = Long.MAX_VALUE; // default to unlimited
 		else {
 			try {
 				maxTempSize = Long.parseLong(maxTempSizeString, 10);
@@ -217,9 +213,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 			}
 		}
 		String maxRetriesString = fs.get("MaxRetries");
-		if (
-			maxRetriesString == null
-		) maxRetries = 0; // default to 0
+		if (maxRetriesString == null) maxRetries = 0; // default to 0
 		else {
 			try {
 				maxRetries = Integer.parseInt(maxRetriesString, 10);

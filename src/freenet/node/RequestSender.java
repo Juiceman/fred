@@ -1581,8 +1581,7 @@ public final class RequestSender extends BaseSender implements PrioRunnable {
 		}
 		if (
 			!wasFork
-		) // If we find the data we will offer it to the requester. // Don't fire transfer begins on a fork since we have not set headers or prb.
-		fireCHKTransferBegins();
+		) fireCHKTransferBegins(); // If we find the data we will offer it to the requester. // Don't fire transfer begins on a fork since we have not set headers or prb.
 
 		final long tStart = System.currentTimeMillis();
 		final BlockReceiver br = new BlockReceiver(
