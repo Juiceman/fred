@@ -285,9 +285,7 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 		HTMLNode alertNode = new HTMLNode("div");
 
 		synchronized (this) {
-			if (
-				isOutdated
-			) alertNode.addChild("#", l10n("outdatedUpdate")); // This is useful to not lose those who do however. // but very few users will turn off auto-update completely. // Arguably we should provide a button to turn on auto-update,
+			if (isOutdated) alertNode.addChild("#", l10n("outdatedUpdate")); // This is useful to not lose those who do however. // but very few users will turn off auto-update completely. // Arguably we should provide a button to turn on auto-update,
 			else if (peers == 0 && !isOpennetEnabled) {
 				alertNode.addChild("#", l10n("noPeersDarknet"));
 			} else if (

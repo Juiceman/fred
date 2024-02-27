@@ -259,9 +259,7 @@ public final class CHKInsertSender
 			if ((!gotFatalTimeout) && (!success)) {
 				setTransferTimedOut();
 			}
-			if (
-				!noUnlockPeer
-			) pn.noLongerRoutingTo(thisTag, false); // LOCKING: Do this outside the lock as pn can do heavy stuff in response (new load management). // Upstream (towards originator), of course, we can unlockHandler() as soon as all the transfers are finished. // Downstream (away from originator), we need to stay locked on the peer until the fatal timeout / the delayed notice.
+			if (!noUnlockPeer) pn.noLongerRoutingTo(thisTag, false); // LOCKING: Do this outside the lock as pn can do heavy stuff in response (new load management). // Upstream (towards originator), of course, we can unlockHandler() as soon as all the transfers are finished. // Downstream (away from originator), we need to stay locked on the peer until the fatal timeout / the delayed notice.
 			synchronized (backgroundTransfers) {
 				// Avoid "Unlocked handler but still routing to yet not reassigned".
 				if (!gotFatalTimeout) {
