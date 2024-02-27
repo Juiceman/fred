@@ -153,9 +153,9 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 				htl
 			);
 
-		    	if (htl == 0) {
+			if (htl == 0) {
 				// No more nodes.
-				 complete();
+				complete();
 				return;
 			}
 
