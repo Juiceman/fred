@@ -1142,8 +1142,7 @@ public class SingleFileFetcher extends SimpleSingleFileFetcher {
 				try {
 					BaseClientKey k = BaseClientKey.getBaseKey(newURI);
 					if (k instanceof ClientKey) redirectedKey = (ClientKey) k;
-					else // This may be a desirable property. // Without redirects to USKs, all SSK and CHKs are static. // FIXME do we want to allow redirects to USKs?
-					throw new FetchException(
+					else throw new FetchException( // This may be a desirable property. // Without redirects to USKs, all SSK and CHKs are static. // FIXME do we want to allow redirects to USKs?
 						FetchExceptionMode.UNKNOWN_METADATA,
 						"Redirect to a USK"
 					);

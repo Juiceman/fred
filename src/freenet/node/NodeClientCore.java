@@ -1480,9 +1480,7 @@ public class NodeClientCore implements Persistable {
 								: nodeStats.localChkFetchBytesReceivedAverage).report(
 								rs.getTotalReceivedBytes()
 							);
-						if (
-							status == RequestSender.SUCCESS
-						) (isSSK //nodeStats.successfulChkFetchBytesSentAverage.report(rs.getTotalSentBytes()); // See comments above declaration of successful* : We don't report sent bytes here.
+						if (status == RequestSender.SUCCESS) (isSSK //nodeStats.successfulChkFetchBytesSentAverage.report(rs.getTotalSentBytes()); // See comments above declaration of successful* : We don't report sent bytes here.
 								? nodeStats.successfulSskFetchBytesReceivedAverage
 								: nodeStats.successfulChkFetchBytesReceivedAverage).report(
 								rs.getTotalReceivedBytes()
@@ -2127,8 +2125,7 @@ public class NodeClientCore implements Persistable {
 					);
 					if (
 						status == RequestSender.SUCCESS
-					) //nodeStats.successfulSskFetchBytesSentAverage.report(rs.getTotalSentBytes()); // reporting the sent bytes would be inaccurate. // See comments above successfulSskFetchBytesSentAverage : we don't relay the data, so
-					nodeStats.successfulSskFetchBytesReceivedAverage.report(
+					) nodeStats.successfulSskFetchBytesReceivedAverage.report( //nodeStats.successfulSskFetchBytesSentAverage.report(rs.getTotalSentBytes()); // reporting the sent bytes would be inaccurate. // See comments above successfulSskFetchBytesSentAverage : we don't relay the data, so
 						rs.getTotalReceivedBytes()
 					);
 				}

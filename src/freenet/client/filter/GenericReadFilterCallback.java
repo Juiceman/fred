@@ -158,9 +158,7 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 			if (logMINOR) Logger.minor(this, "Processing " + u);
 			uri = URIPreEncoder.encodeURI(u).normalize();
 			if (logMINOR) Logger.minor(this, "Processing " + uri);
-			if (
-				u.startsWith("/") || u.startsWith("%2f")
-			) noRelative = true; // Don't allow encoded /'s, they're just too confusing (here they would get decoded and then coalesced with other slashes). // Don't bother with relative URIs if it's obviously absolute.
+			if (u.startsWith("/") || u.startsWith("%2f")) noRelative = true; // Don't allow encoded /'s, they're just too confusing (here they would get decoded and then coalesced with other slashes). // Don't bother with relative URIs if it's obviously absolute.
 			if (!noRelative) resolved = baseURI.resolve(uri);
 			else resolved = uri;
 			if (logMINOR) Logger.minor(this, "Resolved: " + resolved);

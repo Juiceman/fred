@@ -592,9 +592,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 					}
 				}
 			}
-			if (
-				DEBUG
-			) System.err.println( // "+slow_entropy, LogLevel.NORMAL); //	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
+			if (DEBUG) System.err.println( // "+slow_entropy, LogLevel.NORMAL); //	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
 				"Fast pool: " + fast_entropy + "\tSlow pool: " + slow_entropy
 			);
 		}

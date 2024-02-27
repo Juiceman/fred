@@ -549,9 +549,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		boolean remove = m.getBoolean(DMT.REMOVE);
 		if (remove) {
 			node.peers.disconnectAndRemove(source, false, false, false);
-			if (
-				source instanceof DarknetPeerNode
-			) System.out.println( // FIXME add a useralert? // FIXME remove, dirty logs.
+			if (source instanceof DarknetPeerNode) System.out.println( // FIXME add a useralert? // FIXME remove, dirty logs.
 				"Disconnecting permanently from your friend \"" +
 				((DarknetPeerNode) source).getName() +
 				"\" because they asked us to remove them."
