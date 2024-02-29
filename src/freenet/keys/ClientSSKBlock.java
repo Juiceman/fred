@@ -85,20 +85,20 @@ public class ClientSSKBlock implements ClientKeyBlock {
 			throw new SSKDecodeException("Data length: "+dataLength+" but data.length="+dataOutput.length);
 		}
 		
-        compressionAlgorithm = (short)(((decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+2] & 0xff) << 8) + (decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+3] & 0xff));
-        decoded = true;
-        
-        if(dontDecompress) {
-        	if(compressionAlgorithm == (short)-1)
-        		return BucketTools.makeImmutableBucket(factory, dataOutput, dataLength);
-        	else if(dataLength < 2)
-        		throw new SSKDecodeException("Data length is less than 2 yet compressed!");
-        	else
-        		return BucketTools.makeImmutableBucket(factory, dataOutput, 2, dataLength - 2);
-        }
+		compressionAlgorithm = (short)(((decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+2] & 0xff) << 8) + (decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+3] & 0xff));
+		decoded = true;
+		
+		if(dontDecompress) {
+			if(compressionAlgorithm == (short)-1)
+				return BucketTools.makeImmutableBucket(factory, dataOutput, dataLength);
+			else if(dataLength < 2)
+				throw new SSKDecodeException("Data length is less than 2 yet compressed!");
+			else
+				return BucketTools.makeImmutableBucket(factory, dataOutput, 2, dataLength - 2);
+		}
 
-        Bucket b = Key.decompress(compressionAlgorithm >= 0, dataOutput, dataLength, factory, Math.min(MAX_DECOMPRESSED_DATA_LENGTH, maxLength), compressionAlgorithm, true);
-        return b;
+		Bucket b = Key.decompress(compressionAlgorithm >= 0, dataOutput, dataLength, factory, Math.min(MAX_DECOMPRESSED_DATA_LENGTH, maxLength), compressionAlgorithm, true);
+		return b;
 	}
 
 	@Override
@@ -122,10 +122,10 @@ public class ClientSSKBlock implements ClientKeyBlock {
 		return memoryDecode(false);
 	}
 	
-    /**
-     * Decode into RAM, if short.
-     * @throws KeyDecodeException 
-     */
+	/**
+	 * Decode into RAM, if short.
+	 * @throws KeyDecodeException 
+	 */
 	public byte[] memoryDecode(boolean dontDecompress) throws KeyDecodeException {
 		try {
 			ArrayBucket a = (ArrayBucket) decode(new ArrayBucketFactory(), 32*1024, dontDecompress);

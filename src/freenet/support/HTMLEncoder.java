@@ -42,9 +42,9 @@ public class HTMLEncoder {
 			if(Character.isLetterOrDigit(c)){ //only special characters need checking
 				sb.append(c);
 			} else if((entity = charTable.get(c))!=null){
-                sb.append('&');
-                sb.append(entity);
-                sb.append(';');
+				sb.append('&');
+				sb.append(entity);
+				sb.append(';');
 			} else{
 				sb.append(c);
 		}
@@ -60,8 +60,8 @@ public class HTMLEncoder {
 	 */
 	public static String encodeXML(String s) {
 		// Extensible Markup Language (XML) 1.0 (Fifth Edition)
-		// [10]   	AttValue	   ::=   	'"' ([^<&"] | Reference)* '"'
-		// 								|   "'" ([^<&'] | Reference)* "'"
+		// [10]	AttValue	   ::=	'"' ([^<&"] | Reference)* '"'
+		//								|   "'" ([^<&'] | Reference)* "'"
 		// [14]   	CharData	   ::=   	[^<&]* - ([^<&]* ']]>' [^<&]*)
 		s = s.replace("&", "&#38;");
 
@@ -94,17 +94,17 @@ public class HTMLEncoder {
 			int[] collisionTable = new int[max+1]; //using integers instead of booleans (no cleanup)
 			boolean ok=false;
 			while (!ok) {
-			    ++modulo; //try a higher modulo
-			    ok = true;
-			    for (int i = 0; ok && i < keys.length; ++i){
-			    	keyIndex = keys[i]%modulo; //try this modulo
-			    	if (collisionTable[keyIndex] == modulo){ //is this value already used
-			    		ok = false;
-			    	}
-			    	else{
-			    		collisionTable[keyIndex] = modulo;
+				++modulo; //try a higher modulo
+				ok = true;
+				for (int i = 0; ok && i < keys.length; ++i){
+					keyIndex = keys[i]%modulo; //try this modulo
+					if (collisionTable[keyIndex] == modulo){ //is this value already used
+						ok = false;
 					}
-			    }
+					else{
+						collisionTable[keyIndex] = modulo;
+					}
+				}
 			}
 			//System.out.println("The modulo is:" + modulo); //was The modulo is:1474
 			

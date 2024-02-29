@@ -44,7 +44,7 @@ public class LocalFileN2NMToadlet extends LocalFileBrowserToadlet {
 	protected void createSelectDirectoryButton(HTMLNode fileRow, String path, HTMLNode persistence) {
 	}
 
-    @Override
+	@Override
 	protected Hashtable<String, String> persistenceFields (Hashtable<String, String> set) {
 		Hashtable<String, String> fieldPairs = new Hashtable<String, String>();
 		String message = set.get("message");

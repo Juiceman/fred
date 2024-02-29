@@ -30,8 +30,8 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 			parseErrorBox(contentNode, helper, WizardL10n.l10n("bandwidthCouldNotParse", "limit", parseTarget));
 		} else if (request.isParameterSet("tooLow")) {
 			HTMLNode errorBox = parseErrorBox(contentNode, helper, WizardL10n.l10n("bandwidthMonthlyLow",
-			                                  new String[] { "requested", "minimum", "useMinimum" },
-			                                  new String[] { parseTarget, String.valueOf(Math.round(BandwidthLimit.minMonthlyLimit)), WizardL10n.l10n("bandwidthMonthlyUseMinimum")}));
+											  new String[] { "requested", "minimum", "useMinimum" },
+											  new String[] { parseTarget, String.valueOf(Math.round(BandwidthLimit.minMonthlyLimit)), WizardL10n.l10n("bandwidthMonthlyUseMinimum")}));
 
 			HTMLNode minimumForm = helper.addFormChild(errorBox, ".", "use-minimum");
 			minimumForm.addChild("input",
@@ -44,10 +44,10 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 
 		// Explain this step's operation.
 		HTMLNode infoBox = helper.getInfobox("infobox-normal", WizardL10n.l10n("bandwidthLimitMonthlyTitle"),
-		        contentNode, null, false);
+				contentNode, null, false);
 		NodeL10n.getBase().addL10nSubstitution(infoBox, "FirstTimeWizardToadlet.bandwidthLimitMonthly",
-		        new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG, 
-		                new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))});
+				new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG, 
+						new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))});
 
 		//TODO: Might want to detect bandwidth limit and hide those too high to reach.
 		//TODO: The user can always set a custom limit. At least one limit should be displayed in order to
@@ -66,11 +66,11 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 			row.addChild("td", String.valueOf(cap) +" GB");
 			HTMLNode selectForm = helper.addFormChild(row.addChild("td"), ".", "limit");
 			selectForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "capTo", String.valueOf(cap)});
+					new String[] { "type", "name", "value" },
+					new String[] { "hidden", "capTo", String.valueOf(cap)});
 			selectForm.addChild("input",
-			        new String[] { "type", "value" },
-			        new String[] { "submit", WizardL10n.l10n("bandwidthSelect")});
+					new String[] { "type", "value" },
+					new String[] { "submit", WizardL10n.l10n("bandwidthSelect")});
 		}
 
 		// Row for custom entry
@@ -87,8 +87,8 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 		// Back / next buttons
 		HTMLNode backForm = helper.addFormChild(infoBox, ".", "backForm");
 		backForm.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 	}
 
 	@Override

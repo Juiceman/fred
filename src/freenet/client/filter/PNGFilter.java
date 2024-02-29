@@ -39,15 +39,15 @@ public class PNGFilter implements ContentDataFilter {
 	private final boolean deleteTimestamp;
 	private final boolean checkCRCs;
 	static final byte[] pngHeader = { (byte) 137, (byte) 80, (byte) 78, (byte) 71, (byte) 13, (byte) 10, (byte) 26,
-	        (byte) 10 };
+			(byte) 10 };
 	static final String[] HARMLESS_CHUNK_TYPES = {
 	// http://www.w3.org/TR/PNG/
-	        "tRNS", "cHRM", "gAMA", "iCCP", // FIXME Embedded ICC profile: could this conceivably cause a web lookup?
-	        "sBIT", // FIXME rather obscure ??
-	        "sRGB", "bKGD", "hIST", "pHYs", "sPLT",
-	        // APNG chunks (Firefox 3 will support APNG)
-	        // http://wiki.mozilla.org/APNG_Specification
-	        "acTL", "fcTL", "fdAT"
+			"tRNS", "cHRM", "gAMA", "iCCP", // FIXME Embedded ICC profile: could this conceivably cause a web lookup?
+			"sBIT", // FIXME rather obscure ??
+			"sRGB", "bKGD", "hIST", "pHYs", "sPLT",
+			// APNG chunks (Firefox 3 will support APNG)
+			// http://wiki.mozilla.org/APNG_Specification
+			"acTL", "fcTL", "fdAT"
 	// MNG isn't supported by Firefox and IE because of lack of market demand. Big surprise
 	// given nobody supports it! It is supported by Konqueror though. Complex standard,
 	// not worth it for the time being.
@@ -56,14 +56,14 @@ public class PNGFilter implements ContentDataFilter {
 	// http://fresh.t-systems-sfr.com/unix/privat/pngcheck-2.3.0.tar.gz:a/pngcheck-2.3.0/pngcheck.c
 	};
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logMINOR;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+								logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -90,12 +90,12 @@ public class PNGFilter implements ContentDataFilter {
 		boolean hasSeenIEND = false;
 		boolean hasSeenIDAT = false;
 		try {
-                        long offset = 0;
+						long offset = 0;
 			dis = new DataInputStream(input);
 			// Check the header
 			byte[] headerCheck = new byte[pngHeader.length];
 			dis.readFully(headerCheck);
-                        offset+=pngHeader.length;
+						offset+=pngHeader.length;
 			if (!Arrays.equals(headerCheck, pngHeader)) {
 				// Throw an exception
 				String message = l10n("invalidHeader");
@@ -131,7 +131,7 @@ public class PNGFilter implements ContentDataFilter {
 				}
 
 				int length = ((lengthBytes[0] & 0xff) << 24) + ((lengthBytes[1] & 0xff) << 16)
-				        + ((lengthBytes[2] & 0xff) << 8) + (lengthBytes[3] & 0xff);
+						+ ((lengthBytes[2] & 0xff) << 8) + (lengthBytes[3] & 0xff);
 				if (logMINOR)
 					Logger.minor(this, "length " + length+ "(offset=0x"+Long.toHexString(offset)+") ");
 				if (dos != null)
@@ -139,7 +139,7 @@ public class PNGFilter implements ContentDataFilter {
 
 				// Type of the chunk : Should match [a-zA-Z]{4}
 				dis.readFully(lengthBytes);
-                                offset+=4;
+								offset+=4;
 				StringBuilder sb = new StringBuilder();
 				byte[] chunkTypeBytes = new byte[4];
 				for (int i = 0; i < 4; i++) {
@@ -182,19 +182,19 @@ public class PNGFilter implements ContentDataFilter {
 
 				if (checkCRCs) {
 					long readCRC = (((crcLengthBytes[0] & 0xff) << 24) + ((crcLengthBytes[1] & 0xff) << 16)
-					        + ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
+							+ ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
 					CRC32 crc = new CRC32();
 					crc.update(chunkTypeBytes);
 					if(length > 0)
-                                            crc.update(chunkData);
+											crc.update(chunkData);
 					long computedCRC = crc.getValue();
 
 					if (readCRC != computedCRC) {
 						skip = true;
 						if (logMINOR)
 							Logger.minor(this, "CRC of the chunk " + chunkTypeString + " doesn't match ("
-							        + Long.toHexString(readCRC) + " but should be " + Long.toHexString(computedCRC)
-							        + ")!");
+									+ Long.toHexString(readCRC) + " but should be " + Long.toHexString(computedCRC)
+									+ ")!");
 					}
 				}
 
@@ -249,7 +249,7 @@ public class PNGFilter implements ContentDataFilter {
 				if (!skip && "IDAT".equalsIgnoreCase(chunkTypeString)) {
 					if (hasSeenIDAT && !"IDAT".equalsIgnoreCase(lastChunkType))
 						throwError("Multiple IDAT chunks must be consecutive!",
-						        "Multiple IDAT chunks must be consecutive!");
+								"Multiple IDAT chunks must be consecutive!");
 					hasSeenIDAT = true;
 					validChunkType = true;
 				}
@@ -262,7 +262,7 @@ public class PNGFilter implements ContentDataFilter {
 				}
 
 				if ("text".equalsIgnoreCase(chunkTypeString) || "itxt".equalsIgnoreCase(chunkTypeString)
-				        || "ztxt".equalsIgnoreCase(chunkTypeString)) {
+						|| "ztxt".equalsIgnoreCase(chunkTypeString)) {
 					if (deleteText)
 						skip = true;
 					else
@@ -283,8 +283,8 @@ public class PNGFilter implements ContentDataFilter {
 				else if (!skip && output != null) {
 					if (logMINOR)
 						Logger
-						        .minor(this, "Writing " + chunkTypeString + " (" + baos.size()
-						                + ") to the output bucket");
+								.minor(this, "Writing " + chunkTypeString + " (" + baos.size()
+										+ ") to the output bucket");
 					baos.writeTo(output);
 					baos.flush();
 				}

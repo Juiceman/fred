@@ -182,7 +182,7 @@ public abstract class BloomFilter {
 	 * Calculate optimal K value
 	 * 
 	 * @param filterLength
-	 *            filter length in bits
+	 *			filter length in bits
 	 * @param maxKey
 	 * @return optimal K
 	 */
@@ -232,7 +232,7 @@ public abstract class BloomFilter {
 	@Override
 	protected void finalize() throws Throwable {
 		close();
-                super.finalize();
+				super.finalize();
 	}
 	
 	public int getSizeBytes() {
@@ -250,19 +250,19 @@ public abstract class BloomFilter {
 		return x;
 	}
 	
-    public int copyTo(byte[] buf, int offset) {
-        lock.readLock().lock();
-        try {
-            int capacity = filter.capacity();
-            System.arraycopy(filter.array(), filter.arrayOffset(), buf, offset, capacity);
-            return capacity;
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-    
-    public void writeTo(OutputStream cos) throws IOException {
-        cos.write(filter.array(), filter.arrayOffset(), filter.capacity());
-    }
+	public int copyTo(byte[] buf, int offset) {
+		lock.readLock().lock();
+		try {
+			int capacity = filter.capacity();
+			System.arraycopy(filter.array(), filter.arrayOffset(), buf, offset, capacity);
+			return capacity;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+	
+	public void writeTo(OutputStream cos) throws IOException {
+		cos.write(filter.array(), filter.arrayOffset(), filter.capacity());
+	}
 
 }

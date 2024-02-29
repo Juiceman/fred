@@ -89,7 +89,7 @@ public class Message {
 	}
 
 	private static Message decodeMessage(ByteBufferInputStream bb, PeerContext peer, int recvByteCount,
-	        boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
+			boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
 		MessageType mspec;
 		try {
 			mspec = MessageType.getSpec(bb.readInt(), veryLax);
@@ -111,7 +111,7 @@ public class Message {
 				Class<?> type = mspec.getFields().get(name);
 				if (type.equals(LinkedList.class)) { // Special handling for LinkedList to deal with element type
 					m.set(name, Serializer
-					      .readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
+						  .readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
 				} else {
 					m.set(name, Serializer.readFromDataInputStream(type, bb));
 				}
@@ -327,7 +327,7 @@ public class Message {
 	}
 
 	public boolean isInternal() {
-	    return _internal;
+		return _internal;
 	}
 
 	public MessageType getSpec() {

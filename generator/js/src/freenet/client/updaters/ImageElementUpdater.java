@@ -68,9 +68,9 @@ public class ImageElementUpdater extends ReplacerUpdater {
 	 * Creates the progress message for the given progress
 	 * 
 	 * @param fetched
-	 *            - The number of the fetched blocks
+	 *			- The number of the fetched blocks
 	 * @param total
-	 *            - The number of the total blocks
+	 *			- The number of the total blocks
 	 * @return The message to be shown in the messages panel
 	 */
 	private Message makeProgressMsg(int fetched, int total) {
@@ -81,7 +81,7 @@ public class ImageElementUpdater extends ReplacerUpdater {
 	 * Returns the progress for a given element
 	 * 
 	 * @param image
-	 *            - The image element
+	 *			- The image element
 	 * @return [0]:the number of fetched blocks [1]:the total number of blocks
 	 */
 	private int[] getProgressForElement(Element image) {

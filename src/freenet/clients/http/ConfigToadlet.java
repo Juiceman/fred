@@ -185,9 +185,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	public void handleMethodPOST(URI uri, HTTPRequest request,
 			ToadletContext ctx) throws ToadletContextClosedException,
 			IOException, RedirectException {
-	    
-        if(!ctx.checkFullAccess(this))
-            return;
+		
+		if(!ctx.checkFullAccess(this))
+			return;
 
 		// User requested reset to defaults, so present confirmation page.
 		if (request.isPartSet("confirm-reset-to-defaults")) {
@@ -424,9 +424,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx)
 			throws ToadletContextClosedException, IOException {
 
-        if(!ctx.checkFullAccess(this))
-            return;
-        
+		if(!ctx.checkFullAccess(this))
+			return;
+		
 		boolean advancedModeEnabled = ctx.isAdvancedModeEnabled();
 
 		PageNode page = ctx.getPageMaker().getPageNode(
@@ -664,17 +664,17 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	 * existing form.
 	 * 
 	 * @param value
-	 *            The current value of the option. It is displayed in the text
-	 *            box.
+	 *			The current value of the option. It is displayed in the text
+	 *			box.
 	 * @param fullName
-	 *            The full name of the option, used to name the text field.
+	 *			The full name of the option, used to name the text field.
 	 * @param o
-	 *            The option, used to add the short description as an "alt"
-	 *            attribute.
+	 *			The option, used to add the short description as an "alt"
+	 *			attribute.
 	 * @param disabled
-	 *            Whether the text box should be disabled.
+	 *			Whether the text box should be disabled.
 	 * @return An input of type "text" and class "config" containing the current
-	 *         value of the option.
+	 *		 value of the option.
 	 */
 	public static HTMLNode addTextBox(String value, String fullName,
 			Option<?> o, boolean disabled) {
@@ -701,16 +701,16 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	 * element, so any Javascript attributes can be added to the output.
 	 * 
 	 * @param value
-	 *            The currently applied value of the option.
+	 *			The currently applied value of the option.
 	 * @param o
-	 *            The option, used to list all values.
+	 *			The option, used to list all values.
 	 * @param fullName
-	 *            The full name of the option, used to name the drop-down.
+	 *			The full name of the option, used to name the drop-down.
 	 * @param disabled
-	 *            Whether the drop-down should be disabled.
+	 *			Whether the drop-down should be disabled.
 	 * @return An HTMLNode of a "select" with "option" children for each of the
-	 *         possible values. If the value specified in value is one of the
-	 *         options, it will be selected.
+	 *		 possible values. If the value specified in value is one of the
+	 *		 options, it will be selected.
 	 */
 	public static HTMLNode addComboBox(String value,
 			EnumerableOptionCallback o, String fullName, boolean disabled) {
@@ -743,13 +743,13 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	 * any Javascript attributes can be added to the output.
 	 * 
 	 * @param value
-	 *            The current value of the option. This will be selected.
+	 *			The current value of the option. This will be selected.
 	 * @param fullName
-	 *            The full name of the option, used to name the drop-down.
+	 *			The full name of the option, used to name the drop-down.
 	 * @param disabled
-	 *            Whether the drop-down should be disabled.
+	 *			Whether the drop-down should be disabled.
 	 * @return An HTMLNode of a "select" with an "option" child for localized
-	 *         "true" and "false", with the current value selected.
+	 *		 "true" and "false", with the current value selected.
 	 */
 	public static HTMLNode addBooleanComboBox(boolean value, String fullName,
 			boolean disabled) {

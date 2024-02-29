@@ -68,8 +68,8 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+	  InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+	  String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		if(cb == null) cb = new NullFilterCallback();
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
@@ -1650,7 +1650,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				new String[] { "href" },
 				new String[] { "altimg" },
 				emptyStringArray,
-                emptyStringArray));
+				emptyStringArray));
 		//MathML Presentation tags follow
 		String[] mathmlempty =
 			{
@@ -1690,7 +1690,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				new String[] { "href" },
 				emptyStringArray,
 				emptyStringArray,
-                    emptyStringArray));
+					emptyStringArray));
 		allowedTagsVerifiers.put(
 			"msup",
 			new CoreTagVerifier(
@@ -1715,7 +1715,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					emptyStringArray,
 					emptyStringArray));
 		allowedTagsVerifiers.put(
-		    "msrow",
+			"msrow",
 			new CoreTagVerifier(
 				"msrow",
 				new String[] { "mathbackground", "mathcolor", "position" },
@@ -1792,7 +1792,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					emptyStringArray,
 					emptyStringArray,
 					emptyStringArray));
-	    allowedTagsVerifiers.put(
+		allowedTagsVerifiers.put(
 			"ms",
 			new CoreTagVerifier(
 				"ms",
@@ -1922,7 +1922,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				emptyStringArray,
 				emptyStringArray));
 		allowedTagsVerifiers.put(
-		    "mtable",
+			"mtable",
 			new CoreTagVerifier(
 				"mtable",
 				new String[] {
@@ -2208,7 +2208,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				}
 			}
 			//If the tag has no attributes, and this is not allowable, remove it
-            if(h.isEmpty() && expungeTagIfNoAttributes()) return null;
+			if(h.isEmpty() && expungeTagIfNoAttributes()) return null;
 			if (t.startSlash)
 				return new ParsedTag(t, (String[])null);
 			String[] outAttrs = new String[h.size()];
@@ -2379,7 +2379,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		}
 
 		Map<String, Object> start(Map<String, Object> h, Map<String, Object> hn, HTMLParseContext pc)
-		        throws DataFilterException {
+				throws DataFilterException {
 			if(logDEBUG) Logger.debug(this, "Starting script/style");
 			pc.styleScriptRecurseCount++;
 			if (pc.styleScriptRecurseCount > 1) {
@@ -2454,7 +2454,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		@Override
 		Map<String, Object> sanitizeHash(Map<String, Object> hn, ParsedTag p, HTMLParseContext pc)
-		        throws DataFilterException {
+				throws DataFilterException {
 			// Call parent so we swallow the scripting
 			super.sanitizeHash(hn, p, pc);
 			return null; // Lose the tags
@@ -2566,7 +2566,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			String[] uriAttrs,
 			String[] inlineURIAttrs,
 			String[] eventAttrs,
-            String[] booleanAttrs) {
+			String[] booleanAttrs) {
 			this(tag, allowedAttrs, uriAttrs, inlineURIAttrs, eventAttrs, booleanAttrs, true);
 		}
 
@@ -2828,12 +2828,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		}
 	}
 
-    /** Verify media tags (audio and video). This needs its own
-     * verifier, because different from images, browsers use content
-     * sniffing to find out whether to display it as media
-     * content. Using text/plain as content type would allow
-     * exploiting this to run unfiltered files as media files. We fix
-     * this by encoding the mime type into the uri.*/
+	/** Verify media tags (audio and video). This needs its own
+	 * verifier, because different from images, browsers use content
+	 * sniffing to find out whether to display it as media
+	 * content. Using text/plain as content type would allow
+	 * exploiting this to run unfiltered files as media files. We fix
+	 * this by encoding the mime type into the uri.*/
 	static class MediaTagVerifier extends CoreTagVerifier {
 		private static final String[] locallyVerifiedAttrs = new String[] {
 			"src"
@@ -2866,7 +2866,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				if (src != null) {
 					src = HTMLEncoder.encode(src);
 					hn.put("src", src);
-                }
+				}
 			}
 			return hn;
 		}
@@ -2907,7 +2907,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			try {
 				finalAction = pc.cb.processForm(method, action);
 			} catch (CommentException e) {
-	            pc.writeAfterTag.append("<!-- ").append(HTMLEncoder.encode(e.toString())).append(" -->");
+				pc.writeAfterTag.append("<!-- ").append(HTMLEncoder.encode(e.toString())).append(" -->");
 				return null;
 			}
 			if(finalAction == null) return null;
@@ -2971,7 +2971,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			"http-equiv",
 			"name",
 			"content",
-            "charset"
+			"charset"
 		};
 
 		MetaTagVerifier() {
@@ -3029,7 +3029,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							// FIXME: if we ever do allow it... the spec
 							// http://www.w3.org/TR/html4/present/styles.html#h-14.2.1
 							// says only the last definition counts...
-							//        but it only counts if it's in the HEAD section,
+							//		but it only counts if it's in the HEAD section,
 							// so we DONT need to parse the whole doc
 							hn.put("http-equiv", http_equiv);
 							hn.put("content", content);
@@ -3046,10 +3046,10 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						for (String allowedContentType: allowedContentTypes) {
 							if (typesplit[0].equalsIgnoreCase(allowedContentType)) {
 								if((typesplit[1] == null) || (pc.charset != null && typesplit[1]
-								        .equalsIgnoreCase(pc.charset))) {
+										.equalsIgnoreCase(pc.charset))) {
 									hn.put("http-equiv", http_equiv);
 									hn.put("content", typesplit[0]
-									    + (typesplit[1] != null ? "; charset="
+										+ (typesplit[1] != null ? "; charset="
 										+ typesplit[1] : ""));
 								} else if(typesplit[1] != null && pc.charset != null && !typesplit[1].equalsIgnoreCase(pc.charset)) {
 									throwFilterException(l10n("wrongCharsetInMeta"));
@@ -3440,7 +3440,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		try {
 			return sanitizeURI(suri, overrideType, overrideCharset, maybeCharset, cb, inline);
 		} catch (CommentException e) {
-            pc.writeAfterTag.append("<!-- ").append(HTMLEncoder.encode(e.toString())).append(" -->");
+			pc.writeAfterTag.append("<!-- ").append(HTMLEncoder.encode(e.toString())).append(" -->");
 			return null;
 		}
 	}

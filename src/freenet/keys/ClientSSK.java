@@ -23,8 +23,8 @@ import freenet.support.Logger;
  */
 public class ClientSSK extends ClientKey {
 
-    private static final long serialVersionUID = 1L;
-    /** Crypto type */
+	private static final long serialVersionUID = 1L;
+	/** Crypto type */
 	public final byte cryptoAlgorithm;
 	/** Document name */
 	public final String docName;
@@ -108,13 +108,13 @@ public class ClientSSK extends ClientKey {
 	}
 	
 	protected ClientSSK() {
-	    // For serialization.
-	    this.cryptoAlgorithm = 0;
-	    this.docName = null;
-	    this.pubKeyHash = null;
-	    this.cryptoKey = null;
-	    this.ehDocname = null;
-	    this.hashCode = 0;
+		// For serialization.
+		this.cryptoAlgorithm = 0;
+		this.docName = null;
+		this.pubKeyHash = null;
+		this.cryptoKey = null;
+		this.ehDocname = null;
+		this.hashCode = 0;
 	}
 	
 	public synchronized void setPublicKey(DSAPublicKey pubKey) {

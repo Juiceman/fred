@@ -21,58 +21,58 @@ import freenet.support.io.ResumeFailedException;
  */
 public interface Bucket {
 
-    /**
-     * Returns an OutputStream that is used to put data in this Bucket, from the 
-     * beginning. It is not possible to append data to a Bucket! This simplifies the
-     * code significantly for some classes. If you need to append, just pass the 
-     * OutputStream around. Will be buffered if appropriate (e.g. byte array backed
-     * buckets don't need to be buffered).
-     */
-    public OutputStream getOutputStream() throws IOException;
-    
-    /** Get an OutputStream which is not buffered. Should be called when we will buffer the stream 
-     * at a higher level or when we will only be doing large writes (e.g. copying data from one 
-     * Bucket to another). Does not make any more persistence guarantees than getOutputStream() 
-     * does, this is just to save memory.
-     */
-    public OutputStream getOutputStreamUnbuffered() throws IOException;
+	/**
+	 * Returns an OutputStream that is used to put data in this Bucket, from the 
+	 * beginning. It is not possible to append data to a Bucket! This simplifies the
+	 * code significantly for some classes. If you need to append, just pass the 
+	 * OutputStream around. Will be buffered if appropriate (e.g. byte array backed
+	 * buckets don't need to be buffered).
+	 */
+	public OutputStream getOutputStream() throws IOException;
+	
+	/** Get an OutputStream which is not buffered. Should be called when we will buffer the stream 
+	 * at a higher level or when we will only be doing large writes (e.g. copying data from one 
+	 * Bucket to another). Does not make any more persistence guarantees than getOutputStream() 
+	 * does, this is just to save memory.
+	 */
+	public OutputStream getOutputStreamUnbuffered() throws IOException;
 
-    /**
-     * Returns an InputStream that reads data from this Bucket. If there is
-     * no data in this bucket, null is returned.
-     * 
-     * You have to call Closer.close(inputStream) on the obtained stream to prevent resource leakage.
-     */
-    public InputStream getInputStream() throws IOException;
+	/**
+	 * Returns an InputStream that reads data from this Bucket. If there is
+	 * no data in this bucket, null is returned.
+	 * 
+	 * You have to call Closer.close(inputStream) on the obtained stream to prevent resource leakage.
+	 */
+	public InputStream getInputStream() throws IOException;
 
-    public InputStream getInputStreamUnbuffered() throws IOException;
-    
-    /**
-     * Returns a name for the bucket, may be used to identify them in
-     * certain in certain situations.
-     */
-    public String getName();
+	public InputStream getInputStreamUnbuffered() throws IOException;
+	
+	/**
+	 * Returns a name for the bucket, may be used to identify them in
+	 * certain in certain situations.
+	 */
+	public String getName();
 
-    /**
-     * Returns the amount of data currently in this bucket in bytes.
-     */
-    public long size();
+	/**
+	 * Returns the amount of data currently in this bucket in bytes.
+	 */
+	public long size();
 
-    /**
-     * Is the bucket read-only?
-     */
-    public boolean isReadOnly();
-    
-    /**
-     * Make the bucket read-only. Irreversible.
-     */
-    public void setReadOnly();
+	/**
+	 * Is the bucket read-only?
+	 */
+	public boolean isReadOnly();
+	
+	/**
+	 * Make the bucket read-only. Irreversible.
+	 */
+	public void setReadOnly();
 
-    /**
-     * Free the bucket, if supported. Note that you must call free() even if you haven't used the 
-     * Bucket (haven't called getOutputStream()) for some kinds of Bucket's, as they may have
-     * allocated space (e.g. created a temporary file).
-     */
+	/**
+	 * Free the bucket, if supported. Note that you must call free() even if you haven't used the 
+	 * Bucket (haven't called getOutputStream()) for some kinds of Bucket's, as they may have
+	 * allocated space (e.g. created a temporary file).
+	 */
 	public void free();
 	
 	/**
@@ -95,6 +95,6 @@ public interface Bucket {
 	/** Write enough data to reconstruct the Bucket, or throw UnsupportedOperationException. Used
 	 * for recovering in emergencies, should be versioned if necessary. 
 	 * @throws IOException */
-    public void storeTo(DataOutputStream dos) throws IOException;
+	public void storeTo(DataOutputStream dos) throws IOException;
 
 }

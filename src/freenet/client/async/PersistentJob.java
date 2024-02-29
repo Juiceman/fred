@@ -6,9 +6,9 @@ package freenet.client.async;
  */
 public interface PersistentJob {
 
-    /** Run a job.
-     * @return True to request serialization of the entire persistent state ASAP.
-     */
-    boolean run(ClientContext context);
+	/** Run a job.
+	 * @return True to request serialization of the entire persistent state ASAP.
+	 */
+	boolean run(ClientContext context);
 
 }

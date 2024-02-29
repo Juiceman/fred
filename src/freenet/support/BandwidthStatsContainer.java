@@ -11,8 +11,8 @@ import java.io.Serializable;
  * @author Artefact2
  */
 public class BandwidthStatsContainer implements Serializable {
-    private static final long serialVersionUID = 1L;
-    public long creationTime = 0;
+	private static final long serialVersionUID = 1L;
+	public long creationTime = 0;
 	public long totalBytesOut = 0;
 	public long totalBytesIn = 0;
 
@@ -36,8 +36,8 @@ public class BandwidthStatsContainer implements Serializable {
 		return hash;
 	}
 
-    public void addFrom(BandwidthStatsContainer latestBW) {
-        this.totalBytesIn += latestBW.totalBytesIn;
-        this.totalBytesOut += latestBW.totalBytesOut;
-    }
+	public void addFrom(BandwidthStatsContainer latestBW) {
+		this.totalBytesIn += latestBW.totalBytesIn;
+		this.totalBytesOut += latestBW.totalBytesOut;
+	}
 }

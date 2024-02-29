@@ -49,9 +49,9 @@ public class PersistentPutDir extends FCPMessage {
 	final InsertContext.CompatibilityMode compatMode;
 	
 	public PersistentPutDir(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity, short priorityClass,
-	        Persistence persistence, boolean global, String defaultName, HashMap<String, Object> manifestElements,
-	        String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor, boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
-	        InsertContext.CompatibilityMode cmode) {
+			Persistence persistence, boolean global, String defaultName, HashMap<String, Object> manifestElements,
+			String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor, boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
+			InsertContext.CompatibilityMode cmode) {
 		this.identifier = identifier;
 		this.uri = publicURI;
 		this.privateURI = privateURI;
@@ -89,9 +89,9 @@ public class PersistentPutDir extends FCPMessage {
 		// Flatten the hierarchy, it can be reconstructed on restarting.
 		// Storing it directly would be a PITA.
 		// FIXME/RESOLVE: The new BaseManifestPutter's container mode does not hold the origin data,
-		//                 after composing the PutHandlers (done in BaseManifestPutter), they are 'lost':
-		//                 A resumed half done container put can not get the complete file list from BaseManifestPutter.
-		//                 Is it really necessary to include the file list here?
+		//				 after composing the PutHandlers (done in BaseManifestPutter), they are 'lost':
+		//				 A resumed half done container put can not get the complete file list from BaseManifestPutter.
+		//				 Is it really necessary to include the file list here?
 		ManifestElement[] elements = BaseManifestPutter.flatten(manifestElements);
 		fs.putSingle("DefaultName", defaultName);
 		for(int i=0;i<elements.length;i++) {
@@ -110,7 +110,7 @@ public class PersistentPutDir extends FCPMessage {
 				if(data instanceof DelayedFreeBucket) {
 					data = ((DelayedFreeBucket)data).getUnderlying();
 				} else if(data instanceof DelayedFreeRandomAccessBucket) {
-				    data = ((DelayedFreeRandomAccessBucket)data).getUnderlying();
+					data = ((DelayedFreeRandomAccessBucket)data).getUnderlying();
 				}
 				subset.put("DataLength", e.getSize());
 				if(mimeOverride != null)

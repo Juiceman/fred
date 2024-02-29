@@ -86,8 +86,8 @@ public class NodeCryptoConfig {
 			}
 			@Override
 			public boolean isReadOnly() {
-				        return true;
-			        }		
+						return true;
+					}		
 		}, false);
 		
 		try{
@@ -234,7 +234,7 @@ public class NodeCryptoConfig {
 			@Override
 			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
 				if (val.equals(get()))
-					        return;
+							return;
 				paddDataPackets = val;
 			}
 		});

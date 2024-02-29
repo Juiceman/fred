@@ -94,7 +94,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected String defaultUploadDir() {
 		if ((core.getAllowedUploadDirs().length == 1 && core.getAllowedUploadDirs()[0].toString().equals("all"))
-		        || core.getAllowedUploadDirs().length == 0) {
+				|| core.getAllowedUploadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the home directory.
 			 * If none are allowed, any directory will result in an error anyway.
 			 */
@@ -111,7 +111,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected String defaultDownloadDir() {
 		if ((core.getAllowedDownloadDirs().length == 1 && core.getAllowedDownloadDirs()[0].toString().equals("all"))
-		        || core.getAllowedDownloadDirs().length == 0) {
+				|| core.getAllowedDownloadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the default download directory.
 			 * If none are allowed, any directory will result in an error anyway.
 			 */
@@ -129,11 +129,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected void createSelectDirectoryButton (HTMLNode node, String absolutePath, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", selectDir, l10n("insert")});
+				new String[]{"type", "name", "value"},
+				new String[]{"submit", selectDir, l10n("insert")});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", filenameField(), absolutePath});
+				new String[]{"type", "name", "value"},
+				new String[]{"hidden", filenameField(), absolutePath});
 		node.addChild(persistence);
 	}
 
@@ -145,11 +145,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected void createSelectFileButton (HTMLNode node, String absolutePath, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", selectFile, l10n("insert")});
+				new String[]{"type", "name", "value"},
+				new String[]{"submit", selectFile, l10n("insert")});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", filenameField(), absolutePath});
+				new String[]{"type", "name", "value"},
+				new String[]{"hidden", filenameField(), absolutePath});
 		node.addChild(persistence);
 	}
 
@@ -161,11 +161,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	private void createChangeDirButton (HTMLNode node, String buttonText, String path, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", changeDir, buttonText});
+				new String[]{"type", "name", "value"},
+				new String[]{"submit", changeDir, buttonText});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", "path", path});
+				new String[]{"type", "name", "value"},
+				new String[]{"hidden", "path", path});
 		node.addChild(persistence);
 	}
 	
@@ -204,19 +204,19 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 		HTMLNode result = new HTMLNode("div", "id", "persistenceFields");
 		for (Map.Entry<String,String> entry : fieldPairs.entrySet()) {
 			result.addChild("input", 
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", entry.getKey(), entry.getValue() });
+					new String[] { "type", "name", "value" },
+					new String[] { "hidden", entry.getKey(), entry.getValue() });
 		}
 		return result;
 	}
 
 	private String selectedValue(HTTPRequest request) {
 		if (request.isParameterSet(filenameField()) &&
-		    (request.isParameterSet(selectDir) || request.isParameterSet(selectFile))) {
+			(request.isParameterSet(selectDir) || request.isParameterSet(selectFile))) {
 			//Request is a GET.
 			return request.getParam(filenameField());
 		} else if (request.isPartSet(filenameField()) &&
-		           (request.isPartSet(selectDir) || request.isPartSet(selectFile))) {
+				   (request.isPartSet(selectDir) || request.isPartSet(selectFile))) {
 			//Request is a POST.
 			return request.getPartAsStringFailsafe(filenameField(), MAX_POST_SIZE);
 		}
@@ -228,8 +228,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @param request contains parameters.
 	 * @param ctx allows page rendering and permissions checks.
 	 * @exception ToadletContextClosedException Access is denied: uploading might be disabled overall.
-	 *                                                            The user might be denied access to this directory,
-	 *                                                            which could be their home directory.
+	 *															The user might be denied access to this directory,
+	 *															which could be their home directory.
 	 * @exception IOException Something file-related went wrong.
 	 * @see <a href="freenet/clients/http/Toadlet#findSupportedMethods()">findSupportedMethods</a>
 	 * @see "java.net.URI"

@@ -266,14 +266,14 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	public void addChildren(HTMLNode[] childNodes) {
 		addChildren(Arrays.asList(childNodes));
 	}
-    
-    public void addChildren(List<HTMLNode> childNodes) {
-        if(readOnly)
-            throw new IllegalArgumentException("Read only");
-        for (HTMLNode childNode: childNodes) {
-            addChild(childNode);
-        }
-    }
+	
+	public void addChildren(List<HTMLNode> childNodes) {
+		if(readOnly)
+			throw new IllegalArgumentException("Read only");
+		for (HTMLNode childNode: childNodes) {
+			addChild(childNode);
+		}
+	}
 
 	public HTMLNode addChild(String nodeName) {
 		return addChild(nodeName, null);
@@ -348,7 +348,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * this node.
 	 * 
 	 * @return The name of the first "real" tag, or <code>null</code> if no
-	 *         "real" tag could be found
+	 *		 "real" tag could be found
 	 */
 	public String getFirstTag() {
 		if (!"#".equals(name)) {

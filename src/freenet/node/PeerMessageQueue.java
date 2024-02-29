@@ -610,7 +610,7 @@ public class PeerMessageQueue {
 			} else {
 				assert(itemsByID == null);
 			}
-			// 	If no more urgent messages, try to add some non-urgent messages too.
+			//	If no more urgent messages, try to add some non-urgent messages too.
 			return addNonUrgentMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
 		}
 

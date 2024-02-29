@@ -45,25 +45,25 @@ public class GetRequestStatusMessage extends FCPMessage {
 				return;
 			}
 			try {
-                node.clientCore.clientContext.jobRunner.queue(new PersistentJob() {
-                    
-                    @Override
-                    public boolean run(ClientContext context) {
-                        ClientRequest req = handler.getForeverRequest(global, handler, identifier);
-                        if(req == null) {
-                            ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
-                            handler.send(msg);
-                        } else {
-                            req.sendPendingMessages(handler.outputHandler, identifier, true, onlyData);
-                        }
-                        return false;
-                    }
-                    
-                }, NativeThread.NORM_PRIORITY);
-            } catch (PersistenceDisabledException e) {
-                ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
-                handler.send(msg);
-            }
+				node.clientCore.clientContext.jobRunner.queue(new PersistentJob() {
+					
+					@Override
+					public boolean run(ClientContext context) {
+						ClientRequest req = handler.getForeverRequest(global, handler, identifier);
+						if(req == null) {
+							ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+							handler.send(msg);
+						} else {
+							req.sendPendingMessages(handler.outputHandler, identifier, true, onlyData);
+						}
+						return false;
+					}
+					
+				}, NativeThread.NORM_PRIORITY);
+			} catch (PersistenceDisabledException e) {
+				ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+				handler.send(msg);
+			}
 		} else {
 			req.sendPendingMessages(handler.outputHandler, identifier, true, onlyData);
 		}

@@ -52,8 +52,8 @@ public class NewPacketFormatTest {
 		//Packet that should be acked
 		p = new NPFPacket();
 		p.addMessageFragment(new MessageFragment(true, false, true, 0, 8, 8, 0, new byte[] {(byte) 0x01,
-		                (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xAB, (byte) 0xCD,
-		                (byte) 0xEF }, null));
+						(byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xAB, (byte) 0xCD,
+						(byte) 0xEF }, null));
 		assertEquals(1, npf.handleDecryptedPacket(p, s).size());
 
 		Thread.sleep(NewPacketFormatKeyContext.MAX_ACK_DELAY*2);
@@ -416,13 +416,13 @@ public class NewPacketFormatTest {
 				new NewPacketFormatKeyContext(receiverStartSeq, senderStartSeq);
 
 		SessionKey senderSessionKey = new SessionKey(null, outgoingCipher, outgoingKey,
-							     incomingCipher, incomingKey, ivCipher,
-							     ivNonce, hmacKey, senderContext, 0);
+								 incomingCipher, incomingKey, ivCipher,
+								 ivNonce, hmacKey, senderContext, 0);
 
 		SessionKey receiverSessionKey = new SessionKey(null, incomingCipher, incomingKey,
-							       outgoingCipher, outgoingKey,
-							       ivCipher, ivNonce, hmacKey,
-							       receiverContext, 0);
+								   outgoingCipher, outgoingKey,
+								   ivCipher, ivNonce, hmacKey,
+								   receiverContext, 0);
 
 		senderNode.currentKey = senderSessionKey;
 		receiverNode.currentKey = receiverSessionKey;

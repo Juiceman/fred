@@ -52,7 +52,7 @@ public class SECURITY_PHYSICAL implements Step {
 
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("physicalSecurityPageTitle"));
 		HTMLNode infoboxContent = helper.getInfobox("infobox-normal",
-		        WizardL10n.l10nSec("physicalThreatLevelShort"), contentNode, null, false);
+				WizardL10n.l10nSec("physicalThreatLevelShort"), contentNode, null, false);
 		infoboxContent.addChild("p", WizardL10n.l10nSec("physicalThreatLevel"));
 
 		HTMLNode form = helper.addFormChild(infoboxContent, ".", "physicalSecurityForm");
@@ -60,21 +60,21 @@ public class SECURITY_PHYSICAL implements Step {
 		String controlName = "security-levels.physicalThreatLevel";
 		HTMLNode swapWarning = div.addChild("p").addChild("i");
 		NodeL10n.getBase().addL10nSubstitution(swapWarning, "SecurityLevels.physicalThreatLevelTruecrypt",
-		        new String[]{"bold", "truecrypt"},
-		        new HTMLNode[]{HTMLNode.STRONG,
-		                HTMLNode.linkInNewWindow(ExternalLinkToadlet.escape("http://www.truecrypt.org/"))});
+				new String[]{"bold", "truecrypt"},
+				new HTMLNode[]{HTMLNode.STRONG,
+						HTMLNode.linkInNewWindow(ExternalLinkToadlet.escape("http://www.truecrypt.org/"))});
 		OperatingSystem os = FileUtil.detectedOS;
 		div.addChild("p", NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevelSwapfile",
-		        "operatingSystem",
-		        NodeL10n.getBase().getString("OperatingSystemName."+os.name())));
+				"operatingSystem",
+				NodeL10n.getBase().getString("OperatingSystemName."+os.name())));
 		if(os == FileUtil.OperatingSystem.Windows) {
 			swapWarning.addChild("#", " " + WizardL10n.l10nSec("physicalThreatLevelSwapfileWindows"));
 		}
 		for(SecurityLevels.PHYSICAL_THREAT_LEVEL level : SecurityLevels.PHYSICAL_THREAT_LEVEL.values()) {
 			HTMLNode input;
 			input = div.addChild("p").addChild("input",
-			        new String[] { "type", "name", "value", "id" },
-			        new String[] { "radio", controlName, level.name(), controlName + level.name() });
+					new String[] { "type", "name", "value", "id" },
+					new String[] { "radio", controlName, level.name(), controlName + level.name() });
 			input.addChild("label",
 							new String[] { "for" },
 							new String[] { controlName + level.name() }
@@ -82,7 +82,7 @@ public class SECURITY_PHYSICAL implements Step {
 			input.addChild("#", ": ");
 			NodeL10n.getBase().addL10nSubstitution(input, "SecurityLevels.physicalThreatLevel.choice."+level, new String[] { "bold" }, new HTMLNode[] { HTMLNode.STRONG });
 			if(level == SecurityLevels.PHYSICAL_THREAT_LEVEL.HIGH &&
-			        core.node.securityLevels.getPhysicalThreatLevel() != level) {
+					core.node.securityLevels.getPhysicalThreatLevel() != level) {
 				// Add password form on high security if not already at high security.
 				HTMLNode p = div.addChild("p");
 				p.addChild("label", "for", "passwordBox", WizardL10n.l10nSec("setPasswordLabel")+":");
@@ -94,11 +94,11 @@ public class SECURITY_PHYSICAL implements Step {
 		}
 		div.addChild("#", WizardL10n.l10nSec("physicalThreatLevelEnd"));
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class SECURITY_PHYSICAL implements Step {
 			HTMLNode contentNode = helper.getPageContent(WizardL10n.l10nSec(pageTitleKey));
 
 			HTMLNode content = helper.getInfobox("infobox-error", WizardL10n.l10nSec(infoboxTitleKey),
-			        contentNode, null, true);
+					contentNode, null, true);
 
 			if (type == PASSWORD_PROMPT.SET_BLANK || type == PASSWORD_PROMPT.DECRYPT_BLANK) {
 				content.addChild("p", WizardL10n.l10nSec("passwordNotZeroLength"));
@@ -172,7 +172,7 @@ public class SECURITY_PHYSICAL implements Step {
 			HTMLNode form = helper.addFormChild(content, ".", "masterPasswordForm");
 
 			SecurityLevelsToadlet.generatePasswordFormPage(wasWrong, form, content, forDowngrade, forUpgrade,
-			        newThreatLevel.name(), null);
+					newThreatLevel.name(), null);
 
 			addBackToPhysicalSeclevelsButton(form);
 			return true;
@@ -211,7 +211,7 @@ public class SECURITY_PHYSICAL implements Step {
 		/*If the user didn't select a network security level before clicking continue, the selected
 		* security level could not be determined, clicked back from a password error page, redirect to the main page.*/
 		if (newThreatLevel == null || !request.isPartSet("security-levels.physicalThreatLevel") ||
-		        request.isPartSet("backToMain")) {
+				request.isPartSet("backToMain")) {
 			return FirstTimeWizardToadlet.WIZARD_STEP.SECURITY_PHYSICAL.name();
 		}
 		//Changing to high physical threat level: set password.
@@ -225,7 +225,7 @@ public class SECURITY_PHYSICAL implements Step {
 			} else {
 				try {
 					if(oldThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.NORMAL ||
-					        oldThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.LOW) {
+							oldThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.LOW) {
 						core.node.changeMasterPassword("", pass, true);
 					} else {
 						core.node.setMasterPassword(pass, true);
@@ -241,7 +241,7 @@ public class SECURITY_PHYSICAL implements Step {
 		}
 		//Decreasing to low or normal from high: remove password.
 		if ((newThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.LOW || newThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.NORMAL) &&
-			        oldThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.HIGH) {
+					oldThreatLevel == SecurityLevels.PHYSICAL_THREAT_LEVEL.HIGH) {
 			if (passwordIsBlank) {
 				//Prompt for the old password, which is needed to decrypt
 				return promptPassword(newThreatLevel, PASSWORD_PROMPT.DECRYPT_BLANK);
@@ -274,7 +274,7 @@ public class SECURITY_PHYSICAL implements Step {
 				core.node.killMasterKeysFile();
 			} catch (IOException e) {
 				return FirstTimeWizardToadlet.WIZARD_STEP.SECURITY_PHYSICAL+
-				        "&error=delete&newThreatLevel="+newThreatLevel.name();
+						"&error=delete&newThreatLevel="+newThreatLevel.name();
 			}
 		}
 		setThreatLevel(newThreatLevel, oldThreatLevel);
@@ -292,7 +292,7 @@ public class SECURITY_PHYSICAL implements Step {
 			System.err.println("Wrong password!");
 		}
 		StringBuilder destination = new StringBuilder(FirstTimeWizardToadlet.WIZARD_STEP.SECURITY_PHYSICAL+
-		        "&error=pass&newThreatLevel=").append(newThreatLevel.name()).append("&type=").append(type.name());
+				"&error=pass&newThreatLevel=").append(newThreatLevel.name()).append("&type=").append(type.name());
 		return destination.toString();
 	}
 
@@ -311,7 +311,7 @@ public class SECURITY_PHYSICAL implements Step {
 
 	private void addBackToPhysicalSeclevelsButton(HTMLNode form) {
 		form.addChild("p").addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "backToMain", WizardL10n.l10n("backToSecurityLevels")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "backToMain", WizardL10n.l10n("backToSecurityLevels")});
 	}
 }

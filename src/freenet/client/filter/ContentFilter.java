@@ -33,7 +33,7 @@ public class ContentFilter {
 	/** The HTML mime types are defined here, to allow other modules to identify it*/
 	public static final String[] HTML_MIME_TYPES=new String[]{"text/html", "application/xhtml+xml", "text/xml+xhtml", "text/xhtml", "application/xhtml"};
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -199,23 +199,23 @@ public class ContentFilter {
 	 * Filter some data.
 	 *
 	 * @param input
-	 *            Source stream to read data from
+	 *			Source stream to read data from
 	 * @param output
-	 *            Stream to write filtered data to
+	 *			Stream to write filtered data to
 	 * @param typeName
-	 *            MIME type for input data
+	 *			MIME type for input data
 	 * @param schemeHostAndPort
-	 *        HOST and PORT from the request
+	 *		HOST and PORT from the request
 	 * @param maybeCharset
-	 * 			  MIME type of the referring document, as a hint, some types,
-	 * 			  such as CSS, will inherit it if no other data is available.
+	 *			  MIME type of the referring document, as a hint, some types,
+	 *			  such as CSS, will inherit it if no other data is available.
 	 * @return
 	 * @throws IOException
-	 *             If an internal error involving s occurred.
+	 *			 If an internal error involving s occurred.
 	 * @throws UnsafeContentTypeException
-	 *             If the MIME type is declared unsafe (e.g. pdf files)
+	 *			 If the MIME type is declared unsafe (e.g. pdf files)
 	 * @throws IllegalStateException
-	 *             If data is invalid (e.g. corrupted file) and the filter have no way to recover.
+	 *			 If data is invalid (e.g. corrupted file) and the filter have no way to recover.
 	 */
 	public static FilterStatus filter(
 			InputStream input,
@@ -233,23 +233,23 @@ public class ContentFilter {
 	 * Filter some data.
 	 *
 	 * @param input
-	 *            Source stream to read data from
+	 *			Source stream to read data from
 	 * @param output
-	 *            Stream to write filtered data to
+	 *			Stream to write filtered data to
 	 * @param typeName
-	 *            MIME type for input data
+	 *			MIME type for input data
 	 * @param schemeHostAndPort
-	 *        HOST and PORT from the request
+	 *		HOST and PORT from the request
 	 * @param maybeCharset
-	 * 			  MIME type of the referring document, as a hint, some types,
-	 * 			  such as CSS, will inherit it if no other data is available.
+	 *			  MIME type of the referring document, as a hint, some types,
+	 *			  such as CSS, will inherit it if no other data is available.
 	 * @return
 	 * @throws IOException
-	 *             If an internal error involving s occurred.
+	 *			 If an internal error involving s occurred.
 	 * @throws UnsafeContentTypeException
-	 *             If the MIME type is declared unsafe (e.g. pdf files)
+	 *			 If the MIME type is declared unsafe (e.g. pdf files)
 	 * @throws IllegalStateException
-	 *             If data is invalid (e.g. corrupted file) and the filter have no way to recover.
+	 *			 If data is invalid (e.g. corrupted file) and the filter have no way to recover.
 	 */
 	public static FilterStatus filter(
 			InputStream input,
@@ -269,29 +269,29 @@ public class ContentFilter {
 	 */
 	@Deprecated // please move to filter with schemeHostAndPort, called from this method.
 	public static FilterStatus filter(InputStream input, OutputStream output, String typeName, String maybeCharset, FilterCallback filterCallback) throws UnsafeContentTypeException, IOException {
-        return filter(input, output, typeName, maybeCharset, null, filterCallback);
-    }
+		return filter(input, output, typeName, maybeCharset, null, filterCallback);
+	}
 
-     /**
+	 /**
 	 * Filter some data.
 	 *
 	 * @param input
-	 *            Source stream to read data from
+	 *			Source stream to read data from
 	 * @param output
-	 *            Stream to write filtered data to
+	 *			Stream to write filtered data to
 	 * @param typeName
-	 *            MIME type for input data
+	 *			MIME type for input data
 	 * @param maybeCharset
-	 * 			  MIME type of the referring document, as a hint, some types,
-	 * 			  such as CSS, will inherit it if no other data is available.
+	 *			  MIME type of the referring document, as a hint, some types,
+	 *			  such as CSS, will inherit it if no other data is available.
 	 * @param schemeHostAndPort
-	 *        HOST and PORT from the request
+	 *		HOST and PORT from the request
 	 * @throws IOException
-	 *             If an internal error involving buckets occurred.
+	 *			 If an internal error involving buckets occurred.
 	 * @throws UnsafeContentTypeException
-	 *             If the MIME type is declared unsafe (e.g. pdf files)
+	 *			 If the MIME type is declared unsafe (e.g. pdf files)
 	 * @throws IllegalStateException
-	 *             If data is invalid (e.g. corrupted file) and the filter have no way to recover.
+	 *			 If data is invalid (e.g. corrupted file) and the filter have no way to recover.
 	 */
 	public static FilterStatus filter(InputStream input, OutputStream output, String typeName, String maybeCharset, String schemeHostAndPort, FilterCallback filterCallback) throws UnsafeContentTypeException, IOException {
 		if(logMINOR) Logger.minor(ContentFilter.class, "Filtering data of type"+typeName);
@@ -408,8 +408,8 @@ public class ContentFilter {
 			if(handler.defaultCharset != null) {
 				try {
 					if((charset = handler.charsetExtractor.getCharset(input, length, handler.defaultCharset)) != null) {
-				        if(logMINOR)
-				        	Logger.minor(ContentFilter.class, "Returning charset: "+charset);
+						if(logMINOR)
+							Logger.minor(ContentFilter.class, "Returning charset: "+charset);
 						return charset;
 					}
 				} catch (DataFilterException e) {
@@ -439,8 +439,8 @@ public class ContentFilter {
 					return charset;
 			} catch (UnsupportedEncodingException e) {
 				// Doesn't seem to be supported by prior to 1.6.
-		        if(logMINOR)
-		        	Logger.minor(ContentFilter.class, "UTF-32 not supported");
+				if(logMINOR)
+					Logger.minor(ContentFilter.class, "UTF-32 not supported");
 			} catch (DataFilterException e) {
 				// Ignore
 			}

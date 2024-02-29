@@ -52,12 +52,12 @@ public class SendableGetRequestSender implements SendableRequestSender {
 
 					@Override
 					public void onSucceeded() {
-					    req.onFetchSuccess(context);
+						req.onFetchSuccess(context);
 					}
 
 					@Override
 					public void onFailed(LowLevelGetException e) {
-					    req.onFailure(e, context);
+						req.onFailure(e, context);
 					}
 					
 				}, !req.ignoreStore, req.canWriteClientCache, req.realTimeFlag, req.localRequestOnly, req.ignoreStore);

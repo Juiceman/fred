@@ -101,8 +101,8 @@ public class BufferTest {
 		// populate length as first 4 bytes
 		data2[0] = (byte)((length & 0xff000000) >> 24);
 		data2[1] = (byte)((length & 0xff0000)   >> 16);
-		data2[2] = (byte)((length & 0xff00)     >>  8);
-		data2[3] = (byte)((length & 0xff)            );
+		data2[2] = (byte)((length & 0xff00)	 >>  8);
+		data2[3] = (byte)((length & 0xff)			);
 		
 		System.arraycopy(data, 0, data2, 4, data.length); // populate rest of content
 		

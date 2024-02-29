@@ -44,8 +44,8 @@ import freenet.support.io.NullOutputStream;
 /** Metadata parser/writer class. */
 public class Metadata implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    static final long FREENET_METADATA_MAGIC = 0xf053b2842d91482bL;
+	private static final long serialVersionUID = 1L;
+	static final long FREENET_METADATA_MAGIC = 0xf053b2842d91482bL;
 	static final int MAX_SPLITFILE_PARAMS_LENGTH = 32768;
 	/** Soft limit, to avoid memory DoS */
 	static final int MAX_SPLITFILE_BLOCKS = 1000*1000;
@@ -66,24 +66,24 @@ public class Metadata implements Cloneable, Serializable {
 	DocumentType documentType;
 	
 	public enum DocumentType {
-	    SIMPLE_REDIRECT((byte)0),
-	    MULTI_LEVEL_METADATA((byte)1),
-	    SIMPLE_MANIFEST((byte)2),
-	    ARCHIVE_MANIFEST((byte)3),
-	    ARCHIVE_INTERNAL_REDIRECT((byte)4),
-	    ARCHIVE_METADATA_REDIRECT((byte)5),
-	    SYMBOLIC_SHORTLINK((byte)6);
-	    
-	    final byte code;
-	    
-	    DocumentType(byte code) {
-	        this.code = code;
-	    }
-	    
-	    static DocumentType byCode(byte b) {
-	        if(b < 0 || b >= values().length) throw new IllegalArgumentException();
-	        return values()[b];
-	    }
+		SIMPLE_REDIRECT((byte)0),
+		MULTI_LEVEL_METADATA((byte)1),
+		SIMPLE_MANIFEST((byte)2),
+		ARCHIVE_MANIFEST((byte)3),
+		ARCHIVE_INTERNAL_REDIRECT((byte)4),
+		ARCHIVE_METADATA_REDIRECT((byte)5),
+		SYMBOLIC_SHORTLINK((byte)6);
+		
+		final byte code;
+		
+		DocumentType(byte code) {
+			this.code = code;
+		}
+		
+		static DocumentType byCode(byte b) {
+			if(b < 0 || b >= values().length) throw new IllegalArgumentException();
+			return values()[b];
+		}
 	}
 
 	short parsedVersion;
@@ -149,19 +149,19 @@ public class Metadata implements Cloneable, Serializable {
 
 	SplitfileAlgorithm splitfileAlgorithm;
 	public enum SplitfileAlgorithm {
-	    NONREDUNDANT((short)0),
-	    ONION_STANDARD((short)1);
-	    
-	    public final short code;
-	    
-	    SplitfileAlgorithm(short code) {
-	        this.code = code;
-	    }
+		NONREDUNDANT((short)0),
+		ONION_STANDARD((short)1);
+		
+		public final short code;
+		
+		SplitfileAlgorithm(short code) {
+			this.code = code;
+		}
 
-        public static SplitfileAlgorithm getByCode(short s) {
-            if(s < 0 || s >= values().length) throw new IllegalArgumentException("Bad splitfile code");
-            return values()[s];
-        }
+		public static SplitfileAlgorithm getByCode(short s) {
+			if(s < 0 || s >= values().length) throw new IllegalArgumentException("Bad splitfile code");
+			return values()[s];
+		}
 	}
 	
 	public static final int MAX_SIZE_IN_MANIFEST = Short.MAX_VALUE;
@@ -209,14 +209,14 @@ public class Metadata implements Cloneable, Serializable {
 	public final boolean topDontCompress;
 	public final CompatibilityMode topCompatibilityMode;
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logMINOR;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+								logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -308,9 +308,9 @@ public class Metadata implements Cloneable, Serializable {
 			throw new MetadataParseException("Unsupported version "+version);
 		parsedVersion = version;
 		try {
-		    documentType = DocumentType.byCode(dis.readByte());
+			documentType = DocumentType.byCode(dis.readByte());
 		} catch (IllegalArgumentException e) {
-		    throw new MetadataParseException("Unsupported document type: "+documentType);
+			throw new MetadataParseException("Unsupported document type: "+documentType);
 		}
 		if(logMINOR) Logger.minor(this, "Document type: "+documentType);
 
@@ -352,17 +352,17 @@ public class Metadata implements Cloneable, Serializable {
 			topDontCompress = dis.readBoolean();
 			short code = dis.readShort();
 			if(CompatibilityMode.hasCode(code) 
-			        && code != CompatibilityMode.COMPAT_CURRENT.code) { // COMPAT_UNKNOWN is OK but COMPAT_CURRENT should never be seen in published metadata
-			    topCompatibilityMode = CompatibilityMode.byCode(code);
-			    if(topSize != 0 && topCompatibilityMode == CompatibilityMode.COMPAT_UNKNOWN)
-			        maxCompatMode = CompatibilityMode.COMPAT_1416;
+					&& code != CompatibilityMode.COMPAT_CURRENT.code) { // COMPAT_UNKNOWN is OK but COMPAT_CURRENT should never be seen in published metadata
+				topCompatibilityMode = CompatibilityMode.byCode(code);
+				if(topSize != 0 && topCompatibilityMode == CompatibilityMode.COMPAT_UNKNOWN)
+					maxCompatMode = CompatibilityMode.COMPAT_1416;
 			} else {
-			    if(CompatibilityMode.maybeFutureCode(code)) {
-                    Logger.warning(this, "Content may have been inserted with a newer version of Freenet?");
-                    topCompatibilityMode = InsertContext.CompatibilityMode.COMPAT_UNKNOWN;
-			    } else {
-			        throw new MetadataParseException("Bad compatibility mode "+code);
-			    }
+				if(CompatibilityMode.maybeFutureCode(code)) {
+					Logger.warning(this, "Content may have been inserted with a newer version of Freenet?");
+					topCompatibilityMode = InsertContext.CompatibilityMode.COMPAT_UNKNOWN;
+				} else {
+					throw new MetadataParseException("Bad compatibility mode "+code);
+				}
 			}
 		} else {
 			topSize = 0;
@@ -484,11 +484,11 @@ public class Metadata implements Cloneable, Serializable {
 				}
 			}
 		} else if(splitfile) {
-		    try {
-		        splitfileAlgorithm = SplitfileAlgorithm.getByCode(dis.readShort());
-		    } catch (IllegalArgumentException e) {
-		        throw new MetadataParseException("Invalid splitfile code"); 
-		    }
+			try {
+				splitfileAlgorithm = SplitfileAlgorithm.getByCode(dis.readShort());
+			} catch (IllegalArgumentException e) {
+				throw new MetadataParseException("Invalid splitfile code"); 
+			}
 			if(!((splitfileAlgorithm == SplitfileAlgorithm.NONREDUNDANT) ||
 					(splitfileAlgorithm == SplitfileAlgorithm.ONION_STANDARD)))
 				throw new MetadataParseException("Unknown splitfile algorithm "+splitfileAlgorithm);
@@ -576,7 +576,7 @@ public class Metadata implements Cloneable, Serializable {
 					else if(splitfileSingleCryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256) {
 						minCompatMode = CompatibilityMode.COMPAT_1416;
 						if(maxCompatMode == CompatibilityMode.COMPAT_UNKNOWN)
-						    maxCompatMode = CompatibilityMode.latest();
+							maxCompatMode = CompatibilityMode.latest();
 					}
 					if(params.length < 10)
 						throw new MetadataParseException("Splitfile parameters too short for version 1");
@@ -624,7 +624,7 @@ public class Metadata implements Cloneable, Serializable {
 			segments = new SplitFileSegmentKeys[segmentCount];
 			
 			if (segmentCount <= 0) {
-			    throw new MetadataParseException("Splitfile segment count must be strictly positive: " + segmentCount);
+				throw new MetadataParseException("Splitfile segment count must be strictly positive: " + segmentCount);
 			} else if (segmentCount == 1) {
 				// splitfile* will be overwritten, this is bad
 				// so copy them
@@ -983,7 +983,7 @@ public class Metadata implements Cloneable, Serializable {
 	 * @param cm The client metadata, if any.
 	 */
 	public Metadata(DocumentType docType, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, FreenetURI uri, ClientMetadata cm, long origDataLength, long origCompressedDataLength, int reqBlocks, int totalBlocks, boolean topDontCompress, CompatibilityMode topCompatibilityMode, HashResult[] hashes) {
-	    assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
+		assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
 		hashCode = super.hashCode();
 		if(hashes != null && hashes.length == 0) {
 			throw new IllegalArgumentException();
@@ -1072,7 +1072,7 @@ public class Metadata implements Cloneable, Serializable {
 	 */
 	public Metadata(SplitfileAlgorithm algo, ClientCHK[] dataURIs, ClientCHK[] checkURIs, int segmentSize, int checkSegmentSize, int deductBlocksFromSegments,
 			ClientMetadata cm, long dataLength, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, long decompressedLength, boolean isMetadata, HashResult[] hashes, byte[] hashThisLayerOnly, long origDataSize, long origCompressedDataSize, int requiredBlocks, int totalBlocks, boolean topDontCompress, CompatibilityMode topCompatibilityMode, byte splitfileCryptoAlgorithm, byte[] splitfileCryptoKey, boolean specifySplitfileKey, int crossSegmentBlocks) {
-	    assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
+		assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
 		hashCode = super.hashCode();
 		this.hashes = hashes;
 		this.hashThisLayerOnly = hashThisLayerOnly;
@@ -1103,40 +1103,40 @@ public class Metadata implements Cloneable, Serializable {
 			setMIMEType(cm.getMIMEType());
 		else
 			setMIMEType(DefaultMIMETypes.DEFAULT_MIME_TYPE);
-        if(topCompatibilityMode.ordinal() < CompatibilityMode.COMPAT_1255.ordinal()) {
-            if(splitfileCryptoKey != null) throw new IllegalArgumentException();
-            if(hashes != null) throw new IllegalArgumentException();
-            if(deductBlocksFromSegments != 0) throw new IllegalArgumentException();
-            origDataSize = 0;
-            origCompressedDataSize = 0;
-            requiredBlocks = 0;
-            totalBlocks = 0;
-            parsedVersion = 0;
-        } else {
-            if(splitfileCryptoKey == null) throw new IllegalArgumentException();
-            parsedVersion = 1;
-        }
-        if(origDataSize != 0) {
-            topSize = origDataSize;
-            topCompressedSize = origCompressedDataSize;
-            topBlocksRequired = requiredBlocks;
-            topBlocksTotal = totalBlocks;
-            // Bug for bug compatibility ...
-            if(topCompatibilityMode.ordinal() >= CompatibilityMode.COMPAT_1468.ordinal()) {
-                this.topDontCompress = topDontCompress;
-                this.topCompatibilityMode = topCompatibilityMode;
-            } else {
-                this.topDontCompress = false;
-                this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
-            }
-        } else {
-            topSize = 0;
-            topCompressedSize = 0;
-            topBlocksRequired = 0;
-            topBlocksTotal = 0;
-            this.topDontCompress = false;
-            this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
-        }
+		if(topCompatibilityMode.ordinal() < CompatibilityMode.COMPAT_1255.ordinal()) {
+			if(splitfileCryptoKey != null) throw new IllegalArgumentException();
+			if(hashes != null) throw new IllegalArgumentException();
+			if(deductBlocksFromSegments != 0) throw new IllegalArgumentException();
+			origDataSize = 0;
+			origCompressedDataSize = 0;
+			requiredBlocks = 0;
+			totalBlocks = 0;
+			parsedVersion = 0;
+		} else {
+			if(splitfileCryptoKey == null) throw new IllegalArgumentException();
+			parsedVersion = 1;
+		}
+		if(origDataSize != 0) {
+			topSize = origDataSize;
+			topCompressedSize = origCompressedDataSize;
+			topBlocksRequired = requiredBlocks;
+			topBlocksTotal = totalBlocks;
+			// Bug for bug compatibility ...
+			if(topCompatibilityMode.ordinal() >= CompatibilityMode.COMPAT_1468.ordinal()) {
+				this.topDontCompress = topDontCompress;
+				this.topCompatibilityMode = topCompatibilityMode;
+			} else {
+				this.topDontCompress = false;
+				this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
+			}
+		} else {
+			topSize = 0;
+			topCompressedSize = 0;
+			topBlocksRequired = 0;
+			topBlocksTotal = 0;
+			this.topDontCompress = false;
+			this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
+		}
 		
 		if(parsedVersion == 0) {
 			splitfileParams = Fields.intsToBytes(new int[] { segmentSize, checkSegmentSize } );
@@ -1213,20 +1213,20 @@ public class Metadata implements Cloneable, Serializable {
 		return baos.toByteArray();
 	}
 	
-    public long writtenLength() throws MetadataUnresolvedException {
-        CountedOutputStream cos = new CountedOutputStream(new NullOutputStream());
-        DataOutputStream dos = null;
-        try {
-            dos = new DataOutputStream(cos);
-            writeTo(dos);
-        } catch (IOException e) {
-            throw new Error("Could not write to CountedOutputStream: "+e, e);
-        } finally {
-            Closer.close(dos);
-            Closer.close(cos);
-        }
-        return cos.written();
-    }
+	public long writtenLength() throws MetadataUnresolvedException {
+		CountedOutputStream cos = new CountedOutputStream(new NullOutputStream());
+		DataOutputStream dos = null;
+		try {
+			dos = new DataOutputStream(cos);
+			writeTo(dos);
+		} catch (IOException e) {
+			throw new Error("Could not write to CountedOutputStream: "+e, e);
+		} finally {
+			Closer.close(dos);
+			Closer.close(cos);
+		}
+		return cos.written();
+	}
 
 	/**
 	 * Read a key using the current settings.
@@ -1310,18 +1310,18 @@ public class Metadata implements Cloneable, Serializable {
 	}
 
 	/**
-     * Get all documents in the manifest (ignores default doc).
-     * @throws MetadataParseException
-     */
-    public HashMap<String, Metadata> getDocuments() {
-    	HashMap<String, Metadata> docs = new HashMap<String, Metadata>();
+	 * Get all documents in the manifest (ignores default doc).
+	 * @throws MetadataParseException
+	 */
+	public HashMap<String, Metadata> getDocuments() {
+		HashMap<String, Metadata> docs = new HashMap<String, Metadata>();
 		for (Map.Entry<String, Metadata> entry: manifestEntries.entrySet()) {
-        	String st = entry.getKey();
-        	if (st.length()>0)
-        		docs.put(st, entry.getValue());
-        }
-        return docs;
-    }
+			String st = entry.getKey();
+			if (st.length()>0)
+				docs.put(st, entry.getValue());
+		}
+		return docs;
+	}
 
 	/**
 	 * Does the metadata point to a single URI?
@@ -1672,21 +1672,21 @@ public class Metadata implements Cloneable, Serializable {
 	}
 
 	public RandomAccessBucket toBucket(BucketFactory bf) throws MetadataUnresolvedException, IOException {
-	    RandomAccessBucket b = bf.makeBucket(-1);
-	    DataOutputStream dos = null;
-	    boolean success = false;
-	    try {
-	        dos = new DataOutputStream(b.getOutputStream());
-	        writeTo(dos);
-	        dos.close();
-	        dos = null;
-	        b.setReadOnly(); // Must be after dos.close()
-	        success = true;
-	        return b;
-	    } finally {
-	        Closer.close(dos);
-	        if(!success) b.free();
-	    }
+		RandomAccessBucket b = bf.makeBucket(-1);
+		DataOutputStream dos = null;
+		boolean success = false;
+		try {
+			dos = new DataOutputStream(b.getOutputStream());
+			writeTo(dos);
+			dos.close();
+			dos = null;
+			b.setReadOnly(); // Must be after dos.close()
+			success = true;
+			return b;
+		} finally {
+			Closer.close(dos);
+			if(!success) b.free();
+		}
 	}
 
 	public boolean isResolved() {
@@ -1896,13 +1896,13 @@ public class Metadata implements Cloneable, Serializable {
 		}
 	}
 
-    public SplitFileSegmentKeys[] getSegmentKeys() throws FetchException {
-        synchronized(this) {
-            if(segments == null && splitfileDataKeys != null && splitfileCheckKeys != null)
-                throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Please restart the download, need to re-parse metadata due to internal changes");
-            return segments;
-        }
-    }
+	public SplitFileSegmentKeys[] getSegmentKeys() throws FetchException {
+		synchronized(this) {
+			if(segments == null && splitfileDataKeys != null && splitfileCheckKeys != null)
+				throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Please restart the download, need to re-parse metadata due to internal changes");
+			return segments;
+		}
+	}
 
 	public int getDeductBlocksFromSegments() {
 		return deductBlocksFromSegments;
@@ -1927,8 +1927,8 @@ public class Metadata implements Cloneable, Serializable {
 		return max;
 	}
 
-    public static boolean isValidSplitfileCryptoAlgorithm(byte cryptoAlgorithm) {
-        return cryptoAlgorithm == 0 || Key.isValidCryptoAlgorithm(cryptoAlgorithm);
-    }
+	public static boolean isValidSplitfileCryptoAlgorithm(byte cryptoAlgorithm) {
+		return cryptoAlgorithm == 0 || Key.isValidCryptoAlgorithm(cryptoAlgorithm);
+	}
 
 }

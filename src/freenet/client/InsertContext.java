@@ -19,8 +19,8 @@ import freenet.client.events.SimpleEventProducer;
  */
 public class InsertContext implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    /** If true, don't try to compress the data */
+	private static final long serialVersionUID = 1L;
+	/** If true, don't try to compress the data */
 	public boolean dontCompress;
 	/** Splitfile algorithm. */
 	private SplitfileAlgorithm splitfileAlgo;
@@ -66,7 +66,7 @@ public class InsertContext implements Cloneable, Serializable {
 	 * systems for keys and Metadata, which will be set as appropriate for an insert depending on 
 	 * the CompatibilityMode. */
 	public static enum CompatibilityMode {
-	    
+		
 		/** We do not know. */
 		COMPAT_UNKNOWN((short)0),
 		/** No compatibility issues, use the most efficient metadata possible. Used only in the 
@@ -94,7 +94,7 @@ public class InsertContext implements Cloneable, Serializable {
 		public final short code;
 		
 		CompatibilityMode(short code) {
-		    this.code = code;
+			this.code = code;
 		}
 		
 		/** cached values(). Never modify or pass this array to outside code! */
@@ -109,41 +109,41 @@ public class InsertContext implements Cloneable, Serializable {
 		/** Must be called whenever we accept a CompatibilityMode as e.g. a config option. Converts
 		 * the pseudo- */
 		public CompatibilityMode intern() {
-		    if(this == COMPAT_CURRENT) return latest();
-		    return this;
+			if(this == COMPAT_CURRENT) return latest();
+			return this;
 		}
 		
-        private static final Map<Short, CompatibilityMode> modesByCode;
-        
-        static {
-            HashMap<Short, CompatibilityMode> cmodes = new HashMap<Short, CompatibilityMode>();
-            for(CompatibilityMode mode : CompatibilityMode.values) {
-                if(cmodes.containsKey(mode.code)) throw new Error("Duplicated code!");
-                cmodes.put(mode.code, mode);
-            }
-            modesByCode = Collections.unmodifiableMap(cmodes);
-        }
+		private static final Map<Short, CompatibilityMode> modesByCode;
+		
+		static {
+			HashMap<Short, CompatibilityMode> cmodes = new HashMap<Short, CompatibilityMode>();
+			for(CompatibilityMode mode : CompatibilityMode.values) {
+				if(cmodes.containsKey(mode.code)) throw new Error("Duplicated code!");
+				cmodes.put(mode.code, mode);
+			}
+			modesByCode = Collections.unmodifiableMap(cmodes);
+		}
 
-	    public static CompatibilityMode byCode(short code) {
-	        if(!modesByCode.containsKey(code)) throw new IllegalArgumentException();
-	        return modesByCode.get(code);
-	    }
-	    
-        public static boolean hasCode(short min) {
-            return modesByCode.containsKey(min);
-        }
+		public static CompatibilityMode byCode(short code) {
+			if(!modesByCode.containsKey(code)) throw new IllegalArgumentException();
+			return modesByCode.get(code);
+		}
+		
+		public static boolean hasCode(short min) {
+			return modesByCode.containsKey(min);
+		}
 
-        public static boolean maybeFutureCode(short code) {
-            return code > latest().code;
-        }
-        
-        /** The default compatibility mode for new inserts when it is not specified. Usually this
-         * will be COMPAT_CURRENT (it will get converted into a specific mode later), but when a
-         * new compatibility mode is deployed we may want to keep this at an earlier version to 
-         * avoid a period when data inserted with the new/testing builds can't be fetched with 
-         * earlier versions. */
-        public static final CompatibilityMode COMPAT_DEFAULT = COMPAT_CURRENT;
-        
+		public static boolean maybeFutureCode(short code) {
+			return code > latest().code;
+		}
+		
+		/** The default compatibility mode for new inserts when it is not specified. Usually this
+		 * will be COMPAT_CURRENT (it will get converted into a specific mode later), but when a
+		 * new compatibility mode is deployed we may want to keep this at an earlier version to 
+		 * avoid a period when data inserted with the new/testing builds can't be fetched with 
+		 * earlier versions. */
+		public static final CompatibilityMode COMPAT_DEFAULT = COMPAT_CURRENT;
+		
 	}
 	
 	/** Backward compatibility support for network level metadata. */
@@ -151,15 +151,15 @@ public class InsertContext implements Cloneable, Serializable {
 	/** Only for migration. FIXME remove. */
 	private long compatibilityMode;
 	/** If true, don't insert, just generate the CHK */
-    public boolean getCHKOnly;
-    /** If true, try to find the final URI as quickly as possible, and insert the upper layers as 
-     * soon as we can, rather than waiting for the lower layers. The default behaviour is safer,
-     * because an attacker can usually only identify the datastream once he has the top block, or 
-     * once you have announced the key. */
-    public boolean earlyEncode;
+	public boolean getCHKOnly;
+	/** If true, try to find the final URI as quickly as possible, and insert the upper layers as 
+	 * soon as we can, rather than waiting for the lower layers. The default behaviour is safer,
+	 * because an attacker can usually only identify the datastream once he has the top block, or 
+	 * once you have announced the key. */
+	public boolean earlyEncode;
 	
 	public CompatibilityMode getCompatibilityMode() {
-	    return realCompatMode;
+		return realCompatMode;
 	}
 	
 	public long getCompatibilityCode() {
@@ -194,7 +194,7 @@ public class InsertContext implements Cloneable, Serializable {
 	public InsertContext(InsertContext ctx, SimpleEventProducer producer) {
 		this.dontCompress = ctx.dontCompress;
 		this.splitfileAlgo = ctx.splitfileAlgo;
-        splitfileAlgorithm = splitfileAlgo.code;
+		splitfileAlgorithm = splitfileAlgo.code;
 		this.consecutiveRNFsCountAsSuccess = ctx.consecutiveRNFsCountAsSuccess;
 		this.maxInsertRetries = ctx.maxInsertRetries;
 		this.eventProducer = producer;
@@ -220,90 +220,90 @@ public class InsertContext implements Cloneable, Serializable {
 		}
 	}
 	
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (canWriteClientCache ? 1231 : 1237);
-        result = prime * result + realCompatMode.ordinal();
-        result = prime * result
-                + ((compressorDescriptor == null) ? 0 : compressorDescriptor.hashCode());
-        result = prime * result + consecutiveRNFsCountAsSuccess;
-        result = prime * result + (dontCompress ? 1231 : 1237);
-        // eventProducer is ignored.
-        result = prime * result + extraInsertsSingleBlock;
-        result = prime * result + extraInsertsSplitfileHeaderBlock;
-        result = prime * result + (forkOnCacheable ? 1231 : 1237);
-        result = prime * result + (ignoreUSKDatehints ? 1231 : 1237);
-        result = prime * result + (localRequestOnly ? 1231 : 1237);
-        result = prime * result + maxInsertRetries;
-        result = prime * result + splitfileAlgo.code;
-        result = prime * result + splitfileSegmentCheckBlocks;
-        result = prime * result + splitfileSegmentDataBlocks;
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (canWriteClientCache ? 1231 : 1237);
+		result = prime * result + realCompatMode.ordinal();
+		result = prime * result
+				+ ((compressorDescriptor == null) ? 0 : compressorDescriptor.hashCode());
+		result = prime * result + consecutiveRNFsCountAsSuccess;
+		result = prime * result + (dontCompress ? 1231 : 1237);
+		// eventProducer is ignored.
+		result = prime * result + extraInsertsSingleBlock;
+		result = prime * result + extraInsertsSplitfileHeaderBlock;
+		result = prime * result + (forkOnCacheable ? 1231 : 1237);
+		result = prime * result + (ignoreUSKDatehints ? 1231 : 1237);
+		result = prime * result + (localRequestOnly ? 1231 : 1237);
+		result = prime * result + maxInsertRetries;
+		result = prime * result + splitfileAlgo.code;
+		result = prime * result + splitfileSegmentCheckBlocks;
+		result = prime * result + splitfileSegmentDataBlocks;
+		return result;
+	}
 
-    /** Are two InsertContext's equal? Ignores the EventProducer, compares only the actual config
-     * values. */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        InsertContext other = (InsertContext) obj;
-        if (canWriteClientCache != other.canWriteClientCache)
-            return false;
-        if (compatibilityMode != other.compatibilityMode)
-            return false;
-        if (compressorDescriptor == null) {
-            if (other.compressorDescriptor != null)
-                return false;
-        } else if (!compressorDescriptor.equals(other.compressorDescriptor))
-            return false;
-        if (consecutiveRNFsCountAsSuccess != other.consecutiveRNFsCountAsSuccess)
-            return false;
-        if (dontCompress != other.dontCompress)
-            return false;
-        // eventProducer is ignored, and assumed to be unique.
-        if (extraInsertsSingleBlock != other.extraInsertsSingleBlock)
-            return false;
-        if (extraInsertsSplitfileHeaderBlock != other.extraInsertsSplitfileHeaderBlock)
-            return false;
-        if (forkOnCacheable != other.forkOnCacheable)
-            return false;
-        if (ignoreUSKDatehints != other.ignoreUSKDatehints)
-            return false;
-        if (localRequestOnly != other.localRequestOnly)
-            return false;
-        if (maxInsertRetries != other.maxInsertRetries)
-            return false;
-        if (splitfileAlgo != other.splitfileAlgo)
-            return false;
-        if (splitfileSegmentCheckBlocks != other.splitfileSegmentCheckBlocks)
-            return false;
-        if (splitfileSegmentDataBlocks != other.splitfileSegmentDataBlocks)
-            return false;
-        return true;
-    }
-    
-    public SplitfileAlgorithm getSplitfileAlgorithm() {
-        return splitfileAlgo;
-    }
-    
-    /** Call when migrating from db4o era. FIXME remove.
-     * @deprecated */
-    @Deprecated
-    public void onResume() {
-        // Used to encode it as a long.
-        if(realCompatMode == null)
-            realCompatMode = CompatibilityMode.byCode((short)compatibilityMode);
-        // Max blocks was wrong too.
-        splitfileSegmentDataBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;
-        splitfileSegmentCheckBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;
-        splitfileAlgo = SplitfileAlgorithm.getByCode(splitfileAlgorithm);
-    }
+	/** Are two InsertContext's equal? Ignores the EventProducer, compares only the actual config
+	 * values. */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InsertContext other = (InsertContext) obj;
+		if (canWriteClientCache != other.canWriteClientCache)
+			return false;
+		if (compatibilityMode != other.compatibilityMode)
+			return false;
+		if (compressorDescriptor == null) {
+			if (other.compressorDescriptor != null)
+				return false;
+		} else if (!compressorDescriptor.equals(other.compressorDescriptor))
+			return false;
+		if (consecutiveRNFsCountAsSuccess != other.consecutiveRNFsCountAsSuccess)
+			return false;
+		if (dontCompress != other.dontCompress)
+			return false;
+		// eventProducer is ignored, and assumed to be unique.
+		if (extraInsertsSingleBlock != other.extraInsertsSingleBlock)
+			return false;
+		if (extraInsertsSplitfileHeaderBlock != other.extraInsertsSplitfileHeaderBlock)
+			return false;
+		if (forkOnCacheable != other.forkOnCacheable)
+			return false;
+		if (ignoreUSKDatehints != other.ignoreUSKDatehints)
+			return false;
+		if (localRequestOnly != other.localRequestOnly)
+			return false;
+		if (maxInsertRetries != other.maxInsertRetries)
+			return false;
+		if (splitfileAlgo != other.splitfileAlgo)
+			return false;
+		if (splitfileSegmentCheckBlocks != other.splitfileSegmentCheckBlocks)
+			return false;
+		if (splitfileSegmentDataBlocks != other.splitfileSegmentDataBlocks)
+			return false;
+		return true;
+	}
+	
+	public SplitfileAlgorithm getSplitfileAlgorithm() {
+		return splitfileAlgo;
+	}
+	
+	/** Call when migrating from db4o era. FIXME remove.
+	 * @deprecated */
+	@Deprecated
+	public void onResume() {
+		// Used to encode it as a long.
+		if(realCompatMode == null)
+			realCompatMode = CompatibilityMode.byCode((short)compatibilityMode);
+		// Max blocks was wrong too.
+		splitfileSegmentDataBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;
+		splitfileSegmentCheckBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;
+		splitfileAlgo = SplitfileAlgorithm.getByCode(splitfileAlgorithm);
+	}
 
 }

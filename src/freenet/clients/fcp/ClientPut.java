@@ -39,8 +39,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class ClientPut extends ClientPutBase {
 
-    private static final long serialVersionUID = 1L;
-    ClientPutter putter;
+	private static final long serialVersionUID = 1L;
+	ClientPutter putter;
 	private final UploadFrom uploadFrom;
 	/** Original filename if from disk, otherwise null. Purely for PersistentPut. */
 	private final File origFilename;
@@ -57,7 +57,7 @@ public class ClientPut extends ClientPutBase {
 	private transient boolean compressing;
 	private boolean compressed;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -71,40 +71,40 @@ public class ClientPut extends ClientPutBase {
 	 * Fproxy
 	 * Creates a new persistent insert.
 	 * @param uri
-	 *            The URI to insert data to
+	 *			The URI to insert data to
 	 * @param identifier
-	 *            The identifier of the insert
+	 *			The identifier of the insert
 	 * @param verbosity
-	 *            The verbosity bitmask
+	 *			The verbosity bitmask
 	 * @param charset TODO
 	 * @param priorityClass
-	 *            The priority for this insert
+	 *			The priority for this insert
 	 * @param persistence
-	 *            The persistence type of this insert
+	 *			The persistence type of this insert
 	 * @param clientToken
-	 *            The client token of this insert
+	 *			The client token of this insert
 	 * @param getCHKOnly
-	 *            Whether only the resulting CHK is requested
+	 *			Whether only the resulting CHK is requested
 	 * @param dontCompress
-	 *            Whether the file should not be compressed
+	 *			Whether the file should not be compressed
 	 * @param maxRetries
-	 *            The maximum number of retries
+	 *			The maximum number of retries
 	 * @param uploadFromType
-	 *            Where the file is uploaded from
+	 *			Where the file is uploaded from
 	 * @param origFilename
-	 *            The original filename
+	 *			The original filename
 	 * @param contentType
-	 *            The content type of the data
+	 *			The content type of the data
 	 * @param data
-	 *            The data (may be <code>null</code> if
-	 *            <code>uploadFromType</code> is UPLOAD_FROM_REDIRECT)
+	 *			The data (may be <code>null</code> if
+	 *			<code>uploadFromType</code> is UPLOAD_FROM_REDIRECT)
 	 * @param redirectTarget
-	 *            The URI to redirect to (if <code>uploadFromType</code> is
-	 *            UPLOAD_FROM_REDIRECT)
+	 *			The URI to redirect to (if <code>uploadFromType</code> is
+	 *			UPLOAD_FROM_REDIRECT)
 	 * @param handler
-	 *            The FCP connection handler
+	 *			The FCP connection handler
 	 * @param global
-	 *            Whether this insert appears on the global queue
+	 *			Whether this insert appears on the global queue
 	 * 
 	 * @throws IdentifierCollisionException
 	 * @throws NotAllowedException 
@@ -210,7 +210,7 @@ public class ClientPut extends ClientPutBase {
 			this.targetURI = message.redirectTarget;
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI, cm);
 			try {
-	            tempData = m.toBucket(server.core.clientContext.getBucketFactory(isPersistentForever()));
+				tempData = m.toBucket(server.core.clientContext.getBucketFactory(isPersistentForever()));
 			} catch (MetadataUnresolvedException e) {
 				// Impossible
 				Logger.error(this, "Impossible: "+e, e);
@@ -260,14 +260,14 @@ public class ClientPut extends ClientPutBase {
 	}
 	
 	protected ClientPut() {
-	    // For serialization.
-	    uploadFrom = null;
-	    origFilename = null;
-	    targetURI = null;
-	    clientMetadata = null;
-	    finishedSize = 0;
-	    targetFilename = null;
-	    binaryBlob = false;
+		// For serialization.
+		uploadFrom = null;
+		origFilename = null;
+		targetURI = null;
+		clientMetadata = null;
+		finishedSize = 0;
+		targetFilename = null;
+		binaryBlob = false;
 	}
 	
 	@Override
@@ -474,7 +474,7 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStartCompressing() {
 		synchronized(this) {
-		    if(compressed) return;
+			if(compressed) return;
 			compressing = true;
 		}
 		if(client != null) {
@@ -488,7 +488,7 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStopCompressing() {
 		synchronized(this) {
-		    if(compressed) return; // Race condition possible
+			if(compressed) return; // Race condition possible
 			compressing = false;
 			compressed = true;
 		}
@@ -538,28 +538,28 @@ public class ClientPut extends ClientPutBase {
 			}
 		}
 		
-        return new UploadFileRequestStatus(
-            identifier, persistence, started, finished, succeeded, total, min, fetched,
-            latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
-            uri, failureCode, failureReasonShort, failureReasonLong, getDataSize(), mimeType,
-            fnam, isCompressing());
+		return new UploadFileRequestStatus(
+			identifier, persistence, started, finished, succeeded, total, min, fetched,
+			latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
+			uri, failureCode, failureReasonShort, failureReasonLong, getDataSize(), mimeType,
+			fnam, isCompressing());
 	}
 	
 	@Override
 	public void innerResume(ClientContext context) throws ResumeFailedException {
-	    if(data != null)
-	        data.onResume(context);
+		if(data != null)
+			data.onResume(context);
 	}
 
-    @Override
-    RequestType getType() {
-        return RequestType.PUT;
-    }
+	@Override
+	RequestType getType() {
+		return RequestType.PUT;
+	}
 
-    @Override
-    public boolean fullyResumed() {
-        // FIXME we might need this in future.
-        return false;
-    }
+	@Override
+	public boolean fullyResumed() {
+		// FIXME we might need this in future.
+		return false;
+	}
 
 }

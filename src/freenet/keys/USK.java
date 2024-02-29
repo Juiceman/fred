@@ -26,8 +26,8 @@ import freenet.support.Logger;
  */
 public class USK extends BaseClientKey implements Comparable<USK>, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    /* The character to separate the site name from the edition number in its SSK form.
+	private static final long serialVersionUID = 1L;
+	/* The character to separate the site name from the edition number in its SSK form.
 	 * I chose "-", because it makes it ludicrously easy to go from the USK form to the
 	 * SSK form, and we don't need to go vice versa.
 	 */
@@ -83,13 +83,13 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 	}
 	
 	protected USK() {
-	    // For serialization.
-        pubKeyHash = null;
-        cryptoKey = null;
-        siteName = null;
-	    suggestedEdition = 0;
-	    cryptoAlgorithm = 0;
-	    hashCode = 0;
+		// For serialization.
+		pubKeyHash = null;
+		cryptoKey = null;
+		siteName = null;
+		suggestedEdition = 0;
+		cryptoAlgorithm = 0;
+		hashCode = 0;
 	}
 
 	private static final Pattern badDocNamePattern;

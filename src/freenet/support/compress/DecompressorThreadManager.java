@@ -39,7 +39,7 @@ public class DecompressorThreadManager {
 	private boolean finished = false;
 	private Throwable error = null;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

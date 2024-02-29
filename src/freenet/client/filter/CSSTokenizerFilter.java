@@ -477,7 +477,7 @@ class CSSTokenizerFilter {
 
 		}
 		else if("background-position".equalsIgnoreCase(element))
-		{       // FIXME: css3 http://www.w3.org/TR/css3-background/#background-position
+		{	   // FIXME: css3 http://www.w3.org/TR/css3-background/#background-position
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("2 3?","4a5")));
 			allelementVerifiers.remove(element);
 		}
@@ -498,7 +498,7 @@ class CSSTokenizerFilter {
 			allelementVerifiers.remove(element);
 		}
 		else if("background".equalsIgnoreCase(element))
-		{    // FIXME: CSS3 http://www.w3.org/TR/css3-background/#background
+		{	// FIXME: CSS3 http://www.w3.org/TR/css3-background/#background
 			//background-attachment
 			auxilaryVerifiers[6]=new CSSPropertyVerifier(Arrays.asList("scroll","fixed"),null,null,null,true);
 			//background-color
@@ -1776,29 +1776,29 @@ class CSSTokenizerFilter {
 		if(isIDSelector && id.isEmpty()) return null; // No ID
 
 		boolean elementValid =
-		    "*".equals(HTMLelement) ||
-		    "~".equals(HTMLelement) ||
-		    (ElementInfo.isValidHTMLTag(HTMLelement.toLowerCase())) ||
-		    (HTMLelement.trim().isEmpty() &&
-                    ((!className.isEmpty()) || (!id.isEmpty()) || attSelections!=null ||
-                            !pseudoClass.isEmpty()));
+			"*".equals(HTMLelement) ||
+			"~".equals(HTMLelement) ||
+			(ElementInfo.isValidHTMLTag(HTMLelement.toLowerCase())) ||
+			(HTMLelement.trim().isEmpty() &&
+					((!className.isEmpty()) || (!id.isEmpty()) || attSelections!=null ||
+							!pseudoClass.isEmpty()));
 		if(!elementValid) return null;
 		
 		if(!className.isEmpty()) {
-		    // Note that the definition of isValidName() allows chained classes because it allows . in class names.
-		    if(!ElementInfo.isValidName(className))
-		        return null;
+			// Note that the definition of isValidName() allows chained classes because it allows . in class names.
+			if(!ElementInfo.isValidName(className))
+				return null;
 		} else if(!id.isEmpty()) {
-		    if(!ElementInfo.isValidName(id))
-		        return null;
+			if(!ElementInfo.isValidName(id))
+				return null;
 		}
 
 		if(!pseudoClass.isEmpty()) {
-		    if(!ElementInfo.isValidPseudoClass(pseudoClass)) {
-		        return null;
-		    } else if(ElementInfo.isBannedPseudoClass(pseudoClass)) {
-		        return "";
-		    }
+			if(!ElementInfo.isValidPseudoClass(pseudoClass)) {
+				return null;
+			} else if(ElementInfo.isBannedPseudoClass(pseudoClass)) {
+				return "";
+			}
 		}
 
 		if(attSelections!=null) {
@@ -1852,15 +1852,15 @@ class CSSTokenizerFilter {
 
 		fBuffer.append(HTMLelement);
 		if(!className.isEmpty()) {
-		    fBuffer.append('.');
-		    fBuffer.append(className);
+			fBuffer.append('.');
+			fBuffer.append(className);
 		} else if(!id.isEmpty()) {
-		    fBuffer.append('#');
-		    fBuffer.append(id);
+			fBuffer.append('#');
+			fBuffer.append(id);
 		}
 		if(!pseudoClass.isEmpty()) {
-		    fBuffer.append(':');
-		    fBuffer.append(pseudoClass);
+			fBuffer.append(':');
+			fBuffer.append(pseudoClass);
 		}
 		if(attSelections!=null) {
 			for(String attSelection:attSelections) {

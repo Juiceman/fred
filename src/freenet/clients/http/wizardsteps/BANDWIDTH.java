@@ -15,19 +15,19 @@ public class BANDWIDTH implements Step {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("step3Title"));
 
 		HTMLNode bandwidthInfoboxContent = helper.getInfobox("infobox-normal", WizardL10n.l10n("bandwidthLimit"),
-		        contentNode, null, false);
+				contentNode, null, false);
 
 		bandwidthInfoboxContent.addChild("#", WizardL10n.l10n("bandwidthCapPrompt"));
 		HTMLNode bandwidthForm = helper.addFormChild(bandwidthInfoboxContent, ".", "bwForm");
 		bandwidthForm.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "yes", NodeL10n.getBase().getString("Toadlet.yes")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "yes", NodeL10n.getBase().getString("Toadlet.yes")});
 		bandwidthForm.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "no", NodeL10n.getBase().getString("Toadlet.no")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "no", NodeL10n.getBase().getString("Toadlet.no")});
 		bandwidthForm.addChild("div").addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[] { "type", "name", "value" },
+				new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 	}
 
 	@Override

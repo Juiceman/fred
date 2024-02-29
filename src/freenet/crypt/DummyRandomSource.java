@@ -17,29 +17,29 @@ public class DummyRandomSource extends RandomSource {
 		setSeed(seed);
 	}
 
-    @Override
+	@Override
 	public int acceptEntropy(EntropySource source, long data, int entropyGuess) {
-        return 0;
-    }
+		return 0;
+	}
 
-    @Override
+	@Override
 	public int acceptTimerEntropy(EntropySource timer) {
-        return 0;
-    }
+		return 0;
+	}
 
-    @Override
+	@Override
 	public int acceptTimerEntropy(EntropySource fnpTimingSource, double bias) {
-        return 0;
-    }
+		return 0;
+	}
 
-    @Override
+	@Override
 	public int acceptEntropyBytes(EntropySource myPacketDataSource, byte[] buf,
-            int offset, int length, double bias) {
-        return 0;
-    }
+			int offset, int length, double bias) {
+		return 0;
+	}
 
-    @Override
+	@Override
 	public void close() {
-    }
+	}
 
 }

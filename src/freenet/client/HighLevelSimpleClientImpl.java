@@ -320,11 +320,11 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	public FreenetURI insertManifest(FreenetURI insertURI, HashMap<String, Object> bucketsByName, String defaultName, short priorityClass, byte[] forceCryptoKey) throws InsertException {
 		PutWaiter pw = new PutWaiter(this);
 		DefaultManifestPutter putter;
-        try {
-            putter = new DefaultManifestPutter(pw, BaseManifestPutter.bucketsByNameToManifestEntries(bucketsByName), priorityClass, insertURI, defaultName, getInsertContext(true), false, forceCryptoKey, core.clientContext);
-        } catch (TooManyFilesInsertException e1) {
-            throw new InsertException(InsertExceptionMode.TOO_MANY_FILES);
-        }
+		try {
+			putter = new DefaultManifestPutter(pw, BaseManifestPutter.bucketsByNameToManifestEntries(bucketsByName), priorityClass, insertURI, defaultName, getInsertContext(true), false, forceCryptoKey, core.clientContext);
+		} catch (TooManyFilesInsertException e1) {
+			throw new InsertException(InsertExceptionMode.TOO_MANY_FILES);
+		}
 		try {
 			core.clientContext.start(putter);
 		} catch (PersistenceDisabledException e) {
@@ -367,15 +367,15 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	}
 
 	public static FetchContext makeDefaultFetchContext(long maxLength, long maxTempLength,
-	        BucketFactory bucketFactory, SimpleEventProducer eventProducer) {
-        return
-        new FetchContext(maxLength, maxTempLength, 1024*1024,
-            MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
-            SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
-            FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
-            FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
-            bucketFactory, eventProducer,
-            false, CAN_WRITE_CLIENT_CACHE, null, null, null);
+			BucketFactory bucketFactory, SimpleEventProducer eventProducer) {
+		return
+		new FetchContext(maxLength, maxTempLength, 1024*1024,
+			MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
+			SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
+			FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
+			FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
+			bucketFactory, eventProducer,
+			false, CAN_WRITE_CLIENT_CACHE, null, null, null);
 	}
 
 	@Override
@@ -388,15 +388,15 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 				EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
 	}
 
-    public static InsertContext makeDefaultInsertContext(BucketFactory bucketFactory,
-            SimpleEventProducer eventProducer) {
-        return new InsertContext(
-                INSERT_RETRIES, CONSECUTIVE_RNFS_ASSUME_SUCCESS,
-                SPLITFILE_BLOCKS_PER_SEGMENT, SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
-                eventProducer, CAN_WRITE_CLIENT_CACHE_INSERTS, Node.FORK_ON_CACHEABLE_DEFAULT, false,
-                Compressor.DEFAULT_COMPRESSORDESCRIPTOR, EXTRA_INSERTS_SINGLE_BLOCK,
-                EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
-    }
+	public static InsertContext makeDefaultInsertContext(BucketFactory bucketFactory,
+			SimpleEventProducer eventProducer) {
+		return new InsertContext(
+				INSERT_RETRIES, CONSECUTIVE_RNFS_ASSUME_SUCCESS,
+				SPLITFILE_BLOCKS_PER_SEGMENT, SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
+				eventProducer, CAN_WRITE_CLIENT_CACHE_INSERTS, Node.FORK_ON_CACHEABLE_DEFAULT, false,
+				Compressor.DEFAULT_COMPRESSORDESCRIPTOR, EXTRA_INSERTS_SINGLE_BLOCK,
+				EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
+	}
 
 	@Override
 	public FreenetURI[] generateKeyPair(String docName) {

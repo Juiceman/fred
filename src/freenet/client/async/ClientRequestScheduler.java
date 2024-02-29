@@ -37,7 +37,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 	final transient ClientRequestSelector selector;
 	
 	private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logDEBUG;
 	
 	static {
 		Logger.registerClass(ClientRequestScheduler.class);
@@ -88,7 +88,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 	}
 	
 	public void startCore(byte[] globalSaltPersistent) {
-	    schedCore = new KeyListenerTracker(isInsertScheduler, isSSKScheduler, isRTScheduler, random, this, globalSaltPersistent, true);
+		schedCore = new KeyListenerTracker(isInsertScheduler, isSSKScheduler, isRTScheduler, random, this, globalSaltPersistent, true);
 	}
 	
 	/** Called by the  config. Callback
@@ -129,23 +129,23 @@ public class ClientRequestScheduler implements RequestScheduler {
 		}
 		final KeyListener listener;
 		if(hasListener != null) {
-		    listener = hasListener.makeKeyListener(clientContext, false);
-		    if(listener != null)
-		        (persistent ? schedCore : schedTransient).addPendingKeys(listener);
-		    else
-		        Logger.normal(this, "No KeyListener for "+hasListener);
+			listener = hasListener.makeKeyListener(clientContext, false);
+			if(listener != null)
+				(persistent ? schedCore : schedTransient).addPendingKeys(listener);
+			else
+				Logger.normal(this, "No KeyListener for "+hasListener);
 		} else
-		    listener = null;
+			listener = null;
 		if(getters != null && !noCheckStore) {
-		    for(SendableGet getter : getters)
-		        datastoreChecker.queueRequest(getter, blocks);
+			for(SendableGet getter : getters)
+				datastoreChecker.queueRequest(getter, blocks);
 		} else {
-		    boolean anyValid = false;
-		    for(SendableGet getter : getters) {
-		        if(!(getter.isCancelled() || getter.getWakeupTime(clientContext, System.currentTimeMillis()) != 0))
-		            anyValid = true;
-		    }
-		    finishRegister(getters, false, anyValid);
+			boolean anyValid = false;
+			for(SendableGet getter : getters) {
+				if(!(getter.isCancelled() || getter.getWakeupTime(clientContext, System.currentTimeMillis()) != 0))
+					anyValid = true;
+			}
+			finishRegister(getters, false, anyValid);
 		}
 	}
 	
@@ -231,12 +231,12 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 */
 	@Override
 	public ChosenBlock grabRequest() {
-	    short fuzz = -1;
-	    if(PRIORITY_SOFT.equals(choosenPriorityScheduler))
-	        fuzz = -1;
-	    else if(PRIORITY_HARD.equals(choosenPriorityScheduler))
-	        fuzz = 0;
-	    return selector.chooseRequest(fuzz, random, offeredKeys, starter, isRTScheduler, clientContext);
+		short fuzz = -1;
+		if(PRIORITY_SOFT.equals(choosenPriorityScheduler))
+			fuzz = -1;
+		else if(PRIORITY_HARD.equals(choosenPriorityScheduler))
+			fuzz = 0;
+		return selector.chooseRequest(fuzz, random, offeredKeys, starter, isRTScheduler, clientContext);
 	}
 	
 	/**
@@ -278,7 +278,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 	
 	@Override
 	public synchronized void succeeded(final BaseSendableGet succeeded, boolean persistent) {
-	    selector.succeeded(succeeded);
+		selector.succeeded(succeeded);
 	}
 
 	public void tripPendingKey(final KeyBlock block) {
@@ -306,8 +306,8 @@ public class ClientRequestScheduler implements RequestScheduler {
 		if(schedCore == null) return;
 		if(schedCore.anyProbablyWantKey(key, clientContext)) {
 			try { 
-			    // This is definitely NOT an internal job. 
-			    // It can wait until after the next checkpoint if necessary. So use queue().
+				// This is definitely NOT an internal job. 
+				// It can wait until after the next checkpoint if necessary. So use queue().
 				jobRunner.queue(new PersistentJob() {
 
 					@Override
@@ -352,7 +352,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 
 	@Override
 	public long countQueuedRequests() {
-	    return selector.countQueuedRequests(clientContext);
+		return selector.countQueuedRequests(clientContext);
 	}
 
 	@Override
@@ -386,7 +386,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 						get.onFailure(e, null, clientContext);
 						return false;
 					}
-                                        @Override
+										@Override
 					public String toString() {
 						return "SendableGet onFailure";
 					}
@@ -411,7 +411,7 @@ public class ClientRequestScheduler implements RequestScheduler {
 						insert.onFailure(e, null, context);
 						return false;
 					}
-                                        @Override
+										@Override
 					public String toString() {
 						return "SendableInsert onFailure";
 					}
@@ -470,13 +470,13 @@ public class ClientRequestScheduler implements RequestScheduler {
 		return node;
 	}
 
-    public KeySalter getGlobalKeySalter(boolean persistent) {
-        return persistent ? schedCore : schedTransient;
-    }
+	public KeySalter getGlobalKeySalter(boolean persistent) {
+		return persistent ? schedCore : schedTransient;
+	}
 
-    @Override
-    public ClientRequestSelector getSelector() {
-        return selector;
-    }
+	@Override
+	public ClientRequestSelector getSelector() {
+		return selector;
+	}
 
 }

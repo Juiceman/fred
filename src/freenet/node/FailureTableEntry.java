@@ -82,13 +82,13 @@ class FailureTableEntry implements TimedOutNodesList {
 	 * if we receive an offer from that node, we will reject it */
 	static final long MAX_TIME_BETWEEN_REQUEST_AND_OFFER = HOURS.toMillis(1);
 
-        public static final long[] EMPTY_LONG_ARRAY = new long[0];
-        public static final short[] EMPTY_SHORT_ARRAY = new short[0];
-        public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
-        @SuppressWarnings("unchecked")
-        public static final WeakReference<? extends PeerNodeUnlocked>[] EMPTY_WEAK_REFERENCE =
-            (WeakReference<? extends PeerNodeUnlocked>[])new WeakReference<?>[0];
-        
+		public static final long[] EMPTY_LONG_ARRAY = new long[0];
+		public static final short[] EMPTY_SHORT_ARRAY = new short[0];
+		public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+		@SuppressWarnings("unchecked")
+		public static final WeakReference<? extends PeerNodeUnlocked>[] EMPTY_WEAK_REFERENCE =
+			(WeakReference<? extends PeerNodeUnlocked>[])new WeakReference<?>[0];
+		
 	FailureTableEntry(Key key) {
 		this.key = key.archivalCopy();
 		long now = System.currentTimeMillis();
@@ -184,10 +184,10 @@ class FailureTableEntry implements TimedOutNodesList {
 				}
 			}
 		}
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		WeakReference<? extends PeerNodeUnlocked>[] newRequestorNodes =
-		    (WeakReference<? extends PeerNodeUnlocked>[])
-		    new WeakReference<?>[requestorNodes.length+notIncluded-nulls];
+			(WeakReference<? extends PeerNodeUnlocked>[])
+			new WeakReference<?>[requestorNodes.length+notIncluded-nulls];
 		long[] newRequestorTimes = new long[requestorNodes.length+notIncluded-nulls];
 		long[] newRequestorBootIDs = new long[requestorNodes.length+notIncluded-nulls];
 		short[] newRequestorHTLs = new short[requestorNodes.length+notIncluded-nulls];
@@ -278,8 +278,8 @@ class FailureTableEntry implements TimedOutNodesList {
 		}
 		@SuppressWarnings("unchecked")
 		WeakReference<? extends PeerNodeUnlocked>[] newRequestedNodes =
-		    (WeakReference<? extends PeerNodeUnlocked>[])
-		    new WeakReference<?>[requestedNodes.length+notIncluded-nulls];
+			(WeakReference<? extends PeerNodeUnlocked>[])
+			new WeakReference<?>[requestedNodes.length+notIncluded-nulls];
 		double[] newRequestedLocs = new double[requestedNodes.length+notIncluded-nulls];
 		long[] newRequestedBootIDs = new long[requestedNodes.length+notIncluded-nulls];
 		long[] newRequestedTimes = new long[requestedNodes.length+notIncluded-nulls];

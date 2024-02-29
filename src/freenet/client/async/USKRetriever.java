@@ -51,7 +51,7 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	 * the client subscribes with a custom FetchContext. */
 	private USKFetcher fetcher;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -110,8 +110,8 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 		try {
 			finalResult = context.getBucketFactory(persistent()).makeBucket(maxLen);
 		} catch (InsufficientDiskSpaceException e) {
-            onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), state, context);
-            return;
+			onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), state, context);
+			return;
 		} catch (IOException e) {
 			Logger.error(this, "Caught "+e, e);
 			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), state, context);
@@ -322,15 +322,15 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 		f.changeUSKPollParameters(time, tries, context);
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) {
-        Logger.error(this, "Cannot be persistent");
-        // Do nothing. Cannot be persistent.
-    }
+	@Override
+	public void innerOnResume(ClientContext context) {
+		Logger.error(this, "Cannot be persistent");
+		// Do nothing. Cannot be persistent.
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        // Not persistent.
-        return null;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		// Not persistent.
+		return null;
+	}
 }

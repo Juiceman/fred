@@ -39,7 +39,7 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 	}
 
 	protected void addElement(T client, C rga) {
-	    synchronized(root) {
+		synchronized(root) {
 		final int len = grabArrays.length;
 
 		grabArrays = Arrays.copyOf(grabArrays, len+1);
@@ -47,16 +47,16 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 		
 		grabClients = Arrays.copyOf(grabClients, len+1);
 		grabClients[len] = client;
-	    }
+		}
 	}
 
 	protected int haveClient(T client) {
-	    synchronized(root) {
+		synchronized(root) {
 		for(int i=0;i<grabClients.length;i++) {
 			if(grabClients[i] == client) return i;
 		}
 		return -1;
-	    }
+		}
 	}
 
 	/**
@@ -64,36 +64,36 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 	 */
 	@SuppressWarnings("unchecked")
 	public C getGrabber(T client) {
-	    synchronized(root) {
+		synchronized(root) {
 		int idx = haveClient(client);
 		if(idx == -1) return null;
 		else return (C)grabArrays[idx];
-	    }
+		}
 	}
 	
 	public T getClient(int x) {
-	    synchronized(root) {
+		synchronized(root) {
 		return grabClients[x];
-	    }
+		}
 	}
 
 	/**
 	 * Put a grabber.
 	 */
 	public void addGrabber(T client, C requestGrabber, ClientContext context) {
-	    synchronized(root) {
+		synchronized(root) {
 		if(requestGrabber.getObject() != client)
 			throw new IllegalArgumentException("Client not equal to RemoveRandomWithObject's client: client="+client+" rr="+requestGrabber+" his object="+requestGrabber.getObject());
 		addElement(client, requestGrabber);
 		if(context != null) {
-		    clearWakeupTime(context);
+			clearWakeupTime(context);
 		}
-	    }
+		}
 	}
 
 	@Override
 	public RemoveRandomReturn removeRandom(RandomGrabArrayItemExclusionList excluding, ClientContext context, long now) {
-	    synchronized(root) {
+		synchronized(root) {
 		while(true) {
 			if(grabArrays.length == 0) return null;
 			if(grabArrays.length == 1) {
@@ -110,13 +110,13 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 			else
 				return removeRandomExhaustive(excluding, context, now);
 		}
-	    }
+		}
 	}
 
 	private RemoveRandomReturn removeRandomExhaustive(
 			RandomGrabArrayItemExclusionList excluding,
 			ClientContext context, long now) {
-	    synchronized(root) {
+		synchronized(root) {
 		long wakeupTime = Long.MAX_VALUE;
 		if(grabArrays.length == 0) return null;
 		int x = context.fastWeakRandom.nextInt(grabArrays.length);
@@ -154,13 +154,13 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 		}
 		reduceWakeupTime(wakeupTime, context);
 		return new RemoveRandomReturn(wakeupTime);
-	    }
+		}
 	}
 
 	private RandomGrabArrayItem removeRandomLimited(
 			RandomGrabArrayItemExclusionList excluding,
 			ClientContext context, long now) {
-	    synchronized(root) {
+		synchronized(root) {
 		/** Count of arrays that have items but didn't return anything because of exclusions */
 		final int MAX_EXCLUDED = 10;
 		int excluded = 0;
@@ -218,13 +218,13 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 				continue;
 			}
 		}
-	    }
+		}
 	}
 
 	private RemoveRandomReturn removeRandomTwoOnly(
 			RandomGrabArrayItemExclusionList excluding,
 			ClientContext context, long now) {
-	    synchronized(root) {
+		synchronized(root) {
 		long wakeupTime = Long.MAX_VALUE;
 		// Another simple common case
 		int x = context.fastWeakRandom.nextBoolean() ? 1 : 0;
@@ -273,7 +273,7 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 				Logger.error(this, "Other RGA is null later on on "+this);
 				grabArrays = asGrabberArray(grabArrays[1-x]);
 				grabClients = asClientArray(grabClients[1-x]);
-                reduceWakeupTime(wakeupTime, context);
+				reduceWakeupTime(wakeupTime, context);
 				return new RemoveRandomReturn(wakeupTime);
 			}
 			excludeTime = rga.getWakeupTime(context, now);
@@ -304,17 +304,17 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 			if(item == null) {
 				if(grabArrays.length == 0)
 					return null; // Remove this as well
-                reduceWakeupTime(wakeupTime, context);
+				reduceWakeupTime(wakeupTime, context);
 				return new RemoveRandomReturn(wakeupTime);
 			} else return new RemoveRandomReturn(item);
 		}
-	    }
+		}
 	}
 
 	private RemoveRandomReturn removeRandomOneOnly(
 			RandomGrabArrayItemExclusionList excluding,
 			ClientContext context, long now) {
-	    synchronized(root) {
+		synchronized(root) {
 		long wakeupTime = Long.MAX_VALUE;
 		// Optimise the common case
 		RemoveRandomWithObject<T> rga = grabArrays[0];
@@ -351,14 +351,14 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 				if(logMINOR) Logger.minor(this, "Arrays are empty on "+this);
 				return null; // Remove this as well
 			}
-            reduceWakeupTime(wakeupTime, context);
+			reduceWakeupTime(wakeupTime, context);
 			return new RemoveRandomReturn(wakeupTime);
 		} else return new RemoveRandomReturn(item);
-	    }
+		}
 	}
 
 	private void removeElement(int x) {
-	    synchronized(root) {
+		synchronized(root) {
 		final int grabArraysLength = grabArrays.length;
 		int newLen = grabArraysLength > 1 ? grabArraysLength-1 : 0;
 		RemoveRandomWithObject<T>[] newArray = newGrabberArray(newLen);
@@ -374,19 +374,19 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 		if(x < grabArraysLength-1)
 			System.arraycopy(grabClients, x+1, newClients, x, grabArraysLength - (x+1));
 		grabClients = newClients;
-	    }
+		}
 	}
 
 	public boolean isEmpty() {
-	    synchronized(root) {
+		synchronized(root) {
 		return grabArrays.length == 0;
-	    }
+		}
 	}
 	
 	public int size() {
-	    synchronized(root) {
+		synchronized(root) {
 		return grabArrays.length;
-	    }
+		}
 	}
 	
 	@Override
@@ -424,70 +424,70 @@ public class SectoredRandomGrabArray<T, C extends RemoveRandomWithObject<T>> imp
 
 	@Override
 	public void setParent(RemoveRandomParent newParent) {
-	    synchronized(root) {
+		synchronized(root) {
 		this.parent = newParent;
-	    }
+		}
 	}
 
-    @Override
-    public RequestSelectionTreeNode getParentGrabArray() {
-        synchronized(root) {
-            return parent;
-        }
-    }
+	@Override
+	public RequestSelectionTreeNode getParentGrabArray() {
+		synchronized(root) {
+			return parent;
+		}
+	}
 	
-    @Override
-    public long getWakeupTime(ClientContext context, long now) {
-        synchronized(root) {
-            if(wakeupTime < now) wakeupTime = 0;
-            return wakeupTime;
-        }
-    }
-    
-    @Override
-    public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
-        if(logMINOR) Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
-        boolean reachedRoot = false;
-        synchronized(root) {
-            if(this.wakeupTime > wakeupTime) {
-                this.wakeupTime = wakeupTime;
-                if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
-                else reachedRoot = true; // Even if it reduces it we need to wake it up.
-            } else return false;
-        }
-        if(reachedRoot)
-            root.wakeUp(context);
-        return true;
-    }
-    
-    @Override
-    public void clearWakeupTime(ClientContext context) {
-        if(logMINOR) Logger.minor(this, "clearCooldownTime() on "+this);
-        synchronized(root) {
-            wakeupTime = 0;
-            if(parent != null) parent.clearWakeupTime(context);
-        }
-    }
+	@Override
+	public long getWakeupTime(ClientContext context, long now) {
+		synchronized(root) {
+			if(wakeupTime < now) wakeupTime = 0;
+			return wakeupTime;
+		}
+	}
+	
+	@Override
+	public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
+		if(logMINOR) Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		boolean reachedRoot = false;
+		synchronized(root) {
+			if(this.wakeupTime > wakeupTime) {
+				this.wakeupTime = wakeupTime;
+				if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
+				else reachedRoot = true; // Even if it reduces it we need to wake it up.
+			} else return false;
+		}
+		if(reachedRoot)
+			root.wakeUp(context);
+		return true;
+	}
+	
+	@Override
+	public void clearWakeupTime(ClientContext context) {
+		if(logMINOR) Logger.minor(this, "clearCooldownTime() on "+this);
+		synchronized(root) {
+			wakeupTime = 0;
+			if(parent != null) parent.clearWakeupTime(context);
+		}
+	}
 
-    private T[] asClientArray(T client) {
-        T[] clients = newClientArray(1);
-        clients[0] = client;
-        return clients;
-    }
+	private T[] asClientArray(T client) {
+		T[] clients = newClientArray(1);
+		clients[0] = client;
+		return clients;
+	}
 
-    @SuppressWarnings("unchecked")
-    private T[] newClientArray(int length) {
-        return (T[])new Object[length];
-    }
+	@SuppressWarnings("unchecked")
+	private T[] newClientArray(int length) {
+		return (T[])new Object[length];
+	}
 
-    private RemoveRandomWithObject<T>[] asGrabberArray(RemoveRandomWithObject<T> grabber) {
-        RemoveRandomWithObject<T>[] grabbers = newGrabberArray(1);
-        grabbers[0] = grabber;
-        return grabbers;
-    }
+	private RemoveRandomWithObject<T>[] asGrabberArray(RemoveRandomWithObject<T> grabber) {
+		RemoveRandomWithObject<T>[] grabbers = newGrabberArray(1);
+		grabbers[0] = grabber;
+		return grabbers;
+	}
 
-    @SuppressWarnings("unchecked")
-    private RemoveRandomWithObject<T>[] newGrabberArray(int length) {
-        return (RemoveRandomWithObject<T>[])new RemoveRandomWithObject<?>[length];
-    }
+	@SuppressWarnings("unchecked")
+	private RemoveRandomWithObject<T>[] newGrabberArray(int length) {
+		return (RemoveRandomWithObject<T>[])new RemoveRandomWithObject<?>[length];
+	}
 }

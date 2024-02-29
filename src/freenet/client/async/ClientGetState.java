@@ -29,5 +29,5 @@ public interface ClientGetState {
 
 	/** Called just before the final write of client.dat before the node shuts down. Should write
 	 * any dirty data to disk etc. */
-    public void onShutdown(ClientContext context);
+	public void onShutdown(ClientContext context);
 }

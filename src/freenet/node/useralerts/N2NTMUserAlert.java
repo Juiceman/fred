@@ -42,7 +42,7 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 
 	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber, long composedTime,
 			long sentTime, long receivedTime) {
-                this(sourcePeerNode, message, fileNumber, composedTime, sentTime, receivedTime, -1);
+				this(sourcePeerNode, message, fileNumber, composedTime, sentTime, receivedTime, -1);
 	}
 
 	@Override

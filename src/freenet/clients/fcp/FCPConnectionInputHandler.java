@@ -45,7 +45,7 @@ public class FCPConnectionInputHandler implements Runnable {
 
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
+		freenet.support.Logger.OSThread.logPID(this);
 		try {
 			realRun();
 		} catch (TooLongException e) {

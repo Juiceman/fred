@@ -65,40 +65,40 @@ public class RealNodeULPRTest extends RealNodeTest {
 	static final int EXIT_UNKNOWN_ERROR_CHECKING_KEY_NOT_EXIST = EXIT_BASE + 2;
 	static final int EXIT_TEST_FAILED = EXIT_BASE + 4;
 	
-    static final int NUMBER_OF_NODES = 10;
-    // We don't explicitly subscribe, so each node must be routed through.
-    // However, per-node failure tables should ensure the node doesn't make the same mistake twice so visits every node.
-    static final short MAX_HTL = 10;
-    //static final int NUMBER_OF_NODES = 50;
-    //static final short MAX_HTL = 10;
-    static final int NUMBER_OF_TESTS = 100;
-    static final boolean ENABLE_SWAPPING = true;
-    static final boolean ENABLE_ULPRS = true; // This is the point of the test, but it's probably a good idea to be able to do a comparison if we want to
-    static final boolean ENABLE_PER_NODE_FAILURE_TABLES = true;
-    static final boolean ENABLE_FOAF = true;
-    static final boolean REAL_TIME_FLAG = false;
-    
+	static final int NUMBER_OF_NODES = 10;
+	// We don't explicitly subscribe, so each node must be routed through.
+	// However, per-node failure tables should ensure the node doesn't make the same mistake twice so visits every node.
+	static final short MAX_HTL = 10;
+	//static final int NUMBER_OF_NODES = 50;
+	//static final short MAX_HTL = 10;
+	static final int NUMBER_OF_TESTS = 100;
+	static final boolean ENABLE_SWAPPING = true;
+	static final boolean ENABLE_ULPRS = true; // This is the point of the test, but it's probably a good idea to be able to do a comparison if we want to
+	static final boolean ENABLE_PER_NODE_FAILURE_TABLES = true;
+	static final boolean ENABLE_FOAF = true;
+	static final boolean REAL_TIME_FLAG = false;
+	
 	static final FRIEND_TRUST trust = FRIEND_TRUST.LOW;
 	static final FRIEND_VISIBILITY visibility = FRIEND_VISIBILITY.NO;
 
-    public static final int DARKNET_PORT_BASE = RealNodePingTest.DARKNET_PORT_END;
-    public static final int DARKNET_PORT_END = DARKNET_PORT_BASE + NUMBER_OF_NODES;
-    
-    public static void main(String[] args) throws FSParseException, PeerParseException, CHKEncodeException, InvalidThresholdException, NodeInitException, ReferenceSignatureVerificationException, KeyCollisionException, SSKEncodeException, IOException, InterruptedException, SSKVerifyException, InvalidCompressionCodecException, PeerTooOldException {
-        System.err.println("ULPR test");
-        System.err.println();
-    	String testName = "realNodeULPRTest";
-        File wd = new File(testName);
-        if(!FileUtil.removeAll(wd)) {
-        	System.err.println("Mass delete failed, test may not be accurate.");
-        	System.exit(EXIT_CANNOT_DELETE_OLD_DATA);
-        }
-        wd.mkdir();
-        
-        DummyRandomSource random = new DummyRandomSource();
-        
-        //NOTE: globalTestInit returns in ignored random source
-        //NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL" /*,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR" "freenet.store:minor,freenet.node.LocationManager:debug,freenet.node.FNPPacketManager:normal,freenet.io.comm.MessageCore:debug"*/);
+	public static final int DARKNET_PORT_BASE = RealNodePingTest.DARKNET_PORT_END;
+	public static final int DARKNET_PORT_END = DARKNET_PORT_BASE + NUMBER_OF_NODES;
+	
+	public static void main(String[] args) throws FSParseException, PeerParseException, CHKEncodeException, InvalidThresholdException, NodeInitException, ReferenceSignatureVerificationException, KeyCollisionException, SSKEncodeException, IOException, InterruptedException, SSKVerifyException, InvalidCompressionCodecException, PeerTooOldException {
+		System.err.println("ULPR test");
+		System.err.println();
+		String testName = "realNodeULPRTest";
+		File wd = new File(testName);
+		if(!FileUtil.removeAll(wd)) {
+			System.err.println("Mass delete failed, test may not be accurate.");
+			System.exit(EXIT_CANNOT_DELETE_OLD_DATA);
+		}
+		wd.mkdir();
+		
+		DummyRandomSource random = new DummyRandomSource();
+		
+		//NOTE: globalTestInit returns in ignored random source
+		//NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL" /*,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR" "freenet.store:minor,freenet.node.LocationManager:debug,freenet.node.FNPPacketManager:normal,freenet.io.comm.MessageCore:debug"*/);
         // Uncomment as appropriate.
         // For testing high-level stuff (requests/ULPRs/FT bugs)
         NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR,freenet.node.PeerNode:MINOR,freenet.node.DarknetPeerNode:MINOR,freenet.io.xfer.PacketThrottle:MINOR,freenet.node.PeerManager:MINOR,freenet.client.async:MINOR", true);

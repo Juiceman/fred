@@ -31,7 +31,7 @@ public class DiskDirPutFile extends DirPutFile {
 	// FIXME implement FileHash support
 	public DiskDirPutFile(String name, String mimeType, File f) {
 		super(name, mimeType);
- 		this.file = f;
+		this.file = f;
 	}
 
 	protected static String guessMIME(String name, File file) {

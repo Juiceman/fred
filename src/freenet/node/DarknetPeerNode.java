@@ -2023,18 +2023,18 @@ public class DarknetPeerNode extends PeerNode {
 		}
 	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
+	@Override
+	public boolean isOpennetForNoderef() {
 	return false;
-    }
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
+	@Override
+	public boolean canAcceptAnnouncements() {
 	return node.passOpennetRefsThroughDarknet();
-    }
+	}
 
-    @Override
-    protected void writePeers() {
+	@Override
+	protected void writePeers() {
 	node.peers.writePeers(false);
-    }
+	}
 }

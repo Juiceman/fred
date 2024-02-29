@@ -27,13 +27,13 @@ import freenet.support.io.NativeThread;
  */
 public class DatastoreChecker implements PrioRunnable {
 
-    /** True to start the DatastoreChecker thread lazily (mostly for simulations). */
-    private final boolean lazy;
-    /** True if lazy is true and the datastore checker thread is running */
-    private boolean running;
-    private final Executor executor;
-    private final String threadName;
-    
+	/** True to start the DatastoreChecker thread lazily (mostly for simulations). */
+	private final boolean lazy;
+	/** True if lazy is true and the datastore checker thread is running */
+	private boolean running;
+	private final Executor executor;
+	private final String threadName;
+	
 	// Setting these to 1, 3 kills 1/3rd of datastore checks.
 	// 2, 5 gives 40% etc.
 	// In normal operation KILL_BLOCKS should be 0 !!!!
@@ -56,18 +56,18 @@ public class DatastoreChecker implements PrioRunnable {
 		/** Request which we will call finishRegister() for when we have
 		 *  checked the keys lists. Deactivated (if persistent). */
 		final SendableGet getter;
-        /** Arrays of keys to check. */
-        Key[] keys;
-        final BlockSet blockSet;
+		/** Arrays of keys to check. */
+		Key[] keys;
+		final BlockSet blockSet;
 		QueueItem(Key[] keys, SendableGet getter, BlockSet blockSet) {
 			this.getter = getter;
-            this.keys = keys;
-            this.blockSet = blockSet;
+			this.keys = keys;
+			this.blockSet = blockSet;
 		}
 
 		@Override
 		public boolean equals(Object o) {
-		    // Hack to make queue.remove() work, see removeRequest() below.
+			// Hack to make queue.remove() work, see removeRequest() below.
 			if(!(o instanceof QueueItem)) return false; // equals() should not throw ClassCastException
 			return this.getter == ((QueueItem)o).getter;
 		}
@@ -92,7 +92,7 @@ public class DatastoreChecker implements PrioRunnable {
 	}
 
 	@SuppressWarnings("unchecked")
-    public DatastoreChecker(Node node, boolean lazyStart, Executor executor, String threadName) {
+	public DatastoreChecker(Node node, boolean lazyStart, Executor executor, String threadName) {
 		this.node = node;
 		this.lazy = lazyStart;
 		this.executor = executor;
@@ -153,7 +153,7 @@ public class DatastoreChecker implements PrioRunnable {
 		synchronized(this) {
 			while(true) {
 				for(short prio = 0;prio<queue.length;prio++) {
-				    QueueItem trans;
+					QueueItem trans;
 					if((trans = queue[prio].pollFirst()) != null) {
 						keys = trans.keys;
 						getter = trans.getter;
@@ -168,8 +168,8 @@ public class DatastoreChecker implements PrioRunnable {
 					break;
 				if(logMINOR) Logger.minor(this, "Waiting for more transient requests");
 				if(lazy) {
-				    running = false;
-				    return true;
+					running = false;
+					return true;
 				}
 				waited = true;
 				try {
@@ -246,32 +246,32 @@ public class DatastoreChecker implements PrioRunnable {
 	}
 
 	synchronized void wakeUp() {
-	    if(lazy) {
-	        if(!running) {
-	            start();
-	            return;
-	        }
-	    }
+		if(lazy) {
+			if(!running) {
+				start();
+				return;
+			}
+		}
 		notifyAll();
 	}
 
 	public synchronized void start() {
-	    if(lazy) {
-	        if(isEmpty()) return;
-	        if(running) return;
-	    }
-	    running = true;
-            executor.execute(this, threadName);
+		if(lazy) {
+			if(isEmpty()) return;
+			if(running) return;
+		}
+		running = true;
+			executor.execute(this, threadName);
 	}
 
 	private synchronized boolean isEmpty() {
-	    for(ArrayDeque<QueueItem> q : queue) {
-	        if(!q.isEmpty()) return false;
-	    }
-	    return true;
-    }
+		for(ArrayDeque<QueueItem> q : queue) {
+			if(!q.isEmpty()) return false;
+		}
+		return true;
+	}
 
-        @Override
+		@Override
 	public int getPriority() {
 		return NativeThread.NORM_PRIORITY;
 	}
@@ -280,7 +280,7 @@ public class DatastoreChecker implements PrioRunnable {
 		if(logMINOR) Logger.minor(this, "Removing request prio="+prio+" persistent="+persistent);
 		QueueItem requestMatcher = new QueueItem(null, request, null);
 		synchronized(this) {
-		    if(!queue[prio].remove(requestMatcher)) return;
+			if(!queue[prio].remove(requestMatcher)) return;
 		}
 		if(logMINOR) Logger.minor(this, "Removed transient request");
 	}

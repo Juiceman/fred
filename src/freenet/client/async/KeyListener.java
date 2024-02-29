@@ -83,7 +83,7 @@ public interface KeyListener {
 
 	public boolean isSSK();
 
- 	/**
+	/**
 	 * @return non-null if only key with (isSSK() ? pubKeyHash : routingKey) wanted.
 	 * Must match getHasKeyListener().getWantedKey().
 	 */

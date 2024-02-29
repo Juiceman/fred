@@ -8,9 +8,9 @@ public interface Listener {
 	 * An error occurred.
 	 * @param error type: What error occurred. Can be one of Probe.ProbeError.
 	 * @param code Code byte value. If the error is an UNKNOWN or UNRECOGNIZED_TYPE which occurred locally this
-	 *             contains the unrecognized code from the message. Otherwise it is null.
+	 *			 contains the unrecognized code from the message. Otherwise it is null.
 	 * @param local True if the error occurred locally and was not prompted by an error relayed from a remote node.
-	 *              False if the error was relayed from a remote node.
+	 *			  False if the error was relayed from a remote node.
 	 */
 	void onError(Error error, Byte code, boolean local);
 
@@ -59,7 +59,7 @@ public interface Listener {
 	/**
 	 * Uptime result.
 	 * @param uptimePercentage endpoint's reported percentage uptime in the last requested period; either
-	 *                         48 hour or 7 days.
+	 *						 48 hour or 7 days.
 	 */
 	void onUptime(float uptimePercentage);
 

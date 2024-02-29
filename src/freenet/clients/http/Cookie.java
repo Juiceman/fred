@@ -23,11 +23,11 @@ public class Cookie {
 	
 	/**
 	 * Taken from this discussion:
-		<TheSeeker>        CTL            = <any US-ASCII control character
-		<TheSeeker>                         (octets 0 - 31) and DEL (127)>
-		<TheSeeker>        CHAR           = <any US-ASCII character (octets 0 - 127)>
-		<TheSeeker>        token          = 1*<any CHAR except CTLs or separators>
-		<TheSeeker>        separators     = "(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <"> | "/" | "[" | "]" | "?" | "=" | "{" | "}" | SP | HT
+		<TheSeeker>		CTL			= <any US-ASCII control character
+		<TheSeeker>						 (octets 0 - 31) and DEL (127)>
+		<TheSeeker>		CHAR		   = <any US-ASCII character (octets 0 - 127)>
+		<TheSeeker>		token		  = 1*<any CHAR except CTLs or separators>
+		<TheSeeker>		separators	 = "(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <"> | "/" | "[" | "]" | "?" | "=" | "{" | "}" | SP | HT
 		<TheSeeker> so, anything from 32-126 that isn't in that list of seperators is valid.
 		<p0s> TheSeeker: where did you copy that from?
 		<TheSeeker> http://www.ietf.org/rfc/rfc2616.txt
@@ -167,17 +167,17 @@ public class Cookie {
 		name = name.trim().toLowerCase(); // RFC2965: Name is case insensitive
 		
 		/*
-		<TheSeeker>        CTL            = <any US-ASCII control character
-		<TheSeeker>                         (octets 0 - 31) and DEL (127)>
-		<TheSeeker>        CHAR           = <any US-ASCII character (octets 0 - 127)>
-		<TheSeeker>        token          = 1*<any CHAR except CTLs or separators>
-		<TheSeeker>        separators     = "(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <"> | "/" | "[" | "]" | "?" | "=" | "{" | "}" | SP | HT
+		<TheSeeker>		CTL			= <any US-ASCII control character
+		<TheSeeker>						 (octets 0 - 31) and DEL (127)>
+		<TheSeeker>		CHAR		   = <any US-ASCII character (octets 0 - 127)>
+		<TheSeeker>		token		  = 1*<any CHAR except CTLs or separators>
+		<TheSeeker>		separators	 = "(" | ")" | "<" | ">" | "@" | "," | ";" | ":" | "\" | <"> | "/" | "[" | "]" | "?" | "=" | "{" | "}" | SP | HT
 		<TheSeeker> so, anything from 32-126 that isn't in that list of seperators is valid.
 		<p0s> TheSeeker: where did you copy that from?
 		<TheSeeker> http://www.ietf.org/rfc/rfc2616.txt
 		<TheSeeker> The following grammar uses the notation, and tokens DIGIT (decimal digits), token (informally, a sequence of non-special, non-white space characters), and http_URL from the HTTP/1.1 specification [RFC2616] to describe their syntax.
-		<TheSeeker>        quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
-		<TheSeeker>        qdtext         = <any TEXT except <">>
+		<TheSeeker>		quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
+		<TheSeeker>		qdtext		 = <any TEXT except <">>
 		<TheSeeker>        TEXT           = <any OCTET except CTLs, but including LWS>
 		<TheSeeker>        LWS            = [CRLF] 1*( SP | HT )
 		<TheSeeker>        OCTET          = <any 8-bit sequence of data>
@@ -246,9 +246,9 @@ public class Cookie {
 		<TheSeeker> The following grammar uses the notation, and tokens DIGIT (decimal digits), token (informally, a sequence of non-special, non-white space characters), and http_URL from the HTTP/1.1 specification [RFC2616] to describe their syntax.
 		<TheSeeker>        quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
 		<TheSeeker>        qdtext         = <any TEXT except <">>
-		<TheSeeker>        TEXT           = <any OCTET except CTLs, but including LWS>
-		<TheSeeker>        LWS            = [CRLF] 1*( SP | HT )
-		<TheSeeker>        OCTET          = <any 8-bit sequence of data>
+		<TheSeeker>		TEXT		   = <any OCTET except CTLs, but including LWS>
+		<TheSeeker>		LWS			= [CRLF] 1*( SP | HT )
+		<TheSeeker>		OCTET		  = <any 8-bit sequence of data>
 		<TheSeeker> so, if it's quoted, it can be anything 32-126 and 128-255 (except a quote char, obviously)
 		*/
 

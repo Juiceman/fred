@@ -11,30 +11,30 @@ import freenet.support.SimpleFieldSet;
  */
 public class PersistentRequestRemovedMessage extends FCPMessage {
 
-    private final String ident;
-    private final boolean global;
-    
-    public PersistentRequestRemovedMessage(String identifier, boolean global) {
-        this.ident = identifier;
-        this.global = global;
-    }
+	private final String ident;
+	private final boolean global;
+	
+	public PersistentRequestRemovedMessage(String identifier, boolean global) {
+		this.ident = identifier;
+		this.global = global;
+	}
 
-    @Override
+	@Override
 	public SimpleFieldSet getFieldSet() {
-        SimpleFieldSet fs = new SimpleFieldSet(true);
-        fs.putSingle("Identifier", ident);
-        fs.put("Global", global);
-        return fs;
-    }
+		SimpleFieldSet fs = new SimpleFieldSet(true);
+		fs.putSingle("Identifier", ident);
+		fs.put("Global", global);
+		return fs;
+	}
 
-    @Override
+	@Override
 	public String getName() {
-        return "PersistentRequestRemoved";
-    }
+		return "PersistentRequestRemoved";
+	}
 
-    @Override
+	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-        throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentRequestRemoved goes from server to client not the other way around", ident, global);
-    }
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentRequestRemoved goes from server to client not the other way around", ident, global);
+	}
 
 }

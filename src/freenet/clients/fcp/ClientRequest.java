@@ -28,11 +28,11 @@ import freenet.support.io.StorageFormatException;
  */
 public abstract class ClientRequest implements Serializable {
 
-    /**
-     * ATTENTION: When incrementing this, please skip version 2. Version 2 had already temporarily
-     * been used by a development branch. */
-    private static final long serialVersionUID = 1L;
-    /** URI to fetch, or target URI to insert to */
+	/**
+	 * ATTENTION: When incrementing this, please skip version 2. Version 2 had already temporarily
+	 * been used by a development branch. */
+	private static final long serialVersionUID = 1L;
+	/** URI to fetch, or target URI to insert to */
 	protected FreenetURI uri;
 	/** Unique request identifier */
 	protected final String identifier;
@@ -42,9 +42,9 @@ public abstract class ClientRequest implements Serializable {
 	/** Original FCPConnectionHandler. Null if persistence != connection */
 	protected transient final FCPConnectionHandler origHandler;
 	/** Is the request on the global queue? */
-    protected final boolean global;
-    /** If the request isn't on the global queue, what is the client's name? */
-    protected final String clientName;
+	protected final boolean global;
+	/** If the request isn't on the global queue, what is the client's name? */
+	protected final String clientName;
 	/** Client */
 	protected transient PersistentRequestClient client;
 	/** Priority class */
@@ -96,7 +96,7 @@ public abstract class ClientRequest implements Serializable {
 		} else {
 			this.verbosity = verbosity2;
 			this.clientName = client.name;
-	    }
+		}
 		this.finished = false;
 		this.priorityClass = priorityClass2;
 		this.persistence = persistenceType2;
@@ -136,17 +136,17 @@ public abstract class ClientRequest implements Serializable {
 			client = null;
 			lowLevelClient = new RequestClientBuilder().realTime(realTime).build();
 			this.clientName = null;
-            this.verbosity = verbosity2;
+			this.verbosity = verbosity2;
 		} else {
 			origHandler = null;
 			if(global) {
 				client = persistence == Persistence.FOREVER ? handler.server.globalForeverClient : handler.server.globalRebootClient;
-	            this.verbosity = Integer.MAX_VALUE;
-	            clientName = null;
+				this.verbosity = Integer.MAX_VALUE;
+				clientName = null;
 			} else {
 				client = persistence == Persistence.FOREVER ? handler.getForeverClient() : handler.getRebootClient();
-	            this.verbosity = verbosity2;
-	            this.clientName = client.name;
+				this.verbosity = verbosity2;
+				this.clientName = client.name;
 			}
 			lowLevelClient = client.lowLevelClient(realTime);
 			if(lowLevelClient == null)
@@ -161,19 +161,19 @@ public abstract class ClientRequest implements Serializable {
 	}
 	
 	protected ClientRequest() {
-	    // For serialization.
-	    identifier = null;
-	    verbosity = 0;
-	    origHandler = null;
-	    global = false;
-	    clientName = null;
-	    realTime = false;
-	    persistence = null;
-	    startupTime = 0;
-	    hashCode = 0;
+		// For serialization.
+		identifier = null;
+		verbosity = 0;
+		origHandler = null;
+		global = false;
+		clientName = null;
+		realTime = false;
+		persistence = null;
+		startupTime = 0;
+		hashCode = 0;
 	}
 
-    /** Lost connection */
+	/** Lost connection */
 	public abstract void onLostConnection(ClientContext context);
 
 	/** Send any pending messages for a persistent request e.g. after reconnecting */
@@ -182,28 +182,28 @@ public abstract class ClientRequest implements Serializable {
 	// Persistence
 
 	public enum Persistence {
-        /** Default: persists until connection loss. */
-	    CONNECTION,
-	    /** Reports to client by name; persists over connection loss.
-	     * Not saved to disk, so dies on reboot. */
-	    REBOOT,
-        /** Same as reboot but saved to disk, persists forever. */
-	    FOREVER;
+		/** Default: persists until connection loss. */
+		CONNECTION,
+		/** Reports to client by name; persists over connection loss.
+		 * Not saved to disk, so dies on reboot. */
+		REBOOT,
+		/** Same as reboot but saved to disk, persists forever. */
+		FOREVER;
 
-        public static Persistence parseOrThrow(String persistenceString, String identifier, boolean global) throws MessageInvalidException {
-            try {
-                if(persistenceString == null) return Persistence.CONNECTION;
-                else return Persistence.valueOf(persistenceString.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing Persistence field: "+persistenceString, identifier, global);
-            }
-        }
+		public static Persistence parseOrThrow(String persistenceString, String identifier, boolean global) throws MessageInvalidException {
+			try {
+				if(persistenceString == null) return Persistence.CONNECTION;
+				else return Persistence.valueOf(persistenceString.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing Persistence field: "+persistenceString, identifier, global);
+			}
+		}
 
-        @Deprecated // Only for migration
-        public static Persistence getByCode(short persistenceType) {
-            if(persistenceType < 0 || persistenceType > values().length) throw new IllegalArgumentException();
-            return values()[persistenceType];
-        }
+		@Deprecated // Only for migration
+		public static Persistence getByCode(short persistenceType) {
+			if(persistenceType < 0 || persistenceType > values().length) throw new IllegalArgumentException();
+			return values()[persistenceType];
+		}
 	}
 
 	abstract void register(boolean noTags) throws IdentifierCollisionException;
@@ -290,20 +290,20 @@ public abstract class ClientRequest implements Serializable {
 	 *
 	 * @return The time of the request’s last activity, or {@code 0}
 	 * @deprecated
-	 *     Use {@link ClientRequester#getLatestSuccess()} instead. You can use 
-	 *     {@link #getClientRequest()} to obtain the ClientRequester.
+	 *	 Use {@link ClientRequester#getLatestSuccess()} instead. You can use 
+	 *	 {@link #getClientRequest()} to obtain the ClientRequester.
 	 */
 	@Deprecated
 	public long getLastActivity() {
-	    ClientRequester cr = getClientRequest();
-	    // I have not actually read the code to find out whether this if() is needed.
-	    // But this function is deprecated at the time of its writing and thus will be removed soon,
-	    // so there is no reason to invest the time to read the code to see whether it will happen.
-	    if (cr == null) {
-	        return 0;
-	    }
-	    
-	    return cr.getLatestSuccess().getTime();
+		ClientRequester cr = getClientRequest();
+		// I have not actually read the code to find out whether this if() is needed.
+		// But this function is deprecated at the time of its writing and thus will be removed soon,
+		// so there is no reason to invest the time to read the code to see whether it will happen.
+		if (cr == null) {
+			return 0;
+		}
+		
+		return cr.getLatestSuccess().getTime();
 	}
 
 	public abstract boolean canRestart();
@@ -379,11 +379,11 @@ public abstract class ClientRequest implements Serializable {
 
 			@Override
 			public boolean run(ClientContext context) {
-			    try {
-			        restart(context, disableFilterData);
-			    } catch (PersistenceDisabledException e) {
-			        // Impossible
-			    }
+				try {
+					restart(context, disableFilterData);
+				} catch (PersistenceDisabledException e) {
+					// Impossible
+				}
 				return true;
 			}
 			
@@ -398,11 +398,11 @@ public abstract class ClientRequest implements Serializable {
 
 				@Override
 				public void run() {
-				    try {
-                        restart(server.core.clientContext, disableFilterData);
-                    } catch (PersistenceDisabledException e) {
-                        // Impossible
-                    }
+					try {
+						restart(server.core.clientContext, disableFilterData);
+					} catch (PersistenceDisabledException e) {
+						// Impossible
+					}
 				}
 				
 			}, "Restart request");
@@ -431,119 +431,119 @@ public abstract class ClientRequest implements Serializable {
 	private static final long CLIENT_DETAIL_MAGIC = 0xebf0b4f4fa9f6721L;
 	private static final int CLIENT_DETAIL_VERSION = 1;
 
-    public void getClientDetail(DataOutputStream dos, ChecksumChecker checker) throws IOException {
-        if(persistence != Persistence.FOREVER) return;
-        dos.writeLong(CLIENT_DETAIL_MAGIC);
-        dos.writeInt(CLIENT_DETAIL_VERSION);
-        // Identify the request first.
-        RequestIdentifier req = getRequestIdentifier();
-        req.writeTo(dos);
-        // Basic details needed for scheduling, reporting and completion.
-        dos.writeBoolean(realTime);
-        dos.writeInt(verbosity);
-        dos.writeLong(startupTime);
-        // persistence is assumed to be PERSIST_FOREVER.
-        // uri will be handled by subclasses.
-        // This can change.
-        dos.writeShort(priorityClass);
-        // This can change and is variable size.
-        if(clientToken == null)
-            dos.writeBoolean(false);
-        else {
-            dos.writeBoolean(true);
-            dos.writeUTF(clientToken);
-        }
-        // Stuff that changes on completion
-        dos.writeBoolean(finished);
-    }
-    
-    protected ClientRequest(DataInputStream dis, RequestIdentifier reqID, 
-            ClientContext context) throws IOException, StorageFormatException {
-        long magic = dis.readLong();
-        if(magic != CLIENT_DETAIL_MAGIC)
-            throw new StorageFormatException("Bad magic");
-        int version = dis.readInt();
-        if(version != CLIENT_DETAIL_VERSION)
-            throw new StorageFormatException("Bad version");
-        RequestIdentifier copyReq = new RequestIdentifier(dis);
-        if(!copyReq.equals(reqID))
-            throw new StorageFormatException("Request identifier has changed");
-        realTime = dis.readBoolean();
-        verbosity = dis.readInt();
-        startupTime = dis.readLong();
-        priorityClass = dis.readShort();
-        if(priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS || 
-                priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS)
-            throw new StorageFormatException("Bogus priority");
-        if(dis.readBoolean())
-            clientToken = dis.readUTF();
-        else
-            clientToken = null;
-        finished = dis.readBoolean();
-        persistence = Persistence.FOREVER;
-        origHandler = null;
-        identifier = reqID.identifier;
-        global = reqID.globalQueue;
-        clientName = reqID.clientName;
-        hashCode = super.hashCode();
-        // We can't wait until onResume() to get the client, because it may be used in the 
-        // constructors.
-        this.client = context.persistentRoot.makeClient(global, clientName);
-        this.lowLevelClient = client.lowLevelClient(realTime);
-    }
+	public void getClientDetail(DataOutputStream dos, ChecksumChecker checker) throws IOException {
+		if(persistence != Persistence.FOREVER) return;
+		dos.writeLong(CLIENT_DETAIL_MAGIC);
+		dos.writeInt(CLIENT_DETAIL_VERSION);
+		// Identify the request first.
+		RequestIdentifier req = getRequestIdentifier();
+		req.writeTo(dos);
+		// Basic details needed for scheduling, reporting and completion.
+		dos.writeBoolean(realTime);
+		dos.writeInt(verbosity);
+		dos.writeLong(startupTime);
+		// persistence is assumed to be PERSIST_FOREVER.
+		// uri will be handled by subclasses.
+		// This can change.
+		dos.writeShort(priorityClass);
+		// This can change and is variable size.
+		if(clientToken == null)
+			dos.writeBoolean(false);
+		else {
+			dos.writeBoolean(true);
+			dos.writeUTF(clientToken);
+		}
+		// Stuff that changes on completion
+		dos.writeBoolean(finished);
+	}
+	
+	protected ClientRequest(DataInputStream dis, RequestIdentifier reqID, 
+			ClientContext context) throws IOException, StorageFormatException {
+		long magic = dis.readLong();
+		if(magic != CLIENT_DETAIL_MAGIC)
+			throw new StorageFormatException("Bad magic");
+		int version = dis.readInt();
+		if(version != CLIENT_DETAIL_VERSION)
+			throw new StorageFormatException("Bad version");
+		RequestIdentifier copyReq = new RequestIdentifier(dis);
+		if(!copyReq.equals(reqID))
+			throw new StorageFormatException("Request identifier has changed");
+		realTime = dis.readBoolean();
+		verbosity = dis.readInt();
+		startupTime = dis.readLong();
+		priorityClass = dis.readShort();
+		if(priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS || 
+				priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS)
+			throw new StorageFormatException("Bogus priority");
+		if(dis.readBoolean())
+			clientToken = dis.readUTF();
+		else
+			clientToken = null;
+		finished = dis.readBoolean();
+		persistence = Persistence.FOREVER;
+		origHandler = null;
+		identifier = reqID.identifier;
+		global = reqID.globalQueue;
+		clientName = reqID.clientName;
+		hashCode = super.hashCode();
+		// We can't wait until onResume() to get the client, because it may be used in the 
+		// constructors.
+		this.client = context.persistentRoot.makeClient(global, clientName);
+		this.lowLevelClient = client.lowLevelClient(realTime);
+	}
 
-    /** Called just after serializing in the request. Called by the ClientRequester, i.e. the tree 
-     * starts there, and we MUST NOT call back to it or we get an infinite recursion. The main 
-     * purpose of this method is to give us an opportunity to connect to the various (transient) 
-     * system utilities we get from ClientContext, e.g. bucket factories, the FCP persistent root 
-     * etc. The base class implementation in ClientRequest will register the request with an 
-     * PersistentRequestClient via the new PersistentRequestRoot.
-     * @param context Contains all the important system utilities.
-     * @throws ResumeFailedException 
-     */
-    public final void onResume(ClientContext context) throws ResumeFailedException {
-        client = context.persistentRoot.makeClient(global, clientName);
-        lowLevelClient = client.lowLevelClient(realTime);
-        innerResume(context);
-        ClientRequester req = getClientRequest();
-        if(req != null) req.onResume(context); // Can legally be null.
-        context.persistentRoot.resume(this, global, clientName);
-    }
-    
-    protected abstract void innerResume(ClientContext context) throws ResumeFailedException;
+	/** Called just after serializing in the request. Called by the ClientRequester, i.e. the tree 
+	 * starts there, and we MUST NOT call back to it or we get an infinite recursion. The main 
+	 * purpose of this method is to give us an opportunity to connect to the various (transient) 
+	 * system utilities we get from ClientContext, e.g. bucket factories, the FCP persistent root 
+	 * etc. The base class implementation in ClientRequest will register the request with an 
+	 * PersistentRequestClient via the new PersistentRequestRoot.
+	 * @param context Contains all the important system utilities.
+	 * @throws ResumeFailedException 
+	 */
+	public final void onResume(ClientContext context) throws ResumeFailedException {
+		client = context.persistentRoot.makeClient(global, clientName);
+		lowLevelClient = client.lowLevelClient(realTime);
+		innerResume(context);
+		ClientRequester req = getClientRequest();
+		if(req != null) req.onResume(context); // Can legally be null.
+		context.persistentRoot.resume(this, global, clientName);
+	}
+	
+	protected abstract void innerResume(ClientContext context) throws ResumeFailedException;
 
-    public RequestClient getRequestClient() {
-        return lowLevelClient;
-    }
+	public RequestClient getRequestClient() {
+		return lowLevelClient;
+	}
 
-    /** Get the RequestIdentifier. This just includes the queue and the identifier. */
-    public RequestIdentifier getRequestIdentifier() {
-        if(persistence == Persistence.CONNECTION) throw new IllegalStateException(); // Not associated with any client.
-        return new RequestIdentifier(global, clientName, identifier, getType());
-    }
-    
-    abstract RequestIdentifier.RequestType getType();
+	/** Get the RequestIdentifier. This just includes the queue and the identifier. */
+	public RequestIdentifier getRequestIdentifier() {
+		if(persistence == Persistence.CONNECTION) throw new IllegalStateException(); // Not associated with any client.
+		return new RequestIdentifier(global, clientName, identifier, getType());
+	}
+	
+	abstract RequestIdentifier.RequestType getType();
 
-    public static ClientRequest restartFrom(DataInputStream dis, RequestIdentifier reqID,
-            ClientContext context, ChecksumChecker checker) throws StorageFormatException, IOException, ResumeFailedException {
-        switch(reqID.type) {
-        case GET:
-            return ClientGet.restartFrom(dis, reqID, context, checker);
-        default:
-            return null;
-        }
-    }
+	public static ClientRequest restartFrom(DataInputStream dis, RequestIdentifier reqID,
+			ClientContext context, ChecksumChecker checker) throws StorageFormatException, IOException, ResumeFailedException {
+		switch(reqID.type) {
+		case GET:
+			return ClientGet.restartFrom(dis, reqID, context, checker);
+		default:
+			return null;
+		}
+	}
 
-    /** Return true if we resumed the original fetch from stored data (usually a file for a 
-     * splitfile download), rather than having to restart it (which happens in most other cases
-     * when we resume). */
-    public abstract boolean fullyResumed();
+	/** Return true if we resumed the original fetch from stored data (usually a file for a 
+	 * splitfile download), rather than having to restart it (which happens in most other cases
+	 * when we resume). */
+	public abstract boolean fullyResumed();
 
-    /** Called just before the final write when the node is shutting down. Should write any dirty
-     * data to disk etc. */
-    public void onShutdown(ClientContext context) {
-        ClientRequester request = getClientRequest();
-        if(request != null)
-            request.onShutdown(context);
-    }
+	/** Called just before the final write when the node is shutting down. Should write any dirty
+	 * data to disk etc. */
+	public void onShutdown(ClientContext context) {
+		ClientRequester request = getClientRequest();
+		if(request != null)
+			request.onShutdown(context);
+	}
 }

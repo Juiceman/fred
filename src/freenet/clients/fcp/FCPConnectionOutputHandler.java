@@ -21,14 +21,14 @@ public class FCPConnectionOutputHandler implements Runnable {
 	// Synced on outQueue
 	private boolean closedOutputQueue;
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logMINOR;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
 			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+								logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -46,7 +46,7 @@ public class FCPConnectionOutputHandler implements Runnable {
 	
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
+		freenet.support.Logger.OSThread.logPID(this);
 		try {
 			realRun();
 		} catch (IOException e) {
@@ -119,20 +119,20 @@ public class FCPConnectionOutputHandler implements Runnable {
 		}
 	}
 
-    /**
-     * @deprecated
-     *     Use {@link FCPConnectionHandler#send(FCPMessage)} instead of using public access to the
-     *     member variable {@link FCPConnectionHandler#outputHandler} to call this function here
-     *     upon the outputHandler. In other words: Replace
-     *     <code>fcpConnectionHandler.outputHandler.queue(...)</code>
-     *     with <code>fcpConnectionHandler.send(...)</code><br>
-     *     TODO: The deprecation is merely to enforce people to stop using the said member variable
-     *     in a public way. The function itself is fine to stay. Once the public usage has been
-     *     replaced by the suggested way of using send(), please make the member variable
-     *     {@link FCPConnectionHandler#outputHandler} private and remove the deprecation at this
-     *     function here.
-     */
-    @Deprecated
+	/**
+	 * @deprecated
+	 *	 Use {@link FCPConnectionHandler#send(FCPMessage)} instead of using public access to the
+	 *	 member variable {@link FCPConnectionHandler#outputHandler} to call this function here
+	 *	 upon the outputHandler. In other words: Replace
+	 *	 <code>fcpConnectionHandler.outputHandler.queue(...)</code>
+	 *	 with <code>fcpConnectionHandler.send(...)</code><br>
+	 *	 TODO: The deprecation is merely to enforce people to stop using the said member variable
+	 *	 in a public way. The function itself is fine to stay. Once the public usage has been
+	 *	 replaced by the suggested way of using send(), please make the member variable
+	 *	 {@link FCPConnectionHandler#outputHandler} private and remove the deprecation at this
+	 *	 function here.
+	 */
+	@Deprecated
 	public void queue(FCPMessage msg) {
 		if(logDEBUG)
 			Logger.debug(this, "Queueing "+msg, new Exception("debug"));

@@ -22,7 +22,7 @@ public class DecodeToadlet extends Toadlet {
 	final NodeClientCore core;
 	
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-	    
+		
 		PageNode page = ctx.getPageMaker().getPageNode("Redirect to Decoded link", ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
@@ -37,7 +37,7 @@ public class DecodeToadlet extends Toadlet {
 
 		// This is for when a browser can't handle 301s, should very rarely (never?) be seen.
 		ctx.getPageMaker().getInfobox("infobox-warning", "Decode Link", contentNode, "decode-not-redirected", true).
-		    addChild("a", "href", keyToFetch, "Click Here to be re-directed");
+			addChild("a", "href", keyToFetch, "Click Here to be re-directed");
 
 		this.writeHTMLReply(ctx, 301, "Moved Permanently\nLocation: "+ keyToFetch, pageNode.generate());
 	}

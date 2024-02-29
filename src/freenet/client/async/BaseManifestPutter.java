@@ -59,8 +59,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public abstract class BaseManifestPutter extends ManifestPutter {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -78,9 +78,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	 */
 	private final class ArchivePutHandler extends PutHandler {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        private ArchivePutHandler(BaseManifestPutter bmp, PutHandler parent, String name, HashMap<String, Object> data, FreenetURI insertURI) {
+		private ArchivePutHandler(BaseManifestPutter bmp, PutHandler parent, String name, HashMap<String, Object> data, FreenetURI insertURI) {
 			super(bmp, parent, name, null, containerPutHandlers);
 			this.origSFI = new ContainerInserter(this, this, data, insertURI, ctx, false, false, null, ARCHIVE_TYPE.TAR, false, forceCryptoKey, cryptoAlgorithm, realTimeFlag);
 		}
@@ -133,9 +133,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	 */
 	private final class ContainerPutHandler extends PutHandler {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        private ContainerPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, HashMap<String, Object> data, FreenetURI insertURI, Object object, HashSet<PutHandler> runningMap) {
+		private ContainerPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, HashMap<String, Object> data, FreenetURI insertURI, Object object, HashSet<PutHandler> runningMap) {
 			super(bmp, parent, name, null, runningMap);
 			this.origSFI = new ContainerInserter(this, this, data, insertURI, ctx, false, false, null, ARCHIVE_TYPE.TAR, false, forceCryptoKey, cryptoAlgorithm, realTimeFlag);
 		}
@@ -181,9 +181,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 	private final class ExternPutHandler extends PutHandler {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        private ExternPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, RandomAccessBucket data, ClientMetadata cm2) {
+		private ExternPutHandler(BaseManifestPutter bmp, PutHandler parent, String name, RandomAccessBucket data, ClientMetadata cm2) {
 			super(bmp, parent, name, cm2, runningPutHandlers);
 			InsertBlock block = new InsertBlock(data, cm, FreenetURI.EMPTY_CHK_URI);
 			this.origSFI = new SingleFileInserter(this, this, block, false, ctx, realTimeFlag, false, true, null, null, false, null, false, persistent(), 0, 0, null, cryptoAlgorithm, forceCryptoKey, -1);
@@ -233,7 +233,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 				} else {
 					// Resolve now to speed up the insert.
 					try {
-					    if(m.writtenLength() > Metadata.MAX_SIZE_IN_MANIFEST)
+						if(m.writtenLength() > Metadata.MAX_SIZE_IN_MANIFEST)
 							throw new MetadataUnresolvedException(new Metadata[] { m }, "Too big");
 					} catch (MetadataUnresolvedException e) {
 						try {
@@ -275,9 +275,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 		// Metadata is not put with a cryptokey. It is derived from other stuff that is already encrypted with random keys.
 		
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        // final metadata
+		// final metadata
 		private MetaPutHandler(BaseManifestPutter smp, PutHandler parent, InsertBlock insertBlock) {
 			super(smp, parent, null, null, null);
 			// Treat as splitfile for purposes of determining number of reinserts.
@@ -329,10 +329,10 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	/** Placeholder for Matadata, don't run it! */
 	private final class JokerPutHandler extends PutHandler {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        /** a normal ( freeform) redirect */
-		public JokerPutHandler(BaseManifestPutter bmp, 	String name, FreenetURI targetURI2, ClientMetadata cm2) {
+		/** a normal ( freeform) redirect */
+		public JokerPutHandler(BaseManifestPutter bmp,	String name, FreenetURI targetURI2, ClientMetadata cm2) {
 			super(bmp, null, name, null, (Metadata)null, cm2);
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI2, cm2);
 			metadata = m;
@@ -356,9 +356,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	// Only implements PutCompletionCallback for the final metadata insert
 	abstract class PutHandler extends BaseClientPutter implements PutCompletionCallback {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        // run me
+		// run me
 		private PutHandler(final BaseManifestPutter bmp, PutHandler parent, String name, ClientMetadata cm, HashSet<PutHandler> runningMap) {
 			super(bmp.priorityClass, bmp.cb.getRequestClient());
 			this.persistent = bmp.persistent();
@@ -634,7 +634,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 		
 		@Override
 		protected void innerNotifyClients(ClientContext context) {
-		    BaseManifestPutter.this.notifyClients(context);
+			BaseManifestPutter.this.notifyClients(context);
 		}
 
 		@Override
@@ -674,44 +674,44 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 			// Ignore
 		}
 		
-        @Override
-        public void innerOnResume(ClientContext context) throws ResumeFailedException {
-            super.innerOnResume(context);
-            try {
-                if(currentState != null)
-                    currentState.onResume(context);
-                if(origSFI != null)
-                    origSFI.onResume(context);
-            } catch (InsertException e) {
-                Logger.error(this, "Failed to start insert on resume: "+e, e);
-                throw new ResumeFailedException("Insert error: "+e);
-            }
-        }
-        
-        @Override
-        public void onShutdown(ClientContext context) {
-            ClientPutState s;
-            synchronized(this) {
-                s = currentState;
-            }
-            if(s != null) s.onShutdown(context);
-        }
-        
-        @Override
-        protected ClientBaseCallback getCallback() {
-            return cb;
-        }
-        
-        /** What is our priority class? */
-        @Override
-        public short getPriorityClass() {
-            return BaseManifestPutter.this.getPriorityClass();
-        }
-        
-        @Override
-        public ClientRequestSchedulerGroup getSchedulerGroup() {
-            return BaseManifestPutter.this;
-        }
+		@Override
+		public void innerOnResume(ClientContext context) throws ResumeFailedException {
+			super.innerOnResume(context);
+			try {
+				if(currentState != null)
+					currentState.onResume(context);
+				if(origSFI != null)
+					origSFI.onResume(context);
+			} catch (InsertException e) {
+				Logger.error(this, "Failed to start insert on resume: "+e, e);
+				throw new ResumeFailedException("Insert error: "+e);
+			}
+		}
+		
+		@Override
+		public void onShutdown(ClientContext context) {
+			ClientPutState s;
+			synchronized(this) {
+				s = currentState;
+			}
+			if(s != null) s.onShutdown(context);
+		}
+		
+		@Override
+		protected ClientBaseCallback getCallback() {
+			return cb;
+		}
+		
+		/** What is our priority class? */
+		@Override
+		public short getPriorityClass() {
+			return BaseManifestPutter.this.getPriorityClass();
+		}
+		
+		@Override
+		public ClientRequestSchedulerGroup getSchedulerGroup() {
+			return BaseManifestPutter.this;
+		}
 
 	}
 
@@ -967,13 +967,13 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	 */
 	private void resolveAndStartBase(ClientContext context) {
 		//new Error("DEBUG_ME_resolveAndStartBase").printStackTrace();
-	    RandomAccessBucket bucket = null;
+		RandomAccessBucket bucket = null;
 		synchronized(this) {
 			if(hasResolvedBase) return;
 		}
 		while(true) {
 			try {
-			    bucket = baseMetadata.toBucket(context.getBucketFactory(persistent()));
+				bucket = baseMetadata.toBucket(context.getBucketFactory(persistent()));
 				if(logMINOR)
 					Logger.minor(this, "Metadata bucket is "+bucket.size()+" bytes long");
 				break;
@@ -1178,19 +1178,19 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 	@Override
 	public void innerNotifyClients(ClientContext context) {
-	    SplitfileProgressEvent e;
-	    synchronized(this) {
-	        e = new SplitfileProgressEvent(
-	            this.totalBlocks,
-	            this.successfulBlocks,
-	            this.latestSuccess,
-	            this.failedBlocks,
-	            this.fatallyFailedBlocks,
-	            this.latestFailure,
-	            this.minSuccessBlocks,
-	            this.minSuccessFetchBlocks,
-	            this.blockSetFinalized);
-	    }
+		SplitfileProgressEvent e;
+		synchronized(this) {
+			e = new SplitfileProgressEvent(
+				this.totalBlocks,
+				this.successfulBlocks,
+				this.latestSuccess,
+				this.failedBlocks,
+				this.fatallyFailedBlocks,
+				this.latestFailure,
+				this.minSuccessBlocks,
+				this.minSuccessFetchBlocks,
+				this.blockSetFinalized);
+		}
 		ctx.eventProducer.produceEvent(e, context);
 	}
 
@@ -1237,8 +1237,8 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 	@Override
 	public void onTransition(ClientPutState from, ClientPutState to, ClientContext context) {
-	    // Everything should be on the PutHandler's, right?
-	    Logger.error(this, "Ignoring transition from "+from+" to "+to+" on "+this);
+		// Everything should be on the PutHandler's, right?
+		Logger.error(this, "Ignoring transition from "+from+" to "+to+" on "+this);
 		// Ignore
 	}
 
@@ -1303,8 +1303,8 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 	protected abstract class ManifestBuilder implements Serializable {
 
-        private static final long serialVersionUID = 1L;
-        private final Stack<HashMap<String, Object>> dirStack;
+		private static final long serialVersionUID = 1L;
+		private final Stack<HashMap<String, Object>> dirStack;
 		/** Map from name to either a Metadata (to be included as-is), a ManifestElement (either a redirect
 		 * or a file), or another HashMap. Eventually processed by e.g. ContainerInserter.makeManifest()
 		 * (for a ContainerBuilder). */
@@ -1399,9 +1399,9 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 
 	protected final class FreeFormBuilder extends ManifestBuilder {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        protected FreeFormBuilder() {
+		protected FreeFormBuilder() {
 			rootDir = new HashMap<String, Object>();
 			currentDir = rootDir;
 		}
@@ -1434,13 +1434,13 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 	
 	protected final class ContainerBuilder extends ManifestBuilder {
 
-        private static final long serialVersionUID = 1L;
-        /** Tree containing the status of the insert. Can have ManifestElement's (original files to
-         * insert or bundle inside a container), HashMap's (more subdirs), Metadata (to be put into 
-         * a container as metadata for e.g. an external file), a ContainerPutHandler or an 
-         * ArchivePutHandler (for containers that are part of the structure, and external containers 
-         * for overflow, respectively). */
-        private final HashMap<String, Object> _rootDir;
+		private static final long serialVersionUID = 1L;
+		/** Tree containing the status of the insert. Can have ManifestElement's (original files to
+		 * insert or bundle inside a container), HashMap's (more subdirs), Metadata (to be put into 
+		 * a container as metadata for e.g. an external file), a ContainerPutHandler or an 
+		 * ArchivePutHandler (for containers that are part of the structure, and external containers 
+		 * for overflow, respectively). */
+		private final HashMap<String, Object> _rootDir;
 		private final PutHandler selfHandle;
 
 		private ContainerBuilder(boolean isRoot) {
@@ -1508,7 +1508,7 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 			}
 			numberOfFiles++;
 			if(element.getData() != null)
-			    totalSize += element.getSize();
+				totalSize += element.getSize();
 		}
 
 		@Override
@@ -1548,79 +1548,79 @@ public abstract class BaseManifestPutter extends ManifestPutter {
 			}
 			numberOfFiles++;
 			if(element.getData() != null)
-			    totalSize += element.getSize();
+				totalSize += element.getSize();
 		}
 	}
 	
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return cb;
-    }
-    
-    public static HashMap<String, Object> bucketsByNameToManifestEntries(HashMap<String,Object> bucketsByName) {
-        HashMap<String,Object> manifestEntries = new HashMap<String,Object>();
-        for(Map.Entry<String,Object> entry: bucketsByName.entrySet()) {
-            String name = entry.getKey();
-            Object o = entry.getValue();
-            if(o instanceof ManifestElement) {
-                manifestEntries.put(name, o);
-            } else if(o instanceof Bucket) {
-                RandomAccessBucket data = (RandomAccessBucket) o;
-                manifestEntries.put(name, new ManifestElement(name, data, null, data.size()));
-            } else if(o instanceof HashMap) {
-                manifestEntries.put(name, bucketsByNameToManifestEntries(Metadata.forceMap(o)));
-            } else
-                throw new IllegalArgumentException(String.valueOf(o));
-        }
-        return manifestEntries;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return cb;
+	}
 	
-    public static ManifestElement[] flatten(HashMap<String,Object> manifestElements) {
-        List<ManifestElement> v = new ArrayList<ManifestElement>();
-        flatten(manifestElements, v, "");
-        return v.toArray(new ManifestElement[v.size()]);
-    }
-    
-    public static void flatten(HashMap<String,Object> manifestElements, List<ManifestElement> v, String prefix) {
-        for(Map.Entry<String,Object> entry: manifestElements.entrySet()) {
-            String name = entry.getKey();
-            String fullName = prefix.length() == 0 ? name : prefix+ '/' +name;
-            Object o = entry.getValue();
-            if(o instanceof HashMap) {
-                flatten(Metadata.forceMap(o), v, fullName);
-            } else if(o instanceof ManifestElement) {
-                ManifestElement me = (ManifestElement) o;
-                v.add(new ManifestElement(me, fullName));
-            } else
-                throw new IllegalStateException(String.valueOf(o));
-        }
-    }
-    
-    @Override
-    public void onShutdown(ClientContext context) {
-        for(PutHandler h : runningPutHandlers)
-            h.onShutdown(context);
-        if(rootContainerPutHandler != null)
-            rootContainerPutHandler.onShutdown(context);
-        if(containerPutHandlers != null) {
-            for(PutHandler h : containerPutHandlers)
-                h.onShutdown(context);
-        }
-        if(rootMetaPutHandler != null)
-            rootMetaPutHandler.onShutdown(context);
-    }
-    
-    protected void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        for(PutHandler h : runningPutHandlers)
-            h.onResume(context);
-        if(rootContainerPutHandler != null)
-            rootContainerPutHandler.onResume(context);
-        if(containerPutHandlers != null) {
-            for(PutHandler h : containerPutHandlers)
-                h.onResume(context);
-        }
-        if(rootMetaPutHandler != null)
-            rootMetaPutHandler.onResume(context);
-    }
+	public static HashMap<String, Object> bucketsByNameToManifestEntries(HashMap<String,Object> bucketsByName) {
+		HashMap<String,Object> manifestEntries = new HashMap<String,Object>();
+		for(Map.Entry<String,Object> entry: bucketsByName.entrySet()) {
+			String name = entry.getKey();
+			Object o = entry.getValue();
+			if(o instanceof ManifestElement) {
+				manifestEntries.put(name, o);
+			} else if(o instanceof Bucket) {
+				RandomAccessBucket data = (RandomAccessBucket) o;
+				manifestEntries.put(name, new ManifestElement(name, data, null, data.size()));
+			} else if(o instanceof HashMap) {
+				manifestEntries.put(name, bucketsByNameToManifestEntries(Metadata.forceMap(o)));
+			} else
+				throw new IllegalArgumentException(String.valueOf(o));
+		}
+		return manifestEntries;
+	}
+	
+	public static ManifestElement[] flatten(HashMap<String,Object> manifestElements) {
+		List<ManifestElement> v = new ArrayList<ManifestElement>();
+		flatten(manifestElements, v, "");
+		return v.toArray(new ManifestElement[v.size()]);
+	}
+	
+	public static void flatten(HashMap<String,Object> manifestElements, List<ManifestElement> v, String prefix) {
+		for(Map.Entry<String,Object> entry: manifestElements.entrySet()) {
+			String name = entry.getKey();
+			String fullName = prefix.length() == 0 ? name : prefix+ '/' +name;
+			Object o = entry.getValue();
+			if(o instanceof HashMap) {
+				flatten(Metadata.forceMap(o), v, fullName);
+			} else if(o instanceof ManifestElement) {
+				ManifestElement me = (ManifestElement) o;
+				v.add(new ManifestElement(me, fullName));
+			} else
+				throw new IllegalStateException(String.valueOf(o));
+		}
+	}
+	
+	@Override
+	public void onShutdown(ClientContext context) {
+		for(PutHandler h : runningPutHandlers)
+			h.onShutdown(context);
+		if(rootContainerPutHandler != null)
+			rootContainerPutHandler.onShutdown(context);
+		if(containerPutHandlers != null) {
+			for(PutHandler h : containerPutHandlers)
+				h.onShutdown(context);
+		}
+		if(rootMetaPutHandler != null)
+			rootMetaPutHandler.onShutdown(context);
+	}
+	
+	protected void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		for(PutHandler h : runningPutHandlers)
+			h.onResume(context);
+		if(rootContainerPutHandler != null)
+			rootContainerPutHandler.onResume(context);
+		if(containerPutHandlers != null) {
+			for(PutHandler h : containerPutHandlers)
+				h.onResume(context);
+		}
+		if(rootMetaPutHandler != null)
+			rootMetaPutHandler.onResume(context);
+	}
 }

@@ -130,7 +130,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			try {
 				tempFile = File.createTempFile(filename.getName(), NodeUpdateManager.TEMP_FILE_SUFFIX, parent);
 			} catch (InsufficientDiskSpaceException e) {
-			    throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
+				throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 			} catch (IOException e) {
 				throw new FetchException(FetchExceptionMode.BUCKET_ERROR, "Cannot create temp file for "+filename+" in "+parent+" - disk full? permissions problem?");
 			}
@@ -183,20 +183,20 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 				}
 				fetched = true;
 			}
-            if(!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
-                Logger.error(this, "Unable to download dependency "+filename+" : not the expected size or hash!");
-                System.err.println("Download of "+filename+" for update failed because temp file appears to be corrupted!");
-                if(cb != null)
-                    cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()+" "));
-                tempFile.delete();
-                return;
-            }
+			if(!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
+				Logger.error(this, "Unable to download dependency "+filename+" : not the expected size or hash!");
+				System.err.println("Download of "+filename+" for update failed because temp file appears to be corrupted!");
+				if(cb != null)
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()+" "));
+				tempFile.delete();
+				return;
+			}
 			if(!FileUtil.renameTo(tempFile, filename)) {
 				Logger.error(this, "Unable to rename temp file "+tempFile+" to "+filename);
 				System.err.println("Download of "+filename+" for update failed because cannot rename from "+tempFile);
 				if(cb != null)
-				    cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file "+tempFile+" to "+filename));
-                tempFile.delete();
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file "+tempFile+" to "+filename));
+				tempFile.delete();
 				return;
 			}
 			if(cb != null) cb.onSuccess();
@@ -262,15 +262,15 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			}
 		}
 
-	    @Override
-	    public void onResume(ClientContext context) {
-	        // Do nothing. Not persistent.
-	    }
+		@Override
+		public void onResume(ClientContext context) {
+			// Do nothing. Not persistent.
+		}
 
-        @Override
-        public RequestClient getRequestClient() {
-            return this;
-        }
+		@Override
+		public RequestClient getRequestClient() {
+			return this;
+		}
 
 	}
 	
@@ -348,103 +348,103 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		manager.uom.addDependency(expectedHash, filename);
 	}
 
-    @Override
-    public void reannounce() {
-        this.manager.broadcastUOMAnnouncesNew();
-        this.manager.broadcastUOMAnnouncesOld();
-    }
+	@Override
+	public void reannounce() {
+		this.manager.broadcastUOMAnnouncesNew();
+		this.manager.broadcastUOMAnnouncesOld();
+	}
 
-    @Override
-    public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer atomicDeployer) {
-        if(this.manager.isAutoUpdateAllowed()) {
-            atomicDeployer.deployMultiFileUpdateOffThread();
-        } else {
-            final long now = System.currentTimeMillis();
-            System.err.println("Not deploying multi-file update for "+atomicDeployer.name+" because auto-update is not enabled.");
-            node.clientCore.alerts.register(new UserAlert() {
+	@Override
+	public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer atomicDeployer) {
+		if(this.manager.isAutoUpdateAllowed()) {
+			atomicDeployer.deployMultiFileUpdateOffThread();
+		} else {
+			final long now = System.currentTimeMillis();
+			System.err.println("Not deploying multi-file update for "+atomicDeployer.name+" because auto-update is not enabled.");
+			node.clientCore.alerts.register(new UserAlert() {
 
-                private String l10n(String key) {
-                    return NodeL10n.getBase().getString("MainJarUpdater.ConfirmMultiFileUpdater."+key);
-                }
-                
-                @Override
-                public boolean userCanDismiss() {
-                    return true;
-                }
+				private String l10n(String key) {
+					return NodeL10n.getBase().getString("MainJarUpdater.ConfirmMultiFileUpdater."+key);
+				}
+				
+				@Override
+				public boolean userCanDismiss() {
+					return true;
+				}
 
-                @Override
-                public String getTitle() {
-                    return l10n("title."+atomicDeployer.name);
-                }
+				@Override
+				public String getTitle() {
+					return l10n("title."+atomicDeployer.name);
+				}
 
-                @Override
-                public String getText() {
-                    return l10n("text."+atomicDeployer.name);
-                }
+				@Override
+				public String getText() {
+					return l10n("text."+atomicDeployer.name);
+				}
 
-                @Override
-                public HTMLNode getHTMLText() {
-                    return new HTMLNode("p", getText());
-                    // FIXME separate button, then the alert could be dismissable? Only useful if it's permanently dismissable though, which means a config setting as well...
-                }
+				@Override
+				public HTMLNode getHTMLText() {
+					return new HTMLNode("p", getText());
+					// FIXME separate button, then the alert could be dismissable? Only useful if it's permanently dismissable though, which means a config setting as well...
+				}
 
-                @Override
-                public String getShortText() {
-                    return getTitle();
-                }
+				@Override
+				public String getShortText() {
+					return getTitle();
+				}
 
-                @Override
-                public short getPriorityClass() {
-                    return UserAlert.ERROR;
-                }
+				@Override
+				public short getPriorityClass() {
+					return UserAlert.ERROR;
+				}
 
-                @Override
-                public boolean isValid() {
-                    return true;
-                }
+				@Override
+				public boolean isValid() {
+					return true;
+				}
 
-                @Override
-                public void isValid(boolean validity) {
-                    // Ignore
-                }
+				@Override
+				public void isValid(boolean validity) {
+					// Ignore
+				}
 
-                @Override
-                public String dismissButtonText() {
-                    return NodeL10n.getBase().getString("UpdatedVersionAvailableUserAlert.updateNowButton");
-                }
+				@Override
+				public String dismissButtonText() {
+					return NodeL10n.getBase().getString("UpdatedVersionAvailableUserAlert.updateNowButton");
+				}
 
-                @Override
-                public boolean shouldUnregisterOnDismiss() {
-                    return true;
-                }
+				@Override
+				public boolean shouldUnregisterOnDismiss() {
+					return true;
+				}
 
-                @Override
-                public void onDismiss() {
-                    atomicDeployer.deployMultiFileUpdateOffThread();
-                }
+				@Override
+				public void onDismiss() {
+					atomicDeployer.deployMultiFileUpdateOffThread();
+				}
 
-                @Override
-                public String anchor() {
-                    return "multi-file-update-confirm-"+atomicDeployer.name;
-                }
+				@Override
+				public String anchor() {
+					return "multi-file-update-confirm-"+atomicDeployer.name;
+				}
 
-                @Override
-                public boolean isEventNotification() {
-                    return false;
-                }
+				@Override
+				public boolean isEventNotification() {
+					return false;
+				}
 
-                @Override
-                public FCPMessage getFCPMessage() {
-                    return null;
-                }
+				@Override
+				public FCPMessage getFCPMessage() {
+					return null;
+				}
 
-                @Override
-                public long getUpdatedTime() {
-                    return now;
-                }
-                
-            });
-        }
-    }
+				@Override
+				public long getUpdatedTime() {
+					return now;
+				}
+				
+			});
+		}
+	}
 
 }

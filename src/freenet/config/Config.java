@@ -38,15 +38,15 @@ public class Config {
 
 	/** Finished initialization */
 	public void finishedInit() {
-	    SubConfig[] configs;
-        synchronized(this) {
-            // FIXME maybe keep a cache of this?
-            configs = configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
-        }
-        for(SubConfig config : configs) {
-            if(!config.hasFinishedInitialization())
-                Logger.error(this, "Not finished initialization: "+config.prefix);
-        }
+		SubConfig[] configs;
+		synchronized(this) {
+			// FIXME maybe keep a cache of this?
+			configs = configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
+		}
+		for(SubConfig config : configs) {
+			if(!config.hasFinishedInitialization())
+				Logger.error(this, "Not finished initialization: "+config.prefix);
+		}
 	}
 
 	public void onRegister(SubConfig config, Option<?> o) {

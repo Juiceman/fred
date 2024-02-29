@@ -218,7 +218,7 @@ public class FetchException extends Exception implements Cloneable {
 	public FetchException(FetchExceptionMode mode, FailureCodeTracker errorCodes) {
 		super(getMessage(mode));
 		if(errorCodes.isEmpty()) {
-		    Logger.error(this, "Failing with no error codes?!", new Exception("error"));
+			Logger.error(this, "Failing with no error codes?!", new Exception("error"));
 		}
 		extraMessage = null;
 		this.mode = mode;
@@ -231,22 +231,22 @@ public class FetchException extends Exception implements Cloneable {
 			Logger.minor(this, "FetchException("+getMessage(mode)+ ')', this);
 	}
 	
-    public FetchException(FetchExceptionMode mode, FailureCodeTracker errorCodes, String msg) {
-        super(getMessage(mode)+": "+msg);
-        if(errorCodes.isEmpty()) {
-            Logger.error(this, "Failing with no error codes?!", new Exception("error"));
-        }
-        extraMessage = msg;
-        this.mode = mode;
-        this.errorCodes = errorCodes;
-        newURI = null;
-        expectedSize = -1;
-        if(mode == FetchExceptionMode.INTERNAL_ERROR)
-            Logger.error(this, "Internal error: "+this);
-        else if(logMINOR) 
-            Logger.minor(this, "FetchException("+getMessage(mode)+ ')', this);
-    }
-    
+	public FetchException(FetchExceptionMode mode, FailureCodeTracker errorCodes, String msg) {
+		super(getMessage(mode)+": "+msg);
+		if(errorCodes.isEmpty()) {
+			Logger.error(this, "Failing with no error codes?!", new Exception("error"));
+		}
+		extraMessage = msg;
+		this.mode = mode;
+		this.errorCodes = errorCodes;
+		newURI = null;
+		expectedSize = -1;
+		if(mode == FetchExceptionMode.INTERNAL_ERROR)
+			Logger.error(this, "Internal error: "+this);
+		else if(logMINOR) 
+			Logger.minor(this, "FetchException("+getMessage(mode)+ ')', this);
+	}
+	
 	public FetchException(FetchExceptionMode mode, String msg) {
 		super(getMessage(mode)+": "+msg);
 		extraMessage = msg;
@@ -335,11 +335,11 @@ public class FetchException extends Exception implements Cloneable {
 	}
 	
 	protected FetchException() {
-	    // For serialization.
-	    mode = null;
-	    newURI = null;
-	    errorCodes = null;
-	    extraMessage = null;
+		// For serialization.
+		mode = null;
+		newURI = null;
+		errorCodes = null;
+		extraMessage = null;
 	}
 
 	/** Get the short name of this exception's failure. */
@@ -350,8 +350,8 @@ public class FetchException extends Exception implements Cloneable {
 
 	/** Get the (localised) short name of this failure mode. */
 	public static String getShortMessage(FetchExceptionMode mode) {
-        // FIXME change the l10n to use the names rather than codes
-	    int code = mode.code;
+		// FIXME change the l10n to use the names rather than codes
+		int code = mode.code;
 		String ret = NodeL10n.getBase().getString("FetchException.shortError."+code);
 		if(ret == null || ret.isEmpty())
 			return "Unknown code "+mode;
@@ -387,122 +387,122 @@ public class FetchException extends Exception implements Cloneable {
 
 	/** Get the (localised) long explanation for this failure mode. */
 	public static String getMessage(FetchExceptionMode mode) {
-	    if(mode == null) throw new NullPointerException();
-        int code = mode.code;
-        // FIXME change the l10n to use the names rather than codes
+		if(mode == null) throw new NullPointerException();
+		int code = mode.code;
+		// FIXME change the l10n to use the names rather than codes
 		String ret = NodeL10n.getBase().getString("FetchException.longError."+code);
 		if(ret == null)
 			return "Unknown fetch error code: "+mode;
 		else return ret;
 	}
 	
-    private static final HashMap<Integer, FetchExceptionMode> modes = 
-        new HashMap<Integer, FetchExceptionMode>();
+	private static final HashMap<Integer, FetchExceptionMode> modes = 
+		new HashMap<Integer, FetchExceptionMode>();
 
-    // Modes should stay the same even if we remove some elements.
+	// Modes should stay the same even if we remove some elements.
 	public static enum FetchExceptionMode {
-	    
-	    // FIXME many of these are not used any more
-	    
-	    /** Too many levels of recursion into archives */
-	    @Deprecated // not used
-	    TOO_DEEP_ARCHIVE_RECURSION(1),
-	    /** Don't know what to do with splitfile */
-	    @Deprecated // not used
-	    UNKNOWN_SPLITFILE_METADATA(2),
-	    /** Don't know what to do with metadata */
-        UNKNOWN_METADATA(3),
-        /** Got a MetadataParseException */
-        INVALID_METADATA(4),
-        /** Got an ArchiveFailureException */
-        ARCHIVE_FAILURE(5),
-        /** Failed to decode a block. But we found it i.e. it is valid on the network level. */
-        BLOCK_DECODE_ERROR(6),
-        /** Too many split metadata levels */
-        @Deprecated // not used
-        TOO_MANY_METADATA_LEVELS(7),
-        /** Too many archive restarts */
-        TOO_MANY_ARCHIVE_RESTARTS(8),
-        /** Too deep recursion */
-        // FIXME some TOO_MUCH_RECURSION may be TOO_DEEP_ARCHIVE_RECURSION 
-        TOO_MUCH_RECURSION(9),
-        /** Tried to access an archive file but not in an archive */
-        NOT_IN_ARCHIVE(10),
-        /** Too many meta strings. E.g. requesting CHK@blah,blah,blah as CHK@blah,blah,blah/filename.ext */
-        TOO_MANY_PATH_COMPONENTS(11),
-        /** Failed to read from or write to a bucket; a kind of internal error */
-        BUCKET_ERROR(12),
-        /** Data not found */
-        DATA_NOT_FOUND(13),
-        /** Route not found */
-        ROUTE_NOT_FOUND(14),
-        /** Downstream overload */
-        REJECTED_OVERLOAD(15),
-        /** Too many redirects */
-        @Deprecated // not used
-        TOO_MANY_REDIRECTS(16),
-        /** An internal error occurred */
-        INTERNAL_ERROR(17),
-        /** The node found the data but the transfer failed */
-        TRANSFER_FAILED(18),
-        /** Splitfile error. This should be a SplitFetchException. */
-        SPLITFILE_ERROR(19),
-        /** Invalid URI. */
-        INVALID_URI(20),
-        /** Too big */
-        TOO_BIG(21),
-        /** Metadata too big */
-        TOO_BIG_METADATA(22),
-        /** Splitfile has too big segments */
-        TOO_MANY_BLOCKS_PER_SEGMENT(23),
-        /** Not enough meta strings in URI given and no default document */
-        NOT_ENOUGH_PATH_COMPONENTS(24),
-        /** Explicitly cancelled */
-        CANCELLED(25),
-        /** Archive restart */
-        ARCHIVE_RESTART(26),
-        /** There is a more recent version of the USK, ~= HTTP 301; FProxy will turn this into a 301 */
-        PERMANENT_REDIRECT(27),
-        /** Not all data was found; some DNFs but some successes */
-        ALL_DATA_NOT_FOUND(28),
-        /** Requestor specified a list of allowed MIME types, and the key's type wasn't in the list */
-        WRONG_MIME_TYPE(29),
-        /** A node killed the request because it had recently been tried and had DNFed */
-        RECENTLY_FAILED(30),
-        /** Content filtration has generally failed to produce clean data */
-        CONTENT_VALIDATION_FAILED(31),
-        /** The content filter does not recognize this data type */
-        CONTENT_VALIDATION_UNKNOWN_MIME(32),
-        /** The content filter knows this data type is dangerous */
-        CONTENT_VALIDATION_BAD_MIME(33),
-        /** The metadata specified a hash but the data didn't match it. */
-        CONTENT_HASH_FAILED(34),
-        /** FEC decode produced a block that doesn't match the data in the original splitfile. */
-        SPLITFILE_DECODE_ERROR(35),
-        /** For a filtered download to disk, the MIME type is incompatible with the 
-         * extension, potentially resulting in data on disk filtered with one MIME 
-         * type but accessed by the operating system with another MIME type. This 
-         * is equivalent to it not being filtered at all i.e. potentially dangerous.
-         */
-        MIME_INCOMPATIBLE_WITH_EXTENSION(36),
-        /** Not enough disk space to start a download or the next stage of a download. */
-        NOT_ENOUGH_DISK_SPACE(37);
-	    
-	    
-	    public final int code;
-        FetchExceptionMode(int code) {
-            this.code = code;
-            if(code < 0 || code >= UPPER_LIMIT_ERROR_CODE)
-                throw new IllegalArgumentException();
-            if(modes.containsKey(code))
-                throw new IllegalArgumentException();
-            modes.put(code, this);
-            if(code > MAX_ERROR_CODE) MAX_ERROR_CODE = code;
-        }
-        public static FetchExceptionMode getByCode(int code) {
-            if(modes.get(code) == null) throw new IllegalArgumentException();
-            return modes.get(code);
-        }
+		
+		// FIXME many of these are not used any more
+		
+		/** Too many levels of recursion into archives */
+		@Deprecated // not used
+		TOO_DEEP_ARCHIVE_RECURSION(1),
+		/** Don't know what to do with splitfile */
+		@Deprecated // not used
+		UNKNOWN_SPLITFILE_METADATA(2),
+		/** Don't know what to do with metadata */
+		UNKNOWN_METADATA(3),
+		/** Got a MetadataParseException */
+		INVALID_METADATA(4),
+		/** Got an ArchiveFailureException */
+		ARCHIVE_FAILURE(5),
+		/** Failed to decode a block. But we found it i.e. it is valid on the network level. */
+		BLOCK_DECODE_ERROR(6),
+		/** Too many split metadata levels */
+		@Deprecated // not used
+		TOO_MANY_METADATA_LEVELS(7),
+		/** Too many archive restarts */
+		TOO_MANY_ARCHIVE_RESTARTS(8),
+		/** Too deep recursion */
+		// FIXME some TOO_MUCH_RECURSION may be TOO_DEEP_ARCHIVE_RECURSION 
+		TOO_MUCH_RECURSION(9),
+		/** Tried to access an archive file but not in an archive */
+		NOT_IN_ARCHIVE(10),
+		/** Too many meta strings. E.g. requesting CHK@blah,blah,blah as CHK@blah,blah,blah/filename.ext */
+		TOO_MANY_PATH_COMPONENTS(11),
+		/** Failed to read from or write to a bucket; a kind of internal error */
+		BUCKET_ERROR(12),
+		/** Data not found */
+		DATA_NOT_FOUND(13),
+		/** Route not found */
+		ROUTE_NOT_FOUND(14),
+		/** Downstream overload */
+		REJECTED_OVERLOAD(15),
+		/** Too many redirects */
+		@Deprecated // not used
+		TOO_MANY_REDIRECTS(16),
+		/** An internal error occurred */
+		INTERNAL_ERROR(17),
+		/** The node found the data but the transfer failed */
+		TRANSFER_FAILED(18),
+		/** Splitfile error. This should be a SplitFetchException. */
+		SPLITFILE_ERROR(19),
+		/** Invalid URI. */
+		INVALID_URI(20),
+		/** Too big */
+		TOO_BIG(21),
+		/** Metadata too big */
+		TOO_BIG_METADATA(22),
+		/** Splitfile has too big segments */
+		TOO_MANY_BLOCKS_PER_SEGMENT(23),
+		/** Not enough meta strings in URI given and no default document */
+		NOT_ENOUGH_PATH_COMPONENTS(24),
+		/** Explicitly cancelled */
+		CANCELLED(25),
+		/** Archive restart */
+		ARCHIVE_RESTART(26),
+		/** There is a more recent version of the USK, ~= HTTP 301; FProxy will turn this into a 301 */
+		PERMANENT_REDIRECT(27),
+		/** Not all data was found; some DNFs but some successes */
+		ALL_DATA_NOT_FOUND(28),
+		/** Requestor specified a list of allowed MIME types, and the key's type wasn't in the list */
+		WRONG_MIME_TYPE(29),
+		/** A node killed the request because it had recently been tried and had DNFed */
+		RECENTLY_FAILED(30),
+		/** Content filtration has generally failed to produce clean data */
+		CONTENT_VALIDATION_FAILED(31),
+		/** The content filter does not recognize this data type */
+		CONTENT_VALIDATION_UNKNOWN_MIME(32),
+		/** The content filter knows this data type is dangerous */
+		CONTENT_VALIDATION_BAD_MIME(33),
+		/** The metadata specified a hash but the data didn't match it. */
+		CONTENT_HASH_FAILED(34),
+		/** FEC decode produced a block that doesn't match the data in the original splitfile. */
+		SPLITFILE_DECODE_ERROR(35),
+		/** For a filtered download to disk, the MIME type is incompatible with the 
+		 * extension, potentially resulting in data on disk filtered with one MIME 
+		 * type but accessed by the operating system with another MIME type. This 
+		 * is equivalent to it not being filtered at all i.e. potentially dangerous.
+		 */
+		MIME_INCOMPATIBLE_WITH_EXTENSION(36),
+		/** Not enough disk space to start a download or the next stage of a download. */
+		NOT_ENOUGH_DISK_SPACE(37);
+		
+		
+		public final int code;
+		FetchExceptionMode(int code) {
+			this.code = code;
+			if(code < 0 || code >= UPPER_LIMIT_ERROR_CODE)
+				throw new IllegalArgumentException();
+			if(modes.containsKey(code))
+				throw new IllegalArgumentException();
+			modes.put(code, this);
+			if(code > MAX_ERROR_CODE) MAX_ERROR_CODE = code;
+		}
+		public static FetchExceptionMode getByCode(int code) {
+			if(modes.get(code) == null) throw new IllegalArgumentException();
+			return modes.get(code);
+		}
 
 	}
 	
@@ -709,8 +709,8 @@ public class FetchException extends Exception implements Cloneable {
 		}
 	}
 
-    public static boolean isErrorCode(int code) {
-        return code >= 0 && code <= MAX_ERROR_CODE && code < UPPER_LIMIT_ERROR_CODE;
-    }
+	public static boolean isErrorCode(int code) {
+		return code >= 0 && code <= MAX_ERROR_CODE && code < UPPER_LIMIT_ERROR_CODE;
+	}
 
 }

@@ -46,7 +46,7 @@ public class DefaultUpdateManager implements IUpdateManager {
 	 * registers a listener that will be notified when update occurs
 	 * 
 	 * @param listener
-	 *            - The listener to be registered
+	 *			- The listener to be registered
 	 */
 	public static void registerListener(IUpdateListener listener) {
 		listeners.add(listener);
@@ -56,7 +56,7 @@ public class DefaultUpdateManager implements IUpdateManager {
 	 * Removes a listener
 	 * 
 	 * @param listener
-	 *            - The listener to be removed
+	 *			- The listener to be removed
 	 */
 	public static void deregisterListener(IUpdateListener listener) {
 		listeners.remove(listener);

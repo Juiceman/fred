@@ -89,9 +89,9 @@ public class MP3Filter implements ContentDataFilter {
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output,
-      String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+	  InputStream input, OutputStream output,
+	  String charset, Map<String, String> otherParams,
+	  String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		filter(input, output);
 	}
 
@@ -144,11 +144,11 @@ public class MP3Filter implements ContentDataFilter {
 				}
 				final boolean paddingBit = ((frameHeader & 0x00000200) >>> 9) == 1;
 				// We skip the following bits here (listed for future reference):
-				// Private         0x00000100  (1 bit)
-				// Channel mode    0x000000c0  (2 bits)
+				// Private		 0x00000100  (1 bit)
+				// Channel mode	0x000000c0  (2 bits)
 				// Mode extension  0x00000030  (2 bits)
-				// Copyright       0x00000008  (1 bit)
-				// Original        0x00000004  (1 bit)
+				// Copyright	   0x00000008  (1 bit)
+				// Original		0x00000004  (1 bit)
 				// FIXME A small boost in security might be gained by clearing the latter two.
 				byte emphasis = (byte) ((frameHeader & 0x00000003));
 				if (emphasis == 2) {

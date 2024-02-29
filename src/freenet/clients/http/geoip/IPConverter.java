@@ -196,7 +196,7 @@ public class IPConverter {
 	 * Constructs a new {@link IPConverter}
 	 * 
 	 * @param node
-	 *            reference to freenet {@link Node}
+	 *			reference to freenet {@link Node}
 	 */
 	private IPConverter(File dbFile) {
 		this.dbFile = dbFile;
@@ -221,7 +221,7 @@ public class IPConverter {
 	 * {@link WeakReference}.
 	 * 
 	 * @param line
-	 *            {@link String} containing IP ranges
+	 *			{@link String} containing IP ranges
 	 * @throws IOException
 	 */
 	private Cache readRanges() {
@@ -276,7 +276,7 @@ public class IPConverter {
 	 * Converts a given IP4 in a long number
 	 * 
 	 * @param ip
-	 *            IP in "XX.XX.XX.XX" format
+	 *			IP in "XX.XX.XX.XX" format
 	 * @return IP in long format
 	 * @throws NumberFormatException If the string is not an IP address.
 	 */
@@ -297,7 +297,7 @@ public class IPConverter {
 	 * Returns a {@link Country} respecting given IP4.
 	 * 
 	 * @param ip
-	 *            IP in "XX.XX.XX.XX" format
+	 *			IP in "XX.XX.XX.XX" format
 	 * @return {@link Country} of given IP, or null if the passed in string is
 	 * not an IP address or we fail to load the ip to country data file.
 	 * @throws IOException
@@ -348,7 +348,7 @@ public class IPConverter {
 				((ip[0] << 24) & 0xff000000L) |
 				((ip[1] << 16) & 0x00ff0000L) |
 				((ip[2] <<  8) & 0x0000ff00L) |
-				( ip[3]        & 0x000000ffL));
+				( ip[3]		& 0x000000ffL));
 		return locateIP(longip);
 	}
 
@@ -404,7 +404,7 @@ public class IPConverter {
 	 * Decodes a ASCII85 code into a long number.
 	 * 
 	 * @param code
-	 *            encoded bytes
+	 *			encoded bytes
 	 * @return decoded long
 	 * @throws IPConverterParseException 
 	 */

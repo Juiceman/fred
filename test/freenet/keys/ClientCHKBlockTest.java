@@ -82,7 +82,7 @@ public class ClientCHKBlockTest {
 			// Check with no JCA.
 			ClientCHKBlock otherEncodedBlock =
 				ClientCHKBlock.encode(new ArrayBucket(data), false, false, (short)-1, data.length, null,
-            null, cryptoAlgorithm, true);
+			null, cryptoAlgorithm, true);
 			assertTrue(key.equals(otherEncodedBlock.getClientKey()));
 			assertTrue(Arrays.equals(otherEncodedBlock.getBlock().data, encodedBlock.getBlock().data));
 			assertTrue(Arrays.equals(otherEncodedBlock.getBlock().headers, encodedBlock.getBlock().headers));

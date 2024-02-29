@@ -21,8 +21,8 @@ public interface Compressor {
 	String DEFAULT_COMPRESSORDESCRIPTOR = null;
 
 	enum COMPRESSOR_TYPE implements Compressor {
-	    // WARNING: Changing non-transient members on classes that are Serializable can result in
-	    // restarting downloads or losing uploads.
+		// WARNING: Changing non-transient members on classes that are Serializable can result in
+		// restarting downloads or losing uploads.
 
 		// Codecs will be tried in order: put the less resource consuming first
 		GZIP("GZIP", new GzipCompressor(), (short) 0),
@@ -220,7 +220,7 @@ public interface Compressor {
 	 * Compress the data (@see {@link #compress(InputStream, OutputStream, long, long)}) with checking of compression effect.
 	 * @param amountOfDataToCheckCompressionRatio The data amount after compression of which we will check whether we have got the desired effect.
 	 * @param minimumCompressionPercentage The minimal desired compression effect, %. A value of 0 means that the
-	 *                                        compression effect will not be checked.
+	 *										compression effect will not be checked.
 	 * @throws CompressionRatioException If the desired compression effect is not achieved.
 	 */
 	long compress(InputStream input, OutputStream output, long maxReadLength, long maxWriteLength,

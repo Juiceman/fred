@@ -41,7 +41,7 @@ public class BookmarkEditorToadlet extends Toadlet {
 	private final NodeClientCore core;
 	private String cutedPath;
 
-        private static volatile boolean logDEBUG;
+		private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -79,12 +79,12 @@ public class BookmarkEditorToadlet extends Toadlet {
 				
 			String itemPath = URLEncoder.encode(path + item.getName(), false);
 			HTMLNode li = new HTMLNode("li", "class", "item", item.getVisibleName());
-            String explain = item.getShortDescription();
-            if(explain != null && explain.length() > 0) {
-            	li.addChild("#", " (");
-            	li.addChild("#", explain);
-            	li.addChild("#", ")");
-            }
+			String explain = item.getShortDescription();
+			if(explain != null && explain.length() > 0) {
+				li.addChild("#", " (");
+				li.addChild("#", explain);
+				li.addChild("#", ")");
+			}
 
 			HTMLNode actions = new HTMLNode("span", "class", "actions");
 			actions.addChild("a", "href", "?action=edit&bookmark=" + itemPath).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/edit.png", edit, edit});
@@ -170,8 +170,8 @@ public class BookmarkEditorToadlet extends Toadlet {
 
 	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx)
 		throws ToadletContextClosedException, IOException {
-	    if(!ctx.checkFullAccess(this))
-	        return;
+		if(!ctx.checkFullAccess(this))
+			return;
 
 		PageMaker pageMaker = ctx.getPageMaker();
 		BookmarkManager bookmarkManager = ctx.getBookmarkManager();
@@ -399,15 +399,15 @@ public class BookmarkEditorToadlet extends Toadlet {
 						 */
 						boolean hasAnActivelink = req.isPartSet("hasAnActivelink");
 						if (!isValidName(name)) {
-              addNameError(pageMaker, content);
+			  addNameError(pageMaker, content);
 						} else
 							newBookmark = new BookmarkItem(key, name,
-							        req.getPartAsStringFailsafe("descB", MAX_KEY_LENGTH),
-							        req.getPartAsStringFailsafe("explain", MAX_EXPLANATION_LENGTH),
-							        hasAnActivelink, bookmarkManager, ctx.getAlertManager());
+									req.getPartAsStringFailsafe("descB", MAX_KEY_LENGTH),
+									req.getPartAsStringFailsafe("explain", MAX_EXPLANATION_LENGTH),
+									hasAnActivelink, bookmarkManager, ctx.getAlertManager());
 					} else
 						if (!isValidName(name)) {
-              addNameError(pageMaker, content);
+			  addNameError(pageMaker, content);
 						} else
 							newBookmark = new BookmarkCategory(name);
 					
@@ -444,13 +444,13 @@ public class BookmarkEditorToadlet extends Toadlet {
 	}
 
   private boolean isValidName(String name) {
-    return !name.isEmpty() && !name.contains("/");
+	return !name.isEmpty() && !name.contains("/");
   }
 
   private void addNameError(PageMaker pageMaker, HTMLNode parent) {
-    HTMLNode errorBox = pageMaker.getInfobox(
-            "infobox-error", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidNameTitle"),
-            parent, "bookmark-error", false);
-    errorBox.addChild("#", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidName"));
+	HTMLNode errorBox = pageMaker.getInfobox(
+			"infobox-error", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidNameTitle"),
+			parent, "bookmark-error", false);
+	errorBox.addChild("#", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidName"));
   }
 }

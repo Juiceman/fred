@@ -29,7 +29,7 @@ public class InsertFreesiteToadlet extends Toadlet {
 		NodeL10n.getBase().addL10nSubstitution(contentBox.addChild("p"), "InsertFreesiteToadlet.contentFlogHelper", new String[] { "plugins" }, new HTMLNode[] { HTMLNode.link(PproxyToadlet.PATH) }); 
 		
 		NodeL10n.getBase().addL10nSubstitution(contentBox.addChild("p"), "InsertFreesiteToadlet.content2",
-		        new String[] { "jsite-http", "jsite-freenet", "jsite-freenet-version", "jsite-info" },
+				new String[] { "jsite-http", "jsite-freenet", "jsite-freenet-version", "jsite-info" },
 				new HTMLNode[] {
 						HTMLNode.link(ExternalLinkToadlet.escape("http://downloads.freenetproject.org/alpha/jSite/")),
 						HTMLNode.link("/SSK@1waTsw46L9-JEQ8yX1khjkfHcn--g0MlMsTlYHax9zQ,oYyxr5jyFnaTsVGDQWk9e3ddOWGKnqEASxAk08MHT2Y,AQACAAE/jSite-15/jSite-0.14-jar-with-dependencies.jar"),
@@ -46,9 +46,9 @@ public class InsertFreesiteToadlet extends Toadlet {
 		li.addChild("#", " - "+l10n("freesiteHowtoExplanation"));
 		
 		NodeL10n.getBase().addL10nSubstitution(contentBox.addChild("p"), "InsertFreesiteToadlet.contentThingamablog",
-		        new String[] { "thingamablog", "thingamablog-freenet" },
-		        new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape("http://downloads.freenetproject.org/alpha/thingamablog/thingamablog.zip")),
-		                HTMLNode.link("/CHK@o8j9T2Ghc9cfKMLvv9aLrHbvW5XiAMEGwGDqH2UANTk,sVxLdxoNL-UAsvrlXRZtI5KyKlp0zv3Ysk4EcO627V0,AAIC--8/thingamablog.zip") });
+				new String[] { "thingamablog", "thingamablog-freenet" },
+				new HTMLNode[] { HTMLNode.link(ExternalLinkToadlet.escape("http://downloads.freenetproject.org/alpha/thingamablog/thingamablog.zip")),
+						HTMLNode.link("/CHK@o8j9T2Ghc9cfKMLvv9aLrHbvW5XiAMEGwGDqH2UANTk,sVxLdxoNL-UAsvrlXRZtI5KyKlp0zv3Ysk4EcO627V0,AAIC--8/thingamablog.zip") });
 		
 		this.writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 	}

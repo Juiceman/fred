@@ -44,9 +44,9 @@ public class IntervalPusherManager {
 	 * Constructor
 	 * 
 	 * @param ticker
-	 *            - The Ticker
+	 *			- The Ticker
 	 * @param pushDataManager
-	 *            - The PushDataManager
+	 *			- The PushDataManager
 	 */
 	public IntervalPusherManager(Ticker ticker, PushDataManager pushDataManager) {
 		this.ticker = ticker;
@@ -57,7 +57,7 @@ public class IntervalPusherManager {
 	 * Registers an element to be pushed at a fixed interval
 	 * 
 	 * @param element
-	 *            - The element
+	 *			- The element
 	 */
 	public void registerUpdateableElement(BaseUpdateableElement element) {
 		boolean needsStart = false;
@@ -75,7 +75,7 @@ public class IntervalPusherManager {
 	 * Removes the element from interval pushing
 	 * 
 	 * @param element
-	 *            - The element to be removed
+	 *			- The element to be removed
 	 */
 	public void deregisterUpdateableElement(BaseUpdateableElement element) {
 		elements.remove(element);

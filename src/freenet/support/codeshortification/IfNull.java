@@ -14,7 +14,7 @@ import java.util.Objects;
  * 
  * @author xor (xor@freenetproject.org)
  * @deprecated
- *     Use {@link Objects#requireNonNull(Object)} or {@link Objects#requireNonNull(Object, String)}
+ *	 Use {@link Objects#requireNonNull(Object)} or {@link Objects#requireNonNull(Object, String)}
  */
 @Deprecated
 public final class IfNull {

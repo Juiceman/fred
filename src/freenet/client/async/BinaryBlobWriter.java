@@ -23,13 +23,13 @@ import freenet.support.io.BucketTools;
  * @author saces
  */
 public final class BinaryBlobWriter {
-    
-    private static volatile boolean logMINOR;
+	
+	private static volatile boolean logMINOR;
 
-    static {
-        Logger.registerClass(BinaryBlobWriter.class);
-    }
-    
+	static {
+		Logger.registerClass(BinaryBlobWriter.class);
+	}
+	
 	private final HashSet<Key> _binaryBlobKeysAddedAlready;
 	private final BucketFactory _bf;
 	private final ArrayList<Bucket> _buckets;

@@ -16,8 +16,8 @@ import freenet.support.Logger;
 
 public class HashResult implements Comparable<HashResult>, Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    /** The type of hash. */
+	private static final long serialVersionUID = 1L;
+	/** The type of hash. */
 	public final HashType type;
 	/** The result of the hash. Immutable. */
 	private final byte[] result;
@@ -37,9 +37,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	protected HashResult() {
-        // For serialization.
-	    type = null;
-	    result = null;
+		// For serialization.
+		type = null;
+		result = null;
 	}
 
 	public static HashResult[] readHashes(DataInputStream dis) throws IOException {
@@ -68,7 +68,7 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	public static void write(HashResult[] hashes, DataOutputStream dos) throws IOException {
-	    if(hashes == null) hashes = new HashResult[0];
+		if(hashes == null) hashes = new HashResult[0];
 		int bitmask = 0;
 		for(HashResult hash : hashes)
 			bitmask |= hash.type.bitmask;
@@ -161,26 +161,26 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	@Override
 	public boolean equals(Object otherObject){
-	    if(!(otherObject instanceof HashResult)){
-	        return false;
-	    }
+		if(!(otherObject instanceof HashResult)){
+			return false;
+		}
 
-	    HashResult otherHash = (HashResult) otherObject;
-	    if(type != otherHash.type){
-	        return false;
-	    }
+		HashResult otherHash = (HashResult) otherObject;
+		if(type != otherHash.type){
+			return false;
+		}
 
-	    return MessageDigest.isEqual(result, otherHash.result);
+		return MessageDigest.isEqual(result, otherHash.result);
 	}
 
 	@Override
 	public int hashCode(){
-	    int hash = 1;
+		int hash = 1;
 
-	    hash *= 31 + type.hashCode();
-	    hash *= 31 + result.hashCode();
+		hash *= 31 + type.hashCode();
+		hash *= 31 + result.hashCode();
 
-	    return hash;
+		return hash;
 	}
 
 }

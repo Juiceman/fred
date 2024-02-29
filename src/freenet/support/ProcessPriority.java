@@ -25,70 +25,70 @@ import com.sun.jna.platform.win32.WinDef.DWORD;
  */
  
 public class ProcessPriority {
-    private static volatile boolean background = false;
-    
-    /// Windows interface (kernel32.dll) ///
-    public interface WindowsHolder extends StdCallLibrary {
-        WindowsHolder INSTANCE = (WindowsHolder) Native.loadLibrary("kernel32", WindowsHolder.class);
+	private static volatile boolean background = false;
+	
+	/// Windows interface (kernel32.dll) ///
+	public interface WindowsHolder extends StdCallLibrary {
+		WindowsHolder INSTANCE = (WindowsHolder) Native.loadLibrary("kernel32", WindowsHolder.class);
 
-        boolean SetPriorityClass(HANDLE hProcess, DWORD dwPriorityClass);
-        HANDLE GetCurrentProcess();
-        DWORD GetLastError();
+		boolean SetPriorityClass(HANDLE hProcess, DWORD dwPriorityClass);
+		HANDLE GetCurrentProcess();
+		DWORD GetLastError();
 
-        DWORD BELOW_NORMAL_PRIORITY_CLASS           = new DWORD(0x00004000);
-    }
+		DWORD BELOW_NORMAL_PRIORITY_CLASS		   = new DWORD(0x00004000);
+	}
 
-    private static class LinuxHolder {
-        static { Native.register(Platform.C_LIBRARY_NAME); }
+	private static class LinuxHolder {
+		static { Native.register(Platform.C_LIBRARY_NAME); }
 
-        private static native int setpriority(int which, int who, int prio);
-        final static int PRIO_PROCESS = 0;
-        final static int MYSELF = 0;
-        final static int LOWER_PRIORITY = 10;
-    }
+		private static native int setpriority(int which, int who, int prio);
+		final static int PRIO_PROCESS = 0;
+		final static int MYSELF = 0;
+		final static int LOWER_PRIORITY = 10;
+	}
 
-    private static class OSXHolder {
-        static { Native.register(Platform.C_LIBRARY_NAME); }
+	private static class OSXHolder {
+		static { Native.register(Platform.C_LIBRARY_NAME); }
 
-        private static native int setpriority(int which, int who, int prio);
-        final static int PRIO_DARWIN_THREAD = 3;
-        final static int MYSELF = 0;
-        final static int PRIO_DARWIN_NORMAL = 0;
-        final static int PRIO_DARWIN_BG = 0x1000;
-    }
+		private static native int setpriority(int which, int who, int prio);
+		final static int PRIO_DARWIN_THREAD = 3;
+		final static int MYSELF = 0;
+		final static int PRIO_DARWIN_NORMAL = 0;
+		final static int PRIO_DARWIN_BG = 0x1000;
+	}
 
 
-    public static boolean enterBackgroundMode() {
-        if (!background) {
-            if (Platform.isWindows()) {
-                WindowsHolder lib = WindowsHolder.INSTANCE;
+	public static boolean enterBackgroundMode() {
+		if (!background) {
+			if (Platform.isWindows()) {
+				WindowsHolder lib = WindowsHolder.INSTANCE;
 
-                if (lib.SetPriorityClass(lib.GetCurrentProcess(), WindowsHolder.BELOW_NORMAL_PRIORITY_CLASS)) {
-                    System.out.println("SetPriorityClass() succeeded!");
-                    return background = true;
-                } else {
-                    System.err.println("SetPriorityClass() failed :"+lib.GetLastError());
-                    return false;
-                }
-            } else if (Platform.isLinux()) {
-                return handleReturn(LinuxHolder.setpriority(LinuxHolder.PRIO_PROCESS, LinuxHolder.MYSELF, LinuxHolder.LOWER_PRIORITY));
+				if (lib.SetPriorityClass(lib.GetCurrentProcess(), WindowsHolder.BELOW_NORMAL_PRIORITY_CLASS)) {
+					System.out.println("SetPriorityClass() succeeded!");
+					return background = true;
+				} else {
+					System.err.println("SetPriorityClass() failed :"+lib.GetLastError());
+					return false;
+				}
+			} else if (Platform.isLinux()) {
+				return handleReturn(LinuxHolder.setpriority(LinuxHolder.PRIO_PROCESS, LinuxHolder.MYSELF, LinuxHolder.LOWER_PRIORITY));
 
-            } else if (Platform.isMac()) {
-                return handleReturn(OSXHolder.setpriority(OSXHolder.PRIO_DARWIN_THREAD, OSXHolder.MYSELF, OSXHolder.PRIO_DARWIN_BG));
-            }
-        }
-        return background;
-    }
+			} else if (Platform.isMac()) {
+				return handleReturn(OSXHolder.setpriority(OSXHolder.PRIO_DARWIN_THREAD, OSXHolder.MYSELF, OSXHolder.PRIO_DARWIN_BG));
+			}
+		}
+		return background;
+	}
 
-    private static boolean handleReturn(int ret) {
-        if (ret == 0) {
-            System.out.println("setpriority() succeeded!");
-            return background = true;
-        } else {
-            System.err.println("setpriority() failed :"+ret);
-            return false;
-        }
-    }
+	private static boolean handleReturn(int ret) {
+		if (ret == 0) {
+			System.out.println("setpriority() succeeded!");
+			return background = true;
+		} else {
+			System.err.println("setpriority() failed :"+ret);
+			return false;
+		}
+	}
 
 }
 

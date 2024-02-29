@@ -85,9 +85,9 @@ public class LoggingConfigHandler {
 						}
 					}
 				});
-    	
+		
 		boolean loggingEnabled = loggingConfig.getBoolean("enabled");
-    	
+		
 		loggingConfig.register("dirname", "logs", 2, true, false, "LogConfigHandler.dirName",
 				"LogConfigHandler.dirNameLong",
 				new StringCallback() {
@@ -112,7 +112,7 @@ public class LoggingConfigHandler {
 						}
 					}
 				});
-    	
+		
 		logDir = new File(config.getString("dirname"));
 		if (loggingEnabled) {
 			preSetLogDir(logDir);
@@ -120,7 +120,7 @@ public class LoggingConfigHandler {
 		// => enableLogger must run preSetLogDir
 		
 		// max space used by zipped logs
-    	
+		
 		config.register("maxZippedLogsSize", "10M", 3, true, true, "LogConfigHandler.maxZippedLogsSize",
 				"LogConfigHandler.maxZippedLogsSizeLong",
 				new LongCallback() {
@@ -131,27 +131,27 @@ public class LoggingConfigHandler {
 					@Override
 					public void set(Long val) throws InvalidConfigValueException {
 						if (val < 0)
-					        val = 0L;
+							val = 0L;
 						maxZippedLogsSize = val;
 						if (fileLoggerHook != null) {
 							fileLoggerHook.setMaxOldLogsSize(val);
 						}
 					}
 				}, true);
-    	
+		
 		maxZippedLogsSize = config.getLong("maxZippedLogsSize");
-    	
+		
 		// These two are forced below so we don't need to check them now
-    	
+		
 		// priority
-    	
+		
 		// Node must override this to minor on testnet.
 		config.register("priority", "warning", 4, false, false, "LogConfigHandler.minLoggingPriority",
 				"LogConfigHandler.minLoggingPriorityLong",
 				new PriorityCallback());
-    	
+		
 		// detailed priority
-    	
+		
 		config.register("priorityDetail", "", 5, true, false, "LogConfigHandler.detaildPriorityThreshold",
 				"LogConfigHandler.detaildPriorityThresholdLong",
 				new StringCallback() {
@@ -171,9 +171,9 @@ public class LoggingConfigHandler {
 						}
 					}
 				});
-    	
+		
 		// interval
-    	
+		
 		config.register("interval", "1HOUR", 5, true, false, "LogConfigHandler.rotationInterval",
 				"LogConfigHandler.rotationIntervalLong",
 				new StringCallback() {
@@ -195,9 +195,9 @@ public class LoggingConfigHandler {
 						logRotateInterval = val;
 					}
 				});
-    	
+		
 		logRotateInterval = config.getString("interval");
-    	
+		
 		// max cached bytes in RAM
 		config.register("maxCachedBytes", "1M", 6, true, false, "LogConfigHandler.maxCachedBytes",
 				"LogConfigHandler.maxCachedBytesLong",
@@ -214,9 +214,9 @@ public class LoggingConfigHandler {
 						if (fileLoggerHook != null) fileLoggerHook.setMaxListBytes(val);
 					}
 				}, true);
-    	
+		
 		maxCachedLogBytes = config.getLong("maxCachedBytes");
-    	
+		
 		// max cached lines in RAM
 		config.register("maxCachedLines", "10k", 7, true, false, "LogConfigHandler.maxCachedLines",
 				"LogConfigHandler.maxCachedLinesLong",
@@ -233,7 +233,7 @@ public class LoggingConfigHandler {
 						throw new NodeNeedRestartException("logger.maxCachedLogLines");
 					}
 				}, false);
-    	
+		
 		maxCachedLogLines = config.getInt("maxCachedLines");
 		
 		config.register("maxBacklogNotBusy", "60000", 8, true, false, "LogConfigHandler.maxBacklogNotBusy", 
@@ -254,7 +254,7 @@ public class LoggingConfigHandler {
 					}
 			
 		}, false);
-    	
+		
 		maxBacklogNotBusy = config.getLong("maxBacklogNotBusy");
 		
 		if (loggingEnabled) enableLogger();
@@ -285,14 +285,14 @@ public class LoggingConfigHandler {
 			} catch (NodeNeedRestartException e) {
 				// impossible
 				System.err.println("impossible NodeNeedRestartException for logger.priority in config file: "
-				        + config.getString("priority"));
+						+ config.getString("priority"));
 			}
 			FileLoggerHook hook;
 			try {
 				hook = 
 					new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(), 
-				    		"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
-				    		maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
+							"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
+							maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
 			} catch (IOException e) {
 				System.err.println("CANNOT START LOGGER: "+e.getMessage());
 				return;
@@ -302,8 +302,8 @@ public class LoggingConfigHandler {
 				try {
 					hook = 
 						new FileLoggerHook(true, new File(logDir, LOG_PREFIX).getAbsolutePath(), 
-					    		"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
-					    		maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
+								"d (c, t, p): m", "MMM dd, yyyy HH:mm:ss:SSS", logRotateInterval, LogLevel.DEBUG /* filtered by chain */, false, true, 
+								maxZippedLogsSize /* 1GB of old compressed logfiles */, maxCachedLogLines);
 				} catch (IntervalParseException e1) {
 					System.err.println("CANNOT START LOGGER: IMPOSSIBLE: "+e1.getMessage());
 					return;
@@ -357,7 +357,7 @@ public class LoggingConfigHandler {
 		
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
+			freenet.support.Logger.OSThread.logPID(this);
 			fileLoggerHook.waitForSwitch();
 			delete(logDir);
 		}
@@ -399,7 +399,7 @@ public class LoggingConfigHandler {
 	}
 
 	public void setMaxZippedLogFiles(String maxSizeAsString) throws InvalidConfigValueException,
-	        NodeNeedRestartException {
+			NodeNeedRestartException {
 		config.set("maxZippedLogsSize", maxSizeAsString);
 	}
 	

@@ -57,46 +57,46 @@ public class SSKBlock implements KeyBlock {
 	 */
 	final NodeSSK nodeKey;
 	final DSAPublicKey pubKey;
-    final short hashIdentifier;
-    final short symCipherIdentifier;
-    final int hashCode;
-    
-    public static final short DATA_LENGTH = 1024;
-    /* Maximum length of compressed payload */
+	final short hashIdentifier;
+	final short symCipherIdentifier;
+	final int hashCode;
+	
+	public static final short DATA_LENGTH = 1024;
+	/* Maximum length of compressed payload */
 	public static final int MAX_COMPRESSED_DATA_LENGTH = DATA_LENGTH - 2;
-    
-    static final short SIG_R_LENGTH = 32;
-    static final short SIG_S_LENGTH = 32;
-    static final short E_H_DOCNAME_LENGTH = 32;
-    static public final short TOTAL_HEADERS_LENGTH = 2 + SIG_R_LENGTH + SIG_S_LENGTH + 2 + 
-    	E_H_DOCNAME_LENGTH + ClientSSKBlock.DATA_DECRYPT_KEY_LENGTH + 2 + 2;
-    
-    static final short ENCRYPTED_HEADERS_LENGTH = 36;
-    
-    @Override
+	
+	static final short SIG_R_LENGTH = 32;
+	static final short SIG_S_LENGTH = 32;
+	static final short E_H_DOCNAME_LENGTH = 32;
+	static public final short TOTAL_HEADERS_LENGTH = 2 + SIG_R_LENGTH + SIG_S_LENGTH + 2 + 
+		E_H_DOCNAME_LENGTH + ClientSSKBlock.DATA_DECRYPT_KEY_LENGTH + 2 + 2;
+	
+	static final short ENCRYPTED_HEADERS_LENGTH = 36;
+	
+	@Override
 	public boolean equals(Object o) {
-    	if(!(o instanceof SSKBlock)) return false;
-    	SSKBlock block = (SSKBlock)o;
+		if(!(o instanceof SSKBlock)) return false;
+		SSKBlock block = (SSKBlock)o;
 
-    	if(!block.pubKey.equals(pubKey)) return false;
-    	if(!block.nodeKey.equals(nodeKey)) return false;
-    	if(block.headersOffset != headersOffset) return false;
-    	if(block.hashIdentifier != hashIdentifier) return false;
-    	if(block.symCipherIdentifier != symCipherIdentifier) return false;
-    	// only compare some of the headers (see top)
-    	for (int i = 0; i < HEADER_COMPARE_TO; i++) {
-    		if (block.headers[i] != headers[i]) return false;
-    	}
-    	//if(!Arrays.equals(block.headers, headers)) return false;
-    	if(!Arrays.equals(block.data, data)) return false;
-    	return true;
-    }
-    
-    @Override
+		if(!block.pubKey.equals(pubKey)) return false;
+		if(!block.nodeKey.equals(nodeKey)) return false;
+		if(block.headersOffset != headersOffset) return false;
+		if(block.hashIdentifier != hashIdentifier) return false;
+		if(block.symCipherIdentifier != symCipherIdentifier) return false;
+		// only compare some of the headers (see top)
+		for (int i = 0; i < HEADER_COMPARE_TO; i++) {
+			if (block.headers[i] != headers[i]) return false;
+		}
+		//if(!Arrays.equals(block.headers, headers)) return false;
+		if(!Arrays.equals(block.data, data)) return false;
+		return true;
+	}
+	
+	@Override
 	public int hashCode(){
-    	return hashCode;
-    }
-    
+		return hashCode;
+	}
+	
 	/**
 	 * Initialize, and verify data, headers against key. Provided
 	 * key must have a pubkey, or we throw.
@@ -112,11 +112,11 @@ public class SSKBlock implements KeyBlock {
 		this.pubKey = nodeKey.getPubKey();
 		if(pubKey == null)
 			throw new SSKVerifyException("PubKey was null from "+nodeKey);
-        // Now verify it
-        hashIdentifier = (short)(((headers[0] & 0xff) << 8) + (headers[1] & 0xff));
-        if(hashIdentifier != HASH_SHA256)
-            throw new SSKVerifyException("Hash not SHA-256");
-        int x = 2;
+		// Now verify it
+		hashIdentifier = (short)(((headers[0] & 0xff) << 8) + (headers[1] & 0xff));
+		if(hashIdentifier != HASH_SHA256)
+			throw new SSKVerifyException("Hash not SHA-256");
+		int x = 2;
 		symCipherIdentifier = (short)(((headers[x] & 0xff) << 8) + (headers[x+1] & 0xff));
 		x+=2;
 		// Then E(H(docname))
@@ -164,7 +164,7 @@ public class SSKBlock implements KeyBlock {
 			// but that's what the legacy code was doing...
 			// @see comments in Global before touching it
 			if(!(dsa.verifySignature(Global.truncateHash(overallHash), r, s) ||
-			     dsa.verifySignature(overallHash, r, s))
+				 dsa.verifySignature(overallHash, r, s))
 			  ) {
 				if (dontVerify)
 					Logger.error(this, "DSA verification failed with dontVerify!!!!");

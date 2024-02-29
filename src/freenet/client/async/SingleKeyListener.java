@@ -91,7 +91,7 @@ public class SingleKeyListener implements KeyListener {
 		return key instanceof NodeSSK;
 	}
 
- 	@Override
+	@Override
 	public byte[] getWantedKey() {
 		return key instanceof NodeSSK ? ((NodeSSK)key).getPubKeyHash() : key.getRoutingKey();
 	}

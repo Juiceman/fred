@@ -56,8 +56,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public class SingleBlockInserter extends SendableInsert implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -176,7 +176,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		String uriType = uri.getKeyType();
 		if(uriType.equals("CHK")) {
 			return ClientCHKBlock.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, compressorDescriptor,
-          cryptoKey, cryptoAlgorithm);
+		  cryptoKey, cryptoAlgorithm);
 		} else if(uriType.equals("SSK") || uriType.equals("KSK")) {
 			InsertableClientSSK ik = InsertableClientSSK.create(uri);
 			return ik.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, random, compressorDescriptor);
@@ -200,16 +200,16 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				}
 			}, "Got URI");
 		} else {
-		    context.jobRunner.queueNormalOrDrop(new PersistentJob() { 
-		        // Will be reported on restart in innerOnResume() if necessary.
-		        
-                @Override
-                public boolean run(ClientContext context) {
-                    cb.onEncode(key, SingleBlockInserter.this, context);
-                    return false;
-                }
-		        
-		    });
+			context.jobRunner.queueNormalOrDrop(new PersistentJob() { 
+				// Will be reported on restart in innerOnResume() if necessary.
+				
+				@Override
+				public boolean run(ClientContext context) {
+					cb.onEncode(key, SingleBlockInserter.this, context);
+					return false;
+				}
+				
+			});
 		}
 	}
 	
@@ -359,7 +359,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		getBlock(context, true);
 		synchronized(this) {
 			// FIXME not really necessary? resultingKey is never dropped, only set.
-		    return resultingKey.getURI();
+			return resultingKey.getURI();
 		}
 	}
 
@@ -368,12 +368,12 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	}
 	
 	public synchronized ClientKey getKeyNoEncode() {
-	    return resultingKey;
+		return resultingKey;
 	}
 
 	@Override
 	public void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context) {
-	    onEncode(key, context);
+		onEncode(key, context);
 		if(logMINOR) Logger.minor(this, "Succeeded ("+this+"): "+token);
 		if(parent.isCancelled()) {
 			fail(new InsertException(InsertExceptionMode.CANCELLED), context);
@@ -394,11 +394,11 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			}
 			finished = true;
 			if(resultingKey == null) {
-			    shouldSendKey = true;
-			    resultingKey = key;
+				shouldSendKey = true;
+				resultingKey = key;
 			} else {
-			    if(!resultingKey.equals(key))
-			        Logger.error(this, "Different key: "+resultingKey+" -> "+key+" for "+this);
+				if(!resultingKey.equals(key))
+					Logger.error(this, "Different key: "+resultingKey+" -> "+key+" for "+this);
 			}
 		}
 		if(freeData) {
@@ -409,7 +409,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		unregister(context, getPriorityClass());
 		if(logMINOR) Logger.minor(this, "Calling onSuccess for "+cb);
 		if(shouldSendKey)
-		    cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
+			cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
 		cb.onSuccess(this, context);
 	}
 
@@ -487,13 +487,13 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				key = encodedBlock.getClientKey();
 				k = key;
 				context.getJobRunner(block.persistent).queueNormalOrDrop(new PersistentJob() {
-				    
-				    @Override
-				    public boolean run(ClientContext context) {
-				        orig.onEncode(key, context);
-				        return true;
-				    }
-				    
+					
+					@Override
+					public boolean run(ClientContext context) {
+						orig.onEncode(key, context);
+						return true;
+					}
+					
 				});
 				if(req.localRequestOnly)
 					try {
@@ -620,7 +620,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				if(finished) return null;
 				key = new BlockItemKey(this, hashCode());
 				if(ignored.hasInsert(key))
-				    return null;
+					return null;
 				return getBlockItem(key, context);
 			}
 		} catch (InsertException e) {
@@ -631,14 +631,14 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
-	    KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
-	    synchronized(this) {
-	        if(finished) return -1;
-            BlockItemKey key = new BlockItemKey(this, hashCode());
-            if(keysFetching.hasInsert(key))
-                return Long.MAX_VALUE;
-            return 0;
-	    }
+		KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
+		synchronized(this) {
+			if(finished) return -1;
+			BlockItemKey key = new BlockItemKey(this, hashCode());
+			if(keysFetching.hasInsert(key))
+				return Long.MAX_VALUE;
+			return 0;
+		}
 	}
 
 	private BlockItem getBlockItem(BlockItemKey key, ClientContext context) throws InsertException {
@@ -764,18 +764,18 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		onEncode(key, context);
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
-        sourceData.onResume(context);
-        if(cb != parent) cb.onResume(context);
-        if(resultingKey != null)
-            cb.onEncode(resultingKey, SingleBlockInserter.this, context);
-        this.schedule(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
+		sourceData.onResume(context);
+		if(cb != parent) cb.onResume(context);
+		if(resultingKey != null)
+			cb.onEncode(resultingKey, SingleBlockInserter.this, context);
+		this.schedule(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 
 }

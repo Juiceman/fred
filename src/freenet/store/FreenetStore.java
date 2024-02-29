@@ -34,29 +34,29 @@ public interface FreenetStore<T extends StorableBlock> extends Closeable {
 	 * Store a block.
 	 * 
 	 * @throws KeyCollisionException
-	 *             If the key already exists and <code>callback.collisionPossible()</code> is
-	 *             <code>true</code>.
+	 *			 If the key already exists and <code>callback.collisionPossible()</code> is
+	 *			 <code>true</code>.
 	 * @param overwrite
-	 *            If true, overwrite old content rather than throwing a
-	 *            <code>KeyCollisionException</code>.
+	 *			If true, overwrite old content rather than throwing a
+	 *			<code>KeyCollisionException</code>.
 	 * @param oldBlock
-	 *            If true, the block really shouldn't be in the datastore, but we are storing
-	 *            it anyway; it should not have the new block flag, so it should be excluded 
-	 *            from Bloom filter sharing. 				
+	 *			If true, the block really shouldn't be in the datastore, but we are storing
+	 *			it anyway; it should not have the new block flag, so it should be excluded 
+	 *			from Bloom filter sharing.				
 	 */
-    public void put(T block, byte[] data, byte[] header, 
-    		boolean overwrite, boolean oldBlock) throws IOException, KeyCollisionException;
-    
-    /**
-     * Change the store size.
-     * @param maxStoreKeys The maximum number of keys to be cached.
-     * @param shrinkNow If false, don't shrink the store immediately.
-     * @throws IOException 
-     * @throws DatabaseException 
-     */
+	public void put(T block, byte[] data, byte[] header, 
+			boolean overwrite, boolean oldBlock) throws IOException, KeyCollisionException;
+	
+	/**
+	 * Change the store size.
+	 * @param maxStoreKeys The maximum number of keys to be cached.
+	 * @param shrinkNow If false, don't shrink the store immediately.
+	 * @throws IOException 
+	 * @throws DatabaseException 
+	 */
 	public void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException;
-    
-    public long getMaxKeys();
+	
+	public long getMaxKeys();
 	
 	public long hits();
 	

@@ -19,8 +19,8 @@ import java.io.Serializable;
  */
 public class ClientMetadata implements Cloneable, Serializable {
 	
-    private static final long serialVersionUID = 1L;
-    /** The document MIME type */
+	private static final long serialVersionUID = 1L;
+	/** The document MIME type */
 	private String mimeType;
 
 	public ClientMetadata(){
@@ -32,23 +32,23 @@ public class ClientMetadata implements Cloneable, Serializable {
 	}
 	
 	private ClientMetadata(DataInputStream dis) throws MetadataParseException, IOException {
-	    int magic = dis.readInt();
-	    if(magic != MAGIC)
-	        throw new MetadataParseException("Bad magic value in ClientMetadata");
-	    short version = dis.readShort();
-	    if(version != VERSION)
-	        throw new MetadataParseException("Unrecognised version "+version+" in ClientMetadata");
-	    boolean hasMIMEType = dis.readBoolean();
-	    if(hasMIMEType)
-	        mimeType = dis.readUTF();
-	    else
-	        mimeType = null;
+		int magic = dis.readInt();
+		if(magic != MAGIC)
+			throw new MetadataParseException("Bad magic value in ClientMetadata");
+		short version = dis.readShort();
+		if(version != VERSION)
+			throw new MetadataParseException("Unrecognised version "+version+" in ClientMetadata");
+		boolean hasMIMEType = dis.readBoolean();
+		if(hasMIMEType)
+			mimeType = dis.readUTF();
+		else
+			mimeType = null;
 	}
 	
 	/** Factory method to keep the API cleaner, avoid ambiguity; this won't be used as often as
 	 * the String constructor. */
 	public static ClientMetadata construct(DataInputStream dis) throws MetadataParseException, IOException {
-	    return new ClientMetadata(dis);
+		return new ClientMetadata(dis);
 	}
 	
 	/** Get the document MIME type. Will always be a valid MIME type, unless there
@@ -104,18 +104,18 @@ public class ClientMetadata implements Cloneable, Serializable {
 		return s;
 	}
 
-    public void writeTo(DataOutputStream dos) throws IOException {
-        dos.writeInt(MAGIC);
-        dos.writeShort(VERSION);
-        if(mimeType == null)
-            dos.writeBoolean(false);
-        else {
-            dos.writeBoolean(true);
-            dos.writeUTF(mimeType);
-        }
-    }
-    
-    private static int VERSION = 1;
-    private static int MAGIC = 0x021441fe8;
+	public void writeTo(DataOutputStream dos) throws IOException {
+		dos.writeInt(MAGIC);
+		dos.writeShort(VERSION);
+		if(mimeType == null)
+			dos.writeBoolean(false);
+		else {
+			dos.writeBoolean(true);
+			dos.writeUTF(mimeType);
+		}
+	}
+	
+	private static int VERSION = 1;
+	private static int MAGIC = 0x021441fe8;
 
 }

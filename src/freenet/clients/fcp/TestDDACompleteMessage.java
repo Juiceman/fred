@@ -56,7 +56,7 @@ public class TestDDACompleteMessage extends FCPMessage {
 			File maybeWrittenFile = checkJob.writeFilename;
 			if (maybeWrittenFile.exists() && maybeWrittenFile.isFile() && maybeWrittenFile.canRead()) {
 				try {
-				    String existingContent = FileUtil.readUTF(maybeWrittenFile).toString().trim();
+					String existingContent = FileUtil.readUTF(maybeWrittenFile).toString().trim();
 					isWriteAllowed = checkJob.writeContent.equals(existingContent);
 				} catch (IOException e) {
 					Logger.error(this, "Caught an IOE trying to read the file (" + maybeWrittenFile + ")! " + e.getMessage());

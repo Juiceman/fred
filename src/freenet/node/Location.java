@@ -62,7 +62,7 @@ public class Location {
 
 	/**
 	 * Distance between two potentially invalid locations.
- 	 * @param a a valid location
+	 * @param a a valid location
 	 * @param b a valid location
 	 * @return the absolute distance between the locations in the circular location space.
 	 * Invalid locations are considered to be at 2.0, and the result is returned accordingly.

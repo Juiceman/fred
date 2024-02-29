@@ -16,17 +16,17 @@ import freenet.support.Logger.LogLevel;
  * Track average round-trip time for each peer node, get a geometric mean.
  */
 public class NodePinger implements Runnable {
-    private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+			}
+		});
+	}
 
 	private final Node node;
 	private volatile double meanPing = 0;
@@ -43,23 +43,23 @@ public class NodePinger implements Runnable {
 	
 	@Override
 	public void run() {
-        try {
-        PeerNode[] peers = null;
-        synchronized(node.peers) {
-        	peers = node.peers.connectedPeers();
-        }
-        if(peers == null || peers.length == 0) return;
+		try {
+		PeerNode[] peers = null;
+		synchronized(node.peers) {
+			peers = node.peers.connectedPeers();
+		}
+		if(peers == null || peers.length == 0) return;
 
-        // Now we don't have to care about synchronization anymore
-        recalculateMean(peers);
-        capacityInputRealtime.calculate(peers);
-        capacityInputBulk.calculate(peers);
-        capacityOutputRealtime.calculate(peers);
-        capacityOutputBulk.calculate(peers);
-        } finally {
-        	// Requeue after to avoid exacerbating overload
-        	node.getTicker().queueTimedJob(this, 200);
-        }
+		// Now we don't have to care about synchronization anymore
+		recalculateMean(peers);
+		capacityInputRealtime.calculate(peers);
+		capacityInputBulk.calculate(peers);
+		capacityOutputRealtime.calculate(peers);
+		capacityOutputBulk.calculate(peers);
+		} finally {
+			// Requeue after to avoid exacerbating overload
+			node.getTicker().queueTimedJob(this, 200);
+		}
 	}
 
 	/** Recalculate the mean ping time */
@@ -72,10 +72,10 @@ public class NodePinger implements Runnable {
 	
 	private double calculateMedianPing(PeerNode[] peers) {
 		double[] allPeers = new double[peers.length];
-        for(int i = 0; i < peers.length; i++) {
-            PeerNode peer = peers[i];
-            allPeers[i] = peer.averagePingTime();
-        }
+		for(int i = 0; i < peers.length; i++) {
+			PeerNode peer = peers[i];
+			allPeers[i] = peer.averagePingTime();
+		}
 		
 		Arrays.sort(allPeers);
 		return allPeers[peers.length / 2];

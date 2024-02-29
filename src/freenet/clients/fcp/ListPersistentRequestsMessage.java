@@ -123,11 +123,11 @@ public class ListPersistentRequestsMessage extends FCPMessage {
 		
 		@Override
 		public void run() {
-		    try {
-		        context.jobRunner.queue(this, NativeThread.HIGH_PRIORITY-1);
-		    } catch (PersistenceDisabledException e) {
-		        outputHandler.queue(new EndListPersistentRequestsMessage(listRequestIdentifier));
-		    }
+			try {
+				context.jobRunner.queue(this, NativeThread.HIGH_PRIORITY-1);
+			} catch (PersistenceDisabledException e) {
+				outputHandler.queue(new EndListPersistentRequestsMessage(listRequestIdentifier));
+			}
 		}
 		
 	}
@@ -163,44 +163,44 @@ public class ListPersistentRequestsMessage extends FCPMessage {
 
 			private void finishComplete(ClientContext context) {
 					try {
-                        context.jobRunner.queue(new PersistentJob() {
+						context.jobRunner.queue(new PersistentJob() {
 
-                        	@Override
-                        	public boolean run(ClientContext context) {
-                        		PersistentRequestClient foreverClient = handler.getForeverClient();
-                        		PersistentListJob job = new PersistentListJob(foreverClient, outputHandler, context, listRequestIdentifier) {
+							@Override
+							public boolean run(ClientContext context) {
+								PersistentRequestClient foreverClient = handler.getForeverClient();
+								PersistentListJob job = new PersistentListJob(foreverClient, outputHandler, context, listRequestIdentifier) {
 
-                        			@Override
-                        			void complete(ClientContext context) {
-                        				if(handler.getRebootClient().watchGlobal) {
-                        					PersistentRequestClient globalForeverClient = handler.server.globalForeverClient;
-                        					PersistentListJob job = new PersistentListJob(globalForeverClient, outputHandler, context, listRequestIdentifier) {
+									@Override
+									void complete(ClientContext context) {
+										if(handler.getRebootClient().watchGlobal) {
+											PersistentRequestClient globalForeverClient = handler.server.globalForeverClient;
+											PersistentListJob job = new PersistentListJob(globalForeverClient, outputHandler, context, listRequestIdentifier) {
 
-                        						@Override
-                        						void complete(
-                        								ClientContext context) {
-                        							finishFinal();
-                        						}
-                        						
-                        					};
-                        					job.run(context);
-                        				} else {
-                        					finishFinal();
-                        				}
-                        			}
+												@Override
+												void complete(
+														ClientContext context) {
+													finishFinal();
+												}
+												
+											};
+											job.run(context);
+										} else {
+											finishFinal();
+										}
+									}
 
-                        			private void finishFinal() {
-                        				outputHandler.queue(new EndListPersistentRequestsMessage(listRequestIdentifier));
-                        			}
-                        			
-                        		};
-                        		job.run(context);
-                        		return false;
-                        	}
-                        }, NativeThread.HIGH_PRIORITY-1);
-                    } catch (PersistenceDisabledException e) {
-                        handler.send(new EndListPersistentRequestsMessage(listRequestIdentifier));
-                    }
+									private void finishFinal() {
+										outputHandler.queue(new EndListPersistentRequestsMessage(listRequestIdentifier));
+									}
+									
+								};
+								job.run(context);
+								return false;
+							}
+						}, NativeThread.HIGH_PRIORITY-1);
+					} catch (PersistenceDisabledException e) {
+						handler.send(new EndListPersistentRequestsMessage(listRequestIdentifier));
+					}
 			}
 			
 		};

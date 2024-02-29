@@ -131,7 +131,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	/** The IntervalPusherManager handles interval pushing*/
 	public IntervalPusherManager intervalPushManager;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -985,10 +985,10 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			//If the user has not completed the wizard, only allow access to the wizard and static
 			//resources. Anything else redirects to the first page of the wizard.
 			if (!(path.startsWith(FirstTimeWizardToadlet.TOADLET_URL) ||
-			      path.startsWith(FirstTimeWizardNewToadlet.TOADLET_URL) ||
-			      path.startsWith(StaticToadlet.ROOT_URL) ||
-			      path.startsWith(ExternalLinkToadlet.PATH) ||
-			      path.equals("/favicon.ico"))) {
+				  path.startsWith(FirstTimeWizardNewToadlet.TOADLET_URL) ||
+				  path.startsWith(StaticToadlet.ROOT_URL) ||
+				  path.startsWith(ExternalLinkToadlet.PATH) ||
+				  path.equals("/favicon.ico"))) {
 				try {
 					throw new PermanentRedirectException(new URI(null, null, null, -1, FirstTimeWizardToadlet.TOADLET_URL, uri.getQuery(), null));
 				} catch(URISyntaxException e) { throw new Error(e); }
@@ -1034,12 +1034,12 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			Socket conn = networkInterface.accept();
 			if (WrapperManager.hasShutdownHookBeenTriggered())
 				return;
-            if(conn == null)
-                continue; // timeout
-            if(logMINOR)
-                Logger.minor(this, "Accepted connection");
-            SocketHandler sh = new SocketHandler(conn, finishedStartup);
-            sh.start();
+			if(conn == null)
+				continue; // timeout
+			if(logMINOR)
+				Logger.minor(this, "Accepted connection");
+			SocketHandler sh = new SocketHandler(conn, finishedStartup);
+			sh.start();
 		}
 	}
 	
@@ -1058,14 +1058,14 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 				executor.execute(this, "HTTP socket handler@"+hashCode());
 			else
 				new Thread(this).start();
-            synchronized(SimpleToadletServer.this) {
-            	fproxyConnections++;
-            }
+			synchronized(SimpleToadletServer.this) {
+				fproxyConnections++;
+			}
 		}
 		
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
+			freenet.support.Logger.OSThread.logPID(this);
 			if(logMINOR) Logger.minor(this, "Handling connection");
 			try {
 				ToadletContextImpl.handle(sock, SimpleToadletServer.this, pageMaker, getUserAlertManager(), bookmarkManager);
@@ -1074,10 +1074,10 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 				t.printStackTrace();
 				Logger.error(this, "Caught in SimpleToadletServer: "+t, t);
 			} finally {
-	            synchronized(SimpleToadletServer.this) {
-	            	fproxyConnections--;
-	            	SimpleToadletServer.this.notifyAll();
-	            }
+				synchronized(SimpleToadletServer.this) {
+					fproxyConnections--;
+					SimpleToadletServer.this.notifyAll();
+				}
 			}
 			if(logMINOR) Logger.minor(this, "Handled connection");
 		}

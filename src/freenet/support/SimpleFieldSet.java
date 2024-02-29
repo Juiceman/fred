@@ -59,117 +59,117 @@ import static java.util.Collections.emptyMap;
  */
 public class SimpleFieldSet {
 
-    private final Map<String, String> values;
-    private Map<String, SimpleFieldSet> subsets;
-    private String endMarker;
-    private final boolean shortLived;
-    private final boolean alwaysUseBase64;
-    protected String[] header;
+	private final Map<String, String> values;
+	private Map<String, SimpleFieldSet> subsets;
+	private String endMarker;
+	private final boolean shortLived;
+	private final boolean alwaysUseBase64;
+	protected String[] header;
 
-    public static final char MULTI_LEVEL_CHAR = '.';
-    public static final char MULTI_VALUE_CHAR = ';';
-    public static final char KEYVALUE_SEPARATOR_CHAR = '=';
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	public static final char MULTI_LEVEL_CHAR = '.';
+	public static final char MULTI_VALUE_CHAR = ';';
+	public static final char KEYVALUE_SEPARATOR_CHAR = '=';
+	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    public SimpleFieldSet(boolean shortLived) {
-        this(shortLived, false);
-    }
-    
-    /**
-     * Create a SimpleFieldSet.
-     * @param shortLived If false, strings will be interned to ensure that they use as
-     * little memory as possible. Only set to true if the SFS will be short-lived or
-     * small.
-     * @param alwaysUseBase64 If true, the SFS can contain newlines etc in values, and we will
-     * always use base64 for the values if they contain such invalid characters.
-     */
-    public SimpleFieldSet(boolean shortLived, boolean alwaysUseBase64) {
-        values = new HashMap<String, String>();
-       	subsets = null;
-       	this.shortLived = shortLived;
-       	this.alwaysUseBase64 = alwaysUseBase64;
-    }
+	public SimpleFieldSet(boolean shortLived) {
+		this(shortLived, false);
+	}
+	
+	/**
+	 * Create a SimpleFieldSet.
+	 * @param shortLived If false, strings will be interned to ensure that they use as
+	 * little memory as possible. Only set to true if the SFS will be short-lived or
+	 * small.
+	 * @param alwaysUseBase64 If true, the SFS can contain newlines etc in values, and we will
+	 * always use base64 for the values if they contain such invalid characters.
+	 */
+	public SimpleFieldSet(boolean shortLived, boolean alwaysUseBase64) {
+		values = new HashMap<String, String>();
+		subsets = null;
+		this.shortLived = shortLived;
+		this.alwaysUseBase64 = alwaysUseBase64;
+	}
 
-    public SimpleFieldSet(BufferedReader br, boolean allowMultiple, boolean shortLived) throws IOException {
-        this(br, allowMultiple, shortLived, false, false);
-    }
-    
-    /**
-     * Construct a SimpleFieldSet from reading a BufferedReader.
-     * @param br
-     * @param allowMultiple If true, multiple lines with the same field name will be
-     * combined; if false, the constructor will throw.
-     * @param shortLived If false, strings will be interned to ensure that they use as
-     * little memory as possible. Only set to true if the SFS will be short-lived or
-     * small.
-     * @throws IOException If the buffer could not be read, or if there was a formatting
-     * problem.
-     */
-    public SimpleFieldSet(BufferedReader br, boolean allowMultiple, boolean shortLived, boolean allowBase64, boolean alwaysBase64) throws IOException {
-        this(shortLived, alwaysBase64);
-        read(Readers.fromBufferedReader(br), allowMultiple, allowBase64);
-    }
+	public SimpleFieldSet(BufferedReader br, boolean allowMultiple, boolean shortLived) throws IOException {
+		this(br, allowMultiple, shortLived, false, false);
+	}
+	
+	/**
+	 * Construct a SimpleFieldSet from reading a BufferedReader.
+	 * @param br
+	 * @param allowMultiple If true, multiple lines with the same field name will be
+	 * combined; if false, the constructor will throw.
+	 * @param shortLived If false, strings will be interned to ensure that they use as
+	 * little memory as possible. Only set to true if the SFS will be short-lived or
+	 * small.
+	 * @throws IOException If the buffer could not be read, or if there was a formatting
+	 * problem.
+	 */
+	public SimpleFieldSet(BufferedReader br, boolean allowMultiple, boolean shortLived, boolean allowBase64, boolean alwaysBase64) throws IOException {
+		this(shortLived, alwaysBase64);
+		read(Readers.fromBufferedReader(br), allowMultiple, allowBase64);
+	}
 
-    /** Copy constructor */
-    public SimpleFieldSet(SimpleFieldSet sfs){
-    	values = new HashMap<String, String>(sfs.values);
-    	if(sfs.subsets != null)
-    		subsets = new HashMap<String, SimpleFieldSet>(sfs.subsets);
-    	this.shortLived = false; // it's been copied!
-    	this.header = sfs.header;
-    	this.endMarker = sfs.endMarker;
-    	this.alwaysUseBase64 = sfs.alwaysUseBase64;
-    }
+	/** Copy constructor */
+	public SimpleFieldSet(SimpleFieldSet sfs){
+		values = new HashMap<String, String>(sfs.values);
+		if(sfs.subsets != null)
+			subsets = new HashMap<String, SimpleFieldSet>(sfs.subsets);
+		this.shortLived = false; // it's been copied!
+		this.header = sfs.header;
+		this.endMarker = sfs.endMarker;
+		this.alwaysUseBase64 = sfs.alwaysUseBase64;
+	}
 
-    public SimpleFieldSet(LineReader lis, int maxLineLength, int lineBufferSize, boolean utf8OrIso88591, boolean allowMultiple, boolean shortLived) throws IOException {
-    	this(lis, maxLineLength, lineBufferSize, utf8OrIso88591, allowMultiple, shortLived, false);
-    }
+	public SimpleFieldSet(LineReader lis, int maxLineLength, int lineBufferSize, boolean utf8OrIso88591, boolean allowMultiple, boolean shortLived) throws IOException {
+		this(lis, maxLineLength, lineBufferSize, utf8OrIso88591, allowMultiple, shortLived, false);
+	}
 
-    public SimpleFieldSet(LineReader lis, int maxLineLength, int lineBufferSize, boolean utf8OrIso88591, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
-    	this(shortLived);
-    	read(lis, maxLineLength, lineBufferSize, utf8OrIso88591, allowMultiple, allowBase64);
-    }
+	public SimpleFieldSet(LineReader lis, int maxLineLength, int lineBufferSize, boolean utf8OrIso88591, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
+		this(shortLived);
+		read(lis, maxLineLength, lineBufferSize, utf8OrIso88591, allowMultiple, allowBase64);
+	}
 
-    /**
-     * Construct from a string.
-     * String format:
-     * blah=blah
-     * blah=blah
-     * End
-     * @param shortLived If false, strings will be interned to ensure that they use as
-     * little memory as possible. Only set to true if the SFS will be short-lived or
-     * small.
-     * @throws IOException if the string is too short or invalid.
-     */
-    public SimpleFieldSet(String content, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
-    	this(shortLived);
-        StringReader sr = new StringReader(content);
-        BufferedReader br = new BufferedReader(sr);
-	    read(Readers.fromBufferedReader(br), allowMultiple, allowBase64);
-    }
-    
-    /**
-     * Construct from a {@link String} array.
-     * <p>
-     * Similar to {@link #SimpleFieldSet(String, boolean, boolean)},
-     * but each item of array represents a single line
-     * </p>
-     * @param content to be parsed 
-     * @param allowMultiple If {@code true}, multiple lines with the same field name will be
-     * combined; if {@code false}, the constructor will throw.
-     * @param shortLived If {@code false}, strings will be interned to ensure that they use as
-     * little memory as possible. Only set to {@code true} if the SFS will be short-lived or
-     * small.
-     * @throws IOException
-     */
-    public SimpleFieldSet(String[] content, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
-    	this(shortLived);
-    	read(Readers.fromStringArray(content), allowMultiple, allowBase64);
-    }
-    
-    /**
-     * @see #read(LineReader, int, int, boolean, boolean)
-     */
+	/**
+	 * Construct from a string.
+	 * String format:
+	 * blah=blah
+	 * blah=blah
+	 * End
+	 * @param shortLived If false, strings will be interned to ensure that they use as
+	 * little memory as possible. Only set to true if the SFS will be short-lived or
+	 * small.
+	 * @throws IOException if the string is too short or invalid.
+	 */
+	public SimpleFieldSet(String content, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
+		this(shortLived);
+		StringReader sr = new StringReader(content);
+		BufferedReader br = new BufferedReader(sr);
+		read(Readers.fromBufferedReader(br), allowMultiple, allowBase64);
+	}
+	
+	/**
+	 * Construct from a {@link String} array.
+	 * <p>
+	 * Similar to {@link #SimpleFieldSet(String, boolean, boolean)},
+	 * but each item of array represents a single line
+	 * </p>
+	 * @param content to be parsed 
+	 * @param allowMultiple If {@code true}, multiple lines with the same field name will be
+	 * combined; if {@code false}, the constructor will throw.
+	 * @param shortLived If {@code false}, strings will be interned to ensure that they use as
+	 * little memory as possible. Only set to {@code true} if the SFS will be short-lived or
+	 * small.
+	 * @throws IOException
+	 */
+	public SimpleFieldSet(String[] content, boolean allowMultiple, boolean shortLived, boolean allowBase64) throws IOException {
+		this(shortLived);
+		read(Readers.fromStringArray(content), allowMultiple, allowBase64);
+	}
+	
+	/**
+	 * @see #read(LineReader, int, int, boolean, boolean)
+	 */
 	private void read(LineReader lr, boolean allowMultiple, boolean allowBase64) throws IOException {
 		read(lr, Integer.MAX_VALUE, 0x100, true, allowMultiple, allowBase64);
 	}
@@ -246,155 +246,155 @@ public class SimpleFieldSet {
 	 * @return The String value corresponding to the given key, or null if there is no such 
 	 * key=value pair.
 	 */
-    public synchronized String get(String key) {
-   		int idx = key.indexOf(MULTI_LEVEL_CHAR);
-   		if(idx == -1)
-   			return values.get(key);
-   		else if(idx == 0)
+	public synchronized String get(String key) {
+		int idx = key.indexOf(MULTI_LEVEL_CHAR);
+		if(idx == -1)
+			return values.get(key);
+		else if(idx == 0)
 			return (subset("") == null) ? null : subset("").get(key.substring(1));
 		else {
-   			if(subsets == null) return null;
-   			String before = key.substring(0, idx);
-   			String after = key.substring(idx+1);
-   			SimpleFieldSet fs = subsets.get(before);
-   			if(fs == null) return null;
-   			return fs.get(after);
-   		}
-    }
-
-    public String[] getAll(String key) {
-    	String k = get(key);
-    	if(k == null) return null;
-    	return split(k);
-    }
-
-    /** Get a list of String's from a single value, encoded in Base64. This is useful for storing
-     * arbitrary String's that may contain illegal characters - the MULTI_VALUE_CHAR, newlines, etc.
-     */
-    public String[] getAllEncoded(String key) throws IllegalBase64Exception {
-        String k = get(key);
-        if(k == null) return null;
-        String[] ret = split(k);
-        for(int i=0;i<ret.length;i++) {
-            ret[i] = Base64.decodeUTF8(ret[i]);
-        }
-        return ret;
-    }
-
-    /** Split a set of String's delimeted by MULTI_VALUE_CHAR, accepting empty strings at both ends.
-     * E.g. ";blah;blah;blah;;" will give ["", "blah", "blah", "blah", "", ""].
-     * Java 7 split() would give ["blah","blah","blah"].
-     */
-    public static String[] split(String string) {
-    	if(string == null) return EMPTY_STRING_ARRAY;
-    	// Java 7 version of String.split() trims the extra delimeters at each end.
-    	int emptyAtStart = 0;
-    	for(;emptyAtStart<string.length() && string.charAt(emptyAtStart) == MULTI_VALUE_CHAR;emptyAtStart++);
-    	if(emptyAtStart == string.length()) {
-    	    String[] ret = new String[string.length()];
-    	    for(int i=0;i<ret.length;i++) ret[i] = "";
-    	    return ret;
-    	}
-    	int emptyAtEnd = 0;
-    	for(int i=string.length()-1; i>=0 && string.charAt(i) == MULTI_VALUE_CHAR;i--) emptyAtEnd++;
-    	string = string.substring(emptyAtStart, string.length() - emptyAtEnd);
-    	String[] split = string.split(String.valueOf(MULTI_VALUE_CHAR)); // slower???
-    	if(emptyAtStart != 0 || emptyAtEnd != 0) {
-    	    String[] ret = new String[emptyAtStart+split.length+emptyAtEnd];
-    	    System.arraycopy(split, 0, ret, emptyAtStart, split.length);
-    	    split = ret;
-    	    for(int i=0;i<split.length;i++)
-    	        if(split[i] == null) split[i] = "";
-    	}
-    	return split;
+			if(subsets == null) return null;
+			String before = key.substring(0, idx);
+			String after = key.substring(idx+1);
+			SimpleFieldSet fs = subsets.get(before);
+			if(fs == null) return null;
+			return fs.get(after);
+		}
 	}
 
-    /** Combine a list of String's into a single String, separating them by the MULTI_VALUE_CHAR. */
-    private static String unsplit(String[] strings) {
+	public String[] getAll(String key) {
+		String k = get(key);
+		if(k == null) return null;
+		return split(k);
+	}
+
+	/** Get a list of String's from a single value, encoded in Base64. This is useful for storing
+	 * arbitrary String's that may contain illegal characters - the MULTI_VALUE_CHAR, newlines, etc.
+	 */
+	public String[] getAllEncoded(String key) throws IllegalBase64Exception {
+		String k = get(key);
+		if(k == null) return null;
+		String[] ret = split(k);
+		for(int i=0;i<ret.length;i++) {
+			ret[i] = Base64.decodeUTF8(ret[i]);
+		}
+		return ret;
+	}
+
+	/** Split a set of String's delimeted by MULTI_VALUE_CHAR, accepting empty strings at both ends.
+	 * E.g. ";blah;blah;blah;;" will give ["", "blah", "blah", "blah", "", ""].
+	 * Java 7 split() would give ["blah","blah","blah"].
+	 */
+	public static String[] split(String string) {
+		if(string == null) return EMPTY_STRING_ARRAY;
+		// Java 7 version of String.split() trims the extra delimeters at each end.
+		int emptyAtStart = 0;
+		for(;emptyAtStart<string.length() && string.charAt(emptyAtStart) == MULTI_VALUE_CHAR;emptyAtStart++);
+		if(emptyAtStart == string.length()) {
+			String[] ret = new String[string.length()];
+			for(int i=0;i<ret.length;i++) ret[i] = "";
+			return ret;
+		}
+		int emptyAtEnd = 0;
+		for(int i=string.length()-1; i>=0 && string.charAt(i) == MULTI_VALUE_CHAR;i--) emptyAtEnd++;
+		string = string.substring(emptyAtStart, string.length() - emptyAtEnd);
+		String[] split = string.split(String.valueOf(MULTI_VALUE_CHAR)); // slower???
+		if(emptyAtStart != 0 || emptyAtEnd != 0) {
+			String[] ret = new String[emptyAtStart+split.length+emptyAtEnd];
+			System.arraycopy(split, 0, ret, emptyAtStart, split.length);
+			split = ret;
+			for(int i=0;i<split.length;i++)
+				if(split[i] == null) split[i] = "";
+		}
+		return split;
+	}
+
+	/** Combine a list of String's into a single String, separating them by the MULTI_VALUE_CHAR. */
+	private static String unsplit(String[] strings) {
 		if (strings.length == 0) return "";
-    	StringBuilder sb = new StringBuilder();
-    	for(String s: strings) {
-    		sb.append(s);
-    		assert(s.indexOf(MULTI_VALUE_CHAR) == -1);
+		StringBuilder sb = new StringBuilder();
+		for(String s: strings) {
+			sb.append(s);
+			assert(s.indexOf(MULTI_VALUE_CHAR) == -1);
 			sb.append(MULTI_VALUE_CHAR);
-    	}
+		}
 		// assert(sb.length() > 0) -- always true as strings.length != 0
 		// remove last MULTI_VALUE_CHAR
 		sb.deleteCharAt(sb.length()-1);
-    	return sb.toString();
-    }
+		return sb.toString();
+	}
 
-    /**
-     * Put contents of a fieldset, overwrite old values.
-     */
-    public void putAllOverwrite(SimpleFieldSet fs) {
-    	for(Map.Entry<String, String> entry: fs.values.entrySet()) {
-    		values.put(entry.getKey(), entry.getValue()); // overwrite old
-    	}
-    	if(fs.subsets == null) return;
+	/**
+	 * Put contents of a fieldset, overwrite old values.
+	 */
+	public void putAllOverwrite(SimpleFieldSet fs) {
+		for(Map.Entry<String, String> entry: fs.values.entrySet()) {
+			values.put(entry.getKey(), entry.getValue()); // overwrite old
+		}
+		if(fs.subsets == null) return;
 	if(subsets == null) subsets = new HashMap<String, SimpleFieldSet>();
-    	for(Map.Entry<String, SimpleFieldSet> entry: fs.subsets.entrySet()) {
-    		String key = entry.getKey();
-    		SimpleFieldSet hisFS = entry.getValue();
-    		SimpleFieldSet myFS = subsets.get(key);
-    		if(myFS != null) {
-    			myFS.putAllOverwrite(hisFS);
-    		} else {
-    			subsets.put(key, hisFS);
-    		}
-    	}
-    }
+		for(Map.Entry<String, SimpleFieldSet> entry: fs.subsets.entrySet()) {
+			String key = entry.getKey();
+			SimpleFieldSet hisFS = entry.getValue();
+			SimpleFieldSet myFS = subsets.get(key);
+			if(myFS != null) {
+				myFS.putAllOverwrite(hisFS);
+			} else {
+				subsets.put(key, hisFS);
+			}
+		}
+	}
 
-    /**
-     * Set a key to a value. If the value already exists, throw IllegalStateException.
-     * @param key The key.
-     * @param value The value.
-     */
-    public void putSingle(String key, String value) {
-    	if(value == null) return;
-    	if(!shortLived) value = value.intern();
-    	if(!put(key, value, false, false, false))
-    		throw new IllegalStateException("Value already exists: "+value+" but want to set "+key+" to "+value);
-    }
+	/**
+	 * Set a key to a value. If the value already exists, throw IllegalStateException.
+	 * @param key The key.
+	 * @param value The value.
+	 */
+	public void putSingle(String key, String value) {
+		if(value == null) return;
+		if(!shortLived) value = value.intern();
+		if(!put(key, value, false, false, false))
+			throw new IllegalStateException("Value already exists: "+value+" but want to set "+key+" to "+value);
+	}
 
-    /**
-     * Aggregating put. Set a key to a value, if the value already exists, append to it.
-     * If you do not need this functionality please use putOverwrite for a minimal
-     * performance gain.
-     *
-     * @param key The key.
-     * @param value The value.
-     */
-    public void putAppend(String key, String value) {
-    	if(value == null) return;
-    	if(!shortLived) value = value.intern();
-    	put(key, value, true, false, false);
-    }
+	/**
+	 * Aggregating put. Set a key to a value, if the value already exists, append to it.
+	 * If you do not need this functionality please use putOverwrite for a minimal
+	 * performance gain.
+	 *
+	 * @param key The key.
+	 * @param value The value.
+	 */
+	public void putAppend(String key, String value) {
+		if(value == null) return;
+		if(!shortLived) value = value.intern();
+		put(key, value, true, false, false);
+	}
 
-    /**
-     * Set a key to a value, overwriting any existing value if present.
-     * This function is a little bit faster than putAppend() because it does not
-     * check whether the key already exists.
-     *
-     * @param key The key.
-     * @param value The value.
-     */
-    public void putOverwrite(String key, String value) {
-    	if(value == null) return;
-    	if(!shortLived) value = value.intern();
-    	put(key, value, false, true, false);
-    }
+	/**
+	 * Set a key to a value, overwriting any existing value if present.
+	 * This function is a little bit faster than putAppend() because it does not
+	 * check whether the key already exists.
+	 *
+	 * @param key The key.
+	 * @param value The value.
+	 */
+	public void putOverwrite(String key, String value) {
+		if(value == null) return;
+		if(!shortLived) value = value.intern();
+		put(key, value, false, true, false);
+	}
 
-    /**
-     * Set a key to a value.
-     * @param key The key.
-     * @param value The value.
-     * @param allowMultiple If true, if the key already exists then the value will be
-     * appended to the existing value. If false, we return false to indicate that the
-     * old value is unchanged.
-     * @return True unless allowMultiple was false and there was a pre-existing value,
-     * or value was null.
-     */
+	/**
+	 * Set a key to a value.
+	 * @param key The key.
+	 * @param value The value.
+	 * @param allowMultiple If true, if the key already exists then the value will be
+	 * appended to the existing value. If false, we return false to indicate that the
+	 * old value is unchanged.
+	 * @return True unless allowMultiple was false and there was a pre-existing value,
+	 * or value was null.
+	 */
 	private synchronized boolean put(String key, String value, boolean allowMultiple, boolean overwrite, boolean fromRead) {
 		int idx;
 		if(value == null) return true; // valid no-op
@@ -430,7 +430,7 @@ public class SimpleFieldSet {
 			fs.put(after, value, allowMultiple, overwrite, fromRead);
 		}
 		return true;
-    }
+	}
 
 	public void put(String key, int value) {
 		// Use putSingle so it does the intern check
@@ -459,82 +459,82 @@ public class SimpleFieldSet {
 	}
 	
 	public void put(String key, byte[] bytes) {
-	    putSingle(key, Base64.encode(bytes));
+		putSingle(key, Base64.encode(bytes));
 	}
 
-    /**
-     * Write the contents of the SimpleFieldSet to a Writer.
-     * Note: The caller *must* buffer the writer to avoid lousy performance!
-     * (StringWriter is by definition buffered, otherwise wrap it in a BufferedWriter)
-     *
-     * @warning keep in mind that a Writer is not necessarily UTF-8!!
-     */
+	/**
+	 * Write the contents of the SimpleFieldSet to a Writer.
+	 * Note: The caller *must* buffer the writer to avoid lousy performance!
+	 * (StringWriter is by definition buffered, otherwise wrap it in a BufferedWriter)
+	 *
+	 * @warning keep in mind that a Writer is not necessarily UTF-8!!
+	 */
 	public void writeTo(Writer w) throws IOException {
 		writeTo(w, "", false, false);
 	}
 
-    /**
-     * Write the contents of the SimpleFieldSet to a Writer.
-     * Note: The caller *must* buffer the writer to avoid lousy performance!
-     * (StringWriter is by definition buffered, otherwise wrap it in a BufferedWriter)
-     * 
-     * @param w The Writer to write to. @warning keep in mind that a Writer is not necessarily UTF-8!!
-     * @param prefix String to prefix the keys with. (E.g. when writing a tree of SFS's).
-     * @param noEndMarker If true, don't write the end marker (the last line, the only one with no
-     * "=" in it).
-     * @param useBase64 If true, use Base64 for any value that has control characters, whitespace, 
-     * or characters used by SimpleFieldSet in it. In this case the separator will be "==" not "=".
-     * This is mainly useful for node references, which tend to lose whitespace, gain newlines etc
-     * in transit. Can be overridden (to true) by alwaysUseBase64 setting.
-     */
-    synchronized void writeTo(Writer w, String prefix, boolean noEndMarker, boolean useBase64) throws IOException {
+	/**
+	 * Write the contents of the SimpleFieldSet to a Writer.
+	 * Note: The caller *must* buffer the writer to avoid lousy performance!
+	 * (StringWriter is by definition buffered, otherwise wrap it in a BufferedWriter)
+	 * 
+	 * @param w The Writer to write to. @warning keep in mind that a Writer is not necessarily UTF-8!!
+	 * @param prefix String to prefix the keys with. (E.g. when writing a tree of SFS's).
+	 * @param noEndMarker If true, don't write the end marker (the last line, the only one with no
+	 * "=" in it).
+	 * @param useBase64 If true, use Base64 for any value that has control characters, whitespace, 
+	 * or characters used by SimpleFieldSet in it. In this case the separator will be "==" not "=".
+	 * This is mainly useful for node references, which tend to lose whitespace, gain newlines etc
+	 * in transit. Can be overridden (to true) by alwaysUseBase64 setting.
+	 */
+	synchronized void writeTo(Writer w, String prefix, boolean noEndMarker, boolean useBase64) throws IOException {
 		writeHeader(w);
-    	for (Map.Entry<String, String> entry: values.entrySet()) {
+		for (Map.Entry<String, String> entry: values.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
 			writeValue(w, key, value, prefix, useBase64);
-    	}
-    	if(subsets != null) {
-    		for (Map.Entry<String, SimpleFieldSet> entry: subsets.entrySet()) {
+		}
+		if(subsets != null) {
+			for (Map.Entry<String, SimpleFieldSet> entry: subsets.entrySet()) {
 				String key = entry.getKey();
 				SimpleFieldSet subset = entry.getValue();
-    			if(subset == null) throw new NullPointerException();
-    			subset.writeTo(w, prefix+key+MULTI_LEVEL_CHAR, true, useBase64);
-    		}
-    	}
-    	if(!noEndMarker) {
-    		if(endMarker == null)
-    			w.write("End\n");
-    		else {
-    			w.write(endMarker);
-    			w.write('\n');
-    		}
-    	}
-    }
+				if(subset == null) throw new NullPointerException();
+				subset.writeTo(w, prefix+key+MULTI_LEVEL_CHAR, true, useBase64);
+			}
+		}
+		if(!noEndMarker) {
+			if(endMarker == null)
+				w.write("End\n");
+			else {
+				w.write(endMarker);
+				w.write('\n');
+			}
+		}
+	}
 
-    private void writeValue(Writer w, String key, String value, String prefix, boolean useBase64) throws IOException {
-        w.write(prefix);
-        w.write(key);
-        w.write(KEYVALUE_SEPARATOR_CHAR);
-        if((useBase64 || alwaysUseBase64) && shouldBase64(value)) {
-        	w.write(KEYVALUE_SEPARATOR_CHAR);
-        	w.write(Base64.encodeUTF8(value));
-        } else {
-        	w.write(value);
-        }
-        w.write('\n');
+	private void writeValue(Writer w, String key, String value, String prefix, boolean useBase64) throws IOException {
+		w.write(prefix);
+		w.write(key);
+		w.write(KEYVALUE_SEPARATOR_CHAR);
+		if((useBase64 || alwaysUseBase64) && shouldBase64(value)) {
+			w.write(KEYVALUE_SEPARATOR_CHAR);
+			w.write(Base64.encodeUTF8(value));
+		} else {
+			w.write(value);
+		}
+		w.write('\n');
 	}
 
 	private boolean shouldBase64(String value) {
-    	for(int i=0;i<value.length();i++) {
-    		char c = value.charAt(i);
-    		if(c == SimpleFieldSet.KEYVALUE_SEPARATOR_CHAR) return true;
-    		if(c == SimpleFieldSet.MULTI_LEVEL_CHAR) return true;
-    		if(c == SimpleFieldSet.MULTI_VALUE_CHAR) return true;
-    		if(Character.isISOControl(c)) return true;
-    		if(Character.isWhitespace(c)) return true;
-    	}
-    	return false;
+		for(int i=0;i<value.length();i++) {
+			char c = value.charAt(i);
+			if(c == SimpleFieldSet.KEYVALUE_SEPARATOR_CHAR) return true;
+			if(c == SimpleFieldSet.MULTI_LEVEL_CHAR) return true;
+			if(c == SimpleFieldSet.MULTI_VALUE_CHAR) return true;
+			if(Character.isISOControl(c)) return true;
+			if(Character.isWhitespace(c)) return true;
+		}
+		return false;
 	}
 
 	public void writeToOrdered(Writer w) throws IOException {
@@ -555,38 +555,38 @@ public class SimpleFieldSet {
 	 * regardless of this allowOptionalBase64.
 	 * @throws IOException If an error occurs writing to the Writer.
 	 */
-    private synchronized void writeToOrdered(Writer w, String prefix, boolean noEndMarker, boolean allowOptionalBase64) throws IOException {
+	private synchronized void writeToOrdered(Writer w, String prefix, boolean noEndMarker, boolean allowOptionalBase64) throws IOException {
 		writeHeader(w);
-    	String[] keys = values.keySet().toArray(new String[values.size()]);
-    	int i=0;
+		String[] keys = values.keySet().toArray(new String[values.size()]);
+		int i=0;
 
-    	// Sort
-    	Arrays.sort(keys);
+		// Sort
+		Arrays.sort(keys);
 
-    	// Output
-    	for(i=0; i < keys.length; i++) {
-    		writeValue(w, keys[i], get(keys[i]), prefix, allowOptionalBase64);
-    	}
+		// Output
+		for(i=0; i < keys.length; i++) {
+			writeValue(w, keys[i], get(keys[i]), prefix, allowOptionalBase64);
+		}
 
-    	if(subsets != null) {
-    		String[] orderedPrefixes = subsets.keySet().toArray(new String[subsets.size()]);
-    		// Sort
-    		Arrays.sort(orderedPrefixes);
+		if(subsets != null) {
+			String[] orderedPrefixes = subsets.keySet().toArray(new String[subsets.size()]);
+			// Sort
+			Arrays.sort(orderedPrefixes);
 
-        	for(i=0; i < orderedPrefixes.length; i++) {
-    			SimpleFieldSet subset = subset(orderedPrefixes[i]);
-    			if(subset == null) throw new NullPointerException();
-    			subset.writeToOrdered(w, prefix+orderedPrefixes[i]+MULTI_LEVEL_CHAR, true, allowOptionalBase64);
-    		}
-    	}
+			for(i=0; i < orderedPrefixes.length; i++) {
+				SimpleFieldSet subset = subset(orderedPrefixes[i]);
+				if(subset == null) throw new NullPointerException();
+				subset.writeToOrdered(w, prefix+orderedPrefixes[i]+MULTI_LEVEL_CHAR, true, allowOptionalBase64);
+			}
+		}
 
-    	if(!noEndMarker) {
-    		if(endMarker == null)
-    			w.write("End\n");
-    		else
-    			w.write(endMarker+ '\n');
-    	}
-    }
+		if(!noEndMarker) {
+			if(endMarker == null)
+				w.write("End\n");
+			else
+				w.write(endMarker+ '\n');
+		}
+	}
 
 	private void writeHeader(Writer w) throws IOException {
 		if (header != null) {
@@ -597,43 +597,43 @@ public class SimpleFieldSet {
 	}
 
 	@Override
-    public String toString() {
-        StringWriter sw = new StringWriter();
-        try {
-            writeTo(sw);
-        } catch (IOException e) {
-            Logger.error(this, "WTF?!: "+e+" in toString()!", e);
-        }
-        return sw.toString();
-    }
+	public String toString() {
+		StringWriter sw = new StringWriter();
+		try {
+			writeTo(sw);
+		} catch (IOException e) {
+			Logger.error(this, "WTF?!: "+e+" in toString()!", e);
+		}
+		return sw.toString();
+	}
 
-    public String toOrderedString() {
-    	StringWriter sw = new StringWriter();
-        try {
-            writeToOrdered(sw);
-        } catch (IOException e) {
-            Logger.error(this, "WTF?!: "+e+" in toString()!", e);
-        }
-        return sw.toString();
-    }
+	public String toOrderedString() {
+		StringWriter sw = new StringWriter();
+		try {
+			writeToOrdered(sw);
+		} catch (IOException e) {
+			Logger.error(this, "WTF?!: "+e+" in toString()!", e);
+		}
+		return sw.toString();
+	}
 
-    public String toOrderedStringWithBase64() {
-        StringWriter sw = new StringWriter();
-        try {
-            writeToOrdered(sw, "", false, true);
-        } catch (IOException e) {
-            Logger.error(this, "WTF?!: "+e+" in toString()!", e);
-        }
-        return sw.toString();
-    }
+	public String toOrderedStringWithBase64() {
+		StringWriter sw = new StringWriter();
+		try {
+			writeToOrdered(sw, "", false, true);
+		} catch (IOException e) {
+			Logger.error(this, "WTF?!: "+e+" in toString()!", e);
+		}
+		return sw.toString();
+	}
 
-    public String getEndMarker() {
-    	return endMarker;
-    }
+	public String getEndMarker() {
+		return endMarker;
+	}
 
-    public void setEndMarker(String s) {
-    	endMarker = s;
-    }
+	public void setEndMarker(String s) {
+		endMarker = s;
+	}
 
 	public synchronized SimpleFieldSet subset(String key) {
 		if(subsets == null) return null;
@@ -672,46 +672,46 @@ public class SimpleFieldSet {
 	/** Iterate over keys that are in the top level of the tree, i.e. that do not contain a ".". 
 	 * E.g. "Name=Value" is a top level key. "Subset.Name=Value" is NOT a top level key. */
 	public Iterator<String> toplevelKeyIterator() {
-	    return values.keySet().iterator();
+		return values.keySet().iterator();
 	}
 	
-    public class KeyIterator implements Iterator<String> {
-    	final Iterator<String> valuesIterator;
-    	final Iterator<String> subsetIterator;
-    	KeyIterator subIterator;
-    	String prefix;
+	public class KeyIterator implements Iterator<String> {
+		final Iterator<String> valuesIterator;
+		final Iterator<String> subsetIterator;
+		KeyIterator subIterator;
+		String prefix;
 
-    	/**
-    	 * It provides an iterator for the SimpleSetField
-    	 * which passes through every key.
-    	 * (e.g. for key1=value1 key2.sub2=value2 key1.sub=value3
-    	 * it will provide key1,key2.sub2,key1.sub)
-    	 * @param a prefix to put BEFORE every key
-    	 * (e.g. for key1=value, if the iterator is created with prefix "aPrefix",
-    	 * it will provide aPrefixkey1
-    	 */
-    	public KeyIterator(String prefix) {
-    		synchronized(SimpleFieldSet.this) {
-    			valuesIterator = values.keySet().iterator();
-    			if(subsets != null)
-    				subsetIterator = subsets.keySet().iterator();
-    			else
-    				subsetIterator = null;
-    			while(true) {
-    				if(valuesIterator != null && valuesIterator.hasNext()) break;
-    				if(subsetIterator == null || !subsetIterator.hasNext()) break;
-    				String name = subsetIterator.next();
-    				if(name == null) continue;
-    				SimpleFieldSet fs = subsets.get(name);
-    				if(fs == null) continue;
-    				String newPrefix = prefix + name + MULTI_LEVEL_CHAR;
-    				subIterator = fs.keyIterator(newPrefix);
-    				if(subIterator.hasNext()) break;
-    				subIterator = null;
-    			}
-    			this.prefix = prefix;
-    		}
-    	}
+		/**
+		 * It provides an iterator for the SimpleSetField
+		 * which passes through every key.
+		 * (e.g. for key1=value1 key2.sub2=value2 key1.sub=value3
+		 * it will provide key1,key2.sub2,key1.sub)
+		 * @param a prefix to put BEFORE every key
+		 * (e.g. for key1=value, if the iterator is created with prefix "aPrefix",
+		 * it will provide aPrefixkey1
+		 */
+		public KeyIterator(String prefix) {
+			synchronized(SimpleFieldSet.this) {
+				valuesIterator = values.keySet().iterator();
+				if(subsets != null)
+					subsetIterator = subsets.keySet().iterator();
+				else
+					subsetIterator = null;
+				while(true) {
+					if(valuesIterator != null && valuesIterator.hasNext()) break;
+					if(subsetIterator == null || !subsetIterator.hasNext()) break;
+					String name = subsetIterator.next();
+					if(name == null) continue;
+					SimpleFieldSet fs = subsets.get(name);
+					if(fs == null) continue;
+					String newPrefix = prefix + name + MULTI_LEVEL_CHAR;
+					subIterator = fs.keyIterator(newPrefix);
+					if(subIterator.hasNext()) break;
+					subIterator = null;
+				}
+				this.prefix = prefix;
+			}
+		}
 
 		@Override
 		public boolean hasNext() {
@@ -777,44 +777,44 @@ public class SimpleFieldSet {
 			throw new UnsupportedOperationException();
 		}
 	}
-    
-    /** Get a read-only map of direct key name:value pairs. Direct key values are things like 
-     * "Name=Value" (which would return a map containing "Name" -> "Value", NOT 
-     * "Subset.Name=Value" (which would not be returned). */
-    public Map<String, String> directKeyValues() {
-        return Collections.unmodifiableMap(values);
-    }
+	
+	/** Get a read-only map of direct key name:value pairs. Direct key values are things like 
+	 * "Name=Value" (which would return a map containing "Name" -> "Value", NOT 
+	 * "Subset.Name=Value" (which would not be returned). */
+	public Map<String, String> directKeyValues() {
+		return Collections.unmodifiableMap(values);
+	}
 
-    /** Get a read-only set of direct key names. So:
-     * Name=Value
-     * Subset.OtherName=Value
-     * End
-     * Would give "Name".
-     * @return
-     */
-    public Set<String> directKeys() {
-        return Collections.unmodifiableSet(values.keySet());
-    }
+	/** Get a read-only set of direct key names. So:
+	 * Name=Value
+	 * Subset.OtherName=Value
+	 * End
+	 * Would give "Name".
+	 * @return
+	 */
+	public Set<String> directKeys() {
+		return Collections.unmodifiableSet(values.keySet());
+	}
 
-    /** Get a read-only set of direct subsets. So:
-     * Name=Value
-     * Subset.OtherName=Value
-     * End
-     * Would give "OtherName" -> SFS containing OtherName=Value.
-     * @return
-     */
-    public Map<String, SimpleFieldSet> directSubsets() {
-        return subsets == null ? emptyMap() : Collections.unmodifiableMap(subsets);
-    }
+	/** Get a read-only set of direct subsets. So:
+	 * Name=Value
+	 * Subset.OtherName=Value
+	 * End
+	 * Would give "OtherName" -> SFS containing OtherName=Value.
+	 * @return
+	 */
+	public Map<String, SimpleFieldSet> directSubsets() {
+		return subsets == null ? emptyMap() : Collections.unmodifiableMap(subsets);
+	}
 
-    /** Tolerant put(); does nothing if fs is empty */
-    public void tput(String key, SimpleFieldSet fs) {
-    	if(fs == null || fs.isEmpty()) return;
-    	put(key, fs);
-    }
+	/** Tolerant put(); does nothing if fs is empty */
+	public void tput(String key, SimpleFieldSet fs) {
+		if(fs == null || fs.isEmpty()) return;
+		put(key, fs);
+	}
 
-    /** Add a name:value pair, traversing the tree and creating sub-SFS's if necessary. So we can
-     * add("a.b.c.d", "value) even if there is no subset "a"; it will create it automatically.
+	/** Add a name:value pair, traversing the tree and creating sub-SFS's if necessary. So we can
+	 * add("a.b.c.d", "value) even if there is no subset "a"; it will create it automatically.
      * @param key Name of the key to add.
      * @param fs Subset under the key.
      */

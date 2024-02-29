@@ -28,7 +28,7 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 	private final HealingDecisionSupplier healingDecisionSupplier;
 	final Map<Bucket, SingleBlockInserter> runningInserters;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -185,13 +185,13 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		meta.free();
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) {
-        // Do nothing. Not persisted.
-    }
+	@Override
+	public void innerOnResume(ClientContext context) {
+		// Do nothing. Not persisted.
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return null;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return null;
+	}
 }

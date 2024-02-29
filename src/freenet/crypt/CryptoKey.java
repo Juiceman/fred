@@ -17,8 +17,8 @@ import freenet.support.Logger;
 
 public abstract class CryptoKey implements CryptoElement, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    protected static final MessageDigest shactx;
+	private static final long serialVersionUID = 1L;
+	protected static final MessageDigest shactx;
 	static {
 		try {
 			shactx = MessageDigest.getInstance("SHA1", Util.mdProviders.get("SHA1"));

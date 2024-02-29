@@ -348,13 +348,13 @@ public class Probe implements ByteCounter {
 	 * If the probe comes to have an HTL of zero: (an incoming HTL of less than one is discarded.)
 	 * Returns (as node settings allow) exactly one of:
 	 * <ul>
-	 *         <li>unique identifier and integer 7-day uptime percentage</li>
-	 *         <li>uptime: 48-hour percentage or 7-day percentage</li>
-	 *         <li>output bandwidth</li>
-	 *         <li>store size</li>
-	 *         <li>link lengths</li>
-	 *         <li>location</li>
-	 *         <li>build number</li>
+	 *		 <li>unique identifier and integer 7-day uptime percentage</li>
+	 *		 <li>uptime: 48-hour percentage or 7-day percentage</li>
+	 *		 <li>output bandwidth</li>
+	 *		 <li>store size</li>
+	 *		 <li>link lengths</li>
+	 *		 <li>location</li>
+	 *		 <li>build number</li>
 	 * </ul>
 	 *
 	 * @param message probe request, containing HTL
@@ -385,14 +385,14 @@ public class Probe implements ByteCounter {
 		if (htl < 1) {
 			if (logWARNING) {
 				Logger.warning(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); discarding.");
+					source.getIdentityString() + " (" + source.userToString() + "); discarding.");
 			}
 			return;
 		} else if (htl > MAX_HTL) {
 			if (logMINOR) {
 				Logger.minor(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
-				    MAX_HTL + ".");
+					source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
+					MAX_HTL + ".");
 			}
 			htl = MAX_HTL;
 		}
@@ -570,7 +570,7 @@ public class Probe implements ByteCounter {
 
 		//Refusal or an error should also be listened for so it can be relayed.
 		filter.or(createFilter(candidate, uid, timeout).setType(DMT.ProbeRefused)
-		      .or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
+			  .or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
 
 		return filter;
 	}
@@ -824,7 +824,7 @@ public class Probe implements ByteCounter {
 				return;
 			}
 			if (logDEBUG) Logger.debug(Probe.class, "Relaying " + message.getSpec().getName() + " back" +
-			                                          " to " + source.userToString());
+													  " to " + source.userToString());
 			try {
 				source.sendAsync(message, null, Probe.this);
 			} catch (NotConnectedException e) {

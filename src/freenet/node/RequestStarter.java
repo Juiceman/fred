@@ -55,8 +55,8 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	
 	public static final short NUMBER_OF_PRIORITY_CLASSES = PAUSED_PRIORITY_CLASS - MAXIMUM_PRIORITY_CLASS + 1; // include 0 and max !!
 	
-    public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
-    
+	public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
+	
 	public static boolean isValidPriorityClass(int prio) {
 		return !((prio < MAXIMUM_PRIORITY_CLASS) || (prio > PAUSED_PRIORITY_CLASS));
 	}
@@ -226,14 +226,14 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
-            while(true) {
-                try {
-                    realRun();
-                } catch (Throwable t) {
-                        Logger.error(this, "Caught "+t, t);
-                }
-            }
+		freenet.support.Logger.OSThread.logPID(this);
+			while(true) {
+				try {
+					realRun();
+				} catch (Throwable t) {
+						Logger.error(this, "Caught "+t, t);
+				}
+			}
 	}
 	
 	private class SenderThread implements Runnable {
@@ -248,11 +248,11 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
-		    // FIXME ? key is not known for inserts here
-		    if (key != null)
-		    	stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
-		    if(!req.send(core, sched)) {
+			freenet.support.Logger.OSThread.logPID(this);
+			// FIXME ? key is not known for inserts here
+			if (key != null)
+				stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
+			if(!req.send(core, sched)) {
 				if(!((!req.isPersistent()) && req.isCancelled()))
 					Logger.error(this, "run() not able to send a request on "+req);
 				else

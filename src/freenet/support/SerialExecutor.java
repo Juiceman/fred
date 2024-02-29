@@ -126,7 +126,7 @@ public class SerialExecutor implements Executor {
 	public void execute(Runnable job, String jobName) {
 		if (logMINOR)
 			Logger.minor(this, "Running " + jobName + " : " + job + " started=" + threadStarted + " waiting="
-			        + threadWaiting);
+					+ threadWaiting);
 		jobs.offer(job);
 
 		synchronized (syncLock) {

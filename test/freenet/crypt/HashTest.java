@@ -21,7 +21,7 @@ public class HashTest {
 	static private final byte[] helloWorld = "hello world".getBytes(StandardCharsets.UTF_8);
 	static private final byte[] nullArray = null;
 	static private final HashType[] types = {HashType.MD5, HashType.ED2K, HashType.SHA1, 
-	    HashType.TTH, HashType.SHA256, HashType.SHA384, HashType.SHA512};
+		HashType.TTH, HashType.SHA256, HashType.SHA384, HashType.SHA512};
 	static private final String[] trueHashes = {
 		"5eb63bbbe01eeed093cb22bb8f5acdc3",
 		"aa010fbc1d14c795d86ef98c95479d17",
@@ -152,7 +152,7 @@ public class HashTest {
 				hash.addByte(helloWorld[j]);
 			}
 			assertArrayEquals("HashType: "+types[i].name(), 
-			        Hex.decode(trueHashes[i]), hash.genHash());	
+					Hex.decode(trueHashes[i]), hash.genHash());	
 		}
 	}
 
@@ -179,7 +179,7 @@ public class HashTest {
 			Hash hash = new Hash(types[i]); 
 			hash.addBytes(byteBuffer);
 			assertArrayEquals("HashType: "+types[i].name(), 
-			        Hex.decode(trueHashes[i]), hash.genHash());
+					Hex.decode(trueHashes[i]), hash.genHash());
 		}
 	}
 
@@ -205,7 +205,7 @@ public class HashTest {
 			hash.addBytes(helloWorld, 0, helloWorld.length/2);
 			hash.addBytes(helloWorld, helloWorld.length/2, helloWorld.length-helloWorld.length/2);
 			assertArrayEquals("HashType: "+types[i].name(), 
-			        Hex.decode(trueHashes[i]), hash.genHash());	
+					Hex.decode(trueHashes[i]), hash.genHash());	
 		}
 	}
 
@@ -257,7 +257,7 @@ public class HashTest {
 		for(int i = 0; i < types.length; i++){
 			Hash hash = new Hash(types[i]);
 			assertTrue("HashType: "+types[i].name(), 
-			        hash.verify(Hex.decode(trueHashes[i]), helloWorld));
+					hash.verify(Hex.decode(trueHashes[i]), helloWorld));
 		}
 	}
 
@@ -266,7 +266,7 @@ public class HashTest {
 		for(int i = 0; i < types.length; i++){
 			Hash hash = new Hash(types[i]);
 			assertFalse("HashType: "+types[i].name(), 
-			        hash.verify(Hex.decode(falseHashes[i]), helloWorld));
+					hash.verify(Hex.decode(falseHashes[i]), helloWorld));
 		}
 	}
 
@@ -284,7 +284,7 @@ public class HashTest {
 		for(int i = 0; i < types.length; i++){
 			Hash hash = new Hash(types[i]);
 			boolean throwResult = false;
-            boolean valid = true;
+			boolean valid = true;
 			try{
 				valid = hash.verify(nullArray, helloWorld);
 			}catch(NullPointerException e){

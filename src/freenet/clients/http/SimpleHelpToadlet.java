@@ -43,10 +43,10 @@ public class SimpleHelpToadlet extends Toadlet {
 		HTMLNode helpScreenContent2 = ctx.getPageMaker().getInfobox("infobox-content", NodeL10n.getBase().getString("SimpleHelpToadlet.definitionsTitle"), contentNode, "freenet-definitions", true);
 		
 		HTMLNode table = helpScreenContent2.addChild("table", new String[]{"border", "style"}, new String[]{"0", "border: none"});
-       
-                HTMLNode row = table.addChild("tr");
-                row.addChild("td", "style", "border: none");
-              
+	   
+				HTMLNode row = table.addChild("tr");
+				row.addChild("td", "style", "border: none");
+			  
 		row.addChild("#", NodeL10n.getBase().getString("SimpleHelpToadlet.CHK"));
 		row.addChild("br");
 		row.addChild("#", NodeL10n.getBase().getString("SimpleHelpToadlet.SSK"));

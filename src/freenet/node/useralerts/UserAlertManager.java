@@ -116,7 +116,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	 * 
 	 * @see #unregister(UserAlert)
 	 * @param alertHashCode
-	 *            The hash code of the user alert to dismiss
+	 *			The hash code of the user alert to dismiss
 	 */
 	public void dismissAlert(int alertHashCode) {
 		UserAlert[] userAlerts = getAlerts();
@@ -212,7 +212,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	 * Renders the given alert and returns the rendered HTML node.
 	 * 
 	 * @param userAlert
-	 *            The user alert to render
+	 *			The user alert to render
 	 * @return The rendered HTML node
 	 */
 	public HTMLNode renderAlert(UserAlert userAlert) {

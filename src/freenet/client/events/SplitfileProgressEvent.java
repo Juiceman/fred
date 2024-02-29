@@ -12,7 +12,7 @@ import freenet.support.Logger.LogLevel;
 
 public class SplitfileProgressEvent implements ClientEvent {
 
-    private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
@@ -56,16 +56,16 @@ public class SplitfileProgressEvent implements ClientEvent {
 	}
 	
 	protected SplitfileProgressEvent() {
-	    // For serialization.
-	    totalBlocks = 0;
-	    succeedBlocks = 0;
-	    // See ClientRequester.getLatestSuccess() for why this defaults to current time.
-	    latestSuccess = new Date();
-	    failedBlocks = 0;
-	    fatallyFailedBlocks = 0;
-	    latestFailure = null;
-	    minSuccessFetchBlocks = 0;
-	    finalizedTotal = false;
+		// For serialization.
+		totalBlocks = 0;
+		succeedBlocks = 0;
+		// See ClientRequester.getLatestSuccess() for why this defaults to current time.
+		latestSuccess = new Date();
+		failedBlocks = 0;
+		fatallyFailedBlocks = 0;
+		latestFailure = null;
+		minSuccessFetchBlocks = 0;
+		finalizedTotal = false;
 	}
 
 	/** TODO: Developer's tools: Include {@link #latestSuccess} and {@link #latestFailure}. */

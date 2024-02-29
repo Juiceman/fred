@@ -80,9 +80,9 @@ public class DSAPublicKey extends CryptoKey implements StorableBlock {
 	}
 	
 	protected DSAPublicKey() {
-	    // For serialization.
-	    y = null;
-	    group = null;
+		// For serialization.
+		y = null;
+		group = null;
 	}
 
 	public BigInteger getY() {

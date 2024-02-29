@@ -55,7 +55,7 @@ public abstract class BandwidthManipulator {
 	 */
 	protected HTMLNode parseErrorBox(HTMLNode parent, PageHelper helper, String message) {
 		HTMLNode infoBox = helper.getInfobox("infobox-warning", WizardL10n.l10n("bandwidthErrorSettingTitle"),
-		        parent, null, false);
+				parent, null, false);
 
 		infoBox.addChild("p", message);
 

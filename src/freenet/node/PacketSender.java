@@ -21,8 +21,8 @@ import freenet.support.math.MersenneTwister;
 /**
  * @author amphibian
  *
- *         Thread that sends a packet whenever: - A packet needs to be resent immediately -
- *         Acknowledgments or resend requests need to be sent urgently.
+ *		 Thread that sends a packet whenever: - A packet needs to be resent immediately -
+ *		 Acknowledgments or resend requests need to be sent urgently.
  */
 // j16sdiz (22-Dec-2008):
 // FIXME this is the only class implements Ticker, everbody is using this as
@@ -114,7 +114,7 @@ public class PacketSender implements Runnable {
 		if(logMINOR) Logger.minor(this, "In PacketSender.run()");
 		freenet.support.Logger.OSThread.logPID(this);
 
-                schedulePeriodicJob();
+				schedulePeriodicJob();
 		/*
 		 * Index of the point in the nodes list at which we sent a packet and then
 		 * ran out of bandwidth. We start the loop from here next time.
@@ -147,11 +147,11 @@ public class PacketSender implements Runnable {
 	 */
 	private void realRun() {
 		long now = System.currentTimeMillis();
-                PeerManager pm;
+				PeerManager pm;
 		PeerNode[] nodes;
 
-        pm = node.peers;
-        nodes = pm.myPeers();
+		pm = node.peers;
+		nodes = pm.myPeers();
 
 		long nextActionTime = Long.MAX_VALUE;
 		long oldTempNow = now;
@@ -361,8 +361,8 @@ public class PacketSender implements Runnable {
 		} else if(toSendAckOnly != null) {
 			try {
 				if(toSendAckOnly.maybeSendPacket(now, true)) {
-                    // Round-robin over the loop to update nextActionTime appropriately
-                    nextActionTime = now;
+					// Round-robin over the loop to update nextActionTime appropriately
+					nextActionTime = now;
 				}
 			} catch (BlockedTooLongException e) {
 				Logger.error(this, "Waited too long: "+TimeUtil.formatTime(e.delta)+" to allocate a packet number to send to "+toSendAckOnly+" : "+("(new packet format)")+" (version "+toSendAckOnly.getVersionNumber()+") - DISCONNECTING!");

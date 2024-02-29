@@ -35,9 +35,9 @@ public interface HTTPRequest {
 	 * without a value.
 	 * 
 	 * @param name
-	 *            the name of the parameter to check
+	 *			the name of the parameter to check
 	 * @return true if the parameter was set in the request, not regarding if
-	 *         the value is empty
+	 *		 the value is empty
 	 */
 	public boolean isParameterSet(String name);
 
@@ -53,9 +53,9 @@ public interface HTTPRequest {
 	 * </p>
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return the parameter value as String, or an empty String if the value
-	 *         was missing or empty
+	 *		 was missing or empty
 	 */
 	public String getParam(String name);
 
@@ -64,10 +64,10 @@ public interface HTTPRequest {
 	 * if the parameter was not set or has an empty value.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @param defaultValue
-	 *            the default value to be returned if the parameter is missing
-	 *            or empty
+	 *			the default value to be returned if the parameter is missing
+	 *			or empty
 	 * @return either the parameter value as String, or the default value
 	 */
 	public String getParam(String name, String defaultValue);
@@ -78,9 +78,9 @@ public interface HTTPRequest {
 	 * value is used.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return either the parameter value as int, or 0 if the parameter is
-	 *         missing, empty or invalid
+	 *		 missing, empty or invalid
 	 */
 	public int getIntParam(String name);
 
@@ -90,10 +90,10 @@ public interface HTTPRequest {
 	 * parameter, the first value is used.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @param defaultValue
-	 *            the default value to be returned if the parameter is missing,
-	 *            empty or invalid
+	 *			the default value to be returned if the parameter is missing,
+	 *			empty or invalid
 	 * @return either the parameter value as int, or the default value
 	 */
 	public int getIntParam(String name, int defaultValue);
@@ -107,7 +107,7 @@ public interface HTTPRequest {
 	 * return <code>null</code>.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return an array of all parameter values that might include empty values
 	 */
 	public String[] getMultipleParam(String name);
@@ -118,7 +118,7 @@ public interface HTTPRequest {
 	 * array is returned, so this method will never return <code>null</code>.
 	 * 
 	 * @param name
-	 *            the name of the parameter to get
+	 *			the name of the parameter to get
 	 * @return an int array of all parameter values that could be parsed as int
 	 */
 	public int[] getMultipleIntParam(String name);

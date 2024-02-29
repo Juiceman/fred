@@ -158,7 +158,7 @@ public class OpennetConnectionsToadlet extends ConnectionsToadlet implements Lin
 	}
 
 	@Override
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, 	RedirectException {
+	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException,	RedirectException {
 		super.handleMethodGET(uri, request, ctx);
 	}
 

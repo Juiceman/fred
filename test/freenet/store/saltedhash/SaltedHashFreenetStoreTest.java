@@ -144,7 +144,7 @@ public class SaltedHashFreenetStoreTest {
 		byte[] data = test.getBytes(StandardCharsets.UTF_8);
 		SimpleReadOnlyArrayBucket bucket = new SimpleReadOnlyArrayBucket(data);
 		return ClientCHKBlock.encode(bucket, false, false, (short)-1, bucket.size(), Compressor.DEFAULT_COMPRESSORDESCRIPTOR,
-        null, (byte)0);
+		null, (byte)0);
 	}
 
 	@Test

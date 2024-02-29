@@ -21,15 +21,15 @@ public interface ClientKeyBlock {
 	/** Does the block contain metadata? If not, it contains real data. */
 	boolean isMetadata();
 
-    /** @return The ClientKey for this key. */
-    public ClientKey getClientKey();
-    
-    public byte[] memoryDecode() throws KeyDecodeException;
-    
-    /** @return The underlying KeyBlock. */
-    public KeyBlock getBlock();
+	/** @return The ClientKey for this key. */
+	public ClientKey getClientKey();
+	
+	public byte[] memoryDecode() throws KeyDecodeException;
+	
+	/** @return The underlying KeyBlock. */
+	public KeyBlock getBlock();
 
-    /** @return The low-level Key for the block. */
+	/** @return The low-level Key for the block. */
 	Key getKey();
 	
 	/** This is why ClientKeyBlock isn't instanceof KeyBlock: Two ClientKeyBlock's with the same content

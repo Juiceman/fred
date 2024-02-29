@@ -11,6 +11,6 @@ public class IllegalBase64Exception
 	private static final long serialVersionUID = -1;
   public IllegalBase64Exception(String descr)
   {
-    super(descr);
+	super(descr);
   }
 }

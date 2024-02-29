@@ -26,8 +26,8 @@ import freenet.support.io.NativeThread;
  */
 public abstract class SendableGet extends BaseSendableGet {
 
-    private static final long serialVersionUID = 1L;
-    /** Parent BaseClientGetter. Required for schedulers. */
+	private static final long serialVersionUID = 1L;
+	/** Parent BaseClientGetter. Required for schedulers. */
 	public final ClientRequester parent;
 	
 	/** Get a numbered key to fetch. */
@@ -104,65 +104,65 @@ public abstract class SendableGet extends BaseSendableGet {
 	}
 	
 	public static FetchException translateException(LowLevelGetException e) {
-	    switch(e.code) {
-	    case LowLevelGetException.DATA_NOT_FOUND:
-	    case LowLevelGetException.DATA_NOT_FOUND_IN_STORE:
-	        return new FetchException(FetchExceptionMode.DATA_NOT_FOUND);
-	    case LowLevelGetException.RECENTLY_FAILED:
-	        return new FetchException(FetchExceptionMode.RECENTLY_FAILED);
-	    case LowLevelGetException.DECODE_FAILED:
-	        return new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR);
-	    case LowLevelGetException.INTERNAL_ERROR:
-	        return new FetchException(FetchExceptionMode.INTERNAL_ERROR);
-	    case LowLevelGetException.REJECTED_OVERLOAD:
-	        return new FetchException(FetchExceptionMode.REJECTED_OVERLOAD);
-	    case LowLevelGetException.ROUTE_NOT_FOUND:
-	        return new FetchException(FetchExceptionMode.ROUTE_NOT_FOUND);
-	    case LowLevelGetException.TRANSFER_FAILED:
-	        return new FetchException(FetchExceptionMode.TRANSFER_FAILED);
-	    case LowLevelGetException.VERIFY_FAILED:
-	        return new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR);
-	    case LowLevelGetException.CANCELLED:
-	        return new FetchException(FetchExceptionMode.CANCELLED);
-	    default:
-	        Logger.error(SimpleSingleFileFetcher.class, "Unknown LowLevelGetException code: "+e.code);
-	        return new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Unknown error code: "+e.code);
-	    }
+		switch(e.code) {
+		case LowLevelGetException.DATA_NOT_FOUND:
+		case LowLevelGetException.DATA_NOT_FOUND_IN_STORE:
+			return new FetchException(FetchExceptionMode.DATA_NOT_FOUND);
+		case LowLevelGetException.RECENTLY_FAILED:
+			return new FetchException(FetchExceptionMode.RECENTLY_FAILED);
+		case LowLevelGetException.DECODE_FAILED:
+			return new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR);
+		case LowLevelGetException.INTERNAL_ERROR:
+			return new FetchException(FetchExceptionMode.INTERNAL_ERROR);
+		case LowLevelGetException.REJECTED_OVERLOAD:
+			return new FetchException(FetchExceptionMode.REJECTED_OVERLOAD);
+		case LowLevelGetException.ROUTE_NOT_FOUND:
+			return new FetchException(FetchExceptionMode.ROUTE_NOT_FOUND);
+		case LowLevelGetException.TRANSFER_FAILED:
+			return new FetchException(FetchExceptionMode.TRANSFER_FAILED);
+		case LowLevelGetException.VERIFY_FAILED:
+			return new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR);
+		case LowLevelGetException.CANCELLED:
+			return new FetchException(FetchExceptionMode.CANCELLED);
+		default:
+			Logger.error(SimpleSingleFileFetcher.class, "Unknown LowLevelGetException code: "+e.code);
+			return new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Unknown error code: "+e.code);
+		}
 	}
 	
-    @Override
-    public boolean reduceWakeupTime(final long wakeupTime, ClientContext context) {
-        boolean ret = super.reduceWakeupTime(wakeupTime, context);
-        if(this.parent instanceof WantsCooldownCallback) {
-            context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+	@Override
+	public boolean reduceWakeupTime(final long wakeupTime, ClientContext context) {
+		boolean ret = super.reduceWakeupTime(wakeupTime, context);
+		if(this.parent instanceof WantsCooldownCallback) {
+			context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-                @Override
-                public boolean run(ClientContext context) {
-                    ((WantsCooldownCallback)parent).enterCooldown(getClientGetState(), wakeupTime, context);
-                    return false;
-                }
-                
-            });
-        }
-        return ret;
-    }
-    
-    @Override
-    public void clearWakeupTime(ClientContext context) {
-        super.clearWakeupTime(context);
-        if(this.parent instanceof WantsCooldownCallback) {
-            context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
+				@Override
+				public boolean run(ClientContext context) {
+					((WantsCooldownCallback)parent).enterCooldown(getClientGetState(), wakeupTime, context);
+					return false;
+				}
+				
+			});
+		}
+		return ret;
+	}
+	
+	@Override
+	public void clearWakeupTime(ClientContext context) {
+		super.clearWakeupTime(context);
+		if(this.parent instanceof WantsCooldownCallback) {
+			context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-                @Override
-                public boolean run(ClientContext context) {
-                    ((WantsCooldownCallback)parent).clearCooldown(getClientGetState());
-                    return false;
-                }
-                
-            });
-        }
-    }
+				@Override
+				public boolean run(ClientContext context) {
+					((WantsCooldownCallback)parent).clearCooldown(getClientGetState());
+					return false;
+				}
+				
+			});
+		}
+	}
 
-    protected abstract ClientGetState getClientGetState();
+	protected abstract ClientGetState getClientGetState();
 
 }

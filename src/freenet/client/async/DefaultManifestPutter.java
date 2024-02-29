@@ -28,9 +28,9 @@ import freenet.support.io.ResumeFailedException;
  * <UL>
  * <LI>max container size: 2MB (a CHK manifest with 62 CHK redirects)
  * <LI>max container item size: 1MB. Items &gt;1MB are inserted as externals.
- *                            exception: see rule 1)
+ *							exception: see rule 1)
  * <LI>container size spare: 15KB. No crystal ball is perfect, so we have space
- *                         for 'unexpected' metadata.
+ *						 for 'unexpected' metadata.
  * </UL>
  * <P>pack rules:
  * <OL>
@@ -49,8 +49,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class DefaultManifestPutter extends BaseManifestPutter {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(DefaultManifestPutter.class);
@@ -415,9 +415,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		}	
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        notifyClients(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		notifyClients(context);
+	}
 }

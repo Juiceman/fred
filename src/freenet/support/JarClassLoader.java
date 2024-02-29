@@ -59,9 +59,9 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * with the given name in the local file system.
 	 * 
 	 * @param fileName
-	 *            The name of the jar file
+	 *			The name of the jar file
 	 * @throws IOException
-	 *             if an I/O error occurs
+	 *			 if an I/O error occurs
 	 */
 	public JarClassLoader(String fileName) throws IOException {
 		this(new File(fileName));
@@ -72,12 +72,12 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * URL.
 	 * 
 	 * @param fileUrl
-	 *            The URL to load the jar file from
+	 *			The URL to load the jar file from
 	 * @param length
-	 *            The length of the jar file if known, <code>-1</code>
-	 *            otherwise
+	 *			The length of the jar file if known, <code>-1</code>
+	 *			otherwise
 	 * @throws IOException
-	 *             if an I/O error occurs
+	 *			 if an I/O error occurs
 	 */
 	public JarClassLoader(URL fileUrl, long length) throws IOException {
 		copyFileToTemp(fileUrl.openStream(), length);
@@ -88,9 +88,9 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * file.
 	 * 
 	 * @param file
-	 *            The file to load classes from
+	 *			The file to load classes from
 	 * @throws IOException
-	 *             if an I/O error occurs
+	 *			 if an I/O error occurs
 	 */
 	public JarClassLoader(File file) throws IOException {
 		tempJarFile = new JarFile(file);
@@ -101,12 +101,12 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * contents of a jar file) to a temporary location.
 	 * 
 	 * @param inputStream
-	 *            The input stream to read from
+	 *			The input stream to read from
 	 * @param length
-	 *            The length of the stream if known, <code>-1</code> if the
-	 *            length is not known
+	 *			The length of the stream if known, <code>-1</code> if the
+	 *			length is not known
 	 * @throws IOException
-	 *             if an I/O error occurs
+	 *			 if an I/O error occurs
 	 */
 	private void copyFileToTemp(InputStream inputStream, long length) throws IOException {
 		File tempFile = File.createTempFile("jar-", ".tmp");
@@ -257,7 +257,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * an entry in the jar file.
 	 * 
 	 * @param name
-	 *            The name of the class
+	 *			The name of the class
 	 * @return The path name of the entry in the jar file
 	 */
 	private String transformName(String name) {

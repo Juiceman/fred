@@ -219,7 +219,7 @@ public class NewPacketFormatKeyContext {
 	}
 
 	public void sent(SentPacket sentPacket, int seqNum, int length) {
-	    sentPacket.sent(length);
+		sentPacket.sent(length);
 		synchronized(sentPackets) {
 			sentPackets.put(seqNum, sentPacket);
 			int inFlight = sentPackets.size();
@@ -243,8 +243,8 @@ public class NewPacketFormatKeyContext {
 			for (SentPacket s : sentPackets.values()) {
 				long t = s.getSentTime() + maxDelay;
 				if (t < timeCheck) {
-				    timeCheck = t;
-			    }
+					timeCheck = t;
+				}
 			}
 		}
 		return timeCheck;
@@ -269,16 +269,16 @@ public class NewPacketFormatKeyContext {
 				if (s.getSentTime() < threshold) {
 					if (logMINOR) {
 						Logger.minor(this, "Assuming packet " + e.getKey() + " has been lost. "
-						                + "Delay " + (curTime - s.getSentTime()) + "ms, "
-						                + "threshold " + threshold + "ms");
+										+ "Delay " + (curTime - s.getSentTime()) + "ms, "
+										+ "threshold " + threshold + "ms");
 					}
 					// Store the packet sentTime in our lost sent times cache, so we can calculate
 					// RTT if an ack may surface later on.
 					if(!s.messages.isEmpty()) {
-				        lostSentTimes.report(e.getKey(), s.getSentTime());
-			        }
-			        // Mark the packet as lost and remove it from our active packets.
-			        s.lost();
+						lostSentTimes.report(e.getKey(), s.getSentTime());
+					}
+					// Mark the packet as lost and remove it from our active packets.
+					s.lost();
 					it.remove();
 					bigLostCount++;
 				} else {

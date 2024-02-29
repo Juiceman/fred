@@ -82,39 +82,39 @@ public class FCPConnectionHandler implements Closeable {
 	final BucketFactory bf;
 	final HashMap<String, ClientRequest> requestsByIdentifier;
 
-    /**
-     * {@link FCPPluginConnectionImpl} indexed by the server plugin name (see
-     * {@link PluginManager#getPluginFCPServer(String)}.<br><br>
-     * 
-     * This also serves the same purpose as the client which is connected to this would normally
-     * be responsible for if it was running as a plugin in the node (as specified by
-     * {@link PluginRespirator#connectToOtherPlugin(String, ClientSideFCPMessageHandler)}):<br>
-     * It keeps strong references to the {@link FCPPluginConnectionImpl} objects, and thereby marks
-     * them as alive.<br>
-     * This in turn causes the {@link FCPPluginConnectionImpl} objects to stay available in the
-     * {@link FCPPluginConnectionTracker}, which allows server plugins to query them by their ID.
-     */
-    private final TreeMap<String, FCPPluginConnectionImpl> pluginConnectionsByServerName
-        = new TreeMap<String, FCPPluginConnectionImpl>();
+	/**
+	 * {@link FCPPluginConnectionImpl} indexed by the server plugin name (see
+	 * {@link PluginManager#getPluginFCPServer(String)}.<br><br>
+	 * 
+	 * This also serves the same purpose as the client which is connected to this would normally
+	 * be responsible for if it was running as a plugin in the node (as specified by
+	 * {@link PluginRespirator#connectToOtherPlugin(String, ClientSideFCPMessageHandler)}):<br>
+	 * It keeps strong references to the {@link FCPPluginConnectionImpl} objects, and thereby marks
+	 * them as alive.<br>
+	 * This in turn causes the {@link FCPPluginConnectionImpl} objects to stay available in the
+	 * {@link FCPPluginConnectionTracker}, which allows server plugins to query them by their ID.
+	 */
+	private final TreeMap<String, FCPPluginConnectionImpl> pluginConnectionsByServerName
+		= new TreeMap<String, FCPPluginConnectionImpl>();
 
-    /**
-     * Lock for {@link #pluginConnectionsByServerName}.
-     * 
-     * A {@link ReadWriteLock} because the usage pattern is mostly reads, very few writes -
-     * {@link ReadWriteLock} can do that faster than a regular Lock.
-     * (A {@link ReentrantReadWriteLock} because thats the only implementation of
-     * {@link ReadWriteLock}.)
-     */
-    private final ReadWriteLock pluginConnectionsByServerName_Lock
-        = new ReentrantReadWriteLock();
+	/**
+	 * Lock for {@link #pluginConnectionsByServerName}.
+	 * 
+	 * A {@link ReadWriteLock} because the usage pattern is mostly reads, very few writes -
+	 * {@link ReadWriteLock} can do that faster than a regular Lock.
+	 * (A {@link ReentrantReadWriteLock} because thats the only implementation of
+	 * {@link ReadWriteLock}.)
+	 */
+	private final ReadWriteLock pluginConnectionsByServerName_Lock
+		= new ReentrantReadWriteLock();
 
-    /**
-     * 16 random bytes hex-encoded as String. Unique for each instance of this class.
-     * 
-     * @deprecated Use {@link #connectionIdentifierUUID} instead.
-     */
-    @Deprecated
-    public final String connectionIdentifier;
+	/**
+	 * 16 random bytes hex-encoded as String. Unique for each instance of this class.
+	 * 
+	 * @deprecated Use {@link #connectionIdentifierUUID} instead.
+	 */
+	@Deprecated
+	public final String connectionIdentifier;
 	
 	/** Random UUID unique for each instance of this class */
 	protected final UUID connectionIdentifierUUID;
@@ -151,25 +151,25 @@ public class FCPConnectionHandler implements Closeable {
 		server.node.random.nextBytes(identifier);
 		this.connectionIdentifier = HexUtil.bytesToHex(identifier);
 		
-        // The random 16-byte identifier was used before we added the UUID. Luckily, UUIDs are also
-        // 16 byetes, so we can re-use the bytes.
-        // TODO: When getting rid of the non-UUID connectionIdentifier, use UUID.randomUUID();
-        this.connectionIdentifierUUID = UUID.nameUUIDFromBytes(identifier);
+		// The random 16-byte identifier was used before we added the UUID. Luckily, UUIDs are also
+		// 16 byetes, so we can re-use the bytes.
+		// TODO: When getting rid of the non-UUID connectionIdentifier, use UUID.randomUUID();
+		this.connectionIdentifierUUID = UUID.nameUUIDFromBytes(identifier);
 	}
 
-    /**
-     * Queues the message for sending at the {@link FCPConnectionOutputHandler}.<br>
-     * <br>
-     * 
-     * ATTENTION: The function will return immediately before even trying to send the message, the
-     * message will be sent asynchronously.<br>
-     * As a consequence, this function not throwing does not give any guarantee whatsoever that the
-     * message will ever be sent.
-     */
-    @SuppressWarnings("deprecation")
-    public final void send(final FCPMessage message) {
-        outputHandler.queue(message);
-    }
+	/**
+	 * Queues the message for sending at the {@link FCPConnectionOutputHandler}.<br>
+	 * <br>
+	 * 
+	 * ATTENTION: The function will return immediately before even trying to send the message, the
+	 * message will be sent asynchronously.<br>
+	 * As a consequence, this function not throwing does not give any guarantee whatsoever that the
+	 * message will ever be sent.
+	 */
+	@SuppressWarnings("deprecation")
+	public final void send(final FCPMessage message) {
+		outputHandler.queue(message);
+	}
 
 	void start() {
 		inputHandler.start();
@@ -202,24 +202,24 @@ public class FCPConnectionHandler implements Closeable {
 		for(SubscribeUSK sub : uskSubscriptions2)
 			sub.unsubscribe();
 		if(!dupe) {
-		    try {
-		        server.core.clientContext.jobRunner.queue(new PersistentJob() {
-		            
-		            @Override
-		            public boolean run(ClientContext context) {
-		                if((rebootClient != null) && !rebootClient.hasPersistentRequests())
-		                    server.unregisterClient(rebootClient);
-		                if(foreverClient != null) {
-		                    if(!foreverClient.hasPersistentRequests())
-		                        server.unregisterClient(foreverClient);
-		                }
-		                return false;
-		            }
-		            
-		        }, NativeThread.NORM_PRIORITY);
-		    } catch (PersistenceDisabledException e) {
-		        // Ignore
-		    }
+			try {
+				server.core.clientContext.jobRunner.queue(new PersistentJob() {
+					
+					@Override
+					public boolean run(ClientContext context) {
+						if((rebootClient != null) && !rebootClient.hasPersistentRequests())
+							server.unregisterClient(rebootClient);
+						if(foreverClient != null) {
+							if(!foreverClient.hasPersistentRequests())
+								server.unregisterClient(foreverClient);
+						}
+						return false;
+					}
+					
+				}, NativeThread.NORM_PRIORITY);
+			} catch (PersistenceDisabledException e) {
+				// Ignore
+			}
 		}
 		
 		outputHandler.onClosed();
@@ -276,10 +276,10 @@ public class FCPConnectionHandler implements Closeable {
 			Logger.minor(this, "Set client name: "+name);
 		PersistentRequestClient client = server.getForeverClient(name, server.core, this);
 		if(client != null) {
-		    synchronized(this) {
-		        foreverClient = client;
-		    }
-            foreverClient.queuePendingMessagesOnConnectionRestartAsync(outputHandler, server.core.clientContext);
+			synchronized(this) {
+				foreverClient = client;
+			}
+			foreverClient.queuePendingMessagesOnConnectionRestartAsync(outputHandler, server.core.clientContext);
 		}
 	}
 	
@@ -326,40 +326,40 @@ public class FCPConnectionHandler implements Closeable {
 						cg = new ClientGet(this, message, server.core);
 						requestsByIdentifier.put(id, cg);
 					} else if(message.persistence == Persistence.FOREVER) {
-					    try {
-					        server.core.clientContext.jobRunner.queue(new PersistentJob() {
-					            
-					            @Override
-					            public boolean run(ClientContext context) {
-					                ClientGet getter;
-					                try {
-					                    getter = new ClientGet(FCPConnectionHandler.this, message, server.core);
-					                } catch (IdentifierCollisionException e1) {
-					                    Logger.normal(this, "Identifier collision on "+this);
-					                    FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
-					                    outputHandler.queue(msg);
-					                    return false;
-					                } catch (MessageInvalidException e1) {
-					                    outputHandler.queue(new ProtocolErrorMessage(e1.protocolCode, false, e1.getMessage(), e1.ident, e1.global));
-					                    return false;
-					                }
-					                try {
-					                    getter.register(false);
-					                } catch (IdentifierCollisionException e) {
-					                    Logger.normal(this, "Identifier collision on "+this);
-					                    FCPMessage msg = new IdentifierCollisionMessage(id, global);
-					                    outputHandler.queue(msg);
-					                    return false;
-					                }
-					                getter.start(context);
-					                return true;
-					            }
-					            
-					        }, NativeThread.HIGH_PRIORITY-1);
-					    } catch (PersistenceDisabledException e) {
-					        outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
-					        return;
-					    }
+						try {
+							server.core.clientContext.jobRunner.queue(new PersistentJob() {
+								
+								@Override
+								public boolean run(ClientContext context) {
+									ClientGet getter;
+									try {
+										getter = new ClientGet(FCPConnectionHandler.this, message, server.core);
+									} catch (IdentifierCollisionException e1) {
+										Logger.normal(this, "Identifier collision on "+this);
+										FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
+										outputHandler.queue(msg);
+										return false;
+									} catch (MessageInvalidException e1) {
+										outputHandler.queue(new ProtocolErrorMessage(e1.protocolCode, false, e1.getMessage(), e1.ident, e1.global));
+										return false;
+									}
+									try {
+										getter.register(false);
+									} catch (IdentifierCollisionException e) {
+										Logger.normal(this, "Identifier collision on "+this);
+										FCPMessage msg = new IdentifierCollisionMessage(id, global);
+										outputHandler.queue(msg);
+										return false;
+									}
+									getter.start(context);
+									return true;
+								}
+								
+							}, NativeThread.HIGH_PRIORITY-1);
+						} catch (PersistenceDisabledException e) {
+							outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
+							return;
+						}
 						return; // Don't run the start() below
 					} else {
 						cg = new ClientGet(this, message, server.core);
@@ -420,48 +420,48 @@ public class FCPConnectionHandler implements Closeable {
 					} catch (MalformedURLException e) {
 						failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, e.getMessage(), id, message.global);
 					} catch (IOException e) {
-					    failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, e.getMessage(), id, message.global);
-                    }
+						failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, e.getMessage(), id, message.global);
+					}
 				} else if(message.persistence == Persistence.FOREVER) {
-				    try {
-				        server.core.clientContext.jobRunner.queue(new PersistentJob() {
-				            
-				            @Override
-				            public boolean run(ClientContext context) {
-				                ClientPut putter;
-				                try {
-				                    putter = new ClientPut(FCPConnectionHandler.this, message, server);
-				                } catch (IdentifierCollisionException e) {
-				                    Logger.normal(this, "Identifier collision on "+this);
-				                    FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
-				                    outputHandler.queue(msg);
-				                    return false;
-				                } catch (MessageInvalidException e) {
-				                    outputHandler.queue(new ProtocolErrorMessage(e.protocolCode, false, e.getMessage(), e.ident, e.global));
-				                    return false;
-				                } catch (MalformedURLException e) {
-				                    outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, null, id, message.global));
-				                    return false;
-				                } catch (IOException e) {
-                                    outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, null, id, message.global));
-                                    return false;
-                                }
-				                try {
-				                    putter.register(false);
-				                } catch (IdentifierCollisionException e) {
-				                    Logger.normal(this, "Identifier collision on "+this);
-				                    FCPMessage msg = new IdentifierCollisionMessage(id, global);
-				                    outputHandler.queue(msg);
-				                    return false;
-				                }
-				                putter.start(context);
-				                return true;
-				            }
-				        
-				        }, NativeThread.HIGH_PRIORITY-1);
-				    } catch (PersistenceDisabledException e) {
-				        outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
-				    }
+					try {
+						server.core.clientContext.jobRunner.queue(new PersistentJob() {
+							
+							@Override
+							public boolean run(ClientContext context) {
+								ClientPut putter;
+								try {
+									putter = new ClientPut(FCPConnectionHandler.this, message, server);
+								} catch (IdentifierCollisionException e) {
+									Logger.normal(this, "Identifier collision on "+this);
+									FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
+									outputHandler.queue(msg);
+									return false;
+								} catch (MessageInvalidException e) {
+									outputHandler.queue(new ProtocolErrorMessage(e.protocolCode, false, e.getMessage(), e.ident, e.global));
+									return false;
+								} catch (MalformedURLException e) {
+									outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, null, id, message.global));
+									return false;
+								} catch (IOException e) {
+									outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, null, id, message.global));
+									return false;
+								}
+								try {
+									putter.register(false);
+								} catch (IdentifierCollisionException e) {
+									Logger.normal(this, "Identifier collision on "+this);
+									FCPMessage msg = new IdentifierCollisionMessage(id, global);
+									outputHandler.queue(msg);
+									return false;
+								}
+								putter.start(context);
+								return true;
+							}
+						
+						}, NativeThread.HIGH_PRIORITY-1);
+					} catch (PersistenceDisabledException e) {
+						outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
+					}
 					return; // Don't run the start() below
 				} else {
 					try {
@@ -474,8 +474,8 @@ public class FCPConnectionHandler implements Closeable {
 					} catch (MalformedURLException e) {
 						failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, null, id, message.global);
 					} catch (IOException e) {
-                        failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, null, id, message.global);
-                    }
+						failedMessage = new ProtocolErrorMessage(ProtocolErrorMessage.IO_ERROR, true, null, id, message.global);
+					}
 				}
 			}
 			if(!success) {
@@ -493,9 +493,9 @@ public class FCPConnectionHandler implements Closeable {
 			if(logMINOR) Logger.minor(this, "Failed: "+failedMessage);
 			outputHandler.queue(failedMessage);
 			if(cp != null)
-			    cp.freeData();
+				cp.freeData();
 			else
-			    message.freeData();
+				message.freeData();
 			return;
 		} else {
 			Logger.minor(this, "Starting "+cp);
@@ -536,42 +536,42 @@ public class FCPConnectionHandler implements Closeable {
 				}
 				// FIXME register non-persistent requests in the constructors also, we already register persistent ones...
 			} else if(message.persistence == Persistence.FOREVER) {
-			    try {
-			        server.core.clientContext.jobRunner.queue(new PersistentJob() {
-			            
-			            @Override
-			            public boolean run(ClientContext context) {
-			                ClientPutDir putter;
-			                try {
-			                    putter = new ClientPutDir(FCPConnectionHandler.this, message, buckets, wasDiskPut, server);
-			                } catch (IdentifierCollisionException e) {
-			                    Logger.normal(this, "Identifier collision on "+this);
-			                    FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
-			                    outputHandler.queue(msg);
-			                    return false;
-			                } catch (MalformedURLException e) {
-			                    outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, null, id, message.global));
-			                    return false;
-			                } catch (TooManyFilesInsertException e) {
-			                    outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.TOO_MANY_FILES_IN_INSERT, true, null, id, message.global));
-			                    return false;
-			                }
-			                try {
-			                    putter.register(false);
-			                } catch (IdentifierCollisionException e) {
-			                    Logger.normal(this, "Identifier collision on "+this);
-			                    FCPMessage msg = new IdentifierCollisionMessage(id, global);
-			                    outputHandler.queue(msg);
-			                    return false;
-			                }
-			                putter.start(context);
-			                return true;
-			            }
-			            
-			        }, NativeThread.HIGH_PRIORITY-1);
-			    } catch (PersistenceDisabledException e) {
-			        outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
-			    }
+				try {
+					server.core.clientContext.jobRunner.queue(new PersistentJob() {
+						
+						@Override
+						public boolean run(ClientContext context) {
+							ClientPutDir putter;
+							try {
+								putter = new ClientPutDir(FCPConnectionHandler.this, message, buckets, wasDiskPut, server);
+							} catch (IdentifierCollisionException e) {
+								Logger.normal(this, "Identifier collision on "+this);
+								FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
+								outputHandler.queue(msg);
+								return false;
+							} catch (MalformedURLException e) {
+								outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, true, null, id, message.global));
+								return false;
+							} catch (TooManyFilesInsertException e) {
+								outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.TOO_MANY_FILES_IN_INSERT, true, null, id, message.global));
+								return false;
+							}
+							try {
+								putter.register(false);
+							} catch (IdentifierCollisionException e) {
+								Logger.normal(this, "Identifier collision on "+this);
+								FCPMessage msg = new IdentifierCollisionMessage(id, global);
+								outputHandler.queue(msg);
+								return false;
+							}
+							putter.start(context);
+							return true;
+						}
+						
+					}, NativeThread.HIGH_PRIORITY-1);
+				} catch (PersistenceDisabledException e) {
+					outputHandler.queue(new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence is disabled", id, global));
+				}
 				return; // Don't run the start() below
 				
 			} else {
@@ -614,81 +614,81 @@ public class FCPConnectionHandler implements Closeable {
 		return rebootClient;
 	}
 
-    /**
-     * @return
-     *     The {@link FCPPluginConnection} for the given serverPluginName (see
-     *     {@link PluginManager#getPluginFCPServer(String)}). Atomically creates and stores it if
-     *     there does not exist one yet. This ensures that for each FCPConnectionHandler, there can
-     *     be only one {@link FCPPluginConnection} for a given serverPluginName.
-     * @throws PluginNotFoundException
-     *     If the specified plugin is not loaded or does not provide an FCP server.
-     */
-    FCPPluginConnection getFCPPluginConnection(String serverPluginName)
-            throws PluginNotFoundException {
+	/**
+	 * @return
+	 *	 The {@link FCPPluginConnection} for the given serverPluginName (see
+	 *	 {@link PluginManager#getPluginFCPServer(String)}). Atomically creates and stores it if
+	 *	 there does not exist one yet. This ensures that for each FCPConnectionHandler, there can
+	 *	 be only one {@link FCPPluginConnection} for a given serverPluginName.
+	 * @throws PluginNotFoundException
+	 *	 If the specified plugin is not loaded or does not provide an FCP server.
+	 */
+	FCPPluginConnection getFCPPluginConnection(String serverPluginName)
+			throws PluginNotFoundException {
 
-        // The suspected typical usage pattern of this function is that the great majority of calls
-        // will return an existing FCPPluginConnection. Creating a fresh one will typically only
-        // happen at the start of a connection and then it will be re-used a lot.
-        // Therefore, it would cost a lot of performance to use synchronized() and we instead use a
-        // ReadWriteLock which is optimal for such patterns.
-        //
-        // The double-checked locking pattern which this induces is necessary due to the fact that a
-        // read-lock cannot be upgraded to a write lock.
-        // The JavaDoc of ReentrantReadWriteLock specifically recommends this pattern, so it ought
-        // to be a safe version of double-checked locking.
-        
-        pluginConnectionsByServerName_Lock.readLock().lock();
-        try {
-            // We use the actual *Impl instead of the interface because the implementation provides
-            // isServerDead(), which the interface does not.
-            FCPPluginConnectionImpl peekOldConnection
-                = pluginConnectionsByServerName.get(serverPluginName);
-            
-            if(peekOldConnection != null && !peekOldConnection.isServerDead()) {
-                return peekOldConnection;
-            }
-        } finally {
-            // A read-lock cannot be upgraded to a write-lock so we must always unlock
-            pluginConnectionsByServerName_Lock.readLock().unlock();
-        }
+		// The suspected typical usage pattern of this function is that the great majority of calls
+		// will return an existing FCPPluginConnection. Creating a fresh one will typically only
+		// happen at the start of a connection and then it will be re-used a lot.
+		// Therefore, it would cost a lot of performance to use synchronized() and we instead use a
+		// ReadWriteLock which is optimal for such patterns.
+		//
+		// The double-checked locking pattern which this induces is necessary due to the fact that a
+		// read-lock cannot be upgraded to a write lock.
+		// The JavaDoc of ReentrantReadWriteLock specifically recommends this pattern, so it ought
+		// to be a safe version of double-checked locking.
+		
+		pluginConnectionsByServerName_Lock.readLock().lock();
+		try {
+			// We use the actual *Impl instead of the interface because the implementation provides
+			// isServerDead(), which the interface does not.
+			FCPPluginConnectionImpl peekOldConnection
+				= pluginConnectionsByServerName.get(serverPluginName);
+			
+			if(peekOldConnection != null && !peekOldConnection.isServerDead()) {
+				return peekOldConnection;
+			}
+		} finally {
+			// A read-lock cannot be upgraded to a write-lock so we must always unlock
+			pluginConnectionsByServerName_Lock.readLock().unlock();
+		}
 
-        pluginConnectionsByServerName_Lock.writeLock().lock();
-        try {
-            // Re-check whether there is an existing connection since we had to re-acquire the lock
-            // meanwhile.
-            FCPPluginConnectionImpl oldConnection
-                = pluginConnectionsByServerName.get(serverPluginName);
-            
-            if(oldConnection != null) {
-                if(!oldConnection.isServerDead()) {
-                    return oldConnection;
-                } else {
-                    // oldConnection.isDead() returned true because the WeakReference to the server
-                    // has been nulled because the plugin was unloaded or reloaded.
-                    // The connection should be discarded then. We have no ReferenceQueue to discard
-                    // affected connections from the pluginConnectionsByServerName table, so we
-                    // opportunistically clean nulled connections from it here.
-                    // The reason why this is sufficient memory management is explained at
-                    // FCPPluginConnectionImpl.server
-                    // NOTICE: Even if there was automatic disposal of nulled references, we still
-                    // would have to manually remove dead ones here: I have observed that it can
-                    // take minutes until the JVM flushes a ReferenceQueue. So if we relied upon
-                    // that only, during those minutes a client would be unable to send messages to
-                    // a re-loaded server plugin because the continued existence of the dead old
-                    // connection would prevent a new one from being created.
-                    pluginConnectionsByServerName.remove(serverPluginName);
-                }
-            }
+		pluginConnectionsByServerName_Lock.writeLock().lock();
+		try {
+			// Re-check whether there is an existing connection since we had to re-acquire the lock
+			// meanwhile.
+			FCPPluginConnectionImpl oldConnection
+				= pluginConnectionsByServerName.get(serverPluginName);
+			
+			if(oldConnection != null) {
+				if(!oldConnection.isServerDead()) {
+					return oldConnection;
+				} else {
+					// oldConnection.isDead() returned true because the WeakReference to the server
+					// has been nulled because the plugin was unloaded or reloaded.
+					// The connection should be discarded then. We have no ReferenceQueue to discard
+					// affected connections from the pluginConnectionsByServerName table, so we
+					// opportunistically clean nulled connections from it here.
+					// The reason why this is sufficient memory management is explained at
+					// FCPPluginConnectionImpl.server
+					// NOTICE: Even if there was automatic disposal of nulled references, we still
+					// would have to manually remove dead ones here: I have observed that it can
+					// take minutes until the JVM flushes a ReferenceQueue. So if we relied upon
+					// that only, during those minutes a client would be unable to send messages to
+					// a re-loaded server plugin because the continued existence of the dead old
+					// connection would prevent a new one from being created.
+					pluginConnectionsByServerName.remove(serverPluginName);
+				}
+			}
 
-            FCPPluginConnectionImpl newConnection
-                = server.createFCPPluginConnectionForNetworkedFCP(serverPluginName, this);
-            
-            pluginConnectionsByServerName.put(serverPluginName, newConnection);
-            
-            return newConnection;
-        } finally {
-            pluginConnectionsByServerName_Lock.writeLock().unlock();
-        }
+			FCPPluginConnectionImpl newConnection
+				= server.createFCPPluginConnectionForNetworkedFCP(serverPluginName, this);
+			
+			pluginConnectionsByServerName.put(serverPluginName, newConnection);
+			
+			return newConnection;
+		} finally {
+			pluginConnectionsByServerName_Lock.writeLock().unlock();
+		}
 	}
 
 	public PersistentRequestClient getForeverClient() {

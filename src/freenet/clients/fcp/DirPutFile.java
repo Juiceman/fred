@@ -22,7 +22,7 @@ abstract class DirPutFile {
 	final String name;
 	ClientMetadata meta;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

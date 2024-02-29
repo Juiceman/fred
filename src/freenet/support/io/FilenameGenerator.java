@@ -23,29 +23,29 @@ import freenet.support.Logger.LogLevel;
  */
 public class FilenameGenerator {
 
-    private transient Random random;
-    private String prefix;
-    private File tmpDir;
+	private transient Random random;
+	private String prefix;
+	private File tmpDir;
 
 
-    private static volatile boolean logMINOR;
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	private static volatile boolean logMINOR;
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+			}
+		});
+	}
 
-    /**
-     * @param random
-     * @param wipeFiles
-     * @param dir if <code>null</code> then use the default temporary directory
-     * @param prefix
-     * @throws IOException
-     */
+	/**
+	 * @param random
+	 * @param wipeFiles
+	 * @param dir if <code>null</code> then use the default temporary directory
+	 * @param prefix
+	 * @throws IOException
+	 */
 	public FilenameGenerator(Random random, boolean wipeFiles, File dir, String prefix) throws IOException {
 		this.random = random;
 		this.prefix = prefix;
@@ -53,8 +53,8 @@ public class FilenameGenerator {
 			tmpDir = FileUtil.getCanonicalFile(new File(System.getProperty("java.io.tmpdir")));
 		else
 			tmpDir = FileUtil.getCanonicalFile(dir);
-        if(!tmpDir.exists()) {
-            tmpDir.mkdir();
+		if(!tmpDir.exists()) {
+			tmpDir.mkdir();
 		}
 		if(!(tmpDir.isDirectory() && tmpDir.canRead() && tmpDir.canWrite()))
 			throw new IOException("Not a directory or cannot read/write: "+tmpDir);
@@ -106,7 +106,7 @@ public class FilenameGenerator {
 	}
 	
 	public File makeRandomFile() throws IOException {
-	    return getFilename(makeRandomFilename());
+		return getFilename(makeRandomFilename());
 	}
 
 	public File getDir() {
@@ -114,20 +114,20 @@ public class FilenameGenerator {
 	}
 
 	protected boolean matches(File file) {
-	    return FileUtil.equals(file.getParentFile(), tmpDir) && 
-	        file.getName().startsWith(prefix);
+		return FileUtil.equals(file.getParentFile(), tmpDir) && 
+			file.getName().startsWith(prefix);
 	}
 
-    public File maybeMove(File file, long id) {
-        if(matches(file)) return file;
-        File newFile = getFilename(id);
-        Logger.normal(this, "Moving tempfile "+file+" to "+newFile);
-        if(FileUtil.moveTo(file, newFile, false))
-            return newFile;
-        else {
-            Logger.error(this, "Unable to move old temporary file "+file+" to "+newFile);
-            return file;
-        }
-    }
+	public File maybeMove(File file, long id) {
+		if(matches(file)) return file;
+		File newFile = getFilename(id);
+		Logger.normal(this, "Moving tempfile "+file+" to "+newFile);
+		if(FileUtil.moveTo(file, newFile, false))
+			return newFile;
+		else {
+			Logger.error(this, "Unable to move old temporary file "+file+" to "+newFile);
+			return file;
+		}
+	}
 
 }

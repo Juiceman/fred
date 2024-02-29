@@ -757,7 +757,7 @@ public class CSSParserTest {
 		propertyTests.put("blockquote { letter-spacing: normal }", "blockquote { letter-spacing: normal }");
 		propertyTests.put("h1 { word-spacing: 1em }", "h1 { word-spacing: 1em }");
 		propertyTests.put("h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }",
-                          "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
+						  "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
 		propertyTests.put("h1 { text-transform: uppercase }", "h1 { text-transform: uppercase }");
 		propertyTests.put("pre        { white-space: pre } p          { white-space: normal } td[nowrap] { white-space: nowrap }", "pre { white-space: pre } p { white-space: normal } td[nowrap] { white-space: nowrap }");
 		propertyTests.put("pre[wrap]  { white-space: pre-wrap }", "pre[wrap] { white-space: pre-wrap }");
@@ -779,7 +779,7 @@ public class CSSParserTest {
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) url(hyper.cur) pointer }", ":link { cursor: url(\"example.svg#linkcursor\") url(\"hyper.cur\") pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor), url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\"), url(\"hyper.cur\"), pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2 5, url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\") 2 5, url(\"hyper.cur\"), pointer }");
-                propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
+				propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
 
 		// UI colors
 		propertyTests.put("p { color: WindowText; background-color: Window }", "p { color: WindowText; background-color: Window }");

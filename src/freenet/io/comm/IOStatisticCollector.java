@@ -190,7 +190,7 @@ public class IOStatisticCollector {
 		public StatisticEntry() {
 			// Create a new array and clear it
 			recieved = new int[IOStatisticCollector.STATISTICS_ENTRIES+1];
-			sent     = new int[IOStatisticCollector.STATISTICS_ENTRIES+1];
+			sent	 = new int[IOStatisticCollector.STATISTICS_ENTRIES+1];
 			for (int i = 0 ; i < recieved.length ; i++) {
 				recieved[i] = sent[i] = 0;
 			}
@@ -198,14 +198,14 @@ public class IOStatisticCollector {
 		
 		public void addData(int inbytes, int outbytes) {
 			recieved[0] += inbytes;
-			sent[0]     += outbytes;
+			sent[0]	 += outbytes;
 		}
 		
 		public boolean rotate() {
 			boolean hasdata = false;
 			for (int i = recieved.length - 1 ; i > 0 ; i--) {
 				recieved[i] = recieved[i-1];
-				sent[i]     = sent[i-1];
+				sent[i]	 = sent[i-1];
 				hasdata |= (recieved[i] > 0) || (sent[i] > 0);
 			}
 			recieved[0] = sent[0] = 0;

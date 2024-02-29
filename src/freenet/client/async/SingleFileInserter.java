@@ -50,8 +50,8 @@ import freenet.support.io.ResumeFailedException;
  */
 class SingleFileInserter implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	
 	static {
@@ -151,25 +151,25 @@ class SingleFileInserter implements ClientPutState, Serializable {
 	}
 
 	void onCompressed(CompressionOutput output, ClientContext context) {
-	    synchronized(this) {
-	        if(started) {
-	            Logger.error(this, "Already started, not starting again", new Exception("error"));
-	            return;
-	        }
-	        if(cancelled) {
-	            Logger.error(this, "Already cancelled, not starting");
-	            return;
-	        }
-	    }
+		synchronized(this) {
+			if(started) {
+				Logger.error(this, "Already started, not starting again", new Exception("error"));
+				return;
+			}
+			if(cancelled) {
+				Logger.error(this, "Already cancelled, not starting");
+				return;
+			}
+		}
 		try {
 			onCompressedInner(output, context);
 		} catch (InsertException e) {
 			cb.onFailure(e, SingleFileInserter.this, context);
-        } catch (Throwable t) {
-            Logger.error(this, "Caught in OffThreadCompressor: "+t, t);
-            System.err.println("Caught in OffThreadCompressor: "+t);
-            t.printStackTrace();
-            // Try to fail gracefully
+		} catch (Throwable t) {
+			Logger.error(this, "Caught in OffThreadCompressor: "+t, t);
+			System.err.println("Caught in OffThreadCompressor: "+t);
+			t.printStackTrace();
+			// Try to fail gracefully
 			cb.onFailure(new InsertException(InsertExceptionMode.INTERNAL_ERROR, t, null), SingleFileInserter.this, context);
 		}
 	}
@@ -269,7 +269,7 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				if(!isUSK)
 					cb.onBlockSetFinished(this, context);
 				synchronized(this) {
-				    started = true;
+					started = true;
 				}
 				if(persistent) {
 					block.nullData();
@@ -332,7 +332,7 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				// Deleting origHashes is fine, we are done with them.
 			}
 			synchronized(this) {
-			    started = true;
+				started = true;
 			}
 			if(persistent) {
 				block.nullData();
@@ -346,18 +346,18 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		// insert it. Then when the splitinserter has finished, and the
 		// metadata insert has finished too, tell the master callback.
 		LockableRandomAccessBuffer dataRAF;
-        try {
-            dataRAF = data.toRandomAccessBuffer();
-        } catch (IOException e) {
-            throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
-        }
+		try {
+			dataRAF = data.toRandomAccessBuffer();
+		} catch (IOException e) {
+			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
+		}
 		if(reportMetadataOnly) {
 			SplitFileInserter sfi = new SplitFileInserter(persistent, parent, cb, 
-			        dataRAF, shouldFreeData, ctx, context, origSize, bestCodec, 
-			        block.clientMetadata, metadata, archiveType, cryptoAlgorithm, forceCryptoKey,
-			        hashThisLayerOnly, hashes, ctx.dontCompress, parent.getMinSuccessFetchBlocks(),
-			        parent.getTotalBlocks(), origDataLength, origCompressedDataLength, 
-			        realTimeFlag, token);
+					dataRAF, shouldFreeData, ctx, context, origSize, bestCodec, 
+					block.clientMetadata, metadata, archiveType, cryptoAlgorithm, forceCryptoKey,
+					hashThisLayerOnly, hashes, ctx.dontCompress, parent.getMinSuccessFetchBlocks(),
+					parent.getTotalBlocks(), origDataLength, origCompressedDataLength, 
+					realTimeFlag, token);
 			if(logMINOR)
 				Logger.minor(this, "Inserting as splitfile: "+sfi+" for "+this);
 			cb.onTransition(this, sfi, context);
@@ -374,18 +374,18 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			if(metadata) allowSizes = false;
 			SplitHandler sh = new SplitHandler(origSize, compressedDataSize, allowSizes);
 			SplitFileInserter sfi = new SplitFileInserter(persistent, parent, sh, 
-			        dataRAF, shouldFreeData, ctx, context, origSize, bestCodec, 
-			        block.clientMetadata, metadata, archiveType, cryptoAlgorithm, forceCryptoKey,
-			        hashThisLayerOnly, hashes, ctx.dontCompress, parent.getMinSuccessFetchBlocks(),
-			        parent.getTotalBlocks(), origDataLength, origCompressedDataLength, 
-			        realTimeFlag, token);
+					dataRAF, shouldFreeData, ctx, context, origSize, bestCodec, 
+					block.clientMetadata, metadata, archiveType, cryptoAlgorithm, forceCryptoKey,
+					hashThisLayerOnly, hashes, ctx.dontCompress, parent.getMinSuccessFetchBlocks(),
+					parent.getTotalBlocks(), origDataLength, origCompressedDataLength, 
+					realTimeFlag, token);
 			sh.sfi = sfi;
 			if(logMINOR)
 				Logger.minor(this, "Inserting as splitfile: "+sfi+" for "+sh+" for "+this);
 			cb.onTransition(this, sh, context);
 			sfi.schedule(context);
 			synchronized(this) {
-			    started = true;
+				started = true;
 			}
 			// SplitHandler will need this.origHashes.
 		}
@@ -412,8 +412,8 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 	private void tryCompress(ClientContext context) throws InsertException {
 		// First, determine how small it needs to be
-	    RandomAccessBucket origData = block.getData();
-	    RandomAccessBucket data = origData;
+		RandomAccessBucket origData = block.getData();
+		RandomAccessBucket data = origData;
 		int blockSize;
 		int oneBlockCompressedSize;
 		boolean dontCompress = ctx.dontCompress;
@@ -473,12 +473,12 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			final CompressionOutput output = new CompressionOutput(data, null, hashes);
 			context.getJobRunner(persistent).queueNormalOrDrop(new PersistentJob() {
 
-                @Override
-                public boolean run(ClientContext context) {
-                    onCompressed(output, context);
-                    return true;
-                }
-			    
+				@Override
+				public boolean run(ClientContext context) {
+					onCompressed(output, context);
+					return true;
+				}
+				
 			});
 		}
 	}
@@ -548,8 +548,8 @@ class SingleFileInserter implements ClientPutState, Serializable {
 	 */
 	public class SplitHandler implements PutCompletionCallback, ClientPutState, Serializable {
 
-        private static final long serialVersionUID = 1L;
-        ClientPutState sfi;
+		private static final long serialVersionUID = 1L;
+		ClientPutState sfi;
 		ClientPutState metadataPutter;
 		boolean finished;
 		boolean splitInsertSuccess;
@@ -747,17 +747,17 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			}
 			InsertBlock newBlock = new InsertBlock(metadataBucket, m, block.desiredURI);
 			synchronized(this) {
-			    // Only the bottom layer in a multi-level splitfile pyramid has randomised keys. The rest are unpredictable anyway, and this ensures we only need to supply one key when reinserting.
-			    metadataPutter = new SingleFileInserter(parent, this, newBlock, true, ctx, realTimeFlag, false, false, token, archiveType, true, metaPutterTargetFilename, true, persistent, origDataLength, origCompressedDataLength, origHashes, cryptoAlgorithm, forceCryptoKey, metadataThreshold);
-			    if(origHashes != null) {
-			        // It gets passed on, and the last one deletes it.
-			        SingleFileInserter.this.origHashes = null;
-			    }
-			    // If EarlyEncode, then start the metadata insert ASAP, to get the key.
-			    // Otherwise, wait until the data is fetchable (to improve persistence).
-			    if(logMINOR)
-			        Logger.minor(this, "Created metadata putter for "+this+" : "+metadataPutter+" bucket "+metadataBucket+" size "+metadataBucket.size());
-			    if(!(ctx.earlyEncode || splitInsertSuccess)) return;
+				// Only the bottom layer in a multi-level splitfile pyramid has randomised keys. The rest are unpredictable anyway, and this ensures we only need to supply one key when reinserting.
+				metadataPutter = new SingleFileInserter(parent, this, newBlock, true, ctx, realTimeFlag, false, false, token, archiveType, true, metaPutterTargetFilename, true, persistent, origDataLength, origCompressedDataLength, origHashes, cryptoAlgorithm, forceCryptoKey, metadataThreshold);
+				if(origHashes != null) {
+					// It gets passed on, and the last one deletes it.
+					SingleFileInserter.this.origHashes = null;
+				}
+				// If EarlyEncode, then start the metadata insert ASAP, to get the key.
+				// Otherwise, wait until the data is fetchable (to improve persistence).
+				if(logMINOR)
+					Logger.minor(this, "Created metadata putter for "+this+" : "+metadataPutter+" bucket "+metadataBucket+" size "+metadataBucket.size());
+				if(!(ctx.earlyEncode || splitInsertSuccess)) return;
 			}
 			if(logMINOR) Logger.minor(this, "Putting metadata on "+metadataPutter+" from "+sfi+" ("+((SplitFileInserter)sfi).getLength()+ ')');
 			if(!startMetadata(context)) {
@@ -969,37 +969,37 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			cb.onMetadata(meta, this, context);
 		}
 
-        @Override
-        public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-            synchronized(this) {
-                if(resumed) return;
-                resumed = true;
-            }
-            if(sfi != null)
-                sfi.onResume(context);
-            if(metadataPutter != null)
-                metadataPutter.onResume(context);
-            if(sfi != null)
-                sfi.schedule(context);
-            if(metadataPutter != null) {
-                if(ctx.earlyEncode || sfi == null || metaInsertStarted)
-                    metadataPutter.schedule(context);
-            }
-        }
+		@Override
+		public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+			synchronized(this) {
+				if(resumed) return;
+				resumed = true;
+			}
+			if(sfi != null)
+				sfi.onResume(context);
+			if(metadataPutter != null)
+				metadataPutter.onResume(context);
+			if(sfi != null)
+				sfi.schedule(context);
+			if(metadataPutter != null) {
+				if(ctx.earlyEncode || sfi == null || metaInsertStarted)
+					metadataPutter.schedule(context);
+			}
+		}
 
-        @Override
-        public void onShutdown(ClientContext context) {
-            ClientPutState splitfileInserter;
-            ClientPutState metadataInserter;
-            synchronized(this) {
-                splitfileInserter = sfi;
-                metadataInserter = metadataPutter;
-            }
-            if(splitfileInserter != null)
-                splitfileInserter.onShutdown(context);
-            if(metadataInserter != null)
-                metadataInserter.onShutdown(context);
-        }
+		@Override
+		public void onShutdown(ClientContext context) {
+			ClientPutState splitfileInserter;
+			ClientPutState metadataInserter;
+			synchronized(this) {
+				splitfileInserter = sfi;
+				metadataInserter = metadataPutter;
+			}
+			if(splitfileInserter != null)
+				splitfileInserter.onShutdown(context);
+			if(metadataInserter != null)
+				metadataInserter.onShutdown(context);
+		}
 		
 	}
 
@@ -1050,25 +1050,25 @@ class SingleFileInserter implements ClientPutState, Serializable {
 	
 	private transient boolean resumed = false;
 
-    @Override
-    public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        if(block != null && block.getData() != null)
-            block.getData().onResume(context);
-        if(cb != null && cb != parent)
-            cb.onResume(context);
-        synchronized(this) {
-            if(started || cancelled) return;
-        }
-        tryCompress(context);
-    }
+	@Override
+	public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		if(block != null && block.getData() != null)
+			block.getData().onResume(context);
+		if(cb != null && cb != parent)
+			cb.onResume(context);
+		synchronized(this) {
+			if(started || cancelled) return;
+		}
+		tryCompress(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 
 }

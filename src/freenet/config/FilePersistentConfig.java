@@ -36,7 +36,7 @@ public class FilePersistentConfig extends PersistentConfig {
 	protected final Object storeSync = new Object();
 	protected boolean writeOnFinished;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

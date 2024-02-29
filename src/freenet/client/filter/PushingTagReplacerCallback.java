@@ -25,11 +25,11 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 	 * Constructor
 	 * 
 	 * @param tracker
-	 *            - The FProxyFetchTracker
+	 *			- The FProxyFetchTracker
 	 * @param maxSize
-	 *            - The maxSize used for fetching
+	 *			- The maxSize used for fetching
 	 * @param ctx
-	 *            - The current ToadletContext
+	 *			- The current ToadletContext
 	 */
 	public PushingTagReplacerCallback(FProxyFetchTracker tracker, long maxSize, ToadletContext ctx) {
 		this.tracker = tracker;

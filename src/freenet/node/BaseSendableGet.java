@@ -10,9 +10,9 @@ import freenet.keys.Key;
  */
 public abstract class BaseSendableGet extends SendableRequest {
 	
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected BaseSendableGet(boolean persistent, boolean realTimeFlag) {
+	protected BaseSendableGet(boolean persistent, boolean realTimeFlag) {
 		super(persistent, realTimeFlag);
 	}
 	

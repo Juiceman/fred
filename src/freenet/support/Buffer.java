@@ -33,7 +33,7 @@ import freenet.io.WritableToDataOutputStream;
  */
 public class Buffer implements WritableToDataOutputStream {
 
-    public static final String VERSION = "$Id: Buffer.java,v 1.2 2005/08/25 17:28:19 amphibian Exp $";
+	public static final String VERSION = "$Id: Buffer.java,v 1.2 2005/08/25 17:28:19 amphibian Exp $";
 
 	private final byte[] _data;
 	private final int _start;
@@ -75,7 +75,7 @@ public class Buffer implements WritableToDataOutputStream {
 
 	public Buffer(byte[] data, int start, int length) {
 		if(length < 0 || start < 0 || start + length > data.length)
-		    throw new IllegalArgumentException("Invalid Length: start=" + start + ", length=" + length);
+			throw new IllegalArgumentException("Invalid Length: start=" + start + ", length=" + length);
 		_start = start;
 		_data = data;
 		_length = length;
@@ -125,7 +125,7 @@ public class Buffer implements WritableToDataOutputStream {
 			return "Buffer {"+this._length+ '}';
 		} else {
 			StringBuilder b = new StringBuilder(this._length*3);
-            b.append('{').append(this._length).append(':');
+			b.append('{').append(this._length).append(':');
 			for (int x=0; x<this._length; x++) {
 				b.append(byteAt(x));
 				b.append(' ');
@@ -160,7 +160,7 @@ public class Buffer implements WritableToDataOutputStream {
 
 	@Override
 	public int hashCode() {
-	    return Fields.hashCode(_data) ^ _start ^ _length;
+		return Fields.hashCode(_data) ^ _start ^ _length;
 	}
 	
 	public int getLength() {

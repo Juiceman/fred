@@ -268,7 +268,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	private long totalOutputSinceStartup;
 	/** Peer node public key; changing this means new noderef */
 	public final ECPublicKey peerECDSAPubKey;
-    /** FIXME: Used by the N2NChat plugin because the getter is protected! */
+	/** FIXME: Used by the N2NChat plugin because the getter is protected! */
 	public final byte[] peerECDSAPubKeyHash;
 	private boolean isSignatureVerificationSuccessfull;
 	/** Incoming setup key. Used to decrypt incoming auth packets.
@@ -422,7 +422,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	* @throws PeerTooOldException If the peer is so old that it can no longer be parsed, e.g. 
 	* because it hasn't been connected since the last major crypto change. */
 	public PeerNode(SimpleFieldSet fs, Node node2, NodeCrypto crypto, boolean fromLocal) 
-	                throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
+					throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
 		boolean noSig = false;
 		if(fromLocal || fromAnonymousInitiator()) noSig = true;
 		myRef = new WeakReference<PeerNode>(this);
@@ -475,9 +475,9 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		/* Read the ECDSA key material for the peer */
 		SimpleFieldSet sfs = fs.subset("ecdsa.P256");
 		if(sfs == null) {
-		    GregorianCalendar gc = new GregorianCalendar(2013, 6, 20);
-		    gc.setTimeZone(TimeZone.getTimeZone("GMT"));
-		    throw new PeerTooOldException("No ECC support", 1449, gc.getTime());
+			GregorianCalendar gc = new GregorianCalendar(2013, 6, 20);
+			gc.setTimeZone(TimeZone.getTimeZone("GMT"));
+			throw new PeerTooOldException("No ECC support", 1449, gc.getTime());
 		}
 		byte[] pub;
 		try {
@@ -730,7 +730,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	 * it beforehand. This makes it a temporary connection. At the moment this only happens on 
 	 * seednodes. */
 	protected boolean fromAnonymousInitiator() {
-	    return false;
+		return false;
 	}
 
 	abstract boolean dontKeepFullFieldSet();
@@ -1743,14 +1743,14 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		boolean anythingChanged = location.updateLocation(newLoc, newLocs);
 		node.peers.updatePMUserAlert();
 		if(anythingChanged)
-		    writePeers();
+			writePeers();
 		setPeerNodeStatus(System.currentTimeMillis());
 	}
 
 	/** Write the peers list affecting this node. */
 	protected abstract void writePeers();
 
-    /**
+	/**
 	* Should we reject a swap request?
 	*/
 	public boolean shouldRejectSwapRequest() {
@@ -1970,7 +1970,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		// Update sendHandshakeTime; don't send another handshake for a while.
 		// If unverified, "a while" determines the timeout; if not, it's just good practice to avoid a race below.
 		if(!(isSeed() && this instanceof SeedServerPeerNode))
-                    calcNextHandshake(true, true, false);
+					calcNextHandshake(true, true, false);
 		stopARKFetcher();
 		try {
 			// First, the new noderef
@@ -1989,9 +1989,9 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		boolean newer = false;
 		boolean older = false;
 		if(isSeed()) {
-                        routable = false;
-                        if(logMINOR) Logger.minor(this, "Not routing traffic to " + this + " it's for announcement.");
-                } else if(bogusNoderef) {
+						routable = false;
+						if(logMINOR) Logger.minor(this, "Not routing traffic to " + this + " it's for announcement.");
+				} else if(bogusNoderef) {
 			Logger.normal(this, "Not routing traffic to " + this + " - bogus noderef");
 			routable = false;
 			//FIXME: It looks like bogusNoderef will just be set to false a few lines later...
@@ -2356,7 +2356,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		processNewNoderef(fs, false, true, false);
 		// Send UOMAnnouncement only *after* we know what the other side's version.
 		if(isRealConnection())
-		    node.nodeUpdater.maybeSendUOMAnnounce(this);
+			node.nodeUpdater.maybeSendUOMAnnounce(this);
 	}
 
 	/**
@@ -2419,7 +2419,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 			Logger.minor(this, "Parsing: \n" + fs);
 		boolean changedAnything = innerProcessNewNoderef(fs, forARK, forDiffNodeRef, forFullNodeRef) || forARK;
 		if(changedAnything && !isSeed())
-		    writePeers();
+			writePeers();
 		// FIXME should this be urgent if IPs change? Dunno.
 	}
 
@@ -2432,13 +2432,13 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		boolean shouldUpdatePeerCounts = false;
 		
 		if(forFullNodeRef) {
-		    // Check the signature.
+			// Check the signature.
 			try {
 				if(!verifyReferenceSignature(fs))
-	                throw new FSParseException("Invalid signature");
+					throw new FSParseException("Invalid signature");
 			} catch (ReferenceSignatureVerificationException e) {
-                throw new FSParseException("Invalid signature");
-            }
+				throw new FSParseException("Invalid signature");
+			}
 		}
 		
 		// Anything may be omitted for a differential node reference
@@ -3212,7 +3212,7 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 
 	public synchronized long getRoutingBackedOffUntil(boolean realTime) {
 		return Math.max(realTime ? mandatoryBackoffUntilRT : mandatoryBackoffUntilBulk,
-				Math.max(                               
+				Math.max(							   
 						realTime ? routingBackedOffUntilRT : routingBackedOffUntilBulk, 
 								realTime ? transferBackedOffUntilRT : transferBackedOffUntilBulk));
 	}
@@ -3594,8 +3594,8 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 		}
 		OpennetManager om = node.getOpennet();
 		if(om != null) {
-		    // OpennetManager must be notified of a new connection even if it is a darknet peer.
-		    om.onConnectedPeer(this);
+			// OpennetManager must be notified of a new connection even if it is a darknet peer.
+			om.onConnectedPeer(this);
 		}
 	}
 
@@ -4157,11 +4157,11 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	
 	/**
 	 * RFC 2988:
-	 *    Note that a TCP implementation MAY clear SRTT and RTTVAR after
-	 *    backing off the timer multiple times as it is likely that the
-	 *    current SRTT and RTTVAR are bogus in this situation.  Once SRTT and
-	 *    RTTVAR are cleared they should be initialized with the next RTT
-	 *    sample taken per (2.2) rather than using (2.3).
+	 *	Note that a TCP implementation MAY clear SRTT and RTTVAR after
+	 *	backing off the timer multiple times as it is likely that the
+	 *	current SRTT and RTTVAR are bogus in this situation.  Once SRTT and
+	 *	RTTVAR are cleared they should be initialized with the next RTT
+	 *	sample taken per (2.2) rather than using (2.3).
 	 */
 	static final int MAX_CONSECUTIVE_RTO_BACKOFFS = 5;
 	
@@ -5460,8 +5460,8 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	
 	@Override
 	public MessageItem makeLoadStats(boolean realtime, boolean boostPriority, boolean noRemember) {
-	    // FIXME re-enable when try NLM again.
-	    return null;
+		// FIXME re-enable when try NLM again.
+		return null;
 //		Message msg = loadSender(realtime).makeLoadStats(System.currentTimeMillis(), node.nodeStats.outwardTransfersPerInsert(), noRemember);
 //		if(msg == null) return null;
 //		return new MessageItem(msg, null, node.nodeStats.allocationNoticesCounter, boostPriority ? DMT.PRIORITY_NOW : (short)-1);
@@ -5768,59 +5768,59 @@ public abstract class PeerNode implements USKRetrieverCallback, BasePeerNode, Pe
 	}
 	
 	private boolean verifyReferenceSignature(SimpleFieldSet fs) throws ReferenceSignatureVerificationException {
-	    // Assume we failed at validating
-	    boolean failed = true;
-	    String signatureP256 = fs.get("sigP256");
-            try {
-                // If we have:
-                // - the new P256 signature AND the P256 pubkey
-                // OR
-                // - the old DSA signature the pubkey and the groups
-                // THEN
-                // verify the signatures
-                fs.removeValue("sig");
-                fs.removeValue("sigP256");
-                byte[] toVerifyECDSA = fs.toOrderedString().getBytes(StandardCharsets.UTF_8);
-                
+		// Assume we failed at validating
+		boolean failed = true;
+		String signatureP256 = fs.get("sigP256");
+			try {
+				// If we have:
+				// - the new P256 signature AND the P256 pubkey
+				// OR
+				// - the old DSA signature the pubkey and the groups
+				// THEN
+				// verify the signatures
+				fs.removeValue("sig");
+				fs.removeValue("sigP256");
+				byte[] toVerifyECDSA = fs.toOrderedString().getBytes(StandardCharsets.UTF_8);
+				
 
-                boolean isECDSAsigPresent = (signatureP256 != null && peerECDSAPubKey != null);
-                boolean verifyECDSA = false; // assume it failed.
-                
-                // Is there a new ECDSA sig?
-                if(isECDSAsigPresent) {
-                        fs.putSingle("sigP256", signatureP256);
-                        verifyECDSA = ECDSA.verify(Curves.P256, peerECDSAPubKey, Base64.decode(signatureP256), toVerifyECDSA);                       
-                }
+				boolean isECDSAsigPresent = (signatureP256 != null && peerECDSAPubKey != null);
+				boolean verifyECDSA = false; // assume it failed.
+				
+				// Is there a new ECDSA sig?
+				if(isECDSAsigPresent) {
+						fs.putSingle("sigP256", signatureP256);
+						verifyECDSA = ECDSA.verify(Curves.P256, peerECDSAPubKey, Base64.decode(signatureP256), toVerifyECDSA);					   
+				}
 
-                // If there is no signature, FAIL
-                // If there is an ECDSA signature, and it doesn't verify, FAIL
-                boolean hasNoSignature = (!isECDSAsigPresent);
-                boolean isECDSAsigInvalid = (isECDSAsigPresent && !verifyECDSA);
-                failed = hasNoSignature || isECDSAsigInvalid;
-                if(failed) {
-                    String errCause = "";
-                    if(hasNoSignature)
-                        errCause += " (No signature)";
-                    if(isECDSAsigInvalid)
-                        errCause += " (ECDSA signature is invalid)";
-                    if(failed)
-                        errCause += " (VERIFICATION FAILED)";
-                    Logger.error(this, "The integrity of the reference has been compromised!" + errCause + " fs was\n" + fs.toOrderedString());
-                    this.isSignatureVerificationSuccessfull = false;
-                    throw new ReferenceSignatureVerificationException("The integrity of the reference has been compromised!" + errCause);
-                } else {
-                    this.isSignatureVerificationSuccessfull = true;
-                    if(!dontKeepFullFieldSet())
-                        this.fullFieldSet = fs;
-                }
-            } catch(IllegalBase64Exception e) {
-                Logger.error(this, "Invalid reference: " + e, e);
-                throw new ReferenceSignatureVerificationException("The node reference you added is invalid: It does not have a valid ECDSA signature.");
-            }
+				// If there is no signature, FAIL
+				// If there is an ECDSA signature, and it doesn't verify, FAIL
+				boolean hasNoSignature = (!isECDSAsigPresent);
+				boolean isECDSAsigInvalid = (isECDSAsigPresent && !verifyECDSA);
+				failed = hasNoSignature || isECDSAsigInvalid;
+				if(failed) {
+					String errCause = "";
+					if(hasNoSignature)
+						errCause += " (No signature)";
+					if(isECDSAsigInvalid)
+						errCause += " (ECDSA signature is invalid)";
+					if(failed)
+						errCause += " (VERIFICATION FAILED)";
+					Logger.error(this, "The integrity of the reference has been compromised!" + errCause + " fs was\n" + fs.toOrderedString());
+					this.isSignatureVerificationSuccessfull = false;
+					throw new ReferenceSignatureVerificationException("The integrity of the reference has been compromised!" + errCause);
+				} else {
+					this.isSignatureVerificationSuccessfull = true;
+					if(!dontKeepFullFieldSet())
+						this.fullFieldSet = fs;
+				}
+			} catch(IllegalBase64Exception e) {
+				Logger.error(this, "Invalid reference: " + e, e);
+				throw new ReferenceSignatureVerificationException("The node reference you added is invalid: It does not have a valid ECDSA signature.");
+			}
 		return !failed;
 	}
 	
 	protected final byte[] getPubKeyHash() {
-	    return peerECDSAPubKeyHash;
+		return peerECDSAPubKeyHash;
 	}
 }

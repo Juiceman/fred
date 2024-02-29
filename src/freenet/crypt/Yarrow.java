@@ -269,15 +269,15 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		write_seed(filename, false);
 	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void write_seed(boolean force) {
-        write_seed(seedfile, force);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void write_seed(boolean force) {
+		write_seed(seedfile, force);
+	}
 
-    private void write_seed(File filename, boolean force) {
+	private void write_seed(File filename, boolean force) {
 		if(!force)
 			synchronized(this) {
 				long now = System.currentTimeMillis();
@@ -555,7 +555,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				}
 			}
 			if(DEBUG)
-				//	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
+				//		Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
 				// "+slow_entropy, LogLevel.NORMAL);
 				System.err.println("Fast pool: " + fast_entropy + "\tSlow pool: " + slow_entropy);
 		}

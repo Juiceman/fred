@@ -36,7 +36,7 @@ public class RealNodeTest {
 	static final FRIEND_TRUST trust = FRIEND_TRUST.LOW;
 	static final FRIEND_VISIBILITY visibility = FRIEND_VISIBILITY.NO;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -54,8 +54,8 @@ public class RealNodeTest {
 	 Borrowed from mrogers simulation code (February 6, 2008)
 	 --
 	 FIXME: May not generate good networks. Presumably this is because the arrays are always scanned
-	        [0..n], some nodes tend to have *much* higher connections than the degree (the first few),
-	        starving the latter ones.
+			[0..n], some nodes tend to have *much* higher connections than the degree (the first few),
+			starving the latter ones.
 	 */
 	static void makeKleinbergNetwork (Node[] nodes, boolean idealLocations, int degree, boolean forceNeighbourConnections, RandomSource random)
 	{
@@ -109,8 +109,8 @@ public class RealNodeTest {
 		} catch (freenet.io.comm.ReferenceSignatureVerificationException e) {
 			Logger.error(RealNodeTest.class, "cannot connect #3!!!!", e);
 		} catch (PeerTooOldException e) {
-            Logger.error(RealNodeTest.class, "cannot connect #4!!!!", e);
-        }
+			Logger.error(RealNodeTest.class, "cannot connect #4!!!!", e);
+		}
 	}
 	
 	static double distance(Node a, Node b) {

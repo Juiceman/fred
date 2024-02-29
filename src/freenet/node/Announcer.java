@@ -131,14 +131,14 @@ public class Announcer {
 			timeAddedSeeds = now;
 			if(seeds.size() == 0) {
 				registerEvent(STATUS_NO_SEEDNODES);
-        /*
-         * Developers might run nodes in empty directories instead of one made by an installer.
-         * They can copy in the seed nodes file, so check for it periodically to support loading it
-         * without the need to restart the node.
-         *
-         * TODO: If the seed nodes file is found it does not unregister the STATUS_NO_SEEDNODES
-         * event.
-         */
+		/*
+		 * Developers might run nodes in empty directories instead of one made by an installer.
+		 * They can copy in the seed nodes file, so check for it periodically to support loading it
+		 * without the need to restart the node.
+		 *
+		 * TODO: If the seed nodes file is found it does not unregister the STATUS_NO_SEEDNODES
+		 * event.
+		 */
 				node.getTicker().queueTimedJob(new Runnable() {
 					public void run() {
 						maybeSendAnnouncement();
@@ -225,11 +225,11 @@ public class Announcer {
 				SeedServerPeerNode seed =
 					new SeedServerPeerNode(fs, node, om.crypto, false);
 				if(node.wantAnonAuth(true) && Arrays.equals(node.getOpennetPubKeyHash(), seed.peerECDSAPubKeyHash)) {
-                                    if(logMINOR)
-                                        Logger.minor("Not adding: I am a seednode attempting to connect to myself!", seed.userToString());
-                                    continue;
-                                }
-                                if(announcedToIdentities.contains(new ByteArrayWrapper(seed.peerECDSAPubKeyHash))) {
+									if(logMINOR)
+										Logger.minor("Not adding: I am a seednode attempting to connect to myself!", seed.userToString());
+									continue;
+								}
+								if(announcedToIdentities.contains(new ByteArrayWrapper(seed.peerECDSAPubKeyHash))) {
 					if(logMINOR)
 						Logger.minor(this, "Not adding: already announced-to: "+seed.userToString());
 					continue;
@@ -254,9 +254,9 @@ public class Announcer {
 				Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
 				continue;
 			} catch (PeerTooOldException e) {
-                Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
-                continue;
-            }
+				Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
+				continue;
+			}
 		}
 		if(logMINOR) Logger.minor(this, "connectSomeNodesInner() returning "+count);
 		return count;
@@ -567,7 +567,7 @@ public class Announcer {
 
 	private synchronized void addAnnouncedIPs(InetAddress[] addrs) {
 		for (InetAddress addr : addrs)
-	        announcedToIPs.add(addr);
+			announcedToIPs.add(addr);
 	}
 
 	/**

@@ -397,7 +397,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 					@Override
 					public void set(Integer val) throws InvalidConfigValueException {
 						if (get().equals(val))
-					        return;
+							return;
 						if(val < 100)
 							throw new InvalidConfigValueException(l10n("valueTooLow"));
 						threadLimit = val;
@@ -416,7 +416,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 					@Override
 					public void set(Integer val) throws InvalidConfigValueException {
 						if (get().equals(val))
-					        return;
+							return;
 						Logger.normal(this, "Changing aggressiveGCModificator to "+val);
 						aggressiveGCModificator = val;
 					}
@@ -434,7 +434,7 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 					@Override
 					public void set(Boolean val) throws InvalidConfigValueException {
 						if (get().equals(val))
-					        return;
+							return;
 
 						if(val)
 							myMemoryChecker.start();
@@ -582,10 +582,10 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		this.avgSlashdotCacheCHKLocation = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageSlashdotCacheCHKLocation"));
 		this.avgClientCacheCHKLocation = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheCHKLocation"));
 
-		this.avgCacheCHKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageCacheCHKSuccessLocation"));
+		this.avgCacheCHKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageCacheCHKSuccessLocation"));
 		this.avgSlashdotCacheCHKSucess =  new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageSlashdotCacheCHKSuccessLocation"));
-		this.avgClientCacheCHKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheCHKSuccessLocation"));
-		this.avgStoreCHKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageStoreCHKSuccessLocation"));
+		this.avgClientCacheCHKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheCHKSuccessLocation"));
+		this.avgStoreCHKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageStoreCHKSuccessLocation"));
 		this.avgRequestLocation = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageRequestLocation"));
 
 		this.avgCacheSSKLocation   = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageCacheSSKLocation"));
@@ -593,10 +593,10 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		this.avgSlashdotCacheSSKLocation = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageSlashdotCacheSSKLocation"));
 		this.avgClientCacheSSKLocation = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheSSKLocation"));
 
-		this.avgCacheSSKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageCacheSSKSuccessLocation"));
+		this.avgCacheSSKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageCacheSSKSuccessLocation"));
 		this.avgSlashdotCacheSSKSuccess =  new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageSlashdotCacheSSKSuccessLocation"));
-		this.avgClientCacheSSKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheSSKSuccessLocation"));
-		this.avgStoreSSKSuccess    = new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageStoreSSKSuccessLocation"));
+		this.avgClientCacheSSKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageClientCacheSSKSuccessLocation"));
+		this.avgStoreSSKSuccess	= new DecayingKeyspaceAverage(nodeLoc, 10000, throttleFS == null ? null : throttleFS.subset("AverageStoreSSKSuccessLocation"));
 
 		hourlyStatsRT = new HourlyStats(node);
 		hourlyStatsBulk = new HourlyStats(node);
@@ -1542,13 +1542,13 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		// FIXME: MAKE CONFIGURABLE AND SECLEVEL DEPENDANT!
 		double localAllocation = totalAllocation * 0.5;
 		if (source == null)
-		    thisAllocation = localAllocation;
+			thisAllocation = localAllocation;
 		else {
-		    totalAllocation -= localAllocation;
-		    thisAllocation = totalAllocation / peers;
-                    if(source instanceof DarknetPeerNode) {
-                        thisAllocation *= 3;
-                    }
+			totalAllocation -= localAllocation;
+			thisAllocation = totalAllocation / peers;
+					if(source instanceof DarknetPeerNode) {
+						thisAllocation *= 3;
+					}
 		}
 		
 		if(logMINOR && sourceRestarted != 0)
@@ -2016,11 +2016,11 @@ public class NodeStats implements Persistable, BlockTimeCallback {
 		fs.put("delayTimeLocalBulk", nlmDelayBulkLocal.currentValue());
 		fs.put("delayTimeRemoteBulk", nlmDelayBulkRemote.currentValue());
 		synchronized(slotTimeoutsSync) {
-		    // timeoutFractions = fatalTimeouts/(fatalTimeouts+allocatedSlot)
-		    fs.put("fatalTimeoutsLocal",fatalTimeoutsInWaitLocal);
-		    fs.put("fatalTimeoutsRemote",fatalTimeoutsInWaitRemote);
-		    fs.put("allocatedSlotLocal",allocatedSlotLocal);
-		    fs.put("allocatedSlotRemote",allocatedSlotRemote);
+			// timeoutFractions = fatalTimeouts/(fatalTimeouts+allocatedSlot)
+			fs.put("fatalTimeoutsLocal",fatalTimeoutsInWaitLocal);
+			fs.put("fatalTimeoutsRemote",fatalTimeoutsInWaitRemote);
+			fs.put("allocatedSlotLocal",allocatedSlotLocal);
+			fs.put("allocatedSlotRemote",allocatedSlotRemote);
 		}
 
 		WaitingForSlots waitingSlots = tracker.countRequestsWaitingForSlots();

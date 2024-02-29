@@ -26,7 +26,7 @@ import freenet.support.io.NativeThread;
  * 
  */
 public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetStore<T> {
-    private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
  
 	private boolean shuttingDown; /* If this flag is true, we don't accept puts anymore */
 	/***
@@ -41,8 +41,8 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 	private final CachingFreenetStoreTracker tracker;
 	private final int sizeBlock;
 	
-    static { Logger.registerClass(CachingFreenetStore.class); }
-    
+	static { Logger.registerClass(CachingFreenetStore.class); }
+	
 	private final static class Block<T> {
 		T block;
 		byte[] data;

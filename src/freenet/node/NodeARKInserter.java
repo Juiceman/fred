@@ -252,7 +252,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 			if(!shouldInsert) return;
 		}
 		// Already inserting.
-		if(inserter != null) return; 	
+		if(inserter != null) return;	
 
 		synchronized (this) {
 			shouldInsert = false;	
@@ -282,14 +282,14 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		metadata.free();
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return this;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return this;
+	}
 
 }

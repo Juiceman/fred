@@ -32,7 +32,7 @@ public class SessionKey {
 	public final NewPacketFormatKeyContext packetContext;
 
 	SessionKey(PeerNode parent, BlockCipher outgoingCipher, byte[] outgoingKey,
-	                BlockCipher incommingCipher, byte[] incommingKey, BlockCipher ivCipher,
+					BlockCipher incommingCipher, byte[] incommingKey, BlockCipher ivCipher,
 			byte[] ivNonce, byte[] hmacKey, NewPacketFormatKeyContext context, long trackerID) {
 		this.pn = parent;
 		this.outgoingCipher = outgoingCipher;

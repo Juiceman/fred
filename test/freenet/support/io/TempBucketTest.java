@@ -36,14 +36,14 @@ import freenet.support.io.TempBucketFactory.TempBucket;
 })
 public class TempBucketTest {
 
-    private static final long MIN_DISK_SPACE = 2*1024*1024;
-    
-    static final MasterSecret secret = new MasterSecret();
-    
-    static{
-        Security.addProvider(new BouncyCastleProvider());
-    }
-    
+	private static final long MIN_DISK_SPACE = 2*1024*1024;
+	
+	static final MasterSecret secret = new MasterSecret();
+	
+	static{
+		Security.addProvider(new BouncyCastleProvider());
+	}
+	
 	public static class TempBucketMigrationTest {
 		private Random weakPRNG = new Random(12340);
 		private Executor exec = new SerialExecutor(NativeThread.NORM_PRIORITY);

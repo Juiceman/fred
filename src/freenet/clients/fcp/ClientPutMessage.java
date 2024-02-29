@@ -274,18 +274,18 @@ public class ClientPutMessage extends DataCarryingMessage {
 		sfs.putSingle("ClientToken", clientToken);
 		switch(uploadFromType) {
 		case DIRECT:
-            sfs.putSingle("UploadFrom", "direct");
-            sfs.put("DataLength", dataLength);
-		    break;
+			sfs.putSingle("UploadFrom", "direct");
+			sfs.put("DataLength", dataLength);
+			break;
 		case DISK:
-            sfs.putSingle("UploadFrom", "disk");
-            sfs.putSingle("Filename", origFilename.getAbsolutePath());
-            sfs.put("DataLength", dataLength);
-            break;
+			sfs.putSingle("UploadFrom", "disk");
+			sfs.putSingle("Filename", origFilename.getAbsolutePath());
+			sfs.put("DataLength", dataLength);
+			break;
 		case REDIRECT:
-            sfs.putSingle("UploadFrom", "redirect");
-            sfs.putSingle("TargetURI", redirectTarget.toString());
-            break;
+			sfs.putSingle("UploadFrom", "redirect");
+			sfs.putSingle("TargetURI", redirectTarget.toString());
+			break;
 		}
 		sfs.put("GetCHKOnly", getCHKOnly);
 		sfs.put("PriorityClass", priorityClass);
@@ -327,7 +327,7 @@ public class ClientPutMessage extends DataCarryingMessage {
 	@Override
 	RandomAccessBucket createBucket(BucketFactory bf, long length, FCPServer server) throws IOException, PersistenceDisabledException {
 		if(persistence == Persistence.FOREVER) {
-		    if(server.core.killedDatabase()) throw new PersistenceDisabledException();
+			if(server.core.killedDatabase()) throw new PersistenceDisabledException();
 			return server.core.persistentTempBucketFactory.makeBucket(length);
 		} else {
 			return super.createBucket(bf, length, server);

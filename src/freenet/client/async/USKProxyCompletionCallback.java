@@ -22,8 +22,8 @@ import freenet.support.compress.Compressor;
  */
 public class USKProxyCompletionCallback implements GetCompletionCallback, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    final USK usk;
+	private static final long serialVersionUID = 1L;
+	final USK usk;
 	final GetCompletionCallback cb;
 	final boolean persistent;
 	

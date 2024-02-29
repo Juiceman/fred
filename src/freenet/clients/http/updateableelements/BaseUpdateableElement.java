@@ -38,7 +38,7 @@ public abstract class BaseUpdateableElement extends HTMLNode {
 	 * Updates the state of the Node. The children should be removed and recreated.
 	 * 
 	 * @param initial
-	 *            - If this is the first update
+	 *			- If this is the first update
 	 */
 	public abstract void updateState(boolean initial);
 

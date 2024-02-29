@@ -51,7 +51,7 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 	/** Provider for link filter exceptions. */
 	private final LinkFilterExceptionProvider linkFilterExceptionProvider;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -101,21 +101,21 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 	}
 
 	// RFC3986
-	//  unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+	//  unreserved	= ALPHA / DIGIT / "-" / "." / "_" / "~"
 	protected static final String UNRESERVED = "[a-zA-Z0-9\\-\\._~]";
 	//  pct-encoded   = "%" HEXDIG HEXDIG
 	protected static final String PCT_ENCODED = "(?:%[0-9A-Fa-f][0-9A-Fa-f])";
-	//  sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
-	//                / "*" / "+" / "," / ";" / "="
+	//  sub-delims	= "!" / "$" / "&" / "'" / "(" / ")"
+	//				/ "*" / "+" / "," / ";" / "="
 	protected static final String SUB_DELIMS  = "[\\!\\$&'\\(\\)\\*\\+,;=]";
-	//  pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-	protected static final String PCHAR      = "(?>" + UNRESERVED + "|" + PCT_ENCODED + "|" + SUB_DELIMS + "|[:@])";
-	//  fragment      = *( pchar / "/" / "?" )
+	//  pchar		 = unreserved / pct-encoded / sub-delims / ":" / "@"
+	protected static final String PCHAR	  = "(?>" + UNRESERVED + "|" + PCT_ENCODED + "|" + SUB_DELIMS + "|[:@])";
+	//  fragment	  = *( pchar / "/" / "?" )
 	protected static final String FRAGMENT   = "(?>" + PCHAR + "|\\/|\\?)*";
 
 	private static final Pattern anchorRegex;
 	static {
-	    anchorRegex = Pattern.compile("^#" + FRAGMENT + "$");
+		anchorRegex = Pattern.compile("^#" + FRAGMENT + "$");
 	}
 
 	@Override

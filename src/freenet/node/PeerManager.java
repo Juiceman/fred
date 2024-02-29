@@ -56,10 +56,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class PeerManager {
 
-        private static volatile boolean logMINOR;
-        static {
-            Logger.registerClass(PeerManager.class);
-        }
+		private static volatile boolean logMINOR;
+		static {
+			Logger.registerClass(PeerManager.class);
+		}
 	/** Our Node */
 	final Node node;
 	/** All the peers we want to connect to */
@@ -67,14 +67,14 @@ public class PeerManager {
 	/** All the peers we are actually connected to */
 	private PeerNode[] connectedPeers;
 	private String darkFilename;
-        private String openFilename;
-        private String oldOpennetPeersFilename;
-        // FIXME MEMORY use a hash. Not hashCode() though.
-        // FIXME Strip metadata, except for peer locations.
-        private String darknetPeersStringCache = null;
-        private String opennetPeersStringCache = null;
-        private String oldOpennetPeersStringCache = null;
-        private PeerManagerUserAlert ua;	// Peers stuff
+		private String openFilename;
+		private String oldOpennetPeersFilename;
+		// FIXME MEMORY use a hash. Not hashCode() though.
+		// FIXME Strip metadata, except for peer locations.
+		private String darknetPeersStringCache = null;
+		private String opennetPeersStringCache = null;
+		private String oldOpennetPeersStringCache = null;
+		private PeerManagerUserAlert ua;	// Peers stuff
 	/** age of oldest never connected peer (milliseconds) */
 	private long oldestNeverConnectedDarknetPeerAge;
 	/** Next time to update oldestNeverConnectedPeerAge */
@@ -246,10 +246,10 @@ public class PeerManager {
 				try {
 					PeerNode pn = PeerNode.create(fs, node, crypto, opennet, this);
 					if(oldOpennetPeers) {
-					    if(!(pn instanceof OpennetPeerNode))
-					        Logger.error(this, "Darknet node in old opennet peers?!: "+pn);
-					    else
-					        opennet.addOldOpennetNode((OpennetPeerNode)pn);
+						if(!(pn instanceof OpennetPeerNode))
+							Logger.error(this, "Darknet node in old opennet peers?!: "+pn);
+						else
+							opennet.addOldOpennetNode((OpennetPeerNode)pn);
 					} else
 						addPeer(pn, true, false);
 				} catch(FSParseException e2) {
@@ -274,16 +274,16 @@ public class PeerManager {
 					continue;
 					// FIXME tell the user???
 				} catch (PeerTooOldException e) {
-				    if(crypto.isOpennet) {
-				        // Ignore.
-				        Logger.error(this, "Dropping too-old opennet peer");
-				    } else {
-				        // A lot more noisy!
-				        droppedOldPeers.add(e, fs.get("myName"));
-				    }
-                    someBroken = true;
-                    continue;
-                }
+					if(crypto.isOpennet) {
+						// Ignore.
+						Logger.error(this, "Dropping too-old opennet peer");
+					} else {
+						// A lot more noisy!
+						droppedOldPeers.add(e, fs.get("myName"));
+					}
+					someBroken = true;
+					continue;
+				}
 			}
 		} catch(EOFException e) {
 			// End of file, fine
@@ -309,18 +309,18 @@ public class PeerManager {
 			}
 		}
 		if(!droppedOldPeers.isEmpty()) {
-		    try {
-		        node.clientCore.alerts.register(droppedOldPeers);
-		        Logger.error(this, droppedOldPeers.getText());
-		    } catch (Throwable t) {
-		        // Startup MUST complete, don't let client layer problems kill it.
-		        Logger.error(this, "Caught error telling user about dropped peers", t);
-		    }
+			try {
+				node.clientCore.alerts.register(droppedOldPeers);
+				Logger.error(this, droppedOldPeers.getText());
+			} catch (Throwable t) {
+				// Startup MUST complete, don't let client layer problems kill it.
+				Logger.error(this, "Caught error telling user about dropped peers", t);
+			}
 		}
 		return !someBroken;
 	}
 
-    public boolean addPeer(PeerNode pn) {
+	public boolean addPeer(PeerNode pn) {
 		return addPeer(pn, false, false);
 	}
 
@@ -474,8 +474,8 @@ public class PeerManager {
 			newConnectedPeers = a.toArray(newConnectedPeers);
 			connectedPeers = newConnectedPeers;
 		}
-                if(!pn.isSeed())
-                    updatePMUserAlert();
+				if(!pn.isSeed())
+					updatePMUserAlert();
 		node.lm.announceLocChange();
 		return true;
 	}
@@ -527,27 +527,27 @@ public class PeerManager {
 				Logger.minor(this, "Connected peers: " + connectedPeers.length);
 		}
 		if(!pn.isSeed())
-                    updatePMUserAlert();
+					updatePMUserAlert();
 		node.lm.announceLocChange();
 	}
-//    NodePeer route(double targetLocation, RoutingContext ctx) {
-//        double minDist = 1.1;
-//        NodePeer best = null;
-//        for(NodePeer p: connectedPeers) {
-//            if(ctx.alreadyRoutedTo(p)) continue;
-//            double loc = p.getLocation().getValue();
-//            double dist = Math.abs(loc - targetLocation);
-//            if(dist < minDist) {
-//                minDist = dist;
-//                best = p;
-//            }
-//        }
-//        return best;
-//    }
-//    
-//    NodePeer route(Location target, RoutingContext ctx) {
-//        return route(target.getValue(), ctx);
-//    }
+//	NodePeer route(double targetLocation, RoutingContext ctx) {
+//		double minDist = 1.1;
+//		NodePeer best = null;
+//		for(NodePeer p: connectedPeers) {
+//			if(ctx.alreadyRoutedTo(p)) continue;
+//			double loc = p.getLocation().getValue();
+//			double dist = Math.abs(loc - targetLocation);
+//			if(dist < minDist) {
+//				minDist = dist;
+//				best = p;
+//			}
+//		}
+//		return best;
+//	}
+//	
+//	NodePeer route(Location target, RoutingContext ctx) {
+//		return route(target.getValue(), ctx);
+//	}
 //
 	/**
 	 * Find the node with the given Peer address. Used by FNPPacketMangler to try to 
@@ -813,9 +813,9 @@ public class PeerManager {
 	}
 
 	public void localBroadcast(Message msg, boolean ignoreRoutability, 
-	        boolean onlyRealConnections, ByteCounter ctr) {
-	    localBroadcast(msg, ignoreRoutability, onlyRealConnections, ctr, 
-	            Integer.MIN_VALUE, Integer.MAX_VALUE);
+			boolean onlyRealConnections, ByteCounter ctr) {
+		localBroadcast(msg, ignoreRoutability, onlyRealConnections, ctr, 
+				Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
 	/**
@@ -824,7 +824,7 @@ public class PeerManager {
 	 * @param minVersion Only send the message if the version <= minVersion.
 	 */
 	public void localBroadcast(Message msg, boolean ignoreRoutability, 
-	        boolean onlyRealConnections, ByteCounter ctr, int minVersion, int maxVersion) {
+			boolean onlyRealConnections, ByteCounter ctr, int minVersion, int maxVersion) {
 		// myPeers not connectedPeers as connectedPeers only contains
 		// ROUTABLE peers, and we may want to send to non-routable peers
 		PeerNode[] peers = myPeers();
@@ -871,7 +871,7 @@ public class PeerManager {
 	}
 
 	public PeerNode closerPeer(PeerNode pn, Set<PeerNode> routedTo, double loc, boolean ignoreSelf, boolean calculateMisrouting,
-	        int minVersion, List<Double> addUnpickedLocsTo, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime, boolean excludeMandatoryBackoff) {
+			int minVersion, List<Double> addUnpickedLocsTo, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime, boolean excludeMandatoryBackoff) {
 		return closerPeer(pn, routedTo, loc, ignoreSelf, calculateMisrouting, minVersion, addUnpickedLocsTo, 2.0, key, outgoingHTL, ignoreBackoffUnder, isLocal, realTime, null, false, System.currentTimeMillis(), excludeMandatoryBackoff);
 	}
 
@@ -898,8 +898,8 @@ public class PeerManager {
 	 * wouldn't be a good idea due to introducing a round-trip-to-request-originator; FIXME consider this.
 	 */
 	public PeerNode closerPeer(PeerNode pn, Set<PeerNode> routedTo, double target, boolean ignoreSelf,
-	        boolean calculateMisrouting, int minVersion, List<Double> addUnpickedLocsTo, double maxDistance, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime,
-	        RecentlyFailedReturn recentlyFailed, boolean ignoreTimeout, long now, boolean newLoadManagement) {
+			boolean calculateMisrouting, int minVersion, List<Double> addUnpickedLocsTo, double maxDistance, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime,
+			RecentlyFailedReturn recentlyFailed, boolean ignoreTimeout, long now, boolean newLoadManagement) {
 		
 		int countWaiting = 0;
 		long soonestTimeoutWakeup = Long.MAX_VALUE;
@@ -1456,7 +1456,7 @@ public class PeerManager {
 	private static final int BACKUPS_DARKNET = 10;
 	
 	private void writePeersInnerDarknet(boolean rotateBackups) {
-        String newDarknetPeersString = null;
+		String newDarknetPeersString = null;
 		synchronized(writePeersSync) {
 			if(darkFilename != null)
 				newDarknetPeersString = getDarknetPeersString();
@@ -1468,8 +1468,8 @@ public class PeerManager {
 	}
 
 	private void writePeersInnerOpennet(boolean rotateBackups) {
-        String newOpennetPeersString = null;
-        String newOldOpennetPeersString = null;
+		String newOpennetPeersString = null;
+		String newOldOpennetPeersString = null;
 		synchronized(writePeersSync) {
 			OpennetManager om = node.getOpennet();
 			if(om != null) {

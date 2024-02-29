@@ -59,59 +59,59 @@ public class PacketThrottle {
 		if(logMINOR) Logger.minor(this, "Set round trip time to "+rtt+" on "+this);
 	}
 
-    public synchronized void notifyOfPacketsLost(int numPackets) {
-        if (numPackets <= 0) {
-            throw new IllegalArgumentException("Reported loss is zero or negative");
-        }
-        _droppedPackets += numPackets;
-        _totalPackets += numPackets;
-        _windowSize *= Math.pow(PACKET_DROP_DECREASE_MULTIPLE, numPackets);
-        if (_windowSize < 1.0F) {
-            _windowSize = 1.0F;
-        }
-        slowStart = false;
-        if (logMINOR) {
-            Logger.minor(this, "notifyOfPacketsLost(): " + this);
-        }
-    }
+	public synchronized void notifyOfPacketsLost(int numPackets) {
+		if (numPackets <= 0) {
+			throw new IllegalArgumentException("Reported loss is zero or negative");
+		}
+		_droppedPackets += numPackets;
+		_totalPackets += numPackets;
+		_windowSize *= Math.pow(PACKET_DROP_DECREASE_MULTIPLE, numPackets);
+		if (_windowSize < 1.0F) {
+			_windowSize = 1.0F;
+		}
+		slowStart = false;
+		if (logMINOR) {
+			Logger.minor(this, "notifyOfPacketsLost(): " + this);
+		}
+	}
 
-    /**
-     * Notify the throttle that a packet was transmitted successfully. We will increase the window size.
-     * @param maxWindowSize The maximum window size. This should be at least twice the largest window
-     * size actually seen in flight at any time so far. We will ensure that the throttle's window size
-     * does not get bigger than this. This works even for new packet format, and solves some of the 
-     * problems that RFC 2861 does.
-     */
-    public synchronized void notifyOfPacketAcknowledged(double maxWindowSize) {
-        _totalPackets++;
+	/**
+	 * Notify the throttle that a packet was transmitted successfully. We will increase the window size.
+	 * @param maxWindowSize The maximum window size. This should be at least twice the largest window
+	 * size actually seen in flight at any time so far. We will ensure that the throttle's window size
+	 * does not get bigger than this. This works even for new packet format, and solves some of the 
+	 * problems that RFC 2861 does.
+	 */
+	public synchronized void notifyOfPacketAcknowledged(double maxWindowSize) {
+		_totalPackets++;
 		// If we didn't use the whole window, shrink the window a bit.
 		// This is similar but not identical to RFC2861
 		// See [freenet-dev] Major weakness in our current link-level congestion control
-        int windowSize = (int)getWindowSize();
+		int windowSize = (int)getWindowSize();
 
-    	if(slowStart) {
-    		if(logMINOR) Logger.minor(this, "Still in slow start");
-    		_windowSize += _windowSize / SLOW_START_DIVISOR;
-    		// Avoid craziness if there is lag in detecting packet loss.
-    		if(_windowSize > maxWindowSize) slowStart = false;
-    		// Window size must not drop below 1.0. Partly this is because we need to be able to send one packet, so it is a logical lower bound.
-    		// But mostly it is because of the non-slow-start division by _windowSize!
-    		if(_windowSize < 1.0F) _windowSize = 1.0F;
-    	} else {
-    		_windowSize += (PACKET_TRANSMIT_INCREMENT / _windowSize);
-    	}
-    	// Ensure that we the window size does not grow dramatically larger than the largest window
-    	// that has actually been in flight at one time.
-    	if(_windowSize > maxWindowSize)
-    		_windowSize = (float) maxWindowSize;
-    	if(_windowSize > (windowSize + 1))
-    		notifyAll();
-    	if(logMINOR)
-    		Logger.minor(this, "notifyOfPacketAcked(): "+this);
-    }
-    
-    /** Only used for diagnostics. We actually maintain a real window size. So we don't
-     * need lots of sanity checking here. */
+		if(slowStart) {
+			if(logMINOR) Logger.minor(this, "Still in slow start");
+			_windowSize += _windowSize / SLOW_START_DIVISOR;
+			// Avoid craziness if there is lag in detecting packet loss.
+			if(_windowSize > maxWindowSize) slowStart = false;
+			// Window size must not drop below 1.0. Partly this is because we need to be able to send one packet, so it is a logical lower bound.
+			// But mostly it is because of the non-slow-start division by _windowSize!
+			if(_windowSize < 1.0F) _windowSize = 1.0F;
+		} else {
+			_windowSize += (PACKET_TRANSMIT_INCREMENT / _windowSize);
+		}
+		// Ensure that we the window size does not grow dramatically larger than the largest window
+		// that has actually been in flight at one time.
+		if(_windowSize > maxWindowSize)
+			_windowSize = (float) maxWindowSize;
+		if(_windowSize > (windowSize + 1))
+			notifyAll();
+		if(logMINOR)
+			Logger.minor(this, "notifyOfPacketAcked(): "+this);
+	}
+	
+	/** Only used for diagnostics. We actually maintain a real window size. So we don't
+	 * need lots of sanity checking here. */
 	public synchronized long getDelay() {
 		// return (long) (_roundTripTime / _simulatedWindowSize);
 		return Math.max(MIN_DELAY, (long) (_roundTripTime / _windowSize));

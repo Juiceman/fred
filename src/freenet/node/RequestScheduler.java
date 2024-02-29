@@ -75,6 +75,6 @@ public interface RequestScheduler {
 	 * RequestHandler (onAbort() handler). */
 	public boolean wantKey(Key key);
 
-    public ClientRequestSelector getSelector();
+	public ClientRequestSelector getSelector();
 
 }

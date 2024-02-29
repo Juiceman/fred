@@ -8,9 +8,9 @@ public interface TagReplacerCallback {
 	 * Processes a tag, and return a replacement
 	 * 
 	 * @param pt
-	 *            - The tag that is processed
+	 *			- The tag that is processed
 	 * @param uriProcessor
-	 *            - The URIProcessor that helps with URI transformations
+	 *			- The URIProcessor that helps with URI transformations
 	 * @return the replacement for the tag, or null if not needed
 	 */
 	public String processTag(ParsedTag pt, URIProcessor uriProcessor);

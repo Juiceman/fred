@@ -50,15 +50,15 @@ public class ThrottleWindowManager {
 		_droppedPackets++;
 		_totalPackets++;
 		_simulatedWindowSize *= PACKET_DROP_DECREASE_MULTIPLE;
-        if(logMINOR)
-        	Logger.minor(this, "request rejected overload: "+this);
+		if(logMINOR)
+			Logger.minor(this, "request rejected overload: "+this);
 	}
 
 	public synchronized void requestCompleted() {
-        _totalPackets++;
-        _simulatedWindowSize += (PACKET_TRANSMIT_INCREMENT / _simulatedWindowSize);
-        if(logMINOR)
-        	Logger.minor(this, "requestCompleted on "+this);
+		_totalPackets++;
+		_simulatedWindowSize += (PACKET_TRANSMIT_INCREMENT / _simulatedWindowSize);
+		if(logMINOR)
+			Logger.minor(this, "requestCompleted on "+this);
 	}
 
 	@Override

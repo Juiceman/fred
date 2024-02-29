@@ -11,15 +11,15 @@ public class SpeedyTicker implements Ticker {
   }
 
   public Executor getExecutor() {
-    throw new UnsupportedOperationException();
+	throw new UnsupportedOperationException();
   }
 
   public void removeQueuedJob(Runnable job) {
-    throw new UnsupportedOperationException();
+	throw new UnsupportedOperationException();
   }
 
   public void queueTimedJobAbsolute(Runnable runner, String name, long time,
-                                             boolean runOnTickerAnyway, boolean noDupes) {
-    throw new UnsupportedOperationException();
+											 boolean runOnTickerAnyway, boolean noDupes) {
+	throw new UnsupportedOperationException();
   }
 }

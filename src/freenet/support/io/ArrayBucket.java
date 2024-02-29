@@ -22,8 +22,8 @@ import freenet.support.api.RandomAccessBucket;
  * @author oskar
  */
 public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
-    private static final long serialVersionUID = 1L;
-    private volatile byte[] data;
+	private static final long serialVersionUID = 1L;
+	private volatile byte[] data;
 	private String name;
 	private boolean readOnly;
 	private boolean freed;
@@ -51,7 +51,7 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
-        if(freed) throw new IOException("Already freed");
+		if(freed) throw new IOException("Already freed");
 		return new ByteArrayInputStream(data);
 	}
 
@@ -99,13 +99,13 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 
 	@Override
 	public void free() {
-	    freed = true;
+		freed = true;
 		data = null;
 		// Not much else we can do.
 	}
 
 	public byte[] toByteArray() throws IOException {
-	    if(freed) throw new IOException("Already freed");
+		if(freed) throw new IOException("Already freed");
 		long sz = size();
 		int size = (int)sz;
 		return Arrays.copyOf(data, size);
@@ -116,31 +116,31 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 		return null;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing.
+	}
 
-    @Override
-    public void storeTo(DataOutputStream dos) {
-        // Should not be used for persistent requests.
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void storeTo(DataOutputStream dos) {
+		// Should not be used for persistent requests.
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public LockableRandomAccessBuffer toRandomAccessBuffer() {
-        readOnly = true;
-        LockableRandomAccessBuffer raf = new ByteArrayRandomAccessBuffer(data, 0, data.length, true);
-        return raf;
-    }
+	@Override
+	public LockableRandomAccessBuffer toRandomAccessBuffer() {
+		readOnly = true;
+		LockableRandomAccessBuffer raf = new ByteArrayRandomAccessBuffer(data, 0, data.length, true);
+		return raf;
+	}
 
-    @Override
-    public InputStream getInputStreamUnbuffered() throws IOException {
-        return getInputStream();
-    }
+	@Override
+	public InputStream getInputStreamUnbuffered() throws IOException {
+		return getInputStream();
+	}
 
-    @Override
-    public OutputStream getOutputStreamUnbuffered() throws IOException {
-        return getOutputStream();
-    }
+	@Override
+	public OutputStream getOutputStreamUnbuffered() throws IOException {
+		return getOutputStream();
+	}
 }

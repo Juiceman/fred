@@ -20,8 +20,8 @@ import freenet.keys.FreenetURI;
  */
 public class ArchiveContext implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private HashSet<FreenetURI> soFar;
+	private static final long serialVersionUID = 1L;
+	private HashSet<FreenetURI> soFar;
 	final int maxArchiveLevels;
 	final long maxArchiveSize;
 	
@@ -31,9 +31,9 @@ public class ArchiveContext implements Serializable {
 	}
 	
 	protected ArchiveContext() {
-	    // For serialization.
-	    maxArchiveLevels = 0;
-	    maxArchiveSize = 0;
+		// For serialization.
+		maxArchiveLevels = 0;
+		maxArchiveSize = 0;
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class ArchiveContext implements Serializable {
 		}
 	}
 
-    public synchronized void clear() {
-        soFar = null;
-    }
+	public synchronized void clear() {
+		soFar = null;
+	}
 }

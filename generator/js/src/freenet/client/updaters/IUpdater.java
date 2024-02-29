@@ -6,9 +6,9 @@ public interface IUpdater {
 	 * Updates a given element with the given content
 	 * 
 	 * @param elementId
-	 *            - The element that needs to be updated
+	 *			- The element that needs to be updated
 	 * @param content
-	 *            - The new content to update with
+	 *			- The new content to update with
 	 */
 	public void updated(String elementId, String content);
 }

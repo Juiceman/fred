@@ -42,7 +42,7 @@ public class JPEGFilter implements ContentDataFilter {
 	private static final int MARKER_RST0 = 0xD0; // First reset marker
 	private static final int MARKER_RST7 = 0xD7; // Last reset marker
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -69,8 +69,8 @@ public class JPEGFilter implements ContentDataFilter {
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+	  InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+	  String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		readFilter(input, output, charset, otherParams, cb, deleteComments, deleteExif);
 		output.flush();
 	}

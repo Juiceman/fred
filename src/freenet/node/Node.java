@@ -366,15 +366,15 @@ public class Node implements TimeSkewDetectorCallback {
 				String suffix = getStoreSuffix();
 				if (val.equals("salt-hash")) {
 					byte[] key;
-                    try {
-                        synchronized(Node.this) {
-                            if(keys == null) throw new MasterKeysWrongPasswordException();
-                            key = keys.clientCacheMasterKey;
-                            clientCacheType = val;
-                        }
-                    } catch (MasterKeysWrongPasswordException e1) {
-                        setClientCacheAwaitingPassword();
-                        throw new InvalidConfigValueException("You must enter the password");
+					try {
+						synchronized(Node.this) {
+							if(keys == null) throw new MasterKeysWrongPasswordException();
+							key = keys.clientCacheMasterKey;
+							clientCacheType = val;
+						}
+					} catch (MasterKeysWrongPasswordException e1) {
+						setClientCacheAwaitingPassword();
+						throw new InvalidConfigValueException("You must enter the password");
 					}
 					try {
 						initSaltHashClientCacheFS(suffix, true, key);
@@ -1182,34 +1182,34 @@ public class Node implements TimeSkewDetectorCallback {
 		
 		showFriendsVisibilityAlert = nodeConfig.getBoolean("showFriendsVisibilityAlert");
 
-        byte[] clientCacheKey = null;
-        
-        MasterSecret persistentSecret = null;
-        for(int i=0;i<2; i++) {
+		byte[] clientCacheKey = null;
+		
+		MasterSecret persistentSecret = null;
+		for(int i=0;i<2; i++) {
 
-            try {
-                if(securityLevels.physicalThreatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM) {
-                    keys = MasterKeys.createRandom(secureRandom);
-                } else {
-                    keys = MasterKeys.read(masterKeysFile, secureRandom, "");
-                }
-                clientCacheKey = keys.clientCacheMasterKey;
-                persistentSecret = keys.getPersistentMasterSecret();
-                databaseKey = keys.createDatabaseKey();
-                if(securityLevels.getPhysicalThreatLevel() == PHYSICAL_THREAT_LEVEL.HIGH) {
-                    System.err.println("Physical threat level is set to HIGH but no password, resetting to NORMAL - probably timing glitch");
-                    securityLevels.resetPhysicalThreatLevel(PHYSICAL_THREAT_LEVEL.NORMAL);
-                }
-                break;
-            } catch (MasterKeysWrongPasswordException e) {
-                break;
-            } catch (MasterKeysFileSizeException e) {
-                System.err.println("Impossible: master keys file "+masterKeysFile+" too " + e.sizeToString() + "! Deleting to enable startup, but you will lose your client cache.");
-                masterKeysFile.delete();
-            } catch (IOException e) {
-                break;
-            }
-        }
+			try {
+				if(securityLevels.physicalThreatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM) {
+					keys = MasterKeys.createRandom(secureRandom);
+				} else {
+					keys = MasterKeys.read(masterKeysFile, secureRandom, "");
+				}
+				clientCacheKey = keys.clientCacheMasterKey;
+				persistentSecret = keys.getPersistentMasterSecret();
+				databaseKey = keys.createDatabaseKey();
+				if(securityLevels.getPhysicalThreatLevel() == PHYSICAL_THREAT_LEVEL.HIGH) {
+					System.err.println("Physical threat level is set to HIGH but no password, resetting to NORMAL - probably timing glitch");
+					securityLevels.resetPhysicalThreatLevel(PHYSICAL_THREAT_LEVEL.NORMAL);
+				}
+				break;
+			} catch (MasterKeysWrongPasswordException e) {
+				break;
+			} catch (MasterKeysFileSizeException e) {
+				System.err.println("Impossible: master keys file "+masterKeysFile+" too " + e.sizeToString() + "! Deleting to enable startup, but you will lose your client cache.");
+				masterKeysFile.delete();
+			} catch (IOException e) {
+				break;
+			}
+		}
 
 		// Boot ID
 		bootID = random.nextLong();
@@ -1306,8 +1306,8 @@ public class Node implements TimeSkewDetectorCallback {
 			 }
 		 }
 		 nodeConfig.register("trafficClass", TrafficClass.getDefault().name(), sortOrder++, true, false,
-				     "Node.trafficClass", "Node.trafficClassLong",
-				     new TrafficClassCallback());
+					 "Node.trafficClass", "Node.trafficClassLong",
+					 new TrafficClassCallback());
 		 String trafficClassValue = nodeConfig.getString("trafficClass");
 		 try {
 			 trafficClass = TrafficClass.fromNameOrValue(trafficClassValue);
@@ -1344,8 +1344,8 @@ public class Node implements TimeSkewDetectorCallback {
 
 			@Override
 			public boolean isReadOnly() {
-				        return true;
-			        }
+						return true;
+					}
 		});
 		enableARKs = nodeConfig.getBoolean("enableARKs");
 
@@ -1363,8 +1363,8 @@ public class Node implements TimeSkewDetectorCallback {
 
 			@Override
 			public boolean isReadOnly() {
-				        return true;
-			      }
+						return true;
+				  }
 		});
 		enablePerNodeFailureTables = nodeConfig.getBoolean("enablePerNodeFailureTables");
 
@@ -1382,8 +1382,8 @@ public class Node implements TimeSkewDetectorCallback {
 
 			@Override
 			public boolean isReadOnly() {
-				        return true;
-			        }
+						return true;
+					}
 		});
 		enableULPRDataPropagation = nodeConfig.getBoolean("enableULPRDataPropagation");
 
@@ -1401,8 +1401,8 @@ public class Node implements TimeSkewDetectorCallback {
 
 			@Override
 			public boolean isReadOnly() {
-				        return true;
-			        }
+						return true;
+					}
 		});
 		enableSwapping = nodeConfig.getBoolean("enableSwapping");
 
@@ -1766,7 +1766,7 @@ public class Node implements TimeSkewDetectorCallback {
 			@Override
 			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
 				if (get().equals(val))
-					        return;
+							return;
 				synchronized(Node.this) {
 					isAllowedToConnectToSeednodes = val;
 					if(opennet != null)
@@ -2101,12 +2101,12 @@ public class Node implements TimeSkewDetectorCallback {
 		nodeConfig.register("storePreallocate", true, sortOrder++, true, true, "Node.storePreallocate", "Node.storePreallocateLong",
 				new BooleanCallback() {
 					@Override
-                    public Boolean get() {
-	                    return storePreallocate;
-                    }
+					public Boolean get() {
+						return storePreallocate;
+					}
 
 					@Override
-                    public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
 						storePreallocate = val;
 						if (storeType.equals("salt-hash")) {
 							setPreallocate(chkDatastore, val);
@@ -2116,7 +2116,7 @@ public class Node implements TimeSkewDetectorCallback {
 							setPreallocate(sskDatastore, val);
 							setPreallocate(sskDatacache, val);
 						}
-                    }
+					}
 
 					private void setPreallocate(StoreCallback<?> datastore,
 							boolean val) {
@@ -2157,10 +2157,10 @@ public class Node implements TimeSkewDetectorCallback {
 							databaseAwaitingPassword = false;
 						}
 						try {
-                            killMasterKeysFile();
-						    clientCore.clientLayerPersister.disableWrite();
-						    clientCore.clientLayerPersister.waitForNotWriting();
-                            clientCore.clientLayerPersister.deleteAllFiles();
+							killMasterKeysFile();
+							clientCore.clientLayerPersister.disableWrite();
+							clientCore.clientLayerPersister.waitForNotWriting();
+							clientCore.clientLayerPersister.deleteAllFiles();
 						} catch (IOException e) {
 							masterKeysFile.delete();
 							Logger.error(this, "Unable to securely delete "+masterKeysFile);
@@ -2169,20 +2169,20 @@ public class Node implements TimeSkewDetectorCallback {
 						}
 					}
 					if(oldLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM && newLevel != PHYSICAL_THREAT_LEVEL.HIGH) {
-					    // Not passworded.
-					    // Create the master.keys.
-					    // Keys must exist.
-					    try {
-					        MasterKeys keys;
-					        synchronized(this) {
-					            keys = Node.this.keys;
-					        }
-                            keys.changePassword(masterKeysFile, "", secureRandom);
-                        } catch (IOException e) {
-                            Logger.error(this, "Unable to create encryption keys file: "+masterKeysFile+" : "+e, e);
-                            System.err.println("Unable to create encryption keys file: "+masterKeysFile+" : "+e);
-                            e.printStackTrace();
-                        }
+						// Not passworded.
+						// Create the master.keys.
+						// Keys must exist.
+						try {
+							MasterKeys keys;
+							synchronized(this) {
+								keys = Node.this.keys;
+							}
+							keys.changePassword(masterKeysFile, "", secureRandom);
+						} catch (IOException e) {
+							Logger.error(this, "Unable to create encryption keys file: "+masterKeysFile+" : "+e, e);
+							System.err.println("Unable to create encryption keys file: "+masterKeysFile+" : "+e);
+							e.printStackTrace();
+						}
 					}
 				}
 
@@ -2330,13 +2330,13 @@ public class Node implements TimeSkewDetectorCallback {
 		boolean startedClientCache = false;
 
 		if (clientCacheType.equals("salt-hash")) {
-		    if(clientCacheKey == null) {
-		        System.err.println("Cannot open client-cache, it is passworded");
-		        setClientCacheAwaitingPassword();
-		    } else {
-		        initSaltHashClientCacheFS(suffix, false, clientCacheKey);
-		        startedClientCache = true;
-		    }
+			if(clientCacheKey == null) {
+				System.err.println("Cannot open client-cache, it is passworded");
+				setClientCacheAwaitingPassword();
+			} else {
+				initSaltHashClientCacheFS(suffix, false, clientCacheKey);
+				startedClientCache = true;
+			}
 		} else if(clientCacheType.equals("none")) {
 			initNoClientCacheFS();
 			startedClientCache = true;
@@ -2655,7 +2655,7 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	private void peersOffersFrefFilesConfiguration(SubConfig nodeConfig, int configOptionSortOrder) {
-	 	final Node node = this;
+		final Node node = this;
 		nodeConfig.register("peersOffersDismissed", false, configOptionSortOrder, true, true,
 				"Node.peersOffersDismissed", "Node.peersOffersDismissedLong", new BooleanCallback() {
 
@@ -2692,7 +2692,7 @@ public class Node implements TimeSkewDetectorCallback {
 		return false;
 	}
 
-    /** Delete files from old BDB-index datastore. */
+	/** Delete files from old BDB-index datastore. */
 	private void deleteOldBDBIndexStoreFiles() {
 		File dbDir = storeDir.file("database-"+getDarknetPortNumber());
 		FileUtil.removeAll(dbDir);
@@ -2740,14 +2740,14 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	public void lateSetupDatabase(DatabaseKey databaseKey) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
-	    if(clientCore.loadedDatabase()) return;
+		if(clientCore.loadedDatabase()) return;
 		System.out.println("Starting late database initialisation");
 
 		try {
-		    if(!clientCore.lateInitDatabase(databaseKey))
-		        failLateInitDatabase();
+			if(!clientCore.lateInitDatabase(databaseKey))
+				failLateInitDatabase();
 		} catch (NodeInitException e) {
-		    failLateInitDatabase();
+			failLateInitDatabase();
 		}
 	}
 
@@ -2768,11 +2768,11 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	/** Called when the client layer needs the decryption password. */
-    void setDatabaseAwaitingPassword() {
-        synchronized(this) {
-            databaseAwaitingPassword = true;
-        }
-    }
+	void setDatabaseAwaitingPassword() {
+		synchronized(this) {
+			databaseAwaitingPassword = true;
+		}
+	}
 
 	private final UserAlert masterPasswordUserAlert = new UserAlert() {
 
@@ -3016,7 +3016,7 @@ public class Node implements TimeSkewDetectorCallback {
 			e.printStackTrace();
 			throw new NodeInitException(NodeInitException.EXIT_STORE_OTHER, e.getMessage());
 		}
-    }
+	}
 
 	private void initSaltHashClientCacheFS(final String suffix, boolean dontResizeOnStart, byte[] clientCacheMasterKey) throws NodeInitException {
 
@@ -3077,7 +3077,7 @@ public class Node implements TimeSkewDetectorCallback {
 			e.printStackTrace();
 			throw new NodeInitException(NodeInitException.EXIT_STORE_OTHER, e.getMessage());
 		}
-    }
+	}
 
 	private <T extends StorableBlock> FreenetStore<T> makeClientcache(String type, boolean isStore, StoreCallback<T> cb, boolean dontResizeOnStart, byte[] clientCacheMasterKey) throws IOException {
 		FreenetStore<T> store = makeStore(type, "clientcache", maxClientCacheKeys, cb, dontResizeOnStart, clientCacheMasterKey);
@@ -3095,7 +3095,7 @@ public class Node implements TimeSkewDetectorCallback {
 		System.out.println("Initializing "+type+" Data"+store+" (" + maxStoreKeys + " keys)");
 
 		SaltedHashFreenetStore<T> fs = SaltedHashFreenetStore.<T>construct(getStoreDir(), type+"-"+store, cb,
-		        random, maxKeys, storeUseSlotFilters, shutdownHook, storePreallocate, storeSaltHashResizeOnStart && !lateStart, lateStart ? ticker : null, clientCacheMasterKey);
+				random, maxKeys, storeUseSlotFilters, shutdownHook, storePreallocate, storeSaltHashResizeOnStart && !lateStart, lateStart ? ticker : null, clientCacheMasterKey);
 		cb.setStore(fs);
 		if(cachingFreenetStoreMaxSize > 0)
 			return new CachingFreenetStore<T>(cb, fs, cachingFreenetStoreTracker);
@@ -3644,21 +3644,21 @@ public class Node implements TimeSkewDetectorCallback {
 		return sskDatastore;
 	}
 
-        CHKStore getChkSlashdotCache() {
-            return chkSlashdotcache;
-        }
+		CHKStore getChkSlashdotCache() {
+			return chkSlashdotcache;
+		}
 
-        CHKStore getChkClientCache() {
-            return chkClientcache;
-        }
+		CHKStore getChkClientCache() {
+			return chkClientcache;
+		}
 
-        SSKStore getSskSlashdotCache() {
-            return sskSlashdotcache;
-        }
+		SSKStore getSskSlashdotCache() {
+			return sskSlashdotcache;
+		}
 
-        SSKStore getSskClientCache() {
-            return sskClientcache;
-        }
+		SSKStore getSskClientCache() {
+			return sskClientcache;
+		}
 
 	/**
 	 * This method returns all statistics info for our data store stats table
@@ -3711,7 +3711,7 @@ public class Node implements TimeSkewDetectorCallback {
 	/**
 	 * Store a datum.
 	 * @param block
-	 *      a KeyBlock
+	 *	  a KeyBlock
 	 * @param deep If true, insert to the store rather than the cache. Do not set
 	 * this to true unless the store results from an insert, and this node is the
 	 * closest node to the target; see the description of chkDatastore.
@@ -4007,9 +4007,9 @@ public class Node implements TimeSkewDetectorCallback {
 
 		config.store();
 
-        if(random instanceof PersistentRandomSource) {
-            ((PersistentRandomSource) random).write_seed(true);
-        }
+		if(random instanceof PersistentRandomSource) {
+			((PersistentRandomSource) random).write_seed(true);
+		}
 	}
 
 	public NodeUpdateManager getNodeUpdater(){
@@ -4598,23 +4598,23 @@ public class Node implements TimeSkewDetectorCallback {
 	public void setMasterPassword(String password, boolean inFirstTimeWizard) throws AlreadySetPasswordException, MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
 		MasterKeys k;
 		synchronized(this) {
-		    if(keys == null) {
-		        // Decrypting.
-		        keys = MasterKeys.read(masterKeysFile, secureRandom, password);
-		        databaseKey = keys.createDatabaseKey();
-		    } else {
-		        // Setting password when changing to HIGH from another mode.
-		        keys.changePassword(masterKeysFile, password, secureRandom);
-		        return;
-		    }
-		    k = keys;
+			if(keys == null) {
+				// Decrypting.
+				keys = MasterKeys.read(masterKeysFile, secureRandom, password);
+				databaseKey = keys.createDatabaseKey();
+			} else {
+				// Setting password when changing to HIGH from another mode.
+				keys.changePassword(masterKeysFile, password, secureRandom);
+				return;
+			}
+			k = keys;
 		}
 		setPasswordInner(k, inFirstTimeWizard);
 	}
 
 	private void setPasswordInner(MasterKeys keys, boolean inFirstTimeWizard) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
-	    MasterSecret secret = keys.getPersistentMasterSecret();
-        clientCore.setupMasterSecret(secret);
+		MasterSecret secret = keys.getPersistentMasterSecret();
+		clientCore.setupMasterSecret(secret);
 		boolean wantClientCache = false;
 		boolean wantDatabase = false;
 		synchronized(this) {
@@ -4710,23 +4710,23 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 	public boolean wantEncryptedDatabase() {
-	    return this.securityLevels.getPhysicalThreatLevel() != PHYSICAL_THREAT_LEVEL.LOW;
+		return this.securityLevels.getPhysicalThreatLevel() != PHYSICAL_THREAT_LEVEL.LOW;
 	}
 	
 	public boolean wantNoPersistentDatabase() {
-	    return this.securityLevels.getPhysicalThreatLevel() == PHYSICAL_THREAT_LEVEL.MAXIMUM;
+		return this.securityLevels.getPhysicalThreatLevel() == PHYSICAL_THREAT_LEVEL.MAXIMUM;
 	}
 
 	public boolean hasDatabase() {
-	    return !clientCore.clientLayerPersister.isKilledOrNotLoaded();
+		return !clientCore.clientLayerPersister.isKilledOrNotLoaded();
 	}
 
-        /**
-         * @return canonical path of the database file in use.
-         */
-        public String getDatabasePath() throws IOException {
-            return clientCore.clientLayerPersister.getWriteFilename().toString();
-        }
+		/**
+		 * @return canonical path of the database file in use.
+		 */
+		public String getDatabasePath() throws IOException {
+			return clientCore.clientLayerPersister.getWriteFilename().toString();
+		}
 
 	/** Should we commit the block to the store rather than the cache?
 	 *
@@ -4751,29 +4751,29 @@ public class Node implements TimeSkewDetectorCallback {
 	 * @return
 	 */
 	public boolean shouldStoreDeep(Key key, PeerNode source, PeerNode[] routedTo) {
-    	double myLoc = getLocation();
-    	double target = key.toNormalizedDouble();
-    	double myDist = Location.distance(myLoc, target);
+		double myLoc = getLocation();
+		double target = key.toNormalizedDouble();
+		double myDist = Location.distance(myLoc, target);
 
-    	// First, calculate whether we would have stored it using the old formula.
-    	if(logMINOR) Logger.minor(this, "Should store for "+key+" ?");
-    	// Don't sink store if any of the nodes we routed to, or our predecessor, is both high-uptime and closer to the target than we are.
-    	if(source != null && !source.isLowUptime()) {
-    		if(Location.distance(source, target) < myDist) {
-    	    	if(logMINOR) Logger.minor(this, "Not storing because source is closer to target for "+key+" : "+source);
-    			return false;
-    		}
-    	}
-    	for(PeerNode pn : routedTo) {
-    		if(Location.distance(pn, target) < myDist && !pn.isLowUptime()) {
-    	    	if(logMINOR) Logger.minor(this, "Not storing because peer "+pn+" is closer to target for "+key+" his loc "+pn.getLocation()+" my loc "+myLoc+" target is "+target);
-    			return false;
-    		} else {
-    			if(logMINOR) Logger.minor(this, "Should store maybe, peer "+pn+" loc = "+pn.getLocation()+" my loc is "+myLoc+" target is "+target+" low uptime is "+pn.isLowUptime());
-    		}
-    	}
-    	if(logMINOR) Logger.minor(this, "Should store returning true for "+key+" target="+target+" myLoc="+myLoc+" peers: "+routedTo.length);
-    	return true;
+		// First, calculate whether we would have stored it using the old formula.
+		if(logMINOR) Logger.minor(this, "Should store for "+key+" ?");
+		// Don't sink store if any of the nodes we routed to, or our predecessor, is both high-uptime and closer to the target than we are.
+		if(source != null && !source.isLowUptime()) {
+			if(Location.distance(source, target) < myDist) {
+				if(logMINOR) Logger.minor(this, "Not storing because source is closer to target for "+key+" : "+source);
+				return false;
+			}
+		}
+		for(PeerNode pn : routedTo) {
+			if(Location.distance(pn, target) < myDist && !pn.isLowUptime()) {
+				if(logMINOR) Logger.minor(this, "Not storing because peer "+pn+" is closer to target for "+key+" his loc "+pn.getLocation()+" my loc "+myLoc+" target is "+target);
+				return false;
+			} else {
+				if(logMINOR) Logger.minor(this, "Should store maybe, peer "+pn+" loc = "+pn.getLocation()+" my loc is "+myLoc+" target is "+target+" low uptime is "+pn.isLowUptime());
+			}
+		}
+		if(logMINOR) Logger.minor(this, "Should store returning true for "+key+" target="+target+" myLoc="+myLoc+" peers: "+routedTo.length);
+		return true;
 	}
 
 
@@ -4896,31 +4896,31 @@ public class Node implements TimeSkewDetectorCallback {
 	}
 
 
-    public byte[] getPluginStoreKey(String storeIdentifier) {
-        DatabaseKey key;
-        synchronized(this) {
-            key = databaseKey;
-        }
-        if(key != null)
-            return key.getPluginStoreKey(storeIdentifier);
-        else
-            return null;
-    }
+	public byte[] getPluginStoreKey(String storeIdentifier) {
+		DatabaseKey key;
+		synchronized(this) {
+			key = databaseKey;
+		}
+		if(key != null)
+			return key.getPluginStoreKey(storeIdentifier);
+		else
+			return null;
+	}
 
 	public PluginManager getPluginManager() {
 		return pluginManager;
 	}
 
 
-    DatabaseKey getDatabaseKey() {
-        return databaseKey;
-    }
+	DatabaseKey getDatabaseKey() {
+		return databaseKey;
+	}
 
-    public NodeDiagnostics getNodeDiagnostics() {
-        return nodeDiagnostics;
-    }
+	public NodeDiagnostics getNodeDiagnostics() {
+		return nodeDiagnostics;
+	}
 
-    public boolean isNodeDiagnosticsEnabled() {
-        return enableNodeDiagnostics;
-    }
+	public boolean isNodeDiagnosticsEnabled() {
+		return enableNodeDiagnostics;
+	}
 }

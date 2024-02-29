@@ -26,19 +26,19 @@ import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
 
 public abstract class BaseFileBucket implements RandomAccessBucket {
-    private static volatile boolean logMINOR;
-    private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
 
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+			}
+		});
+	}
 
 	protected long fileRestartCounter;
 	/** Has the bucket been freed? If so, no further operations may be done */
@@ -62,17 +62,17 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	public BaseFileBucket(File file, boolean deleteOnExit) {
 		if(file == null) throw new NullPointerException();
 		maybeSetDeleteOnExit(deleteOnExit, file);
-        assert(!(createFileOnly() && tempFileAlreadyExists())); // Mutually incompatible!
+		assert(!(createFileOnly() && tempFileAlreadyExists())); // Mutually incompatible!
 	}
 	
 	protected BaseFileBucket() {
-	    // For serialization.
+		// For serialization.
 	}
 
-        private void maybeSetDeleteOnExit(boolean deleteOnExit, File file) {
-        	if(deleteOnExit)
+		private void maybeSetDeleteOnExit(boolean deleteOnExit, File file) {
+			if(deleteOnExit)
 			setDeleteOnExit(file);
-        }
+		}
 	
 	protected void setDeleteOnExit(File file) {
 		try {
@@ -96,12 +96,12 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 				throw new IOException("Bucket is read-only: "+this);
 			
 			if(createFileOnly() && // Fail if file already exists 
-			        fileRestartCounter == 0 && // Ignore if we're just clobbering our own file after a previous getOutputStream() 
-			        !file.createNewFile()) {
-			    throw new FileExistsException(file);
+					fileRestartCounter == 0 && // Ignore if we're just clobbering our own file after a previous getOutputStream() 
+					!file.createNewFile()) {
+				throw new FileExistsException(file);
 			}
 			if(tempFileAlreadyExists() && !(file.exists() && file.canRead() && file.canWrite())) {
-			    throw new FileDoesNotExistException(file);
+				throw new FileDoesNotExistException(file);
 			}
 			
 			if(streams != null && !streams.isEmpty())
@@ -124,7 +124,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	
 	@Override
 	public OutputStream getOutputStream() throws IOException {
-	    return new BufferedOutputStream(getOutputStreamUnbuffered());
+		return new BufferedOutputStream(getOutputStreamUnbuffered());
 	}
 
 	private synchronized void addStream(Closeable stream) {
@@ -246,14 +246,14 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 				throw e;
 			}
 			if(renaming) {
-			    // getOutputStream() creates the file as a marker, so DON'T check for its existence, 
-			    // even if createFileOnly() is true.
-			    if(!FileUtil.renameTo(tempfile, file)) {
-			        tempfile.delete();
-			        if(logMINOR)
-			            Logger.minor(this, "Deleted, cannot rename file for "+this);
-			        throw new IOException("Cannot rename file");
-			    }
+				// getOutputStream() creates the file as a marker, so DON'T check for its existence, 
+				// even if createFileOnly() is true.
+				if(!FileUtil.renameTo(tempfile, file)) {
+					tempfile.delete();
+					if(logMINOR)
+						Logger.minor(this, "Deleted, cannot rename file for "+this);
+					throw new IOException("Cannot rename file");
+				}
 			}
 		}
 		
@@ -305,7 +305,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	}
 	
 	public InputStream getInputStream() throws IOException {
-	    return new BufferedInputStream(getInputStreamUnbuffered());
+		return new BufferedInputStream(getInputStreamUnbuffered());
 	}
 
 	/**
@@ -318,7 +318,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 
 	@Override
 	public synchronized long size() {
-	    return getFile().length();
+		return getFile().length();
 	}
 
 	/**
@@ -362,11 +362,11 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 
 		// Try TEMP and TMP
 		//	if (tempDir == null) {
-		//	    tempDir = System.getenv("TEMP");
+		//		tempDir = System.getenv("TEMP");
 		//	}
 
 		//	if (tempDir == null) {
-		//	    tempDir = System.getenv("TMP");
+		//		tempDir = System.getenv("TMP");
 		//	}
 
 		// make some semi-educated guesses based on OS.
@@ -412,7 +412,7 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	}
 
 	public synchronized Bucket[] split(int splitSize) {
-	    long length = size();
+		long length = size();
 		if(length > ((long)Integer.MAX_VALUE) * splitSize)
 			throw new IllegalArgumentException("Way too big!: "+length+" for "+splitSize);
 		int bucketCount = (int) (length / splitSize);
@@ -490,40 +490,40 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 
 	@Override
 	public void onResume(ClientContext context) throws ResumeFailedException {
-	    // Do nothing.
+		// Do nothing.
 	}
 	
 	public static final int MAGIC = 0xc4b7533d;
 	static final int VERSION = 1;
 	
-    @Override
-    public void storeTo(DataOutputStream dos) throws IOException {
-        dos.writeInt(MAGIC);
-        dos.writeInt(VERSION);
-        dos.writeBoolean(freed);
-    }
+	@Override
+	public void storeTo(DataOutputStream dos) throws IOException {
+		dos.writeInt(MAGIC);
+		dos.writeInt(VERSION);
+		dos.writeBoolean(freed);
+	}
 	
-    protected BaseFileBucket(DataInputStream dis) throws IOException, StorageFormatException {
-        // Not constructed directly, so we DO need to read the magic value.
-        int magic = dis.readInt();
-        if(magic != MAGIC) throw new StorageFormatException("Bad magic");
-        int version = dis.readInt();
-        if(version != VERSION) throw new StorageFormatException("Bad version");
-        freed = dis.readBoolean();
-    }
-    
-    @Override
-    public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
-        if(freed) throw new IOException("Already freed");
-        setReadOnly();
-        long size = size();
-        if(size == 0) throw new IOException("Must not be empty");
-        return new PooledFileRandomAccessBuffer(getFile(), true, size, null, 
-                getPersistentTempID(), deleteOnFree());
-    }
-    
-    protected long getPersistentTempID() {
-        return -1;
-    }
+	protected BaseFileBucket(DataInputStream dis) throws IOException, StorageFormatException {
+		// Not constructed directly, so we DO need to read the magic value.
+		int magic = dis.readInt();
+		if(magic != MAGIC) throw new StorageFormatException("Bad magic");
+		int version = dis.readInt();
+		if(version != VERSION) throw new StorageFormatException("Bad version");
+		freed = dis.readBoolean();
+	}
+	
+	@Override
+	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
+		if(freed) throw new IOException("Already freed");
+		setReadOnly();
+		long size = size();
+		if(size == 0) throw new IOException("Must not be empty");
+		return new PooledFileRandomAccessBuffer(getFile(), true, size, null, 
+				getPersistentTempID(), deleteOnFree());
+	}
+	
+	protected long getPersistentTempID() {
+		return -1;
+	}
 
 }

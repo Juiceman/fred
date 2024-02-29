@@ -20,14 +20,14 @@ import java.nio.charset.StandardCharsets;
  **/
 public class URLDecoder
 {
-    // test harness
-    public static void main(String[] args) throws URLEncodedFormatException {
+	// test harness
+	public static void main(String[] args) throws URLEncodedFormatException {
 	for (String arg: args) {
-	    System.out.println(arg + " -> " + decode(arg, false));
+		System.out.println(arg + " -> " + decode(arg, false));
 	}
-    }
+	}
 
-    /**
+	/**
 	 * Decodes a URLEncoder format string.
 	 *
 	 * @param s String to be translated.

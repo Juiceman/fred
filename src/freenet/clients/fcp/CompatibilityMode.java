@@ -7,19 +7,19 @@ import freenet.support.HexUtil;
 import freenet.support.SimpleFieldSet;
 
 public class CompatibilityMode extends FCPMessage {
-    
-    public CompatibilityMode(String identifier, boolean global, CompatibilityAnalyser compat) {
-        this.identifier = identifier;
-        this.global = global;
-        this.compat = compat;
-    }
 	
-    private static final long serialVersionUID = 1L;
-    
-    private final CompatibilityAnalyser compat;
-    final String identifier;
-    final boolean global;
-    
+	public CompatibilityMode(String identifier, boolean global, CompatibilityAnalyser compat) {
+		this.identifier = identifier;
+		this.global = global;
+		this.compat = compat;
+	}
+	
+	private static final long serialVersionUID = 1L;
+	
+	private final CompatibilityAnalyser compat;
+	final String identifier;
+	final boolean global;
+	
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(false);
@@ -48,7 +48,7 @@ public class CompatibilityMode extends FCPMessage {
 	}
 
 	public InsertContext.CompatibilityMode[] getModes() {
-	    return compat.getModes();
+		return compat.getModes();
 	}
 
 }

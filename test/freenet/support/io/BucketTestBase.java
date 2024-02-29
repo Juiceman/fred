@@ -18,7 +18,7 @@ import freenet.support.api.Bucket;
 public abstract class BucketTestBase {
 	protected byte[] DATA1 = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 	protected byte[] DATA2 = new byte[] { 0x70, (byte) 0x81, (byte) 0x92, (byte) 0xa3, (byte) 0xb4, (byte) 0xc5,
-	        (byte) 0xd6, (byte) 0xe7, (byte) 0xf8 };
+			(byte) 0xd6, (byte) 0xe7, (byte) 0xf8 };
 
 	protected abstract Bucket makeBucket(long size) throws IOException;
 

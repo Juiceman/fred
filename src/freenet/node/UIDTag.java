@@ -17,17 +17,17 @@ import freenet.support.Logger.LogLevel;
  */
 public abstract class UIDTag {
 	
-    private static volatile boolean logMINOR;
-    
-    static {
-    	Logger.registerLogThresholdCallback(new LogThresholdCallback(){
-    		@Override
-    		public void shouldUpdate(){
-    			logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-    		}
-    	});
-    }
-    
+	private static volatile boolean logMINOR;
+	
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+			@Override
+			public void shouldUpdate(){
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+			}
+		});
+	}
+	
 	final long createdTime;
 	final boolean wasLocal;
 	private final WeakReference<PeerNode> sourceRef;

@@ -41,7 +41,7 @@ public class PartiallyReceivedBulk {
 	int _abortReason;
 	String _abortDescription;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

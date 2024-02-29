@@ -73,7 +73,7 @@ public class PersistentConfig extends Config {
 			Logger.error(this, "Could not parse config option "+name+": "+e, e);
 		}
 	}
-        
+		
 	/**
 	 * Return a copy of the SFS as read by the config framework.
 	 * 

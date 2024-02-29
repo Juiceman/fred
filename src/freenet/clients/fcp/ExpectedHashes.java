@@ -10,8 +10,8 @@ import freenet.support.SimpleFieldSet;
 
 public class ExpectedHashes extends FCPMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    final HashResult[] hashes;
+	private static final long serialVersionUID = 1L;
+	final HashResult[] hashes;
 	final String identifier;
 	final boolean global;
 	
@@ -21,17 +21,17 @@ public class ExpectedHashes extends FCPMessage implements Serializable {
 		this.hashes = event.hashes;
 	}
 	
-    ExpectedHashes(HashResult[] hashes, String identifier, boolean global) {
-        this.identifier = identifier;
-        this.global = global;
-        this.hashes = hashes;
-    }
-    
+	ExpectedHashes(HashResult[] hashes, String identifier, boolean global) {
+		this.identifier = identifier;
+		this.global = global;
+		this.hashes = hashes;
+	}
+	
 	protected ExpectedHashes() {
-	    // For serialization.
-	    hashes = null;
-	    identifier = null;
-	    global = false;
+		// For serialization.
+		hashes = null;
+		identifier = null;
+		global = false;
 	}
 
 	@Override

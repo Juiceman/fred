@@ -240,8 +240,8 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 				addFirst.lastAccessed = now;
 				oldBlock = blocksByRoutingKey.push(key, addFirst);
 				if(oldBlock != null) {
-	                if(blocks == null) blocks = new ArrayList<DiskBlock>();
-	                blocks.add(oldBlock);
+					if(blocks == null) blocks = new ArrayList<DiskBlock>();
+					blocks.add(oldBlock);
 				}
 				writes++;
 			}

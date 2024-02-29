@@ -108,13 +108,13 @@ public class USKFetcherWrapper extends BaseClientGetter {
 		// Ignore
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return null;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return null;
+	}
 }

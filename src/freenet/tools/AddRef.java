@@ -104,12 +104,12 @@ public class AddRef {
 		}
 	}
 
-        /**
-         *
-         * @param lis
-         * @return
-         */
-        protected SimpleFieldSet getMessage(LineReadingInputStream lis){
+		/**
+		 *
+		 * @param lis
+		 * @return
+		 */
+		protected SimpleFieldSet getMessage(LineReadingInputStream lis){
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		try {
 			while(lis.available()>0){

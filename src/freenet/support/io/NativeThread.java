@@ -112,7 +112,7 @@ public class NativeThread extends Thread {
 	* @param name
 	* @param priority
 	* @param dontCheckRenice This should be set to true
-	*    unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
+	*	unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
 	*/
 	public NativeThread(String name, int priority, boolean dontCheckRenice) {
 		super(name);
@@ -126,7 +126,7 @@ public class NativeThread extends Thread {
 	* @param name
 	* @param priority
 	* @param dontCheckRenice This should be set to true
-	*    unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
+	*	unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
 	*/
 	public NativeThread(Runnable r, String name, int priority, boolean dontCheckRenice) {
 		super(r, name);
@@ -140,7 +140,7 @@ public class NativeThread extends Thread {
 	* @param name
 	* @param priority
 	* @param dontCheckRenice This should be set to true
-	*    unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
+	*	unless the caller is running at NATIVE_PRIORITY_BASE @see bug6623
 	*/
 	public NativeThread(ThreadGroup g, Runnable r, String name, int priority, boolean dontCheckRenice) {
 		super(g, r, name);

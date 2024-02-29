@@ -16,7 +16,7 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 	private final Bucket bucket;
 	private final long spaceUsed;
 
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override

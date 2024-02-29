@@ -110,17 +110,17 @@ public class InsertException extends Exception implements Cloneable {
 			Logger.minor(this, "Creating InsertException: "+getMessage(mode), this);
 	}
 
-    public InsertException(InsertExceptionMode mode, String message, FailureCodeTracker errorCodes, FreenetURI expectedURI) {
-        super(message == null ? getMessage(mode) : (getMessage(mode)+": "+message));
-        extra = message;
-        this.mode = mode;
-        this.errorCodes = errorCodes;
-        this.uri = expectedURI;
-        if(mode == InsertExceptionMode.INTERNAL_ERROR)
-            Logger.error(this, "Internal error: "+this);
-        else if(logMINOR) 
-            Logger.minor(this, "Creating InsertException: "+getMessage(mode), this);
-    }
+	public InsertException(InsertExceptionMode mode, String message, FailureCodeTracker errorCodes, FreenetURI expectedURI) {
+		super(message == null ? getMessage(mode) : (getMessage(mode)+": "+message));
+		extra = message;
+		this.mode = mode;
+		this.errorCodes = errorCodes;
+		this.uri = expectedURI;
+		if(mode == InsertExceptionMode.INTERNAL_ERROR)
+			Logger.error(this, "Internal error: "+this);
+		else if(logMINOR) 
+			Logger.minor(this, "Creating InsertException: "+getMessage(mode), this);
+	}
 
 	public InsertException(InsertExceptionMode mode) {
 		super(getMessage(mode));
@@ -147,73 +147,73 @@ public class InsertException extends Exception implements Cloneable {
 	}
 
 	public static InsertException constructFrom(LowLevelPutException e) {
-	    switch(e.code) {
-	    case LowLevelPutException.COLLISION:
-	        return new InsertException(InsertExceptionMode.COLLISION);
-	    case LowLevelPutException.INTERNAL_ERROR:
-	        return new InsertException(InsertExceptionMode.INTERNAL_ERROR);
-	    case LowLevelPutException.REJECTED_OVERLOAD:
-	        return new InsertException(InsertExceptionMode.REJECTED_OVERLOAD);
-	    case LowLevelPutException.ROUTE_NOT_FOUND:
-	        return new InsertException(InsertExceptionMode.ROUTE_NOT_FOUND);
-        case LowLevelPutException.ROUTE_REALLY_NOT_FOUND:
-            return new InsertException(InsertExceptionMode.ROUTE_REALLY_NOT_FOUND);
-	    default:
-	        Logger.error(InsertException.class, "Unknown LowLevelPutException: "+e+" code "+e.code, new Exception("error"));
-	        return new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Unknown error "+e.code, null);
-	    }
-    }
+		switch(e.code) {
+		case LowLevelPutException.COLLISION:
+			return new InsertException(InsertExceptionMode.COLLISION);
+		case LowLevelPutException.INTERNAL_ERROR:
+			return new InsertException(InsertExceptionMode.INTERNAL_ERROR);
+		case LowLevelPutException.REJECTED_OVERLOAD:
+			return new InsertException(InsertExceptionMode.REJECTED_OVERLOAD);
+		case LowLevelPutException.ROUTE_NOT_FOUND:
+			return new InsertException(InsertExceptionMode.ROUTE_NOT_FOUND);
+		case LowLevelPutException.ROUTE_REALLY_NOT_FOUND:
+			return new InsertException(InsertExceptionMode.ROUTE_REALLY_NOT_FOUND);
+		default:
+			Logger.error(InsertException.class, "Unknown LowLevelPutException: "+e+" code "+e.code, new Exception("error"));
+			return new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Unknown error "+e.code, null);
+		}
+	}
 	
-    private static final HashMap<Integer, InsertExceptionMode> modes = 
-        new HashMap<Integer, InsertExceptionMode>();
+	private static final HashMap<Integer, InsertExceptionMode> modes = 
+		new HashMap<Integer, InsertExceptionMode>();
 
-    public static enum InsertExceptionMode {
-        
-        /** Caller supplied a URI we cannot use */
-        INVALID_URI(1),
-        /** Failed to read from or write to a bucket; a kind of internal error */
-        BUCKET_ERROR(2),
-        /** Internal error of some sort */
-        INTERNAL_ERROR(3),
-        /** Downstream node was overloaded */
-        REJECTED_OVERLOAD(4),
-        /** Couldn't find enough nodes to send the data to */
-        ROUTE_NOT_FOUND(5),
-        /** There were fatal errors in a splitfile insert. */
-        FATAL_ERRORS_IN_BLOCKS(6),
-        /** Could not insert a splitfile because a block failed too many times */
-        TOO_MANY_RETRIES_IN_BLOCKS(7),
-        /** Not able to leave the node at all */
-        ROUTE_REALLY_NOT_FOUND(8),
-        /** Collided with pre-existing content */
-        COLLISION(9),
-        /** Cancelled by user */
-        CANCELLED(10),
-        /** Meta string used in the key (most probably '/') */
-        META_STRINGS_NOT_SUPPORTED(11),
-        /** Invalid binary blob data supplied so cannot insert it */
-        BINARY_BLOB_FORMAT_ERROR(12),
-        /** Too many files in a directory in a site insert */
-        TOO_MANY_FILES(13),
-        /** File being uploaded is bigger than maximum supported size */
-        TOO_BIG(14);
-        
-        
-        public final int code;
-        InsertExceptionMode(int code) {
-            this.code = code;
-            if(code < 0 || code >= UPPER_LIMIT_ERROR_CODE)
-                throw new IllegalArgumentException();
-            if(modes.containsKey(code))
-                throw new IllegalArgumentException();
-            modes.put(code, this);
-        }
-        public static InsertExceptionMode getByCode(int code) {
-            if(modes.get(code) == null) throw new IllegalArgumentException();
-            return modes.get(code);
-        }
+	public static enum InsertExceptionMode {
+		
+		/** Caller supplied a URI we cannot use */
+		INVALID_URI(1),
+		/** Failed to read from or write to a bucket; a kind of internal error */
+		BUCKET_ERROR(2),
+		/** Internal error of some sort */
+		INTERNAL_ERROR(3),
+		/** Downstream node was overloaded */
+		REJECTED_OVERLOAD(4),
+		/** Couldn't find enough nodes to send the data to */
+		ROUTE_NOT_FOUND(5),
+		/** There were fatal errors in a splitfile insert. */
+		FATAL_ERRORS_IN_BLOCKS(6),
+		/** Could not insert a splitfile because a block failed too many times */
+		TOO_MANY_RETRIES_IN_BLOCKS(7),
+		/** Not able to leave the node at all */
+		ROUTE_REALLY_NOT_FOUND(8),
+		/** Collided with pre-existing content */
+		COLLISION(9),
+		/** Cancelled by user */
+		CANCELLED(10),
+		/** Meta string used in the key (most probably '/') */
+		META_STRINGS_NOT_SUPPORTED(11),
+		/** Invalid binary blob data supplied so cannot insert it */
+		BINARY_BLOB_FORMAT_ERROR(12),
+		/** Too many files in a directory in a site insert */
+		TOO_MANY_FILES(13),
+		/** File being uploaded is bigger than maximum supported size */
+		TOO_BIG(14);
+		
+		
+		public final int code;
+		InsertExceptionMode(int code) {
+			this.code = code;
+			if(code < 0 || code >= UPPER_LIMIT_ERROR_CODE)
+				throw new IllegalArgumentException();
+			if(modes.containsKey(code))
+				throw new IllegalArgumentException();
+			modes.put(code, this);
+		}
+		public static InsertExceptionMode getByCode(int code) {
+			if(modes.get(code) == null) throw new IllegalArgumentException();
+			return modes.get(code);
+		}
 
-    }
+	}
 
 	/** There will never be more error codes than this constant. Must not change, used for some
 	 * data structures. */
@@ -221,7 +221,7 @@ public class InsertException extends Exception implements Cloneable {
 
 	/** Get the (localised) short name of this failure mode. */
 	public static String getMessage(InsertExceptionMode mode) {
-        // FIXME change the l10n to use the keyword not the code
+		// FIXME change the l10n to use the keyword not the code
 		String ret = NodeL10n.getBase().getString("InsertException.longError."+mode.code);
 		if(ret == null)
 			return "Unknown error "+mode;
@@ -230,7 +230,7 @@ public class InsertException extends Exception implements Cloneable {
 
 	/** Get the (localised) long explanation for this failure mode. */
 	public static String getShortMessage(InsertExceptionMode mode) {
-	    // FIXME change the l10n to use the keyword not the code
+		// FIXME change the l10n to use the keyword not the code
 		String ret = NodeL10n.getBase().getString("InsertException.shortError."+mode.code);
 		if(ret == null)
 			return "Unknown error "+mode;
@@ -253,8 +253,8 @@ public class InsertException extends Exception implements Cloneable {
 		case META_STRINGS_NOT_SUPPORTED:
 		case BINARY_BLOB_FORMAT_ERROR:
 		case TOO_BIG:
-        case BUCKET_ERROR: // maybe. No point retrying.
-        case INTERNAL_ERROR: // maybe. No point retrying.
+		case BUCKET_ERROR: // maybe. No point retrying.
+		case INTERNAL_ERROR: // maybe. No point retrying.
 			return true;
 		case REJECTED_OVERLOAD:
 		case TOO_MANY_RETRIES_IN_BLOCKS:

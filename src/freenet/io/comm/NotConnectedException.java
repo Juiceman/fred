@@ -13,13 +13,13 @@ import freenet.support.LightweightException;
  */
 public class NotConnectedException extends LightweightException {
 	private static final long serialVersionUID = -1;
-    public NotConnectedException(String string) {
-        super(string);
-    }
+	public NotConnectedException(String string) {
+		super(string);
+	}
 
-    public NotConnectedException() {
-        super();
-    }
+	public NotConnectedException() {
+		super();
+	}
 
 	public NotConnectedException(DisconnectedException e) {
 		super(e.toString());

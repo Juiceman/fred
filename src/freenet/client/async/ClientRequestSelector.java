@@ -76,29 +76,29 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	
 	static class ClientRequestRGANode extends SectoredRandomGrabArraySimple<RequestClient,ClientRequestSchedulerGroup> {
 
-        public ClientRequestRGANode(RequestClient object, RemoveRandomParent parent,
-                ClientRequestSelector root) {
-            super(object, parent, root);
-        }
-	    
+		public ClientRequestRGANode(RequestClient object, RemoveRandomParent parent,
+				ClientRequestSelector root) {
+			super(object, parent, root);
+		}
+		
 	}
 	
 	static class RequestClientRGANode extends SectoredRandomGrabArray<RequestClient,ClientRequestRGANode> {
 
-        public RequestClientRGANode(RemoveRandomParent parent, ClientRequestSelector root) {
-            super(parent, root);
-        }
-	    
+		public RequestClientRGANode(RemoveRandomParent parent, ClientRequestSelector root) {
+			super(parent, root);
+		}
+		
 	}
 	
 	/**
-     * The base of the tree.
-     */
-    protected RequestClientRGANode[] priorities;
-    
-    protected final Deque<BaseSendableGet>recentSuccesses;
-    
-    ClientRequestSelector(boolean isInsertScheduler, boolean isSSKScheduler, boolean isRTScheduler, ClientRequestScheduler sched) {
+	 * The base of the tree.
+	 */
+	protected RequestClientRGANode[] priorities;
+	
+	protected final Deque<BaseSendableGet>recentSuccesses;
+	
+	ClientRequestSelector(boolean isInsertScheduler, boolean isSSKScheduler, boolean isRTScheduler, ClientRequestScheduler sched) {
 		this.sched = sched;
 		this.isInsertScheduler = isInsertScheduler;
 		this.isSSKScheduler = isSSKScheduler;
@@ -148,7 +148,7 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * LOCKING: Synchronized because we may create new priorities. Both the cooldown queue and the 
 	 * RGA hierarchy, rooted at the priorities, use ClientRequestSelector lock. */
 	private synchronized long choosePriority(int fuzz, RandomSource random, ClientContext context, long now){
-	    RequestClientRGANode result = null;
+		RequestClientRGANode result = null;
 		
 		long wakeupTime = Long.MAX_VALUE;
 		
@@ -161,16 +161,16 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 			priority = fuzz<0 ? tweakedPrioritySelector[random.nextInt(tweakedPrioritySelector.length)] : prioritySelector[Math.abs(fuzz % prioritySelector.length)];
 			result = priorities[priority];
 			if(result != null) {
-			    long cooldownTime = result.getWakeupTime(context, now);
-			    if(cooldownTime > 0) {
-			        if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
-			        if(logMINOR) {
-			            if(cooldownTime == Long.MAX_VALUE)
-			                Logger.minor(this, "Priority "+priority+" is waiting until a request finishes or is empty");
-			            else
-			                Logger.minor(this, "Priority "+priority+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
-			        }
-			        result = null;
+				long cooldownTime = result.getWakeupTime(context, now);
+				if(cooldownTime > 0) {
+					if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
+					if(logMINOR) {
+						if(cooldownTime == Long.MAX_VALUE)
+							Logger.minor(this, "Priority "+priority+" is waiting until a request finishes or is empty");
+						else
+							Logger.minor(this, "Priority "+priority+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
+					}
+					result = null;
 				}
 			}
 			if(priority > RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CLASS) {
@@ -199,20 +199,20 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 		long now = System.currentTimeMillis();
 		for(int i=0;i<5;i++) {
 			SelectorReturn r = chooseRequestInner(fuzz, random, offeredKeys, starter, realTime, context, now);
-                        SendableRequest req = r.req;
+						SendableRequest req = r.req;
 			if(req == null) {
-			    if(r.wakeupTime != Long.MAX_VALUE && r.wakeupTime > now) {
-			        // Wake up later.
-			        sched.clientContext.ticker.queueTimedJob(new Runnable() {
-			            
-			            @Override
-			            public void run() {
-			                sched.wakeStarter();
-			            }
-			            
-			        }, r.wakeupTime - now);
-			    }
-			    continue;
+				if(r.wakeupTime != Long.MAX_VALUE && r.wakeupTime > now) {
+					// Wake up later.
+					sched.clientContext.ticker.queueTimedJob(new Runnable() {
+						
+						@Override
+						public void run() {
+							sched.wakeStarter();
+						}
+						
+					}, r.wakeupTime - now);
+				}
+				continue;
 			}
 			if(isInsertScheduler && req instanceof SendableGet) {
 				IllegalStateException e = new IllegalStateException("removeFirstInner returned a SendableGet on an insert scheduler!!");
@@ -232,8 +232,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 			return null;
 		}
 		if(req.getWakeupTime(context, now) != 0) {
-		    // Race condition. We don't need to add a wake-up job. FIXME this shouldn't happen 
-		    // because we only consider local requests of the same type?! Add logging and debug!
+			// Race condition. We don't need to add a wake-up job. FIXME this shouldn't happen 
+			// because we only consider local requests of the same type?! Add logging and debug!
 			if(logMINOR) Logger.minor(this, "Request is in cooldown: "+req);
 			return null;
 		}
@@ -342,23 +342,23 @@ outer:	for(;choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CL
 				continue; // Try next priority
 			}
 			while(true) {
-			    long cooldownTime = chosenTracker.getWakeupTime(context, now);
-			    if(cooldownTime > 0) {
-			        if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
-			        Logger.normal(this, "Priority "+choosenPriorityClass+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
-			        continue outer;
+				long cooldownTime = chosenTracker.getWakeupTime(context, now);
+				if(cooldownTime > 0) {
+					if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
+					Logger.normal(this, "Priority "+choosenPriorityClass+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
+					continue outer;
 				}
 				
 				if(logMINOR)
 					Logger.minor(this, "Got priority tracker "+chosenTracker);
 				RemoveRandomReturn val;
 				synchronized(this) {
-				    // We must hold the overall lock, just as in addToGrabArrays.
-				    // This is important for keeping the cooldown tracker consistent amongst other 
-				    // things: We can get a race condition between thread A reading the tree, 
-				    // finding nothing and setCachedWakeup(), and thread B waking up a request, 
-				    // resulting in the request not being accessible.
-				    val = chosenTracker.removeRandom(starter, context, now);
+					// We must hold the overall lock, just as in addToGrabArrays.
+					// This is important for keeping the cooldown tracker consistent amongst other 
+					// things: We can get a race condition between thread A reading the tree, 
+					// finding nothing and setCachedWakeup(), and thread B waking up a request, 
+					// resulting in the request not being accessible.
+					val = chosenTracker.removeRandom(starter, context, now);
 				}
 				SendableRequest req;
 				if(val == null) {
@@ -526,17 +526,17 @@ outer:	for(;choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CL
 			if(!ret) return ret;
 			// It is being fetched. Add the BaseSendableGet to the wait list so it gets woken up when the request finishes.
 			if(getterWaiting != null) {
-			    WeakReference<BaseSendableGet>[] waiting = transientRequestsWaitingForKeysFetching.get(key);
-			    if(waiting == null) {
-			        transientRequestsWaitingForKeysFetching.put(key, (WeakReference<BaseSendableGet>[])new WeakReference<?>[] { new WeakReference<BaseSendableGet>(getterWaiting) });
-			    } else {
-			        for(WeakReference<BaseSendableGet> ref : waiting) {
-			            if(ref.get() == getterWaiting) return true;
-			        }
-			        WeakReference<BaseSendableGet>[] newWaiting = Arrays.copyOf(waiting, waiting.length+1);
-			        newWaiting[waiting.length] = new WeakReference<BaseSendableGet>(getterWaiting);
-			        transientRequestsWaitingForKeysFetching.put(key, newWaiting);
-			    }
+				WeakReference<BaseSendableGet>[] waiting = transientRequestsWaitingForKeysFetching.get(key);
+				if(waiting == null) {
+					transientRequestsWaitingForKeysFetching.put(key, (WeakReference<BaseSendableGet>[])new WeakReference<?>[] { new WeakReference<BaseSendableGet>(getterWaiting) });
+				} else {
+					for(WeakReference<BaseSendableGet> ref : waiting) {
+						if(ref.get() == getterWaiting) return true;
+					}
+					WeakReference<BaseSendableGet>[] newWaiting = Arrays.copyOf(waiting, waiting.length+1);
+					newWaiting[waiting.length] = new WeakReference<BaseSendableGet>(getterWaiting);
+					transientRequestsWaitingForKeysFetching.put(key, newWaiting);
+				}
 			}
 			return true;
 		}
@@ -575,7 +575,7 @@ outer:	for(;choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CL
 		synchronized(runningInserts) {
 			boolean retval = runningInserts.add(token);
 			if(!retval) {
-			    // This shouldn't happen often, because the chooseBlock()'s should check for it...
+				// This shouldn't happen often, because the chooseBlock()'s should check for it...
 				Logger.error(this, "Already in runningInserts: "+token);
 			} else {
 				if(logMINOR)
@@ -600,174 +600,174 @@ outer:	for(;choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CL
 	}
 	
 	   /** Add a request (or insert) to the request selection tree.
-     * @param priorityClass The priority of the request.
-     * @param client Label object indicating which larger group of requests this request belongs to
-     * (e.g. the global queue, or an FCP client), and whether it is persistent.
-     * @param cr The high-level request that this single block request is part of. E.g. a fetch for 
-     * a single key may download many blocks in a splitfile; an insert for a large freesite is 
-     * considered a single @see ClientRequester.
-     * @param req A single SendableRequest object which is one or more low-level requests. E.g. it 
-     * can be an insert of a single block, or it can be a request or insert for a single segment 
-     * within a splitfile. 
-     * @param container The database handle, if the request is persistent, in which case this will
-     * be a ClientRequestSchedulerCore. If so, this method must be called on the database thread.
-     * @param context The client context object, which contains links to all the important objects
-     * that are not persisted in the database, e.g. executors, temporary filename generator, etc.
-     */
-    void addToGrabArray(short priorityClass, RequestClient client, ClientRequestSchedulerGroup cr, SendableRequest req, ClientContext context) {
-        if((priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS) || (priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS))
-            throw new IllegalStateException("Invalid priority: "+priorityClass+" - range is "+RequestStarter.MAXIMUM_PRIORITY_CLASS+" (most important) to "+RequestStarter.PAUSED_PRIORITY_CLASS+" (least important)");
-        // Client
-        synchronized(this) {
-            ClientRequestRGANode requestGrabber = makeSRGAForClient(priorityClass, client, context);
-            requestGrabber.add(cr, req, context);
-        }
-        sched.wakeStarter();
-    }
+	 * @param priorityClass The priority of the request.
+	 * @param client Label object indicating which larger group of requests this request belongs to
+	 * (e.g. the global queue, or an FCP client), and whether it is persistent.
+	 * @param cr The high-level request that this single block request is part of. E.g. a fetch for 
+	 * a single key may download many blocks in a splitfile; an insert for a large freesite is 
+	 * considered a single @see ClientRequester.
+	 * @param req A single SendableRequest object which is one or more low-level requests. E.g. it 
+	 * can be an insert of a single block, or it can be a request or insert for a single segment 
+	 * within a splitfile. 
+	 * @param container The database handle, if the request is persistent, in which case this will
+	 * be a ClientRequestSchedulerCore. If so, this method must be called on the database thread.
+	 * @param context The client context object, which contains links to all the important objects
+	 * that are not persisted in the database, e.g. executors, temporary filename generator, etc.
+	 */
+	void addToGrabArray(short priorityClass, RequestClient client, ClientRequestSchedulerGroup cr, SendableRequest req, ClientContext context) {
+		if((priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS) || (priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS))
+			throw new IllegalStateException("Invalid priority: "+priorityClass+" - range is "+RequestStarter.MAXIMUM_PRIORITY_CLASS+" (most important) to "+RequestStarter.PAUSED_PRIORITY_CLASS+" (least important)");
+		// Client
+		synchronized(this) {
+			ClientRequestRGANode requestGrabber = makeSRGAForClient(priorityClass, client, context);
+			requestGrabber.add(cr, req, context);
+		}
+		sched.wakeStarter();
+	}
 
-    private ClientRequestRGANode makeSRGAForClient(short priorityClass,
-            RequestClient client, ClientContext context) {
-        RequestClientRGANode clientGrabber = priorities[priorityClass];
-        if(clientGrabber == null) {
-            clientGrabber = new RequestClientRGANode(null, this);
-            priorities[priorityClass] = clientGrabber;
-            if(logMINOR) Logger.minor(this, "Registering client tracker for priority "+priorityClass+" : "+clientGrabber);
-        }
-        // Request
-        ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
-        if(requestGrabber == null) {
-            requestGrabber = new ClientRequestRGANode(client, clientGrabber, this);
-            if(logMINOR)
-                Logger.minor(this, "Creating new grabber: "+requestGrabber+" for "+client+" from "+clientGrabber+" : prio="+priorityClass);
-            clientGrabber.addGrabber(client, requestGrabber, context);
-            clientGrabber.clearWakeupTime(context);
-        }
-        return requestGrabber;
-    }
-    
-    public void reregisterAll(ClientRequester request, RequestScheduler lock, ClientContext context, short oldPrio) {
-        RequestClient client = request.getClient();
-        short newPrio = request.getPriorityClass();
-        if(newPrio == oldPrio) {
-            Logger.error(this, "Changing priority from "+oldPrio+" to "+newPrio+" for "+request);
-            return;
-        }
-        ClientRequestSchedulerGroup group = request.getSchedulerGroup();
-        synchronized(this) {
-            // First by priority
-            RequestClientRGANode clientGrabber = priorities[oldPrio];
-            if(clientGrabber == null) {
-                // Normal as most of the schedulers aren't relevant to any given insert/request.
-                if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
-                return;
-            }
-            // Then by RequestClient
-            ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
-            if(requestGrabber == null) {
-                if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
-                return;
-            }
-            RandomGrabArrayWithObject<ClientRequestSchedulerGroup> rga = requestGrabber.getGrabber(group);
-            if(rga == null) {
-                if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
-                return;
-            }
-            requestGrabber.maybeRemove(rga, context);
-            requestGrabber = makeSRGAForClient(newPrio, client, context);
-            if(requestGrabber.getGrabber(group) != null) {
-                Logger.error(this, "RGA already exists for "+request+" : "+requestGrabber.getGrabber(group)+
-                        " but want to insert "+rga, new Exception("error"));
-                requestGrabber.maybeRemove(rga, context);
-            }
-            requestGrabber.addGrabber(group, rga, context);
-        }
-    }
+	private ClientRequestRGANode makeSRGAForClient(short priorityClass,
+			RequestClient client, ClientContext context) {
+		RequestClientRGANode clientGrabber = priorities[priorityClass];
+		if(clientGrabber == null) {
+			clientGrabber = new RequestClientRGANode(null, this);
+			priorities[priorityClass] = clientGrabber;
+			if(logMINOR) Logger.minor(this, "Registering client tracker for priority "+priorityClass+" : "+clientGrabber);
+		}
+		// Request
+		ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
+		if(requestGrabber == null) {
+			requestGrabber = new ClientRequestRGANode(client, clientGrabber, this);
+			if(logMINOR)
+				Logger.minor(this, "Creating new grabber: "+requestGrabber+" for "+client+" from "+clientGrabber+" : prio="+priorityClass);
+			clientGrabber.addGrabber(client, requestGrabber, context);
+			clientGrabber.clearWakeupTime(context);
+		}
+		return requestGrabber;
+	}
+	
+	public void reregisterAll(ClientRequester request, RequestScheduler lock, ClientContext context, short oldPrio) {
+		RequestClient client = request.getClient();
+		short newPrio = request.getPriorityClass();
+		if(newPrio == oldPrio) {
+			Logger.error(this, "Changing priority from "+oldPrio+" to "+newPrio+" for "+request);
+			return;
+		}
+		ClientRequestSchedulerGroup group = request.getSchedulerGroup();
+		synchronized(this) {
+			// First by priority
+			RequestClientRGANode clientGrabber = priorities[oldPrio];
+			if(clientGrabber == null) {
+				// Normal as most of the schedulers aren't relevant to any given insert/request.
+				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				return;
+			}
+			// Then by RequestClient
+			ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
+			if(requestGrabber == null) {
+				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				return;
+			}
+			RandomGrabArrayWithObject<ClientRequestSchedulerGroup> rga = requestGrabber.getGrabber(group);
+			if(rga == null) {
+				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				return;
+			}
+			requestGrabber.maybeRemove(rga, context);
+			requestGrabber = makeSRGAForClient(newPrio, client, context);
+			if(requestGrabber.getGrabber(group) != null) {
+				Logger.error(this, "RGA already exists for "+request+" : "+requestGrabber.getGrabber(group)+
+						" but want to insert "+rga, new Exception("error"));
+				requestGrabber.maybeRemove(rga, context);
+			}
+			requestGrabber.addGrabber(group, rga, context);
+		}
+	}
 
-    public synchronized long countQueuedRequests(ClientContext context) {
-        long total = 0;
-        for(int i=0;i<priorities.length;i++) {
-            RequestClientRGANode prio = priorities[i];
-            if(prio == null || prio.isEmpty())
-                System.out.println("Priority "+i+" : empty");
-            else {
-                System.out.println("Priority "+i+" : "+prio.size());
-                    System.out.println("Clients: "+prio.size()+" for "+prio);
-                    for(int k=0;k<prio.size();k++) {
-                        RequestClient client = prio.getClient(k);
-                        System.out.println("Client "+k+" : "+client);
-                        ClientRequestRGANode requestGrabber = prio.getGrabber(client);
-                        System.out.println("SRGA for client: "+requestGrabber);
-                        for(int l=0;l<requestGrabber.size();l++) {
-                            ClientRequestSchedulerGroup cr = requestGrabber.getClient(l);
-                            System.out.println("Request "+l+" : "+cr);
-                            RandomGrabArray rga = requestGrabber.getGrabber(cr);
-                            System.out.println("Queued SendableRequests: "+rga.size()+" on "+rga);
-                            long sendable = 0;
-                            long all = 0;
-                            for(int m=0;m<rga.size();m++) {
-                                SendableRequest req = (SendableRequest) rga.get(m);
-                                if(req == null) continue;
-                                sendable += req.countSendableKeys(context);
-                                all += req.countAllKeys(context);
-                            }
-                            System.out.println("Sendable keys: "+sendable+" all keys "+all+" diff "+(all-sendable));
-                            total += all;
-                        }
-                    }
-            }
-        }
-        return total;
-    }   
-    
-    /**
-     * @param req
-     * @param container
-     * @param maybeActive Array of requests, can be null, which are being registered
-     * in this group. These will be ignored for purposes of checking whether stuff
-     * is activated when it shouldn't be. It is perfectly okay to have req be a
-     * member of maybeActive.
-     * 
-     * FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
-     * or make req a SendableRequest[] and register them all at once.
-     */
-    void innerRegister(SendableRequest req, ClientContext context, SendableRequest[] maybeActive) {
-        if(isInsertScheduler && req instanceof BaseSendableGet)
-            throw new IllegalArgumentException("Adding a SendableGet to an insert scheduler!!");
-        if((!isInsertScheduler) && req instanceof SendableInsert)
-            throw new IllegalArgumentException("Adding a SendableInsert to a request scheduler!!");
-        if(isInsertScheduler != req.isInsert())
-            throw new IllegalArgumentException("Request isInsert="+req.isInsert()+" but my isInsertScheduler="+isInsertScheduler+"!!");
-        short prio = req.getPriorityClass();
-        if(logMINOR) Logger.minor(this, "Still registering "+req+" at prio "+prio+" for "+req.getClientRequest()+" ssk="+this.isSSKScheduler+" insert="+this.isInsertScheduler);
-        addToGrabArray(prio, req.getClient(), req.getSchedulerGroup(), req, context);
-        if(logMINOR) Logger.minor(this, "Registered "+req+" on prioclass="+prio);
-    }
-    
-    public void succeeded(BaseSendableGet succeeded) {
-        // Do nothing.
-        // FIXME: Keep a list of recently succeeded ClientRequester's.
-        if(isInsertScheduler) return;
-        if(succeeded.isCancelled()) return;
-        // Don't bother with getCooldownTime at this point.
-            if(logMINOR)
-                Logger.minor(this, "Recording successful fetch from "+succeeded);
-        synchronized(recentSuccesses) {
-            while(recentSuccesses.size() >= 8)
-                recentSuccesses.pollFirst();
-            recentSuccesses.add(succeeded);
-        }
-    }
-    
-    public void wakeUp(ClientContext context) {
-        // Break out of locks. Can be called within RGAs etc!
-        context.mainExecutor.execute(new Runnable() {
+	public synchronized long countQueuedRequests(ClientContext context) {
+		long total = 0;
+		for(int i=0;i<priorities.length;i++) {
+			RequestClientRGANode prio = priorities[i];
+			if(prio == null || prio.isEmpty())
+				System.out.println("Priority "+i+" : empty");
+			else {
+				System.out.println("Priority "+i+" : "+prio.size());
+					System.out.println("Clients: "+prio.size()+" for "+prio);
+					for(int k=0;k<prio.size();k++) {
+						RequestClient client = prio.getClient(k);
+						System.out.println("Client "+k+" : "+client);
+						ClientRequestRGANode requestGrabber = prio.getGrabber(client);
+						System.out.println("SRGA for client: "+requestGrabber);
+						for(int l=0;l<requestGrabber.size();l++) {
+							ClientRequestSchedulerGroup cr = requestGrabber.getClient(l);
+							System.out.println("Request "+l+" : "+cr);
+							RandomGrabArray rga = requestGrabber.getGrabber(cr);
+							System.out.println("Queued SendableRequests: "+rga.size()+" on "+rga);
+							long sendable = 0;
+							long all = 0;
+							for(int m=0;m<rga.size();m++) {
+								SendableRequest req = (SendableRequest) rga.get(m);
+								if(req == null) continue;
+								sendable += req.countSendableKeys(context);
+								all += req.countAllKeys(context);
+							}
+							System.out.println("Sendable keys: "+sendable+" all keys "+all+" diff "+(all-sendable));
+							total += all;
+						}
+					}
+			}
+		}
+		return total;
+	}   
+	
+	/**
+	 * @param req
+	 * @param container
+	 * @param maybeActive Array of requests, can be null, which are being registered
+	 * in this group. These will be ignored for purposes of checking whether stuff
+	 * is activated when it shouldn't be. It is perfectly okay to have req be a
+	 * member of maybeActive.
+	 * 
+	 * FIXME: Either get rid of the debugging code and therefore get rid of maybeActive,
+	 * or make req a SendableRequest[] and register them all at once.
+	 */
+	void innerRegister(SendableRequest req, ClientContext context, SendableRequest[] maybeActive) {
+		if(isInsertScheduler && req instanceof BaseSendableGet)
+			throw new IllegalArgumentException("Adding a SendableGet to an insert scheduler!!");
+		if((!isInsertScheduler) && req instanceof SendableInsert)
+			throw new IllegalArgumentException("Adding a SendableInsert to a request scheduler!!");
+		if(isInsertScheduler != req.isInsert())
+			throw new IllegalArgumentException("Request isInsert="+req.isInsert()+" but my isInsertScheduler="+isInsertScheduler+"!!");
+		short prio = req.getPriorityClass();
+		if(logMINOR) Logger.minor(this, "Still registering "+req+" at prio "+prio+" for "+req.getClientRequest()+" ssk="+this.isSSKScheduler+" insert="+this.isInsertScheduler);
+		addToGrabArray(prio, req.getClient(), req.getSchedulerGroup(), req, context);
+		if(logMINOR) Logger.minor(this, "Registered "+req+" on prioclass="+prio);
+	}
+	
+	public void succeeded(BaseSendableGet succeeded) {
+		// Do nothing.
+		// FIXME: Keep a list of recently succeeded ClientRequester's.
+		if(isInsertScheduler) return;
+		if(succeeded.isCancelled()) return;
+		// Don't bother with getCooldownTime at this point.
+			if(logMINOR)
+				Logger.minor(this, "Recording successful fetch from "+succeeded);
+		synchronized(recentSuccesses) {
+			while(recentSuccesses.size() >= 8)
+				recentSuccesses.pollFirst();
+			recentSuccesses.add(succeeded);
+		}
+	}
+	
+	public void wakeUp(ClientContext context) {
+		// Break out of locks. Can be called within RGAs etc!
+		context.mainExecutor.execute(new Runnable() {
 
-            @Override
-            public void run() {
-                sched.wakeStarter();
-            }
-            
-        });
-    }
+			@Override
+			public void run() {
+				sched.wakeStarter();
+			}
+			
+		});
+	}
 
 }

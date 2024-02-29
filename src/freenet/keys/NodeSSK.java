@@ -88,19 +88,19 @@ public class NodeSSK extends Key {
 		hashCode = Fields.hashCode(pkHash) ^ Fields.hashCode(ehDocname);
 	}
 	
-    private NodeSSK(NodeSSK key) {
-    	super(key);
-    	this.cryptoAlgorithm = key.cryptoAlgorithm;
-    	this.pubKey = key.pubKey;
-    	this.pubKeyHash = key.pubKeyHash.clone();
-    	this.encryptedHashedDocname = key.encryptedHashedDocname.clone();
-    	this.hashCode = key.hashCode;
-    }
-    
-    @Override
+	private NodeSSK(NodeSSK key) {
+		super(key);
+		this.cryptoAlgorithm = key.cryptoAlgorithm;
+		this.pubKey = key.pubKey;
+		this.pubKeyHash = key.pubKeyHash.clone();
+		this.encryptedHashedDocname = key.encryptedHashedDocname.clone();
+		this.hashCode = key.hashCode;
+	}
+	
+	@Override
 	public Key cloneKey() {
-    	return new NodeSSK(this);
-    }
+		return new NodeSSK(this);
+	}
 
 	// routingKey = H( E(H(docname)) + H(pubkey) )
 	private static byte[] makeRoutingKey(byte[] pkHash, byte[] ehDocname) {
@@ -114,22 +114,22 @@ public class NodeSSK extends Key {
 	
 	@Override
 	public void write(DataOutput _index) throws IOException {
-        _index.writeShort(getType());
-        _index.write(encryptedHashedDocname);
-        _index.write(pubKeyHash);
+		_index.writeShort(getType());
+		_index.write(encryptedHashedDocname);
+		_index.write(pubKeyHash);
 	}
 
-    public static Key readSSK(DataInput raf, byte cryptoAlgorithm) throws IOException {
-        byte[] buf = new byte[E_H_DOCNAME_SIZE];
-        raf.readFully(buf);
-        byte[] buf2 = new byte[PUBKEY_HASH_SIZE];
-        raf.readFully(buf2);
-        try {
+	public static Key readSSK(DataInput raf, byte cryptoAlgorithm) throws IOException {
+		byte[] buf = new byte[E_H_DOCNAME_SIZE];
+		raf.readFully(buf);
+		byte[] buf2 = new byte[PUBKEY_HASH_SIZE];
+		raf.readFully(buf2);
+		try {
 			return new NodeSSK(buf2, buf, null, cryptoAlgorithm);
 		} catch (SSKVerifyException e) {
 			throw (AssertionError)new AssertionError("Impossible").initCause(e);
 		}
-    }
+	}
 
 	@Override
 	public short getType() {
@@ -197,22 +197,22 @@ public class NodeSSK extends Key {
 		return hashCode;
 	}
 	
-    // Not just the routing key, enough data to reconstruct the key (excluding any pubkey needed)
-    @Override
+	// Not just the routing key, enough data to reconstruct the key (excluding any pubkey needed)
+	@Override
 	public byte[] getKeyBytes() {
-    	return encryptedHashedDocname;
-    }
-    
-    @Override
+		return encryptedHashedDocname;
+	}
+	
+	@Override
 	public byte[] getFullKey() {
-    	byte[] buf = new byte[FULL_KEY_LENGTH];
-    	short type = getType();
-    	buf[0] = (byte) (type >> 8);
-    	buf[1] = (byte) (type & 0xFF);
-    	System.arraycopy(encryptedHashedDocname, 0, buf, 2, E_H_DOCNAME_SIZE);
-    	System.arraycopy(pubKeyHash, 0, buf, 2+E_H_DOCNAME_SIZE, PUBKEY_HASH_SIZE);
-    	return buf;
-    }
+		byte[] buf = new byte[FULL_KEY_LENGTH];
+		short type = getType();
+		buf[0] = (byte) (type >> 8);
+		buf[1] = (byte) (type & 0xFF);
+		System.arraycopy(encryptedHashedDocname, 0, buf, 2, E_H_DOCNAME_SIZE);
+		System.arraycopy(pubKeyHash, 0, buf, 2+E_H_DOCNAME_SIZE, PUBKEY_HASH_SIZE);
+		return buf;
+	}
 
 	public static NodeSSK construct(byte[] buf) throws SSKVerifyException {
 		if(buf[0] != 2)

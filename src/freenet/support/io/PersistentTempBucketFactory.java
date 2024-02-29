@@ -58,7 +58,7 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	private final Object encryptLock = new Object();
 	/** Should we encrypt temporary files? */
 	private boolean encrypt;
-    private MasterSecret secret;
+	private MasterSecret secret;
 	
 	private DiskSpaceChecker checker;
 	
@@ -67,7 +67,7 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 
 	static final int BLOB_SIZE = CHKBlock.DATA_LENGTH;
 	
-        private static volatile boolean logMINOR;
+		private static volatile boolean logMINOR;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
@@ -124,13 +124,13 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	}
 	
 	public void setDiskSpaceChecker(DiskSpaceChecker checker) {
-	    this.checker = checker;
+		this.checker = checker;
 	}
 	
 	public void setMasterSecret(MasterSecret secret) {
-	    synchronized(encryptLock) {
-	        this.secret = secret;
-	    }
+		synchronized(encryptLock) {
+			this.secret = secret;
+		}
 	}
 	
 	/** Notify the bucket factory that a file is a temporary file, and not to be deleted. FIXME this is not
@@ -152,10 +152,10 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	 * Deletes any old temp files still unclaimed.
 	 */
 	public synchronized void completedInit() {
-	    if(originalFiles == null) {
-	        Logger.error(this, "Completed init called twice", new Exception("error"));
-	        return;
-	    }
+		if(originalFiles == null) {
+			Logger.error(this, "Completed init called twice", new Exception("error"));
+			return;
+		}
 		for(File f: originalFiles) {
 			if(Logger.shouldLog(LogLevel.MINOR, this))
 				Logger.minor(this, "Deleting old tempfile "+f);
@@ -174,11 +174,11 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 		if(rawBucket == null)
 			rawBucket = new PersistentTempFileBucket(fg.makeRandomFilename(), fg, this);
 		synchronized(encryptLock) {
-		    if(encrypt) {
-                rawBucket = new PaddedRandomAccessBucket(rawBucket);
-		        rawBucket = new EncryptedRandomAccessBucket(TempBucketFactory.CRYPT_TYPE, 
-		                rawBucket, secret);
-		    }
+			if(encrypt) {
+				rawBucket = new PaddedRandomAccessBucket(rawBucket);
+				rawBucket = new EncryptedRandomAccessBucket(TempBucketFactory.CRYPT_TYPE, 
+						rawBucket, secret);
+			}
 		}
 		if(mustWrap)
 			rawBucket = new DelayedFreeRandomAccessBucket(this, rawBucket);
@@ -192,15 +192,15 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	public void delayedFree(DelayedFree b, long createdCommitID) {
 		synchronized(this) {
 			if(createdCommitID != commitID) {
-			    bucketsToFree.add(b);
-			    return;
+				bucketsToFree.add(b);
+				return;
 			}
 		}
 		b.realFree();
 	}
 
-    /** Returns a list of buckets to free. The caller should write the buckets to the checkpoint, 
-     * and free them after the checkpoint has written successfully, by calling postCommit(). */
+	/** Returns a list of buckets to free. The caller should write the buckets to the checkpoint, 
+	 * and free them after the checkpoint has written successfully, by calling postCommit(). */
 	public DelayedFree[] grabBucketsToFree() {
 		synchronized(this) {
 			if(bucketsToFree.isEmpty()) return null;
@@ -211,10 +211,10 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 		}
 	}
 	
-    @Override
-    public synchronized long commitID() {
-        return commitID;
-    }
+	@Override
+	public synchronized long commitID() {
+		return commitID;
+	}
 
 	/** Get the directory we are creating temporary files in */
 	@Override
@@ -230,9 +230,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 
 	/** Are we encrypting temporary files? */
 	public boolean isEncrypting() {
-	    synchronized(encryptLock) {
-	        return encrypt;
-	    }
+		synchronized(encryptLock) {
+			return encrypt;
+		}
 	}
 
 	/**
@@ -240,30 +240,30 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	 * this changes.
 	 */
 	public void setEncryption(boolean encrypt) {
-	    synchronized(encryptLock) {
-	        this.encrypt = encrypt;
-	    }
+		synchronized(encryptLock) {
+			this.encrypt = encrypt;
+		}
 	}
 
 	/**
 	 * Delete the buckets.
 	 */
 	public void finishDelayedFree(DelayedFree[] buckets) {
-	    if(buckets != null) {
-	        for(DelayedFree bucket : buckets) {
-	            try {
-	                if(bucket.toFree())
-	                    bucket.realFree();
-	            } catch (Throwable t) {
-	                Logger.error(this, "Caught "+t+" freeing bucket "+bucket+" after transaction commit", t);
-	            }
-	        }
-	    }
+		if(buckets != null) {
+			for(DelayedFree bucket : buckets) {
+				try {
+					if(bucket.toFree())
+						bucket.realFree();
+				} catch (Throwable t) {
+					Logger.error(this, "Caught "+t+" freeing bucket "+bucket+" after transaction commit", t);
+				}
+			}
+		}
 	}
 
-    @Override
-    public boolean checkDiskSpace(File file, int toWrite, int bufferSize) {
-        return checker.checkDiskSpace(file, toWrite, bufferSize);
-    }
+	@Override
+	public boolean checkDiskSpace(File file, int toWrite, int bufferSize) {
+		return checker.checkDiskSpace(file, toWrite, bufferSize);
+	}
 
 }

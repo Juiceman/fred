@@ -80,30 +80,30 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			nodes[i].start(false);
 		}
 
-        System.out.println();
-        System.out.println("Ping average > 95%, lets do some inserts/requests");
-        System.out.println();
-        
-        if(DO_INSERT_TEST) {
-        	
-            waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
-            
-            RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
-            
-            waitForAllConnected(nodes);
-            
-            while(true) {
-            	try {
-            		waitForAllConnected(nodes);
-            		int status = tester.insertRequestTest();
-            		if(status == -1) continue;
-            		System.out.println("Insert test completed with status "+status);
-            		break;
-            	} catch (Throwable t) {
-            		Logger.error(RealNodeRequestInsertTest.class, "Caught "+t, t);
-            	}
-            }
-        }
+		System.out.println();
+		System.out.println("Ping average > 95%, lets do some inserts/requests");
+		System.out.println();
+		
+		if(DO_INSERT_TEST) {
+			
+			waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
+			
+			RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
+			
+			waitForAllConnected(nodes);
+			
+			while(true) {
+				try {
+					waitForAllConnected(nodes);
+					int status = tester.insertRequestTest();
+					if(status == -1) continue;
+					System.out.println("Insert test completed with status "+status);
+					break;
+				} catch (Throwable t) {
+					Logger.error(RealNodeRequestInsertTest.class, "Caught "+t, t);
+				}
+			}
+		}
 
 		final NumberFormat nf = NumberFormat.getInstance();
 		Listener print = new Listener() {

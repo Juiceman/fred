@@ -144,7 +144,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			if(onlyNode == null) {
 				// Route it
 				next = node.peers.closerPeer(source, nodesRoutedTo, target, true, node.isAdvancedModeEnabled(), -1,
-				        null, null, htl, 0, source == null, false, false);
+						null, null, htl, 0, source == null, false, false);
 			} else {
 				next = onlyNode;
 				if(nodesRoutedTo.contains(onlyNode)) {
@@ -482,15 +482,15 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 		if(cb != null) cb.nodeFailed(next, "timed out");
 	}
 
-        private synchronized void waitForRunningTransfers() {
-           while(waitingForTransfers > 0) {
-              try {
-                 wait();
-              } catch (InterruptedException e) {
-                 // Ignore.
-              }
-           }
-        }
+		private synchronized void waitForRunningTransfers() {
+		   while(waitingForTransfers > 0) {
+			  try {
+				 wait();
+			  } catch (InterruptedException e) {
+				 // Ignore.
+			  }
+		   }
+		}
 
 	private void rnf(PeerNode next) {
 		waitForRunningTransfers();

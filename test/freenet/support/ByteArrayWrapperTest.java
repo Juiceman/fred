@@ -45,7 +45,7 @@ public class ByteArrayWrapperTest {
 		Object o2 = map.get(wrapper2);
 		Object o3 = map.get(wrapper3);
 		
-		assertEquals(o1, o2);        // are wrapper1 and wrapper2 considered equivalent by hashcode?
+		assertEquals(o1, o2);		// are wrapper1 and wrapper2 considered equivalent by hashcode?
 		assertFalse(o1 == wrapper1); // did wrapper1 survive?
 		assertTrue(o1 == wrapper2);  // did wrapper1 get replaced by 2?
 		assertTrue(o3 == wrapper3);  // did wrapper3 get returned by hashcode correctly?		

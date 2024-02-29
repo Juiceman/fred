@@ -335,7 +335,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		
 		// Do we want it? We can RejectOverload if we don't have the bandwidth...
 		boolean isSSK = key instanceof NodeSSK;
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
 		OfferReplyTag tag = new OfferReplyTag(isSSK, source, realTimeFlag, uid, node);
 		
 		if(!tracker.lockUID(uid, isSSK, false, true, false, realTimeFlag, tag)) {
@@ -485,11 +485,11 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		}
 		long id = m.getLong(DMT.UID);
 		ByteCounter ctr = isSSK ? node.nodeStats.sskRequestCtr : node.nodeStats.chkRequestCtr;
-        short htl = m.getShort(DMT.HTL);
+		short htl = m.getShort(DMT.HTL);
 		if(htl <= 0) htl = 1;
-        Key key = (Key) m.getObject(DMT.FREENET_ROUTING_KEY);
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
-        final RequestTag tag = new RequestTag(isSSK, RequestTag.START.REMOTE, source, realTimeFlag, id, node);
+		Key key = (Key) m.getObject(DMT.FREENET_ROUTING_KEY);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		final RequestTag tag = new RequestTag(isSSK, RequestTag.START.REMOTE, source, realTimeFlag, id, node);
 		if(!tracker.lockUID(id, isSSK, false, false, false, realTimeFlag, tag)) {
 			if(logMINOR) Logger.minor(this, "Could not lock ID "+id+" -> rejecting (already running)");
 			Message rejected = DMT.createFNPRejectedLoop(id);
@@ -554,7 +554,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	private void handleInsertRequest(Message m, PeerNode source, boolean isSSK) {
 		ByteCounter ctr = isSSK ? node.nodeStats.sskInsertCtr : node.nodeStats.chkInsertCtr;
 		long id = m.getLong(DMT.UID);
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
 		InsertTag tag = new InsertTag(isSSK, InsertTag.START.REMOTE, source, realTimeFlag, id, node);
 		if(!tracker.lockUID(id, isSSK, true, false, false, realTimeFlag, tag)) {
 			if(logMINOR) Logger.minor(this, "Could not lock ID "+id+" -> rejecting (already running)");
@@ -596,26 +596,26 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		long now = System.currentTimeMillis();
 		if(m.getSpec().equals(DMT.FNPSSKInsertRequest)) {
 			NodeSSK key = (NodeSSK) m.getObject(DMT.FREENET_ROUTING_KEY);
-	        byte[] data = ((ShortBuffer) m.getObject(DMT.DATA)).getData();
-	        byte[] headers = ((ShortBuffer) m.getObject(DMT.BLOCK_HEADERS)).getData();
-	        short htl = m.getShort(DMT.HTL);
+			byte[] data = ((ShortBuffer) m.getObject(DMT.DATA)).getData();
+			byte[] headers = ((ShortBuffer) m.getObject(DMT.BLOCK_HEADERS)).getData();
+			short htl = m.getShort(DMT.HTL);
 			if(htl <= 0) htl = 1;
 			SSKInsertHandler rh = new SSKInsertHandler(key, data, headers, htl, source, id, node, now, tag, node.canWriteDatastoreInsert(htl), forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
+			rh.receivedBytes(m.receivedByteCount());
 			node.executor.execute(rh, "SSKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
 		} else if(m.getSpec().equals(DMT.FNPSSKInsertRequestNew)) {
 			NodeSSK key = (NodeSSK) m.getObject(DMT.FREENET_ROUTING_KEY);
 			short htl = m.getShort(DMT.HTL);
 			if(htl <= 0) htl = 1;
 			SSKInsertHandler rh = new SSKInsertHandler(key, null, null, htl, source, id, node, now, tag, node.canWriteDatastoreInsert(htl), forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
+			rh.receivedBytes(m.receivedByteCount());
 			node.executor.execute(rh, "SSKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
 		} else {
-	        NodeCHK key = (NodeCHK) m.getObject(DMT.FREENET_ROUTING_KEY);
-	        short htl = m.getShort(DMT.HTL);
+			NodeCHK key = (NodeCHK) m.getObject(DMT.FREENET_ROUTING_KEY);
+			short htl = m.getShort(DMT.HTL);
 			if(htl <= 0) htl = 1;
 			CHKInsertHandler rh = new CHKInsertHandler(key, htl, source, id, node, now, tag, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
+			rh.receivedBytes(m.receivedByteCount());
 			node.executor.execute(rh, "CHKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
 		}
 		if(logMINOR) Logger.minor(this, "Started InsertHandler for "+id);
@@ -669,14 +669,14 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 					msg = DMT.createFNPRejectedOverload(uid, true, false, false);
 					if (logMINOR)
 						Logger.minor(this,
-							     "Rejected announcement (overall overload) from "
-							     + source);
+								 "Rejected announcement (overall overload) from "
+								 + source);
 				} else if (NodeStats.AnnouncementDecision.LOOP == shouldAcceptAnnouncement) {
 					msg = DMT.createFNPRejectedLoop(uid);
 					if (logMINOR)
 						Logger.minor(this,
-							     "Rejected announcement (loop) from "+
-							     source);
+								 "Rejected announcement (loop) from "+
+								 source);
 				} else {
 					throw new Error("This shouldn't happen. Please report");
 				}
@@ -958,7 +958,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			}
 			if(next == null)
 			next = node.peers.closerPeer(pn, ctx.routedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
-				        null, htl, 0, pn == null, false, false);
+						null, htl, 0, pn == null, false, false);
 			if(logMINOR) Logger.minor(this, "Next: "+next+" message: "+m);
 			if(next != null) {
 				// next is connected, or at least has been => next.getPeer() CANNOT be null.

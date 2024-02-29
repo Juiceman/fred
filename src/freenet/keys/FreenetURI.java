@@ -85,12 +85,12 @@ import freenet.support.io.FileUtil;
  */
 public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializable {
 
-    /**
-     * For Serializable.
-     */
-    private static transient final long serialVersionUID = 1L;
-    
-    private static volatile boolean logMINOR;
+	/**
+	 * For Serializable.
+	 */
+	private static transient final long serialVersionUID = 1L;
+	
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
@@ -504,14 +504,14 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 	}
 	
 	protected FreenetURI() {
-	    // For serialization only!
-	    this.metaStr = null;
-	    this.keyType = null;
-	    this.routingKey = null;
-	    this.cryptoKey = null;
-	    this.extra = null;
-	    this.docName = null;
-	    this.suggestedEdition = 0;
+		// For serialization only!
+		this.metaStr = null;
+		this.keyType = null;
+		this.routingKey = null;
+		this.cryptoKey = null;
+		this.extra = null;
+		this.docName = null;
+		this.suggestedEdition = 0;
 	}
 
 	/** Dump the individual components of the key to System.out. */
@@ -731,13 +731,13 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 		return toStringCache;
 	}
 
-    /**
-     * @deprecated Use {@link #toASCIIString()} instead
-     */
+	/**
+	 * @deprecated Use {@link #toASCIIString()} instead
+	 */
 	@Deprecated
-    public String toACIIString() {
-        return toASCIIString();
-    }
+	public String toACIIString() {
+		return toASCIIString();
+	}
 
 	/**
 	 * Get the FreenetURI as a pure ASCII string, any non-english
@@ -905,10 +905,10 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 	/** Write either a null or a FreenetURI. */
 	public static void writeFullBinaryKeyWithLength(FreenetURI uri, DataOutputStream dos) 
 	throws IOException {
-	    if(uri == null)
-	        dos.writeShort((short)0);
-	    else
-	        uri.writeFullBinaryKeyWithLength(dos);
+		if(uri == null)
+			dos.writeShort((short)0);
+		else
+			uri.writeFullBinaryKeyWithLength(dos);
 	}
 	
 	/**

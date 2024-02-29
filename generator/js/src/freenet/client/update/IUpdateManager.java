@@ -6,7 +6,7 @@ public interface IUpdateManager {
 	 * A notification received that an element needs to be updated
 	 * 
 	 * @param message
-	 *            - The message about the update
+	 *			- The message about the update
 	 */
 	public void updated(String message);
 }

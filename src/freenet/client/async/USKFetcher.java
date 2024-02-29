@@ -105,19 +105,19 @@ import freenet.support.io.Closer;
  * which will be restarted on startup.
  */
 public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, KeyListener {
-    private static volatile boolean logMINOR;
-    private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
 
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+			}
+		});
+	}
 
 	/** USK manager */
 	private final USKManager uskManager;
@@ -177,7 +177,7 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	}
 
 	@SuppressWarnings("serial")
-    class DBRFetcher extends SimpleSingleFileFetcher {
+	class DBRFetcher extends SimpleSingleFileFetcher {
 
 		DBRFetcher(ClientKey key, int maxRetries, FetchContext ctx,
 				ClientRequester parent, GetCompletionCallback rcb,
@@ -389,63 +389,63 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		}
 		@Override
 		public void onDNF(ClientContext context) {
-		    synchronized(this) {
-		        checker = null;
-		        dnf = true;
-		    }
+			synchronized(this) {
+				checker = null;
+				dnf = true;
+			}
 			USKFetcher.this.onDNF(this, context);
 		}
 		@Override
 		public void onSuccess(ClientSSKBlock block, ClientContext context) {
-		    synchronized(this) {
-		        checker = null;
-		        succeeded = true;
-		    }
+			synchronized(this) {
+				checker = null;
+				succeeded = true;
+			}
 			USKFetcher.this.onSuccess(this, false, block, context);
 		}
 
 		@Override
 		public void onFatalAuthorError(ClientContext context) {
-		    synchronized(this) {
-		        checker = null;
-		    }
+			synchronized(this) {
+				checker = null;
+			}
 			// Counts as success except it doesn't update
 			USKFetcher.this.onSuccess(this, true, null, context);
 		}
 
 		@Override
 		public void onNetworkError(ClientContext context) {
-		    synchronized(this) {
-		        checker = null;
-		    }
+			synchronized(this) {
+				checker = null;
+			}
 			// Not a DNF
 			USKFetcher.this.onFail(this, context);
 		}
 
 		@Override
 		public void onCancelled(ClientContext context) {
-		    synchronized(this) {
-		        checker = null;
-		    }
+			synchronized(this) {
+				checker = null;
+			}
 			USKFetcher.this.onCancelled(this, context);
 		}
 
 		public void cancel(ClientContext context) {
 			cancelled = true;
-            USKChecker c;
-            synchronized(this) {
-                c = checker;
-            }
+			USKChecker c;
+			synchronized(this) {
+				c = checker;
+			}
 			if(c != null)
 				c.cancel(context);
 			onCancelled(context);
 		}
 
 		public void schedule(ClientContext context) {
-		    USKChecker c;
-		    synchronized(this) {
-		        c = checker;
-		    }
+			USKChecker c;
+			synchronized(this) {
+				c = checker;
+			}
 			if(c == null) {
 				if(logMINOR)
 					Logger.minor(this, "Checker == null in schedule() for "+this, new Exception("debug"));
@@ -495,7 +495,7 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		public void reloadPollParameters(ClientContext context) {
 			USKChecker c;
 			synchronized(this) {
-			    c = checker;
+				c = checker;
 			}
 			if(c == null) return;
 			c.onChangedFetchContext(context);
@@ -732,8 +732,8 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			synchronized(this) {
 				started = false; // don't finish before have rescheduled
 
-                //Find out when we should check next ('end'), in an increasing delay (unless we make progress).
-                long newSleepTime = sleepTime * 2;
+				//Find out when we should check next ('end'), in an increasing delay (unless we make progress).
+				long newSleepTime = sleepTime * 2;
 				if(newSleepTime > maxSleepTime) newSleepTime = maxSleepTime;
 				sleepTime = newSleepTime;
 				end = now + context.random.nextInt((int) sleepTime);
@@ -761,19 +761,19 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			uskManager.onFinished(this);
 			context.getSskFetchScheduler(realTimeFlag).schedTransient.removePendingKeys((KeyListener)this);
 			long ed = uskManager.lookupLatestSlot(origUSK);
-            byte[] data;
+			byte[] data;
 			synchronized(this) {
-			    if(lastRequestData == null)
-			        data = null;
-			    else {
-			        try {
-			            data = BucketTools.toByteArray(lastRequestData);
-			        } catch (IOException e) {
-			            Logger.error(this, "Unable to turn lastRequestData into byte[]: caught I/O exception: "+e, e);
-			            data = null;
-			        }
-			        lastRequestData.free();
-			    }
+				if(lastRequestData == null)
+					data = null;
+				else {
+					try {
+						data = BucketTools.toByteArray(lastRequestData);
+					} catch (IOException e) {
+						Logger.error(this, "Unable to turn lastRequestData into byte[]: caught I/O exception: "+e, e);
+						data = null;
+					}
+					lastRequestData.free();
+				}
 			}
 			for(USKFetcherCallback c: cb) {
 				try {
@@ -1113,7 +1113,7 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			// Remove from the store checker queue.
 			storeChecker.unregister(context, storeChecker.getPriorityClass());
 		if(data != null)
-		    data.free();
+			data.free();
 	}
 
 	/** Set of interested USKCallbacks. Note that we don't actually
@@ -1312,9 +1312,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			// Look up on each iteration since scheduling can cause new editions to be found sometimes.
 			long lastEd = uskManager.lookupLatestSlot(origUSK);
 			synchronized(USKFetcher.this) {
-	            // FIXME not sure this condition works, test it!
-			    if(keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
-			        lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
+				// FIXME not sure this condition works, test it!
+				if(keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
+					lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
 			}
 			if(attempt == null) continue;
 			if(attempt.number > lastEd)
@@ -1405,7 +1405,7 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	}
 
 	@SuppressWarnings("serial")
-    class StoreCheckerGetter extends SendableGet {
+	class StoreCheckerGetter extends SendableGet {
 
 		public StoreCheckerGetter(ClientRequester parent, USKStoreChecker c) {
 			super(parent, USKFetcher.this.realTimeFlag);
@@ -1463,9 +1463,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			for(USKAttempt attempt: attempts) {
 				long lastEd = uskManager.lookupLatestSlot(origUSK);
 				synchronized(USKFetcher.this) {
-	                // FIXME not sure this condition works, test it!
-				    if(keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
-				        lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
+					// FIXME not sure this condition works, test it!
+					if(keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
+						lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
 				}
 				if(attempt == null) continue;
 				if(attempt.number > lastEd)
@@ -1541,10 +1541,10 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			return 0;
 		}
 
-        @Override
-        protected ClientGetState getClientGetState() {
-            return USKFetcher.this;
-        }
+		@Override
+		protected ClientGetState getClientGetState() {
+			return USKFetcher.this;
+		}
 
 	};
 
@@ -2133,14 +2133,14 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        throw new UnsupportedOperationException("Not persistent");
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		throw new UnsupportedOperationException("Not persistent");
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        throw new UnsupportedOperationException("Not persistent");
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		throw new UnsupportedOperationException("Not persistent");
+	}
 
 }

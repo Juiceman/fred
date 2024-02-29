@@ -19,7 +19,7 @@ abstract class ArchiveStoreItem {
 	}
 	
 	protected void addToContext() {
-	    context.addItem(this);
+		context.addItem(this);
 	}
 
 	/** Delete any stored data on disk etc. 

@@ -261,14 +261,14 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testBytesToHex_byteIntInt_WithLongOffset() {
-        try {
-        	int arrayLength = 3;
-        	byte[] methodBytesArray = new byte[arrayLength];
-    		HexUtil.bytesToHex(methodBytesArray,arrayLength+1,1);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IllegalArgumentException anException) {
-            assertNotNull(anException); }
-    }
+		try {
+			int arrayLength = 3;
+			byte[] methodBytesArray = new byte[arrayLength];
+			HexUtil.bytesToHex(methodBytesArray,arrayLength+1,1);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (IllegalArgumentException anException) {
+			assertNotNull(anException); }
+	}
 	
 	/**
 	 * Test bytesToHex(byte[],int,int) method
@@ -277,14 +277,14 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testBytesToHex_byteIntInt_WithLongReading() {
-        try {
-        	int arrayLength = 3;
-        	byte[] methodBytesArray = new byte[arrayLength];
-    		HexUtil.bytesToHex(methodBytesArray,0,arrayLength+1);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IllegalArgumentException anException) {
-            assertNotNull(anException); }
-    }
+		try {
+			int arrayLength = 3;
+			byte[] methodBytesArray = new byte[arrayLength];
+			HexUtil.bytesToHex(methodBytesArray,0,arrayLength+1);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (IllegalArgumentException anException) {
+			assertNotNull(anException); }
+	}
 	
 	/**
 	 * Test bytesToHex(byte[],int,int) method
@@ -304,14 +304,14 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testHexToBytes_StringByteInt_WithLongOffset() {
-        try {
-        	String methodString = "0";
-        	byte[] methodByteArray = new byte[1];
-    		HexUtil.hexToBytes(methodString,methodByteArray,methodByteArray.length);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (ArrayIndexOutOfBoundsException anException) {
-            assertNotNull(anException); }
-    }
+		try {
+			String methodString = "0";
+			byte[] methodByteArray = new byte[1];
+			HexUtil.hexToBytes(methodString,methodByteArray,methodByteArray.length);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (ArrayIndexOutOfBoundsException anException) {
+			assertNotNull(anException); }
+	}
 	
 	/**
 	 * Test hexToBytes(String,byte[],int) method
@@ -320,14 +320,14 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testHexToBytes_StringByteInt_WithShortArray() {
-        try {
-        	String methodString = "0000";
-        	byte[] methodByteArray = new byte[1];
-    		HexUtil.hexToBytes(methodString,methodByteArray,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IndexOutOfBoundsException anException) {
-            assertNotNull(anException); }
-    }
+		try {
+			String methodString = "0000";
+			byte[] methodByteArray = new byte[1];
+			HexUtil.hexToBytes(methodString,methodByteArray,0);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (IndexOutOfBoundsException anException) {
+			assertNotNull(anException); }
+	}
 	
 	/**
 	 * Test all hexToBytes() methods
@@ -338,22 +338,22 @@ public class HexUtilTest {
 	public void testHexToBytes_WithBadDigit() {
 		String methodString = "00%0";
 		try {
-        	byte[] methodByteArray = new byte[methodString.length()];
-    		HexUtil.hexToBytes(methodString,methodByteArray,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-        try {
-    		HexUtil.hexToBytes(methodString,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-        try {
-    		HexUtil.hexToBytes(methodString);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-    }
+			byte[] methodByteArray = new byte[methodString.length()];
+			HexUtil.hexToBytes(methodString,methodByteArray,0);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (NumberFormatException anException) {
+			assertNotNull(anException); }
+		try {
+			HexUtil.hexToBytes(methodString,0);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (NumberFormatException anException) {
+			assertNotNull(anException); }
+		try {
+			HexUtil.hexToBytes(methodString);
+			fail("Expected Exception Error Not Thrown!"); } 
+		catch (NumberFormatException anException) {
+			assertNotNull(anException); }
+	}
 	
 	/**
 	 * Test the bitsToByte(BitSet,int) method

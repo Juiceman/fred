@@ -23,41 +23,41 @@ public enum HMAC {
   final int digestSize;
 
   HMAC(String name, int size) {
-    this.algo = name;
-    this.digestSize = size;
+	this.algo = name;
+	this.digestSize = size;
   }
 
   public static byte[] mac(HMAC hash, byte[] key, byte[] data) {
-    if(key.length != hash.digestSize)
-      throw new IllegalArgumentException("Wrong keysize! We're not doing key stretching "+
-                                         key.length+" expected "+hash.digestSize);
+	if(key.length != hash.digestSize)
+	  throw new IllegalArgumentException("Wrong keysize! We're not doing key stretching "+
+										 key.length+" expected "+hash.digestSize);
 
-    SecretKeySpec signingKey = new SecretKeySpec(key, hash.algo);
-    Mac mac;
-    try {
-      mac = Mac.getInstance(hash.algo);
-    } catch (NoSuchAlgorithmException e) {
-      Logger.error(HMAC.class, "No such AlgorithmException", e);
-      throw new Error(e);
-    }
-    try {
-      mac.init(signingKey);
-    } catch (InvalidKeyException e) {
-      Logger.error(HMAC.class, "Impossible InvalidKeyException", e);
-      throw new Error(e);
-    }
-    return mac.doFinal(data);
+	SecretKeySpec signingKey = new SecretKeySpec(key, hash.algo);
+	Mac mac;
+	try {
+	  mac = Mac.getInstance(hash.algo);
+	} catch (NoSuchAlgorithmException e) {
+	  Logger.error(HMAC.class, "No such AlgorithmException", e);
+	  throw new Error(e);
+	}
+	try {
+	  mac.init(signingKey);
+	} catch (InvalidKeyException e) {
+	  Logger.error(HMAC.class, "Impossible InvalidKeyException", e);
+	  throw new Error(e);
+	}
+	return mac.doFinal(data);
   }
 
   public static boolean verify(HMAC hash, byte[] key, byte[] data, byte[] mac) {
-    return MessageDigest.isEqual(mac, mac(hash, key, data));
+	return MessageDigest.isEqual(mac, mac(hash, key, data));
   }
 
   public static byte[] macWithSHA256(byte[] K, byte[] text) {
-    return mac(HMAC.SHA2_256, K, text);
+	return mac(HMAC.SHA2_256, K, text);
   }
 
   public static boolean verifyWithSHA256(byte[] K, byte[] text, byte[] mac) {
-    return verify(HMAC.SHA2_256, K, text, mac);
+	return verify(HMAC.SHA2_256, K, text, mac);
   }
 }	

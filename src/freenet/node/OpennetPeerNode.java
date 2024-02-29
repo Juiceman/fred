@@ -272,31 +272,31 @@ public class OpennetPeerNode extends PeerNode {
 		return true;
 	}
 	
-    public LinkLengthClass linkLengthClass() {
-        if(!Location.isValid(getLocation())) {
-            Logger.error(this, "No location on "+this, new Exception("debug"));
-            return LinkLengthClass.SHORT; // FIXME add unknown to enum? Would need more complex error handling...
-        }
-        // FIXME OPTIMISE This should not change since we don't swap on opennet.
-        if(Location.distance(this, opennet.node.getLocation()) > OpennetManager.LONG_DISTANCE)
-            return LinkLengthClass.LONG;
-        else
-            return LinkLengthClass.SHORT;
-    }
+	public LinkLengthClass linkLengthClass() {
+		if(!Location.isValid(getLocation())) {
+			Logger.error(this, "No location on "+this, new Exception("debug"));
+			return LinkLengthClass.SHORT; // FIXME add unknown to enum? Would need more complex error handling...
+		}
+		// FIXME OPTIMISE This should not change since we don't swap on opennet.
+		if(Location.distance(this, opennet.node.getLocation()) > OpennetManager.LONG_DISTANCE)
+			return LinkLengthClass.LONG;
+		else
+			return LinkLengthClass.SHORT;
+	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
-        return true;
-    }
+	@Override
+	public boolean canAcceptAnnouncements() {
+		return true;
+	}
 
-    @Override
-    protected void writePeers() {
-        node.peers.writePeers(true);
-    }
+	@Override
+	protected void writePeers() {
+		node.peers.writePeers(true);
+	}
 
 }

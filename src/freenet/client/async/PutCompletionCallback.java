@@ -47,9 +47,9 @@ public interface PutCompletionCallback {
 	 */
 	public void onBlockSetFinished(ClientPutState state, ClientContext context);
 	
-    /** Called on restarting the node for a persistent request. The request must re-schedule 
-     * itself. 
-     * @throws InsertException */
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException;
+	/** Called on restarting the node for a persistent request. The request must re-schedule 
+	 * itself. 
+	 * @throws InsertException */
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException;
 
 }
