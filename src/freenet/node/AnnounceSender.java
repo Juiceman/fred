@@ -196,7 +196,8 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 					break;
 				}
 
-				if(msg == null) {
+				if(msg == null)
+				{
 					if(logMINOR) Logger.minor(this, "Timeout waiting for Accepted");
 					// Try next node
 					msg = null;
@@ -210,7 +211,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 					break;
 				}
 
-				if(msg.getSpec() == DMT.FNPRejectedOverload) {
+				if    (msg.getSpec() == DMT.FNPRejectedOverload) {
 					if(logMINOR) Logger.minor(this, "Rejected: overload");
 					// Give up on this one, try another
 					msg = null;
