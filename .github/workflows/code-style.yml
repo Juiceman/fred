@@ -23,7 +23,7 @@ jobs:
 
       - name: Format code
         run: |
-          astyle --style=java --indent=force-tab --suffix=none --recursive *.java
+          astyle --style=java --indent=force-tab --add-braces --max-code-length=100 --suffix=none --recursive *.java
           
       - name: Set up Node.js
         uses: actions/setup-node@v4.0.2
