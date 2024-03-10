@@ -32,24 +32,24 @@ public class RealNodeTest {
 	static final int EXIT_INSERT_FAILED = EXIT_BASE + 5;
 	static final int EXIT_REQUEST_FAILED = EXIT_BASE + 6;
 	static final int EXIT_BAD_DATA = EXIT_BASE + 7;
-	
+
 	static final FRIEND_TRUST trust = FRIEND_TRUST.LOW;
 	static final FRIEND_VISIBILITY visibility = FRIEND_VISIBILITY.NO;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	/* Because we start a whole bunch of nodes at once, we will get many "Not reusing
 	 * tracker, so wiping old trackers" messages. This is normal, all the nodes start
 	 * handshaking straight off, they all send JFK(1)s, and we get race conditions. */
-	
+
 	/*
 	 Borrowed from mrogers simulation code (February 6, 2008)
 	 --
@@ -57,8 +57,7 @@ public class RealNodeTest {
 	        [0..n], some nodes tend to have *much* higher connections than the degree (the first few),
 	        starving the latter ones.
 	 */
-	static void makeKleinbergNetwork (Node[] nodes, boolean idealLocations, int degree, boolean forceNeighbourConnections, RandomSource random)
-	{
+	static void makeKleinbergNetwork (Node[] nodes, boolean idealLocations, int degree, boolean forceNeighbourConnections, RandomSource random) {
 		if(idealLocations) {
 			// First set the locations up so we don't spend a long time swapping just to stabilise each network.
 			double div = 1.0 / nodes.length;
@@ -69,7 +68,7 @@ public class RealNodeTest {
 			}
 		}
 		if(forceNeighbourConnections) {
-			for(int i=0;i<nodes.length;i++) {
+			for(int i=0; i<nodes.length; i++) {
 				int next = (i+1) % nodes.length;
 				connect(nodes[i], nodes[next]);
 			}
@@ -97,7 +96,7 @@ public class RealNodeTest {
 			}
 		}
 	}
-	
+
 	static void connect(Node a, Node b) {
 		try {
 			a.connect (b, trust, visibility);
@@ -109,28 +108,28 @@ public class RealNodeTest {
 		} catch (freenet.io.comm.ReferenceSignatureVerificationException e) {
 			Logger.error(RealNodeTest.class, "cannot connect #3!!!!", e);
 		} catch (PeerTooOldException e) {
-            Logger.error(RealNodeTest.class, "cannot connect #4!!!!", e);
-        }
+			Logger.error(RealNodeTest.class, "cannot connect #4!!!!", e);
+		}
 	}
-	
+
 	static double distance(Node a, Node b) {
 		double aL=a.getLocation();
 		double bL=b.getLocation();
 		return Location.distance(aL, bL);
 	}
-	
+
 	static String getPortNumber(PeerNode p) {
 		if (p == null || p.getPeer() == null)
 			return "null";
 		return Integer.toString(p.getPeer().getPort());
 	}
-	
+
 	static String getPortNumber(Node n) {
 		if (n == null)
 			return "null";
 		return Integer.toString(n.getDarknetPortNumber());
 	}
-	
+
 	static void waitForAllConnected(Node[] nodes) throws InterruptedException {
 		long tStart = System.currentTimeMillis();
 		while(true) {
@@ -144,7 +143,7 @@ public class RealNodeTest {
 			double totalPingTime = 0.0;
 			double maxPingTime = 0.0;
 			double minPingTime = Double.MAX_VALUE;
-			for(int i=0;i<nodes.length;i++) {
+			for(int i=0; i<nodes.length; i++) {
 				int countConnected = nodes[i].peers.countConnectedDarknetPeers();
 				int countAlmostConnected = nodes[i].peers.countAlmostConnectedDarknetPeers();
 				int countTotal = nodes[i].peers.countValidPeers();

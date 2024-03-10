@@ -10,7 +10,7 @@ public class UnknownNodeIdentifierMessage extends FCPMessage {
 
 	final String nodeIdentifier;
 	final String identifier;
-	
+
 	public UnknownNodeIdentifierMessage(String id, String identifier) {
 		this.nodeIdentifier = id;
 		this.identifier = identifier;
@@ -32,7 +32,7 @@ public class UnknownNodeIdentifierMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "UnknownNodeIdentifier goes from server to client not the other way around", nodeIdentifier, false);
 	}
 

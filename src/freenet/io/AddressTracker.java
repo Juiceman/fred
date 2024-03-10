@@ -59,7 +59,7 @@ public class AddressTracker {
 
 	/** Maximum number of Item's of either type */
 	private int MAX_ITEMS = DEFAULT_MAX_ITEMS;
-	
+
 	static final int DEFAULT_MAX_ITEMS = 1000;
 	static final int SEED_MAX_ITEMS = 10000;
 
@@ -114,7 +114,7 @@ public class AddressTracker {
 			throw new FSParseException("Unknown Version "+version);
 		long savedBootID = fs.getLong("BootID");
 		if(savedBootID != lastBootID) throw new FSParseException("Unable to load address tracker table, assuming an unclean shutdown: Last ID was " +
-				lastBootID+" but stored "+savedBootID);
+					lastBootID+" but stored "+savedBootID);
 		// Sadly we don't know whether there were packets arriving during the gap,
 		// and some insecure firewalls will use incoming packets to keep tunnels open
 		//timeDefinitelyNoPacketsReceived = fs.getLong("TimeDefinitelyNoPacketsReceived");
@@ -125,26 +125,26 @@ public class AddressTracker {
 		peerTrackers = new HashMap<Peer, PeerAddressTrackerItem>();
 		SimpleFieldSet peers = fs.subset("Peers");
 		if(peers != null) {
-		Iterator<String> i = peers.directSubsetNameIterator();
-		if(i != null) {
-		while(i.hasNext()) {
-			SimpleFieldSet peer = peers.subset(i.next());
-			PeerAddressTrackerItem item = new PeerAddressTrackerItem(peer);
-			peerTrackers.put(item.peer, item);
-		}
-		}
+			Iterator<String> i = peers.directSubsetNameIterator();
+			if(i != null) {
+				while(i.hasNext()) {
+					SimpleFieldSet peer = peers.subset(i.next());
+					PeerAddressTrackerItem item = new PeerAddressTrackerItem(peer);
+					peerTrackers.put(item.peer, item);
+				}
+			}
 		}
 		ipTrackers = new HashMap<InetAddress, InetAddressAddressTrackerItem>();
 		SimpleFieldSet ips = fs.subset("IPs");
 		if(ips != null) {
-		Iterator<String> i = ips.directSubsetNameIterator();
-		if(i != null) {
-		while(i.hasNext()) {
-			SimpleFieldSet peer = ips.subset(i.next());
-			InetAddressAddressTrackerItem item = new InetAddressAddressTrackerItem(peer);
-			ipTrackers.put(item.addr, item);
-		}
-		}
+			Iterator<String> i = ips.directSubsetNameIterator();
+			if(i != null) {
+				while(i.hasNext()) {
+					SimpleFieldSet peer = ips.subset(i.next());
+					InetAddressAddressTrackerItem item = new InetAddressAddressTrackerItem(peer);
+					ipTrackers.put(item.addr, item);
+				}
+			}
 		}
 	}
 
@@ -231,7 +231,7 @@ public class AddressTracker {
 		MAYBE_PORT_FORWARDED,
 		DEFINITELY_PORT_FORWARDED
 	}
-	
+
 	/** If the minimum gap is at least this, we might be port forwarded.
 	 * RFC 4787 requires at least 2 minutes, but many NATs have shorter timeouts. */
 	public final static long MAYBE_TUNNEL_LENGTH = MINUTES.toMillis(5) + SECONDS.toMillis(1);
@@ -339,9 +339,9 @@ public class AddressTracker {
 		InetAddressAddressTrackerItem[] inetItems = getInetAddressTrackerItems();
 		items = new SimpleFieldSet(true);
 		if(inetItems.length > 0) {
-		    for(int i = 0; i < inetItems.length; i++)
-			items.put(Integer.toString(i), inetItems[i].toFieldSet());
-		    sfs.put("IPs", items);
+			for(int i = 0; i < inetItems.length; i++)
+				items.put(Integer.toString(i), inetItems[i].toFieldSet());
+			sfs.put("IPs", items);
 		}
 		return sfs;
 	}

@@ -39,12 +39,12 @@ import freenet.support.io.FileUtil;
 import freenet.support.io.InsufficientDiskSpaceException;
 
 public class MainJarUpdater extends NodeUpdater implements Deployer {
-	
+
 	static private volatile boolean logMINOR;
 	static {
 		Logger.registerClass(MainJarUpdater.class);
 	}
-	
+
 	private final FetchContext dependencyCtx;
 	private final ClientContext clientContext;
 
@@ -60,17 +60,17 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	}
 
 	private final MainJarDependenciesChecker dependencies;
-	
+
 	@Override
 	public String jarName() {
 		return "freenet.jar";
 	}
-	
+
 	public void start() {
 		maybeProcessOldBlob();
 		super.start();
 	}
-	
+
 	@Override
 	protected void maybeParseManifest(FetchResult result, int build) {
 		// Do nothing.
@@ -87,9 +87,9 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	protected void onStartFetching() {
 		manager.onStartFetching();
 	}
-	
+
 	// Dependency handling.
-	
+
 	private HashSet<DependencyJarFetcher> fetchers = new HashSet<DependencyJarFetcher>();
 	private HashSet<DependencyJarFetcher> essentialFetchers = new HashSet<DependencyJarFetcher>();
 
@@ -107,7 +107,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	public void deploy(MainJarDependencies deps) {
 		manager.onDependenciesReady(deps);
 	}
-	
+
 	/** Glue code. */
 	private class DependencyJarFetcher implements JarFetcher, ClientGetCallback, RequestClient, ClientEventListener {
 
@@ -122,7 +122,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		private final File tempFile;
 		private UOMDependencyFetcher uomFetcher;
 		private final boolean executable;
-		
+
 		DependencyJarFetcher(File filename, FreenetURI chk, long expectedLength, byte[] expectedHash, JarFetcherCallback cb, boolean essential, boolean executable) throws FetchException {
 			FetchContext myCtx = new FetchContext(dependencyCtx, FetchContext.IDENTICAL_MASK);
 			File parent = filename.getParentFile();
@@ -130,13 +130,13 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			try {
 				tempFile = File.createTempFile(filename.getName(), NodeUpdateManager.TEMP_FILE_SUFFIX, parent);
 			} catch (InsufficientDiskSpaceException e) {
-			    throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
+				throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 			} catch (IOException e) {
 				throw new FetchException(FetchExceptionMode.BUCKET_ERROR, "Cannot create temp file for "+filename+" in "+parent+" - disk full? permissions problem?");
 			}
-			getter = new ClientGetter(this,  
-					chk, myCtx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
-					new FileBucket(tempFile, false, false, false, false), null, null);
+			getter = new ClientGetter(this,
+									  chk, myCtx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
+									  new FileBucket(tempFile, false, false, false, false), null, null);
 			myCtx.eventProducer.addEventListener(this);
 			this.cb = cb;
 			this.filename = filename;
@@ -145,7 +145,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			this.essential = essential;
 			this.executable = executable;
 		}
-		
+
 		@Override
 		public void cancel() {
 			final UOMDependencyFetcher f;
@@ -160,20 +160,20 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 					getter.cancel(clientContext);
 					if(f != null) f.cancel();
 				}
-				
+
 			});
 		}
-		
+
 		@Override
 		public boolean persistent() {
 			return false;
 		}
-		
+
 		@Override
 		public boolean realTimeFlag() {
 			return false;
 		}
-		
+
 		@Override
 		public void onSuccess(FetchResult result, ClientGetter state) {
 			synchronized(this) {
@@ -183,25 +183,25 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 				}
 				fetched = true;
 			}
-            if(!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
-                Logger.error(this, "Unable to download dependency "+filename+" : not the expected size or hash!");
-                System.err.println("Download of "+filename+" for update failed because temp file appears to be corrupted!");
-                if(cb != null)
-                    cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()+" "));
-                tempFile.delete();
-                return;
-            }
+			if(!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
+				Logger.error(this, "Unable to download dependency "+filename+" : not the expected size or hash!");
+				System.err.println("Download of "+filename+" for update failed because temp file appears to be corrupted!");
+				if(cb != null)
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()+" "));
+				tempFile.delete();
+				return;
+			}
 			if(!FileUtil.renameTo(tempFile, filename)) {
 				Logger.error(this, "Unable to rename temp file "+tempFile+" to "+filename);
 				System.err.println("Download of "+filename+" for update failed because cannot rename from "+tempFile);
 				if(cb != null)
-				    cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file "+tempFile+" to "+filename));
-                tempFile.delete();
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file "+tempFile+" to "+filename));
+				tempFile.delete();
 				return;
 			}
 			if(cb != null) cb.onSuccess();
 		}
-		
+
 		@Override
 		public void onFailure(FetchException e, ClientGetter state) {
 			tempFile.delete();
@@ -210,13 +210,13 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			}
 			if(cb != null) cb.onFailure(e);
 		}
-		
+
 		@Override
 		public synchronized void receive(ClientEvent ce, ClientContext context) {
 			if(ce instanceof SplitfileProgressEvent)
 				lastProgress = (SplitfileProgressEvent) ce;
 		}
-		
+
 		private void start() throws FetchException {
 			getter.start(clientContext);
 		}
@@ -224,14 +224,14 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		public synchronized HTMLNode renderRow() {
 			HTMLNode row = new HTMLNode("tr");
 			row.addChild("td").addChild("p", filename.toString());
-			
+
 			if(uomFetcher != null)
 				row.addChild("td").addChild("#", l10n("fetchingFromUOM"));
 			else if(lastProgress == null)
 				row.addChild(QueueToadlet.createProgressCell(false, true, COMPRESS_STATE.WORKING, 0, 0, 0, 0, 0, false, false));
 			else
-				row.addChild(QueueToadlet.createProgressCell(false, 
-						true, COMPRESS_STATE.WORKING, lastProgress.succeedBlocks, lastProgress.failedBlocks, lastProgress.fatallyFailedBlocks, lastProgress.minSuccessfulBlocks, lastProgress.totalBlocks, lastProgress.finalizedTotal, false));
+				row.addChild(QueueToadlet.createProgressCell(false,
+							 true, COMPRESS_STATE.WORKING, lastProgress.succeedBlocks, lastProgress.failedBlocks, lastProgress.fatallyFailedBlocks, lastProgress.minSuccessfulBlocks, lastProgress.totalBlocks, lastProgress.finalizedTotal, false));
 			return row;
 		}
 
@@ -241,17 +241,17 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 				if(!essential) return;
 			}
 			UOMDependencyFetcher f = manager.uom.fetchDependency(expectedHash, expectedLength, filename, executable,
-					new UOMDependencyFetcherCallback() {
+			new UOMDependencyFetcherCallback() {
 
-						@Override
-						public void onSuccess() {
-							synchronized(DependencyJarFetcher.this) {
-								if(fetched) return;
-								fetched = true;
-							}
-							if(cb != null) cb.onSuccess();
-						}
-						
+				@Override
+				public void onSuccess() {
+					synchronized(DependencyJarFetcher.this) {
+						if(fetched) return;
+						fetched = true;
+					}
+					if(cb != null) cb.onSuccess();
+				}
+
 			});
 			synchronized(this) {
 				if(uomFetcher != null) {
@@ -262,21 +262,21 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			}
 		}
 
-	    @Override
-	    public void onResume(ClientContext context) {
-	        // Do nothing. Not persistent.
-	    }
+		@Override
+		public void onResume(ClientContext context) {
+			// Do nothing. Not persistent.
+		}
 
-        @Override
-        public RequestClient getRequestClient() {
-            return this;
-        }
+		@Override
+		public RequestClient getRequestClient() {
+			return this;
+		}
 
 	}
-	
+
 	@Override
 	public JarFetcher fetch(FreenetURI uri, File downloadTo,
-			long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException {
+							long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException {
 		if(essential)
 			System.out.println("Fetching "+downloadTo+" needed for new Freenet update "+build);
 		else if(build != 0) // build 0 means it's a preload or a multi-file update.
@@ -295,7 +295,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		}
 		return fetcher;
 	}
-	
+
 	public void onStartFetchingUOM() {
 		DependencyJarFetcher[] f;
 		synchronized(fetchers) {
@@ -304,7 +304,7 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		for(DependencyJarFetcher fetcher : f)
 			fetcher.fetchFromUOM();
 	}
-	
+
 	public void renderProperties(HTMLNode alertNode) {
 		synchronized(fetchers) {
 			if(!fetchers.isEmpty()) {
@@ -348,103 +348,103 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		manager.uom.addDependency(expectedHash, filename);
 	}
 
-    @Override
-    public void reannounce() {
-        this.manager.broadcastUOMAnnouncesNew();
-        this.manager.broadcastUOMAnnouncesOld();
-    }
+	@Override
+	public void reannounce() {
+		this.manager.broadcastUOMAnnouncesNew();
+		this.manager.broadcastUOMAnnouncesOld();
+	}
 
-    @Override
-    public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer atomicDeployer) {
-        if(this.manager.isAutoUpdateAllowed()) {
-            atomicDeployer.deployMultiFileUpdateOffThread();
-        } else {
-            final long now = System.currentTimeMillis();
-            System.err.println("Not deploying multi-file update for "+atomicDeployer.name+" because auto-update is not enabled.");
-            node.clientCore.alerts.register(new UserAlert() {
+	@Override
+	public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer atomicDeployer) {
+		if(this.manager.isAutoUpdateAllowed()) {
+			atomicDeployer.deployMultiFileUpdateOffThread();
+		} else {
+			final long now = System.currentTimeMillis();
+			System.err.println("Not deploying multi-file update for "+atomicDeployer.name+" because auto-update is not enabled.");
+			node.clientCore.alerts.register(new UserAlert() {
 
-                private String l10n(String key) {
-                    return NodeL10n.getBase().getString("MainJarUpdater.ConfirmMultiFileUpdater."+key);
-                }
-                
-                @Override
-                public boolean userCanDismiss() {
-                    return true;
-                }
+				private String l10n(String key) {
+					return NodeL10n.getBase().getString("MainJarUpdater.ConfirmMultiFileUpdater."+key);
+				}
 
-                @Override
-                public String getTitle() {
-                    return l10n("title."+atomicDeployer.name);
-                }
+				@Override
+				public boolean userCanDismiss() {
+					return true;
+				}
 
-                @Override
-                public String getText() {
-                    return l10n("text."+atomicDeployer.name);
-                }
+				@Override
+				public String getTitle() {
+					return l10n("title."+atomicDeployer.name);
+				}
 
-                @Override
-                public HTMLNode getHTMLText() {
-                    return new HTMLNode("p", getText());
-                    // FIXME separate button, then the alert could be dismissable? Only useful if it's permanently dismissable though, which means a config setting as well...
-                }
+				@Override
+				public String getText() {
+					return l10n("text."+atomicDeployer.name);
+				}
 
-                @Override
-                public String getShortText() {
-                    return getTitle();
-                }
+				@Override
+				public HTMLNode getHTMLText() {
+					return new HTMLNode("p", getText());
+					// FIXME separate button, then the alert could be dismissable? Only useful if it's permanently dismissable though, which means a config setting as well...
+				}
 
-                @Override
-                public short getPriorityClass() {
-                    return UserAlert.ERROR;
-                }
+				@Override
+				public String getShortText() {
+					return getTitle();
+				}
 
-                @Override
-                public boolean isValid() {
-                    return true;
-                }
+				@Override
+				public short getPriorityClass() {
+					return UserAlert.ERROR;
+				}
 
-                @Override
-                public void isValid(boolean validity) {
-                    // Ignore
-                }
+				@Override
+				public boolean isValid() {
+					return true;
+				}
 
-                @Override
-                public String dismissButtonText() {
-                    return NodeL10n.getBase().getString("UpdatedVersionAvailableUserAlert.updateNowButton");
-                }
+				@Override
+				public void isValid(boolean validity) {
+					// Ignore
+				}
 
-                @Override
-                public boolean shouldUnregisterOnDismiss() {
-                    return true;
-                }
+				@Override
+				public String dismissButtonText() {
+					return NodeL10n.getBase().getString("UpdatedVersionAvailableUserAlert.updateNowButton");
+				}
 
-                @Override
-                public void onDismiss() {
-                    atomicDeployer.deployMultiFileUpdateOffThread();
-                }
+				@Override
+				public boolean shouldUnregisterOnDismiss() {
+					return true;
+				}
 
-                @Override
-                public String anchor() {
-                    return "multi-file-update-confirm-"+atomicDeployer.name;
-                }
+				@Override
+				public void onDismiss() {
+					atomicDeployer.deployMultiFileUpdateOffThread();
+				}
 
-                @Override
-                public boolean isEventNotification() {
-                    return false;
-                }
+				@Override
+				public String anchor() {
+					return "multi-file-update-confirm-"+atomicDeployer.name;
+				}
 
-                @Override
-                public FCPMessage getFCPMessage() {
-                    return null;
-                }
+				@Override
+				public boolean isEventNotification() {
+					return false;
+				}
 
-                @Override
-                public long getUpdatedTime() {
-                    return now;
-                }
-                
-            });
-        }
-    }
+				@Override
+				public FCPMessage getFCPMessage() {
+					return null;
+				}
+
+				@Override
+				public long getUpdatedTime() {
+					return now;
+				}
+
+			});
+		}
+	}
 
 }

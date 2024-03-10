@@ -12,7 +12,7 @@ import freenet.support.SimpleFieldSet;
  * node -> client: DDAReply { Dir=/tmp/blah, ReadFilename=random1, WriteFilename=random2, ContentToWrite=random3 }
  * client -> node: DDAResponse { Dir=/tmp/blah, ReadContent=blah }
  * node -> client: DDAComplete { Dir=/tmp/blah, ReadAllowed=true, WriteAllowed=true }
- * 
+ *
  *  @author Florent Daigni&egrave;re &lt;nextgens@freenetproject.org&gt;
  */
 public class TestDDARequestMessage extends FCPMessage {
@@ -20,13 +20,13 @@ public class TestDDARequestMessage extends FCPMessage {
 	public static final String DIRECTORY = "Directory";
 	public static final String WANT_READ = "WantReadDirectory";
 	public static final String WANT_WRITE = "WantWriteDirectory";
-	
+
 	final String identifier;
 	final boolean wantRead, wantWrite;
-	
-	
-	/** 
-	 * @throws MessageInvalidException 
+
+
+	/**
+	 * @throws MessageInvalidException
 	 */
 	public TestDDARequestMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get(DIRECTORY);
@@ -34,7 +34,7 @@ public class TestDDARequestMessage extends FCPMessage {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Directory given!", null, false);
 		if(identifier.length() == 0)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "The specified Directory can't be empty!", null, false);
-		
+
 		wantRead = fs.getBoolean(WANT_READ, false);
 		wantWrite = fs.getBoolean(WANT_WRITE, false);
 		if((wantRead == false) && (wantWrite == false))
@@ -62,5 +62,5 @@ public class TestDDARequestMessage extends FCPMessage {
 		TestDDAReplyMessage reply = new TestDDAReplyMessage(job);
 		handler.send(reply);
 	}
-	
+
 }

@@ -15,7 +15,7 @@ import freenet.support.SimpleFieldSet;
  * Sent by a client to subscribe to a USK. The client will then be notified by a SubscribedUSKMessage that his
  * request has been taken into account and whenever a new latest version of the USK is available.
  * There is a flag for whether the node should actively probe for the USK.
- * 
+ *
  * SubscribeUSK
  * URI=USK@60I8H8HinpgZSOuTSD66AVlIFAy-xsppFr0YCzCar7c,NzdivUGCGOdlgngOGRbbKDNfSCnjI0FXjHLzJM4xkJ4,AQABAAE/index/4
  * DontPoll=true // meaning passively subscribe, don't cause the node to actively probe for it
@@ -34,7 +34,7 @@ public class SubscribeUSKMessage extends FCPMessage {
 	final boolean realTimeFlag;
 	final boolean sparsePoll;
 	final boolean ignoreUSKDatehints;
-	
+
 	public SubscribeUSKMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		this.identifier = fs.get("Identifier");
 		if(identifier == null)
@@ -75,7 +75,7 @@ public class SubscribeUSKMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		try {
 			new SubscribeUSK(this, node.clientCore, handler);
 		} catch (IdentifierCollisionException e) {

@@ -204,8 +204,7 @@ public class FilterMessage extends DataCarryingMessage {
 		return ContentFilter.filter(input, output, mimeType, fakeUri, null, null, null, null, clientContext.linkFilterExceptionProvider);
 	}
 
-	private String bestGuessMimeType(String filename)
-	{
+	private String bestGuessMimeType(String filename) {
 		String guessedMimeType = null;
 		if (filename != null) {
 			guessedMimeType = DefaultMIMETypes.guessMIMEType(filename, true);

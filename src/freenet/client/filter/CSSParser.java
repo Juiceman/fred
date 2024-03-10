@@ -24,7 +24,7 @@ import java.io.Writer;
 class CSSParser extends CSSTokenizerFilter {
 
 	final FilterCallback cb;
-	
+
 	CSSParser(
 		Reader r,
 		Writer w,

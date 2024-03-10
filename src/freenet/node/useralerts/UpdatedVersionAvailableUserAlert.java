@@ -16,11 +16,11 @@ import freenet.support.TimeUtil;
 public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 	private final NodeUpdateManager updater;
 
-	public UpdatedVersionAvailableUserAlert(NodeUpdateManager updater){
+	public UpdatedVersionAvailableUserAlert(NodeUpdateManager updater) {
 		super(false, null, null, null, null, (short) 0, false, NodeL10n.getBase().getString("UserAlert.hide"), false, null);
 		this.updater = updater;
 	}
-	
+
 	@Override
 	public String getTitle() {
 		return l10n("title");
@@ -40,22 +40,22 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 
 	@Override
 	public String getText() {
-		
+
 		UpdateThingy ut = createUpdateThingy();
 
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(ut.firstBit);
-		
+
 		if(ut.formText != null) {
 			sb.append(" <form action=\"/\" method=\"post\"><input type=\"submit\" name=\"update\" value=\"");
 			sb.append(ut.formText);
 			sb.append("\" /></form>");
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String getShortText() {
 		if(!updater.isArmed()) {
@@ -77,16 +77,16 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 		String firstBit;
 		String formText;
 	}
-	
+
 	@Override
 	public HTMLNode getHTMLText() {
-		
+
 		UpdateThingy ut = createUpdateThingy();
-		
+
 		HTMLNode alertNode = new HTMLNode("div");
-		
+
 		alertNode.addChild("#", ut.firstBit);
-		
+
 		if(ut.formText != null) {
 			alertNode.addChild("form", new String[] { "action", "method" }, new String[] { "/", "post" }).addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "update", ut.formText });
 			alertNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "formPassword", updater.node.clientCore.formPassword });
@@ -103,21 +103,22 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 			version = updater.getMainVersion();
 		}
 		updater.addChangelogLinks(version, alertNode);
-		
+
 		updater.renderProgress(alertNode);
-		
+
 		return alertNode;
 	}
-	
+
 	private UpdateThingy createUpdateThingy() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(l10n("notLatest"));
 		sb.append(' ');
-		
+
 		if(updater.isArmed() && updater.inFinalCheck()) {
-			sb.append(l10n("finalCheck", new String[] { "count", "max", "time" }, 
-					new String[] { Integer.toString(updater.getRevocationDNFCounter()), 
-						Integer.toString(RevocationChecker.REVOCATION_DNF_MIN), TimeUtil.formatTime(updater.timeRemainingOnCheck()) }));
+			sb.append(l10n("finalCheck", new String[] { "count", "max", "time" },
+						   new String[] { Integer.toString(updater.getRevocationDNFCounter()),
+										  Integer.toString(RevocationChecker.REVOCATION_DNF_MIN), TimeUtil.formatTime(updater.timeRemainingOnCheck())
+										}));
 			sb.append(' ');
 		} else if(updater.isArmed()) {
 			sb.append(l10n("armed"));
@@ -148,20 +149,20 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 				sb.append(l10n("updateASAPQuestion"));
 				formText = l10n("updateASAPButton");
 			}
-			
+
 			if(updater.node.updateIsUrgent()) {
 				sb.append(" ");
 				sb.append(l10n("updateIsUrgent"));
 			}
-			
+
 			if(updater.brokenDependencies()) {
 				sb.append(" ");
 				sb.append(l10n("brokenDependencies", "version", Integer.toString(updater.newMainJarVersion())));
 			}
-			
+
 			return new UpdateThingy(sb.toString(), formText);
 		}
-		
+
 		return new UpdateThingy(sb.toString(), null);
 	}
 
@@ -189,16 +190,16 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 		else
 			return UserAlert.MINOR;
 	}
-	
+
 	@Override
 	public boolean isValid() {
-		return updater.isEnabled() && (!updater.isBlown()) && 
-			(updater.fetchingNewMainJar() || updater.hasNewMainJar() || updater.fetchingFromUOM());
+		return updater.isEnabled() && (!updater.isBlown()) &&
+			   (updater.fetchingNewMainJar() || updater.hasNewMainJar() || updater.fetchingFromUOM());
 	}
-	
+
 	@Override
-	public void isValid(boolean b){
+	public void isValid(boolean b) {
 		// Ignore
 	}
-	
+
 }

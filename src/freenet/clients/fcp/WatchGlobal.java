@@ -20,11 +20,10 @@ public class WatchGlobal extends FCPMessage {
 				verbosityMask = Integer.parseInt(s);
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, e.toString(), null, false);
-			}
-		else
+			} else
 			verbosityMask = Integer.MAX_VALUE;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
@@ -40,14 +39,14 @@ public class WatchGlobal extends FCPMessage {
 
 	@Override
 	public void run(final FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		if(!handler.getRebootClient().setWatchGlobal(enabled, verbosityMask, node.clientCore.getFCPServer())) {
 			FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence disabled", null, true);
 			handler.send(err);
 		}
 		PersistentRequestClient client = handler.getForeverClient();
 		if(client != null)
-		    client.setWatchGlobal(enabled, verbosityMask, handler.server);
+			client.setWatchGlobal(enabled, verbosityMask, handler.server);
 	}
 
 }

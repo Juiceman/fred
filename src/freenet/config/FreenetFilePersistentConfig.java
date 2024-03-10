@@ -19,7 +19,7 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 		@Override
 		public void run() {
 			synchronized (this) {
-				while(!hasNodeStarted){
+				while(!hasNodeStarted) {
 					try {
 						wait(1000);
 					} catch (InterruptedException e) {}
@@ -52,15 +52,15 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 
 	@Override
 	public void store() {
-	    // FIXME how to do this without duplicating code and making finishedInit visible?
+		// FIXME how to do this without duplicating code and making finishedInit visible?
 		synchronized(this) {
-	        if(!finishedInit) {
-	            writeOnFinished = true;
-	            return;
-	        }
+			if(!finishedInit) {
+				writeOnFinished = true;
+				return;
+			}
 		}
 		synchronized(storeSync) {
-			if(isWritingConfig || ticker == null){
+			if(isWritingConfig || ticker == null) {
 				Logger.normal(this, "Already writing the config file to disk or the node object hasn't been set : refusing to proceed");
 				return;
 			}
@@ -71,7 +71,7 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 	}
 
 	public void finishedInit(Ticker ticker) {
-        this.ticker = ticker;
+		this.ticker = ticker;
 		super.finishedInit();
 	}
 

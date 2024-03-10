@@ -18,7 +18,7 @@ public class GetConfig extends FCPMessage {
 	final boolean withDataTypes;
 	static final String NAME = "GetConfig";
 	final String identifier;
-	
+
 	public GetConfig(SimpleFieldSet fs) {
 		withCurrent = fs.getBoolean("WithCurrent", false);
 		withDefaults = fs.getBoolean("WithDefaults", false);
@@ -31,20 +31,20 @@ public class GetConfig extends FCPMessage {
 		this.identifier = fs.get("Identifier");
 		fs.removeValue("Identifier");
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		return new SimpleFieldSet(true);
 	}
-	
+
 	@Override
 	public String getName() {
 		return NAME;
 	}
-	
+
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "GetConfig requires full access", identifier, false);
 		}

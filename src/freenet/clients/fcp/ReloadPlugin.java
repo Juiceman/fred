@@ -9,7 +9,7 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * reload a plugin
- * 
+ *
  */
 public class ReloadPlugin extends FCPMessage {
 

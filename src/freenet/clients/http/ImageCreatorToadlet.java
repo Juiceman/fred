@@ -70,7 +70,7 @@ public class ImageCreatorToadlet extends Toadlet {
 			}
 			if (requiredWidth > WIDTH_AND_HEIGHT_LIMIT || requiredHeight > WIDTH_AND_HEIGHT_LIMIT) {
 				writeHTMLReply(ctx, 400, "Bad request",
-						"Too large (max " + WIDTH_AND_HEIGHT_LIMIT + "x" + WIDTH_AND_HEIGHT_LIMIT + "px)");
+							   "Too large (max " + WIDTH_AND_HEIGHT_LIMIT + "x" + WIDTH_AND_HEIGHT_LIMIT + "px)");
 			}
 			// This is the image we are making
 			BufferedImage buffer = new BufferedImage(requiredWidth, requiredHeight, BufferedImage.TYPE_INT_RGB);
@@ -103,7 +103,7 @@ public class ImageCreatorToadlet extends Toadlet {
 	}
 
 	void specifyMaximumFontSizeThatFitsInImage(Graphics2D g2, FontRenderContext fc,
-												int imageWidth, int imageHeight, String text) {
+			int imageWidth, int imageHeight, String text) {
 		int minFontSize = 1;
 		int maxFontSize = Math.max(imageWidth, imageHeight);
 		int betweenFontSize = betweenFontSize(minFontSize, maxFontSize);

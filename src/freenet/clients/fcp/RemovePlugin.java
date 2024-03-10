@@ -9,7 +9,7 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * remove a plugin
- * 
+ *
  */
 public class RemovePlugin extends FCPMessage {
 

@@ -36,14 +36,14 @@ import freenet.support.io.TempBucketFactory.TempBucket;
 })
 public class TempBucketTest {
 
-    private static final long MIN_DISK_SPACE = 2*1024*1024;
-    
-    static final MasterSecret secret = new MasterSecret();
-    
-    static{
-        Security.addProvider(new BouncyCastleProvider());
-    }
-    
+	private static final long MIN_DISK_SPACE = 2*1024*1024;
+
+	static final MasterSecret secret = new MasterSecret();
+
+	static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+
 	public static class TempBucketMigrationTest {
 		private Random weakPRNG = new Random(12340);
 		private Executor exec = new SerialExecutor(NativeThread.NORM_PRIORITY);
@@ -128,12 +128,12 @@ public class TempBucketTest {
 				b.free();
 			}
 		}
-		
+
 		// This CAN happen due to memory pressure.
 		@Test
 		public void testConversionWhileReading() throws IOException {
 			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 1024, 65536, weakPRNG, false, MIN_DISK_SPACE, secret);
-			
+
 			TempBucket bucket = (TempBucket) tbf.makeBucket(64);
 			OutputStream os = bucket.getOutputStreamUnbuffered();
 			os.write(new byte[16]);
@@ -141,17 +141,17 @@ public class TempBucketTest {
 			bucket.migrateToDisk();
 			byte[] readTo = new byte[16];
 			assertTrue(is.read(readTo, 0, 16) == 16);
-			for(int i=0;i<readTo.length;i++)
+			for(int i=0; i<readTo.length; i++)
 				assertTrue(readTo[i] == 0);
 			is.close();
 			os.close();
 		}
-		
+
 		// Do a bigger read, verify contents.
 		@Test
 		public void testBigConversionWhileReading() throws IOException {
 			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 4096, 65536, weakPRNG, false, MIN_DISK_SPACE, secret);
-			
+
 			TempBucket bucket = (TempBucket) tbf.makeBucket(2048);
 			OutputStream os = bucket.getOutputStreamUnbuffered();
 			byte[] data = new byte[2048];
@@ -161,12 +161,12 @@ public class TempBucketTest {
 			bucket.migrateToDisk();
 			byte[] readTo = new byte[2048];
 			new DataInputStream(is).readFully(readTo);
-			for(int i=0;i<readTo.length;i++)
+			for(int i=0; i<readTo.length; i++)
 				assertTrue(readTo[i] == data[i]);
 			is.close();
 			os.close();
 		}
-		
+
 	}
 
 	// Private because we only use it as a base class for the actual tests.
@@ -192,7 +192,7 @@ public class TempBucketTest {
 
 		@Override
 		protected Bucket makeBucket(long size) throws IOException {
-			return tbf.makeBucket(1); // TempBucket allow resize 
+			return tbf.makeBucket(1); // TempBucket allow resize
 		}
 	}
 

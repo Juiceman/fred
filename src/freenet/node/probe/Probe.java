@@ -48,9 +48,9 @@ public class Probe implements ByteCounter {
 	private static volatile boolean logWARNING;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logWARNING = Logger.shouldLog(Logger.LogLevel.WARNING, this);
 				logMINOR = Logger.shouldLog(Logger.LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(Logger.LogLevel.DEBUG, this);
@@ -177,7 +177,7 @@ public class Probe implements ByteCounter {
 		final SubConfig nodeConfig = node.config.get("node");
 
 		nodeConfig.register("probeBandwidth", true, sortOrder++, true, true, "Node.probeBandwidthShort",
-			"Node.probeBandwidthLong", new BooleanCallback() {
+		"Node.probeBandwidthLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondBandwidth;
@@ -190,7 +190,7 @@ public class Probe implements ByteCounter {
 		});
 		respondBandwidth = nodeConfig.getBoolean("probeBandwidth");
 		nodeConfig.register("probeBuild", true, sortOrder++, true, true, "Node.probeBuildShort",
-			"Node.probeBuildLong", new BooleanCallback() {
+		"Node.probeBuildLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondBuild;
@@ -203,7 +203,7 @@ public class Probe implements ByteCounter {
 		});
 		respondBuild = nodeConfig.getBoolean("probeBuild");
 		nodeConfig.register("probeIdentifier", true, sortOrder++, true, true,
-			"Node.probeRespondIdentifierShort", "Node.probeRespondIdentifierLong", new BooleanCallback() {
+		"Node.probeRespondIdentifierShort", "Node.probeRespondIdentifierLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondIdentifier;
@@ -216,7 +216,7 @@ public class Probe implements ByteCounter {
 		});
 		respondIdentifier = nodeConfig.getBoolean("probeIdentifier");
 		nodeConfig.register("probeLinkLengths", true, sortOrder++, true, true, "Node.probeLinkLengthsShort",
-			"Node.probeLinkLengthsLong", new BooleanCallback() {
+		"Node.probeLinkLengthsLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondLinkLengths;
@@ -229,7 +229,7 @@ public class Probe implements ByteCounter {
 		});
 		respondLinkLengths = nodeConfig.getBoolean("probeLinkLengths");
 		nodeConfig.register("probeLocation", true, sortOrder++, true, true, "Node.probeLocationShort",
-			"Node.probeLocationLong", new BooleanCallback() {
+		"Node.probeLocationLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondLocation;
@@ -242,7 +242,7 @@ public class Probe implements ByteCounter {
 		});
 		respondLocation = nodeConfig.getBoolean("probeLocation");
 		nodeConfig.register("probeStoreSize", true, sortOrder++, true, true, "Node.probeStoreSizeShort",
-			"Node.probeStoreSizeLong", new BooleanCallback() {
+		"Node.probeStoreSizeLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondStoreSize;
@@ -255,7 +255,7 @@ public class Probe implements ByteCounter {
 		});
 		respondStoreSize = nodeConfig.getBoolean("probeStoreSize");
 		nodeConfig.register("probeUptime", true, sortOrder++, true, true, "Node.probeUptimeShort",
-			"Node.probeUptimeLong", new BooleanCallback() {
+		"Node.probeUptimeLong", new BooleanCallback() {
 			@Override
 			public Boolean get() {
 				return respondUptime;
@@ -268,39 +268,39 @@ public class Probe implements ByteCounter {
 		});
 		respondUptime = nodeConfig.getBoolean("probeUptime");
 		nodeConfig.register("probeRejectStats", true, sortOrder++, true, true, "Node.probeRejectStatsShort",
-				"Node.probeRejectStatsLong", new BooleanCallback() {
-				@Override
-				public Boolean get() {
-					return respondRejectStats;
-				}
+		"Node.probeRejectStatsLong", new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return respondRejectStats;
+			}
 
-				@Override
-				public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-					respondRejectStats = val;
-				}
-			});
-			respondRejectStats = nodeConfig.getBoolean("probeRejectStats");
-			
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				respondRejectStats = val;
+			}
+		});
+		respondRejectStats = nodeConfig.getBoolean("probeRejectStats");
+
 		nodeConfig.register("probeOverallBulkOutputCapacityUsage", true, sortOrder++, true, true, "Node.respondOverallBulkOutputCapacityUsage",
-				"Node.respondOverallBulkOutputCapacityUsageLong", new BooleanCallback() {
+		"Node.respondOverallBulkOutputCapacityUsageLong", new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						return respondOverallBulkOutputCapacityUsage;
-					}
+			@Override
+			public Boolean get() {
+				return respondOverallBulkOutputCapacityUsage;
+			}
 
-					@Override
-					public void set(Boolean val)
-							throws InvalidConfigValueException,
-							NodeNeedRestartException {
-						respondOverallBulkOutputCapacityUsage = val;
-					}
-			
+			@Override
+			public void set(Boolean val)
+			throws InvalidConfigValueException,
+				NodeNeedRestartException {
+				respondOverallBulkOutputCapacityUsage = val;
+			}
+
 		});
 		respondOverallBulkOutputCapacityUsage = nodeConfig.getBoolean("probeOverallBulkOutputCapacityUsage");
 
 		nodeConfig.register("identifier", -1, sortOrder++, true, true, "Node.probeIdentifierShort",
-			"Node.probeIdentifierLong", new LongCallback() {
+		"Node.probeIdentifierLong", new LongCallback() {
 			@Override
 			public Long get() {
 				return probeIdentifier;
@@ -385,14 +385,14 @@ public class Probe implements ByteCounter {
 		if (htl < 1) {
 			if (logWARNING) {
 				Logger.warning(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); discarding.");
+							   source.getIdentityString() + " (" + source.userToString() + "); discarding.");
 			}
 			return;
 		} else if (htl > MAX_HTL) {
 			if (logMINOR) {
 				Logger.minor(Probe.class, "Received out-of-bounds HTL of " + htl + " from " +
-				    source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
-				    MAX_HTL + ".");
+							 source.getIdentityString() + " (" + source.userToString() + "); interpreting as " +
+							 MAX_HTL + ".");
 			}
 			htl = MAX_HTL;
 		}
@@ -555,22 +555,41 @@ public class Probe implements ByteCounter {
 		final MessageFilter filter = createFilter(candidate, uid, timeout);
 
 		switch (type) {
-			case BANDWIDTH: filter.setType(DMT.ProbeBandwidth); break;
-			case BUILD: filter.setType(DMT.ProbeBuild); break;
-			case IDENTIFIER: filter.setType(DMT.ProbeIdentifier); break;
-			case LINK_LENGTHS: filter.setType(DMT.ProbeLinkLengths); break;
-			case LOCATION: filter.setType(DMT.ProbeLocation); break;
-			case STORE_SIZE: filter.setType(DMT.ProbeStoreSize); break;
-			case UPTIME_48H:
-			case UPTIME_7D: filter.setType(DMT.ProbeUptime); break;
-			case REJECT_STATS: filter.setType(DMT.ProbeRejectStats); break;
-			case OVERALL_BULK_OUTPUT_CAPACITY_USAGE: filter.setType(DMT.ProbeOverallBulkOutputCapacityUsage); break;
-			default: throw new UnsupportedOperationException("Missing filter for " + type.name());
+		case BANDWIDTH:
+			filter.setType(DMT.ProbeBandwidth);
+			break;
+		case BUILD:
+			filter.setType(DMT.ProbeBuild);
+			break;
+		case IDENTIFIER:
+			filter.setType(DMT.ProbeIdentifier);
+			break;
+		case LINK_LENGTHS:
+			filter.setType(DMT.ProbeLinkLengths);
+			break;
+		case LOCATION:
+			filter.setType(DMT.ProbeLocation);
+			break;
+		case STORE_SIZE:
+			filter.setType(DMT.ProbeStoreSize);
+			break;
+		case UPTIME_48H:
+		case UPTIME_7D:
+			filter.setType(DMT.ProbeUptime);
+			break;
+		case REJECT_STATS:
+			filter.setType(DMT.ProbeRejectStats);
+			break;
+		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
+			filter.setType(DMT.ProbeOverallBulkOutputCapacityUsage);
+			break;
+		default:
+			throw new UnsupportedOperationException("Missing filter for " + type.name());
 		}
 
 		//Refusal or an error should also be listened for so it can be relayed.
 		filter.or(createFilter(candidate, uid, timeout).setType(DMT.ProbeRefused)
-		      .or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
+				  .or(createFilter(candidate, uid, timeout).setType(DMT.ProbeError)));
 
 		return filter;
 	}
@@ -682,10 +701,10 @@ public class Probe implements ByteCounter {
 			listener.onRejectStats(stats);
 			break;
 		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
-			byte bandwidthClass = 
+			byte bandwidthClass =
 				DMT.bandwidthClassForCapacityUsage(node.getOutputBandwidthLimit());
-			listener.onOverallBulkOutputCapacity(bandwidthClass, 
-					(float)randomNoise(node.nodeStats.getBandwidthLiabilityUsage(), 0.1));
+			listener.onOverallBulkOutputCapacity(bandwidthClass,
+												 (float)randomNoise(node.nodeStats.getBandwidthLiabilityUsage(), 0.1));
 			break;
 		default:
 			throw new UnsupportedOperationException("Missing response for " + type.name());
@@ -693,18 +712,28 @@ public class Probe implements ByteCounter {
 	}
 
 	private boolean respondTo(Type type) {
-		switch (type){
-		case BANDWIDTH: return respondBandwidth;
-		case BUILD: return respondBuild;
-		case IDENTIFIER: return respondIdentifier;
-		case LINK_LENGTHS: return respondLinkLengths;
-		case LOCATION: return respondLocation;
-		case STORE_SIZE: return respondStoreSize;
+		switch (type) {
+		case BANDWIDTH:
+			return respondBandwidth;
+		case BUILD:
+			return respondBuild;
+		case IDENTIFIER:
+			return respondIdentifier;
+		case LINK_LENGTHS:
+			return respondLinkLengths;
+		case LOCATION:
+			return respondLocation;
+		case STORE_SIZE:
+			return respondStoreSize;
 		case UPTIME_48H:
-		case UPTIME_7D: return respondUptime;
-		case REJECT_STATS: return respondRejectStats;
-		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE: return respondOverallBulkOutputCapacityUsage;
-		default: throw new UnsupportedOperationException("Missing permissions check for " + type.name());
+		case UPTIME_7D:
+			return respondUptime;
+		case REJECT_STATS:
+			return respondRejectStats;
+		case OVERALL_BULK_OUTPUT_CAPACITY_USAGE:
+			return respondOverallBulkOutputCapacityUsage;
+		default:
+			throw new UnsupportedOperationException("Missing permissions check for " + type.name());
 		}
 	}
 
@@ -824,7 +853,7 @@ public class Probe implements ByteCounter {
 				return;
 			}
 			if (logDEBUG) Logger.debug(Probe.class, "Relaying " + message.getSpec().getName() + " back" +
-			                                          " to " + source.userToString());
+										   " to " + source.userToString());
 			try {
 				source.sendAsync(message, null, Probe.this);
 			} catch (NotConnectedException e) {
@@ -891,10 +920,10 @@ public class Probe implements ByteCounter {
 
 		@Override
 		public void onOverallBulkOutputCapacity(
-				byte bandwidthClassForCapacityUsage, float capacityUsage) {
+			byte bandwidthClassForCapacityUsage, float capacityUsage) {
 			send(DMT.createProbeOverallBulkOutputCapacityUsage(uid, bandwidthClassForCapacityUsage, capacityUsage));
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
 }

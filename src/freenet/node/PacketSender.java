@@ -33,9 +33,9 @@ public class PacketSender implements Runnable {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -81,7 +81,7 @@ public class PacketSender implements Runnable {
 	}
 
 	private void schedulePeriodicJob() {
-		
+
 		node.ticker.queueTimedJob(new Runnable() {
 
 			@Override
@@ -90,7 +90,7 @@ public class PacketSender implements Runnable {
 					long now = System.currentTimeMillis();
 					if (logMINOR)
 						Logger.minor(PacketSender.class,
-								"Starting shedulePeriodicJob() at " + now);
+									 "Starting shedulePeriodicJob() at " + now);
 					PeerManager pm = node.peers;
 					pm.maybeLogPeerNodeStatusSummary(now);
 					pm.maybeUpdateOldestNeverConnectedDarknetPeerAge(now);
@@ -100,8 +100,8 @@ public class PacketSender implements Runnable {
 
 					if (logMINOR)
 						Logger.minor(PacketSender.class,
-								"Finished running shedulePeriodicJob() at "
-										+ System.currentTimeMillis());
+									 "Finished running shedulePeriodicJob() at "
+									 + System.currentTimeMillis());
 				} finally {
 					node.ticker.queueTimedJob(this, 1000);
 				}
@@ -114,7 +114,7 @@ public class PacketSender implements Runnable {
 		if(logMINOR) Logger.minor(this, "In PacketSender.run()");
 		freenet.support.Logger.OSThread.logPID(this);
 
-                schedulePeriodicJob();
+		schedulePeriodicJob();
 		/*
 		 * Index of the point in the nodes list at which we sent a packet and then
 		 * ran out of bandwidth. We start the loop from here next time.
@@ -134,24 +134,24 @@ public class PacketSender implements Runnable {
 	/**
 	 * Send loop. Strategy:
 	 * - Each peer can tell us when its data needs to be sent by. This is usually 100ms after it
-	 * is posted. It could vary by message type. Acknowledgements also become valid 100ms after 
+	 * is posted. It could vary by message type. Acknowledgements also become valid 100ms after
 	 * being queued.
 	 * - If any peer's data is overdue, send the data from the most overdue peer.
 	 * - If there are peers with more than a packet's worth of data queued, send the data from the
 	 * peer with the oldest data.
 	 * - If there are peers with overdue ack's, send to the peer whose acks are oldest.
-	 * 
+	 *
 	 * It does not attempt to ensure fairness, it attempts to minimise latency. Fairness is best
 	 * dealt with at a higher level e.g. requests, although some transfers are not part of requests,
 	 * e.g. bulk f2f transfers, so we may need to reconsider this eventually...
 	 */
 	private void realRun() {
 		long now = System.currentTimeMillis();
-                PeerManager pm;
+		PeerManager pm;
 		PeerNode[] nodes;
 
-        pm = node.peers;
-        nodes = pm.myPeers();
+		pm = node.peers;
+		nodes = pm.myPeers();
 
 		long nextActionTime = Long.MAX_VALUE;
 		long oldTempNow = now;
@@ -170,15 +170,15 @@ public class PacketSender implements Runnable {
 			nextActionTime = Math.min(nextActionTime, now + canSendAt);
 			canSendThrottled = false;
 		}
-		
+
 		/** The earliest time at which a peer needs to send a packet, which is before
-		 * now. Throttled if canSendThrottled, otherwise not throttled. 
+		 * now. Throttled if canSendThrottled, otherwise not throttled.
 		 * Note: we only use it to sort the full-packed peers by priority, don't rely on it when setting nextActionTime!*/
 		long lowestUrgentSendTime = Long.MAX_VALUE;
 		/** The peer(s) which lowestUrgentSendTime is referring to */
 		ArrayList<PeerNode> urgentSendPeers = null;
 		/** The earliest time at which a peer needs to send a packet, which is after
-		 * now, where there is a full packet's worth of data to send. 
+		 * now, where there is a full packet's worth of data to send.
 		 * Throttled if canSendThrottled, otherwise not throttled. */
 		long lowestFullPacketSendTime = Long.MAX_VALUE;
 		/** The peer(s) which lowestFullPacketSendTime is referring to */
@@ -194,11 +194,11 @@ public class PacketSender implements Runnable {
 
 		for(PeerNode pn: nodes) {
 			now = System.currentTimeMillis();
-			
+
 			// Basic peer maintenance.
-			
-			// For purposes of detecting not having received anything, which indicates a 
-			// serious connectivity problem, we want to look for *any* packets received, 
+
+			// For purposes of detecting not having received anything, which indicates a
+			// serious connectivity problem, we want to look for *any* packets received,
 			// including auth packets.
 			lastReceivedPacketFromAnyNode =
 				Math.max(pn.lastReceivedPacketTime(), lastReceivedPacketFromAnyNode);
@@ -209,9 +209,9 @@ public class PacketSender implements Runnable {
 			}
 
 			if(pn.isConnected()) {
-				
+
 				boolean shouldThrottle = pn.shouldThrottle();
-				
+
 				pn.checkForLostPackets();
 
 				// Is the node dead?
@@ -242,7 +242,7 @@ public class PacketSender implements Runnable {
 				}
 
 				// The peer is connected.
-				
+
 				if(canSendThrottled || !shouldThrottle) {
 					// We can send to this peer.
 					long sendTime = pn.getNextUrgentTime(now);
@@ -286,7 +286,7 @@ public class PacketSender implements Runnable {
 						}
 					}
 				}
-				
+
 				if(canSendThrottled || !shouldThrottle) {
 					long urgentTime = pn.getNextUrgentTime(now);
 					// Should spam the logs, unless there is a deadlock
@@ -314,21 +314,21 @@ public class PacketSender implements Runnable {
 				if(handshakeTime <= lowestHandshakeTime)
 					handshakePeers.add(pn);
 			}
-			
+
 			long tempNow = System.currentTimeMillis();
 			if((tempNow - oldTempNow) > SECONDS.toMillis(5))
 				Logger.error(this, "tempNow is more than 5 seconds past oldTempNow (" + (tempNow - oldTempNow) + ") in PacketSender working with " + pn.userToString());
 			oldTempNow = tempNow;
 		}
-		
+
 		// We may send a packet, send an ack-only packet, or send a handshake.
-		
+
 		PeerNode toSendPacket = null;
 		PeerNode toSendAckOnly = null;
 		PeerNode toSendHandshake = null;
-		
+
 		long t = Long.MAX_VALUE;
-		
+
 		if(lowestUrgentSendTime <= now) {
 			// We need to send a full packet.
 			toSendPacket = urgentSendPeers.get(localRandom.nextInt(urgentSendPeers.size()));
@@ -341,13 +341,13 @@ public class PacketSender implements Runnable {
 			toSendAckOnly = ackPeers.get(localRandom.nextInt(ackPeers.size()));
 			t = lowestAckTime;
 		}
-		
+
 		if(lowestHandshakeTime <= now && t > lowestHandshakeTime) {
 			toSendHandshake = handshakePeers.get(localRandom.nextInt(handshakePeers.size()));
 			toSendPacket = null;
 			toSendAckOnly = null;
 		}
-		
+
 		if(toSendPacket != null) {
 			try {
 				if(toSendPacket.maybeSendPacket(now, false)) {
@@ -361,30 +361,30 @@ public class PacketSender implements Runnable {
 		} else if(toSendAckOnly != null) {
 			try {
 				if(toSendAckOnly.maybeSendPacket(now, true)) {
-                    // Round-robin over the loop to update nextActionTime appropriately
-                    nextActionTime = now;
+					// Round-robin over the loop to update nextActionTime appropriately
+					nextActionTime = now;
 				}
 			} catch (BlockedTooLongException e) {
 				Logger.error(this, "Waited too long: "+TimeUtil.formatTime(e.delta)+" to allocate a packet number to send to "+toSendAckOnly+" : "+("(new packet format)")+" (version "+toSendAckOnly.getVersionNumber()+") - DISCONNECTING!");
 				toSendAckOnly.forceDisconnect();
 			}
 		}
-		
+
 		/* Estimating of nextActionTime logic:
 		* FullPackets:
 		*  - A full packet available, bandwidth available  -->> now
 		*  - A full packet available for non-throttled peer -->> now
 		*  - A full packet available, no bandwidth -->> wait till bandwidth available
 		*  - No packet -->> don't care, will wake up anyway when one arrives, goto Nothing
-		* UrgentMessages: Only applies when there's enough bandwidth to send a full packet, Includes any urgent acks 
+		* UrgentMessages: Only applies when there's enough bandwidth to send a full packet, Includes any urgent acks
 		*  - There's an urgent message, deadline(urgentMessage) > now -->> deadline(urgentMessage)
 		*  - There's an urgent message, deadline(urgentMessage) <= now -->> now
 		*  - There's an urgent message, but there's not enough bandwidth for a full packet -->> wait till bandwidth available
-		*  - There's no urgent message -->> don't care, goto Nothing 
+		*  - There's no urgent message -->> don't care, goto Nothing
 		* Nothing:
-		*  -->> timeCheckForLostPackets 
+		*  -->> timeCheckForLostPackets
 		*/
-		
+
 		if(toSendHandshake != null) {
 			// Send handshake if necessary
 			long beforeHandshakeTime = System.currentTimeMillis();
@@ -393,7 +393,7 @@ public class PacketSender implements Runnable {
 			if((afterHandshakeTime - beforeHandshakeTime) > SECONDS.toMillis(2))
 				Logger.error(this, "afterHandshakeTime is more than 2 seconds past beforeHandshakeTime (" + (afterHandshakeTime - beforeHandshakeTime) + ") in PacketSender working with " + toSendHandshake.userToString());
 		}
-		
+
 		// All of these take into account whether the data can be sent already.
 		// So we can include them in nextActionTime.
 		nextActionTime = Math.min(nextActionTime, lowestUrgentSendTime);
@@ -403,7 +403,7 @@ public class PacketSender implements Runnable {
 
 		// FIXME: If we send something we will have to go around the loop again.
 		// OPTIMISATION: We could track the second best, and check how many are in the array.
-		
+
 		/* Attempt to connect to old-opennet-peers.
 		 * Constantly send handshake packets, in order to get through a NAT.
 		 * Most JFK(1)'s are less than 300 bytes. 25*300/15 = avg 500B/sec bandwidth cost.
@@ -449,7 +449,7 @@ public class PacketSender implements Runnable {
 			Logger.error(this, "now is more than 10 seconds past oldNow (" + (now - oldNow) + ") in PacketSender");
 
 		long sleepTime = nextActionTime - now;
-		
+
 		// MAX_COALESCING_DELAYms maximum sleep time - same as the maximum coalescing delay
 		sleepTime = Math.min(sleepTime, MAX_COALESCING_DELAY);
 
@@ -468,8 +468,8 @@ public class PacketSender implements Runnable {
 					wait(sleepTime);
 				}
 			} catch(InterruptedException e) {
-			// Ignore, just wake up. Probably we got interrupt()ed
-			// because a new packet came in.
+				// Ignore, just wake up. Probably we got interrupt()ed
+				// because a new packet came in.
 			}
 		} else {
 			if(logDEBUG)

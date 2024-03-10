@@ -30,7 +30,7 @@ public class OggBitstreamFilter {
 	 * @throws IOException
 	 */
 	OggPage parse(OggPage page) throws IOException {
-		if(!(page.getPageNumber() == lastPageSequenceNumber+1 || page.getPageNumber() == lastPageSequenceNumber)){
+		if(!(page.getPageNumber() == lastPageSequenceNumber+1 || page.getPageNumber() == lastPageSequenceNumber)) {
 			isValidStream = false;
 			throw new DataFilterException(l10n("MalformedTitle"), l10n("MalformedTitle"), l10n("MalformedMessage"));
 		}

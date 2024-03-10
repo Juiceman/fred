@@ -20,7 +20,7 @@ public class SendURIMessage extends SendPeerMessage {
 			uri = new FreenetURI(fs.get("URI"));
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(),
-					identifier, false);
+											  identifier, false);
 		}
 	}
 
@@ -42,8 +42,7 @@ public class SendURIMessage extends SendPeerMessage {
 			if(dataLength() > 0) {
 				byte[] description = BucketTools.toByteArray(bucket);
 				return pn.sendDownloadFeed(uri, new String(description, StandardCharsets.UTF_8));
-			}
-			else
+			} else
 				return pn.sendDownloadFeed(uri, null);
 		} catch (IOException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "", null, false);

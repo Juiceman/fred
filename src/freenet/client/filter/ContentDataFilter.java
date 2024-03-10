@@ -37,16 +37,16 @@ public interface ContentDataFilter {
 	 * caught and converted to a DataFilterException.
 	 */
 	void readFilter(
-			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException;
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException;
 
 	/**
 	 * Compatibility for readFilter without schemeHostAndPort. Please use readFilter with schemeHostAndPort.
 	 */
 	@Deprecated
 	default void readFilter(
-			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		FilterCallback cb) throws DataFilterException, IOException {
 		readFilter(input, output, charset, otherParams, null, cb);
 	}
 

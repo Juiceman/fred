@@ -8,23 +8,23 @@ import freenet.support.TimeUtil;
 
 /**
  * Tag for a request.
- * 
+ *
  * @author Matthew Toseland <toad@amphibian.dyndns.org> (0xE43DA450)
  */
 public class RequestTag extends UIDTag {
-	
-    private static volatile boolean logMINOR;
-    
-    static {
-    	Logger.registerClass(RequestTag.class);
-    }
-	
+
+	private static volatile boolean logMINOR;
+
+	static {
+		Logger.registerClass(RequestTag.class);
+	}
+
 	enum START {
 		ASYNC_GET,
 		LOCAL,
 		REMOTE
 	}
-	
+
 	final START start;
 	final boolean isSSK;
 	private boolean servedFromDatastore;
@@ -63,7 +63,7 @@ public class RequestTag extends UIDTag {
 			sent = true;
 		sender = new WeakReference<RequestSender>(rs);
 	}
-	
+
 	@Override
 	protected synchronized boolean mustUnlock() {
 		if(sent && requestSenderFinishedCode == RequestSender.NOT_FINISHED) return false;
@@ -174,7 +174,7 @@ public class RequestTag extends UIDTag {
 		if(forAccept && (sourceRestarted || unlockedHandler)) return 0;
 		return ((!isLocal()) || ignoreLocalVsRemote) ? 1 : 0;
 	}
-	
+
 	private boolean completedDownstreamTransfers;
 
 	public synchronized void completedDownstreamTransfers() {
@@ -219,7 +219,7 @@ public class RequestTag extends UIDTag {
 		}
 		innerUnlock(noRecordUnlock);
 	}
-	
+
 	@Override
 	public synchronized boolean currentlyRoutingTo(PeerNode peer) {
 		if(waitingForOpennet != null && waitingForOpennet == peer.myRef)
@@ -258,5 +258,5 @@ public class RequestTag extends UIDTag {
 		}
 		tracker.removeTransferringSender(key, requestSender);
 	}
-	
+
 }

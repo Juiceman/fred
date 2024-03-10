@@ -20,8 +20,8 @@ public class DownloadFeedUserAlert extends AbstractUserAlert {
 	private final long received;
 	private String sourceNodeName;
 
-	public DownloadFeedUserAlert(DarknetPeerNode sourcePeerNode, 
-			String description, int fileNumber, FreenetURI uri, long composed, long sent, long received) {
+	public DownloadFeedUserAlert(DarknetPeerNode sourcePeerNode,
+								 String description, int fileNumber, FreenetURI uri, long composed, long sent, long received) {
 		super(true, null, null, null, null, UserAlert.MINOR, true, null, true, null);
 		this.description = description;
 		this.uri = uri;
@@ -94,7 +94,7 @@ public class DownloadFeedUserAlert extends AbstractUserAlert {
 	@Override
 	public FCPMessage getFCPMessage() {
 		return new URIFeedMessage(getTitle(), getShortText(), getText(), getPriorityClass(), getUpdatedTime(),
-				sourceNodeName, composed, sent, received, uri, description);
+								  sourceNodeName, composed, sent, received, uri, description);
 	}
 
 	@Override

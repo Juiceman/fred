@@ -2,8 +2,8 @@ package freenet.node;
 
 public class WaitingMultiMessageCallback extends MultiMessageCallback {
 
-	
-	
+
+
 	@Override
 	synchronized void finish(boolean success) {
 		notifyAll();

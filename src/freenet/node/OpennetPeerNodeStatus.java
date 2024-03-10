@@ -8,5 +8,5 @@ public class OpennetPeerNodeStatus extends PeerNodeStatus {
 	}
 
 	public final long timeLastSuccess;
-	
+
 }

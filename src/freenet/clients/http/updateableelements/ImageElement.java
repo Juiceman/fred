@@ -48,17 +48,17 @@ public class ImageElement extends BaseUpdateableElement {
 
 	private boolean					wasError		= false;
 
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx, boolean pushed){
+	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx, boolean pushed) {
 		return createImageElement(tracker,key,maxSize,ctx,-1,-1, null, pushed);
 	}
-	
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx,int width,int height, String name, boolean pushed){
+
+	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx,int width,int height, String name, boolean pushed) {
 		Map<String,String> attributes=new HashMap<String, String>();
 		attributes.put("src", key.toString());
-		if(width!=-1){
+		if(width!=-1) {
 			attributes.put("width", String.valueOf(width));
 		}
-		if(height!=-1){
+		if(height!=-1) {
 			attributes.put("height", String.valueOf(height));
 		}
 		if(name != null) {
@@ -67,7 +67,7 @@ public class ImageElement extends BaseUpdateableElement {
 		}
 		return new ImageElement(tracker,key,maxSize,ctx,new ParsedTag("img", attributes), pushed);
 	}
-	
+
 	public ImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx, ParsedTag originalImg, boolean pushed) {
 		super("span", ctx);
 		randomNumber = tracker.makeRandomElementID();

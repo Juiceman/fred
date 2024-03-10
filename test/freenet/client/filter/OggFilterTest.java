@@ -34,18 +34,18 @@ public class OggFilterTest {
 	@Test
 	public void testValidSubPageStripped() throws IOException {
 		try (
-			DataInputStream input = resourceToDataInputStream("./ogg/contains_subpages.ogg");
-			ByteArrayOutputStream output = new ByteArrayOutputStream()
-		) {
+				DataInputStream input = resourceToDataInputStream("./ogg/contains_subpages.ogg");
+				ByteArrayOutputStream output = new ByteArrayOutputStream()
+			) {
 			assertThrows(
 				DataFilterException.class,
 				() -> filter.readFilter(input, output, null, null, null, null)
 			);
-			assertArrayEquals(new byte[]{}, output.toByteArray());
+			assertArrayEquals(new byte[] {}, output.toByteArray());
 		}
 	}
 
-    /** the purpose of this test is to create the testoutputFile so you can check it with a video player. */
+	/** the purpose of this test is to create the testoutputFile so you can check it with a video player. */
 	@Test
 	public void testFilterFfmpegEncodedVideoSegment() throws IOException {
 		ByteArrayOutputStream expectedData = new ByteArrayOutputStream();
@@ -62,8 +62,8 @@ public class OggFilterTest {
 
 	private void writeToTestOutputFile(ByteArrayOutputStream output) throws IOException {
 		URL resource = getClass().getResource(
-			"./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--filtered-testoutput.ogv"
-		);
+						   "./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--filtered-testoutput.ogv"
+					   );
 		if (resource == null) {
 			throw new RuntimeException("Test file is not found");
 		}

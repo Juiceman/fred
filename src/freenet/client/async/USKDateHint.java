@@ -12,7 +12,7 @@ import freenet.keys.USK;
 
 /** Utility class for date-based edition hints */
 public class USKDateHint {
-	
+
 	public enum Type {
 		YEAR,
 		MONTH,
@@ -34,17 +34,17 @@ public class USKDateHint {
 				return false;
 		}
 	}
-	
+
 	private GregorianCalendar cal;
 
 	private USKDateHint() {
 		cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.US);
 	}
-	
+
 	public static USKDateHint now() {
 		return new USKDateHint();
 	}
-	
+
 	public String get(Type t) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(cal.get(Calendar.YEAR));
@@ -61,14 +61,14 @@ public class USKDateHint {
 		sb.append(cal.get(Calendar.DAY_OF_MONTH));
 		return sb.toString();
 	}
-	
+
 	/** Return the data to insert to each hint slot. */
 	public String getData(long edition) {
 		return "HINT\n"+Long.toString(edition)+"\n"+get(Type.DAY)+"\n";
 	}
-	
+
 	static final String PREFIX = "-DATEHINT-";
-	
+
 	/** Return the URL's to insert hint data to */
 	public FreenetURI[] getInsertURIs(InsertableUSK key) {
 		FreenetURI[] uris = new FreenetURI[Type.values.length];

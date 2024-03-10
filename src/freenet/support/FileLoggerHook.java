@@ -36,33 +36,33 @@ import freenet.support.io.FileUtil;
 
 /**
  * Converted the old StandardLogger to Ian's loggerhook interface.
- * 
+ *
  * @author oskar
  */
 public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	/** Verbosity types */
 	public static final int DATE = 1,
-		CLASS = 2,
-		HASHCODE = 3,
-		THREAD = 4,
-		PRIORITY = 5,
-		MESSAGE = 6,
-		UNAME = 7;
+							CLASS = 2,
+							HASHCODE = 3,
+							THREAD = 4,
+							PRIORITY = 5,
+							MESSAGE = 6,
+							UNAME = 7;
 
 	private volatile boolean closed = false;
 	private boolean closedFinished = false;
 
 	protected int INTERVAL = Calendar.MINUTE;
 	protected int INTERVAL_MULTIPLIER = 5;
-	
+
 	private static final Charset ENCODING = StandardCharsets.UTF_8;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -87,7 +87,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 			// Ignored.
 		}
 	}
-	
+
 	private DateFormat df;
 	private int[] fmt;
 	private String[] str;
@@ -101,7 +101,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	/* Base filename for rotating logs */
 	protected String baseFilename = null;
-	
+
 	protected File latestFile;
 	protected File previousFile;
 
@@ -117,12 +117,12 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	/**
 	 * Something weird happens when the disk gets full, also we don't want to
 	 * block So run the actual write on another thread
-	 * 
+	 *
 	 * Unfortunately, we can't use ConcurrentBlockingQueue because we need to dump stuff when the queue gets
 	 * too big.
-	 * 
-	 * FIXME PERFORMANCE: Using an ArrayBlockingQueue avoids some unnecessary memory allocations, but it 
-	 * means we have to take two locks. 
+	 *
+	 * FIXME PERFORMANCE: Using an ArrayBlockingQueue avoids some unnecessary memory allocations, but it
+	 * means we have to take two locks.
 	 * Seriously consider reverting 88268b99856919df0d42c2787d9ea3674a9f6f0d..e359b4005ef728a159fdee988c483de8ce8f3f6b
 	 * to go back to one lock and a LinkedList.
 	 */
@@ -145,7 +145,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		final long end; // exclusive
 		final long size;
 	}
-	
+
 	public void setMaxListBytes(long len) {
 		synchronized(list) {
 			MAX_LIST_BYTES = len;
@@ -155,7 +155,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	public void setInterval(String intervalName) throws IntervalParseException {
 		StringBuilder sb = new StringBuilder(intervalName.length());
-		for(int i=0;i<intervalName.length();i++) {
+		for(int i=0; i<intervalName.length(); i++) {
 			char c = intervalName.charAt(i);
 			if(!Character.isDigit(c)) break;
 			sb.append(c);
@@ -196,7 +196,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		}
 
 	}
-	
+
 	/**
 	 * The extra parameter int digit is to be used for creating a logfile name
 	 * when a log exists already with the same date.
@@ -206,7 +206,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	 * @param compressed
 	 * @return
 	 */
-	protected String getHourLogName(Calendar c, int digit, boolean compressed){
+	protected String getHourLogName(Calendar c, int digit, boolean compressed) {
 		StringBuilder buf = new StringBuilder(50);
 		buf.append(baseFilename).append('-');
 		buf.append(Version.buildNumber());
@@ -238,7 +238,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		buf.append(s);
 		return buf;
 	}
-	
+
 	// Unless we are writing flat out, everything will hit disk within this period.
 	private long flushTime = 1000; // Default is 1 second. Will be set by setMaxBacklogNotBusy().
 
@@ -262,20 +262,20 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				previousFile = new File(baseFilename+"-previous.log");
 				gc = new GregorianCalendar();
 				switch (INTERVAL) {
-					case Calendar.YEAR :
-						gc.set(Calendar.MONTH, 0);
-					case Calendar.MONTH :
-						gc.set(Calendar.DAY_OF_MONTH, 0);
-					case Calendar.WEEK_OF_YEAR :
-						if (INTERVAL == Calendar.WEEK_OF_YEAR)
-							gc.set(Calendar.DAY_OF_WEEK, 0);
-					case Calendar.DAY_OF_MONTH :
-						gc.set(Calendar.HOUR, 0);
-					case Calendar.HOUR :
-						gc.set(Calendar.MINUTE, 0);
-					case Calendar.MINUTE :
-						gc.set(Calendar.SECOND, 0);
-						gc.set(Calendar.MILLISECOND, 0);
+				case Calendar.YEAR :
+					gc.set(Calendar.MONTH, 0);
+				case Calendar.MONTH :
+					gc.set(Calendar.DAY_OF_MONTH, 0);
+				case Calendar.WEEK_OF_YEAR :
+					if (INTERVAL == Calendar.WEEK_OF_YEAR)
+						gc.set(Calendar.DAY_OF_WEEK, 0);
+				case Calendar.DAY_OF_MONTH :
+					gc.set(Calendar.HOUR, 0);
+				case Calendar.HOUR :
+					gc.set(Calendar.MINUTE, 0);
+				case Calendar.MINUTE :
+					gc.set(Calendar.SECOND, 0);
+					gc.set(Calendar.MILLISECOND, 0);
 				}
 				if(INTERVAL_MULTIPLIER > 1) {
 					int x = gc.get(INTERVAL);
@@ -294,8 +294,8 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				}
 				System.err.println("Created log files");
 				startTime = gc.getTimeInMillis();
-		    	if(logMINOR)
-		    		Logger.minor(this, "Start time: "+gc+" -> "+startTime);
+				if(logMINOR)
+					Logger.minor(this, "Start time: "+gc+" -> "+startTime);
 				lastTime = startTime;
 				gc.add(INTERVAL, INTERVAL_MULTIPLIER);
 				nextHour = gc.getTimeInMillis();
@@ -311,7 +311,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 					if (baseFilename != null) {
 						if ((thisTime > nextHour) || switchedBaseFilename) {
 							currentFilename = rotateLog(currentFilename, lastTime, nextHour, gc);
-							
+
 							gc.add(INTERVAL, INTERVAL_MULTIPLIER);
 							lastTime = nextHour;
 							nextHour = gc.getTimeInMillis();
@@ -378,10 +378,10 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 						}
 					}
 					if(timeoutFlush || died) {
-						// Flush to disk 
+						// Flush to disk
 						myWrite(logStream, null);
-				        if(altLogStream != null)
-				        	myWrite(altLogStream, null);
+						if(altLogStream != null)
+							myWrite(altLogStream, null);
 					}
 					if(died) {
 						try {
@@ -404,13 +404,13 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 					}
 					if(o == null) continue;
 					myWrite(logStream,  o);
-			        if(altLogStream != null)
-			        	myWrite(altLogStream, o);
+					if(altLogStream != null)
+						myWrite(altLogStream, o);
 				} catch (OutOfMemoryError e) {
 					System.err.println(e.getClass());
 					System.err.println(e.getMessage());
 					e.printStackTrace();
-				    // FIXME
+					// FIXME
 					//freenet.node.Main.dumpInterestingObjects();
 				} catch (Throwable t) {
 					System.err.println("FileLoggerHook log writer caught " + t);
@@ -420,44 +420,44 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		}
 
 		private File rotateLog(File currentFilename, long lastTime, long nextHour, GregorianCalendar gc) {
-	        // Switch logs
-	        try {
-	        	logStream.flush();
-	        	if(altLogStream != null) altLogStream.flush();
-	        } catch (IOException e) {
-	        	System.err.println(
-	        		"Flushing on change caught " + e);
-	        }
-	        try {
-	        	logStream.close();
-	        } catch (IOException e) {
-	        	System.err.println(
-	        			"Closing on change caught " + e);
-	        }
-	        long length = currentFilename.length();
-	        OldLogFile olf = new OldLogFile(currentFilename, lastTime, nextHour, length);
-	        synchronized(logFiles) {
-	        	logFiles.addLast(olf);
-	        }
-	        oldLogFilesDiskSpaceUsage += length;
-	        trimOldLogFiles();
-	        // Rotate primary log stream
-	        currentFilename = new File(getHourLogName(gc, -1, true));
-	        logStream = openNewLogFile(currentFilename, true);
-	        if(latestFile != null) {
-	        	try {
-	        		altLogStream.close();
-	        	} catch (IOException e) {
-	        		System.err.println(
-	        				"Closing alt on change caught " + e);
-	        	}
-	        	if(previousFile != null && latestFile.exists())
-	        		FileUtil.renameTo(latestFile, previousFile);
-	        	latestFile.delete();
-	        	altLogStream = openNewLogFile(latestFile, false);
-	        }
-	        return currentFilename;
-        }
+			// Switch logs
+			try {
+				logStream.flush();
+				if(altLogStream != null) altLogStream.flush();
+			} catch (IOException e) {
+				System.err.println(
+					"Flushing on change caught " + e);
+			}
+			try {
+				logStream.close();
+			} catch (IOException e) {
+				System.err.println(
+					"Closing on change caught " + e);
+			}
+			long length = currentFilename.length();
+			OldLogFile olf = new OldLogFile(currentFilename, lastTime, nextHour, length);
+			synchronized(logFiles) {
+				logFiles.addLast(olf);
+			}
+			oldLogFilesDiskSpaceUsage += length;
+			trimOldLogFiles();
+			// Rotate primary log stream
+			currentFilename = new File(getHourLogName(gc, -1, true));
+			logStream = openNewLogFile(currentFilename, true);
+			if(latestFile != null) {
+				try {
+					altLogStream.close();
+				} catch (IOException e) {
+					System.err.println(
+						"Closing alt on change caught " + e);
+				}
+				if(previousFile != null && latestFile.exists())
+					FileUtil.renameTo(latestFile, previousFile);
+				latestFile.delete();
+				altLogStream = openNewLogFile(latestFile, false);
+			}
+			return currentFilename;
+		}
 
 		// Check every minute
 		static final int maxSleepTime = 60 * 1000;
@@ -477,9 +477,9 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				} catch (IOException e) {
 					System.err.println(
 						"Exception writing to log: "
-							+ e
-							+ ", sleeping "
-							+ sleepTime);
+						+ e
+						+ ", sleeping "
+						+ sleepTime);
 					thrown = true;
 				}
 				if (thrown) {
@@ -526,7 +526,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 			}
 		}
 	}
-	
+
 	private static final byte[] BOM = "\uFEFF".getBytes(ENCODING);
 
 	protected int runningCompressors = 0;
@@ -537,7 +537,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	/**
 	 * Create a Logger to append to the given file. If the file does not exist
 	 * it will be created.
-	 * 
+	 *
 	 * @param filename
 	 *            the name of the file to log to.
 	 * @param fmt
@@ -551,7 +551,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	 *            not, redirect them to the log file
 	 * @exception IOException
 	 *                if the file couldn't be opened for append.
-	 * @throws IntervalParseException 
+	 * @throws IntervalParseException
 	 */
 	public FileLoggerHook(
 		String filename,
@@ -562,7 +562,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		boolean assumeWorking,
 		boolean logOverwrite,
 		long maxOldLogfilesDiskUsage, int maxListSize)
-		throws IOException, IntervalParseException {
+	throws IOException, IntervalParseException {
 		this(
 			false,
 			filename,
@@ -575,9 +575,9 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 			maxOldLogfilesDiskUsage,
 			maxListSize);
 	}
-	
+
 	private final Object trimOldLogFilesLock = new Object();
-	
+
 	public void trimOldLogFiles() {
 		synchronized(trimOldLogFilesLock) {
 			while(oldLogFilesDiskSpaceUsage > maxOldLogfilesDiskUsage) {
@@ -591,9 +591,9 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				}
 				olf.filename.delete();
 				oldLogFilesDiskSpaceUsage -= olf.size;
-		    	if(logMINOR)
-		    		Logger.minor(this, "Deleting "+olf.filename+" - saving "+olf.size+
-						" bytes, disk usage now: "+oldLogFilesDiskSpaceUsage+" of "+maxOldLogfilesDiskUsage);
+				if(logMINOR)
+					Logger.minor(this, "Deleting "+olf.filename+" - saving "+olf.size+
+								 " bytes, disk usage now: "+oldLogFilesDiskSpaceUsage+" of "+maxOldLogfilesDiskUsage);
 			}
 		}
 	}
@@ -619,8 +619,8 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		java.util.Arrays.sort(files);
 		long lastStartTime = -1;
 		File oldFile = null;
-        if(latestFile.exists())
-        	FileUtil.renameTo(latestFile, previousFile);
+		if(latestFile.exists())
+			FileUtil.renameTo(latestFile, previousFile);
 
 		for(File f: files) {
 			String name = f.getName();
@@ -644,7 +644,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 					name = name.substring(1);
 				String[] tokens = name.split("-");
 				int[] nums = new int[tokens.length];
-				for(int j=0;j<tokens.length;j++) {
+				for(int j=0; j<tokens.length; j++) {
 					try {
 						nums[j] = Integer.parseInt(tokens[j]);
 					} catch (NumberFormatException e) {
@@ -688,7 +688,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		//add a number to the end of the file that already exists
 		if(currentFilename != null && currentFilename.exists()) {
 			System.out.println("Old log file exists for this time period: "+currentFilename);
-			for(int a = 1;; a++){
+			for(int a = 1;; a++) {
 				numericSameDateFilename = new File(getHourLogName(gc, a, true));
 				if(numericSameDateFilename == null || !numericSameDateFilename.exists()) {
 					if(numericSameDateFilename != null) {
@@ -713,26 +713,26 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	}
 
 	public FileLoggerHook(
-			String filename,
-			String fmt,
-			String dfmt,
-			String threshold,
-			String logRotateInterval,
-			boolean assumeWorking,
-			boolean logOverwrite,
-			long maxOldLogFilesDiskUsage,
-			int maxListSize)
-			throws IOException, InvalidThresholdException, IntervalParseException {
-			this(filename,
-				fmt,
-				dfmt,
-				logRotateInterval,
-				LogLevel.valueOf(threshold.toUpperCase()),
-				assumeWorking,
-				logOverwrite,
-				maxOldLogFilesDiskUsage,
-				maxListSize);
-		}
+		String filename,
+		String fmt,
+		String dfmt,
+		String threshold,
+		String logRotateInterval,
+		boolean assumeWorking,
+		boolean logOverwrite,
+		long maxOldLogFilesDiskUsage,
+		int maxListSize)
+	throws IOException, InvalidThresholdException, IntervalParseException {
+		this(filename,
+			 fmt,
+			 dfmt,
+			 logRotateInterval,
+			 LogLevel.valueOf(threshold.toUpperCase()),
+			 assumeWorking,
+			 logOverwrite,
+			 maxOldLogFilesDiskUsage,
+			 maxListSize);
+	}
 
 	private void checkStdStreams() {
 		// Redirect System.err and System.out to the Logger Printstream
@@ -755,19 +755,19 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		this(os, fmt, dfmt, threshold, true);
 		logStream = os;
 	}
-	
+
 	public FileLoggerHook(
-			OutputStream os,
-			String fmt,
-			String dfmt,
-			String threshold) throws InvalidThresholdException, IntervalParseException {
-			this(os, fmt, dfmt, LogLevel.valueOf(threshold.toUpperCase()), true);
-			logStream = os;
-		}
+		OutputStream os,
+		String fmt,
+		String dfmt,
+		String threshold) throws InvalidThresholdException, IntervalParseException {
+		this(os, fmt, dfmt, LogLevel.valueOf(threshold.toUpperCase()), true);
+		logStream = os;
+	}
 
 	/**
 	 * Create a Logger to send log output to the given PrintStream.
-	 * 
+	 *
 	 * @param stream
 	 *            the PrintStream to send log output to.
 	 * @param fmt
@@ -776,7 +776,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	 *            date format string
 	 * @param threshold
 	 *            Lowest logged priority
-	 * @throws IntervalParseException 
+	 * @throws IntervalParseException
 	 */
 	public FileLoggerHook(
 		OutputStream stream,
@@ -818,7 +818,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		SemiOrderedShutdownHook.get().addLateJob(ct);
 		wt.start();
 	}
-	
+
 	public FileLoggerHook(
 		boolean rotate,
 		String baseFilename,
@@ -829,7 +829,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		boolean assumeWorking,
 		boolean logOverwrite,
 		long maxOldLogfilesDiskUsage, int maxListSize)
-		throws IOException, IntervalParseException {
+	throws IOException, IntervalParseException {
 		this(fmt, dfmt, threshold, logRotateInterval, logOverwrite, maxOldLogfilesDiskUsage, maxListSize);
 		//System.err.println("Creating FileLoggerHook with threshold
 		// "+threshold);
@@ -841,17 +841,17 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 			logStream = new BufferedOutputStream(new FileOutputStream(baseFilename, !logOverwrite), 65536);
 		}
 	}
-	
+
 	public FileLoggerHook(
-			boolean rotate,
-			String baseFilename,
-			String fmt,
-			String dfmt,
-			String threshold,
-			String logRotateInterval,
-			boolean assumeWorking,
-			boolean logOverwrite,
-			long maxOldLogFilesDiskUsage, int maxListSize) throws IOException, InvalidThresholdException, IntervalParseException{
+		boolean rotate,
+		String baseFilename,
+		String fmt,
+		String dfmt,
+		String threshold,
+		String logRotateInterval,
+		boolean assumeWorking,
+		boolean logOverwrite,
+		long maxOldLogFilesDiskUsage, int maxListSize) throws IOException, InvalidThresholdException, IntervalParseException {
 		this(rotate,baseFilename,fmt,dfmt,logRotateInterval,LogLevel.valueOf(threshold.toUpperCase()),assumeWorking,logOverwrite,maxOldLogFilesDiskUsage,maxListSize);
 	}
 
@@ -860,10 +860,10 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		this.maxOldLogfilesDiskUsage = maxOldLogfilesDiskUsage;
 		this.logOverwrite = overwrite;
 		setInterval(logRotateInterval);
-		
+
 		MAX_LIST_SIZE = maxListSize;
 		list = new ArrayBlockingQueue<byte[]>(MAX_LIST_SIZE);
-		
+
 		setDateFormat(dfmt);
 		setLogFormat(fmt);
 	}
@@ -931,53 +931,53 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 		if (closed)
 			return;
-		
+
 		StringBuilder sb = new StringBuilder( e == null ? 512 : 1024 );
 		int sctr = 0;
 
 		for (int f: fmt) {
 			switch (f) {
-				case 0 :
-					sb.append(str[sctr++]);
-					break;
-				case DATE :
-					long now = System.currentTimeMillis();
-					synchronized (this) {
-						myDate.setTime(now);
-						sb.append(df.format(myDate));
-					}
-					break;
-				case CLASS :
-					sb.append(c == null ? "<none>" : c.getName());
-					break;
-				case HASHCODE :
-					sb.append(
-						o == null
-							? "<none>"
-							: Integer.toHexString(o.hashCode()));
-					break;
-				case THREAD :
-					sb.append(Thread.currentThread().getName());
-					break;
-				case PRIORITY :
-					sb.append(priority.name());
-					break;
-				case MESSAGE :
-					sb.append(msg);
-					break;
-				case UNAME :
-					sb.append(uname);
-					break;
+			case 0 :
+				sb.append(str[sctr++]);
+				break;
+			case DATE :
+				long now = System.currentTimeMillis();
+				synchronized (this) {
+					myDate.setTime(now);
+					sb.append(df.format(myDate));
+				}
+				break;
+			case CLASS :
+				sb.append(c == null ? "<none>" : c.getName());
+				break;
+			case HASHCODE :
+				sb.append(
+					o == null
+					? "<none>"
+					: Integer.toHexString(o.hashCode()));
+				break;
+			case THREAD :
+				sb.append(Thread.currentThread().getName());
+				break;
+			case PRIORITY :
+				sb.append(priority.name());
+				break;
+			case MESSAGE :
+				sb.append(msg);
+				break;
+			case UNAME :
+				sb.append(uname);
+				break;
 			}
 		}
 		sb.append('\n');
 
 		// Write stacktrace if available
-		for(int j=0;j<20 && e != null;j++) {
+		for(int j=0; j<20 && e != null; j++) {
 			sb.append(e.toString());
-			
+
 			StackTraceElement[] trace = e.getStackTrace();
-			
+
 			if(trace == null)
 				sb.append("(null)\n");
 			else if(trace.length == 0)
@@ -990,7 +990,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 					sb.append('\n');
 				}
 			}
-			
+
 			Throwable cause = e.getCause();
 			if(cause != e) e = cause;
 			else break;
@@ -1008,7 +1008,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	/** Memory allocation overhead (estimated through experimentation with bsh) */
 	private static final int LINE_OVERHEAD = 60;
-	
+
 	public void logString(byte[] b) throws UnsupportedEncodingException {
 		synchronized (list) {
 			int sz = list.size();
@@ -1019,10 +1019,10 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				if(ss != null) listBytes -= ss.length + LINE_OVERHEAD;
 				String err =
 					"GRRR: ERROR: Logging too fast, chopped "
-						+ 2
-						+ " entries, "
-						+ listBytes
-						+ " bytes in memory\n";
+					+ 2
+					+ " entries, "
+					+ listBytes
+					+ " bytes in memory\n";
 				byte[] buf = err.getBytes(ENCODING);
 				if(list.offer(buf))
 					listBytes += (buf.length + LINE_OVERHEAD);
@@ -1033,7 +1033,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 			int x = 0;
 			if (listBytes > MAX_LIST_BYTES) {
 				while ((list.size() > (MAX_LIST_SIZE * 0.9F))
-					|| (listBytes > (MAX_LIST_BYTES * 0.9F))) {
+						|| (listBytes > (MAX_LIST_BYTES * 0.9F))) {
 					byte[] ss;
 					ss = list.poll();
 					listBytes -= (ss.length + LINE_OVERHEAD);
@@ -1041,10 +1041,10 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				}
 				String err =
 					"GRRR: ERROR: Logging too fast, chopped "
-						+ x
-						+ " entries, "
-						+ listBytes
-						+ " bytes in memory\n";
+					+ x
+					+ " entries, "
+					+ listBytes
+					+ " bytes in memory\n";
 				byte[] buf = err.getBytes(ENCODING);
 				if(!list.offer(buf)) {
 					byte[] ss = list.poll();
@@ -1067,22 +1067,22 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	public static int numberOf(char c) {
 		switch (c) {
-			case 'd' :
-				return DATE;
-			case 'c' :
-				return CLASS;
-			case 'h' :
-				return HASHCODE;
-			case 't' :
-				return THREAD;
-			case 'p' :
-				return PRIORITY;
-			case 'm' :
-				return MESSAGE;
-			case 'u' :
-				return UNAME;
-			default :
-				return 0;
+		case 'd' :
+			return DATE;
+		case 'c' :
+			return CLASS;
+		case 'h' :
+			return HASHCODE;
+		case 't' :
+			return THREAD;
+		case 'p' :
+			return PRIORITY;
+		case 'm' :
+			return MESSAGE;
+		case 'u' :
+			return UNAME;
+		default :
+			return 0;
 		}
 	}
 
@@ -1113,7 +1113,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 
 	/**
 	 * Print a human- and script- readable list of available log files.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void listAvailableLogs(OutputStreamWriter writer) throws IOException {
 		OldLogFile[] oldLogFiles;
@@ -1131,8 +1131,8 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 		OldLogFile toReturn = null;
 		synchronized(logFiles) {
 			for(OldLogFile olf : logFiles) {
-		    	if(logMINOR)
-		    		Logger.minor(this, "Checking "+time+" against "+olf.filename+" : start="+olf.start+", end="+olf.end);
+				if(logMINOR)
+					Logger.minor(this, "Checking "+time+" against "+olf.filename+" : start="+olf.start+", end="+olf.end);
 				if((time >= olf.start) && (time < olf.end)) {
 					toReturn = olf;
 					if(logMINOR) Logger.minor(this, "Found "+olf);
@@ -1182,7 +1182,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 	}
 
 	private boolean switchedBaseFilename;
-	
+
 	public void switchBaseFilename(String filename) {
 		synchronized(this) {
 			this.baseFilename = filename;
@@ -1218,7 +1218,7 @@ public class FileLoggerHook extends LoggerHook implements Closeable {
 				oldLogFilesDiskSpaceUsage -= olf.size;
 				if(logMINOR)
 					Logger.minor(this, "Deleting "+olf.filename+" - saving "+olf.size+
-							" bytes, disk usage now: "+oldLogFilesDiskSpaceUsage+" of "+maxOldLogfilesDiskUsage);
+								 " bytes, disk usage now: "+oldLogFilesDiskSpaceUsage+" of "+maxOldLogfilesDiskUsage);
 			}
 		}
 	}

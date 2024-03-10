@@ -29,7 +29,7 @@ public class PushDataManager {
 
 	/** Stores whether a keepalive was received for a request since the Cleaner last run */
 	private Map<String, Boolean>						isKeepaliveReceived		= new HashMap<String, Boolean>();
-	
+
 	private Map<String, Boolean>						isFirstKeepaliveReceived		= new HashMap<String, Boolean>();
 
 	/** The Cleaner that runs periodically and cleanes the failing requests */
@@ -47,7 +47,7 @@ public class PushDataManager {
 
 	/**
 	 * An element is updated and needs to be pushed to all requests.
-	 * 
+	 *
 	 * @param id
 	 *            - The id of the element that changed
 	 */
@@ -56,33 +56,33 @@ public class PushDataManager {
 			Logger.minor(this, "Element updated id:" + id);
 		}
 		boolean needsUpdate = false;
-		if(elements.containsKey(id)==false){
-			if(logMINOR){
+		if(elements.containsKey(id)==false) {
+			if(logMINOR) {
 				Logger.minor(this, "Element is updating, but not present on elements! elements:"+elements+" pages:"+pages+" awaitingNotifications:"+awaitingNotifications);
 			}
 		}
 		if (elements.containsKey(id)) for (String reqId : elements.get(id)) {
-			if(logMINOR){
-				Logger.minor(this, "Element is present on page:"+reqId+". Adding an UpdateEvent for all notification list.");
-			}
-			for(Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
-//			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
-				List<UpdateEvent> notificationList = entry.getValue();
-				UpdateEvent updateEvent = new UpdateEvent(reqId, id);
-				if (notificationList.contains(updateEvent) == false) {
-					notificationList.add(updateEvent);
-					if (logMINOR) {
-						Logger.minor(this, "Notification("+updateEvent+") added to a notification list for "+entry.getKey());
-					}
-				} else {
-					if (logMINOR)
-						Logger.minor(this, "Not notifying "+entry.getKey()+" because already on list");
+				if(logMINOR) {
+					Logger.minor(this, "Element is present on page:"+reqId+". Adding an UpdateEvent for all notification list.");
 				}
+				for(Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
+//			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
+					List<UpdateEvent> notificationList = entry.getValue();
+					UpdateEvent updateEvent = new UpdateEvent(reqId, id);
+					if (notificationList.contains(updateEvent) == false) {
+						notificationList.add(updateEvent);
+						if (logMINOR) {
+							Logger.minor(this, "Notification("+updateEvent+") added to a notification list for "+entry.getKey());
+						}
+					} else {
+						if (logMINOR)
+							Logger.minor(this, "Not notifying "+entry.getKey()+" because already on list");
+					}
+				}
+				needsUpdate = true;
 			}
-			needsUpdate = true;
-		}
 		if (needsUpdate) {
-			if(logMINOR){
+			if(logMINOR) {
 				Logger.minor(this, "Waking up notification polls");
 			}
 			notifyAll();
@@ -91,14 +91,14 @@ public class PushDataManager {
 
 	/**
 	 * A pushed element is rendered and needs to be tracked.
-	 * 
+	 *
 	 * @param requestUniqueId
 	 *            - The requestId that rendered the element
 	 * @param element
 	 *            - The element that is rendered
 	 */
 	public synchronized void elementRendered(String requestUniqueId, BaseUpdateableElement element) {
-		if(logMINOR){
+		if(logMINOR) {
 			Logger.minor(this, "Element is rendered in page:"+requestUniqueId+" element:"+element);
 		}
 		// Add to the pages
@@ -130,29 +130,29 @@ public class PushDataManager {
 
 	/**
 	 * Returns the element's current state.
-	 * 
+	 *
 	 * @param requestId
 	 *            - The requestId that needs the element.
 	 * @param id
 	 *            - The element's id
 	 */
 	public synchronized BaseUpdateableElement getRenderedElement(String requestId, String id) {
-		if(logMINOR){
+		if(logMINOR) {
 			Logger.minor(this, "Getting element data for element:"+id+" in page:"+requestId);
 		}
 		if (pages.get(requestId) != null) for (BaseUpdateableElement element : pages.get(requestId)) {
-			if (element.getUpdaterId(requestId).compareTo(id) == 0) {
-				element.updateState(false);
-				return element;
+				if (element.getUpdaterId(requestId).compareTo(id) == 0) {
+					element.updateState(false);
+					return element;
+				}
 			}
-		}
 		Logger.error(this, "Could not find data for the element requested. requestId:"+requestId+" id:"+id+" pages:"+pages+" keepaliveReceived:"+isKeepaliveReceived);
 		return null;
 	}
 
 	/**
 	 * Fails a request and copies all notifications directed to it to another request. It is invoked when a leadership change occurs.
-	 * 
+	 *
 	 * @param originalRequestId
 	 *            - The failing leader's id
 	 * @param newRequestId
@@ -180,7 +180,7 @@ public class PushDataManager {
 
 	/**
 	 * The request leaves, so it needs to be deleted
-	 * 
+	 *
 	 * @param requestId
 	 *            - The id of the request that is leaving
 	 * @return Was a request deleted?
@@ -191,18 +191,18 @@ public class PushDataManager {
 
 	/**
 	 * A keepalive received.
-	 * 
+	 *
 	 * @param requestId
 	 *            - The id of the request that sent the keepalive
 	 * @return Was it successful?
 	 */
 	public synchronized boolean keepAliveReceived(String requestId) {
-		if(logMINOR){
+		if(logMINOR) {
 			Logger.minor(this, "Keepalive is received for page:"+requestId);
 		}
 		// If the request is already deleted, then fail
 		if (isKeepaliveReceived.containsKey(requestId) == false) {
-			if(logMINOR){
+			if(logMINOR) {
 				Logger.minor(this, "Keepalive failed");
 			}
 			return false;
@@ -215,7 +215,7 @@ public class PushDataManager {
 
 	/**
 	 * Waits and return the next notification. Calling this method setup the notification list.
-	 * 
+	 *
 	 * @param requestId
 	 *            - The id of the request
 	 * @return The next notification when present
@@ -224,7 +224,7 @@ public class PushDataManager {
 		if (logMINOR) {
 			Logger.minor(this, "Polling for notification:" + requestId);
 		}
-		while (awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() == 0 || // No notifications 
+		while (awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() == 0 || // No notifications
 				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId)==false)) { // Not asked us yet
 			try {
 				wait();
@@ -248,7 +248,7 @@ public class PushDataManager {
 
 	/**
 	 * Deletes a request either because of failing or leaving
-	 * 
+	 *
 	 * @param requestId
 	 *            - The id of the request
 	 * @return Was a request deleted?
@@ -260,7 +260,7 @@ public class PushDataManager {
 		if (isKeepaliveReceived.containsKey(requestId) == false) {
 			if (logMINOR) {
 				Logger.minor(this, "Request already cleaned, doing nothing");
-			}			
+			}
 			return false;
 		}
 		isKeepaliveReceived.remove(requestId);
@@ -320,7 +320,7 @@ public class PushDataManager {
 			}
 			return false;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return requestId.hashCode() + elementId.hashCode();

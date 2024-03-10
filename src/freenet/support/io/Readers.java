@@ -25,7 +25,7 @@ final public class Readers {
 			}
 		};
 	}
-	
+
 	/**
 	 *  A {@link LineReader} <a href="http://en.wikipedia.org/wiki/Adapter_pattern">Adapter</a>
 	 * for {@link String} array.
@@ -37,7 +37,7 @@ final public class Readers {
 			public String readLine(int maxLength, int bufferSize, boolean utf) throws IOException {
 				if(++currentLine<lines.length) {
 					return lines[currentLine];
-				} 
+				}
 				return null;
 			}
 		};

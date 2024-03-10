@@ -30,9 +30,9 @@ public class NewLZMACompressor extends AbstractCompressor {
 
 	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -41,7 +41,7 @@ public class NewLZMACompressor extends AbstractCompressor {
 	// Copied from EncoderThread. See below re licensing.
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+	throws IOException, CompressionOutputSizeException {
 		Bucket output;
 		InputStream is = null;
 		OutputStream os = null;
@@ -53,8 +53,10 @@ public class NewLZMACompressor extends AbstractCompressor {
 				Logger.minor(this, "Compressing "+data+" size "+data.size()+" to new bucket "+output);
 			compress(is, os, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
-			is.close(); is = null;
-			os.close(); os = null;
+			is.close();
+			is = null;
+			os.close();
+			os = null;
 		} finally {
 			Closer.close(is);
 			Closer.close(os);
@@ -65,7 +67,7 @@ public class NewLZMACompressor extends AbstractCompressor {
 	@Override
 	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 						 final long amountOfDataToCheckCompressionRatio, final int minimumCompressionPercentage)
-			throws IOException, CompressionRatioException {
+	throws IOException, CompressionRatioException {
 		CountedInputStream cis = null;
 		CountedOutputStream cos = null;
 		cis = new CountedInputStream(is);
@@ -130,8 +132,10 @@ public class NewLZMACompressor extends AbstractCompressor {
 			if(logMINOR)
 				Logger.minor(this, "Output: "+output+" size "+output.size()+" read "+is.count());
 			// It is essential that the close()'s throw if there is any problem.
-			is.close(); is = null;
-			os.close(); os = null;
+			is.close();
+			is = null;
+			os.close();
+			os = null;
 		} finally {
 			Closer.close(os);
 			Closer.close(is);

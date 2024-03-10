@@ -36,8 +36,8 @@ public class ByteBufferInputStream extends InputStream implements DataInput {
 			return -1;
 		}
 	}
-	
-	
+
+
 	public int remaining() {
 		return buf.remaining();
 	}
@@ -174,7 +174,7 @@ public class ByteBufferInputStream extends InputStream implements DataInput {
 
 	/**
 	 * Slice a piece of ByteBuffer into a new ByteBufferInputStream
-	 * 
+	 *
 	 * @param size
 	 */
 	public ByteBufferInputStream slice(int size) throws IOException {
@@ -184,9 +184,9 @@ public class ByteBufferInputStream extends InputStream implements DataInput {
 
 			ByteBuffer bf2 = buf.slice();
 			bf2.limit(size);
-			
+
 			skip(size);
-			
+
 			return new ByteBufferInputStream(bf2);
 		} catch (BufferUnderflowException e) {
 			throw (EOFException)new EOFException().initCause(e);

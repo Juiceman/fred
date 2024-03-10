@@ -10,16 +10,16 @@ import freenet.l10n.NodeL10n;
 
 /** The status of a request. Cached copy i.e. can be accessed outside the database thread
  * even for a persistent request.
- * 
+ *
  * Methods that change the status should be package-local, and called either
- * within freenet.clients.fcp, or via RequestStatusCache. Hence we should be 
+ * within freenet.clients.fcp, or via RequestStatusCache. Hence we should be
  * able to lock the RequestStatusCache and be confident that nothing is going
  * to change under us.
- * 
- * @author toad 
+ *
+ * @author toad
  */
 public abstract class RequestStatus implements Cloneable {
-	
+
 	private final String identifier;
 	private boolean hasStarted;
 	private boolean hasFinished;
@@ -36,7 +36,7 @@ public abstract class RequestStatus implements Cloneable {
 	private Date latestFailure;
 	private boolean isTotalFinalized;
 	private final Persistence persistence;
-	
+
 	/** The download or upload has finished.
 	 * @param success Did it succeed? */
 	synchronized void setFinished(boolean success) {
@@ -46,7 +46,7 @@ public abstract class RequestStatus implements Cloneable {
 		this.hasStarted = true;
 		this.isTotalFinalized = true;
 	}
-	
+
 	synchronized void restart(boolean started) {
 		// See ClientRequester.getLatestSuccess() for why this defaults to current time.
 		this.latestSuccess = new Date();
@@ -55,12 +55,12 @@ public abstract class RequestStatus implements Cloneable {
 		this.hasStarted = started;
 		this.isTotalFinalized = false;
 	}
-	
+
 	/** Constructor for creating a status from a request that has already started, e.g. on
 	 * startup. We will also create status when a request is created. */
-	RequestStatus(String identifier, Persistence persistence, boolean started, boolean finished, 
-			boolean success, int total, int min, int fetched, Date latestSuccess, int fatal,
-			int failed, Date latestFailure, boolean totalFinalized, short prio) {
+	RequestStatus(String identifier, Persistence persistence, boolean started, boolean finished,
+				  boolean success, int total, int min, int fetched, Date latestSuccess, int fatal,
+				  int failed, Date latestFailure, boolean totalFinalized, short prio) {
 		this.identifier = identifier;
 		this.hasStarted = started;
 		this.hasFinished = finished;
@@ -80,7 +80,7 @@ public abstract class RequestStatus implements Cloneable {
 		this.isTotalFinalized = totalFinalized;
 		this.persistence = persistence;
 	}
-	
+
 	public boolean hasSucceeded() {
 		return hasSucceeded;
 	}
@@ -123,7 +123,7 @@ public abstract class RequestStatus implements Cloneable {
 		// clone() because Date is mutable.
 		return latestSuccess != null ? (Date)latestSuccess.clone() : null;
 	}
-	
+
 	public Date getLastFailure() {
 		// clone() because Date is mutable.
 		return latestFailure != null ? (Date)latestFailure.clone() : null;
@@ -176,7 +176,7 @@ public abstract class RequestStatus implements Cloneable {
 		this.hasStarted = started;
 	}
 
-	/** Get the preferred filename, from the URI, the filename, etc. 
+	/** Get the preferred filename, from the URI, the filename, etc.
 	 * @return A filename or null if not enough information to give one. */
 	public abstract String getPreferredFilename();
 

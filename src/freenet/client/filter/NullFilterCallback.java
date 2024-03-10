@@ -34,7 +34,7 @@ public class NullFilterCallback implements FilterCallback {
 
 	@Override
 	public String processURI(String uri, String overrideType, String forceSchemeHostAndPort, boolean inline)
-			throws CommentException {
+	throws CommentException {
 		return null;
 	}
 

@@ -39,16 +39,24 @@ public class MersenneTwister extends org.spaceroots.mantissa.random.MersenneTwis
 	private static final long serialVersionUID = 6555069655883958609L;
 
 	/** Creates a new random number generator using the current time as the seed. */
-	public MersenneTwister() { super(); }
+	public MersenneTwister() {
+		super();
+	}
 
 	/** Creates a new random number generator using a single int seed. */
-	public MersenneTwister(int seed) { super(seed); }
+	public MersenneTwister(int seed) {
+		super(seed);
+	}
 
 	/** Creates a new random number generator using an int array seed. */
-	public MersenneTwister(int[] seed) { super(seed); }
+	public MersenneTwister(int[] seed) {
+		super(seed);
+	}
 
 	/** Creates a new random number generator using a single long seed. */
-	public MersenneTwister(long seed) { super(seed); }
+	public MersenneTwister(long seed) {
+		super(seed);
+	}
 
 	/** Creates a new random number generator using a byte array seed. */
 	public MersenneTwister(byte[] seed) {
@@ -56,13 +64,19 @@ public class MersenneTwister extends org.spaceroots.mantissa.random.MersenneTwis
 	}
 
 	/** {@inheritDoc} */
-	@Override public synchronized void setSeed(int seed) { super.setSeed(seed); }
+	@Override public synchronized void setSeed(int seed) {
+		super.setSeed(seed);
+	}
 
 	/** {@inheritDoc} */
-	@Override public synchronized void setSeed(int[] seed) { super.setSeed(seed); }
+	@Override public synchronized void setSeed(int[] seed) {
+		super.setSeed(seed);
+	}
 
 	/** {@inheritDoc} */
-	@Override public synchronized void setSeed(long seed) { super.setSeed(seed); }
+	@Override public synchronized void setSeed(long seed) {
+		super.setSeed(seed);
+	}
 
 	/**
 	** Reinitialize the generator as if just built with the given byte array seed.
@@ -76,6 +90,8 @@ public class MersenneTwister extends org.spaceroots.mantissa.random.MersenneTwis
 	}
 
 	/** {@inheritDoc} */
-	@Override protected synchronized int next(int bits) { return super.next(bits); }
+	@Override protected synchronized int next(int bits) {
+		return super.next(bits);
+	}
 
 }

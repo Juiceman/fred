@@ -64,7 +64,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	private boolean isFetching;
 	private final String blobFilenamePrefix;
 	protected File tempBlobFile;
-	
+
 	public abstract String jarName();
 
 	NodeUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max, String blobFilenamePrefix) {
@@ -100,7 +100,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			manager.blow("The auto-update URI isn't valid and can't be used", true);
 		}
 	}
-	
+
 	protected void maybeProcessOldBlob() {
 		File oldBlob = getBlobFile(currentVersion);
 		if(oldBlob.exists()) {
@@ -131,7 +131,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	public RequestClient getRequestClient() {
 		return this;
 	}
-	
+
 	@Override
 	public void onFoundEdition(long l, USK key, ClientContext context, boolean wasMetadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
 		if(newKnownGood && !newSlotToo) return;
@@ -149,7 +149,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				System.err.println("Ignoring "+jarName() + " update edition "+l+": version too new (min "+minDeployVersion+" max "+maxDeployVersion+")");
 				found = maxDeployVersion;
 			}
-			
+
 			if(found <= availableVersion)
 				return;
 			System.err.println("Found " + jarName() + " update edition " + found);
@@ -187,9 +187,9 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		synchronized(this) {
 			if(logMINOR)
 				Logger.minor(this, "maybeUpdate: isFetching=" + isFetching + ", isRunning=" + isRunning + ", availableVersion=" + availableVersion);
-			if(!isRunning) 
+			if(!isRunning)
 				return;
-			if(isFetching && availableVersion == fetchingVersion) 
+			if(isFetching && availableVersion == fetchingVersion)
 				return;
 			if(availableVersion <= fetchedVersion)
 				return;
@@ -217,9 +217,9 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 						File.createTempFile(blobFilenamePrefix + availableVersion + "-", ".fblob.tmp", manager.node.clientCore.getPersistentTempDir());
 					FreenetURI uri = URI.setSuggestedEdition(availableVersion);
 					uri = uri.sskForUSK();
-					cg = new ClientGetter(this,  
-						uri, ctx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
-						null, new BinaryBlobWriter(new FileBucket(tempBlobFile, false, false, false, false)), null);
+					cg = new ClientGetter(this,
+										  uri, ctx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
+										  null, new BinaryBlobWriter(new FileBucket(tempBlobFile, false, false, false, false)), null);
 					toStart = cg;
 				} else {
 					System.err.println("Already fetching "+jarName() + " fetch for " + fetchingVersion + " want "+availableVersion);
@@ -248,13 +248,13 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	final File getBlobFile(int availableVersion) {
 		return new File(node.clientCore.getPersistentTempDir(), blobFilenamePrefix + availableVersion + ".fblob");
 	}
-	
+
 	RandomAccessBucket getBlobBucket(int availableVersion) {
 		File f = getBlobFile(availableVersion);
 		if(f == null) return null;
 		return new FileBucket(f, true, false, false, false);
 	}
-	
+
 	@Override
 	public void onSuccess(FetchResult result, ClientGetter state) {
 		onSuccess(result, state, tempBlobFile, fetchingVersion);
@@ -281,11 +281,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				if(result == null || result.asBucket() == null || availableVersion > fetchedVersion)
 					node.ticker.queueTimedJob(new Runnable() {
 
-						@Override
-						public void run() {
-							maybeUpdate();
-						}
-					}, 0);
+					@Override
+					public void run() {
+						maybeUpdate();
+					}
+				}, 0);
 				return;
 			}
 			blobFile = getBlobFile(fetchedVersion);
@@ -293,7 +293,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				blobFile.delete();
 				if(!tempBlobFile.renameTo(blobFile))
 					if(blobFile.exists() && tempBlobFile.exists() &&
-						blobFile.length() == tempBlobFile.length())
+							blobFile.length() == tempBlobFile.length())
 						Logger.minor(this, "Can't rename " + tempBlobFile + " over " + blobFile + " for " + fetchedVersion + " - probably not a big deal though as the files are the same size");
 					else {
 						Logger.error(this, "Not able to rename binary blob for node updater: " + tempBlobFile + " -> " + blobFile + " - may not be able to tell other peers about this build");
@@ -309,11 +309,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		}
 		processSuccess(fetchedVersion, result, blobFile);
 	}
-	
+
 	/** We have fetched the jar! Do something after onSuccess(). Called unlocked. */
 	protected abstract void processSuccess(int fetched, FetchResult result, File blobFile);
 
-	/** Called with locks held 
+	/** Called with locks held
 	 * @param result */
 	protected abstract void maybeParseManifest(FetchResult result, int build);
 
@@ -329,7 +329,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 					if(ze == null) break;
 					if(ze.isDirectory()) continue;
 					String name = ze.getName();
-					
+
 					if(name.equals("META-INF/MANIFEST.MF")) {
 						if(logMINOR) Logger.minor(this, "Found manifest");
 						long size = ze.getSize();
@@ -363,17 +363,17 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			Closer.close(is);
 		}
 	}
-	
+
 	static final String DEPENDENCIES_FILE = "dependencies.properties";
-	
+
 	/** Read the jar file. Parse the Properties. Read every file in the ZIP; if it is corrupted,
 	 * we will get a CRC error and therefore an IOException, and so the update won't be deployed.
-	 * This is not entirely foolproof because ZipInputStream doesn't check the CRC for stored 
+	 * This is not entirely foolproof because ZipInputStream doesn't check the CRC for stored
 	 * files, only for deflated files, and it's only a CRC32 anyway. But it should reduce the
 	 * chances of accidental corruption breaking an update.
 	 * @param is The InputStream for the jar file.
-	 * @param filename The filename of the manifest file containing the properties (normally 
-	 * META-INF/MANIFEST.MF). 
+	 * @param filename The filename of the manifest file containing the properties (normally
+	 * META-INF/MANIFEST.MF).
 	 * @throws IOException If there is a temporary files error or the jar is corrupted. */
 	static Properties parseProperties(InputStream is, String filename) throws IOException {
 		Properties props = new Properties();
@@ -385,7 +385,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				if(ze == null) break;
 				if(ze.isDirectory()) continue;
 				String name = ze.getName();
-				
+
 				if(name.equals(filename)) {
 					if(logMINOR) Logger.minor(NodeUpdater.class, "Found manifest");
 					long size = ze.getSize();
@@ -400,11 +400,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 					ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 					props.load(bais);
 				} else {
-				    // Read the file. Throw if there is a CRC error.
-				    // Note that java.util.zip.ZipInputStream only checks the CRC for compressed 
-				    // files, so this is not entirely foolproof.
-				    long size = ze.getSize();
-				    FileUtil.copy(zis, new NullOutputStream(), size);
+					// Read the file. Throw if there is a CRC error.
+					// Note that java.util.zip.ZipInputStream only checks the CRC for compressed
+					// files, so this is not entirely foolproof.
+					long size = ze.getSize();
+					FileUtil.copy(zis, new NullOutputStream(), size);
 					zis.closeEntry();
 				}
 			}
@@ -436,7 +436,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	protected void parseManifestLine(String line) {
 		// Do nothing by default, only some NodeUpdater's will use this, those that don't won't call parseManifest().
 	}
-	
+
 	private static final int MAX_MANIFEST_SIZE = 1024*1024;
 
 	@Override
@@ -454,7 +454,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			isFetching = false;
 		}
 		if(errorCode == FetchExceptionMode.CANCELLED ||
-			!e.isFatal()) {
+				!e.isFatal()) {
 			Logger.normal(this, "Rescheduling new request");
 			ticker.queueTimedJob(new Runnable() {
 
@@ -471,11 +471,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			} else
 				ticker.queueTimedJob(new Runnable() {
 
-					@Override
-					public void run() {
-						maybeUpdate();
-					}
-				}, HOURS.toMillis(1));
+				@Override
+				public void run() {
+					maybeUpdate();
+				}
+			}, HOURS.toMillis(1));
 		}
 	}
 
@@ -508,7 +508,7 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		return fetchedVersion > currentVersion;
 	}
 
-	/** Called when the fetch URI has changed. No major locks are held by caller. 
+	/** Called when the fetch URI has changed. No major locks are held by caller.
 	 * @param uri The new URI. */
 	public void onChangeURI(FreenetURI uri) {
 		kill();
@@ -584,14 +584,14 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		if(callFinishedFound > -1)
 			finishOnFoundEdition(callFinishedFound);
 	}
-	
+
 	@Override
 	public boolean realTimeFlag() {
 		return false;
 	}
-	
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing. Not persistent.
-    }
+
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing. Not persistent.
+	}
 }

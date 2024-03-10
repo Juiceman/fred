@@ -29,8 +29,7 @@ public class SendTextMessage extends SendPeerMessage {
 			if(dataLength() > 0) {
 				byte[] text = BucketTools.toByteArray(bucket);
 				return pn.sendTextFeed(new String(text, StandardCharsets.UTF_8));
-			}
-			else {
+			} else {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid data length", null, false);
 			}
 		} catch (IOException e) {

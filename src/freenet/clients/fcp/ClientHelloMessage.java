@@ -17,7 +17,7 @@ public class ClientHelloMessage extends FCPMessage {
 	public final static String NAME = "ClientHello";
 	String clientName;
 	String clientExpectedVersion;
-	
+
 	public ClientHelloMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		clientName = fs.get("Name");
 		clientExpectedVersion = fs.get("ExpectedVersion");

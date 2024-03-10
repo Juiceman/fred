@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class StringCounter {
 
 	private final HashMap<String, Item> map;
-	
+
 	private static class Item {
 		public Item(String string2) {
 			this.string = string2;
@@ -22,11 +22,11 @@ public class StringCounter {
 		final String string;
 		int counter;
 	}
-	
+
 	public StringCounter() {
 		map = new HashMap<String, Item>();
 	}
-	
+
 	public synchronized void inc(String string) {
 		Item item = map.get(string);
 		if(item == null) {
@@ -36,17 +36,17 @@ public class StringCounter {
 		} else
 			item.counter++;
 	}
-	
+
 	public int get(String string) {
 		Item item = map.get(string);
 		if(item == null) return 0;
 		return item.counter;
 	}
-	
+
 	private synchronized Item[] items() {
 		return map.values().toArray(new Item[map.size()]);
 	}
-	
+
 	private synchronized Item[] sortedItems(final boolean ascending) {
 		Item[] items = items();
 		Arrays.sort(items, new Comparator<Item>() {
@@ -62,7 +62,7 @@ public class StringCounter {
 		});
 		return items;
 	}
-	
+
 	public String toLongString() {
 		Item[] items = sortedItems(false);
 		if (items.length == 0)
@@ -79,7 +79,7 @@ public class StringCounter {
 		sb.deleteCharAt(sb.length()-1);
 		return sb.toString();
 	}
-	
+
 	public int toTableRows(HTMLNode table) {
 		Item[] items = sortedItems(false);
 		for(Item it: items) {

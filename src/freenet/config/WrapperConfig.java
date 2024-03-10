@@ -25,7 +25,7 @@ import freenet.support.io.FileUtil;
 public class WrapperConfig {
 
 	private static HashMap<String, String> overrides = new HashMap<String, String>();
-	
+
 	public static String getWrapperProperty(String name) {
 		synchronized(WrapperConfig.class) {
 			String override = overrides.get(name);
@@ -34,7 +34,7 @@ public class WrapperConfig {
 		}
 		return WrapperManager.getProperties().getProperty(name, null);
 	}
-	
+
 	public static boolean canChangeProperties() {
 		if(!WrapperManager.isControlledByNativeWrapper()) {
 			Logger.normal(WrapperConfig.class, "Cannot alter properties: not running under wrapper");
@@ -44,9 +44,9 @@ public class WrapperConfig {
 		if(!f.exists()) {
 			f = new File("wrapper.conf");
 			if(!f.exists()) {
-                            Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf does not exist");
-                            return false;
- 			}
+				Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf does not exist");
+				return false;
+			}
 		}
 		if(!f.canRead()) {
 			Logger.normal(WrapperConfig.class, "Cannot alter properties: wrapper.conf not readable");
@@ -71,11 +71,11 @@ public class WrapperConfig {
 	 */
 	public static synchronized boolean setWrapperProperty(String name, String value) {
 		// Some of this copied from UpdateDeployContext, hence no GPL header on this file as none there.
-		
+
 		String wrapperDir = "wrapper";
 		File oldConfig = new File(wrapperDir + "/wrapper.conf");
 		File newConfig = new File(wrapperDir + "/wrapper.conf.new");
-		
+
 		if(!oldConfig.exists()) {
 			oldConfig = new File("wrapper.conf");
 			newConfig = new File("wrapper.conf.new");
@@ -83,25 +83,25 @@ public class WrapperConfig {
 		}
 		FileInputStream fis = null;
 		FileOutputStream fos = null;
-		
+
 		try {
-		
+
 			fis = new FileInputStream(oldConfig);
 			BufferedInputStream bis = new BufferedInputStream(fis);
 			InputStreamReader isr = new InputStreamReader(bis);
 			BufferedReader br = new BufferedReader(isr);
-			
+
 			fos = new FileOutputStream(newConfig);
 			OutputStreamWriter osw = new OutputStreamWriter(fos);
 			BufferedWriter bw = new BufferedWriter(osw);
-			
+
 			String line;
-			
+
 			boolean written = false;
 			boolean writtenReload = false;
-			
+
 			while((line = br.readLine()) != null) {
-				
+
 				if(line.startsWith(name+"=")) {
 					bw.write(name+'='+value+'\n');
 					written = true;
@@ -111,7 +111,7 @@ public class WrapperConfig {
 				} else {
 					bw.write(line+'\n');
 				}
-			
+
 			}
 			br.close();
 			fis = null;
@@ -134,7 +134,7 @@ public class WrapperConfig {
 			Closer.close(fis);
 			Closer.close(fos);
 		}
-		
+
 		if(!newConfig.renameTo(oldConfig)) {
 			File oldOldConfig = new File(wrapperDir + "/wrapper.conf.old");
 			if(oldOldConfig.exists() && !oldOldConfig.delete())
@@ -158,7 +158,7 @@ public class WrapperConfig {
 				System.err.println(error);
 				if(!oldOldConfig.renameTo(oldConfig)) {
 					System.err.println("CATASTROPHIC UPDATE ERROR: Unable to rename backup copy of config file over the current config file, after failing to update config file! The node will not boot until you get a new wrapper.conf!\n"+
-							"The old config file is saved in "+oldOldConfig+" and it should be renamed to wrapper.conf");
+									   "The old config file is saved in "+oldOldConfig+" and it should be renamed to wrapper.conf");
 					System.exit(NodeInitException.EXIT_BROKE_WRAPPER_CONF);
 				}
 			}
@@ -167,5 +167,5 @@ public class WrapperConfig {
 		overrides.put(name, value);
 		return true;
 	}
-	
+
 }

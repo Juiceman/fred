@@ -34,13 +34,13 @@ public abstract class FCPMessage {
 	public static final String BULK_SSK_INSERT_REJECTS = "Rejects.Bulk.Insert.SSK";
 	public static final String OUTPUT_BANDWIDTH_CLASS = "OutputBandwidthClass";
 	public static final String OVERALL_BULK_OUTPUT_CAPACITY_USAGE = "OverallBulkOutputCapacityUsage";
-	
 
-        private static volatile boolean logDEBUG;
+
+	private static volatile boolean logDEBUG;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
@@ -65,13 +65,13 @@ public abstract class FCPMessage {
 	String getEndString() {
 		return "EndMessage";
 	}
-	
+
 	public abstract SimpleFieldSet getFieldSet();
 
 	public abstract String getName();
-	
+
 	/**
-	 * Create a message from a SimpleFieldSet, and the message's name, if possible. 
+	 * Create a message from a SimpleFieldSet, and the message's name, if possible.
 	 */
 	public static FCPMessage create(String name, SimpleFieldSet fs, BucketFactory bfTemp, PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
 		if(name.equals(AddPeer.NAME))
@@ -157,9 +157,9 @@ public abstract class FCPMessage {
 
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unknown message name "+name, null, false);
 	}
-	
+
 	/**
-	 * Create a message from a SimpleFieldSet, and the message's name, if possible. 
+	 * Create a message from a SimpleFieldSet, and the message's name, if possible.
 	 * Useful for FCPClients
 	 */
 	public static FCPMessage create(String name, SimpleFieldSet fs) throws MessageInvalidException {
@@ -213,7 +213,7 @@ public abstract class FCPMessage {
 		};
 	}
 
-	/** Do whatever it is that we do with this type of message. 
+	/** Do whatever it is that we do with this type of message.
 	 * @throws MessageInvalidException */
 	public abstract void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException;
 

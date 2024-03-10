@@ -7,18 +7,18 @@ import freenet.clients.fcp.FCPMessage;
 import freenet.support.HTMLNode;
 
 public interface UserAlert {
-	
+
 	/**
 	 * Can the user dismiss the alert?
 	 * If not, it persists until it is unregistered.
 	 */
 	public boolean userCanDismiss();
-	
+
 	/**
 	 * Title of alert (must be short!).
 	 */
 	public String getTitle();
-	
+
 	/**
 	 * Content of alert (plain text).
 	 */
@@ -28,35 +28,35 @@ public interface UserAlert {
 	 * Content of alert (HTML).
 	 */
 	public HTMLNode getHTMLText();
-	
+
 	/**
 	 * *Really* concise text of alert. Should be comfortably under a line even when translated
 	 * into a verbose language. Will link to the full details.
 	 */
 	public String getShortText();
-	
+
 	/**
 	 * Priority class
 	 */
 	public short getPriorityClass();
-	
+
 	/**
 	 * Is the alert valid right now? Suggested use is to synchronize on the
 	 * alert, then check this, then get the data.
 	 */
 	public boolean isValid();
-	
+
 	public void isValid(boolean validity);
-	
+
 	public String dismissButtonText();
-	
+
 	public boolean shouldUnregisterOnDismiss();
-	
+
 	/**
 	 * Method to be called upon alert dismissal
 	 */
 	public void onDismiss();
-	
+
 	/**
 	 * @return A unique, short name for the alert. Can be simply hashCode(), not visible to the user.
 	 * MUST NOT contain spaces or commas.
@@ -75,7 +75,7 @@ public interface UserAlert {
 	 * @return A FCPMessage that is sent subscribing FCPClients
 	 */
 	public FCPMessage getFCPMessage();
-	
+
 	/**
 	 * @return The Unix timestamp of when the alert was last updated
 	 */

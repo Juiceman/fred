@@ -17,8 +17,8 @@ import freenet.support.Logger;
 
 public abstract class CryptoKey implements CryptoElement, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    protected static final MessageDigest shactx;
+	private static final long serialVersionUID = 1L;
+	protected static final MessageDigest shactx;
 	static {
 		try {
 			shactx = MessageDigest.getInstance("SHA1", Util.mdProviders.get("SHA1"));
@@ -88,25 +88,25 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 		String fphex = HexUtil.bytesToHex(fingerprint());
 		StringBuilder b = new StringBuilder(40 + 10);
 		b
-			.append(fphex.substring(0, 4))
-			.append(' ')
-			.append(fphex.substring(4, 8))
-			.append(' ')
-			.append(fphex.substring(8, 12))
-			.append(' ')
-			.append(fphex.substring(12, 16))
-			.append(' ')
-			.append(fphex.substring(16, 20))
-			.append("  ")
-			.append(fphex.substring(20, 24))
-			.append(' ')
-			.append(fphex.substring(24, 28))
-			.append(' ')
-			.append(fphex.substring(28, 32))
-			.append(' ')
-			.append(fphex.substring(32, 36))
-			.append(' ')
-			.append(fphex.substring(36, 40));
+		.append(fphex.substring(0, 4))
+		.append(' ')
+		.append(fphex.substring(4, 8))
+		.append(' ')
+		.append(fphex.substring(8, 12))
+		.append(' ')
+		.append(fphex.substring(12, 16))
+		.append(' ')
+		.append(fphex.substring(16, 20))
+		.append("  ")
+		.append(fphex.substring(20, 24))
+		.append(' ')
+		.append(fphex.substring(24, 28))
+		.append(' ')
+		.append(fphex.substring(28, 32))
+		.append(' ')
+		.append(fphex.substring(32, 36))
+		.append(' ')
+		.append(fphex.substring(36, 40));
 		return b.toString();
 	}
 

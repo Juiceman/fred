@@ -8,7 +8,7 @@ import freenet.node.SendableGet;
 import freenet.support.Logger;
 
 public class SingleKeyListener implements KeyListener {
-	
+
 	private final Key key;
 	private final BaseSingleFileFetcher fetcher;
 	private boolean done;
@@ -91,7 +91,7 @@ public class SingleKeyListener implements KeyListener {
 		return key instanceof NodeSSK;
 	}
 
- 	@Override
+	@Override
 	public byte[] getWantedKey() {
 		return key instanceof NodeSSK ? ((NodeSSK)key).getPubKeyHash() : key.getRoutingKey();
 	}

@@ -46,8 +46,7 @@ public class BMPFilter implements ContentDataFilter {
 	{ (byte)'P', (byte)'T'};
 
 
-	private int unsignedByte(byte b)
-	{
+	private int unsignedByte(byte b) {
 		if (b >= 0)
 			return b;
 		else
@@ -55,14 +54,13 @@ public class BMPFilter implements ContentDataFilter {
 	}
 
 
-	public int readInt(DataInputStream dis) throws IOException
-	{
+	public int readInt(DataInputStream dis) throws IOException {
 		int result;
 		byte[] data = new byte[4];
 
 		result = dis.read(data);
 		if (result < 0) // end of file reached
-		throw new EOFException();
+			throw new EOFException();
 
 		result = (unsignedByte(data[2]) << 16) | (unsignedByte(data[1]) << 8) | unsignedByte(data[0]);
 		result|=(unsignedByte(data[3]) << 24);
@@ -71,8 +69,7 @@ public class BMPFilter implements ContentDataFilter {
 	}
 
 
-	public int readShort(DataInputStream dis) throws IOException
-	{
+	public int readShort(DataInputStream dis) throws IOException {
 		int result = dis.read();
 		if (result < 0)// end of file reached
 			throw new EOFException();
@@ -87,8 +84,8 @@ public class BMPFilter implements ContentDataFilter {
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		DataInputStream dis = new DataInputStream(input);
 		dis.mark(54);
 		byte[] StartWord = new byte[2];

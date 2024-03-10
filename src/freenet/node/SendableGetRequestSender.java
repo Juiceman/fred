@@ -11,22 +11,22 @@ import freenet.support.Logger.LogLevel;
 public class SendableGetRequestSender implements SendableRequestSender {
 
 	private static volatile boolean logMINOR;
-	
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	public boolean sendIsBlocking() {
 		return false;
 	}
-	
-	/** Do the request, blocking. Called by RequestStarter. 
+
+	/** Do the request, blocking. Called by RequestStarter.
 	 * Also responsible for deleting it.
 	 * @return True if a request was executed. False if caller should try to find another request, and remove
 	 * this one from the queue. */
@@ -52,14 +52,14 @@ public class SendableGetRequestSender implements SendableRequestSender {
 
 					@Override
 					public void onSucceeded() {
-					    req.onFetchSuccess(context);
+						req.onFetchSuccess(context);
 					}
 
 					@Override
 					public void onFailed(LowLevelGetException e) {
-					    req.onFailure(e, context);
+						req.onFailure(e, context);
 					}
-					
+
 				}, !req.ignoreStore, req.canWriteClientCache, req.realTimeFlag, req.localRequestOnly, req.ignoreStore);
 			} catch (Throwable t) {
 				Logger.error(this, "Caught "+t, t);

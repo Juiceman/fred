@@ -43,14 +43,14 @@ import freenet.support.io.ResumeFailedException;
  *
  * TODO persistence
  * TODO add a MAX_SIZE for the final container(file)
- * 
+ *
  * @author saces
- * 
+ *
  */
 public class ContainerInserter implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -60,7 +60,7 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	private static class ContainerElement {
 		private final Bucket data;
 		private final String targetInArchive;
-		
+
 		private ContainerElement(Bucket data2, String targetInArchive2) {
 			data = data2;
 			targetInArchive = targetInArchive2;
@@ -88,7 +88,7 @@ public class ContainerInserter implements ClientPutState, Serializable {
 
 	/**
 	 * Insert a bunch of files as single Archive with .metadata
-	 * 
+	 *
 	 * @param parent2
 	 * @param cb2
 	 * @param metadata2
@@ -102,22 +102,22 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	 * @param forceCryptoKey
 	 * @param cryptoAlgorithm
 	 * @param realTimeFlag
-	 * 
+	 *
 	 */
 	public ContainerInserter(
-			BaseClientPutter parent2, 
-			PutCompletionCallback cb2, 
-			HashMap<String, Object> metadata2,
-			FreenetURI targetURI2,
-			InsertContext ctx2,
-			boolean dontCompress2,
-			boolean reportMetadataOnly2,
-			Object token2,
-			ARCHIVE_TYPE archiveType2,
-			boolean freeData,
-			byte[] forceCryptoKey,
-			byte cryptoAlgorithm,
-			boolean realTimeFlag) {
+		BaseClientPutter parent2,
+		PutCompletionCallback cb2,
+		HashMap<String, Object> metadata2,
+		FreenetURI targetURI2,
+		InsertContext ctx2,
+		boolean dontCompress2,
+		boolean reportMetadataOnly2,
+		Object token2,
+		ARCHIVE_TYPE archiveType2,
+		boolean freeData,
+		byte[] forceCryptoKey,
+		byte cryptoAlgorithm,
+		boolean realTimeFlag) {
 		parent = parent2;
 		cb = cb2;
 		hashCode = super.hashCode();
@@ -163,29 +163,29 @@ public class ContainerInserter implements ClientPutState, Serializable {
 
 	private void start(ClientContext context) {
 		if(logDEBUG) Logger.debug(this, "Atempt to start a container inserter", new Exception("debug"));
-		
+
 		makeMetadata(context);
-		
+
 		synchronized(this) {
 			if(finished) return;
 		}
-		
+
 		InsertBlock block;
 		OutputStream os = null;
 		try {
-		    RandomAccessBucket outputBucket = context.getBucketFactory(persistent).makeBucket(-1);
+			RandomAccessBucket outputBucket = context.getBucketFactory(persistent).makeBucket(-1);
 			os = new BufferedOutputStream(outputBucket.getOutputStream());
 			String mimeType = (archiveType == ARCHIVE_TYPE.TAR ?
-				createTarBucket(os) :
-				createZipBucket(os));
+							   createTarBucket(os) :
+							   createZipBucket(os));
 			os = null; // create*Bucket closes os
 			if(logMINOR)
 				Logger.minor(this, "Archive size is "+outputBucket.size());
-			
+
 			if(logMINOR) Logger.minor(this, "We are using "+archiveType);
-			
+
 			// Now we have to insert the Archive we have generated.
-			
+
 			// Can we just insert it, and not bother with a redirect to it?
 			// Thereby exploiting implicit manifest support, which will pick up on .metadata??
 			// We ought to be able to !!
@@ -196,12 +196,12 @@ public class ContainerInserter implements ClientPutState, Serializable {
 		} finally {
 			Closer.close(os);
 		}
-		
+
 		boolean dc = dontCompress;
 		if (!dontCompress) {
 			dc = (archiveType == ARCHIVE_TYPE.ZIP);
 		}
-		
+
 		// Treat it as a splitfile for purposes of determining reinsert count.
 		SingleFileInserter sfi = new SingleFileInserter(parent, cb, block, false, ctx, realTimeFlag, dc, reportMetadataOnly, token, archiveType, true, null, true, persistent, 0, 0, null, cryptoAlgorithm, forceCryptoKey, -1);
 		if(logMINOR)
@@ -239,7 +239,7 @@ public class ContainerInserter implements ClientPutState, Serializable {
 				return;
 			}
 		}
-		
+
 	}
 
 	private int resolve(MetadataUnresolvedException e, int x, FreenetURI key, String element2, ClientContext context) throws IOException {
@@ -268,20 +268,20 @@ public class ContainerInserter implements ClientPutState, Serializable {
 
 	// A persistent hashCode is helpful in debugging, and also means we can put
 	// these objects into sets etc when we need to.
-	
+
 	private final int hashCode;
-	
+
 	@Override
 	public int hashCode() {
 		return hashCode;
 	}
-	
+
 	/**
 	** OutputStream os will be close()d if this method returns successfully.
 	*/
 	private String createTarBucket(OutputStream os) throws IOException {
 		if(logMINOR) Logger.minor(this, "Create a TAR Bucket");
-		
+
 		TarArchiveOutputStream tarOS = new TarArchiveOutputStream(os);
 		try {
 			tarOS.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
@@ -301,13 +301,13 @@ public class ContainerInserter implements ClientPutState, Serializable {
 		} finally {
 			tarOS.close();
 		}
-		
+
 		return ARCHIVE_TYPE.TAR.mimeTypes[0];
 	}
-	
+
 	private String createZipBucket(OutputStream os) throws IOException {
 		if(logMINOR) Logger.minor(this, "Create a ZIP Bucket");
-		
+
 		ZipOutputStream zos = new ZipOutputStream(os);
 		try {
 			ZipEntry ze;
@@ -365,49 +365,49 @@ public class ContainerInserter implements ClientPutState, Serializable {
 		}
 		return smc.getMetadata();
 	}
-	
+
 	private transient boolean resumed = false;
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        if(cb != null && cb != parent)
-            cb.onResume(context);
-        if(containerItems != null) {
-            for(ContainerElement e : containerItems) {
-                if(e.data != null)
-                    e.data.onResume(context);
-            }
-        }
-        resumeMetadata(origMetadata, context);
-        // Do not call start(). start() immediately transitions to another state.
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static void resumeMetadata(Map<String, Object> map, ClientContext context) throws ResumeFailedException {
-        Map<String, Object> manifestElements = map;
-        for (Object o : manifestElements.values()) {
-            if(o instanceof HashMap) {
-                resumeMetadata((Map<String, Object>)o, context);
-            } else if(o instanceof ManifestElement) {
-                ManifestElement e = (ManifestElement) o;
-                e.onResume(context);
-            } else if(o instanceof Metadata) {
-                // Ignore
-            } else if(o instanceof PutHandler) {
-                PutHandler handler = (PutHandler) o;
-                handler.onResume(context);
-            } else if(o instanceof ManifestElement) {
-                ((ManifestElement)o).onResume(context);
-            } else throw new IllegalArgumentException("Unknown manifest element: "+o);
-        }
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		if(cb != null && cb != parent)
+			cb.onResume(context);
+		if(containerItems != null) {
+			for(ContainerElement e : containerItems) {
+				if(e.data != null)
+					e.data.onResume(context);
+			}
+		}
+		resumeMetadata(origMetadata, context);
+		// Do not call start(). start() immediately transitions to another state.
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@SuppressWarnings("unchecked")
+	public static void resumeMetadata(Map<String, Object> map, ClientContext context) throws ResumeFailedException {
+		Map<String, Object> manifestElements = map;
+		for (Object o : manifestElements.values()) {
+			if(o instanceof HashMap) {
+				resumeMetadata((Map<String, Object>)o, context);
+			} else if(o instanceof ManifestElement) {
+				ManifestElement e = (ManifestElement) o;
+				e.onResume(context);
+			} else if(o instanceof Metadata) {
+				// Ignore
+			} else if(o instanceof PutHandler) {
+				PutHandler handler = (PutHandler) o;
+				handler.onResume(context);
+			} else if(o instanceof ManifestElement) {
+				((ManifestElement)o).onResume(context);
+			} else throw new IllegalArgumentException("Unknown manifest element: "+o);
+		}
+	}
+
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 }

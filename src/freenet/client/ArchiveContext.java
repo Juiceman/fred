@@ -14,28 +14,28 @@ import freenet.keys.FreenetURI;
  * Object passed down a full fetch, including all the recursion.
  * Used, at present, for detecting archive fetch loops, hence the
  * name.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
 public class ArchiveContext implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private HashSet<FreenetURI> soFar;
+	private static final long serialVersionUID = 1L;
+	private HashSet<FreenetURI> soFar;
 	final int maxArchiveLevels;
 	final long maxArchiveSize;
-	
+
 	public ArchiveContext(long maxArchiveSize, int max) {
 		this.maxArchiveLevels = max;
 		this.maxArchiveSize = maxArchiveSize;
 	}
-	
+
 	protected ArchiveContext() {
-	    // For serialization.
-	    maxArchiveLevels = 0;
-	    maxArchiveSize = 0;
+		// For serialization.
+		maxArchiveLevels = 0;
+		maxArchiveSize = 0;
 	}
-	
+
 	/**
 	 * Check for a loop.
 	 *
@@ -53,7 +53,7 @@ public class ArchiveContext implements Serializable {
 		}
 	}
 
-    public synchronized void clear() {
-        soFar = null;
-    }
+	public synchronized void clear() {
+		soFar = null;
+	}
 }

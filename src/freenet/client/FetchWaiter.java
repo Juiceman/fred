@@ -15,12 +15,12 @@ public class FetchWaiter implements ClientGetCallback {
 	private FetchException error;
 	private boolean finished;
 	private final RequestClient client;
-	
-	public FetchWaiter(RequestClient client) {
-	    this.client = client;
-    }
 
-    @Override
+	public FetchWaiter(RequestClient client) {
+		this.client = client;
+	}
+
+	@Override
 	public synchronized void onSuccess(FetchResult result, ClientGetter state) {
 		if(finished) return;
 		this.result = result;
@@ -50,14 +50,14 @@ public class FetchWaiter implements ClientGetCallback {
 		return result;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        throw new UnsupportedOperationException();
-        // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		throw new UnsupportedOperationException();
+		// Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return client;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return client;
+	}
 }

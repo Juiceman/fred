@@ -10,15 +10,15 @@ import freenet.keys.KeyBlock;
 import freenet.keys.KeyVerifyException;
 import freenet.support.Logger;
 
-/** 
+/**
  * Simple BlockSet implementation, keeps all keys in RAM.
- * 
+ *
  * @author toad
  */
 public class SimpleBlockSet implements BlockSet {
 
 	private final HashMap<Key, KeyBlock> blocksByKey = new HashMap<Key, KeyBlock>();
-	
+
 	@Override
 	public synchronized void add(KeyBlock block) {
 		blocksByKey.put(block.getKey(), block);
@@ -45,5 +45,5 @@ public class SimpleBlockSet implements BlockSet {
 			return null;
 		}
 	}
-	
+
 }

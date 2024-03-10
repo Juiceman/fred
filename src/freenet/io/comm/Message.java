@@ -39,14 +39,14 @@ import freenet.support.Logger.LogLevel;
 
 /**
  * A Message which can be read from and written to a DatagramPacket.
- * 
- * SECURITY REDFLAG WARNING: Messages should normally be recreated rather 
+ *
+ * SECURITY REDFLAG WARNING: Messages should normally be recreated rather
  * than passed on. Messages can contain sub-messages, these are used to
  * avoid having to add whole new message types every time we add one field
- * to a message... Passing on a message as-is means it includes the 
+ * to a message... Passing on a message as-is means it includes the
  * sub-messages, which could lead to e.g. labelling, communication between
  * colluding nodes along a request route, and just wasting bytes.
- * 
+ *
  * FIXME we should get rid of sub-messages.
  *
  * @author ian
@@ -58,9 +58,9 @@ public class Message {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -77,19 +77,19 @@ public class Message {
 	short priority;
 	private boolean needsLoadRT;
 	private boolean needsLoadBulk;
-	
+
 	public static Message decodeMessageFromPacket(byte[] buf, int offset, int length, PeerContext peer, int overhead) {
 		ByteBufferInputStream bb = new ByteBufferInputStream(buf, offset, length);
 		return decodeMessage(bb, peer, length + overhead, true, false, false);
 	}
-	
+
 	public static Message decodeMessageLax(byte[] buf, PeerContext peer, int overhead) {
 		ByteBufferInputStream bb = new ByteBufferInputStream(buf);
 		return decodeMessage(bb, peer, buf.length + overhead, true, false, true);
 	}
 
 	private static Message decodeMessage(ByteBufferInputStream bb, PeerContext peer, int recvByteCount,
-	        boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
+										 boolean mayHaveSubMessages, boolean inSubMessage, boolean veryLax) {
 		MessageType mspec;
 		try {
 			mspec = MessageType.getSpec(bb.readInt(), veryLax);
@@ -111,7 +111,7 @@ public class Message {
 				Class<?> type = mspec.getFields().get(name);
 				if (type.equals(LinkedList.class)) { // Special handling for LinkedList to deal with element type
 					m.set(name, Serializer
-					      .readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
+						  .readListFromDataInputStream(mspec.getLinkedListTypes().get(name), bb));
 				} else {
 					m.set(name, Serializer.readFromDataInputStream(type, bb));
 				}
@@ -226,7 +226,7 @@ public class Message {
 	public Object getObject(String key) {
 		return _payload.get(key);
 	}
-	
+
 	public byte[] getShortBufferBytes(String key) {
 		ShortBuffer buffer = (ShortBuffer) getObject(key);
 		return buffer.getData();
@@ -327,7 +327,7 @@ public class Message {
 	}
 
 	public boolean isInternal() {
-	    return _internal;
+		return _internal;
 	}
 
 	public MessageType getSpec() {
@@ -384,7 +384,7 @@ public class Message {
 
 	public Message grabSubMessage(MessageType t) {
 		if (_subMessages == null) return null;
-		for (int i=0;i<_subMessages.size();i++) {
+		for (int i=0; i<_subMessages.size(); i++) {
 			Message m = _subMessages.get(i);
 			if (m.getSpec() == t) {
 				_subMessages.remove(i);
@@ -401,7 +401,7 @@ public class Message {
 	public short getPriority() {
 		return priority;
 	}
-	
+
 	public void boostPriority() {
 		priority--;
 	}
@@ -409,15 +409,15 @@ public class Message {
 	public boolean needsLoadRT() {
 		return needsLoadRT;
 	}
-	
+
 	public boolean needsLoadBulk() {
 		return needsLoadBulk;
 	}
-	
+
 	public void setNeedsLoadRT() {
 		needsLoadRT = true;
 	}
-	
+
 	public void setNeedsLoadBulk() {
 		needsLoadBulk = true;
 	}

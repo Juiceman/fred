@@ -25,9 +25,9 @@ import freenet.support.io.FileUtil;
 
 /**
  * ClientGet message.
- * 
+ *
  * Example:
- * 
+ *
  * ClientGet
  * IgnoreDS=false // true = ignore the datastore
  * DSOnly=false // true = only check the datastore, don't route (~= htl 0)
@@ -35,13 +35,13 @@ import freenet.support.io.FileUtil;
  * Identifier=Request Number One
  * Verbosity=0 // no status, just tell us when it's done
  * ReturnType=direct // return all at once over the FCP connection
- * MaxSize=100 // maximum size of returned data 
+ * MaxSize=100 // maximum size of returned data
  * MaxTempSize=1000 // maximum size of intermediary data
  * MaxRetries=100 // automatic retry supported as an option
  * PriorityClass=1 // priority class 1 = interactive
  * Persistence=reboot // continue until node is restarted; report progress while client is
  *    connected, including if it reconnects after losing connection
- * ClientToken=hello // returned in PersistentGet, a hint to the client, so the client 
+ * ClientToken=hello // returned in PersistentGet, a hint to the client, so the client
  *    doesn't need to maintain its own state
  * IgnoreUSKDatehints=false // true = don't use USK datehints
  * EndMessage
@@ -72,17 +72,17 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 	final boolean ignoreUSKDatehints;
 	private Bucket initialMetadata;
 	private final long initialMetadataLength;
-	
+
 	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	public ClientGetMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		short defaultPriority;
 		clientToken = fs.get("ClientToken");
@@ -129,8 +129,8 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 				throw new MessageInvalidException(ProtocolErrorMessage.DISK_TARGET_EXISTS, null, identifier, global);
 			try {
 				// Check whether we can create a temp file in the target directory.
-			    File temp = FileUtil.createTempFile(diskFile.getName(), ".freenet-tmp", diskFile.getParentFile());
-			    temp.delete();
+				File temp = FileUtil.createTempFile(diskFile.getName(), ".freenet-tmp", diskFile.getParentFile());
+				temp.delete();
 			} catch (IOException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.COULD_NOT_CREATE_FILE, e.getMessage(), identifier, global);
 			}
@@ -144,7 +144,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 			try {
 				maxSize = Long.parseLong(maxSizeString, 10);
 				if(maxSize < 0)
-				    throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum size must be positive", identifier, global);
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum size must be positive", identifier, global);
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: "+e.getMessage(), identifier, global);
 			}
@@ -156,8 +156,8 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		else {
 			try {
 				maxTempSize = Long.parseLong(maxTempSizeString, 10);
-                if(maxTempSize < 0)
-                    throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum temp size must be positive", identifier, global);
+				if(maxTempSize < 0)
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum temp size must be positive", identifier, global);
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: "+e.getMessage(), identifier, global);
 			}
@@ -199,7 +199,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		realTimeFlag = fs.getBoolean("RealTimeFlag", false);
 		initialMetadataLength = fs.getLong("InitialMetadata.DataLength", 0);
 		if(initialMetadataLength < 0)
-		    throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid data length for initial metadata", identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid data length for initial metadata", identifier, global);
 		ignoreUSKDatehints = fs.getBoolean("IgnoreUSKDatehints", false);
 	}
 
@@ -236,13 +236,13 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 
 	ReturnType parseReturnTypeFCP(String string) throws MessageInvalidException {
 		try {
-		    if(string == null) return ReturnType.DIRECT;
-		    return ReturnType.valueOf(string.toUpperCase());
+			if(string == null) return ReturnType.DIRECT;
+			return ReturnType.valueOf(string.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unable to parse ReturnType "+string+" : "+e, identifier, global);
 		}
 	}
-	
+
 	@Override
 	long dataLength() {
 		return initialMetadataLength;
@@ -250,7 +250,7 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 
 	@Override
 	public void readFrom(InputStream is, BucketFactory bf, FCPServer server)
-			throws IOException, MessageInvalidException {
+	throws IOException, MessageInvalidException {
 		if(initialMetadataLength == 0) return;
 		Bucket data;
 		data = bf.makeBucket(initialMetadataLength);

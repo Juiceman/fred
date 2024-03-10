@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  * Test case for {@link freenet.support.HexUtil} class.
- * 
+ *
  * @author Alberto Bacchelli &lt;sback@freenetproject.org&gt;
  */
 public class HexUtilTest {
@@ -46,14 +46,15 @@ public class HexUtilTest {
 		String expectedResult;
 		for (int i = 255; i >= 0; i--) {
 			methodByteArray[0] = (byte)i;
-			/* Integer.toHexString works with int so it doesn't return always a two digit hex. 
+			/* Integer.toHexString works with int so it doesn't return always a two digit hex.
 			   For this reason we need the next "switch case". */
 			expectedResult = (i <= 15?
-					"0" + (Integer.toHexString(i)):
-					(Integer.toHexString(i)));
-			assertEquals(expectedResult,HexUtil.bytesToHex(methodByteArray));}
+							  "0" + (Integer.toHexString(i)):
+							  (Integer.toHexString(i)));
+			assertEquals(expectedResult,HexUtil.bytesToHex(methodByteArray));
+		}
 	}
-	
+
 	/**
 	 * Test the hexToBytes(String) method
 	 * against the hex representation of
@@ -66,14 +67,15 @@ public class HexUtilTest {
 		String methodHexString;
 		for (int i = 255; i >= 0; i--) {
 			expectedByteArray[0] = (byte)i;
-			/* Integer.toHexString works with int so it doesn't return always a two digit hex. 
+			/* Integer.toHexString works with int so it doesn't return always a two digit hex.
 			   For this reason we need the next "switch case". */
 			methodHexString = (i <= 15?
-					"0" + (Integer.toHexString(i)):
-					(Integer.toHexString(i)));
-			assertTrue(Arrays.equals(expectedByteArray,HexUtil.hexToBytes(methodHexString)));}
+							   "0" + (Integer.toHexString(i)):
+							   (Integer.toHexString(i)));
+			assertTrue(Arrays.equals(expectedByteArray,HexUtil.hexToBytes(methodHexString)));
+		}
 	}
-	
+
 	/**
 	 * Test the hexToBytes(String,int) method
 	 * against the hex representation of
@@ -86,14 +88,15 @@ public class HexUtilTest {
 		String methodHexString;
 		for (int i = 255; i >= 0; i--) {
 			expectedByteArray[0] = (byte)i;
-			/* Integer.toHexString works with int so it doesn't return always a two digit hex. 
+			/* Integer.toHexString works with int so it doesn't return always a two digit hex.
 			   For this reason we need the next "switch case". */
 			methodHexString = (i <= 15?
-					"0" + (Integer.toHexString(i)):
-					(Integer.toHexString(i)));
-			assertTrue(Arrays.equals(expectedByteArray,HexUtil.hexToBytes(methodHexString,0)));}
+							   "0" + (Integer.toHexString(i)):
+							   (Integer.toHexString(i)));
+			assertTrue(Arrays.equals(expectedByteArray,HexUtil.hexToBytes(methodHexString,0)));
+		}
 	}
-	
+
 	/**
 	 * Test the hexToBytes(String,byte[],int) method
 	 * against the hex representation of
@@ -106,15 +109,16 @@ public class HexUtilTest {
 		String methodHexString;
 		for (int i = 255; i >= 0; i--) {
 			expectedByteArray[0] = (byte)i;
-			/* Integer.toHexString works with int so it doesn't return always a two digit hex. 
+			/* Integer.toHexString works with int so it doesn't return always a two digit hex.
 			   For this reason we need the next "switch case". */
 			methodHexString = (i <= 15?
-					"0" + (Integer.toHexString(i)):
-					(Integer.toHexString(i)));
+							   "0" + (Integer.toHexString(i)):
+							   (Integer.toHexString(i)));
 			HexUtil.hexToBytes(methodHexString,outputArray,0);
-			assertTrue(Arrays.equals(expectedByteArray,outputArray));}
+			assertTrue(Arrays.equals(expectedByteArray,outputArray));
+		}
 	}
-	
+
 	/**
 	 * Test the bitsToByte(BitSet,int) method
 	 * against the bit representation of
@@ -132,9 +136,9 @@ public class HexUtilTest {
 			addOne(methodBitSet);
 		}
 	}
-	
+
 	/**
-	 * It adds 1 to a given BitSet 
+	 * It adds 1 to a given BitSet
 	 * @param aBitSet
 	 */
 	private void addOne(BitSet aBitSet) {
@@ -145,7 +149,7 @@ public class HexUtilTest {
 		}
 		aBitSet.flip(bitSetIndex);
 	}
-	
+
 	/**
 	 * Test countBytesForBits(int) method
 	 * against all possible values until 256 bytes
@@ -158,7 +162,7 @@ public class HexUtilTest {
 			for (int bits = (expectedBytesCount-1)*8+1; bits <= (expectedBytesCount)*8; bits++)
 				assertEquals(HexUtil.countBytesForBits(bits),expectedBytesCount);
 	}
-	
+
 	/**
 	 * Test bytesToBits(byte[],BitSet,int) method
 	 * against all possible single byte value.
@@ -172,9 +176,10 @@ public class HexUtilTest {
 		for (int i = 0; i < 255; i++) {
 			methodByteArray[0] = (byte)i;
 			HexUtil.bytesToBits(methodByteArray,methodBitSet,7);
-			assertTrue(Arrays.equals(methodByteArray,HexUtil.bitsToBytes(methodBitSet,8)));}
+			assertTrue(Arrays.equals(methodByteArray,HexUtil.bitsToBytes(methodBitSet,8)));
+		}
 	}
-	
+
 	/**
 	 * Test biToHex(BigInteger) method
 	 * comparing its results to results provided
@@ -192,7 +197,7 @@ public class HexUtilTest {
 		expectedHexValue = "00ffffffffffffff";
 		assertEquals(HexUtil.biToHex(methodBigInteger),expectedHexValue);
 	}
-	
+
 	/**
 	 * Test bitsToHexString(BitSet,int) method
 	 * comparing its results to results provided
@@ -210,7 +215,7 @@ public class HexUtilTest {
 		expectedString = "ff";
 		assertEquals(HexUtil.bitsToHexString(methodBitSet,8),expectedString);
 	}
-	
+
 	/**
 	 * Tests hexToBits(String,BitSet,int) method
 	 */
@@ -219,7 +224,7 @@ public class HexUtilTest {
 		String methodStringToStore = "00";
 		BitSet methodBitSet = new BitSet(8);
 		HexUtil.hexToBits(methodStringToStore,methodBitSet,methodBitSet.size());
-		assertTrue(methodBitSet.cardinality()==0);		
+		assertTrue(methodBitSet.cardinality()==0);
 		BitSet expectedBitSet = new BitSet(8);
 		expectedBitSet.set(0,7,true); /*0x7f*/
 		methodStringToStore = "7f";
@@ -232,7 +237,7 @@ public class HexUtilTest {
 		HexUtil.hexToBits(methodStringToStore,methodBitSet,methodBitSet.size());
 		assertTrue(methodBitSet.intersects(expectedBitSet));
 	}
-	
+
 	/**
 	 * Tests writeBigInteger(BigInteger,DataOutputStream)
 	 * and readBigInteger(DataInputStream) comparing a
@@ -246,14 +251,15 @@ public class HexUtilTest {
 		DataOutputStream methodDataOutStream = new DataOutputStream(methodByteArrayOutStream);
 		try {
 			HexUtil.writeBigInteger(methodBigInteger,methodDataOutStream);
-			ByteArrayInputStream methodByteArrayInStream = 
+			ByteArrayInputStream methodByteArrayInStream =
 				new ByteArrayInputStream(methodByteArrayOutStream.toByteArray());
 			DataInputStream methodDataInStream = new DataInputStream(methodByteArrayInStream);
 			assertTrue(methodBigInteger.compareTo(HexUtil.readBigInteger(methodDataInStream))==0);
 		} catch (IOException aException) {
-			fail("Not expected exception thrown : " + aException.getMessage()); }
+			fail("Not expected exception thrown : " + aException.getMessage());
+		}
 	}
-	
+
 	/**
 	 * Test bytesToHex(byte[],int,int) method
 	 * with a too long starting offset. The tested
@@ -261,15 +267,16 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testBytesToHex_byteIntInt_WithLongOffset() {
-        try {
-        	int arrayLength = 3;
-        	byte[] methodBytesArray = new byte[arrayLength];
-    		HexUtil.bytesToHex(methodBytesArray,arrayLength+1,1);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IllegalArgumentException anException) {
-            assertNotNull(anException); }
-    }
-	
+		try {
+			int arrayLength = 3;
+			byte[] methodBytesArray = new byte[arrayLength];
+			HexUtil.bytesToHex(methodBytesArray,arrayLength+1,1);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (IllegalArgumentException anException) {
+			assertNotNull(anException);
+		}
+	}
+
 	/**
 	 * Test bytesToHex(byte[],int,int) method
 	 * with asking to read too many bytes. The tested
@@ -277,15 +284,16 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testBytesToHex_byteIntInt_WithLongReading() {
-        try {
-        	int arrayLength = 3;
-        	byte[] methodBytesArray = new byte[arrayLength];
-    		HexUtil.bytesToHex(methodBytesArray,0,arrayLength+1);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IllegalArgumentException anException) {
-            assertNotNull(anException); }
-    }
-	
+		try {
+			int arrayLength = 3;
+			byte[] methodBytesArray = new byte[arrayLength];
+			HexUtil.bytesToHex(methodBytesArray,0,arrayLength+1);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (IllegalArgumentException anException) {
+			assertNotNull(anException);
+		}
+	}
+
 	/**
 	 * Test bytesToHex(byte[],int,int) method
 	 * with a 0 length.
@@ -296,7 +304,7 @@ public class HexUtilTest {
 		byte[] methodBytesArray = {1,2,3};		//a non-zero bytes array
 		assertEquals("",HexUtil.bytesToHex(methodBytesArray,0,length));
 	}
-	
+
 	/**
 	 * Test hexToBytes(String,byte[],int) method
 	 * with a too long offset.
@@ -304,15 +312,16 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testHexToBytes_StringByteInt_WithLongOffset() {
-        try {
-        	String methodString = "0";
-        	byte[] methodByteArray = new byte[1];
-    		HexUtil.hexToBytes(methodString,methodByteArray,methodByteArray.length);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (ArrayIndexOutOfBoundsException anException) {
-            assertNotNull(anException); }
-    }
-	
+		try {
+			String methodString = "0";
+			byte[] methodByteArray = new byte[1];
+			HexUtil.hexToBytes(methodString,methodByteArray,methodByteArray.length);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (ArrayIndexOutOfBoundsException anException) {
+			assertNotNull(anException);
+		}
+	}
+
 	/**
 	 * Test hexToBytes(String,byte[],int) method
 	 * with a too short byte[] to put the result.
@@ -320,41 +329,45 @@ public class HexUtilTest {
 	 */
 	@Test
 	public void testHexToBytes_StringByteInt_WithShortArray() {
-        try {
-        	String methodString = "0000";
-        	byte[] methodByteArray = new byte[1];
-    		HexUtil.hexToBytes(methodString,methodByteArray,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (IndexOutOfBoundsException anException) {
-            assertNotNull(anException); }
-    }
-	
+		try {
+			String methodString = "0000";
+			byte[] methodByteArray = new byte[1];
+			HexUtil.hexToBytes(methodString,methodByteArray,0);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (IndexOutOfBoundsException anException) {
+			assertNotNull(anException);
+		}
+	}
+
 	/**
 	 * Test all hexToBytes() methods
 	 * with a not valid character.
-	 * The method should raise an exception. 
+	 * The method should raise an exception.
 	 */
 	@Test
 	public void testHexToBytes_WithBadDigit() {
 		String methodString = "00%0";
 		try {
-        	byte[] methodByteArray = new byte[methodString.length()];
-    		HexUtil.hexToBytes(methodString,methodByteArray,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-        try {
-    		HexUtil.hexToBytes(methodString,0);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-        try {
-    		HexUtil.hexToBytes(methodString);
-            fail("Expected Exception Error Not Thrown!"); } 
-        catch (NumberFormatException anException) {
-            assertNotNull(anException); }
-    }
-	
+			byte[] methodByteArray = new byte[methodString.length()];
+			HexUtil.hexToBytes(methodString,methodByteArray,0);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (NumberFormatException anException) {
+			assertNotNull(anException);
+		}
+		try {
+			HexUtil.hexToBytes(methodString,0);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (NumberFormatException anException) {
+			assertNotNull(anException);
+		}
+		try {
+			HexUtil.hexToBytes(methodString);
+			fail("Expected Exception Error Not Thrown!");
+		} catch (NumberFormatException anException) {
+			assertNotNull(anException);
+		}
+	}
+
 	/**
 	 * Test the bitsToByte(BitSet,int) method
 	 * using a size smaller than the actual number
@@ -375,7 +388,7 @@ public class HexUtilTest {
 		/* 0x01 & 0x01 == 0x01 */
 		outputArray = HexUtil.bitsToBytes(methodBitSet,1);
 		assertTrue(Arrays.equals(expectedByteArray,outputArray));
-		
+
 		/* 0x80 */
 		methodBitSet.flip(7);
 		/* 0x08 */

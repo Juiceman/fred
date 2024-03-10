@@ -11,8 +11,8 @@ import freenet.support.compress.Compressor.COMPRESSOR_TYPE;
 
 class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(ArchiveHandlerImpl.class);
@@ -32,9 +32,9 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 
 	@Override
 	public Bucket get(String internalName, ArchiveContext archiveContext,
-			ArchiveManager manager)
-			throws ArchiveFailureException, ArchiveRestartException,
-			MetadataParseException, FetchException {
+					  ArchiveManager manager)
+	throws ArchiveFailureException, ArchiveRestartException,
+		MetadataParseException, FetchException {
 
 		if(forceRefetchArchive) return null;
 
@@ -52,16 +52,16 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 
 	@Override
 	public Bucket getMetadata(ArchiveContext archiveContext,
-			ArchiveManager manager) throws ArchiveFailureException,
-			ArchiveRestartException, MetadataParseException, FetchException {
+							  ArchiveManager manager) throws ArchiveFailureException,
+		ArchiveRestartException, MetadataParseException, FetchException {
 		return get(".metadata", archiveContext, manager);
 	}
 
 	@Override
 	public void extractToCache(Bucket bucket, ArchiveContext actx,
-			String element, ArchiveExtractCallback callback,
-			ArchiveManager manager, ClientContext context) throws ArchiveFailureException,
-			ArchiveRestartException {
+							   String element, ArchiveExtractCallback callback,
+							   ArchiveManager manager, ClientContext context) throws ArchiveFailureException,
+		ArchiveRestartException {
 		forceRefetchArchive = false; // now we don't need to force refetch any more
 		ArchiveStoreContext ctx = manager.makeContext(key, archiveType, compressorType, false);
 		manager.extractToCache(key, archiveType, compressorType, bucket, actx, ctx, element, callback, context);

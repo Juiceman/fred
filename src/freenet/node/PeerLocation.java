@@ -6,7 +6,7 @@ import java.util.Set;
 import freenet.support.Logger;
 
 public class PeerLocation {
-	
+
 	/** Current location in the keyspace, or -1 if it is unknown */
 	private double currentLocation;
 	/** Current sorted array of locations of our peer's peers. Must not be modified,
@@ -19,7 +19,7 @@ public class PeerLocation {
 		currentLocation = Location.getLocation(locationString);
 		locSetTime = System.currentTimeMillis();
 	}
-	
+
 	public synchronized String toString() {
 		return Double.toString(currentLocation);
 	}
@@ -76,7 +76,7 @@ public class PeerLocation {
 			}
 			newPeersLocation[i] = loc;
 		}
-		
+
 		Arrays.sort(newPeersLocation);
 		boolean anythingChanged = false;
 

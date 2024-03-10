@@ -12,7 +12,7 @@ import freenet.support.SimpleFieldSet;
 /**
  * ProtocolError (some problem parsing the other side's FCP messages, or other
  * problem not related to Freenet)
- * 
+ *
  * ProtocolError
  * Code=1
  * CodeDescription=ClientHello must be first message
@@ -23,8 +23,8 @@ import freenet.support.SimpleFieldSet;
  */
 public class ProtocolErrorMessage extends FCPMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    static final int CLIENT_HELLO_MUST_BE_FIRST_MESSAGE = 1;
+	private static final long serialVersionUID = 1L;
+	static final int CLIENT_HELLO_MUST_BE_FIRST_MESSAGE = 1;
 	static final int NO_LATE_CLIENT_HELLOS = 2;
 	static final int MESSAGE_PARSE_ERROR = 3;
 	static final int FREENET_URI_PARSE_ERROR = 4;
@@ -62,13 +62,13 @@ public class ProtocolErrorMessage extends FCPMessage implements Serializable {
 	static final int WRONG_RETURN_TYPE = 36;
 	static final int IO_ERROR = 37;
 	static final int PLUGINS_DISABLED = 38;
-	
+
 	final int code;
 	final String extra;
 	final boolean fatal;
 	final String ident;
 	final boolean global;
-	
+
 	private String codeDescription() {
 		// FIXME l10n?
 		switch(code) {
@@ -139,14 +139,14 @@ public class ProtocolErrorMessage extends FCPMessage implements Serializable {
 		case BAD_MIME_TYPE:
 			return "Bad MIME type";
 		case WRONG_RETURN_TYPE:
-		    return "Not supported for that return type";
+			return "Not supported for that return type";
 		case IO_ERROR:
-		    return "Disk I/O error";
+			return "Disk I/O error";
 		case PERSISTENCE_DISABLED:
-		    return "Persistence disabled (e.g. encrypted queue waiting for password?)";
+			return "Persistence disabled (e.g. encrypted queue waiting for password?)";
 		default:
 			Logger.error(this, "Unknown error code: "+code, new Exception("debug"));
-		return "(Unknown)";
+			return "(Unknown)";
 		}
 	}
 
@@ -165,14 +165,14 @@ public class ProtocolErrorMessage extends FCPMessage implements Serializable {
 		fatal = fs.getBoolean("Fatal", false);
 		global = fs.getBoolean("Global", false);
 	}
-	
+
 	protected ProtocolErrorMessage() {
-	    // For serialization.
-	    code = 0;
-	    extra = null;
-	    fatal = false;
-	    ident = null;
-	    global = false;
+		// For serialization.
+		code = 0;
+		extra = null;
+		fatal = false;
+		ident = null;
+		global = false;
 	}
 
 	@Override

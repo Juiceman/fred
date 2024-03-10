@@ -12,7 +12,7 @@ public class SSKKeypairMessage extends FCPMessage {
 	private final FreenetURI insertURI;
 	private final FreenetURI requestURI;
 	private final String identifier;
-	
+
 	public SSKKeypairMessage(FreenetURI insertURI, FreenetURI requestURI, String identifier) {
 		this.insertURI = insertURI;
 		this.requestURI = requestURI;

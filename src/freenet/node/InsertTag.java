@@ -8,29 +8,29 @@ import freenet.support.TimeUtil;
  * @author Matthew Toseland <toad@amphibian.dyndns.org> (0xE43DA450)
  */
 public class InsertTag extends UIDTag {
-	
+
 	final boolean ssk;
-	
+
 	enum START {
 		LOCAL,
 		REMOTE
 	}
-	
+
 	final START start;
 	private Throwable handlerThrew;
 	private boolean senderStarted;
 	private boolean senderFinished;
-	
+
 	InsertTag(boolean ssk, START start, PeerNode source, boolean realTimeFlag, long uid, Node node) {
 		super(source, realTimeFlag, uid, node);
 		this.start = start;
 		this.ssk = ssk;
 	}
-	
+
 	public synchronized void startedSender() {
 		senderStarted = true;
 	}
-	
+
 	public void finishedSender() {
 		boolean noRecordUnlock;
 		synchronized(this) {
@@ -46,7 +46,7 @@ public class InsertTag extends UIDTag {
 		if(senderStarted && !senderFinished) return false;
 		return super.mustUnlock();
 	}
-	
+
 	public synchronized void handlerThrew(Throwable t) {
 		handlerThrew = t;
 	}

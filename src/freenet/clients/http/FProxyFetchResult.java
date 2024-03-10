@@ -7,7 +7,7 @@ import freenet.support.api.Bucket;
  * can be the progress of the fetch so far. This is a snapshot, so should be
  * consistent but could be out of date: if the snapshot says it is in progress,
  * it might actually be finished. Note that close() must be called when fproxy
- * has finished with the data (and is the only method that actually calls back 
+ * has finished with the data (and is the only method that actually calls back
  * to the freenet.clients.http.FProxyFetchInProgress ).
  * @author Matthew Toseland <toad@amphibian.dyndns.org> (0xE43DA450)
  */
@@ -15,13 +15,13 @@ public class FProxyFetchResult {
 
 	/** If we have fetched the data, we know this. If we haven't, we might know it. */
 	public final String mimeType;
-	
+
 	/** If we have fetched the data, we know this. If we haven't, we might know it. */
 	public final long size;
-	
+
 	/** If we have fetched the data */
 	final Bucket data;
-	
+
 	/** If we have not fetched the data */
 	/** Creation time */
 	public final long timeStarted;
@@ -39,18 +39,18 @@ public class FProxyFetchResult {
 	public final int fatallyFailedBlocks;
 	/** Finalized blocks? */
 	public final boolean finalizedBlocks;
-	
+
 	/** Number of times this has been used */
 	private int fetchedCount;
-	
+
 	/** Failed */
 	public final FetchException failed;
-	
+
 	final FProxyFetchInProgress progress;
 	final boolean hasWaited;
 
 	public final long eta;
-	
+
 	/** At the time of creating the snapshot, has it finished? */
 	private final boolean finished;
 
@@ -90,7 +90,7 @@ public class FProxyFetchResult {
 		this.hasWaited = hasWaited;
 		finished = (failed != null);
 	}
-	
+
 	/** Must be called when fproxy has finished with the data */
 	public void close() {
 		progress.close(this);
@@ -99,7 +99,7 @@ public class FProxyFetchResult {
 	public boolean hasData() {
 		return data != null;
 	}
-	
+
 	public Bucket getData() {
 		return data;
 	}
@@ -107,17 +107,17 @@ public class FProxyFetchResult {
 	public boolean hasWaited() {
 		return hasWaited;
 	}
-	
-	public boolean isFinished(){
+
+	public boolean isFinished() {
 		return finished;
 	}
 
 	public void setFetchCount(int fetched) {
 		this.fetchedCount = fetched;
 	}
-	
+
 	public int getFetchCount() {
 		return fetchedCount;
 	}
-	
+
 }

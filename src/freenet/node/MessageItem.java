@@ -46,7 +46,7 @@ public class MessageItem {
 		if(buf.length > NewPacketFormat.MAX_MESSAGE_SIZE) {
 			// This is bad because fairness between UID's happens at the level of message queueing,
 			// and the window size is frequently very small, so if we have really big messages they
-			// could cause big problems e.g. starvation of other messages, resulting in timeouts 
+			// could cause big problems e.g. starvation of other messages, resulting in timeouts
 			// (especially if there are retransmits).
 			Logger.error(this, "WARNING: Message too big: "+buf.length+" for "+msg2, new Exception("error"));
 		}
@@ -135,7 +135,7 @@ public class MessageItem {
 		hasCachedID = true;
 		return cachedID;
 	}
-	
+
 	private long generateID() {
 		if(msg == null) return -1;
 		Object o = msg.getObject(DMT.UID);
@@ -160,19 +160,19 @@ public class MessageItem {
 	}
 
 	/** Set the deadline for this message. Called when a message is unqueued, when
-	 * we start to send it. Used if the message does not entirely fit in the 
+	 * we start to send it. Used if the message does not entirely fit in the
 	 * packet, and also if it is retransmitted.
 	 * @param time The time (in the future) to set the deadline to.
 	 */
 	public synchronized void setDeadline(long time) {
 		deadline = time;
 	}
-	
+
 	/** Clear the deadline for this message. */
 	public synchronized void clearDeadline() {
 		deadline = 0;
 	}
-	
+
 	/** Get the deadline for this message. 0 means no deadline has been set. */
 	public synchronized long getDeadline() {
 		return deadline;

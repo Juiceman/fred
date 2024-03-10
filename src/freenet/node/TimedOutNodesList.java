@@ -4,7 +4,7 @@
 package freenet.node;
 
 /**
- * Interface which returns the time at which the failure table timeout on any given node will 
+ * Interface which returns the time at which the failure table timeout on any given node will
  * expire for a specific key.
  * @author toad
  */
@@ -16,7 +16,7 @@ public interface TimedOutNodesList {
 	 * @param now The current time from System.currentTimeMillis().
 	 * @param forPerNodeFailureTables If true, return the timeout for purposes of
 	 * per-node failure tables i.e. which to route to (paranoid high); if false,
-	 * return the timeout for purposes of RecentlyFailed request quenching 
+	 * return the timeout for purposes of RecentlyFailed request quenching
 	 * (trusting low).
 	 * @return The time at which the timeout ends for the node in question.
 	 * -1 if there is no timeout. */

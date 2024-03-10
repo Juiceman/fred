@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 	protected long max;
 	protected long timeLastTick;
 	protected long nanosPerTick;
-	
+
 	/**
 	 * Create a token bucket.
 	 * @param max The maximum size of the bucket, in tokens.
@@ -38,7 +38,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		if(nanosPerTick <= 0) throw new IllegalArgumentException();
 		if(max <= 0) throw new IllegalArgumentException();
 	}
-	
+
 	/**
 	 * Either grab a bunch of tokens, or don't. Never block.
 	 * @param tokens The number of tokens to grab.
@@ -58,7 +58,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Try to grab some tokens; if there aren't enough, grab all of them. Never block.
 	 * @param tokens The number of tokens to grab.
@@ -80,7 +80,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 			return tokens;
 		}
 	}
-	
+
 	/**
 	 * Remove tokens, without blocking, even if it causes the balance to go negative.
 	 * @param tokens The number of tokens to remove.
@@ -92,11 +92,11 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		current -= tokens;
 		if(logMINOR) Logger.minor(this, "Removed tokens, balance now "+current);
 	}
-	
+
 	public synchronized long count() {
 		return current;
 	}
-	
+
 	/**
 	 * Get the current number of available tokens.
 	 */
@@ -108,7 +108,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 	protected long offset() {
 		return 0;
 	}
-	
+
 	public synchronized void blockingGrab(long tokens) {
 		if(tokens < 0) throw new IllegalArgumentException("Can't grab negative tokens: "+tokens);
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
@@ -116,12 +116,12 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		if(tokens < max)
 			innerBlockingGrab(tokens);
 		else {
-			for(int i=0;i<tokens;i+=max) {
+			for(int i=0; i<tokens; i+=max) {
 				innerBlockingGrab(Math.min(tokens, max));
 			}
 		}
 	}
-	
+
 	/**
 	 * Grab a bunch of tokens. Block if necessary.
 	 * @param tokens The number of tokens to grab.
@@ -131,23 +131,23 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		if(logMINOR) Logger.minor(this, "Inner blocking grab: "+tokens);
 		addTokens();
 		if(logMINOR) Logger.minor(this, "current="+current);
-		
+
 		current -= tokens;
-		
+
 		if(current >= 0) {
 			if(logMINOR) Logger.minor(this, "Got tokens instantly, current="+current);
 			return;
 		} else {
 			if(logMINOR) Logger.minor(this, "Blocking grab removed tokens, current="+current+" - will have to wait because negative...");
 		}
-		
+
 		long minDelayNS = nanosPerTick * (-current);
 		long minDelayMS = MILLISECONDS.convert(minDelayNS + MILLISECONDS.toNanos(1) - 1, NANOSECONDS);
 		long now = System.currentTimeMillis();
 		long wakeAt = now + minDelayMS;
-		
+
 		if(logMINOR) Logger.minor(this, "Waking in "+minDelayMS+" millis");
-		
+
 		while(true) {
 			now = System.currentTimeMillis();
 			int delay = (int) Math.min(Integer.MAX_VALUE, wakeAt - now);
@@ -167,7 +167,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		current += tokens;
 		if(current > max) current = max;
 	}
-	
+
 	/**
 	 * Change the number of nanos per tick.
 	 * @param nanosPerTick The new number of nanos per tick.
@@ -186,7 +186,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		max = newMax;
 		addTokens();
 	}
-	
+
 	public synchronized void changeNanosAndBucketSize(long nanosPerTick, long newMax) {
 		if(nanosPerTick <= 0) throw new IllegalArgumentException();
 		if(newMax <= 0) throw new IllegalArgumentException();
@@ -198,14 +198,14 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		this.max = newMax;
 		if(current > max) current = max;
 	}
-	
+
 	public synchronized void addTokens() {
 		addTokensNoClip();
 		if(current > max) current = max;
 		if(logMINOR)
 			Logger.minor(this, "addTokens: Clipped, current="+current);
 	}
-	
+
 	/**
 	 * Update the number of tokens according to elapsed time.
 	 */
@@ -217,7 +217,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 			Logger.minor(this, "addTokensNoClip: Added "+add+" tokens, current="+current);
 		// Deliberately do not clip to size at this point; caller must do this, but it is usually beneficial for the caller to do so.
 	}
-	
+
 	synchronized long tokensToAdd() {
 		long nowNS = NANOSECONDS.convert(System.currentTimeMillis(), MILLISECONDS);
 		if(timeLastTick > nowNS) {
@@ -236,7 +236,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 		}
 		return (nowNS - nextTick) / nanosPerTick;
 	}
-	
+
 	public synchronized long getNanosPerTick() {
 		return nanosPerTick;
 	}

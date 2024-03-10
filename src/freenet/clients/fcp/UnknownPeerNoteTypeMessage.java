@@ -10,7 +10,7 @@ public class UnknownPeerNoteTypeMessage extends FCPMessage {
 
 	final int peerNoteType;
 	final String identifier;
-	
+
 	public UnknownPeerNoteTypeMessage(int peerNoteType, String identifier) {
 		this.peerNoteType = peerNoteType;
 		this.identifier = identifier;
@@ -32,7 +32,7 @@ public class UnknownPeerNoteTypeMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "UnknownPeerNoteType goes from server to client not the other way around", identifier, false);
 	}
 

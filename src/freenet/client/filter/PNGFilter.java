@@ -39,31 +39,32 @@ public class PNGFilter implements ContentDataFilter {
 	private final boolean deleteTimestamp;
 	private final boolean checkCRCs;
 	static final byte[] pngHeader = { (byte) 137, (byte) 80, (byte) 78, (byte) 71, (byte) 13, (byte) 10, (byte) 26,
-	        (byte) 10 };
+									  (byte) 10
+									};
 	static final String[] HARMLESS_CHUNK_TYPES = {
-	// http://www.w3.org/TR/PNG/
-	        "tRNS", "cHRM", "gAMA", "iCCP", // FIXME Embedded ICC profile: could this conceivably cause a web lookup?
-	        "sBIT", // FIXME rather obscure ??
-	        "sRGB", "bKGD", "hIST", "pHYs", "sPLT",
-	        // APNG chunks (Firefox 3 will support APNG)
-	        // http://wiki.mozilla.org/APNG_Specification
-	        "acTL", "fcTL", "fdAT"
-	// MNG isn't supported by Firefox and IE because of lack of market demand. Big surprise
-	// given nobody supports it! It is supported by Konqueror though. Complex standard,
-	// not worth it for the time being.
+		// http://www.w3.org/TR/PNG/
+		"tRNS", "cHRM", "gAMA", "iCCP", // FIXME Embedded ICC profile: could this conceivably cause a web lookup?
+		"sBIT", // FIXME rather obscure ??
+		"sRGB", "bKGD", "hIST", "pHYs", "sPLT",
+		// APNG chunks (Firefox 3 will support APNG)
+		// http://wiki.mozilla.org/APNG_Specification
+		"acTL", "fcTL", "fdAT"
+		// MNG isn't supported by Firefox and IE because of lack of market demand. Big surprise
+		// given nobody supports it! It is supported by Konqueror though. Complex standard,
+		// not worth it for the time being.
 
-	// This might be a useful source of info too (e.g. on private chunks):
-	// http://fresh.t-systems-sfr.com/unix/privat/pngcheck-2.3.0.tar.gz:a/pngcheck-2.3.0/pngcheck.c
+		// This might be a useful source of info too (e.g. on private chunks):
+		// http://fresh.t-systems-sfr.com/unix/privat/pngcheck-2.3.0.tar.gz:a/pngcheck-2.3.0/pngcheck.c
 	};
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -76,26 +77,26 @@ public class PNGFilter implements ContentDataFilter {
 
 	@Override
 	public void readFilter(
-			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		readFilter(input, output, charset, otherParams, cb, deleteText, deleteTimestamp, checkCRCs);
 		output.flush();
 	}
 
 	public void readFilter(InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			FilterCallback cb, boolean deleteText, boolean deleteTimestamp, boolean checkCRCs)
-			throws DataFilterException, IOException {
+						   FilterCallback cb, boolean deleteText, boolean deleteTimestamp, boolean checkCRCs)
+	throws DataFilterException, IOException {
 		DataInputStream dis = null;
 		boolean hasSeenIHDR = false;
 		boolean hasSeenIEND = false;
 		boolean hasSeenIDAT = false;
 		try {
-                        long offset = 0;
+			long offset = 0;
 			dis = new DataInputStream(input);
 			// Check the header
 			byte[] headerCheck = new byte[pngHeader.length];
 			dis.readFully(headerCheck);
-                        offset+=pngHeader.length;
+			offset+=pngHeader.length;
 			if (!Arrays.equals(headerCheck, pngHeader)) {
 				// Throw an exception
 				String message = l10n("invalidHeader");
@@ -131,7 +132,7 @@ public class PNGFilter implements ContentDataFilter {
 				}
 
 				int length = ((lengthBytes[0] & 0xff) << 24) + ((lengthBytes[1] & 0xff) << 16)
-				        + ((lengthBytes[2] & 0xff) << 8) + (lengthBytes[3] & 0xff);
+							 + ((lengthBytes[2] & 0xff) << 8) + (lengthBytes[3] & 0xff);
 				if (logMINOR)
 					Logger.minor(this, "length " + length+ "(offset=0x"+Long.toHexString(offset)+") ");
 				if (dos != null)
@@ -139,7 +140,7 @@ public class PNGFilter implements ContentDataFilter {
 
 				// Type of the chunk : Should match [a-zA-Z]{4}
 				dis.readFully(lengthBytes);
-                                offset+=4;
+				offset+=4;
 				StringBuilder sb = new StringBuilder();
 				byte[] chunkTypeBytes = new byte[4];
 				for (int i = 0; i < 4; i++) {
@@ -182,19 +183,19 @@ public class PNGFilter implements ContentDataFilter {
 
 				if (checkCRCs) {
 					long readCRC = (((crcLengthBytes[0] & 0xff) << 24) + ((crcLengthBytes[1] & 0xff) << 16)
-					        + ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
+									+ ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
 					CRC32 crc = new CRC32();
 					crc.update(chunkTypeBytes);
 					if(length > 0)
-                                            crc.update(chunkData);
+						crc.update(chunkData);
 					long computedCRC = crc.getValue();
 
 					if (readCRC != computedCRC) {
 						skip = true;
 						if (logMINOR)
 							Logger.minor(this, "CRC of the chunk " + chunkTypeString + " doesn't match ("
-							        + Long.toHexString(readCRC) + " but should be " + Long.toHexString(computedCRC)
-							        + ")!");
+										 + Long.toHexString(readCRC) + " but should be " + Long.toHexString(computedCRC)
+										 + ")!");
 					}
 				}
 
@@ -224,8 +225,8 @@ public class PNGFilter implements ContentDataFilter {
 
 					if(logMINOR)
 						Logger.minor(this, "Info from IHDR: width="+width+"px height="+height+"px bitDepth="+bitDepth+
-								" colourType="+colourType+" compressionMethod="+compressionMethod+" filterMethod="+
-								filterMethod+" interlaceMethod="+interlaceMethod);
+									 " colourType="+colourType+" compressionMethod="+compressionMethod+" filterMethod="+
+									 filterMethod+" interlaceMethod="+interlaceMethod);
 					hasSeenIHDR = true;
 					validChunkType = true;
 				}
@@ -249,7 +250,7 @@ public class PNGFilter implements ContentDataFilter {
 				if (!skip && "IDAT".equalsIgnoreCase(chunkTypeString)) {
 					if (hasSeenIDAT && !"IDAT".equalsIgnoreCase(lastChunkType))
 						throwError("Multiple IDAT chunks must be consecutive!",
-						        "Multiple IDAT chunks must be consecutive!");
+								   "Multiple IDAT chunks must be consecutive!");
 					hasSeenIDAT = true;
 					validChunkType = true;
 				}
@@ -262,7 +263,7 @@ public class PNGFilter implements ContentDataFilter {
 				}
 
 				if ("text".equalsIgnoreCase(chunkTypeString) || "itxt".equalsIgnoreCase(chunkTypeString)
-				        || "ztxt".equalsIgnoreCase(chunkTypeString)) {
+						|| "ztxt".equalsIgnoreCase(chunkTypeString)) {
 					if (deleteText)
 						skip = true;
 					else
@@ -283,8 +284,8 @@ public class PNGFilter implements ContentDataFilter {
 				else if (!skip && output != null) {
 					if (logMINOR)
 						Logger
-						        .minor(this, "Writing " + chunkTypeString + " (" + baos.size()
-						                + ") to the output bucket");
+						.minor(this, "Writing " + chunkTypeString + " (" + baos.size()
+							   + ") to the output bucket");
 					baos.writeTo(output);
 					baos.flush();
 				}
@@ -309,22 +310,23 @@ public class PNGFilter implements ContentDataFilter {
 	@SuppressWarnings("fallthrough")
 	private void throwOnInvalidColour(int bitDepth, int colourType) throws DataFilterException {
 		switch (bitDepth) {
-			case 1:
-			case 2:
-			case 4:
-				if(colourType != 0 && colourType != 3)
-					throwError("Invalid colourType/bitDepth combination!",
-							"Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
+		case 1:
+		case 2:
+		case 4:
+			if(colourType != 0 && colourType != 3)
+				throwError("Invalid colourType/bitDepth combination!",
+						   "Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
+			break;
+		case 16:
+			if(colourType == 3)
+				throwError("Invalid colourType/bitDepth combination!",
+						   "Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
+		case 8:
+			if(colourType == 0 || colourType ==2 || colourType ==3 || colourType ==4|| colourType ==6)
 				break;
-			case 16:
-				if(colourType == 3)
-					throwError("Invalid colourType/bitDepth combination!",
-							"Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
-			case 8:
-				if(colourType == 0 || colourType ==2 || colourType ==3 || colourType ==4|| colourType ==6)
-					break;
-			default: throwError("Invalid colourType/bitDepth combination!",
-					"Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
+		default:
+			throwError("Invalid colourType/bitDepth combination!",
+					   "Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
 		}
 	}
 
@@ -346,7 +348,7 @@ public class PNGFilter implements ContentDataFilter {
 			Logger.setupStdoutLogging(LogLevel.MINOR, "");
 
 			ContentFilter.filter(inputStream, outputStream, "image/png",
-					new URI("http://127.0.0.1:8888/"), null, null, null, null);
+								 new URI("http://127.0.0.1:8888/"), null, null, null, null);
 		} finally {
 			Closer.close(inputStream);
 			Closer.close(outputStream);

@@ -10,10 +10,10 @@ import freenet.support.SimpleFieldSet;
 public class ListPeerMessage extends FCPMessage {
 
 	static final String NAME = "ListPeer";
-	
+
 	final SimpleFieldSet fs;
 	final String identifier;
-	
+
 	public ListPeerMessage(SimpleFieldSet fs) {
 		this.fs = fs;
 		this.identifier = fs.get("Identifier");

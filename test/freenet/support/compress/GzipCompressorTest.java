@@ -44,11 +44,12 @@ public class GzipCompressorTest {
 			+ "djjjjjjjjjjjjjjj3j12j312j312j312j31j23hj123niah1ia3h1iu2b321uiab31ugb312gba38gab23igb12i3ag1b2ig3bi1g3bi1gba3iu12ba3iug1bi3ug1b2i3gab1i2ua3";
 
 	private static final byte[] COMPRESSED_DATA_1 = { 31, -117, 8, 0, 0, 0, 0, 0, 0, 0, -99, -117, 81, 10, -60, 48, 8, 68, -49, -92, -13, -77,
-			-41, 25, 9, 36, 26, -24, 82, 66, -18, 95, -37, -12, -89, -80, 44, -53, 14, -8, 70, 71, 37, -1, -108, -3, 36, -10, 17, -91, 113, -12,
-			24, -53, -110, 87, -44, 121, 38, -99, 39, -10, 86, -4, -67, -77, -107, 28, 111, 108, -117, -7, 81, -38, -39, -57, -118, -66, -39,
-			-25, -43, 86, -18, -119, 37, -98, 66, -120, 6, 30, 21, -118, -106, 41, 54, 103, 19, 39, 18, 83, 13, 42, -45, 105, -112, 89, 19, 90,
-			-115, 120, 85, -102, -62, -85, -119, 58, 88, -59, -44, 43, -52, 101, 33, 15, 124, -118, 94, -106, 59, -57, -68, 46, -112, 79, -30,
-			58, -119, 3, -88, -111, 58, 68, 117, 1, 0, 0 };
+													  -41, 25, 9, 36, 26, -24, 82, 66, -18, 95, -37, -12, -89, -80, 44, -53, 14, -8, 70, 71, 37, -1, -108, -3, 36, -10, 17, -91, 113, -12,
+													  24, -53, -110, 87, -44, 121, 38, -99, 39, -10, 86, -4, -67, -77, -107, 28, 111, 108, -117, -7, 81, -38, -39, -57, -118, -66, -39,
+													  -25, -43, 86, -18, -119, 37, -98, 66, -120, 6, 30, 21, -118, -106, 41, 54, 103, 19, 39, 18, 83, 13, 42, -45, 105, -112, 89, 19, 90,
+													  -115, 120, 85, -102, -62, -85, -119, 58, 88, -59, -44, 43, -52, 101, 33, 15, 124, -118, 94, -106, 59, -57, -68, 46, -112, 79, -30,
+													  58, -119, 3, -88, -111, 58, 68, 117, 1, 0, 0
+													};
 
 	/**
 	 * test GZIP compressor's identity and functionality
@@ -130,9 +131,9 @@ public class GzipCompressorTest {
 		NullBucket outBucket = new NullBucket();
 
 		try (
-			InputStream decompressorInput = inBucket.getInputStream();
-			OutputStream decompressorOutput = outBucket.getOutputStream()
-		) {
+				InputStream decompressorInput = inBucket.getInputStream();
+				OutputStream decompressorOutput = outBucket.getOutputStream()
+			) {
 			GZIP.decompress(decompressorInput, decompressorOutput, 4096 + 10, 4096 + 20);
 		} catch (CompressionOutputSizeException e) {
 			// expect this
@@ -146,9 +147,9 @@ public class GzipCompressorTest {
 
 	private byte[] doBucketDecompress(byte[] compressedData) throws IOException {
 		try (
-			ByteArrayInputStream decompressorInput = new ByteArrayInputStream(compressedData);
-			ByteArrayOutputStream decompressorOutput = new ByteArrayOutputStream()
-		) {
+				ByteArrayInputStream decompressorInput = new ByteArrayInputStream(compressedData);
+				ByteArrayOutputStream decompressorOutput = new ByteArrayOutputStream()
+			) {
 			GZIP.decompress(decompressorInput, decompressorOutput, 32768, 32768 * 2);
 			return decompressorOutput.toByteArray();
 		}

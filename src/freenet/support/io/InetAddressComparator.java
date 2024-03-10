@@ -5,16 +5,16 @@ import java.util.Comparator;
 
 import freenet.support.Fields;
 
-/** Fast non-lexical Comparator for IP addresses for cases where an 
- * attacker might forge IP addresses to try to exhaust a hashtable, so we 
- * need to use a TreeMap, but we don't actually care whether similar IPs 
+/** Fast non-lexical Comparator for IP addresses for cases where an
+ * attacker might forge IP addresses to try to exhaust a hashtable, so we
+ * need to use a TreeMap, but we don't actually care whether similar IPs
  * are close together.
  * @author toad */
 public class InetAddressComparator implements Comparator<InetAddress> {
 
 	public final static InetAddressComparator COMPARATOR =
 		new InetAddressComparator();
-	
+
 	@Override
 	public int compare(InetAddress arg0, InetAddress arg1) {
 		if(arg0 == arg1) return 0;

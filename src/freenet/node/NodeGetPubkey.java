@@ -20,20 +20,20 @@ public class NodeGetPubkey implements GetPubkey {
 	static {
 		Logger.registerClass(NodeGetPubkey.class);
 	}
-	
+
 	// Debugging stuff
 	private static final boolean USE_RAM_PUBKEYS_CACHE = true;
 	private static final int MAX_MEMORY_CACHED_PUBKEYS = 1000;
-	
+
 	private final LRUMap<ByteArrayWrapper, DSAPublicKey> cachedPubKeys;
 
 	private PubkeyStore pubKeyDatastore;
 	private PubkeyStore pubKeyDatacache;
 	private PubkeyStore pubKeyClientcache;
 	private PubkeyStore pubKeySlashdotcache;
-	
+
 	private final Node node;
-	
+
 	NodeGetPubkey(Node node) {
 		cachedPubKeys = LRUMap.createSafeMap(ByteArrayWrapper.FAST_COMPARATOR);
 		this.node = node;
@@ -158,7 +158,7 @@ public class NodeGetPubkey implements GetPubkey {
 	public void setLocalDataStore(PubkeyStore pubKeyClientcache) {
 		this.pubKeyClientcache = pubKeyClientcache;
 	}
-	
+
 	public void setLocalSlashdotcache(PubkeyStore pubKeySlashdotcache) {
 		this.pubKeySlashdotcache = pubKeySlashdotcache;
 	}

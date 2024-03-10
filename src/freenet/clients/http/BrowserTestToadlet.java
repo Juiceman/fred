@@ -176,7 +176,7 @@ public class BrowserTestToadlet extends Toadlet {
 		"X38FNlhhhyW2WGOPRTZZZbEMCAA7";
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx)
-		 throws ToadletContextClosedException, IOException {
+	throws ToadletContextClosedException, IOException {
 		// Yes, we need that in order to test the browser (number of connections per server)
 		if (request.isParameterSet("wontload")) return;
 
@@ -191,7 +191,7 @@ public class BrowserTestToadlet extends Toadlet {
 		/* for test (for allow <img src="data:...) add "; img-src 'self' data:"
 		 * to freenet.clients.http.ToadletContextImpl#generateCSP return statement */
 		ctx.getPageMaker().getInfobox("infobox-warning", "MIME Inline", contentNode, "mime-inline-test", true).
-			addChild("img", new String[]{"src", "alt"}, new String[]{"data:image/gif;base64,"+imgWarningMime, "Your browser is probably safe."});
+		addChild("img", new String[] {"src", "alt"}, new String[] {"data:image/gif;base64,"+imgWarningMime, "Your browser is probably safe."});
 
 		// #### Test whether we can have more than 10 simultaneous connections to fproxy
 		HTMLNode maxConnectionsPerServerContent = ctx.getPageMaker().getInfobox("infobox-warning", "Number of connections", contentNode, "browser-connections", true);
@@ -199,17 +199,17 @@ public class BrowserTestToadlet extends Toadlet {
 		for(int i = 0; i < 10 ; i++)
 			maxConnectionsPerServerContent.addChild("img", "src", ".?wontload");
 		maxConnectionsPerServerContent.addChild("img",
-			 new String[]{"src", "alt"},
-			 new String[]{"/static/themes/clean/success.png", "fail!"});
+												new String[] {"src", "alt"},
+												new String[] {"/static/themes/clean/success.png", "fail!"});
 
 		// #### Test whether JS is available. : should do the test with pictures instead!
 		ctx.getPageMaker().getInfobox("infobox-warning", "Javascript", contentNode, "javascript-test", true)
-			 .addChild("div")
-			 .addChild("img",
-					new String[]{"id", "src", "alt"},
-					new String[]{"JSTEST", "/static/themes/clean/success.png", "fail!"})
-			 .addChild("script", "type", "text/javascript")
-			 .addChild("%", "document.getElementById('JSTEST').src = '/static/themes/clean/warning.png';");
+		.addChild("div")
+		.addChild("img",
+				  new String[] {"id", "src", "alt"},
+				  new String[] {"JSTEST", "/static/themes/clean/success.png", "fail!"})
+		.addChild("script", "type", "text/javascript")
+		.addChild("%", "document.getElementById('JSTEST').src = '/static/themes/clean/warning.png';");
 
 		this.writeHTMLReply(ctx, 200, "OK", null,pageNode.generate(), true);
 	}

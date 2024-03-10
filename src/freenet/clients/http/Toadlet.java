@@ -69,16 +69,16 @@ public abstract class Toadlet {
 	 * this function is necessary.
 	 *
 	 * @param context Can be used to decide the return value, for example to check session cookies using {@link SessionManager}.
-     * @return
-     *     The result of {@link #showAsToadlet()}, which is <code>this</code> by default.<br>
-     *     This behavior is for backwards compatibility with existing code which overrides that
-     *     function.<br><br>
-     *
-     *     Override this function to return something else for invisible Toadlets as explained
-     *     above.
+	 * @return
+	 *     The result of {@link #showAsToadlet()}, which is <code>this</code> by default.<br>
+	 *     This behavior is for backwards compatibility with existing code which overrides that
+	 *     function.<br><br>
+	 *
+	 *     Override this function to return something else for invisible Toadlets as explained
+	 *     above.
 	 */
 	public Toadlet showAsToadlet(ToadletContext context) {
-	    return showAsToadlet();
+		return showAsToadlet();
 	}
 
 	/**
@@ -90,9 +90,9 @@ public abstract class Toadlet {
 	 */
 	@Deprecated
 	public Toadlet showAsToadlet() {
-        // DO NOT CHANGE THIS ANYMORE: Otherwise showAsToadlet(ToadletContext) will not follow the
-        // contract of its JavaDoc.
-        return this;
+		// DO NOT CHANGE THIS ANYMORE: Otherwise showAsToadlet(ToadletContext) will not follow the
+		// contract of its JavaDoc.
+		return this;
 	}
 
 	/**
@@ -270,18 +270,18 @@ public abstract class Toadlet {
 		writeReply(ctx, code, "text/plain; charset=utf-8", desc, null, reply, true);
 	}
 
-    /**
-     * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
-     * send a redirect, or a file with a specified filename.
-     * @param ctx The specific request to reply to.
-     * @param code The HTTP reply code to use.
-     * @param desc The HTTP response description for the code.
-     * @param headers The additional HTTP headers to send.
-     * @param reply The HTML page, as a String.
-     */
-    protected void writeHTMLReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
-        writeHTMLReply(ctx, code, desc, headers, reply, false);
-    }
+	/**
+	 * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
+	 * send a redirect, or a file with a specified filename.
+	 * @param ctx The specific request to reply to.
+	 * @param code The HTTP reply code to use.
+	 * @param desc The HTTP response description for the code.
+	 * @param headers The additional HTTP headers to send.
+	 * @param reply The HTML page, as a String.
+	 */
+	protected void writeHTMLReply(ToadletContext ctx, int code, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
+		writeHTMLReply(ctx, code, desc, headers, reply, false);
+	}
 
 	/**
 	 * Write an HTTP response as HTML, possibly with custom headers, for example, we may want to
@@ -310,12 +310,12 @@ public abstract class Toadlet {
 	}
 
 	protected void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, String reply) throws ToadletContextClosedException, IOException {
-	    writeReply(context, code, mimeType, desc, headers, reply, false);
+		writeReply(context, code, mimeType, desc, headers, reply, false);
 	}
 
 	protected void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, String reply, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
-	    byte[] buffer = reply.getBytes(StandardCharsets.UTF_8);
-	    writeReply(context, code, mimeType, desc, headers, buffer, 0, buffer.length, forceDisableJavascript);
+		byte[] buffer = reply.getBytes(StandardCharsets.UTF_8);
+		writeReply(context, code, mimeType, desc, headers, buffer, 0, buffer.length, forceDisableJavascript);
 	}
 
 	/**
@@ -332,7 +332,7 @@ public abstract class Toadlet {
 	 * @param length The number of bytes of data to send as the response body.
 	 */
 	private void writeReply(ToadletContext context, int code, String mimeType, String desc, MultiValueTable<String, String> headers, byte[] buffer, int startIndex, int length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException {
-	    context.sendReplyHeaders(code, desc, headers, mimeType, length, forceDisableJavascript);
+		context.sendReplyHeaders(code, desc, headers, mimeType, length, forceDisableJavascript);
 		context.writeData(buffer, startIndex, length);
 	}
 
@@ -449,14 +449,14 @@ public abstract class Toadlet {
 	 * @throws IOException See {@link #sendErrorPage(ToadletContext, int, String, String)}
 	 * @throws ToadletContextClosedException See {@link #sendErrorPage(ToadletContext, int, String, String)}
 	 */
-    void sendUnauthorizedPage(ToadletContext ctx) throws ToadletContextClosedException, IOException {
-        sendErrorPage(ctx, 403, NodeL10n.getBase().getString("Toadlet.unauthorizedTitle"), NodeL10n.getBase().getString("Toadlet.unauthorized"));
-    }
+	void sendUnauthorizedPage(ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		sendErrorPage(ctx, 403, NodeL10n.getBase().getString("Toadlet.unauthorizedTitle"), NodeL10n.getBase().getString("Toadlet.unauthorized"));
+	}
 
 	protected void writeInternalError(Throwable t, ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		Logger.error(this, "Caught "+t, t);
 		String msg = "<html><head><title>"+NodeL10n.getBase().getString("Toadlet.internalErrorTitle")+
-				"</title></head><body><h1>"+NodeL10n.getBase().getString("Toadlet.internalErrorPleaseReport")+"</h1><pre>";
+					 "</title></head><body><h1>"+NodeL10n.getBase().getString("Toadlet.internalErrorPleaseReport")+"</h1><pre>";
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		while (t != null) {
@@ -469,7 +469,7 @@ public abstract class Toadlet {
 	}
 
 	protected static void addHomepageLink(HTMLNode content) {
-		content.addChild("a", new String[]{"href", "title"}, new String[]{"/", l10n("homepage")}, l10n("returnToNodeHomepage"));
+		content.addChild("a", new String[] {"href", "title"}, new String[] {"/", l10n("homepage")}, l10n("returnToNodeHomepage"));
 	}
 
 	/**

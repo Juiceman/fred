@@ -17,19 +17,19 @@ import freenet.support.io.ResumeFailedException;
 
 public class MultiPutCompletionCallback implements PutCompletionCallback, ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
-	
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	// ArrayLists rather than HashSet's for memory reasons.
 	// This class will not be used with large sets, so O(n) is cheaper than O(1) -
 	// at least it is on memory!
@@ -50,15 +50,15 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 	private final boolean finishOnFailure;
 	private transient boolean resumed;
 	private BaseClientKey encodedKey;
-	
+
 	public MultiPutCompletionCallback(PutCompletionCallback cb, BaseClientPutter parent, Object token, boolean persistent) {
 		this(cb, parent, token, persistent, false);
 	}
-	
+
 	public MultiPutCompletionCallback(PutCompletionCallback cb, BaseClientPutter parent, Object token, boolean persistent, boolean collisionIsOK) {
 		this(cb, parent, token, persistent, collisionIsOK, false);
 	}
-	
+
 	public MultiPutCompletionCallback(PutCompletionCallback cb, BaseClientPutter parent, Object token, boolean persistent, boolean collisionIsOK, boolean finishOnFailure) {
 		this.cb = cb;
 		this.collisionIsOK = collisionIsOK;
@@ -152,7 +152,7 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 					// Delete the old failure mode, use the new one
 					this.e = e;
 				}
-				
+
 			}
 			if(e == null) {
 				e = this.e;
@@ -171,7 +171,7 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		add(ps);
 		generator = ps;
 	}
-	
+
 	public synchronized void add(ClientPutState ps) {
 		if(finished) return;
 		waitingFor.add(ps);
@@ -210,8 +210,8 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		synchronized(this) {
 			if(state != generator) return;
 			if(encodedKey != null) {
-			    if(key.equals(encodedKey)) return; // Squash duplicated call to onEncode().
-			    else Logger.error(this, "Encoded twice with different keys for "+this+" : "+encodedKey+" -> "+key);
+				if(key.equals(encodedKey)) return; // Squash duplicated call to onEncode().
+				else Logger.error(this, "Encoded twice with different keys for "+this+" : "+encodedKey+" -> "+key);
 			}
 			encodedKey = key;
 		}
@@ -225,7 +225,7 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 			states = waitingFor.toArray(states);
 		}
 		boolean logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-		for(int i=0;i<states.length;i++) {
+		for(int i=0; i<states.length; i++) {
 			if(logDEBUG) Logger.minor(this, "Cancelling state "+i+" of "+states.length+" : "+states[i]);
 			states[i].cancel(context);
 		}
@@ -236,17 +236,17 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		if(generator == oldState)
 			generator = newState;
 		if(oldState == newState) return;
-		for(int i=0;i<waitingFor.size();i++) {
+		for(int i=0; i<waitingFor.size(); i++) {
 			if(waitingFor.get(i) == oldState) {
 				waitingFor.set(i, newState);
 			}
 		}
-		for(int i=0;i<waitingForBlockSet.size();i++) {
+		for(int i=0; i<waitingForBlockSet.size(); i++) {
 			if(waitingForBlockSet.get(i) == oldState) {
 				waitingForBlockSet.set(i, newState);
 			}
 		}
-		for(int i=0;i<waitingForFetchable.size();i++) {
+		for(int i=0; i<waitingForFetchable.size(); i++) {
 			if(waitingForFetchable.get(i) == oldState) {
 				waitingForFetchable.set(i, newState);
 			}
@@ -261,7 +261,7 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 			Logger.error(this, "Got metadata for "+state);
 		}
 	}
-	
+
 	@Override
 	public synchronized void onMetadata(Bucket metadata, ClientPutState state, ClientContext context) {
 		if(generator == state) {
@@ -306,26 +306,26 @@ public class MultiPutCompletionCallback implements PutCompletionCallback, Client
 		cb.onFetchable(this);
 	}
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        synchronized(this) {
-            if(resumed) return;
-            resumed = true;
-        }
-        for(ClientPutState s : getWaitingFor())
-            s.onResume(context);
-        if(cb != parent) cb.onResume(context);
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		synchronized(this) {
+			if(resumed) return;
+			resumed = true;
+		}
+		for(ClientPutState s : getWaitingFor())
+			s.onResume(context);
+		if(cb != parent) cb.onResume(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        for(ClientPutState state : getWaitingFor()) {
-            state.onShutdown(context);
-        }
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		for(ClientPutState state : getWaitingFor()) {
+			state.onShutdown(context);
+		}
+	}
 
-    private synchronized List<ClientPutState> getWaitingFor() {
-        return new ArrayList<ClientPutState>(waitingFor);
-    }
+	private synchronized List<ClientPutState> getWaitingFor() {
+		return new ArrayList<ClientPutState>(waitingFor);
+	}
 
 }

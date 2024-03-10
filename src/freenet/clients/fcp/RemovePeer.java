@@ -10,10 +10,10 @@ import freenet.support.SimpleFieldSet;
 public class RemovePeer extends FCPMessage {
 
 	static final String NAME = "RemovePeer";
-	
+
 	final SimpleFieldSet fs;
 	final String identifier;
-	
+
 	public RemovePeer(SimpleFieldSet fs) {
 		this.fs = fs;
 		identifier = fs.get("Identifier");
