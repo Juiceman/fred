@@ -48,7 +48,7 @@ public class Message {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (msg.hashCode() + (anchor == null ? 0 : anchor.hashCode())) * (priority.ordinal()+1);

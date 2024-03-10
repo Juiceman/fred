@@ -20,24 +20,24 @@ import freenet.support.io.StorageFormatException;
 /**
  * Essentially a map of integer to incrementible integer.
  * FIXME maybe move this to support, give it a better name?
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
 public class FailureCodeTracker implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    public final boolean insert;
+	private static final long serialVersionUID = 1L;
+	public final boolean insert;
 	private int total;
-	
+
 	public FailureCodeTracker(boolean insert) {
 		this.insert = insert;
 	}
-	
+
 	/**
 	 * Create a FailureCodeTracker from a SimpleFieldSet.
 	 * @param isInsert Whether this is an insert.
-	 * @param fs The SimpleFieldSet containing the FieldSet (non-verbose) form of 
+	 * @param fs The SimpleFieldSet containing the FieldSet (non-verbose) form of
 	 * the tracker.
 	 */
 	public FailureCodeTracker(boolean isInsert, SimpleFieldSet fs) {
@@ -54,23 +54,23 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 			total += count;
 		}
 	}
-	
+
 	protected FailureCodeTracker() {
-	    // For serialization.
-	    this.insert = false;
-	}
-	
-	private HashMap<Integer, Integer> map;
-	
-	public void inc(FetchExceptionMode k) {
-	    if(insert) throw new IllegalStateException();
-	    inc(k.code);
+		// For serialization.
+		this.insert = false;
 	}
 
-    public void inc(InsertExceptionMode k) {
-        if(!insert) throw new IllegalStateException();
-        inc(k.code);
-    }
+	private HashMap<Integer, Integer> map;
+
+	public void inc(FetchExceptionMode k) {
+		if(insert) throw new IllegalStateException();
+		inc(k.code);
+	}
+
+	public void inc(InsertExceptionMode k) {
+		if(!insert) throw new IllegalStateException();
+		inc(k.code);
+	}
 
 	public synchronized void inc(int k) {
 		if(k == 0) {
@@ -82,19 +82,19 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		if(i == null)
 			map.put(key, 1);
 		else
-		    map.put(key, i+1);
+			map.put(key, i+1);
 		total++;
 	}
 
-    public void inc(FetchExceptionMode k, int val) {
-        if(insert) throw new IllegalStateException();
-        inc(k.code, val);
-    }
+	public void inc(FetchExceptionMode k, int val) {
+		if(insert) throw new IllegalStateException();
+		inc(k.code, val);
+	}
 
-    public void inc(InsertExceptionMode k, int val) {
-        if(!insert) throw new IllegalStateException();
-        inc(k.code, val);
-    }
+	public void inc(InsertExceptionMode k, int val) {
+		if(!insert) throw new IllegalStateException();
+		inc(k.code, val);
+	}
 
 	public synchronized void inc(Integer k, int val) {
 		if(k == 0) {
@@ -106,10 +106,10 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		if(i == null)
 			map.put(key, 1);
 		else
-		    map.put(key, i+val);
+			map.put(key, i+val);
 		total += val;
 	}
-	
+
 	public synchronized String toVerboseString() {
 		if(map == null) return super.toString()+":empty";
 		StringBuilder sb = new StringBuilder();
@@ -126,11 +126,11 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public String getMessage(Integer x) {
-	    return insert ? InsertException.getMessage(InsertExceptionMode.getByCode(x)) : 
-	        FetchException.getMessage(FetchExceptionMode.getByCode(x));
-    }
+		return insert ? InsertException.getMessage(InsertExceptionMode.getByCode(x)) :
+			   FetchException.getMessage(FetchExceptionMode.getByCode(x));
+	}
 
-    @Override
+	@Override
 	public synchronized String toString() {
 		if(map == null) return super.toString()+":empty";
 		StringBuilder sb = new StringBuilder(super.toString());
@@ -157,7 +157,7 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Merge codes from another tracker into this one.
 	 */
@@ -189,34 +189,34 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	public synchronized SimpleFieldSet toFieldSet(boolean verbose) {
 		SimpleFieldSet sfs = new SimpleFieldSet(false);
 		if(map != null) {
-		for (Map.Entry<Integer, Integer> e : map.entrySet()) {
-			Integer k = e.getKey();
-			Integer item = e.getValue();
-			int code = k.intValue();
-			// prefix.num.Description=<code description>
-			// prefix.num.Count=<count>
-			if(verbose)
-				sfs.putSingle(Integer.toString(code)+".Description", getMessage(code));
-			sfs.put(Integer.toString(code)+".Count", item);
-		}
+			for (Map.Entry<Integer, Integer> e : map.entrySet()) {
+				Integer k = e.getKey();
+				Integer item = e.getValue();
+				int code = k.intValue();
+				// prefix.num.Description=<code description>
+				// prefix.num.Count=<count>
+				if(verbose)
+					sfs.putSingle(Integer.toString(code)+".Description", getMessage(code));
+				sfs.put(Integer.toString(code)+".Count", item);
+			}
 		}
 		return sfs;
 	}
 
 	public synchronized boolean isOneCodeOnly() {
-	    if(map == null) return true;
+		if(map == null) return true;
 		return map.size() == 1;
 	}
-	
-    public FetchExceptionMode getFirstCodeFetch() {
-        if(insert) throw new IllegalStateException();
-        return FetchExceptionMode.getByCode(getFirstCode());
-    }
 
-    public InsertExceptionMode getFirstCodeInsert() {
-        if(!insert) throw new IllegalStateException();
-        return InsertExceptionMode.getByCode(getFirstCode());
-    }
+	public FetchExceptionMode getFirstCodeFetch() {
+		if(insert) throw new IllegalStateException();
+		return FetchExceptionMode.getByCode(getFirstCode());
+	}
+
+	public InsertExceptionMode getFirstCodeInsert() {
+		if(!insert) throw new IllegalStateException();
+		return InsertExceptionMode.getByCode(getFirstCode());
+	}
 
 	public synchronized int getFirstCode() {
 		return ((Integer) map.keySet().toArray()[0]).intValue();
@@ -257,72 +257,72 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public synchronized boolean isDataFound() {
-	    if(!insert) throw new IllegalStateException();
+		if(!insert) throw new IllegalStateException();
 		for(Map.Entry<Integer, Integer> entry : map.entrySet()) {
 			if(entry.getValue() <= 0) continue;
 			if(FetchException.isDataFound(FetchExceptionMode.getByCode(entry.getKey()), null)) return true;
 		}
 		return false;
 	}
-	
+
 	private int MAGIC = 0xb605aa08;
 	private int VERSION = 1;
-	
+
 	/** Get the length of the fixed-size representation produced by writeFixedLengthTo(). */
 	public static int getFixedLength(boolean insert) {
-        int upperLimit = 
-            insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
-        return 4 + 4 + 4 + 4 * upperLimit;
+		int upperLimit =
+			insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
+		return 4 + 4 + 4 + 4 * upperLimit;
 	}
-	
-	/** Write a fixed-size representation to a DataOutputStream. This is important for e.g. 
+
+	/** Write a fixed-size representation to a DataOutputStream. This is important for e.g.
 	 * splitfiles, where we have a fixed part of the disk file to save it to. */
 	public synchronized void writeFixedLengthTo(DataOutputStream dos) throws IOException {
-	    int upperLimit = 
-	        insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
-	    dos.writeInt(MAGIC);
-	    dos.writeInt(VERSION);
-	    dos.writeInt(upperLimit);
-	    for(int i=0;i<upperLimit;i++)
-	        dos.writeInt(getErrorCount(i));
+		int upperLimit =
+			insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
+		dos.writeInt(MAGIC);
+		dos.writeInt(VERSION);
+		dos.writeInt(upperLimit);
+		for(int i=0; i<upperLimit; i++)
+			dos.writeInt(getErrorCount(i));
 	}
 
 	/** Get number of errors of count mode */
-    public synchronized int getErrorCount(int mode) {
-        if(map == null) return 0;
-        Integer item = map.get(mode);
-        return item == null ? 0 : item;
-    }
-    
-    /** Get number of errors of count mode */
-    public synchronized int getErrorCount(InsertExceptionMode mode) {
-        if(!insert) throw new IllegalStateException();
-        return getErrorCount(mode.code);
-    }
-    
-    /** Get number of errors of count mode */
-    public synchronized int getErrorCount(FetchExceptionMode mode) {
-        if(insert) throw new IllegalStateException();
-        return getErrorCount(mode.code);
-    }
-    
-    public FailureCodeTracker(boolean insert, DataInputStream dis) throws IOException, StorageFormatException {
-        this.insert = insert;
-        if(dis.readInt() != MAGIC) 
-            throw new StorageFormatException("Bad magic for FailureCodeTracker");
-        if(dis.readInt() != VERSION)
-            throw new StorageFormatException("Bad version for FailureCodeTracker");
-        int upperLimit = 
-            insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
-        if(dis.readInt() != upperLimit)
-            throw new StorageFormatException("Bad upper limit for FailureCodeTracker");
-        for(int i=0;i<upperLimit;i++) {
-            int x = dis.readInt();
-            if(x < 0) throw new StorageFormatException("Negative error counts");
-            if(x == 0) continue;
-            if(map == null) map = new HashMap<Integer, Integer>();
-            total += x;
-            map.put(i, x);
-        }
-    }
+	public synchronized int getErrorCount(int mode) {
+		if(map == null) return 0;
+		Integer item = map.get(mode);
+		return item == null ? 0 : item;
+	}
+
+	/** Get number of errors of count mode */
+	public synchronized int getErrorCount(InsertExceptionMode mode) {
+		if(!insert) throw new IllegalStateException();
+		return getErrorCount(mode.code);
+	}
+
+	/** Get number of errors of count mode */
+	public synchronized int getErrorCount(FetchExceptionMode mode) {
+		if(insert) throw new IllegalStateException();
+		return getErrorCount(mode.code);
+	}
+
+	public FailureCodeTracker(boolean insert, DataInputStream dis) throws IOException, StorageFormatException {
+		this.insert = insert;
+		if(dis.readInt() != MAGIC)
+			throw new StorageFormatException("Bad magic for FailureCodeTracker");
+		if(dis.readInt() != VERSION)
+			throw new StorageFormatException("Bad version for FailureCodeTracker");
+		int upperLimit =
+			insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
+		if(dis.readInt() != upperLimit)
+			throw new StorageFormatException("Bad upper limit for FailureCodeTracker");
+		for(int i=0; i<upperLimit; i++) {
+			int x = dis.readInt();
+			if(x < 0) throw new StorageFormatException("Negative error counts");
+			if(x == 0) continue;
+			if(map == null) map = new HashMap<Integer, Integer>();
+			total += x;
+			map.put(i, x);
+		}
+	}
 }

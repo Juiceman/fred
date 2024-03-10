@@ -31,7 +31,7 @@ public class CryptUtilTest {
 				mt1.nextBytes(b1);
 				Util.randomBytes(mt2, b2, off, len);
 				assertTrue("Random offset="+off+" length="+len,
-						Fields.byteArrayEqual(b1, b2, 0, off, len));
+						   Fields.byteArrayEqual(b1, b2, 0, off, len));
 			}
 		}
 	}
@@ -74,7 +74,7 @@ public class CryptUtilTest {
 				r1.nextBytes(b1);
 				Util.randomBytes(r2, b2, off, len);
 				assertTrue("SecureRandom offset="+off+" length="+len,
-						Fields.byteArrayEqual(b1, b2, 0, off, len));
+						   Fields.byteArrayEqual(b1, b2, 0, off, len));
 			}
 		}
 	}

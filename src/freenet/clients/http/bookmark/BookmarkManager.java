@@ -64,9 +64,9 @@ public class BookmarkManager implements RequestClient {
 
 	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -211,7 +211,7 @@ public class BookmarkManager implements RequestClient {
 		BookmarkCategory parent = getCategoryByPath(parentPath);
 		parent.addBookmark(bookmark);
 		putPaths(parentPath + bookmark.getName() + ((bookmark instanceof BookmarkCategory) ? "/" : ""),
-			bookmark);
+				 bookmark);
 
 		if(bookmark instanceof BookmarkItem)
 			subscribeToUSK((BookmarkItem)bookmark);
@@ -254,7 +254,7 @@ public class BookmarkManager implements RequestClient {
 			BookmarkCategory cat = (BookmarkCategory) bookmark;
 			for(int i = 0; i < cat.size(); i++)
 				removeBookmark(path + cat.get(i).getName() + ((cat.get(i) instanceof BookmarkCategory) ? "/"
-					: ""));
+							   : ""));
 		} else {
 			if(((BookmarkItem) bookmark).getKeyType().equals("USK")) {
 				try {

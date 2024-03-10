@@ -16,14 +16,14 @@ import freenet.support.SimpleFieldSet;
 public class PersistentPut extends FCPMessage {
 
 	static final String name = "PersistentPut";
-	
+
 	final String identifier;
 	final FreenetURI uri;
 	final FreenetURI privateURI;
-	final int verbosity; 
+	final int verbosity;
 	final short priorityClass;
 	final UploadFrom uploadFrom;
-	final Persistence persistence; 
+	final Persistence persistence;
 	final File origFilename;
 	final String mimeType;
 	final boolean global;
@@ -39,12 +39,12 @@ public class PersistentPut extends FCPMessage {
 	final boolean realTime;
 	final byte[] splitfileCryptoKey;
 	final String compressorDescriptor;
-	
-	public PersistentPut(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity, 
-			short priorityClass, UploadFrom uploadFrom, FreenetURI targetURI, 
-			Persistence persistence, File origFilename, String mimeType, 
-			boolean global, long size, String clientToken, boolean started, 
-			int maxRetries, String targetFilename, boolean binaryBlob, InsertContext.CompatibilityMode compatMode, boolean dontCompress, String compressorDescriptor, boolean realTime, byte[] splitfileCryptoKey) {
+
+	public PersistentPut(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity,
+						 short priorityClass, UploadFrom uploadFrom, FreenetURI targetURI,
+						 Persistence persistence, File origFilename, String mimeType,
+						 boolean global, long size, String clientToken, boolean started,
+						 int maxRetries, String targetFilename, boolean binaryBlob, InsertContext.CompatibilityMode compatMode, boolean dontCompress, String compressorDescriptor, boolean realTime, byte[] splitfileCryptoKey) {
 		this.identifier = identifier;
 		this.uri = publicURI;
 		this.privateURI = privateURI;
@@ -114,7 +114,7 @@ public class PersistentPut extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentPut goes from server to client not the other way around", identifier, global);
 	}
 

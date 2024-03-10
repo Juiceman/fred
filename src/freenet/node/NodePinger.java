@@ -16,17 +16,17 @@ import freenet.support.Logger.LogLevel;
  * Track average round-trip time for each peer node, get a geometric mean.
  */
 public class NodePinger implements Runnable {
-    private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 
-    static {
-        Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-            @Override
-            public void shouldUpdate() {
-                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-            }
-        });
-    }
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+			}
+		});
+	}
 
 	private final Node node;
 	private volatile double meanPing = 0;
@@ -40,26 +40,26 @@ public class NodePinger implements Runnable {
 	void start() {
 		run();
 	}
-	
+
 	@Override
 	public void run() {
-        try {
-        PeerNode[] peers = null;
-        synchronized(node.peers) {
-        	peers = node.peers.connectedPeers();
-        }
-        if(peers == null || peers.length == 0) return;
+		try {
+			PeerNode[] peers = null;
+			synchronized(node.peers) {
+				peers = node.peers.connectedPeers();
+			}
+			if(peers == null || peers.length == 0) return;
 
-        // Now we don't have to care about synchronization anymore
-        recalculateMean(peers);
-        capacityInputRealtime.calculate(peers);
-        capacityInputBulk.calculate(peers);
-        capacityOutputRealtime.calculate(peers);
-        capacityOutputBulk.calculate(peers);
-        } finally {
-        	// Requeue after to avoid exacerbating overload
-        	node.getTicker().queueTimedJob(this, 200);
-        }
+			// Now we don't have to care about synchronization anymore
+			recalculateMean(peers);
+			capacityInputRealtime.calculate(peers);
+			capacityInputBulk.calculate(peers);
+			capacityOutputRealtime.calculate(peers);
+			capacityOutputBulk.calculate(peers);
+		} finally {
+			// Requeue after to avoid exacerbating overload
+			node.getTicker().queueTimedJob(this, 200);
+		}
 	}
 
 	/** Recalculate the mean ping time */
@@ -69,14 +69,14 @@ public class NodePinger implements Runnable {
 		if(logMINOR)
 			Logger.minor(this, "Median ping: "+meanPing);
 	}
-	
+
 	private double calculateMedianPing(PeerNode[] peers) {
 		double[] allPeers = new double[peers.length];
-        for(int i = 0; i < peers.length; i++) {
-            PeerNode peer = peers[i];
-            allPeers[i] = peer.averagePingTime();
-        }
-		
+		for(int i = 0; i < peers.length; i++) {
+			PeerNode peer = peers[i];
+			allPeers[i] = peer.averagePingTime();
+		}
+
 		Arrays.sort(allPeers);
 		return allPeers[peers.length / 2];
 	}
@@ -84,12 +84,12 @@ public class NodePinger implements Runnable {
 	public double averagePingTime() {
 		return meanPing;
 	}
-	
+
 	final CapacityChecker capacityInputRealtime = new CapacityChecker(true, true);
 	final CapacityChecker capacityInputBulk = new CapacityChecker(true, false);
 	final CapacityChecker capacityOutputRealtime = new CapacityChecker(false, true);
 	final CapacityChecker capacityOutputBulk = new CapacityChecker(false, false);
-	
+
 	class CapacityChecker {
 		final boolean isInput;
 		final boolean isRealtime;
@@ -98,12 +98,12 @@ public class NodePinger implements Runnable {
 		private double firstQuartile;
 		private double lastQuartile;
 		private double max;
-		
+
 		CapacityChecker(boolean input, boolean realtime) {
 			isInput = input;
 			isRealtime = realtime;
 		}
-		
+
 		void calculate(PeerNode[] peers) {
 			double[] allPeers = new double[peers.length];
 			int x = 0;
@@ -126,11 +126,11 @@ public class NodePinger implements Runnable {
 				if(logMINOR) Logger.minor(this, "Quartiles for peer capacities: "+(isInput?"input ":"output ")+(isRealtime?"realtime: ":"bulk: ")+Arrays.toString(getQuartiles()));
 			}
 		}
-		
+
 		synchronized double[] getQuartiles() {
 			return new double[] { min, firstQuartile, median, lastQuartile, max };
 		}
-		
+
 		/** Get min(half the median, first quartile). Used as a threshold. */
 		synchronized double getThreshold() {
 			return Math.min(median/2, firstQuartile);

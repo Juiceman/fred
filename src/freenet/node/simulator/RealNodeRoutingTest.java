@@ -21,9 +21,9 @@ import freenet.support.math.SimpleRunningAverage;
 
 /**
  * @author amphibian
- * 
+ *
  * Create a mesh of nodes and let them sort out their locations.
- * 
+ *
  * Then run some node-to-node searches.
  */
 public class RealNodeRoutingTest extends RealNodeTest {
@@ -37,7 +37,7 @@ public class RealNodeRoutingTest extends RealNodeTest {
 	static final boolean ENABLE_SWAPPING = false;
 	static final boolean ENABLE_SWAP_QUEUEING = false;
 	static final boolean ENABLE_FOAF = true;
-	
+
 	public static int DARKNET_PORT_BASE = RealNodeRequestInsertTest.DARKNET_PORT_END;
 	public static final int DARKNET_PORT_END = DARKNET_PORT_BASE + NUMBER_OF_NODES;
 
@@ -110,7 +110,7 @@ public class RealNodeRoutingTest extends RealNodeTest {
 			int noSwaps = LocationManager.noSwaps;
 			System.err.println("Swaps: " + (newSwaps - lastSwaps));
 			System.err.println("\nTotal swaps: Started*2: " + totalStarted * 2 + ", succeeded: " + newSwaps + ", last minute failures: " + noSwaps +
-				", ratio " + (double) noSwaps / (double) newSwaps + ", early failures: " + ((totalStarted * 2) - (noSwaps + newSwaps)));
+							   ", ratio " + (double) noSwaps / (double) newSwaps + ", early failures: " + ((totalStarted * 2) - (noSwaps + newSwaps)));
 			System.err.println("This cycle ratio: " + ((double) (noSwaps - lastNoSwaps)) / ((double) (newSwaps - lastSwaps)));
 			lastNoSwaps = noSwaps;
 			System.err.println("Swaps rejected (already locked): " + LocationManager.swapsRejectedAlreadyLocked);
@@ -146,7 +146,7 @@ public class RealNodeRoutingTest extends RealNodeTest {
 					}
 					double loc2 = randomNode2.getLocation();
 					Logger.normal(RealNodeRoutingTest.class, "Pinging " + randomNode2.getDarknetPortNumber() + " @ " + loc2 + " from " + randomNode.getDarknetPortNumber() + " @ " + randomNode.getLocation());
-					
+
 					int hopsTaken = randomNode.routedPing(loc2, randomNode2.getDarknetPubKeyHash());
 					pings++;
 					if(hopsTaken < 0) {

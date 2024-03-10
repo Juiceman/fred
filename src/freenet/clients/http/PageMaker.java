@@ -16,10 +16,10 @@ import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** Simple class to output standard heads and tail for web interface pages. 
+/** Simple class to output standard heads and tail for web interface pages.
 */
 public final class PageMaker {
-	
+
 	public enum THEME {
 		BOXED("boxed", "Boxed (Top menu)", "", false, false),
 		BOXED_CLASSIC("boxed-classic", "Boxed (Classic menu)", "", false, false),
@@ -47,7 +47,7 @@ public final class PageMaker {
 		RABBIT_HOLE("rabbit-hole", "Into the Rabbit Hole", "Simple and clean theme", false, false),
 		WINTERFACEY("winterfacey", "Winterfacey", "2016th-theme, based on Winterface (Bootstrap)", true, false);
 
-		
+
 		public static final String[] possibleValues = {
 			BOXED.code,
 			BOXED_CLASSIC.code,
@@ -75,7 +75,7 @@ public final class PageMaker {
 			RABBIT_HOLE.code,
 			WINTERFACEY.code
 		};
-		
+
 		public final String code;  // the internal name
 		public final String name;  // the name in "human form"
 		public final String description; // description
@@ -89,7 +89,7 @@ public final class PageMaker {
 		 * infobox on the welcome page.
 		 */
 		public final boolean fetchKeyBoxAboveBookmarks;
-		
+
 		private THEME(String code, String name, String description) {
 			this(code, name, description, false, false);
 		}
@@ -105,7 +105,7 @@ public final class PageMaker {
 		public static THEME themeFromName(String cssName) {
 			for(THEME t : THEME.values()) {
 				if(t.code.equalsIgnoreCase(cssName) ||
-				   t.name.equalsIgnoreCase(cssName))
+						t.name.equalsIgnoreCase(cssName))
 				{
 					return t;
 				}
@@ -116,8 +116,8 @@ public final class PageMaker {
 		public static THEME getDefault() {
 			return THEME.WINTERFACEY;
 		}
-	}	
-	
+	}
+
 	public static final int MODE_SIMPLE = 1;
 	public static final int MODE_ADVANCED = 2;
 
@@ -127,28 +127,28 @@ public final class PageMaker {
 	private THEME theme;
 	private String override;
 	private final Node node;
-	
+
 	private List<SubMenu> menuList = new ArrayList<SubMenu>();
 	private Map<String, SubMenu> subMenus = new HashMap<String, SubMenu>();
-	
+
 	private static class SubMenu {
-		
+
 		/** Name of the submenu */
 		private final String navigationLinkText;
 		/** Link if the user clicks on the submenu itself */
 		private final String defaultNavigationLink;
 		/** Tooltip */
 		private final String defaultNavigationLinkTitle;
-		
+
 		private final FredPluginL10n plugin;
-		
+
 		private final List<String> navigationLinkTexts = new ArrayList<String>();
 		private final List<String> navigationLinkTextsNonFull = new ArrayList<String>();
 		private final Map<String, String> navigationLinkTitles = new HashMap<String, String>();
 		private final Map<String, String> navigationLinks = new HashMap<String, String>();
 		private final Map<String, LinkEnabledCallback>  navigationLinkCallbacks = new HashMap<String, LinkEnabledCallback>();
 		private final Map<String, FredPluginL10n> navigationLinkL10n = new HashMap<String, FredPluginL10n>();
-		
+
 		public SubMenu(String link, String name, String title, FredPluginL10n plugin) {
 			this.navigationLinkText = name;
 			this.defaultNavigationLink = link;
@@ -178,16 +178,16 @@ public final class PageMaker {
 		}
 
 	}
-	
+
 	protected PageMaker(THEME t, Node n) {
 		setTheme(t);
 		this.node = n;
 	}
-	
+
 	void setOverride(String pointTo) {
 		this.override = pointTo;
 	}
-	
+
 	public void setTheme(THEME theme2) {
 		if (theme2 == null) {
 			this.theme = THEME.getDefault();
@@ -205,7 +205,7 @@ public final class PageMaker {
 		subMenus.put(name, menu);
 		menuList.add(menu);
 	}
-	
+
 	/**
 	 * Add a navigation category to the menu at a given offset.
 	 * @param menuOffset The position of the link in FProxy's menu. 0 = left.
@@ -215,17 +215,17 @@ public final class PageMaker {
 		subMenus.put(name, menu);
 		menuList.add(menuOffset, menu);
 	}
-	
+
 
 	public synchronized void removeNavigationCategory(String name) {
 		SubMenu menu = subMenus.remove(name);
 		if (menu == null) {
 			Logger.error(this, "can't remove navigation category, name="+name);
 			return;
-		}	
+		}
 		menuList.remove(menu);
 	}
-	
+
 	public synchronized void addNavigationLink(String menutext, String path, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n) {
 		SubMenu menu = subMenus.get(menutext);
 		if(menu == null)
@@ -233,15 +233,15 @@ public final class PageMaker {
 		menu.addNavigationLink(path, name, title, fullOnly, cb, l10n);
 	}
 
-	/** Remove a navigation link from a sub-menu. Applies globally, do not use this to customise 
+	/** Remove a navigation link from a sub-menu. Applies globally, do not use this to customise
 	 * menus when sending one page! */
 	public synchronized void removeNavigationLink(String menutext, String name) {
 		SubMenu menu = subMenus.get(menutext);
 		// The menu may have already been removed.
 		if(menu != null)
-		    menu.removeNavigationLink(name);
+			menu.removeNavigationLink(name);
 	}
-	
+
 	public HTMLNode createBackLink(ToadletContext toadletContext, String name) {
 		String referer = toadletContext.getHeaders().get("referer");
 		if (referer != null) {
@@ -311,7 +311,7 @@ public final class PageMaker {
 	 * @param title
 	 *            Title of the page.
 	 * @param ctx
-	 *            ToadletContext to use to render the page. Can be null, e.g. if the HTML is not 
+	 *            ToadletContext to use to render the page. Can be null, e.g. if the HTML is not
 	 *            being generated as part of a toadlet request, for example if it's using the old
 	 *            FredPluginHTTP interface.
 	 * @param renderParameters
@@ -329,11 +329,11 @@ public final class PageMaker {
 		headNode.addChild("noscript").addChild("style"," .jsonly {display:none;}");
 		if(override != null)
 			headNode.addChild(getOverrideContent());
-		else 
+		else
 			headNode.addChild("link", new String[] { "rel", "href", "type", "title" }, new String[] { "stylesheet", "/static/themes/" + theme.code + "/theme.css", "text/css", theme.code });
-		
+
 		boolean sendAllThemes =  ctx != null && ctx.getContainer().sendAllThemes();
-		
+
 		if(sendAllThemes) {
 			for (THEME t: THEME.values()) {
 				String themeName = t.code;
@@ -345,18 +345,19 @@ public final class PageMaker {
 			URL themeJsUrl = getClass().getResource("staticfiles/themes/" + theme.code + "/script.js");
 			if (themeJsUrl != null) {
 				headNode.addChild("script",
-						new String[]{"type", "language", "src"},
-						new String[]{"text/javascript", "javascript", "/static/themes/" + theme.code + "/script.js"});
+								  new String[] {"type", "language", "src"},
+								  new String[] {"text/javascript", "javascript", "/static/themes/" + theme.code + "/script.js"});
 			}
 		}
 
-		boolean webPushingEnabled = 
+		boolean webPushingEnabled =
 			ctx != null && ctx.getContainer().isFProxyJavascriptEnabled() && ctx.getContainer().isFProxyWebPushingEnabled();
-		
+
 		// Add the generated javascript, if it and pushing is enabled
 		if (webPushingEnabled) headNode.addChild("script", new String[] { "type", "language", "src" }, new String[] {
-				"text/javascript", "javascript", "/static/freenetjs/freenetjs.nocache.js" });
-		
+						"text/javascript", "javascript", "/static/freenetjs/freenetjs.nocache.js"
+					});
+
 		Toadlet t;
 		if (ctx != null) {
 			t = ctx.activeToadlet();
@@ -366,30 +367,30 @@ public final class PageMaker {
 		String activePath = "";
 		if(t != null) activePath = t.path();
 		HTMLNode bodyNode = htmlNode.addChild("body",
-		        new String[] { "class", "id" },
-		        new String[] { "fproxy-page", filterCSSIdentifier("page-"+activePath) });
+											  new String[] { "class", "id" },
+											  new String[] { "fproxy-page", filterCSSIdentifier("page-"+activePath) });
 		//Add a hidden input that has the request's id
 		if(webPushingEnabled)
-			bodyNode.addChild("input",new String[]{"type","name","value","id"},new String[]{"hidden","requestId",ctx.getUniqueId(),"requestId"});
-		
+			bodyNode.addChild("input",new String[] {"type","name","value","id"},new String[] {"hidden","requestId",ctx.getUniqueId(),"requestId"});
+
 		// Add the client-side localization only when pushing is enabled
 		if (webPushingEnabled) {
 			bodyNode.addChild("script", new String[] { "type", "language" }, new String[] { "text/javascript", "javascript" }).addChild("%", PushingTagReplacerCallback.getClientSideLocalizationScript());
 		}
-		
+
 		HTMLNode pageDiv = bodyNode.addChild("div", "id", "page");
 		HTMLNode topBarDiv = pageDiv.addChild("div", "id", "topbar");
 
 		if (renderParameters.isRenderStatus() && fullAccess) {
 			final HTMLNode statusBarDiv = pageDiv.addChild("div", "id", "statusbar-container").addChild("div", "id", "statusbar");
 
-			 if (node != null && node.clientCore != null) {
-				 final HTMLNode alerts = ctx.getAlertManager().createSummary(true);
-				 if (alerts != null) {
-					 statusBarDiv.addChild(alerts).addAttribute("id", "statusbar-alerts");
-					 statusBarDiv.addChild("div", "class", "separator", "\u00a0");
-				 }
-			 }
+			if (node != null && node.clientCore != null) {
+				final HTMLNode alerts = ctx.getAlertManager().createSummary(true);
+				if (alerts != null) {
+					statusBarDiv.addChild(alerts).addAttribute("id", "statusbar-alerts");
+					statusBarDiv.addChild("div", "class", "separator", "\u00a0");
+				}
+			}
 
 
 			statusBarDiv.addChild("div", "id", "statusbar-language").addChild("a", "href", "/config/node#l10n", NodeL10n.getBase().getSelectedLanguage().fullName);
@@ -461,11 +462,13 @@ public final class PageMaker {
 
 				HTMLNode progressBar = statusBarDiv.addChild("div", "class", "progressbar");
 				progressBar.addChild("div", new String[] { "class", "style" }, new String[] { "progressbar-done progressbar-peers " + additionalClass, "width: " +
-						Math.min(100,Math.floor(100*connectedRatio)) + "%;" });
+									 Math.min(100,Math.floor(100*connectedRatio)) + "%;"
+																							});
 
 				progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_finalized", NodeL10n.getBase().getString("StatusBar.connectedPeers", new String[]{"X", "Y"},
-						new String[]{Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.countConnectedOpennetPeers())}) },
-						Integer.toString(connectedPeers) + ((totalPeers != Integer.MAX_VALUE) ? " / " + Integer.toString(totalPeers) : ""));
+									 new String[]{Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.countConnectedOpennetPeers())})
+																							},
+									 Integer.toString(connectedPeers) + ((totalPeers != Integer.MAX_VALUE) ? " / " + Integer.toString(totalPeers) : ""));
 			}
 		}
 
@@ -493,7 +496,7 @@ public final class PageMaker {
 						} else {
 							sublistItem = subnavlist.addChild("li", "class", "submenuitem-not-selected");
 						}
-						
+
 						FredPluginL10n l10n = menu.navigationLinkL10n.get(navigationLink);
 						if(l10n == null) l10n = menu.plugin;
 						if(l10n != null) {
@@ -568,7 +571,7 @@ public final class PageMaker {
 								text = newText;
 							}
 						}
-						
+
 						listItem.addChild("a", new String[] { "href", "title" }, new String[] { menu.defaultNavigationLink, menuItemTitle }, text);
 						listItem.addChild(subnavlist);
 						navbarUl.addChild(listItem);
@@ -592,7 +595,7 @@ public final class PageMaker {
 					} else {
 						sublistItem = subnavlist.addChild("li", "class", "submenuitem-not-selected");
 					}
-					
+
 					FredPluginL10n l10n = selected.navigationLinkL10n.get(navigationLink);
 					if (l10n == null) l10n = selected.plugin;
 					if(l10n != null) {
@@ -672,7 +675,7 @@ public final class PageMaker {
 		if (header == null) throw new NullPointerException();
 		return getInfobox(new HTMLNode("#", header), title, isUnique);
 	}
-	
+
 	public InfoboxNode getInfobox(HTMLNode header, String title, boolean isUnique) {
 		if (header == null) throw new NullPointerException();
 		return getInfobox(null, header, title, isUnique);
@@ -692,7 +695,7 @@ public final class PageMaker {
 
 	/**
 	 * Returns an infobox with the given style and header.
-	 * 
+	 *
 	 * @param category
 	 *            The CSS styles, separated by a space (' ')
 	 * @param header
@@ -721,7 +724,7 @@ public final class PageMaker {
 		infobox.addChild("div", "class", "infobox-header").addChild(header);
 		return new InfoboxNode(infobox, infobox.addChild("div", "class", "infobox-content"));
 	}
-	
+
 	private HTMLNode getOverrideContent() {
 		return new HTMLNode("link", new String[] { "rel", "href", "type", "media", "title" }, new String[] { "stylesheet", override, "text/css", "screen", "custom" });
 	}
@@ -741,10 +744,10 @@ public final class PageMaker {
 			else
 				container.setAdvancedMode(false);
 		}
-		
+
 		return mode;
 	}
-	
+
 	/**
 	 * Bundles parameters that are used to create the page node. The default for
 	 * the render parameters is to include all optional render tasks. Individual

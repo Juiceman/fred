@@ -20,7 +20,7 @@ public class TagVerifierTest {
 	private static final String BASE_URI_CONTENT = "localhost:8888";
 	private static final String BASE_KEY = "USK@0I8gctpUE32CM0iQhXaYpCMvtPPGfT4pjXm01oid5Zc,3dAcn4fX2LyxO6uCnWFTx-2HKZ89uruurcKwLSCxbZ4,AQACAAE/Ultimate-Freenet-Index/55/";
 	private static final String ALT_BASE_URI = BASE_URI_PROTOCOL+"://"+BASE_URI_CONTENT+'/'+BASE_KEY;
-	
+
 	String tagname;
 	LinkedHashMap<String, String> attributes;
 	ParsedTag htmlTag;

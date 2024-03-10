@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package freenet.node;
 
@@ -27,7 +27,7 @@ import freenet.support.api.RandomAccessBucket;
 public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	/**
-	 * 
+	 *
 	 */
 	private final Node node;
 	private final NodeCrypto crypto;
@@ -59,7 +59,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		canStart = true;
 		innerUpdate();
 	}
-	
+
 	public void update() {
 		// Called by detector code, which is critical and convoluted.
 		// Run off-thread, break locks, avoid stalling caller.
@@ -69,10 +69,10 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 			public void run() {
 				innerUpdate();
 			}
-			
+
 		});
 	}
-	
+
 	private void innerUpdate() {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		if(logMINOR) Logger.minor(this, "update()");
@@ -91,7 +91,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		}
 		// Proceed with inserting the ARK
 		if(logMINOR) Logger.minor(this, "Inserting " + darknetOpennetString + " ARK because peers list changed");
-		
+
 		if(inserter != null) {
 			// Already inserting.
 			// Re-insert after finished.
@@ -108,7 +108,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 				shouldInsert = true;
 			}
 			return;
-		}	
+		}
 
 		startInserter();
 	}
@@ -122,7 +122,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		synchronized (this) {
 			if(lastInsertedPeers != null) {
 				if(p.length != lastInsertedPeers.length) return true;
-				for(int i=0;i<p.length;i++)
+				for(int i=0; i<p.length; i++)
 					if(!p[i].strictEquals(lastInsertedPeers[i]))
 						return true;
 			} else {
@@ -138,41 +138,41 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 			if(logMINOR) Logger.minor(this, darknetOpennetString + " ARK inserter can't start yet");
 			return;
 		}
-		
+
 		if(logMINOR) Logger.minor(this, "starting " + darknetOpennetString + " ARK inserter");
-		
+
 		SimpleFieldSet fs = crypto.exportPublicFieldSet(false, false, true);
-		
+
 		// Remove some unnecessary fields that only cause collisions.
-		
+
 		// Delete entire ark.* field for now. Changing this and automatically moving to the new may be supported in future.
 		fs.removeSubset("ark");
 		fs.removeValue("location");
 		fs.removeValue("sig");
 		//fs.remove("version"); - keep version because of its significance in reconnection
-		
+
 		String s = fs.toString();
 
 		byte[] buf = s.getBytes(StandardCharsets.UTF_8);
 
 		RandomAccessBucket b = new SimpleReadOnlyArrayBucket(buf);
-		
+
 		long number = crypto.myARKNumber;
 		InsertableClientSSK ark = crypto.myARK;
 		FreenetURI uri = ark.getInsertURI().setKeyType("USK").setSuggestedEdition(number);
-		
+
 		if(logMINOR) Logger.minor(this, "Inserting " + darknetOpennetString + " ARK: " + uri + "  contents:\n" + s);
-		
+
 		InsertContext ctx = node.clientCore.makeClient((short)0, true, false).getInsertContext(true);
 		inserter = new ClientPutter(this, b, uri,
-					null, // Modern ARKs easily fit inside 1KB so should be pure SSKs => no MIME type; this improves fetchability considerably
-					ctx,
-					RequestStarter.INTERACTIVE_PRIORITY_CLASS, false, null, false, node.clientCore.clientContext, null, -1);
-		
+									null, // Modern ARKs easily fit inside 1KB so should be pure SSKs => no MIME type; this improves fetchability considerably
+									ctx,
+									RequestStarter.INTERACTIVE_PRIORITY_CLASS, false, null, false, node.clientCore.clientContext, null, -1);
+
 		try {
-			
+
 			node.clientCore.clientContext.start(inserter);
-			
+
 			synchronized (this) {
 				if(fs.get("physical.udp") == null)
 					lastInsertedPeers = null;
@@ -180,7 +180,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 					try {
 						String[] all = fs.getAll("physical.udp");
 						Peer[] peers = new Peer[all.length];
-						for(int i=0;i<all.length;i++)
+						for(int i=0; i<all.length; i++)
 							peers[i] = new Peer(all[i], false);
 						lastInsertedPeers = peers;
 					} catch (PeerParseException e1) {
@@ -191,12 +191,12 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 				}
 			}
 		} catch (InsertException e) {
-			onFailure(e, inserter);	
+			onFailure(e, inserter);
 		} catch (PersistenceDisabledException e) {
 			// Impossible
 		}
 	}
-	
+
 	@Override
 	public void onSuccess(BaseClientPutter state) {
 		FreenetURI uri = state.getURI();
@@ -222,7 +222,7 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		} catch (InterruptedException e1) {
 			// Ignore
 		}
-		
+
 		startInserter();
 	}
 
@@ -252,10 +252,10 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 			if(!shouldInsert) return;
 		}
 		// Already inserting.
-		if(inserter != null) return; 	
+		if(inserter != null) return;
 
 		synchronized (this) {
-			shouldInsert = false;	
+			shouldInsert = false;
 		}
 
 		startInserter();
@@ -282,14 +282,14 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		metadata.free();
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return this;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return this;
+	}
 
 }

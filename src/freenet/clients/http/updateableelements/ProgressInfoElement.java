@@ -48,15 +48,15 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 			addChild("div", "No fetcher found");
 			return;
 		}
-		
+
 		addChild("#", FProxyToadlet.l10n("filenameLabel")+ " ");
 		addChild("a", "href", "/"+key.toString(false, false), key.getPreferredFilename());
 		if(fr.mimeType != null) addChild("br", FProxyToadlet.l10n("contentTypeLabel")+" "+fr.mimeType);
 		if(fr.size > 0) addChild("br", "Size: "+SizeUtil.formatSize(fr.size));
 		if(isAdvancedMode) {
-			addChild("br", FProxyToadlet.l10n("blocksDetail", 
-					new String[] { "fetched", "required", "total", "failed", "fatallyfailed" },
-					new String[] { Integer.toString(fr.fetchedBlocks), Integer.toString(fr.requiredBlocks), Integer.toString(fr.totalBlocks), Integer.toString(fr.failedBlocks), Integer.toString(fr.fatallyFailedBlocks) }));
+			addChild("br", FProxyToadlet.l10n("blocksDetail",
+											  new String[] { "fetched", "required", "total", "failed", "fatallyfailed" },
+											  new String[] { Integer.toString(fr.fetchedBlocks), Integer.toString(fr.requiredBlocks), Integer.toString(fr.totalBlocks), Integer.toString(fr.failedBlocks), Integer.toString(fr.fatallyFailedBlocks) }));
 		}
 		long elapsed = System.currentTimeMillis() - fr.timeStarted;
 		addChild("br");

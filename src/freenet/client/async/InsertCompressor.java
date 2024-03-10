@@ -147,7 +147,7 @@ public class InsertCompressor implements CompressJob {
 						}
 						try {
 							comp.compress(is, os, origSize, bestCompressedDataSize,
-									amountOfDataToCheckCompressionRatio, minimumCompressionPercentage);
+										  amountOfDataToCheckCompressionRatio, minimumCompressionPercentage);
 						} catch (CompressionOutputSizeException | CompressionRatioException e) {
 							if(hasher != null) {
 								is.skip(Long.MAX_VALUE);
@@ -199,8 +199,8 @@ public class InsertCompressor implements CompressJob {
 						shouldFreeOnFinally = false;
 					}
 				} catch (PersistenceDisabledException e) {
-				    if(!context.jobRunner.shuttingDown())
-				        Logger.error(this, "Database disabled compressing data", new Exception("error"));
+					if(!context.jobRunner.shuttingDown())
+						Logger.error(this, "Database disabled compressing data", new Exception("error"));
 					shouldFreeOnFinally = true;
 					if(bestCompressedData != null && bestCompressedData != origData && bestCompressedData != result)
 						bestCompressedData.free();
@@ -220,8 +220,8 @@ public class InsertCompressor implements CompressJob {
 
 				context.jobRunner.queue(new PersistentJob() {
 
-				    // This can wait until after the next checkpoint, because it's still in the
-				    // persistentInsertCompressors list, so will be restarted if necessary.
+					// This can wait until after the next checkpoint, because it's still in the
+					// persistentInsertCompressors list, so will be restarted if necessary.
 					@Override
 					public boolean run(ClientContext context) {
 						inserter.onCompressed(output, context);
@@ -295,7 +295,7 @@ public class InsertCompressor implements CompressJob {
 	 * @return
 	 */
 	public static InsertCompressor start(ClientContext ctx, SingleFileInserter inserter, RandomAccessBucket origData,
-				int minSize, BucketFactory bf, boolean persistent, long generateHashes, boolean pre1254, final Config config) {
+										 int minSize, BucketFactory bf, boolean persistent, long generateHashes, boolean pre1254, final Config config) {
 		InsertCompressor compressor = new InsertCompressor(inserter, origData, minSize, bf, persistent, generateHashes, pre1254, config);
 		compressor.init(ctx);
 		return compressor;

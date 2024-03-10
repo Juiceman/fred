@@ -25,15 +25,15 @@ import freenet.support.Logger.LogLevel;
 
 /**
  * All the keys at a given priority which we have received key offers from other nodes for.
- * 
+ *
  * This list needs to be kept up to date when:
  * - A request is removed.
  * - A request's priority changes.
  * - A key is found.
  * - A node disconnects or restarts (through the BlockOffer objects on the FailureTable).
- * 
+ *
  * And of course, when an offer is received, we need to add an element.
- * 
+ *
  * @author toad
  *
  */
@@ -46,9 +46,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -57,7 +57,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	private final RandomSource random;
 	private final short priorityClass;
 	private final boolean isSSK;
-	
+
 	OfferedKeysList(NodeClientCore core, RandomSource random, short priorityClass, boolean isSSK, boolean realTimeFlag) {
 		super(false, realTimeFlag);
 		this.keys = new HashSet<Key>();
@@ -66,7 +66,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		this.priorityClass = priorityClass;
 		this.isSSK = isSSK;
 	}
-	
+
 	/** Called when a key is found, when it no longer belongs to this list etc. */
 	public synchronized void remove(Key key) {
 		assert(keysList.size() == keys.size());
@@ -76,7 +76,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		}
 		assert(keysList.size() == keys.size());
 	}
-	
+
 	public synchronized boolean isEmpty() {
 		return keys.isEmpty();
 	}
@@ -107,7 +107,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 			return this;
 		}
 	}
-	
+
 	@Override
 	public synchronized SendableRequestItem chooseKey(KeysFetchingLocally fetching, ClientContext context) {
 		assert(keysList.size() == keys.size());
@@ -121,7 +121,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 			keysList.trimToSize();
 			return new MySendableRequestItem(k);
 		}
-		for(int i=0;i<10;i++) {
+		for(int i=0; i<10; i++) {
 			// Pick a random key
 			if(keysList.isEmpty()) return null;
 			int ptr = random.nextInt(keysList.size());
@@ -157,7 +157,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	public void internalError(Throwable t, RequestScheduler sched, ClientContext context, boolean persistent) {
 		Logger.error(this, "Internal error: "+t, t);
 	}
-	
+
 	@Override
 	public SendableRequestSender getSender(ClientContext context) {
 		return new SendableRequestSender() {
@@ -173,16 +173,16 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 
 					@Override
 					public void onSucceeded() {
-                        // We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
+						// We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
 						sched.removeFetchingKey(key);
 						sched.wakeStarter();
 					}
 
 					@Override
 					public void onFailed(LowLevelGetException e) {
-					    // We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
+						// We don't use ChosenBlockImpl so have to remove the keys from the fetching set ourselves.
 						sched.removeFetchingKey(key);
-						// Something might be waiting for a request to complete (e.g. if we have two requests for the same key), 
+						// Something might be waiting for a request to complete (e.g. if we have two requests for the same key),
 						// so wake the starter thread.
 						sched.wakeStarter();
 					}
@@ -196,7 +196,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 			public boolean sendIsBlocking() {
 				return false;
 			}
-			
+
 		};
 	}
 
@@ -246,7 +246,7 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
 		if(isEmpty()) {
-		    return Long.MAX_VALUE;
+			return Long.MAX_VALUE;
 		}
 		return 0;
 	}

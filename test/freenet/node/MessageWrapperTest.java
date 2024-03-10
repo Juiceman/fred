@@ -50,7 +50,7 @@ public class MessageWrapperTest {
 		assertFalse(frag.shortMessage);
 		assertSame(wrapper, frag.wrapper);
 	}
-	
+
 	@Test
 	public void testGetFragmentWithLoss() {
 		MessageItem item = new MessageItem(new byte[363], null, false, null, (short) 0, false, false);
@@ -88,11 +88,11 @@ public class MessageWrapperTest {
 		assertEquals(363, frag3.messageLength);
 		assertFalse(frag3.shortMessage);
 		assertSame(wrapper, frag3.wrapper);
-		
+
 		wrapper.ack(0, 120); // frag1
 		wrapper.ack(242, 262); // frag3
 		wrapper.lost(121, 241); // frag 2
-		
+
 		MessageFragment frag = wrapper.getMessageFragment(128);
 		assertNotNull(frag);
 		assertFalse(frag.firstFragment);

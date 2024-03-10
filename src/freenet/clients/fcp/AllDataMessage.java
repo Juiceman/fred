@@ -14,13 +14,13 @@ import freenet.support.api.Bucket;
  */
 public class AllDataMessage extends DataCarryingMessage {
 
-    private static final long serialVersionUID = 1L;
-    final long dataLength;
+	private static final long serialVersionUID = 1L;
+	final long dataLength;
 	final boolean global;
 	final String identifier;
 	final long startupTime, completionTime;
 	final String mimeType;
-	
+
 	public AllDataMessage(Bucket bucket, String identifier, boolean global, long startupTime, long completionTime, String mimeType) {
 		this.bucket = bucket;
 		this.dataLength = bucket.size();
@@ -30,15 +30,15 @@ public class AllDataMessage extends DataCarryingMessage {
 		this.completionTime = completionTime;
 		this.mimeType = mimeType;
 	}
-	
+
 	protected AllDataMessage() {
-	    // For serialization.
-	    dataLength = 0;
-	    global = false;
-	    identifier = null;
-	    startupTime = 0;
-	    completionTime = 0;
-	    mimeType = null;
+		// For serialization.
+		dataLength = 0;
+		global = false;
+		identifier = null;
+		startupTime = 0;
+		completionTime = 0;
+		mimeType = null;
 	}
 
 	@Override

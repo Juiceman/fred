@@ -25,7 +25,7 @@ public class UpdaterConstants {
 	// We get a notification on page closure unless the browser dies, and
 	// CSS fetches and manual downloads can occupy many connections (e.g.
 	// The Activelink Index has 8 CSS's), so don't set it too low.
-	
+
 	public static final int		KEEPALIVE_INTERVAL_SECONDS	= 600;
 
 	public static final String	SUCCESS						= "SUCCESS";

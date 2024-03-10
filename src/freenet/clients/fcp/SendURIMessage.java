@@ -20,7 +20,7 @@ public class SendURIMessage extends SendPeerMessage {
 			uri = new FreenetURI(fs.get("URI"));
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(),
-					identifier, false);
+											  identifier, false);
 		}
 	}
 

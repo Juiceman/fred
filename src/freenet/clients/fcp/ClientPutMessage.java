@@ -25,7 +25,7 @@ import freenet.support.compress.InvalidCompressionCodecException;
 import freenet.support.io.FileBucket;
 
 /**
- * 
+ *
  * ClientPut
  * URI=CHK@ // could as easily be an insertable SSK URI
  * Metadata.ContentType=text/html
@@ -33,7 +33,7 @@ import freenet.support.io.FileBucket;
  * Verbosity=0 // just report when complete
  * MaxRetries=999999 // lots of retries
  * PriorityClass=1 // FProxy priority level
- * 
+ *
  * UploadFrom=direct // attached directly to this message
  * DataLength=100 // 100kB
  * or
@@ -41,13 +41,13 @@ import freenet.support.io.FileBucket;
  * Filename=/home/toad/something.html
  * FileHash=021349568329403123
  * Data
- * 
+ *
  * Neither IgnoreDS nor DSOnly make sense for inserts.
  */
 public class ClientPutMessage extends DataCarryingMessage {
 
 	public final static String NAME = "ClientPut";
-	
+
 	final FreenetURI uri;
 	final String contentType;
 	final long dataLength;
@@ -60,8 +60,8 @@ public class ClientPutMessage extends DataCarryingMessage {
 	final UploadFrom uploadFromType;
 	/** The hash of the file you want the node to deal with.
 	 *  it is MANDATORY to do DDA operations and should be computed like that:
-	 *  
-	 *  Base64Encode(SHA256( Handler.connectionIdentifer + ClientPutMessage.identifier + content)) 
+	 *
+	 *  Base64Encode(SHA256( Handler.connectionIdentifer + ClientPutMessage.identifier + content))
 	 */
 	final String fileHash;
 	final boolean dontCompress;
@@ -84,7 +84,7 @@ public class ClientPutMessage extends DataCarryingMessage {
 	final boolean realTimeFlag;
 	final long metadataThreshold;
 	final boolean ignoreUSKDatehints;
-	
+
 	public ClientPutMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		String fnam = null;
 		identifier = fs.get("Identifier");
@@ -248,7 +248,7 @@ public class ClientPutMessage extends DataCarryingMessage {
 			} catch (InvalidCompressionCodecException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, global);
 			}
-			if (ca == null) 
+			if (ca == null)
 				codecs = null;
 		}
 		compressorDescriptor = codecs;
@@ -274,18 +274,18 @@ public class ClientPutMessage extends DataCarryingMessage {
 		sfs.putSingle("ClientToken", clientToken);
 		switch(uploadFromType) {
 		case DIRECT:
-            sfs.putSingle("UploadFrom", "direct");
-            sfs.put("DataLength", dataLength);
-		    break;
+			sfs.putSingle("UploadFrom", "direct");
+			sfs.put("DataLength", dataLength);
+			break;
 		case DISK:
-            sfs.putSingle("UploadFrom", "disk");
-            sfs.putSingle("Filename", origFilename.getAbsolutePath());
-            sfs.put("DataLength", dataLength);
-            break;
+			sfs.putSingle("UploadFrom", "disk");
+			sfs.putSingle("Filename", origFilename.getAbsolutePath());
+			sfs.put("DataLength", dataLength);
+			break;
 		case REDIRECT:
-            sfs.putSingle("UploadFrom", "redirect");
-            sfs.putSingle("TargetURI", redirectTarget.toString());
-            break;
+			sfs.putSingle("UploadFrom", "redirect");
+			sfs.putSingle("TargetURI", redirectTarget.toString());
+			break;
 		}
 		sfs.put("GetCHKOnly", getCHKOnly);
 		sfs.put("PriorityClass", priorityClass);
@@ -305,7 +305,7 @@ public class ClientPutMessage extends DataCarryingMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		handler.startClientPut(this);
 	}
 
@@ -327,7 +327,7 @@ public class ClientPutMessage extends DataCarryingMessage {
 	@Override
 	RandomAccessBucket createBucket(BucketFactory bf, long length, FCPServer server) throws IOException, PersistenceDisabledException {
 		if(persistence == Persistence.FOREVER) {
-		    if(server.core.killedDatabase()) throw new PersistenceDisabledException();
+			if(server.core.killedDatabase()) throw new PersistenceDisabledException();
 			return server.core.persistentTempBucketFactory.makeBucket(length);
 		} else {
 			return super.createBucket(bf, length, server);

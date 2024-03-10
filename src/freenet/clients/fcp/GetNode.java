@@ -13,7 +13,7 @@ public class GetNode extends FCPMessage {
 	final boolean withVolatile;
 	static final String NAME = "GetNode";
 	final String identifier;
-	
+
 	public GetNode(SimpleFieldSet fs) {
 		giveOpennetRef = fs.getBoolean("GiveOpennetRef", false);
 		withPrivate = fs.getBoolean("WithPrivate", false);
@@ -21,7 +21,7 @@ public class GetNode extends FCPMessage {
 		identifier = fs.get("Identifier");
 		fs.removeValue("Identifier");
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
@@ -29,15 +29,15 @@ public class GetNode extends FCPMessage {
 			fs.putSingle("Identifier", identifier);
 		return fs;
 	}
-	
+
 	@Override
 	public String getName() {
 		return NAME;
 	}
-	
+
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "GetNode requires full access", identifier, false);
 		}

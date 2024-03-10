@@ -60,16 +60,19 @@ public class FreenetJs implements EntryPoint {
 	}
 
 	static long logCounter;
-	
+
 	/** Log a message */
 	public static final void log(String msg) {
 		try {
 			// Only log id debug is enabled
 			if (isDebug) {
 				// Write the log back to the server
-				 try{ FreenetRequest.sendRequest(UpdaterConstants.logWritebackPath, new QueryParameter("msg",requestId+":"+(logCounter++)+":"+urlEncode(msg))); }catch(Exception e){
-				 
-				 }
+				try {
+					FreenetRequest.sendRequest(UpdaterConstants.logWritebackPath, new QueryParameter("msg",requestId+":"+(logCounter++)+":"+urlEncode(msg)));
+				}
+				catch(Exception e) {
+
+				}
 				// Write the log to the console
 				nativeLog(msg);
 				// Write the log to the page
@@ -86,11 +89,11 @@ public class FreenetJs implements EntryPoint {
 
 	/** Base 64 causes some bizarre data corruption, probably because / and + are not allowed in URLs.
 	  * Java's URLEncoder isn't available, and Freenet's URLEncoder doesn't compile: getBytes() doesn't work.
-	  * So hack together a pathetic feature incomplete encoder that doesn't use getBytes(). 
+	  * So hack together a pathetic feature incomplete encoder that doesn't use getBytes().
 	  * REDFLAG: THIS IS NOT REMOTELY SAFE!!!! */
 	private static String urlEncode(String s) {
 		StringBuffer sb = new StringBuffer(s.length());
-		for(int i=0;i<s.length();i++) {
+		for(int i=0; i<s.length(); i++) {
 			char c = s.charAt(i);
 			if(c == '%') {
 				sb.append("%25");
@@ -112,7 +115,7 @@ public class FreenetJs implements EntryPoint {
 		}
 		return sb.toString();
 	}
-	
+
 	/** Exported method to let external sources turn on logging */
 	public static final void enableDebug() {
 		isDebug = true;

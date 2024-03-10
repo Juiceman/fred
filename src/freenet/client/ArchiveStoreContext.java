@@ -14,9 +14,9 @@ import freenet.support.Logger.LogLevel;
  * Tracks all files currently in the cache from a given key.
  * Keeps the last known hash of the key (if this changes in a fetch, we flush the cache, unpack,
  * then throw an ArchiveRestartedException).
- * Provides fetch methods for Fetcher, which try the cache and then fetch if necessary, 
+ * Provides fetch methods for Fetcher, which try the cache and then fetch if necessary,
  * subject to the above.
- * 
+ *
  * Always take the lock on ArchiveStoreContext before the lock on ArchiveManager, NOT the other way around.
  */
 class ArchiveStoreContext {
@@ -33,16 +33,16 @@ class ArchiveStoreContext {
 	 * the inner lock to avoid deadlocks. */
 	private final LinkedList<ArchiveStoreItem> myItems;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	ArchiveStoreContext(FreenetURI key, ArchiveManager.ARCHIVE_TYPE archiveType) {
 		this.key = key;
 		this.archiveType = archiveType;
@@ -53,13 +53,13 @@ class ArchiveStoreContext {
 	long getLastSize() {
 		return lastSize;
 	}
-	
+
 	/** Sets the size of the archive - @see getLastSize() */
 	void setLastSize(long size) {
 		lastSize = size;
 	}
 
-	
+
 	/** Returns the hash of the archive last time we fetched it, or null */
 	byte[] getLastHash() {
 		return lastHash;
@@ -92,8 +92,8 @@ class ArchiveStoreContext {
 		}
 	}
 
-	/** Notify that an archive store item with this key has been expelled from the 
-	 * cache. Remove it from our local cache and ask it to free the bucket if 
+	/** Notify that an archive store item with this key has been expelled from the
+	 * cache. Remove it from our local cache and ask it to free the bucket if
 	 * necessary. */
 	void removeItem(ArchiveStoreItem item) {
 		synchronized(myItems) {
@@ -109,7 +109,7 @@ class ArchiveStoreContext {
 	public short getArchiveType() {
 		return archiveType.metadataID;
 	}
-	
+
 	public FreenetURI getKey() {
 		return key;
 	}

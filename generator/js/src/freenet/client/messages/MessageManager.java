@@ -56,13 +56,13 @@ public class MessageManager {
 
 	/**
 	 * Adds a message to the panel
-	 * 
+	 *
 	 * @param msg
 	 *            - The message to add
 	 */
 	public void addMessage(Message msg) {
 		//Disabled showing fproxy messages. This is TEMPORARY!
-		if(msg.getAnchor()!=null){
+		if(msg.getAnchor()!=null) {
 			return;
 		}
 		messages.add(msg);
@@ -71,7 +71,7 @@ public class MessageManager {
 
 	/**
 	 * Removes a message at a given position
-	 * 
+	 *
 	 * @param position
 	 *            - The position of the message that is removed
 	 */
@@ -82,7 +82,7 @@ public class MessageManager {
 
 	/**
 	 * Removes a message
-	 * 
+	 *
 	 * @param message
 	 *            - The message that will be removed
 	 */
@@ -93,7 +93,7 @@ public class MessageManager {
 
 	/**
 	 * Gets the position of a message
-	 * 
+	 *
 	 * @param msg
 	 *            - The message which position will be returned
 	 * @return The position of the message
@@ -104,7 +104,7 @@ public class MessageManager {
 
 	/**
 	 * Replaces a message with a new one at a given position
-	 * 
+	 *
 	 * @param position
 	 *            - The position, which will be replaced
 	 * @param msg
@@ -118,7 +118,7 @@ public class MessageManager {
 
 	/**
 	 * Checks if a message is currently shown
-	 * 
+	 *
 	 * @param msg
 	 *            - The message to search for
 	 * @return Whether the message is present
@@ -141,18 +141,18 @@ public class MessageManager {
 			HorizontalPanel hpanel = new HorizontalPanel();
 			// Sets the background color based on the priority
 			switch (m.getPriority()) {
-				case MINOR:
-					hpanel.getElement().getStyle().setProperty("background", "green");
-					break;
-				case WARNING:
-					hpanel.getElement().getStyle().setProperty("background", "yellow");
-					break;
-				case ERROR:
-					hpanel.getElement().getStyle().setProperty("background", "orange");
-					break;
-				case CRITICAL:
-					hpanel.getElement().getStyle().setProperty("background", "red");
-					break;
+			case MINOR:
+				hpanel.getElement().getStyle().setProperty("background", "green");
+				break;
+			case WARNING:
+				hpanel.getElement().getStyle().setProperty("background", "yellow");
+				break;
+			case ERROR:
+				hpanel.getElement().getStyle().setProperty("background", "orange");
+				break;
+			case CRITICAL:
+				hpanel.getElement().getStyle().setProperty("background", "red");
+				break;
 			}
 			// Sets some css properties
 			hpanel.getElement().getStyle().setProperty("width", "100%");
@@ -221,18 +221,18 @@ public class MessageManager {
 				String anchor = alert.getElementsByTagName("anchor").getItem(0).getInnerText();
 				Priority priority = null;
 				switch (Integer.parseInt(alert.getElementsByTagName("priority").getItem(0).getInnerText())) {
-					case 0:
-						priority = Priority.CRITICAL;
-						break;
-					case 1:
-						priority = Priority.ERROR;
-						break;
-					case 2:
-						priority = Priority.WARNING;
-						break;
-					case 3:
-						priority = Priority.MINOR;
-						break;
+				case 0:
+					priority = Priority.CRITICAL;
+					break;
+				case 1:
+					priority = Priority.ERROR;
+					break;
+				case 2:
+					priority = Priority.WARNING;
+					break;
+				case 3:
+					priority = Priority.MINOR;
+					break;
 				}
 				String title = alert.getElementsByTagName("alertTitle").getItem(0).getInnerText();
 				addMessage(new Message(title, priority, anchor, Boolean.parseBoolean(alert.getElementsByTagName("canDismiss").getItem(0).getInnerText())));

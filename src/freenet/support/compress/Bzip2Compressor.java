@@ -32,10 +32,10 @@ public class Bzip2Compressor extends AbstractCompressor {
 
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+	throws IOException, CompressionOutputSizeException {
 		Bucket output = bf.makeBucket(maxWriteLength);
 		try (InputStream is = data.getInputStream();
-			 OutputStream os = output.getOutputStream()) {
+					OutputStream os = output.getOutputStream()) {
 			compress(is, os, maxReadLength, maxWriteLength);
 		}
 		return output;
@@ -44,7 +44,7 @@ public class Bzip2Compressor extends AbstractCompressor {
 	@Override
 	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 						 long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
-			throws IOException, CompressionRatioException {
+	throws IOException, CompressionRatioException {
 		if(maxReadLength <= 0)
 			throw new IllegalArgumentException();
 		BZip2CompressorOutputStream bz2os = null;

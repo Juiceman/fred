@@ -21,13 +21,13 @@ import freenet.support.io.NativeThread;
 
 /**
  * CachingFreenetStore
- * 
+ *
  * @author Simon Vocella <voxsim@gmail.com>
- * 
+ *
  */
 public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetStore<T> {
-    private static volatile boolean logMINOR;
- 
+	private static volatile boolean logMINOR;
+
 	private boolean shuttingDown; /* If this flag is true, we don't accept puts anymore */
 	/***
 	 * True if close() has been called
@@ -40,9 +40,11 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 	private final ReadWriteLock configLock = new ReentrantReadWriteLock();
 	private final CachingFreenetStoreTracker tracker;
 	private final int sizeBlock;
-	
-    static { Logger.registerClass(CachingFreenetStore.class); }
-    
+
+	static {
+		Logger.registerClass(CachingFreenetStore.class);
+	}
+
 	private final static class Block<T> {
 		T block;
 		byte[] data;
@@ -60,7 +62,7 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		this.shuttingDown = false;
 		this.tracker = tracker;
 		this.sizeBlock = callback.getTotalBlockSize();
-		
+
 		callback.setStore(this);
 		shutdownHook.addEarlyJob(new NativeThread("Close CachingFreenetStore", NativeThread.HIGH_PRIORITY, true) {
 			@Override
@@ -72,20 +74,20 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 
 	@Override
 	public T fetch(byte[] routingKey, byte[] fullKey,
-			boolean dontPromote, boolean canReadClientCache,
-			boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) 
-			throws IOException {
+				   boolean dontPromote, boolean canReadClientCache,
+				   boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta)
+	throws IOException {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
-		
+
 		Block<T> block = null;
-		
+
 		configLock.readLock().lock();
 		try {
 			block = blocksByRoutingKey.get(key);
 		} finally {
 			configLock.readLock().unlock();
 		}
-		
+
 		if(block != null) {
 			try {
 				return this.callback.construct(block.data, block.header, routingKey, block.block.getFullKey(), canReadClientCache, canReadSlashdotCache, meta, null);
@@ -93,52 +95,52 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 				Logger.error(this, "Error in fetching for CachingFreenetStore: "+e, e);
 			}
 		}
-		
-		return backDatastore.fetch(routingKey, fullKey, dontPromote, canReadClientCache, canReadSlashdotCache, ignoreOldBlocks, meta);	
+
+		return backDatastore.fetch(routingKey, fullKey, dontPromote, canReadClientCache, canReadSlashdotCache, ignoreOldBlocks, meta);
 	}
 
 	@Override
 	public boolean probablyInStore(byte[] routingKey) {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
 		Block<T> block = null;
-		
+
 		configLock.readLock().lock();
 		try {
 			block = blocksByRoutingKey.get(key);
 		} finally {
 			configLock.readLock().unlock();
 		}
-		
+
 		return block != null || backDatastore.probablyInStore(routingKey);
 	}
-	
+
 	@Override
 	public void put(T block, byte[] data, byte[] header,
-			boolean overwrite, boolean isOldBlock) throws IOException, KeyCollisionException {
+					boolean overwrite, boolean isOldBlock) throws IOException, KeyCollisionException {
 		byte[] routingKey = block.getRoutingKey();
 		final ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
-		
+
 		Block<T> storeBlock = new Block<T>();
 		storeBlock.block = block;
 		storeBlock.data = data;
 		storeBlock.header = header;
 		storeBlock.overwrite = overwrite;
 		storeBlock.isOldBlock = isOldBlock;
-		
+
 		boolean cacheIt = true;
-		
+
 		//Case cache it
 		configLock.writeLock().lock();
-		
+
 		try {
 			if(!shuttingDown) {
 				Block<T> previousBlock = blocksByRoutingKey.get(key);
-			
+
 				if(!collisionPossible || overwrite) {
 					if(previousBlock == null) {
 						cacheIt = tracker.add(sizeBlock);
 					}
-					
+
 					if(cacheIt) {
 						blocksByRoutingKey.push(key, storeBlock);
 					}
@@ -149,13 +151,13 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 							return;
 						throw new KeyCollisionException();
 					}
-					
+
 					//Is probablyInStore()? If so, remove it from blocksByRoutingKey, and set a flag so we don't call put()
 					if(backDatastore.probablyInStore(routingKey)) {
 						cacheIt = false;
 					} else {
 						cacheIt = tracker.add(sizeBlock);
-						
+
 						if(cacheIt) {
 							blocksByRoutingKey.push(key, storeBlock);
 						}
@@ -167,23 +169,23 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		} finally {
 			configLock.writeLock().unlock();
 		}
-		
+
 		//Case don't cache it
 		if(!cacheIt) {
 			backDatastore.put(block, data, header, overwrite, isOldBlock);
 			return;
 		}
 	}
-	
+
 	/** Try to write one block to disk.
-	 * @return The number of bytes written to disk if we successfully wrote a block, 0 if we wrote 
-	 * a block but can't remove it because it changed while we were writing it, and -1 if there 
+	 * @return The number of bytes written to disk if we successfully wrote a block, 0 if we wrote
+	 * a block but can't remove it because it changed while we were writing it, and -1 if there
 	 * were no blocks to write because the cache is empty.
 	 */
 	long pushLeastRecentlyBlock() {
 		Block<T> block = null;
 		ByteArrayWrapper key = null;
-		
+
 		configLock.writeLock().lock();
 		try {
 			block = blocksByRoutingKey.peekValue();
@@ -192,7 +194,7 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		} finally {
 			configLock.writeLock().unlock();
 		}
-			
+
 		try {
 			backDatastore.put(block.block, block.data, block.header, block.overwrite, block.isOldBlock);
 		} catch (IOException e) {
@@ -200,12 +202,12 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		} catch (KeyCollisionException e) {
 			if(logMINOR) Logger.minor(this, "KeyCollisionException in pushAll for CachingFreenetStore: "+e, e);
 		}
-		
+
 		configLock.writeLock().lock();
 		try {
 			Block<T> currentVersionOfBlock = blocksByRoutingKey.get(key);
-			
-			/** it might have changed if there was a put() with overwrite=true. 
+
+			/** it might have changed if there was a put() with overwrite=true.
 			 *  If it has changed, return 0 , i.e. don't remove it*/
 			if(currentVersionOfBlock != null && currentVersionOfBlock.block.equals(block.block)) {
 				if(blocksByRoutingKey.removeKey(key))
@@ -241,7 +243,7 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 			configLock.writeLock().unlock();
 		}
 	}
-	
+
 	/** Only for unit tests */
 	boolean isEmpty() {
 		boolean isEmpty;

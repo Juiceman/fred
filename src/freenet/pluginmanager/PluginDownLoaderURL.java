@@ -92,8 +92,8 @@ public class PluginDownLoaderURL extends PluginDownLoader<URL> {
 					// Redirection should be allowed only for HTTP and HTTPS
 					// and should be limited to 5 redirections at most.
 					if (target == null || !(target.getProtocol().equals("http")
-								|| target.getProtocol().equals("https")
-								|| target.getProtocol().equals("ftp"))
+											|| target.getProtocol().equals("https")
+											|| target.getProtocol().equals("ftp"))
 							|| redirects >= 5)
 					{
 						throw new SecurityException("illegal URL redirect");

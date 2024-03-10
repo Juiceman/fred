@@ -44,7 +44,7 @@ public class DefaultUpdateManager implements IUpdateManager {
 
 	/**
 	 * registers a listener that will be notified when update occurs
-	 * 
+	 *
 	 * @param listener
 	 *            - The listener to be registered
 	 */
@@ -54,7 +54,7 @@ public class DefaultUpdateManager implements IUpdateManager {
 
 	/**
 	 * Removes a listener
-	 * 
+	 *
 	 * @param listener
 	 *            - The listener to be removed
 	 */
@@ -69,7 +69,8 @@ public class DefaultUpdateManager implements IUpdateManager {
 		FreenetJs.log("DefaultUpdateManager updated:elementid:" + elementId);
 		// Sends a request asking for data for the updated element
 		FreenetRequest.sendRequest(UpdaterConstants.dataPath, new QueryParameter[] { new QueryParameter("requestId", FreenetJs.requestId),
-				new QueryParameter("elementId", elementId) }, new UpdaterRequestCallback(elementId));
+									   new QueryParameter("elementId", elementId)
+		}, new UpdaterRequestCallback(elementId));
 		// Notifies the listeners
 		for (IUpdateListener l : listeners) {
 			l.onUpdate();

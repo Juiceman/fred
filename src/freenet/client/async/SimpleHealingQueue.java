@@ -28,11 +28,11 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 	private final HealingDecisionSupplier healingDecisionSupplier;
 	final Map<Bucket, SingleBlockInserter> runningInserters;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -56,8 +56,8 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 			if(runningInserters.size() > maxRunning) return false;
 			try {
 				sbi = new SingleBlockInserter(this, data, (short)-1,
-							FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, this, false,
-							CHKBlock.DATA_LENGTH, ctr, false, false, data, context, false, true, 0, cryptoAlgorithm, cryptoKey);
+											  FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, this, false,
+											  CHKBlock.DATA_LENGTH, ctr, false, false, data, context, false, true, 0, cryptoAlgorithm, cryptoKey);
 			} catch (Throwable e) {
 				Logger.error(this, "Caught trying to insert healing block: "+e, e);
 				return false;
@@ -78,8 +78,8 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 	}
 
 	private boolean isHealingThisBlockSimilarToForwarding(
-			ClientContext context,
-			SingleBlockInserter sbi) {
+		ClientContext context,
+		SingleBlockInserter sbi) {
 		// ensure that we have a routing key
 		sbi.tryEncode(context);
 		double keyLocation = sbi.getKeyNoEncode().getNodeKey().toNormalizedDouble();
@@ -180,18 +180,18 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 
 	@Override
 	public void onMetadata(Bucket meta, ClientPutState state,
-			ClientContext context) {
+						   ClientContext context) {
 		Logger.error(this, "onMetadata() in SimpleHealingQueue - impossible", new Exception("error"));
 		meta.free();
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) {
-        // Do nothing. Not persisted.
-    }
+	@Override
+	public void innerOnResume(ClientContext context) {
+		// Do nothing. Not persisted.
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return null;
-    }
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return null;
+	}
 }

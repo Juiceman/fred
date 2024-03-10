@@ -18,12 +18,12 @@ public class LowLevelPutException extends Exception {
 	public static final int ROUTE_REALLY_NOT_FOUND = 4;
 	/** Insert collided with pre-existing, different content. Can only happen with KSKs and SSKs. */
 	public static final int COLLISION = 5;
-	
+
 	/** Failure code */
 	public final int code;
-	
+
 	private KeyBlock collidedBlock;
-	
+
 	static String getMessage(int reason) {
 		switch(reason) {
 		case INTERNAL_ERROR:
@@ -39,9 +39,9 @@ public class LowLevelPutException extends Exception {
 		default:
 			return "Unknown error code: "+reason;
 		}
-		
+
 	}
-	
+
 	public LowLevelPutException(int code, String message, Throwable t) {
 		super(message, t);
 		this.code = code;
@@ -51,19 +51,19 @@ public class LowLevelPutException extends Exception {
 		super(getMessage(reason));
 		this.code = reason;
 	}
-	
+
 	public LowLevelPutException(KeyBlock collided) {
 		super(getMessage(COLLISION));
 		this.code = COLLISION;
 		collidedBlock = collided;
 	}
-	
+
 	public synchronized void setCollidedBlock(KeyBlock block) {
 		collidedBlock = block;
 	}
-	
+
 	public synchronized KeyBlock getCollidedBlock() {
 		return collidedBlock;
 	}
-	
+
 }

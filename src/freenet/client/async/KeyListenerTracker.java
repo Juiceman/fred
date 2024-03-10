@@ -27,55 +27,55 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 
 /**
- * <p>Tracks exactly which keys we are listening for. This is 
- * decoupled from actually requesting them because we want to pick up the data even if we didn't 
- * request it - some nearby node requested it, it got inserted through this node, it was offered 
+ * <p>Tracks exactly which keys we are listening for. This is
+ * decoupled from actually requesting them because we want to pick up the data even if we didn't
+ * request it - some nearby node requested it, it got inserted through this node, it was offered
  * via ULPRs some time after we requested it etc.</p>
- * 
+ *
  * <p>The queue of requests to run, and the algorithm to choose which to start, is in
  * @see ClientRequestSchedulerSelector .</p>
- * 
+ *
  * PERSISTENCE: This class is NOT serialized, it is recreated on every startup, and downloads are
- * re-registered with this class (for KeyListeners) and downloads and uploads are re-registered 
+ * re-registered with this class (for KeyListeners) and downloads and uploads are re-registered
  * with the ClientRequestSelector.
  * @author toad
  */
 class KeyListenerTracker implements KeySalter {
-	
+
 	private static volatile boolean logMINOR;
-	
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	/** Minimum number of retries at which we start to hold it against a request.
 	 * See the comments on fixRetryCount; we don't want many untried requests to prevent
-	 * us from trying requests which have only been tried once (e.g. USK checkers), from 
-	 * other clients (and we DO want retries to take precedence over client round robin IF 
+	 * us from trying requests which have only been tried once (e.g. USK checkers), from
+	 * other clients (and we DO want retries to take precedence over client round robin IF
 	 * the request has been tried many times already). */
 	private static final int MIN_RETRY_COUNT = 3;
 
 	final boolean isInsertScheduler;
 	final boolean isSSKScheduler;
 	final boolean isRTScheduler;
-	
+
 	protected final ClientRequestScheduler sched;
 	/** Transient even for persistent scheduler. There is one for each of transient, persistent. */
 	protected final ArrayList<KeyListener> keyListeners;
 	protected final Map<ByteArrayWrapper,Object> singleKeyListeners;
 
 	final boolean persistent;
-	
+
 	public boolean persistent() {
-	    return persistent;
+		return persistent;
 	}
-	
+
 	protected KeyListenerTracker(boolean forInserts, boolean forSSKs, boolean forRT, RandomSource random, ClientRequestScheduler sched, byte[] globalSalt, boolean persistent) {
 		this.isInsertScheduler = forInserts;
 		this.isSSKScheduler = forSSKs;
@@ -84,19 +84,19 @@ class KeyListenerTracker implements KeySalter {
 		keyListeners = new ArrayList<KeyListener>();
 		singleKeyListeners = this.isSSKScheduler ? new TreeMap<ByteArrayWrapper,Object>(ByteArrayWrapper.FAST_COMPARATOR) : new HashMap<ByteArrayWrapper,Object>();
 		if(globalSalt == null) {
-		    globalSalt = new byte[32];
-		    random.nextBytes(globalSalt);
+			globalSalt = new byte[32];
+			random.nextBytes(globalSalt);
 		}
 		this.globalSalt = globalSalt;
 		this.persistent = persistent;
 	}
-	
+
 	/**
 	 * Mangle the retry count.
 	 * Below a certain number of attempts, we don't prefer one request to another just because
 	 * it's been tried more times. The reason for this is to prevent floods of low-retry-count
 	 * requests from starving other clients' requests which need to be retried. The other
-	 * solution would be to sort by client before retry count, but that would be excessive 
+	 * solution would be to sort by client before retry count, but that would be excessive
 	 * IMHO; we DO want to avoid rerequesting keys we've tried many times before.
 	 */
 	protected static int fixRetryCount(int retryCount) {
@@ -124,7 +124,7 @@ class KeyListenerTracker implements KeySalter {
 				} else if(o instanceof KeyListener) {
 					if(listener == (KeyListener)o) return;
 					singleKeyListeners.put(wrapper,
-							new KeyListener[] { (KeyListener)o, listener });
+										   new KeyListener[] { (KeyListener)o, listener });
 				} else {
 					@SuppressWarnings("unchecked")
 					KeyListener[] listeners = (KeyListener[])o;
@@ -142,7 +142,7 @@ class KeyListenerTracker implements KeySalter {
 		if (logMINOR)
 			Logger.minor(this, "Added pending keys to "+this+" : size now "+this.keyListeners.size()+"/"+singleKeyListeners.size()+" : "+listener);
 	}
-	
+
 	public boolean removePendingKeys(KeyListener listener) {
 		boolean ret = false;
 		byte[] wantedKey = listener.getWantedKey();
@@ -195,7 +195,7 @@ class KeyListenerTracker implements KeySalter {
 			Logger.minor(this, "Removed pending keys from "+this+" : size now "+this.keyListeners.size()+"/"+singleKeyListeners.size()+" : "+listener, new Exception("debug"));
 		return ret;
 	}
-	
+
 	public boolean removePendingKeys(HasKeyListener hasListener) {
 		boolean ret = false;
 		byte[] wantedKey = hasListener.getWantedKey();
@@ -248,7 +248,7 @@ class KeyListenerTracker implements KeySalter {
 				}
 				return ret;
 			}
-			for(Iterator<KeyListener> i = keyListeners.iterator();i.hasNext();) {
+			for(Iterator<KeyListener> i = keyListeners.iterator(); i.hasNext();) {
 				KeyListener listener = i.next();
 				if(listener.getHasKeyListener() == hasListener) {
 					ret = true;
@@ -261,7 +261,7 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return ret;
 	}
-	
+
 	private synchronized ArrayList<KeyListener> probablyMatches(Key key, byte[] saltedKey) {
 		ArrayList<KeyListener> matches = null;
 		final ByteArrayWrapper wrapper = new ByteArrayWrapper(saltedKey);
@@ -309,7 +309,7 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return priority;
 	}
-	
+
 	public synchronized long countWaitingKeys() {
 		long count = 0;
 		for(Object o: singleKeyListeners.values()) {
@@ -333,7 +333,7 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return count;
 	}
-	
+
 	public boolean anyWantKey(Key key, ClientContext context) {
 		assert(key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
@@ -351,7 +351,7 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return false;
 	}
-	
+
 	public synchronized boolean anyProbablyWantKey(Key key, ClientContext context) {
 		assert(key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
@@ -381,13 +381,13 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return false;
 	}
-	
+
 	public boolean tripPendingKey(Key key, KeyBlock block, ClientContext context) {
 		if ((key instanceof NodeSSK) != isSSKScheduler) {
 			Logger.error(
-					this,
-					"Key " + key + " on scheduler ssk=" + isSSKScheduler,
-					new Exception("debug"));
+				this,
+				"Key " + key + " on scheduler ssk=" + isSSKScheduler,
+				new Exception("debug"));
 			return false;
 		}
 		assert (key instanceof NodeSSK == isSSKScheduler);
@@ -414,14 +414,14 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return ret;
 	}
-	
+
 	public SendableGet[] requestsForKey(Key key, ClientContext context) {
 		ArrayList<SendableGet> list = new ArrayList<SendableGet>();
 		assert(key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
 		List<KeyListener> matches = probablyWantKey(key, saltedKey);
-    if(matches == null)
-      return null;
+		if(matches == null)
+			return null;
 		for (KeyListener listener : matches) {
 			SendableGet[] reqs;
 			try {
@@ -442,7 +442,7 @@ class KeyListenerTracker implements KeySalter {
 		}
 		return list.toArray(new SendableGet[list.size()]);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -458,7 +458,7 @@ class KeyListenerTracker implements KeySalter {
 	}
 
 	public byte[] globalSalt;
-	
+
 	public byte[] saltKey(Key key) {
 		return  saltKey(key instanceof NodeSSK ? ((NodeSSK)key).getPubKeyHash() : key.getRoutingKey());
 	}
@@ -473,7 +473,7 @@ class KeyListenerTracker implements KeySalter {
 		SHA256.returnMessageDigest(md);
 		return ret;
 	}
-	
+
 	protected void hintGlobalSalt(byte[] globalSalt2) {
 		if(globalSalt == null)
 			globalSalt = globalSalt2;

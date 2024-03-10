@@ -43,18 +43,18 @@ import freenet.support.io.FileUtil;
 
 /**
  * Push / Pull test over long period of time
- * 
+ *
  * <p>
  * This class push a series of keys in the format of
  * <code>KSK@&lt;unique identifier&gt;-DATE-n</code>. It will then try to pull them after (2^n - 1)
  * days.
  * <p>
  * The result is recorded as a CSV file in the format of:
- * 
+ *
  * <pre>
  * 	DATE, VERSION, SEED-TIME-1, PUSH-TIME-#0, ... , PUSH-TIME-#N, SEED-TIME-2, PULL-TIME-#0, ... , PULL-TIME-#N
  * </pre>
- * 
+ *
  * @author sdiz
  */
 public class LongTermPushPullTest extends LongTermTest {
@@ -77,7 +77,7 @@ public class LongTermPushPullTest extends LongTermTest {
 			System.exit(1);
 		}
 		String uid = args[0];
-		
+
 		if(args.length == 2 && (args[1].equalsIgnoreCase("--dump") || args[1].equalsIgnoreCase("-dump") || args[1].equalsIgnoreCase("dump"))) {
 			try {
 				dumpStats(uid);
@@ -121,8 +121,8 @@ public class LongTermPushPullTest extends LongTermTest {
 
 			// Create one node
 			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
-			        0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
-			        12 * 1024, true, true, false, false, null);
+											  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
+											  12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
 
 			// Start it
@@ -132,14 +132,14 @@ public class LongTermPushPullTest extends LongTermTest {
 				exitCode = EXIT_FAILED_TARGET;
 				return;
 			}
-				
+
 			long t2 = System.currentTimeMillis();
 			System.out.println("SEED-TIME:" + (t2 - t1));
 			csvLine.add(String.valueOf(t2 - t1));
 
 			// PUSH N+1 BLOCKS
 			for (int i = 0; i <= MAX_N; i++) {
-			    RandomAccessBucket data = randomData(node);
+				RandomAccessBucket data = randomData(node);
 				HighLevelSimpleClient client = node.clientCore.makeClient((short) 0, false, false);
 				FreenetURI uri = new FreenetURI("KSK@" + uid + "-" + dateFormat.format(today.getTime()) + "-" + i);
 				System.out.println("PUSHING " + uri);
@@ -149,7 +149,7 @@ public class LongTermPushPullTest extends LongTermTest {
 					public void receive(ClientEvent ce, ClientContext context) {
 						System.out.println(ce.getDescription());
 					}
-					
+
 				});
 
 				try {
@@ -177,8 +177,8 @@ public class LongTermPushPullTest extends LongTermTest {
 			FileUtil.writeTo(fis, new File(innerDir2, "seednodes.fref"));
 			fis.close();
 			node2 = NodeStarter.createTestNode(DARKNET_PORT2, OPENNET_PORT2, dir.getPath(), false,
-			        Node.DEFAULT_MAX_HTL, 0, random, new PooledExecutor(), 1000, 5 * 1024 * 1024, true, true, true,
-			        true, true, true, true, 12 * 1024, false, true, false, false, null);
+											   Node.DEFAULT_MAX_HTL, 0, random, new PooledExecutor(), 1000, 5 * 1024 * 1024, true, true, true,
+											   true, true, true, true, 12 * 1024, false, true, false, false, null);
 			node2.start(true);
 
 			t1 = System.currentTimeMillis();
@@ -208,7 +208,7 @@ public class LongTermPushPullTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-					        && e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
 						e.printStackTrace();
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
@@ -260,7 +260,7 @@ public class LongTermPushPullTest extends LongTermTest {
 			if(split.length > 2) {
 				int[] pushTimes = new int[MAX_N+1];
 				String[] pushFailures = new String[MAX_N+1];
-				for(int i=0;i<=MAX_N;i++) {
+				for(int i=0; i<=MAX_N; i++) {
 					String s = split[3+i];
 					try {
 						pushTimes[i] = Integer.parseInt(s);
@@ -271,7 +271,7 @@ public class LongTermPushPullTest extends LongTermTest {
 				if(split.length > 3 + MAX_N+1) {
 					int[] pullTimes = new int[MAX_N+1];
 					String[] pullFailures = new String[MAX_N+1];
-					for(int i=0;i<=MAX_N;i++) {
+					for(int i=0; i<=MAX_N; i++) {
 						String s = split[3+MAX_N+2+i];
 						try {
 							pullTimes[i] = Integer.parseInt(s);
@@ -293,7 +293,7 @@ public class LongTermPushPullTest extends LongTermTest {
 			map.put(calendar, element);
 		}
 		fis.close();
-		for(int i=0;i<=MAX_N;i++) {
+		for(int i=0; i<=MAX_N; i++) {
 			int delta = ((1<<i)-1);
 			System.out.println("Checking delta: "+delta+" days");
 			int failures = 0;
@@ -352,7 +352,7 @@ public class LongTermPushPullTest extends LongTermTest {
 			System.out.println();
 		}
 	}
-	
+
 	static class DumpElement {
 		public DumpElement(GregorianCalendar date, int version) {
 			this.date = date;
@@ -389,21 +389,21 @@ public class LongTermPushPullTest extends LongTermTest {
 		final int[] pullTimes;
 		final String[] pullFailures;
 	}
-	
+
 
 	private static RandomAccessBucket randomData(Node node) throws IOException {
-	    RandomAccessBucket data = node.clientCore.tempBucketFactory.makeBucket(TEST_SIZE);
+		RandomAccessBucket data = node.clientCore.tempBucketFactory.makeBucket(TEST_SIZE);
 		OutputStream os = data.getOutputStream();
 		try {
-		byte[] buf = new byte[4096];
-		for (long written = 0; written < TEST_SIZE;) {
-			node.fastWeakRandom.nextBytes(buf);
-			int toWrite = (int) Math.min(TEST_SIZE - written, buf.length);
-			os.write(buf, 0, toWrite);
-			written += toWrite;
-		}
+			byte[] buf = new byte[4096];
+			for (long written = 0; written < TEST_SIZE;) {
+				node.fastWeakRandom.nextBytes(buf);
+				int toWrite = (int) Math.min(TEST_SIZE - written, buf.length);
+				os.write(buf, 0, toWrite);
+				written += toWrite;
+			}
 		} finally {
-		os.close();
+			os.close();
 		}
 		return data;
 	}

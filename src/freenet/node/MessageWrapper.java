@@ -23,13 +23,13 @@ public class MessageWrapper {
 	private final SparseBitmap acks = new SparseBitmap();
 	private final SparseBitmap sent = new SparseBitmap();
 	private final SparseBitmap everSent = new SparseBitmap();
-	
+
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -47,7 +47,7 @@ public class MessageWrapper {
 	public boolean ack(int start, int end) {
 		return ack(start, end, null);
 	}
-	
+
 	/**
 	 * Mark the given range as received.
 	 *
@@ -87,24 +87,24 @@ public class MessageWrapper {
 		if(logDEBUG) Logger.debug(this, "Lost from "+start+" to "+end+" on "+this.messageID);
 		int size = end - start + 1;
 		synchronized(sent) {
-		synchronized(acks) {
-			resends++;
-			sent.remove(start, end);
+			synchronized(acks) {
+				resends++;
+				sent.remove(start, end);
 
-			for(int[] range : acks) {
-				if(range[1] < start) continue;
-				if(range[0] > end) continue;
+				for(int[] range : acks) {
+					if(range[1] < start) continue;
+					if(range[0] > end) continue;
 
-				int toAddStart = Math.max(start, range[0]);
-				int toAddEnd = Math.min(end, range[1]);
-				if(toAddStart == toAddEnd || toAddStart > toAddEnd) continue;
-				Logger.warning(this, "Lost range (" + start + "->" + end + ") is overlapped by acked range ("
-						+ range[0] + "->" + range[1] + "). Adding " + toAddStart + "->"
-						+ toAddEnd + " to sent");
-				sent.add(toAddStart, toAddEnd);
-				size -= (toAddEnd - toAddStart + 1);
+					int toAddStart = Math.max(start, range[0]);
+					int toAddEnd = Math.min(end, range[1]);
+					if(toAddStart == toAddEnd || toAddStart > toAddEnd) continue;
+					Logger.warning(this, "Lost range (" + start + "->" + end + ") is overlapped by acked range ("
+								   + range[0] + "->" + range[1] + "). Adding " + toAddStart + "->"
+								   + toAddEnd + " to sent");
+					sent.add(toAddStart, toAddEnd);
+					size -= (toAddEnd - toAddStart + 1);
+				}
 			}
-		}
 		}
 
 		return size;
@@ -146,9 +146,9 @@ public class MessageWrapper {
 
 	public boolean isFirstFragment() {
 		synchronized(sent) {
-		synchronized(acks) {
-			return sent.isEmpty() && acks.isEmpty();
-		}
+			synchronized(acks) {
+				return sent.isEmpty() && acks.isEmpty();
+			}
 		}
 	}
 
@@ -180,8 +180,8 @@ public class MessageWrapper {
 			}
 
 			dataLength = maxLength
-			- 2 //Message id + flags
-			- (isShortMessage ? 1 : 2); //Fragment length
+						 - 2 //Message id + flags
+						 - (isShortMessage ? 1 : 2); //Fragment length
 
 			if(isFragmented(dataLength)) {
 				dataLength -= (isShortMessage ? 1 : 3); //Message length / fragment offset
@@ -198,13 +198,13 @@ public class MessageWrapper {
 
 		boolean isFragmented = !((start == 0) && (dataLength == item.buf.length));
 		return new MessageFragment(isShortMessage, isFragmented, start == 0, messageID, dataLength,
-		                item.buf.length, start, fragmentData, this);
+								   item.buf.length, start, fragmentData, this);
 	}
 
 	public void onDisconnect() {
 		item.onDisconnect();
 	}
-	
+
 	MessageItem getItem() {
 		return item;
 	}

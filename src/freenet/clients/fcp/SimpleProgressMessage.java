@@ -11,21 +11,21 @@ import freenet.support.SimpleFieldSet;
 
 public class SimpleProgressMessage extends FCPMessage {
 
-    private final String ident;
+	private final String ident;
 	private final boolean global;
 	private final SplitfileProgressEvent event;
-	
+
 	public SimpleProgressMessage(String identifier, boolean global, SplitfileProgressEvent event) {
 		this.ident = identifier;
 		this.event = event;
 		this.global = global;
 	}
-	
+
 	protected SimpleProgressMessage() {
-	    // For serialization.
-	    ident = null;
-	    global = false;
-	    event = null;
+		// For serialization.
+		ident = null;
+		global = false;
+		event = null;
 	}
 
 	@Override
@@ -64,32 +64,32 @@ public class SimpleProgressMessage extends FCPMessage {
 	public double getFraction() {
 		return (double) event.succeedBlocks / (double) event.totalBlocks;
 	}
-	
+
 	public double getMinBlocks() {
 		return event.minSuccessfulBlocks;
 	}
-	
-	public double getTotalBlocks(){
+
+	public double getTotalBlocks() {
 		return event.totalBlocks;
 	}
-	
-	public double getFetchedBlocks(){
+
+	public double getFetchedBlocks() {
 		return event.succeedBlocks;
 	}
-	
+
 	public Date getLatestSuccess() {
 		// clone() because Date is mutable
 		return event.latestSuccess != null ? (Date)event.latestSuccess.clone() : null;
 	}
-	
-	public double getFailedBlocks(){
+
+	public double getFailedBlocks() {
 		return event.failedBlocks;
 	}
-	
-	public double getFatalyFailedBlocks(){
+
+	public double getFatalyFailedBlocks() {
 		return event.fatallyFailedBlocks;
 	}
-	
+
 	public Date getLatestFailure() {
 		// clone() because Date is mutable
 		return event.latestFailure != null ? (Date)event.latestFailure.clone() : null;

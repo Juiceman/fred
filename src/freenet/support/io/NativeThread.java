@@ -11,7 +11,7 @@ import freenet.support.Logger;
 
 /**
  * Do *NOT* forget to call super.run() if you extend it!
- * 
+ *
  * @see <a href="https://emu.freenetproject.org/pipermail/devl/2008-February/028357.html">Devl Mailing List</a>
  * @author Florent Daigni&egrave;re &lt;nextgens@freenetproject.org&gt;
  */
@@ -28,7 +28,7 @@ public class NativeThread extends Thread {
 	public final static boolean HAS_ENOUGH_NICE_LEVELS;
 	public final static boolean HAS_PLENTY_NICE_LEVELS;
 
-	
+
 	// TODO: Wire in.
 	public static enum PriorityLevel {
 		MIN_PRIORITY(1),
@@ -36,24 +36,24 @@ public class NativeThread extends Thread {
 		NORM_PRIORITY(5),
 		HIGH_PRIORITY(7),
 		MAX_PRIORITY(10);
-		
+
 		public final int value;
-		
+
 		PriorityLevel(int myValue) {
 			value = myValue;
 		}
-		
+
 		public static PriorityLevel fromValue(int value) {
 			for(PriorityLevel level :PriorityLevel.values()) {
 				if(level.value == value)
 					return level;
 			}
-			
+
 			throw new IllegalArgumentException();
 		}
 	}
-	
-	
+
+
 
 	public static final int ENOUGH_NICE_LEVELS = PriorityLevel.values().length;
 	@Deprecated
@@ -66,8 +66,8 @@ public class NativeThread extends Thread {
 	public static final int HIGH_PRIORITY = PriorityLevel.HIGH_PRIORITY.value;
 	@Deprecated
 	public static final int MAX_PRIORITY = PriorityLevel.MAX_PRIORITY.value;
-	
-	
+
+
 
 	static {
 		Logger.minor(NativeThread.class, "Running init()");
@@ -119,7 +119,7 @@ public class NativeThread extends Thread {
 		this.currentPriority = priority;
 		this.dontCheckRenice = dontCheckRenice;
 	}
-	
+
 	/**
 	* Creates a new native (reniced) thread
 	*
@@ -133,7 +133,7 @@ public class NativeThread extends Thread {
 		this.currentPriority = priority;
 		this.dontCheckRenice = dontCheckRenice;
 	}
-	
+
 	/**
 	* Creates a new native (reniced) thread
 	*
@@ -147,7 +147,7 @@ public class NativeThread extends Thread {
 		this.currentPriority = priority;
 		this.dontCheckRenice = dontCheckRenice;
 	}
-	
+
 	@Override
 	public final void run() {
 		if(!setNativePriority(currentPriority))
@@ -155,11 +155,11 @@ public class NativeThread extends Thread {
 		super.run();
 		realRun();
 	}
-	
+
 	public void realRun() {
 		// Override this for convenience when doing new NativeThread() { ... }
 	}
-	
+
 	/**
 	 * Rescale java priority and set linux priority.
 	 */
@@ -178,7 +178,7 @@ public class NativeThread extends Thread {
 		if(NATIVE_PRIORITY_BASE != realPrio && !dontCheckRenice) {
 			/* The user has reniced freenet or we didn't use the PacketSender to create the thread
 			 * either ways it's bad for us.
-			 * 
+			 *
 			 * Let's disable the renicing as we can't rely on it anymore.
 			 */
 			_disabled = true;
@@ -192,13 +192,13 @@ public class NativeThread extends Thread {
 		// That's an obvious coding mistake
 		if(prio < currentPriority)
 			throw new IllegalStateException("You're trying to set a thread priority" +
-				" above the current value!! It's not possible if you aren't root" +
-				" and shouldn't ever occur in our code. (asked="+prio+':'+linuxPriority+" currentMax="+
-				+currentPriority+':'+NATIVE_PRIORITY_BASE+") SHOUDLN'T HAPPEN, please report!");
+											" above the current value!! It's not possible if you aren't root" +
+											" and shouldn't ever occur in our code. (asked="+prio+':'+linuxPriority+" currentMax="+
+											+currentPriority+':'+NATIVE_PRIORITY_BASE+") SHOUDLN'T HAPPEN, please report!");
 		Logger.minor(this, "Setting native priority to "+linuxPriority+" (base="+NATIVE_PRIORITY_BASE+") for "+this);
 		return (LinuxNativeThread.setpriority(0, 0, linuxPriority) > -1 ? true : false);
 	}
-	
+
 	public int getNativePriority() {
 		return currentPriority;
 	}
@@ -206,7 +206,7 @@ public class NativeThread extends Thread {
 	public static boolean usingNativeCode() {
 		return _loadNative && !_disabled;
 	}
-	
+
 	public static String normalizeName(String name) {
 		if(name.indexOf(" for ") != -1)
 			name = name.substring(0, name.indexOf(" for "));
@@ -214,10 +214,10 @@ public class NativeThread extends Thread {
 			name = name.substring(0, name.indexOf('@'));
 		if (name.indexOf('(') != -1)
 			name = name.substring(0, name.indexOf('('));
-		
+
 		return name.trim();
 	}
-	
+
 	public String getNormalizedName() {
 		return normalizeName(getName());
 	}

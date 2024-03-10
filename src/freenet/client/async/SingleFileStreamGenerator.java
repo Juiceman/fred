@@ -22,11 +22,11 @@ public class SingleFileStreamGenerator implements StreamGenerator {
 	final private Bucket bucket;
 	final private boolean persistent;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -39,13 +39,13 @@ public class SingleFileStreamGenerator implements StreamGenerator {
 
 	@Override
 	public void writeTo(OutputStream os, ClientContext context) throws IOException {
-		try{
+		try {
 			if(logMINOR) Logger.minor(this, "Generating Stream", new Exception("debug"));
 			InputStream data = bucket.getInputStream();
 			try {
-			FileUtil.copy(data, os, -1);
+				FileUtil.copy(data, os, -1);
 			} finally {
-			data.close();
+				data.close();
 			}
 			os.close();
 			bucket.free();

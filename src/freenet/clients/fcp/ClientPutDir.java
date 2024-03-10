@@ -35,20 +35,20 @@ import freenet.support.io.ResumeFailedException;
 
 public class ClientPutDir extends ClientPutBase {
 
-    private static final long serialVersionUID = 1L;
-    private HashMap<String, Object> manifestElements;
+	private static final long serialVersionUID = 1L;
+	private HashMap<String, Object> manifestElements;
 	private ManifestPutter putter;
 	private final String defaultName;
 	private final long totalSize;
 	private final int numberOfFiles;
 	private final boolean wasDiskPut;
-	
+
 	private static volatile boolean logMINOR;
 	private final byte[] overrideSplitfileCryptoKey;
-	
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
@@ -56,22 +56,22 @@ public class ClientPutDir extends ClientPutBase {
 		});
 	}
 
-	public ClientPutDir(FCPConnectionHandler handler, ClientPutDirMessage message, 
-			HashMap<String, Object> manifestElements, boolean wasDiskPut, FCPServer server) throws IdentifierCollisionException, MalformedURLException, TooManyFilesInsertException {
+	public ClientPutDir(FCPConnectionHandler handler, ClientPutDirMessage message,
+						HashMap<String, Object> manifestElements, boolean wasDiskPut, FCPServer server) throws IdentifierCollisionException, MalformedURLException, TooManyFilesInsertException {
 		super(checkEmptySSK(message.uri, message.targetFilename != null ? message.targetFilename : "site", server.core.clientContext), message.identifier, message.verbosity, null,
-				handler, message.priorityClass, message.persistence, message.clientToken,
-				message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly, message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable, message.compressorDescriptor, message.extraInsertsSingleBlock, message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode, message.ignoreUSKDatehints, server);
+			  handler, message.priorityClass, message.persistence, message.clientToken,
+			  message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly, message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable, message.compressorDescriptor, message.extraInsertsSingleBlock, message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode, message.ignoreUSKDatehints, server);
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		this.wasDiskPut = wasDiskPut;
 		this.overrideSplitfileCryptoKey = message.overrideSplitfileCryptoKey;
-		
+
 		// objectOnNew is called once, objectOnUpdate is never called, yet manifestElements get blanked anyway!
-		
+
 		this.manifestElements = new HashMap<String,Object>();
 		this.manifestElements.putAll(manifestElements);
-		
+
 //		this.manifestElements = manifestElements;
-		
+
 //		this.manifestElements = new HashMap<String, Object>();
 //		this.manifestElements.putAll(manifestElements);
 		this.defaultName = message.defaultName;
@@ -89,11 +89,11 @@ public class ClientPutDir extends ClientPutBase {
 	/**
 	 * Fproxy
 	*	Puts a disk dir
-	 * @throws TooManyFilesInsertException 
-	 * @throws InsertException 
+	 * @throws TooManyFilesInsertException
+	 * @throws InsertException
 	*/
 	public ClientPutDir(PersistentRequestClient client, FreenetURI uri, String identifier, int verbosity, short priorityClass, Persistence persistence, String clientToken, boolean getCHKOnly, boolean dontCompress, int maxRetries, File dir, String defaultName, boolean allowUnreadableFiles, boolean includeHiddenFiles, boolean global, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, byte[] overrideSplitfileCryptoKey, NodeClientCore core) throws FileNotFoundException, IdentifierCollisionException, MalformedURLException, TooManyFilesInsertException {
-		super(checkEmptySSK(uri, "site", core.clientContext), identifier, verbosity , null, null, client, priorityClass, persistence, clientToken, global, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, InsertContext.CompatibilityMode.COMPAT_DEFAULT, false/*XXX ignoreUSKDatehints*/, core);
+		super(checkEmptySSK(uri, "site", core.clientContext), identifier, verbosity, null, null, client, priorityClass, persistence, clientToken, global, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, InsertContext.CompatibilityMode.COMPAT_DEFAULT, false/*XXX ignoreUSKDatehints*/, core);
 		wasDiskPut = true;
 		this.overrideSplitfileCryptoKey = overrideSplitfileCryptoKey;
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
@@ -111,7 +111,7 @@ public class ClientPutDir extends ClientPutBase {
 	}
 
 	public ClientPutDir(PersistentRequestClient client, FreenetURI uri, String identifier, int verbosity, short priorityClass, Persistence persistence, String clientToken, boolean getCHKOnly, boolean dontCompress, int maxRetries, HashMap<String, Object> elements, String defaultName, boolean global, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, byte[] overrideSplitfileCryptoKey, NodeClientCore core) throws IdentifierCollisionException, MalformedURLException, TooManyFilesInsertException {
-		super(checkEmptySSK(uri, "site", core.clientContext), identifier, verbosity , null, null, client, priorityClass, persistence, clientToken, global, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, InsertContext.CompatibilityMode.COMPAT_DEFAULT, false/*XXX ignoreUSKDatehints*/, core);
+		super(checkEmptySSK(uri, "site", core.clientContext), identifier, verbosity, null, null, client, priorityClass, persistence, clientToken, global, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, InsertContext.CompatibilityMode.COMPAT_DEFAULT, false/*XXX ignoreUSKDatehints*/, core);
 		wasDiskPut = false;
 		this.overrideSplitfileCryptoKey = overrideSplitfileCryptoKey;
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
@@ -127,14 +127,14 @@ public class ClientPutDir extends ClientPutBase {
 		}
 		if(logMINOR) Logger.minor(this, "Putting data from custom buckets "+identifier+" : "+priorityClass);
 	}
-	
+
 	protected ClientPutDir() {
-	    // For serialization.
-	    defaultName = null;
-	    totalSize = 0;
-	    numberOfFiles = 0;
-	    wasDiskPut = false;
-	    overrideSplitfileCryptoKey = null;
+		// For serialization.
+		defaultName = null;
+		totalSize = 0;
+		numberOfFiles = 0;
+		wasDiskPut = false;
+		overrideSplitfileCryptoKey = null;
 	}
 
 	@Override
@@ -146,30 +146,30 @@ public class ClientPutDir extends ClientPutBase {
 			client.queueClientRequestMessage(msg, 0);
 		}
 	}
-	
+
 	private HashMap<String, Object> makeDiskDirManifest(File dir, String prefix, boolean allowUnreadableFiles, boolean includeHiddenFiles) throws FileNotFoundException {
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		File[] files = dir.listFiles();
-		
+
 		if(files == null)
 			throw new IllegalArgumentException("No such directory");
 
 		for (File f : files) {
-			
-    		if(f.isHidden() && !includeHiddenFiles) continue;
+
+			if(f.isHidden() && !includeHiddenFiles) continue;
 
 			if (f.exists() && f.canRead()) {
 				if(f.isFile()) {
 					FileBucket bucket = new FileBucket(f, true, false, false, false);
 					if(logMINOR)
 						Logger.minor(this, "Add file : " + f.getAbsolutePath());
-					
+
 					map.put(f.getName(), new ManifestElement(f.getName(), prefix + f.getName(), bucket, DefaultMIMETypes.guessMIMEType(f.getName(), true), f.length()));
 				} else if(f.isDirectory()) {
 					if(logMINOR)
 						Logger.minor(this, "Add dir : " + f.getAbsolutePath());
-					
+
 					map.put(f.getName(), makeDiskDirManifest(f, prefix + f.getName() + "/", allowUnreadableFiles, includeHiddenFiles));
 				} else {
 					if(!allowUnreadableFiles)
@@ -177,16 +177,16 @@ public class ClientPutDir extends ClientPutBase {
 				}
 			} else if (!allowUnreadableFiles)
 				throw new FileNotFoundException("The file does not exist or is unreadable : " + f);
-			
+
 		}
 
 		return map;
 	}
-	
+
 	private void makePutter(ClientContext context) throws TooManyFilesInsertException {
-	    putter = new DefaultManifestPutter(this,
-	            manifestElements, priorityClass, uri, defaultName, ctx,
-	            persistence == Persistence.FOREVER, overrideSplitfileCryptoKey, context);
+		putter = new DefaultManifestPutter(this,
+										   manifestElements, priorityClass, uri, defaultName, ctx,
+										   persistence == Persistence.FOREVER, overrideSplitfileCryptoKey, context);
 	}
 
 	@Override
@@ -214,14 +214,14 @@ public class ClientPutDir extends ClientPutBase {
 			onFailure(e, null);
 		}
 	}
-	
+
 	@Override
 	public void onLostConnection(ClientContext context) {
 		if(persistence == Persistence.CONNECTION)
 			cancel(context);
 		// otherwise ignore
 	}
-	
+
 	@Override
 	protected void freeData() {
 		if(logMINOR) Logger.minor(this, "freeData() on "+this+" persistence type = "+persistence);
@@ -237,7 +237,7 @@ public class ClientPutDir extends ClientPutBase {
 		freeData(manifestElements);
 		manifestElements = null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void freeData(HashMap<String, Object> manifestElements) {
 		if(logMINOR) Logger.minor(this, "freeData() inner on "+this+" persistence type = "+persistence+" size = "+manifestElements.size());
@@ -266,9 +266,9 @@ public class ClientPutDir extends ClientPutBase {
 			Logger.error(this, "putter == null", new Exception("error"));
 		// FIXME end
 		return new PersistentPutDir(identifier, publicURI, uri, verbosity, priorityClass,
-				persistence, global, defaultName, manifestElements, clientToken, started, ctx.maxInsertRetries, ctx.dontCompress, ctx.compressorDescriptor, wasDiskPut, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null, this.ctx.getCompatibilityMode());
+									persistence, global, defaultName, manifestElements, clientToken, started, ctx.maxInsertRetries, ctx.dontCompress, ctx.compressorDescriptor, wasDiskPut, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null, this.ctx.getCompatibilityMode());
 	}
-	
+
 	private boolean isRealTime() {
 		// FIXME: remove debug code
 		if (lowLevelClient == null) {
@@ -336,12 +336,12 @@ public class ClientPutDir extends ClientPutBase {
 	public void onFailure(FetchException e, ClientGetter state) {}
 
 	public void onSuccess(FetchResult result, ClientGetter state) {}
-	
+
 	@Override
 	public void onSuccess(BaseClientPutter state) {
 		super.onSuccess(state);
 	}
-	
+
 	@Override
 	public void onFailure(InsertException e, BaseClientPutter state) {
 		super.onFailure(e, state);
@@ -364,7 +364,7 @@ public class ClientPutDir extends ClientPutBase {
 	protected void onStopCompressing() {
 		// Ignore
 	}
-	
+
 	@Override
 	RequestStatus getStatus() {
 		FreenetURI finalURI = getFinalURI();
@@ -376,13 +376,13 @@ public class ClientPutDir extends ClientPutBase {
 			failureReasonShort = putFailedMessage.getShortFailedMessage();
 			failureReasonShort = putFailedMessage.getLongFailedMessage();
 		}
-		
+
 		int total=0, min=0, fetched=0, fatal=0, failed=0;
 		// See ClientRequester.getLatestSuccess() for why this defaults to current time.
 		Date latestSuccess = new Date();
 		Date latestFailure = null;
 		boolean totalFinalized = false;
-		
+
 		if(progressMessage != null) {
 			if(progressMessage instanceof SimpleProgressMessage) {
 				SimpleProgressMessage msg = (SimpleProgressMessage)progressMessage;
@@ -396,26 +396,26 @@ public class ClientPutDir extends ClientPutBase {
 				totalFinalized = msg.isTotalFinalized();
 			}
 		}
-		
+
 		return new UploadDirRequestStatus(
-		    identifier, persistence, started, finished, succeeded, total, min, fetched,
-		    latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
-		    uri, failureCode, failureReasonShort, failureReasonLong, totalSize, numberOfFiles);
+				   identifier, persistence, started, finished, succeeded, total, min, fetched,
+				   latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
+				   uri, failureCode, failureReasonShort, failureReasonLong, totalSize, numberOfFiles);
 	}
-	
+
 	@Override
 	public void innerResume(ClientContext context) throws ResumeFailedException {
-	    ContainerInserter.resumeMetadata(manifestElements, context);
+		ContainerInserter.resumeMetadata(manifestElements, context);
 	}
 
-    @Override
-    RequestType getType() {
-        return RequestType.PUTDIR;
-    }
+	@Override
+	RequestType getType() {
+		return RequestType.PUTDIR;
+	}
 
-    @Override
-    public boolean fullyResumed() {
-        return false;
-    }
+	@Override
+	public boolean fullyResumed() {
+		return false;
+	}
 
 }

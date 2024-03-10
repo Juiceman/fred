@@ -136,7 +136,7 @@ public class PushTester {
 					public void run() {
 						new PushTester().startTesting(true);
 					};
-				}.start();
+				} .start();
 
 			}
 		} else {

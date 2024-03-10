@@ -48,7 +48,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author amphibian
- * 
+ *
  * Maintains:
  * - A list of peers we want to connect to.
  * - A list of peers we are actually connected to.
@@ -56,10 +56,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class PeerManager {
 
-        private static volatile boolean logMINOR;
-        static {
-            Logger.registerClass(PeerManager.class);
-        }
+	private static volatile boolean logMINOR;
+	static {
+		Logger.registerClass(PeerManager.class);
+	}
 	/** Our Node */
 	final Node node;
 	/** All the peers we want to connect to */
@@ -67,14 +67,14 @@ public class PeerManager {
 	/** All the peers we are actually connected to */
 	private PeerNode[] connectedPeers;
 	private String darkFilename;
-        private String openFilename;
-        private String oldOpennetPeersFilename;
-        // FIXME MEMORY use a hash. Not hashCode() though.
-        // FIXME Strip metadata, except for peer locations.
-        private String darknetPeersStringCache = null;
-        private String opennetPeersStringCache = null;
-        private String oldOpennetPeersStringCache = null;
-        private PeerManagerUserAlert ua;	// Peers stuff
+	private String openFilename;
+	private String oldOpennetPeersFilename;
+	// FIXME MEMORY use a hash. Not hashCode() though.
+	// FIXME Strip metadata, except for peer locations.
+	private String darknetPeersStringCache = null;
+	private String opennetPeersStringCache = null;
+	private String oldOpennetPeersStringCache = null;
+	private PeerManagerUserAlert ua;	// Peers stuff
 	/** age of oldest never connected peer (milliseconds) */
 	private long oldestNeverConnectedDarknetPeerAge;
 	/** Next time to update oldestNeverConnectedPeerAge */
@@ -113,7 +113,7 @@ public class PeerManager {
 			}
 		}
 	};
-	
+
 	protected void writePeersNow(boolean rotateBackups) {
 		writePeersDarknetNow(rotateBackups);
 		writePeersOpennetNow(rotateBackups);
@@ -148,12 +148,12 @@ public class PeerManager {
 	public static final int PEER_NODE_STATUS_DISCONNECTING = 13;
 	public static final int PEER_NODE_STATUS_ROUTING_DISABLED = 14;
 	public static final int PEER_NODE_STATUS_NO_LOAD_STATS = 15;
-	
+
 	/** The list of listeners that needs to be notified when peers' statuses changed.
 	 * FIXME use this for PeerManagerUserAlert.
 	 * FIXME don't register with each PeerNode separately, just provide an
-	 * interface for listening for all of them. (Possibly excluding 
-	 * status changes on seed servers and seed clients). 
+	 * interface for listening for all of them. (Possibly excluding
+	 * status changes on seed servers and seed clients).
 	 * */
 	private List<PeerStatusChangeListener> listeners=new CopyOnWriteArrayList<PeerStatusChangeListener>();
 
@@ -185,7 +185,7 @@ public class PeerManager {
 
 	/**
 	 * Attempt to read a file full of noderefs. Try the file as named first, then the .bak if it is empty or
-	 * otherwise doesn't work. WARNING: Only call this AFTER the Node constructor has completed! Methods may 
+	 * otherwise doesn't work. WARNING: Only call this AFTER the Node constructor has completed! Methods may
 	 * be called on Node!
 	 * @param filename The filename to read from. If this doesn't work, we try the .bak file.
 	 * @param crypto The cryptographic identity which these nodes are connected to.
@@ -203,7 +203,7 @@ public class PeerManager {
 					darkFilename = filename;
 		}
 		int maxBackups = isOpennet ? BACKUPS_OPENNET : BACKUPS_DARKNET;
-		for(int i=0;i<=maxBackups;i++) {
+		for(int i=0; i<=maxBackups; i++) {
 			File peersFile = this.getBackupFilename(filename, i);
 			// Try to read the node list from disk
 			if(peersFile.exists())
@@ -246,10 +246,10 @@ public class PeerManager {
 				try {
 					PeerNode pn = PeerNode.create(fs, node, crypto, opennet, this);
 					if(oldOpennetPeers) {
-					    if(!(pn instanceof OpennetPeerNode))
-					        Logger.error(this, "Darknet node in old opennet peers?!: "+pn);
-					    else
-					        opennet.addOldOpennetNode((OpennetPeerNode)pn);
+						if(!(pn instanceof OpennetPeerNode))
+							Logger.error(this, "Darknet node in old opennet peers?!: "+pn);
+						else
+							opennet.addOldOpennetNode((OpennetPeerNode)pn);
 					} else
 						addPeer(pn, true, false);
 				} catch(FSParseException e2) {
@@ -274,16 +274,16 @@ public class PeerManager {
 					continue;
 					// FIXME tell the user???
 				} catch (PeerTooOldException e) {
-				    if(crypto.isOpennet) {
-				        // Ignore.
-				        Logger.error(this, "Dropping too-old opennet peer");
-				    } else {
-				        // A lot more noisy!
-				        droppedOldPeers.add(e, fs.get("myName"));
-				    }
-                    someBroken = true;
-                    continue;
-                }
+					if(crypto.isOpennet) {
+						// Ignore.
+						Logger.error(this, "Dropping too-old opennet peer");
+					} else {
+						// A lot more noisy!
+						droppedOldPeers.add(e, fs.get("myName"));
+					}
+					someBroken = true;
+					continue;
+				}
 			}
 		} catch(EOFException e) {
 			// End of file, fine
@@ -309,18 +309,18 @@ public class PeerManager {
 			}
 		}
 		if(!droppedOldPeers.isEmpty()) {
-		    try {
-		        node.clientCore.alerts.register(droppedOldPeers);
-		        Logger.error(this, droppedOldPeers.getText());
-		    } catch (Throwable t) {
-		        // Startup MUST complete, don't let client layer problems kill it.
-		        Logger.error(this, "Caught error telling user about dropped peers", t);
-		    }
+			try {
+				node.clientCore.alerts.register(droppedOldPeers);
+				Logger.error(this, droppedOldPeers.getText());
+			} catch (Throwable t) {
+				// Startup MUST complete, don't let client layer problems kill it.
+				Logger.error(this, "Caught error telling user about dropped peers", t);
+			}
 		}
 		return !someBroken;
 	}
 
-    public boolean addPeer(PeerNode pn) {
+	public boolean addPeer(PeerNode pn) {
 		return addPeer(pn, false, false);
 	}
 
@@ -366,12 +366,12 @@ public class PeerManager {
 		if(!pn.isSeed()) {
 			// LOCKING: addPeer() can be called inside PM lock, so must do this on a separate thread.
 			node.executor.execute(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					updatePMUserAlert();
 				}
-				
+
 			});
 		}
 		return true;
@@ -474,8 +474,8 @@ public class PeerManager {
 			newConnectedPeers = a.toArray(newConnectedPeers);
 			connectedPeers = newConnectedPeers;
 		}
-                if(!pn.isSeed())
-                    updatePMUserAlert();
+		if(!pn.isSeed())
+			updatePMUserAlert();
 		node.lm.announceLocChange();
 		return true;
 	}
@@ -527,7 +527,7 @@ public class PeerManager {
 				Logger.minor(this, "Connected peers: " + connectedPeers.length);
 		}
 		if(!pn.isSeed())
-                    updatePMUserAlert();
+			updatePMUserAlert();
 		node.lm.announceLocChange();
 	}
 //    NodePeer route(double targetLocation, RoutingContext ctx) {
@@ -544,14 +544,14 @@ public class PeerManager {
 //        }
 //        return best;
 //    }
-//    
+//
 //    NodePeer route(Location target, RoutingContext ctx) {
 //        return route(target.getValue(), ctx);
 //    }
 //
 	/**
-	 * Find the node with the given Peer address. Used by FNPPacketMangler to try to 
-	 * quickly identify a peer by the address of the packet. Includes 
+	 * Find the node with the given Peer address. Used by FNPPacketMangler to try to
+	 * quickly identify a peer by the address of the packet. Includes
 	 * non-isRealConnection()'s since they can also be connected.
 	 */
 	public PeerNode getByPeer(Peer peer) {
@@ -570,7 +570,7 @@ public class PeerManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Find the node with the given Peer address, or IP address. Checks the outgoing
 	 * packet mangler as well.
@@ -600,7 +600,7 @@ public class PeerManager {
 	 */
 	public ArrayList<PeerNode> getAllConnectedByAddress(FreenetInetAddress a, boolean strict) {
 		ArrayList<PeerNode> found = null;
-		
+
 		PeerNode[] peerList = myPeers();
 		// Try a match by IP address if we can't match exactly by IP:port.
 		for(PeerNode pn : peerList) {
@@ -616,7 +616,7 @@ public class PeerManager {
 
 	/**
 	 * Connect to a node provided the fieldset representing it.
-	 * @throws PeerTooOldException 
+	 * @throws PeerTooOldException
 	 */
 	public void connect(SimpleFieldSet noderef, OutgoingPacketMangler mangler, FRIEND_TRUST trust, FRIEND_VISIBILITY visibility) throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
 		PeerNode pn = node.createNewDarknetNode(noderef, trust, visibility);
@@ -627,7 +627,7 @@ public class PeerManager {
 		}
 		addPeer(pn);
 	}
-	
+
 	public void disconnectAndRemove(final PeerNode pn, boolean sendDisconnectMessage, final boolean waitForAck, boolean purge) {
 		disconnect(pn, sendDisconnectMessage, waitForAck, purge, false, true, Node.MAX_PEER_INACTIVITY);
 	}
@@ -638,7 +638,7 @@ public class PeerManager {
 	 * @param waitForAck If false, don't wait for the ack for the FNPDisconnected message.
 	 * @param purge If true, set the purge flag on the disconnect, causing the other peer
 	 * to purge this node from e.g. its old opennet peers list.
-	 * @param dumpMessagesNow If true, dump queued messages immediately, before the 
+	 * @param dumpMessagesNow If true, dump queued messages immediately, before the
 	 * disconnect completes.
 	 * @param remove If true, remove the node from the routing table and tell the peer to do so.
 	 */
@@ -703,7 +703,7 @@ public class PeerManager {
 			}
 			if(!pn.isSeed()) {
 				node.getTicker().queueTimedJob(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						if(pn.isDisconnecting()) {
@@ -795,9 +795,8 @@ public class PeerManager {
 				continue;
 			if(pn.isRoutable())
 				v.add(pn);
-			else
-				if(logMINOR)
-					Logger.minor(this, "Excluding " + pn + " because is disconnected");
+			else if(logMINOR)
+				Logger.minor(this, "Excluding " + pn + " because is disconnected");
 		}
 		int lengthWithoutExcluded = v.size();
 		if((exclude != null) && exclude.isRoutable())
@@ -812,19 +811,19 @@ public class PeerManager {
 		return connectedPeers[node.random.nextInt(lengthWithoutExcluded)];
 	}
 
-	public void localBroadcast(Message msg, boolean ignoreRoutability, 
-	        boolean onlyRealConnections, ByteCounter ctr) {
-	    localBroadcast(msg, ignoreRoutability, onlyRealConnections, ctr, 
-	            Integer.MIN_VALUE, Integer.MAX_VALUE);
+	public void localBroadcast(Message msg, boolean ignoreRoutability,
+							   boolean onlyRealConnections, ByteCounter ctr) {
+		localBroadcast(msg, ignoreRoutability, onlyRealConnections, ctr,
+					   Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
-	
+
 	/**
 	 * Asynchronously send this message to every connected peer.
 	 * @param maxVersion Only send the message if the version >= maxVersion.
 	 * @param minVersion Only send the message if the version <= minVersion.
 	 */
-	public void localBroadcast(Message msg, boolean ignoreRoutability, 
-	        boolean onlyRealConnections, ByteCounter ctr, int minVersion, int maxVersion) {
+	public void localBroadcast(Message msg, boolean ignoreRoutability,
+							   boolean onlyRealConnections, ByteCounter ctr, int minVersion, int maxVersion) {
 		// myPeers not connectedPeers as connectedPeers only contains
 		// ROUTABLE peers, and we may want to send to non-routable peers
 		PeerNode[] peers = myPeers();
@@ -832,9 +831,8 @@ public class PeerManager {
 			if(ignoreRoutability) {
 				if(!peer.isConnected())
 					continue;
-			} else
-				if(!peer.isRoutable())
-					continue;
+			} else if(!peer.isRoutable())
+				continue;
 			if(onlyRealConnections && !peer.isRealConnection())
 				continue;
 			int version = peer.getVersionNumber();
@@ -871,7 +869,7 @@ public class PeerManager {
 	}
 
 	public PeerNode closerPeer(PeerNode pn, Set<PeerNode> routedTo, double loc, boolean ignoreSelf, boolean calculateMisrouting,
-	        int minVersion, List<Double> addUnpickedLocsTo, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime, boolean excludeMandatoryBackoff) {
+							   int minVersion, List<Double> addUnpickedLocsTo, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime, boolean excludeMandatoryBackoff) {
 		return closerPeer(pn, routedTo, loc, ignoreSelf, calculateMisrouting, minVersion, addUnpickedLocsTo, 2.0, key, outgoingHTL, ignoreBackoffUnder, isLocal, realTime, null, false, System.currentTimeMillis(), excludeMandatoryBackoff);
 	}
 
@@ -882,13 +880,13 @@ public class PeerManager {
 	 * It is possible for either to be null independent of the other, 'closest' is the closer of the two in either case, and
 	 * will not be null if any of the other two return values is not null. LOCKING: This will briefly take
 	 * various locks, try to avoid calling it with lots of locks held.
-	 * @param addUnpickedLocsTo Add all locations we didn't choose which we could have routed to to 
+	 * @param addUnpickedLocsTo Add all locations we didn't choose which we could have routed to to
 	 * this array. Remove the location of the peer we pick from it.
 	 * @param maxDistance If a node is further away from the target than this distance, ignore it.
 	 * @param key The original key, if we have it, and if we want to consult with the FailureTable
 	 * to avoid routing to nodes which have recently failed for the same key.
 	 * @param isLocal We don't just check pn == null because in some cases pn can be null here: If an insert is forked, for
-	 * a remote requests, we can route back to the originator, so we set pn to null. Whereas for stats we want to know 
+	 * a remote requests, we can route back to the originator, so we set pn to null. Whereas for stats we want to know
 	 * accurately whether this was originated remotely.
 	 * @param recentlyFailed If non-null, we should check for recently failed: If we have routed to, and got
 	 * a failed response from, and are still connected to and within the timeout for, our top two routing choices,
@@ -898,24 +896,24 @@ public class PeerManager {
 	 * wouldn't be a good idea due to introducing a round-trip-to-request-originator; FIXME consider this.
 	 */
 	public PeerNode closerPeer(PeerNode pn, Set<PeerNode> routedTo, double target, boolean ignoreSelf,
-	        boolean calculateMisrouting, int minVersion, List<Double> addUnpickedLocsTo, double maxDistance, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime,
-	        RecentlyFailedReturn recentlyFailed, boolean ignoreTimeout, long now, boolean newLoadManagement) {
-		
+							   boolean calculateMisrouting, int minVersion, List<Double> addUnpickedLocsTo, double maxDistance, Key key, short outgoingHTL, long ignoreBackoffUnder, boolean isLocal, boolean realTime,
+							   RecentlyFailedReturn recentlyFailed, boolean ignoreTimeout, long now, boolean newLoadManagement) {
+
 		int countWaiting = 0;
 		long soonestTimeoutWakeup = Long.MAX_VALUE;
-		
+
 		PeerNode[] peers = connectedPeers();
 		if(!node.enablePerNodeFailureTables)
 			key = null;
 		if(logMINOR)
 			Logger.minor(this, "Choosing closest peer: connectedPeers=" + peers.length+" key "+key);
-		
+
 		double myLoc = node.getLocation();
-		
+
 		double maxDiff = Double.MAX_VALUE;
 		if(!ignoreSelf)
 			maxDiff = Location.distance(myLoc, target);
-		
+
 		double prevLoc = -1.0;
 		if(pn != null) prevLoc = pn.getLocation();
 
@@ -925,7 +923,7 @@ public class PeerManager {
 		 * - Timed-out, non-backed-off peers, least recently timed out first.
 		 * - Non-timed-out backed-off peers, in order of closeness to the target.
 		 * - Timed out, backed-off peers, least recently timed out first.
-		 * - 
+		 * -
 		 */
 		double closestDistance = Double.MAX_VALUE;
 		// If closestDistance is FOAF, this is the real distance.
@@ -947,15 +945,15 @@ public class PeerManager {
 		PeerNode leastRecentlyTimedOutBackedOff = null;
 		long timeLeastRecentlyTimedOutBackedOff = Long.MAX_VALUE;
 		double leastRecentlyTimedOutBackedOffDistance = Double.MAX_VALUE;
-		
+
 		TimedOutNodesList entry = null;
 
 		if(key != null)
 			entry = node.failureTable.getTimedOutNodesList(key);
-		
+
 		double[] selectionRates = new double[peers.length];
 		double totalSelectionRate = 0.0;
-		for(int i=0;i<peers.length;i++) {
+		for(int i=0; i<peers.length; i++) {
 			selectionRates[i] = peers[i].selectionRate();
 			totalSelectionRate += selectionRates[i];
 		}
@@ -1013,7 +1011,7 @@ public class PeerManager {
 				if(logMINOR) Logger.minor(this, "Skipping (mandatory backoff): "+p.getPeer());
 				continue;
 			}
-			
+
 			/** For RecentlyFailed i.e. request quenching */
 			long timeoutRF = -1;
 			/** For per-node failure tables i.e. routing */
@@ -1032,7 +1030,7 @@ public class PeerManager {
 			boolean direct = true;
 			double realDiff = Location.distance(loc, target);
 			double diff = realDiff;
-			
+
 			if (p.shallWeRouteAccordingToOurPeersLocation(outgoingHTL)) {
 				double l = p.getClosestPeerLocation(target, excludeLocations);
 				if (!Double.isNaN(l)) {
@@ -1046,7 +1044,7 @@ public class PeerManager {
 				if(logMINOR)
 					Logger.minor(this, "The peer "+p+" has published his peer's locations and the closest we have found to the target is "+diff+" away.");
 			}
-			
+
 			if(diff > maxDistance)
 				continue;
 			if((!ignoreSelf) && (diff > maxDiff)) {
@@ -1088,12 +1086,11 @@ public class PeerManager {
 						leastRecentlyTimedOut = p;
 						leastRecentlyTimedOutDistance = diff;
 					}
-				} else
-					if(timeoutFT < timeLeastRecentlyTimedOutBackedOff) {
-						timeLeastRecentlyTimedOutBackedOff = timeoutFT;
-						leastRecentlyTimedOutBackedOff = p;
-						leastRecentlyTimedOutBackedOffDistance = diff;
-					}
+				} else if(timeoutFT < timeLeastRecentlyTimedOutBackedOff) {
+					timeLeastRecentlyTimedOutBackedOff = timeoutFT;
+					leastRecentlyTimedOutBackedOff = p;
+					leastRecentlyTimedOutBackedOffDistance = diff;
+				}
 			if(addUnpickedLocsTo != null && !chosen) {
 				Double d = loc;
 				// Here we can directly compare double's because they aren't processed in any way, and are finite and (probably) nonzero.
@@ -1104,22 +1101,22 @@ public class PeerManager {
 
 		PeerNode best = closestNotBackedOff;
 		double bestDistance = closestNotBackedOffDistance;
-		
+
 		/**
 		 * Various things are "advisory" i.e. they are taken into account but do not cause a request not to be routed at all:
-		 * - Backoff: A node is backed off for a period after it rejects a request; 
-		 * this is randomised and increases exponentially if no requests are accepted; 
-		 * a longer period is imposed for timeouts after a request has been accepted 
+		 * - Backoff: A node is backed off for a period after it rejects a request;
+		 * this is randomised and increases exponentially if no requests are accepted;
+		 * a longer period is imposed for timeouts after a request has been accepted
 		 * and transfer failures.
-		 * - Recent failures: After various kinds of failures we impose a timeout, 
-		 * until when we will try to avoid sending the same key to that node. This is 
+		 * - Recent failures: After various kinds of failures we impose a timeout,
+		 * until when we will try to avoid sending the same key to that node. This is
 		 * part of per-node failure tables.
 		 * Combining these:
-		 * - If there are nodes which are both not backed off and not timed out, we 
-		 * route to whichever of those nodes is closest to the target location. If we 
+		 * - If there are nodes which are both not backed off and not timed out, we
+		 * route to whichever of those nodes is closest to the target location. If we
 		 * are still here, all nodes are either backed off or timed out.
 		 * - If there are nodes which are timed out but not backed off, choose the node
-		 * whose timeout expires soonest. Hence if a single key is requested 
+		 * whose timeout expires soonest. Hence if a single key is requested
 		 * continually, we round-robin between nodes. If we still don't have a winner,
 		 * we know all nodes are backed off.
 		 * - If there are nodes which are backed off but not timed out, choose the node
@@ -1146,11 +1143,11 @@ public class PeerManager {
 					Logger.minor(this, "Using least recently failed in-timeout-period backed-off peer for key: " + best.shortToString() + " for " + key);
 			}
 		}
-		
+
 		if(recentlyFailed != null && logMINOR)
 			Logger.minor(this, "Count waiting: "+countWaiting);
 		int maxCountWaiting = maxCountWaiting(peers);
-		if(recentlyFailed != null && countWaiting >= maxCountWaiting && 
+		if(recentlyFailed != null && countWaiting >= maxCountWaiting &&
 				node.enableULPRDataPropagation /* dangerous to do RecentlyFailed if we won't track/propagate offers */) {
 			// Recently failed is possible.
 			// Route twice, each time ignoring timeout.
@@ -1178,7 +1175,7 @@ public class PeerManager {
 								until = Math.min(until, soonestTimeoutWakeup);
 								if(logMINOR) Logger.minor(this, "Recently failed: "+(int)Math.min(Integer.MAX_VALUE, (soonestTimeoutWakeup - now))+"ms");
 							}
-							
+
 							long check;
 							if(best == closestNotBackedOff)
 								// We are routing to the perfect node, so no node coming out of backoff/FailureTable will make any difference; don't check.
@@ -1229,15 +1226,15 @@ public class PeerManager {
 				//Add the location which we did not pick, if it exists.
 				if(closestNotBackedOff != null && closestBackedOff != null)
 					addUnpickedLocsTo.add(closestBackedOff.getLocation());
-					
+
 		}
-		
+
 		return best;
 	}
 
 	/**
-	 * @param peers 
-	 * @return The minimum number of peers which are waiting for timeouts due to RecentlyFailed or 
+	 * @param peers
+	 * @return The minimum number of peers which are waiting for timeouts due to RecentlyFailed or
 	 * DNF's for which we will terminate the request with a RecentlyFailed of our own.
 	 */
 	private int maxCountWaiting(PeerNode[] peers) {
@@ -1246,13 +1243,13 @@ public class PeerManager {
 	}
 
 	static final int MIN_DELTA = 2000;
-	
+
 	/** Check whether the routing situation will change soon because of a node coming out of backoff or of
 	 * a FailureTable timeout.
-	 * 
+	 *
 	 * If we have routed to a backed off node, or a node due to a failure-table timeout, there is a good
 	 * chance that the ideal node will change shortly.
-	 * 
+	 *
 	 * @return The time at which there will be a different best location to route to for this key, or
 	 * Long.MAX_VALUE if we cannot predict a better peer after any amount of time.
 	 */
@@ -1266,14 +1263,14 @@ public class PeerManager {
 		for(PeerNode p : peers) {
 			if(p == best) continue;
 			if(!p.isRoutable()) continue;
-			
+
 			// Is it further from the target than what we've chosen?
 			// It probably is, but if there is backoff or failure tables involved it might not be.
-			
+
 			double loc = p.getLocation();
 			double realDiff = Location.distance(loc, target);
 			double diff = realDiff;
-			
+
 			if (p.shallWeRouteAccordingToOurPeersLocation(outgoingHTL)) {
 				double l = p.getClosestPeerLocation(target, excludeLocations);
 				if (!Double.isNaN(l)) {
@@ -1286,27 +1283,27 @@ public class PeerManager {
 				if(logMINOR)
 					Logger.minor(this, "The peer "+p+" has published his peer's locations and the closest we have found to the target is "+diff+" away.");
 			}
-			
+
 			if(diff >= bestDistance) continue;
-			
+
 			// The peer is of interest.
 			// It will be relevant to routing at max(wakeup from backoff, failure table timeout, recentlyfailed timeout).
-			
+
 			long wakeup = 0;
-			
+
 			long timeoutFT = entry.getTimeoutTime(p, outgoingHTL, now, true);
 			long timeoutRF = entry.getTimeoutTime(p, outgoingHTL, now, false);
-			
+
 			if(timeoutFT > now)
 				wakeup = Math.max(wakeup, timeoutFT);
 			if(timeoutRF > now)
 				wakeup = Math.max(wakeup, timeoutRF);
-			
+
 			long bulkBackoff = p.getRoutingBackedOffUntilBulk();
 			long rtBackoff = p.getRoutingBackedOffUntilRT();
-			
+
 			// Whichever backoff is sooner, but ignore if not backed off.
-			
+
 			if(bulkBackoff > now && rtBackoff <= now)
 				wakeup = Math.max(wakeup, bulkBackoff);
 			else if(bulkBackoff <= now && rtBackoff > now)
@@ -1365,7 +1362,7 @@ public class PeerManager {
 
 	private final Object writePeersSync = new Object();
 	private final Object writePeerFileSync = new Object();
-	
+
 	void writePeers(boolean opennet) {
 		if(opennet)
 			writePeersOpennet();
@@ -1379,7 +1376,7 @@ public class PeerManager {
 		else
 			writePeersDarknetUrgent();
 	}
-	
+
 	void writePeersOpennetUrgent() {
 		node.executor.execute(new PrioRunnable() {
 
@@ -1392,7 +1389,7 @@ public class PeerManager {
 			public int getPriority() {
 				return NativeThread.HIGH_PRIORITY;
 			}
-			
+
 		});
 	}
 
@@ -1408,18 +1405,18 @@ public class PeerManager {
 			public int getPriority() {
 				return NativeThread.HIGH_PRIORITY;
 			}
-			
+
 		});
 	}
 
 	void writePeersDarknet() {
 		shouldWritePeersDarknet = true;
 	}
-	
+
 	void writePeersOpennet() {
 		shouldWritePeersOpennet = true;
 	}
-	
+
 	protected String getDarknetPeersString() {
 		StringBuilder sb = new StringBuilder();
 		PeerNode[] peers = myPeers();
@@ -1427,10 +1424,10 @@ public class PeerManager {
 			if(pn instanceof DarknetPeerNode)
 				sb.append(pn.exportDiskFieldSet().toOrderedString());
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	protected String getOpennetPeersString() {
 		StringBuilder sb = new StringBuilder();
 		PeerNode[] peers = myPeers();
@@ -1438,25 +1435,25 @@ public class PeerManager {
 			if(pn instanceof OpennetPeerNode)
 				sb.append(pn.exportDiskFieldSet().toOrderedString());
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	protected String getOldOpennetPeersString(OpennetManager om) {
 		StringBuilder sb = new StringBuilder();
 		for(PeerNode pn : om.getOldPeers()) {
 			if(pn instanceof OpennetPeerNode)
 				sb.append(pn.exportDiskFieldSet().toOrderedString());
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	private static final int BACKUPS_OPENNET = 1;
 	private static final int BACKUPS_DARKNET = 10;
-	
+
 	private void writePeersInnerDarknet(boolean rotateBackups) {
-        String newDarknetPeersString = null;
+		String newDarknetPeersString = null;
 		synchronized(writePeersSync) {
 			if(darkFilename != null)
 				newDarknetPeersString = getDarknetPeersString();
@@ -1468,8 +1465,8 @@ public class PeerManager {
 	}
 
 	private void writePeersInnerOpennet(boolean rotateBackups) {
-        String newOpennetPeersString = null;
-        String newOldOpennetPeersString = null;
+		String newOpennetPeersString = null;
+		String newOldOpennetPeersString = null;
 		synchronized(writePeersSync) {
 			OpennetManager om = node.getOpennet();
 			if(om != null) {
@@ -1488,7 +1485,7 @@ public class PeerManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Write the peers file to disk
 	 * @param rotateBackups If true, rotate backups. If false, just clobber the latest file.
@@ -1521,10 +1518,10 @@ public class PeerManager {
 				fos.getFD().sync();
 				w.close();
 				w = null;
-				
+
 				if(rotateBackups) {
 					File prevFile = null;
-					for(int i=maxBackups;i>=0;i--) {
+					for(int i=maxBackups; i>=0; i--) {
 						File thisFile = getBackupFilename(filename, i);
 						if(prevFile == null) {
 							thisFile.delete();
@@ -1598,9 +1595,9 @@ public class PeerManager {
 			ua.opennetAssumeNAT = opennetAssumeNAT;
 			ua.darknetAssumeNAT = darknetAssumeNAT;
 			ua.darknetConns = getPeerNodeStatusSize(PEER_NODE_STATUS_CONNECTED, true) +
-				getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, true);
+							  getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, true);
 			ua.conns = getPeerNodeStatusSize(PEER_NODE_STATUS_CONNECTED, false) +
-				getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, false);
+					   getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, false);
 			ua.darknetPeers = darknetPeers;
 			ua.disconnDarknetPeers = darknetPeers - ua.darknetConns;
 			ua.peers = peers;
@@ -1623,7 +1620,7 @@ public class PeerManager {
 		}
 		return false;
 	}
-	
+
 	public boolean anyDarknetPeers() {
 		PeerNode[] conns = connectedPeers();
 		for(PeerNode p : conns)
@@ -1720,7 +1717,7 @@ public class PeerManager {
 			int numberOfNoLoadStats = 0;
 
 			PeerNode[] peers = this.myPeers();
-			
+
 			for(PeerNode peer: peers) {
 				if(peer == null) {
 					Logger.error(this, "getPeerNodeStatuses(true) == null!");
@@ -1728,63 +1725,63 @@ public class PeerManager {
 				}
 				int status = peer.getPeerNodeStatus();
 				switch(status) {
-					case PEER_NODE_STATUS_CONNECTED:
-						numberOfConnected++;
-						break;
-					case PEER_NODE_STATUS_ROUTING_BACKED_OFF:
-						numberOfRoutingBackedOff++;
-						break;
-					case PEER_NODE_STATUS_TOO_NEW:
-						numberOfTooNew++;
-						break;
-					case PEER_NODE_STATUS_TOO_OLD:
-						numberOfTooOld++;
-						break;
-					case PEER_NODE_STATUS_DISCONNECTED:
-						numberOfDisconnected++;
-						break;
-					case PEER_NODE_STATUS_NEVER_CONNECTED:
-						numberOfNeverConnected++;
-						break;
-					case PEER_NODE_STATUS_DISABLED:
-						numberOfDisabled++;
-						break;
-					case PEER_NODE_STATUS_LISTEN_ONLY:
-						numberOfListenOnly++;
-						break;
-					case PEER_NODE_STATUS_LISTENING:
-						numberOfListening++;
-						break;
-					case PEER_NODE_STATUS_BURSTING:
-						numberOfBursting++;
-						break;
-					case PEER_NODE_STATUS_CLOCK_PROBLEM:
-						numberOfClockProblem++;
-						break;
-					case PEER_NODE_STATUS_CONN_ERROR:
-						numberOfConnError++;
-						break;
-					case PEER_NODE_STATUS_DISCONNECTING:
-						numberOfDisconnecting++;
-						break;
-					case PEER_NODE_STATUS_ROUTING_DISABLED:
-						numberOfRoutingDisabled++;
-						break;
-					case PEER_NODE_STATUS_NO_LOAD_STATS:
-						numberOfNoLoadStats++;
-						break;
-					default:
-						Logger.error(this, "Unknown peer status value : " + status);
-						break;
+				case PEER_NODE_STATUS_CONNECTED:
+					numberOfConnected++;
+					break;
+				case PEER_NODE_STATUS_ROUTING_BACKED_OFF:
+					numberOfRoutingBackedOff++;
+					break;
+				case PEER_NODE_STATUS_TOO_NEW:
+					numberOfTooNew++;
+					break;
+				case PEER_NODE_STATUS_TOO_OLD:
+					numberOfTooOld++;
+					break;
+				case PEER_NODE_STATUS_DISCONNECTED:
+					numberOfDisconnected++;
+					break;
+				case PEER_NODE_STATUS_NEVER_CONNECTED:
+					numberOfNeverConnected++;
+					break;
+				case PEER_NODE_STATUS_DISABLED:
+					numberOfDisabled++;
+					break;
+				case PEER_NODE_STATUS_LISTEN_ONLY:
+					numberOfListenOnly++;
+					break;
+				case PEER_NODE_STATUS_LISTENING:
+					numberOfListening++;
+					break;
+				case PEER_NODE_STATUS_BURSTING:
+					numberOfBursting++;
+					break;
+				case PEER_NODE_STATUS_CLOCK_PROBLEM:
+					numberOfClockProblem++;
+					break;
+				case PEER_NODE_STATUS_CONN_ERROR:
+					numberOfConnError++;
+					break;
+				case PEER_NODE_STATUS_DISCONNECTING:
+					numberOfDisconnecting++;
+					break;
+				case PEER_NODE_STATUS_ROUTING_DISABLED:
+					numberOfRoutingDisabled++;
+					break;
+				case PEER_NODE_STATUS_NO_LOAD_STATS:
+					numberOfNoLoadStats++;
+					break;
+				default:
+					Logger.error(this, "Unknown peer status value : " + status);
+					break;
 				}
 			}
 			Logger.normal(this, "Connected: " + numberOfConnected + "  Routing Backed Off: " + numberOfRoutingBackedOff + "  Too New: " + numberOfTooNew + "  Too Old: " + numberOfTooOld + "  Disconnected: " + numberOfDisconnected + "  Never Connected: " + numberOfNeverConnected + "  Disabled: " + numberOfDisabled + "  Bursting: " + numberOfBursting + "  Listening: " + numberOfListening + "  Listen Only: " + numberOfListenOnly + "  Clock Problem: " + numberOfClockProblem + "  Connection Problem: " + numberOfConnError + "  Disconnecting: " + numberOfDisconnecting + " RoutingDisabled " + numberOfRoutingDisabled + " No load stats: "+numberOfNoLoadStats);
 			nextPeerNodeStatusLogTime = now + peerNodeStatusLogInterval;
 		}
 	}
-	
+
 	public void changePeerNodeStatus(PeerNode peerNode, int oldPeerNodeStatus,
-			int peerNodeStatus, boolean noLog) {
+									 int peerNodeStatus, boolean noLog) {
 		Integer newStatus = Integer.valueOf(peerNodeStatus);
 		Integer oldStatus = Integer.valueOf(oldPeerNodeStatus);
 		this.allPeersStatuses.changePeerNodeStatus(peerNode, oldStatus, newStatus, noLog);
@@ -1796,7 +1793,7 @@ public class PeerManager {
 			public void run() {
 				updatePMUserAlert();
 			}
-			
+
 		});
 	}
 
@@ -1984,7 +1981,7 @@ public class PeerManager {
 		}
 		return v.toArray(new OpennetPeerNode[v.size()]);
 	}
-	
+
 	public PeerNode[] getOpennetAndSeedServerPeers() {
 		PeerNode[] peers = myPeers();
 		// FIXME optimise! Maybe maintain as a separate list?
@@ -2066,7 +2063,7 @@ public class PeerManager {
 		if(logMINOR) Logger.minor(this, "countConnectedDarknetPeers() returning "+count);
 		return count;
 	}
-	
+
 	public int countConnectedPeers() {
 		return countConnectedPeers(myPeers());
 	}
@@ -2166,7 +2163,7 @@ public class PeerManager {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * How many peers do we have that actually may connect? Don't include seednodes, disabled nodes, etc.
 	 */
@@ -2184,17 +2181,17 @@ public class PeerManager {
 		}
 		return count;
 	}
-	
+
 	public int countSeednodes() {
 		int count = 0;
 		for(PeerNode peer : myPeers()) {
-			if(peer instanceof SeedServerPeerNode || 
+			if(peer instanceof SeedServerPeerNode ||
 					peer instanceof SeedClientPeerNode)
 				count++;
 		}
 		return count;
 	}
-	
+
 	public int countBackedOffPeers(boolean realTime) {
 		PeerNode[] peers = myPeers();
 		int count = 0;
@@ -2217,56 +2214,56 @@ public class PeerManager {
 		}
 		return null;
 	}
-	
+
 	void incrementSelectionSamples(long now, PeerNode pn) {
 		// TODO: reimplement with a bit field to spare memory
 		pn.incrementNumberOfSelections(now);
 	}
-	
+
 	/** Notifies the listeners about status change*/
-	private void notifyPeerStatusChangeListeners(){
-		for(PeerStatusChangeListener l:listeners){
+	private void notifyPeerStatusChangeListeners() {
+		for(PeerStatusChangeListener l:listeners) {
 			l.onPeerStatusChange();
-			for(PeerNode pn:myPeers()){
+			for(PeerNode pn:myPeers()) {
 				pn.registerPeerNodeStatusChangeListener(l);
 			}
 		}
 	}
-	
+
 	/** Registers a listener to be notified when peers' statuses changes
 	 * @param listener - the listener to be registered*/
-	public void addPeerStatusChangeListener(PeerStatusChangeListener listener){
+	public void addPeerStatusChangeListener(PeerStatusChangeListener listener) {
 		listeners.add(listener);
-		for(PeerNode pn:myPeers()){
+		for(PeerNode pn:myPeers()) {
 			pn.registerPeerNodeStatusChangeListener(listener);
 		}
 	}
-	
+
 	/** Removes a listener
 	 * @param listener - The listener to be removed*/
-	public void removePeerStatusChangeListener(PeerStatusChangeListener listener){
+	public void removePeerStatusChangeListener(PeerStatusChangeListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	/** A listener interface that can be used to be notified about peer status change events*/
-	public static interface PeerStatusChangeListener{
+	public static interface PeerStatusChangeListener {
 		/** Peers status have changed*/
 		public void onPeerStatusChange();
 	}
-	
+
 	/** Get a non-copied snapshot of the peers list. NOTE: LOW LEVEL:
 	 * Should be up to date (but not guaranteed when exit lock), DO NOT
-	 * MODIFY THE RETURNED DATA! Package-local - stuff outside node/ 
+	 * MODIFY THE RETURNED DATA! Package-local - stuff outside node/
 	 * should use the copying getters (which are a little more expensive). */
 	synchronized PeerNode[] myPeers() {
 		return myPeers;
 	}
-	
+
 	/** Get the last snapshot of the connected peers list. NOTE: This is
 	 * not as reliable as using the copying getters (or even using myPeers()
 	 * and then checking each peer). But it is fast.
-	 * 
-	 * FIXME: Check all callers. Should they use myPeers and check for 
+	 *
+	 * FIXME: Check all callers. Should they use myPeers and check for
 	 * connectedness, and/or should they use a copying method? I'm not sure
 	 * how reliable updating of connectedPeers is ...
 	 */
@@ -2274,8 +2271,8 @@ public class PeerManager {
 		return connectedPeers;
 	}
 
-	/** Count the number of PeerNode's with a given status (right now, not 
-	 * based on a snapshot). Note you should not call this if holding lots 
+	/** Count the number of PeerNode's with a given status (right now, not
+	 * based on a snapshot). Note you should not call this if holding lots
 	 * of locks! */
 	public int countByStatus(int status) {
 		int count = 0;
@@ -2292,26 +2289,26 @@ public class PeerManager {
 	// We can trust our friends, so only 1 is needed.
 	public static final int OUTDATED_MIN_TOO_NEW_DARKNET = 1;
 	public static final int OUTDATED_MAX_CONNS = 5;
-	
+
 	public boolean isOutdated() {
-		
+
 		int tooNewDarknet = getPeerNodeStatusSize(PEER_NODE_STATUS_TOO_NEW, true);
-		
+
 		if(tooNewDarknet >= OUTDATED_MIN_TOO_NEW_DARKNET)
 			return true;
-		
+
 		int tooNewOpennet = getPeerNodeStatusSize(PEER_NODE_STATUS_TOO_NEW, false);
-		
+
 		// FIXME arbitrary constants.
 		// We cannot count on the version announcements.
 		// Until we actually get a validated update jar it's all potentially bogus.
-		
+
 		int connections = getPeerNodeStatusSize(PEER_NODE_STATUS_CONNECTED, false) +
-			getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, false);
-		
+						  getPeerNodeStatusSize(PEER_NODE_STATUS_ROUTING_BACKED_OFF, false);
+
 		if(tooNewOpennet >= OUTDATED_MIN_TOO_NEW_TOTAL) {
 			return connections < OUTDATED_MAX_CONNS;
 		} else return false;
 	}
-	
+
 }

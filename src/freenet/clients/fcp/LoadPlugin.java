@@ -14,7 +14,7 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * load a plugin
- * 
+ *
  */
 public class LoadPlugin extends FCPMessage {
 
@@ -67,7 +67,7 @@ public class LoadPlugin extends FCPMessage {
 		if(!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "LoadPlugin requires full access", identifier, false);
 		}
-		
+
 		if(!node.pluginManager.isEnabled()) {
 			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.PLUGINS_DISABLED, false, "Plugins disabled", identifier, false));
 			return;
@@ -88,7 +88,7 @@ public class LoadPlugin extends FCPMessage {
 							type = TYPENAME_FREENET;
 						} catch (MalformedURLException e) {
 							// FIXME currently i have no idea how to auto detect a proper url,
-							// especially distinguish it from typos/mistakes. 
+							// especially distinguish it from typos/mistakes.
 							// so it is disabled for now. saces.
 //							try {
 //								URL url = new URL(pluginURL);

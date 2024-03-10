@@ -19,39 +19,39 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 
 /**
- * A wrapper for a read-only bucket providing for multiple readers. The data is 
+ * A wrapper for a read-only bucket providing for multiple readers. The data is
  * only freed when all of the readers have freed it.
  * @author toad
  */
 public class MultiReaderBucket implements Serializable {
-	
-    private static final long serialVersionUID = 1L;
 
-    private final Bucket bucket;
-	
+	private static final long serialVersionUID = 1L;
+
+	private final Bucket bucket;
+
 	// Assume there will be relatively few readers
 	private ArrayList<Bucket> readers;
-	
+
 	private boolean closed;
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 
-        static {
-            Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 
-                @Override
-                public void shouldUpdate() {
-                    logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                }
-            });
-        }
-	
+			@Override
+			public void shouldUpdate() {
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+			}
+		});
+	}
+
 	public MultiReaderBucket(Bucket underlying) {
 		bucket = underlying;
 	}
-	
+
 	protected MultiReaderBucket() {
-	    // For serialization.
-	    bucket = null;
+		// For serialization.
+		bucket = null;
 	}
 
 	/** Get a reader bucket */
@@ -69,9 +69,9 @@ public class MultiReaderBucket implements Serializable {
 	}
 
 	class ReaderBucket implements Bucket, Serializable {
-		
-        private static final long serialVersionUID = 1L;
-        private boolean freed;
+
+		private static final long serialVersionUID = 1L;
+		private boolean freed;
 
 		@Override
 		public void free() {
@@ -98,25 +98,25 @@ public class MultiReaderBucket implements Serializable {
 			}
 			return new ReaderBucketInputStream(true);
 		}
-		
-        @Override
-        public InputStream getInputStreamUnbuffered() throws IOException {
-            synchronized(MultiReaderBucket.this) {
-                if(freed || closed) {
-                    throw new IOException("Already freed");
-                }
-            }
-            return new ReaderBucketInputStream(false);
-        }
-        
+
+		@Override
+		public InputStream getInputStreamUnbuffered() throws IOException {
+			synchronized(MultiReaderBucket.this) {
+				if(freed || closed) {
+					throw new IOException("Already freed");
+				}
+			}
+			return new ReaderBucketInputStream(false);
+		}
+
 		private class ReaderBucketInputStream extends InputStream {
-			
+
 			InputStream is;
-			
+
 			ReaderBucketInputStream(boolean buffer) throws IOException {
 				is = buffer ? bucket.getInputStream() : bucket.getInputStreamUnbuffered();
 			}
-			
+
 			@Override
 			public final int read() throws IOException {
 				synchronized(MultiReaderBucket.this) {
@@ -124,7 +124,7 @@ public class MultiReaderBucket implements Serializable {
 				}
 				return is.read();
 			}
-			
+
 			@Override
 			public final int read(byte[] data, int offset, int length) throws IOException {
 				synchronized(MultiReaderBucket.this) {
@@ -132,7 +132,7 @@ public class MultiReaderBucket implements Serializable {
 				}
 				return is.read(data, offset, length);
 			}
-			
+
 			@Override
 			public final int read(byte[] data) throws IOException {
 				synchronized(MultiReaderBucket.this) {
@@ -140,7 +140,7 @@ public class MultiReaderBucket implements Serializable {
 				}
 				return is.read(data);
 			}
-			
+
 			@Override
 			public final void close() throws IOException {
 				is.close();
@@ -151,7 +151,7 @@ public class MultiReaderBucket implements Serializable {
 				return is.available();
 			}
 		}
-		
+
 		@Override
 		public String getName() {
 			return bucket.getName();
@@ -162,10 +162,10 @@ public class MultiReaderBucket implements Serializable {
 			throw new IOException("Read only");
 		}
 
-        @Override
-        public OutputStream getOutputStreamUnbuffered() throws IOException {
-            throw new IOException("Read only");
-        }
+		@Override
+		public OutputStream getOutputStreamUnbuffered() throws IOException {
+			throw new IOException("Read only");
+		}
 
 		@Override
 		public boolean isReadOnly() {
@@ -181,11 +181,11 @@ public class MultiReaderBucket implements Serializable {
 		public long size() {
 			return bucket.size();
 		}
-		
+
 		@Override
 		protected void finalize() throws Throwable {
 			free();
-                        super.finalize();
+			super.finalize();
 		}
 
 		@Override
@@ -193,16 +193,16 @@ public class MultiReaderBucket implements Serializable {
 			return null;
 		}
 
-        @Override
-        public void onResume(ClientContext context) throws ResumeFailedException {
-            throw new UnsupportedOperationException(); // Not persistent.
-        }
+		@Override
+		public void onResume(ClientContext context) throws ResumeFailedException {
+			throw new UnsupportedOperationException(); // Not persistent.
+		}
 
-        @Override
-        public void storeTo(DataOutputStream dos) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-		
+		@Override
+		public void storeTo(DataOutputStream dos) throws IOException {
+			throw new UnsupportedOperationException();
+		}
+
 	}
-	
+
 }

@@ -6,7 +6,7 @@ package freenet.client.events;
 public class FinishedCompressionEvent implements ClientEvent {
 
 	static final int code = 0x09;
-	
+
 	/** Codec, -1 = uncompressed */
 	public final int codec;
 	/** Original size */
@@ -29,5 +29,5 @@ public class FinishedCompressionEvent implements ClientEvent {
 	public int getCode() {
 		return code;
 	}
-	
+
 }

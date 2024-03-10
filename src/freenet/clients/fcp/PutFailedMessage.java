@@ -15,8 +15,8 @@ import freenet.support.SimpleFieldSet;
 
 public class PutFailedMessage extends FCPMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    final InsertExceptionMode code;
+	private static final long serialVersionUID = 1L;
+	final InsertExceptionMode code;
 	final String codeDescription;
 	final String extraDescription;
 	final String shortCodeDescription;
@@ -44,14 +44,14 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 	 * client library. FIXME.
 	 * @param useVerboseFields If true, read in verbose fields (CodeDescription
 	 * etc), if false, reconstruct them from the error code.
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	public PutFailedMessage(SimpleFieldSet fs, boolean useVerboseFields) throws MalformedURLException {
 		identifier = fs.get("Identifier");
 		if(identifier == null) throw new NullPointerException();
 		global = fs.getBoolean("Global", false);
 		code = InsertExceptionMode.getByCode(Integer.parseInt(fs.get("Code")));
-		
+
 		if(useVerboseFields) {
 			codeDescription = fs.get("CodeDescription");
 			isFatal = fs.getBoolean("Fatal", false);
@@ -61,7 +61,7 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 			isFatal = InsertException.isFatal(code);
 			shortCodeDescription = InsertException.getShortMessage(code);
 		}
-		
+
 		extraDescription = fs.get("ExtraDescription");
 		String euri = fs.get("ExpectedURI");
 		if(euri != null && euri.length() > 0)
@@ -80,7 +80,7 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 	public SimpleFieldSet getFieldSet() {
 		return getFieldSet(true);
 	}
-	
+
 	public SimpleFieldSet getFieldSet(boolean verbose) {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		if(identifier == null)
@@ -111,7 +111,7 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PutFailed goes from server to client not the other way around", identifier, global);
 	}
 

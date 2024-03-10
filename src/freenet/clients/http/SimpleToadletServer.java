@@ -54,13 +54,13 @@ import freenet.support.api.StringCallback;
 import freenet.support.io.ArrayBucketFactory;
 import freenet.support.io.NativeThread;
 
-/** 
+/**
  * The Toadlet (HTTP) Server
- * 
+ *
  * Provide a HTTP server for FProxy
  */
 public final class SimpleToadletServer implements ToadletContainer, Runnable, LinkFilterExceptionProvider {
-	/** List of urlPrefix / Toadlet */ 
+	/** List of urlPrefix / Toadlet */
 	private final LinkedList<ToadletElement> toadlets;
 	private static class ToadletElement {
 		public ToadletElement(Toadlet t2, String urlPrefix, String menu, String name) {
@@ -82,27 +82,27 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	private NetworkInterface networkInterface;
 	private boolean ssl = false;
 	public static final int DEFAULT_FPROXY_PORT = 8888;
-	
+
 	// ACL
 	private final AllowedHosts allowedFullAccess;
 	private boolean publicGatewayMode;
 	private final boolean wasPublicGatewayMode;
-	
-	// Theme 
+
+	// Theme
 	private THEME cssTheme;
 	private File cssOverride;
 	private boolean sendAllThemes;
 	private boolean advancedModeEnabled;
 	private final PageMaker pageMaker;
 	private boolean fetchKeyBoxAboveBookmarks;
-	
+
 	// Control
 	private Thread myThread;
 	private final Executor executor;
 	private final Random random;
 	private BucketFactory bf;
 	private volatile NodeClientCore core;
-	
+
 	// HTTP Option
 	private boolean doRobots;
 	private boolean enablePersistentConnections;
@@ -110,7 +110,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	private boolean enableActivelinks;
 	private boolean enableExtendedMethodHandling;
 	private boolean enableCachingForChkAndSskKeys;
-	
+
 	// Something does not really belongs to here
 	volatile static boolean isPanicButtonToBeShown;				// move to QueueToadlet ?
 	volatile static boolean noConfirmPanic;
@@ -120,27 +120,27 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	private volatile boolean fproxyHasCompletedWizard;	// hmmm..
 	private volatile boolean disableProgressPage;
 	private int maxFproxyConnections;
-	
+
 	private int fproxyConnections;
-	
+
 	private boolean finishedStartup;
-	
+
 	/** The PushDataManager handles all the pushing tasks*/
-	public PushDataManager pushDataManager; 
-	
+	public PushDataManager pushDataManager;
+
 	/** The IntervalPusherManager handles interval pushing*/
 	public IntervalPusherManager intervalPushManager;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	// Config Callbacks
 	private class FProxySSLCallback extends BooleanCallback  {
 		@Override
@@ -162,13 +162,13 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			return true;
 		}
 	}
-	
+
 	private static class FProxyPassthruMaxSizeNoProgress extends LongCallback {
 		@Override
 		public Long get() {
 			return FProxyToadlet.MAX_LENGTH_NO_PROGRESS;
 		}
-		
+
 		@Override
 		public void set(Long val) throws InvalidConfigValueException {
 			if (get().equals(val))
@@ -182,7 +182,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		public Long get() {
 			return FProxyToadlet.MAX_LENGTH_WITH_PROGRESS;
 		}
-		
+
 		@Override
 		public void set(Long val) throws InvalidConfigValueException {
 			if (get().equals(val))
@@ -196,7 +196,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		public Integer get() {
 			return port;
 		}
-		
+
 		@Override
 		public void set(Integer newPort) throws NodeNeedRestartException {
 			if(port != newPort) {
@@ -204,13 +204,13 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			}
 		}
 	}
-	
+
 	private class FProxyBindtoCallback extends StringCallback  {
 		@Override
 		public String get() {
 			return bindTo;
 		}
-		
+
 		@Override
 		public void set(String bindTo) throws InvalidConfigValueException {
 			String oldValue = get();
@@ -233,12 +233,12 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		public String get() {
 			return networkInterface.getAllowedHosts();
 		}
-		
+
 		@Override
 		public void set(String allowedHosts) throws InvalidConfigValueException {
 			if (!allowedHosts.equals(get())) {
 				try {
-				networkInterface.setAllowedHosts(allowedHosts);
+					networkInterface.setAllowedHosts(allowedHosts);
 				} catch(IllegalArgumentException e) {
 					throw new InvalidConfigValueException(e);
 				}
@@ -250,7 +250,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		public String get() {
 			return cssTheme.code;
 		}
-		
+
 		@Override
 		public void set(String CSSName) throws InvalidConfigValueException {
 			if((CSSName.indexOf(':') != -1) || (CSSName.indexOf('/') != -1))
@@ -300,7 +300,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			else {
 				pageMaker.setOverride(StaticToadlet.OVERRIDE_URL + cssOverride.getName());
 			}
-			
+
 		}
 	}
 	private class FProxyEnabledCallback extends BooleanCallback  {
@@ -332,74 +332,74 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	}
 	private static class FProxyAdvancedModeEnabledCallback extends BooleanCallback  {
 		private final SimpleToadletServer ts;
-		
-		FProxyAdvancedModeEnabledCallback(SimpleToadletServer ts){
+
+		FProxyAdvancedModeEnabledCallback(SimpleToadletServer ts) {
 			this.ts = ts;
 		}
-		
+
 		@Override
 		public Boolean get() {
 			return ts.isAdvancedModeEnabled();
 		}
-		
+
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
 			ts.setAdvancedMode(val);
 		}
 	}
 	private static class FProxyJavascriptEnabledCallback extends BooleanCallback  {
-		
+
 		private final SimpleToadletServer ts;
-		
-		FProxyJavascriptEnabledCallback(SimpleToadletServer ts){
+
+		FProxyJavascriptEnabledCallback(SimpleToadletServer ts) {
 			this.ts = ts;
 		}
-		
+
 		@Override
 		public Boolean get() {
 			return ts.isFProxyJavascriptEnabled();
 		}
-		
+
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
 			if (get().equals(val))
 				return;
-				ts.enableFProxyJavascript(val);
+			ts.enableFProxyJavascript(val);
 		}
 	}
-	
-	private static class FProxyWebPushingEnabledCallback extends BooleanCallback{
-		
+
+	private static class FProxyWebPushingEnabledCallback extends BooleanCallback {
+
 		private final SimpleToadletServer ts;
-		
-		FProxyWebPushingEnabledCallback(SimpleToadletServer ts){
+
+		FProxyWebPushingEnabledCallback(SimpleToadletServer ts) {
 			this.ts=ts;
 		}
-		
+
 		@Override
 		public Boolean get() {
 			return ts.isFProxyWebPushingEnabled();
 		}
-		
+
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
 			if (get().equals(val))
 				return;
-				ts.enableFProxyWebPushing(val);
+			ts.enableFProxyWebPushing(val);
 		}
 	}
-	
+
 	private boolean haveCalledFProxy = false;
-	
+
 	// FIXME factor this out to a global helper class somehow?
-	
+
 	private class ReFilterCallback extends StringCallback implements EnumerableOptionCallback {
 
 		@Override
 		public String[] getPossibleValues() {
 			REFILTER_POLICY[] possible = REFILTER_POLICY.values();
 			String[] ret = new String[possible.length];
-			for(int i=0;i<possible.length;i++)
+			for(int i=0; i<possible.length; i++)
 				ret[i] = possible[i].name();
 			return ret;
 		}
@@ -411,10 +411,10 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 
 		@Override
 		public void set(String val) throws InvalidConfigValueException,
-				NodeNeedRestartException {
+			NodeNeedRestartException {
 			refilterPolicy = REFILTER_POLICY.valueOf(val);
 		}
-		
+
 	};
 
 	public void createFproxy() {
@@ -424,7 +424,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			if(haveCalledFProxy) return;
 			haveCalledFProxy = true;
 		}
-		
+
 		pushDataManager=new PushDataManager(getTicker());
 		intervalPushManager=new IntervalPusherManager(getTicker(), pushDataManager);
 		bookmarkManager = new BookmarkManager(core, publicGatewayMode());
@@ -436,13 +436,13 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			e.printStackTrace();
 		}
 	}
-	
 
-	
+
+
 	public void setCore(NodeClientCore core) {
 		this.core = core;
 	}
-	
+
 	/**
 	 * Create a SimpleToadletServer, using the settings from the SubConfig (the fproxy.*
 	 * config).
@@ -450,86 +450,86 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public SimpleToadletServer(SubConfig fproxyConfig, BucketFactory bucketFactory, Executor executor, Node node) throws IOException, InvalidConfigValueException {
 
 		this.executor = executor;
-		this.core = null; // setCore() will be called later. 
+		this.core = null; // setCore() will be called later.
 		this.random = new Random();
-		
+
 		int configItemOrder = 0;
-		
+
 		fproxyConfig.register("enabled", true, configItemOrder++, true, true, "SimpleToadletServer.enabled", "SimpleToadletServer.enabledLong",
-				new FProxyEnabledCallback());
-		
+							  new FProxyEnabledCallback());
+
 		boolean enabled = fproxyConfig.getBoolean("enabled");
-		
+
 		fproxyConfig.register("ssl", false, configItemOrder++, true, true, "SimpleToadletServer.ssl", "SimpleToadletServer.sslLong",
-				new FProxySSLCallback());
+							  new FProxySSLCallback());
 		fproxyConfig.register("port", DEFAULT_FPROXY_PORT, configItemOrder++, true, true, "SimpleToadletServer.port", "SimpleToadletServer.portLong",
-				new FProxyPortCallback(), false);
+							  new FProxyPortCallback(), false);
 		fproxyConfig.register("bindTo", NetworkInterface.DEFAULT_BIND_TO, configItemOrder++, true, true, "SimpleToadletServer.bindTo", "SimpleToadletServer.bindToLong",
-				new FProxyBindtoCallback());
+							  new FProxyBindtoCallback());
 		fproxyConfig.register("css", PageMaker.THEME.getDefault().code, configItemOrder++, false, false, "SimpleToadletServer.cssName", "SimpleToadletServer.cssNameLong",
-				new FProxyCSSNameCallback());
+							  new FProxyCSSNameCallback());
 		fproxyConfig.register("CSSOverride", "", configItemOrder++, true, false, "SimpleToadletServer.cssOverride", "SimpleToadletServer.cssOverrideLong",
-				new FProxyCSSOverrideCallback());
+							  new FProxyCSSOverrideCallback());
 		fproxyConfig.register("sendAllThemes", false, configItemOrder++, true, false, "SimpleToadletServer.sendAllThemes", "SimpleToadletServer.sendAllThemesLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						return sendAllThemes;
-					}
+			@Override
+			public Boolean get() {
+				return sendAllThemes;
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						sendAllThemes = val;
-					}
-				});
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				sendAllThemes = val;
+			}
+		});
 		sendAllThemes = fproxyConfig.getBoolean("sendAllThemes");
-		
+
 		fproxyConfig.register("advancedModeEnabled", false, configItemOrder++, true, false, "SimpleToadletServer.advancedMode", "SimpleToadletServer.advancedModeLong",
-				new FProxyAdvancedModeEnabledCallback(this));
+							  new FProxyAdvancedModeEnabledCallback(this));
 
 		fproxyConfig.register("enableExtendedMethodHandling", false, configItemOrder++, true, false, "SimpleToadletServer.enableExtendedMethodHandling", "SimpleToadletServer.enableExtendedMethodHandlingLong",
-				new BooleanCallback() {
-					@Override
-					public Boolean get() {
-						return enableExtendedMethodHandling;
-					}
+		new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return enableExtendedMethodHandling;
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if(get().equals(val)) return;
-						enableExtendedMethodHandling = val;
-					}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				if(get().equals(val)) return;
+				enableExtendedMethodHandling = val;
+			}
 		});
 		fproxyConfig.register("javascriptEnabled", true, configItemOrder++, true, false, "SimpleToadletServer.enableJS", "SimpleToadletServer.enableJSLong",
-				new FProxyJavascriptEnabledCallback(this));
+							  new FProxyJavascriptEnabledCallback(this));
 		fproxyConfig.register("webPushingEnabled", false, configItemOrder++, true, false, "SimpleToadletServer.enableWP", "SimpleToadletServer.enableWPLong", new FProxyWebPushingEnabledCallback(this));
 		fproxyConfig.register("hasCompletedWizard", false, configItemOrder++, true, false, "SimpleToadletServer.hasCompletedWizard", "SimpleToadletServer.hasCompletedWizardLong",
-				new BooleanCallback() {
-					@Override
-					public Boolean get() {
-						return fproxyHasCompletedWizard;
-					}
+		new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return fproxyHasCompletedWizard;
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if(get().equals(val)) return;
-						fproxyHasCompletedWizard = val;
-					}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				if(get().equals(val)) return;
+				fproxyHasCompletedWizard = val;
+			}
 		});
 		fproxyConfig.register("disableProgressPage", false, configItemOrder++, true, false, "SimpleToadletServer.disableProgressPage", "SimpleToadletServer.disableProgressPageLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						return disableProgressPage;
-					}
+			@Override
+			public Boolean get() {
+				return disableProgressPage;
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						disableProgressPage = val;
-					}
-			
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				disableProgressPage = val;
+			}
+
 		});
 		fproxyHasCompletedWizard = fproxyConfig.getBoolean("hasCompletedWizard");
 		fProxyJavascriptEnabled = fproxyConfig.getBoolean("javascriptEnabled");
@@ -538,34 +538,34 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		enableExtendedMethodHandling = fproxyConfig.getBoolean("enableExtendedMethodHandling");
 
 		fproxyConfig.register("showPanicButton", false, configItemOrder++, true, true, "SimpleToadletServer.panicButton", "SimpleToadletServer.panicButtonLong",
-				new BooleanCallback(){
-				@Override
-				public Boolean get() {
-					return SimpleToadletServer.isPanicButtonToBeShown;
-				}
-			
-				@Override
-				public void set(Boolean value) {
-					if(value == SimpleToadletServer.isPanicButtonToBeShown) return;
-					else	SimpleToadletServer.isPanicButtonToBeShown = value;
-				}
+		new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return SimpleToadletServer.isPanicButtonToBeShown;
+			}
+
+			@Override
+			public void set(Boolean value) {
+				if(value == SimpleToadletServer.isPanicButtonToBeShown) return;
+				else	SimpleToadletServer.isPanicButtonToBeShown = value;
+			}
 		});
-		
+
 		fproxyConfig.register("noConfirmPanic", false, configItemOrder++, true, true, "SimpleToadletServer.noConfirmPanic", "SimpleToadletServer.noConfirmPanicLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						return SimpleToadletServer.noConfirmPanic;
-					}
+			@Override
+			public Boolean get() {
+				return SimpleToadletServer.noConfirmPanic;
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-						if(val == SimpleToadletServer.noConfirmPanic) return;
-						else SimpleToadletServer.noConfirmPanic = val;
-					}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
+				if(val == SimpleToadletServer.noConfirmPanic) return;
+				else SimpleToadletServer.noConfirmPanic = val;
+			}
 		});
-		
+
 		fproxyConfig.register("publicGatewayMode", false, configItemOrder++, true, true, "SimpleToadletServer.publicGatewayMode", "SimpleToadletServer.publicGatewayModeLong", new BooleanCallback() {
 
 			@Override
@@ -579,59 +579,59 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 				publicGatewayMode = val;
 				throw new NodeNeedRestartException(l10n("publicGatewayModeNeedsRestart"));
 			}
-			
+
 		});
 		wasPublicGatewayMode = publicGatewayMode = fproxyConfig.getBoolean("publicGatewayMode");
-		
-		// This is OFF BY DEFAULT because for example firefox has a limit of 2 persistent 
+
+		// This is OFF BY DEFAULT because for example firefox has a limit of 2 persistent
 		// connections per server, but 8 non-persistent connections per server. We need 8 conns
 		// more than we need the efficiency gain of reusing connections - especially on first
 		// install.
-		
+
 		fproxyConfig.register("enablePersistentConnections", false, configItemOrder++, true, false, "SimpleToadletServer.enablePersistentConnections", "SimpleToadletServer.enablePersistentConnectionsLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						synchronized(SimpleToadletServer.this) {
-							return enablePersistentConnections;
-						}
-					}
+			@Override
+			public Boolean get() {
+				synchronized(SimpleToadletServer.this) {
+					return enablePersistentConnections;
+				}
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException {
-						synchronized(SimpleToadletServer.this) {
-							enablePersistentConnections = val;
-						}
-					}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException {
+				synchronized(SimpleToadletServer.this) {
+					enablePersistentConnections = val;
+				}
+			}
 		});
 		enablePersistentConnections = fproxyConfig.getBoolean("enablePersistentConnections");
-		
+
 		// Off by default.
 		// I had hoped it would yield a significant performance boost to bootstrap performance
 		// on browsers with low numbers of simultaneous connections. Unfortunately the bottleneck
 		// appears to be that the node does very few local requests compared to external requests
 		// (for anonymity's sake).
-		
+
 		fproxyConfig.register("enableInlinePrefetch", false, configItemOrder++, true, false, "SimpleToadletServer.enableInlinePrefetch", "SimpleToadletServer.enableInlinePrefetchLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						synchronized(SimpleToadletServer.this) {
-							return enableInlinePrefetch;
-						}
-					}
+			@Override
+			public Boolean get() {
+				synchronized(SimpleToadletServer.this) {
+					return enableInlinePrefetch;
+				}
+			}
 
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException {
-						synchronized(SimpleToadletServer.this) {
-							enableInlinePrefetch = val;
-						}
-					}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException {
+				synchronized(SimpleToadletServer.this) {
+					enableInlinePrefetch = val;
+				}
+			}
 		});
 		enableInlinePrefetch = fproxyConfig.getBoolean("enableInlinePrefetch");
-		
+
 		fproxyConfig.register("enableActivelinks", false, configItemOrder++, false, false, "SimpleToadletServer.enableActivelinks", "SimpleToadletServer.enableActivelinksLong", new BooleanCallback() {
 
 			@Override
@@ -643,10 +643,10 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
 				enableActivelinks = val;
 			}
-			
+
 		});
 		enableActivelinks = fproxyConfig.getBoolean("enableActivelinks");
-		
+
 		fproxyConfig.register("passthroughMaxSize", FProxyToadlet.MAX_LENGTH_NO_PROGRESS, configItemOrder++, true, false, "SimpleToadletServer.passthroughMaxSize", "SimpleToadletServer.passthroughMaxSizeLong", new FProxyPassthruMaxSizeNoProgress(), true);
 		FProxyToadlet.MAX_LENGTH_NO_PROGRESS = fproxyConfig.getLong("passthroughMaxSize");
 		fproxyConfig.register("passthroughMaxSizeProgress", FProxyToadlet.MAX_LENGTH_WITH_PROGRESS, configItemOrder++, true, false, "SimpleToadletServer.passthroughMaxSizeProgress", "SimpleToadletServer.passthroughMaxSizeProgressLong", new FProxyPassthruMaxSizeProgress(), true);
@@ -666,122 +666,122 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		});
 		enableCachingForChkAndSskKeys = fproxyConfig.getBoolean("enableCachingForChkAndSskKeys");
 		fproxyConfig.register("allowedHosts", "127.0.0.1,0:0:0:0:0:0:0:1", configItemOrder++, true, true, "SimpleToadletServer.allowedHosts", "SimpleToadletServer.allowedHostsLong",
-				new FProxyAllowedHostsCallback());
-		fproxyConfig.register("allowedHostsFullAccess", "127.0.0.1,0:0:0:0:0:0:0:1", configItemOrder++, true, true, "SimpleToadletServer.allowedFullAccess", 
-				"SimpleToadletServer.allowedFullAccessLong",
-				new StringCallback() {
+							  new FProxyAllowedHostsCallback());
+		fproxyConfig.register("allowedHostsFullAccess", "127.0.0.1,0:0:0:0:0:0:0:1", configItemOrder++, true, true, "SimpleToadletServer.allowedFullAccess",
+							  "SimpleToadletServer.allowedFullAccessLong",
+		new StringCallback() {
 
-					@Override
-					public String get() {
-						return allowedFullAccess.getAllowedHosts();
-					}
+			@Override
+			public String get() {
+				return allowedFullAccess.getAllowedHosts();
+			}
 
-					@Override
-					public void set(String val) throws InvalidConfigValueException {
-						try {
-						allowedFullAccess.setAllowedHosts(val);
-						} catch(IllegalArgumentException e) {
-							throw new InvalidConfigValueException(e);
-						}
-					}
-			
+			@Override
+			public void set(String val) throws InvalidConfigValueException {
+				try {
+					allowedFullAccess.setAllowedHosts(val);
+				} catch(IllegalArgumentException e) {
+					throw new InvalidConfigValueException(e);
+				}
+			}
+
 		});
 		allowedFullAccess = new AllowedHosts(fproxyConfig.getString("allowedHostsFullAccess"));
 		fproxyConfig.register("doRobots", false, configItemOrder++, true, false, "SimpleToadletServer.doRobots", "SimpleToadletServer.doRobotsLong",
-				new BooleanCallback() {
-					@Override
-					public Boolean get() {
-						return doRobots;
-					}
-					@Override
-					public void set(Boolean val) throws InvalidConfigValueException {
-						doRobots = val;
-					}
+		new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return doRobots;
+			}
+			@Override
+			public void set(Boolean val) throws InvalidConfigValueException {
+				doRobots = val;
+			}
 		});
 		doRobots = fproxyConfig.getBoolean("doRobots");
-		
+
 		// We may not know what the overall thread limit is yet so just set it to 100.
 		fproxyConfig.register("maxFproxyConnections", 100, configItemOrder++, true, false, "SimpleToadletServer.maxFproxyConnections", "SimpleToadletServer.maxFproxyConnectionsLong",
-				new IntCallback() {
+		new IntCallback() {
 
-					@Override
-					public Integer get() {
-						synchronized(SimpleToadletServer.this) {
-							return maxFproxyConnections;
-						}
-					}
+			@Override
+			public Integer get() {
+				synchronized(SimpleToadletServer.this) {
+					return maxFproxyConnections;
+				}
+			}
 
-					@Override
-					public void set(Integer val) {
-						synchronized(SimpleToadletServer.this) {
-							maxFproxyConnections = val;
-							SimpleToadletServer.this.notifyAll();
-						}
-					}
-			
+			@Override
+			public void set(Integer val) {
+				synchronized(SimpleToadletServer.this) {
+					maxFproxyConnections = val;
+					SimpleToadletServer.this.notifyAll();
+				}
+			}
+
 		}, false);
 		maxFproxyConnections = fproxyConfig.getInt("maxFproxyConnections");
-		
+
 		fproxyConfig.register("metaRefreshSamePageInterval", 1, configItemOrder++, true, false, "SimpleToadletServer.metaRefreshSamePageInterval", "SimpleToadletServer.metaRefreshSamePageIntervalLong",
-				new IntCallback() {
+		new IntCallback() {
 
-					@Override
-					public Integer get() {
-						return HTMLFilter.metaRefreshSamePageMinInterval;
-					}
+			@Override
+			public Integer get() {
+				return HTMLFilter.metaRefreshSamePageMinInterval;
+			}
 
-					@Override
-					public void set(Integer val)
-							throws InvalidConfigValueException,
-							NodeNeedRestartException {
-						if(val < -1) throw new InvalidConfigValueException("-1 = disabled, 0+ = set a minimum interval"); // FIXME l10n
-						HTMLFilter.metaRefreshSamePageMinInterval = val;
-					}
+			@Override
+			public void set(Integer val)
+			throws InvalidConfigValueException,
+				NodeNeedRestartException {
+				if(val < -1) throw new InvalidConfigValueException("-1 = disabled, 0+ = set a minimum interval"); // FIXME l10n
+				HTMLFilter.metaRefreshSamePageMinInterval = val;
+			}
 		}, false);
 		HTMLFilter.metaRefreshSamePageMinInterval = Math.max(-1, fproxyConfig.getInt("metaRefreshSamePageInterval"));
-		
+
 		fproxyConfig.register("metaRefreshRedirectInterval", 1, configItemOrder++, true, false, "SimpleToadletServer.metaRefreshRedirectInterval", "SimpleToadletServer.metaRefreshRedirectIntervalLong",
-				new IntCallback() {
+		new IntCallback() {
 
-					@Override
-					public Integer get() {
-						return HTMLFilter.metaRefreshRedirectMinInterval;
-					}
+			@Override
+			public Integer get() {
+				return HTMLFilter.metaRefreshRedirectMinInterval;
+			}
 
-					@Override
-					public void set(Integer val)
-							throws InvalidConfigValueException,
-							NodeNeedRestartException {
-						if(val < -1) throw new InvalidConfigValueException("-1 = disabled, 0+ = set a minimum interval"); // FIXME l10n
-						HTMLFilter.metaRefreshRedirectMinInterval = val;
-					}
+			@Override
+			public void set(Integer val)
+			throws InvalidConfigValueException,
+				NodeNeedRestartException {
+				if(val < -1) throw new InvalidConfigValueException("-1 = disabled, 0+ = set a minimum interval"); // FIXME l10n
+				HTMLFilter.metaRefreshRedirectMinInterval = val;
+			}
 		}, false);
 		HTMLFilter.metaRefreshRedirectMinInterval = Math.max(-1, fproxyConfig.getInt("metaRefreshRedirectInterval"));
 
 		fproxyConfig.register("embedM3uPlayerInFreesites", true, configItemOrder++, true, false, "SimpleToadletServer.embedM3uPlayerInFreesites", "SimpleToadletServer.embedM3uPlayerInFreesitesLong",
-				new BooleanCallback() {
+		new BooleanCallback() {
 
-					@Override
-					public Boolean get() {
-						return HTMLFilter.embedM3uPlayer;
-					}
+			@Override
+			public Boolean get() {
+				return HTMLFilter.embedM3uPlayer;
+			}
 
-					@Override
-					public void set(Boolean val) {
-						HTMLFilter.embedM3uPlayer = val;
-					}
-				});
+			@Override
+			public void set(Boolean val) {
+				HTMLFilter.embedM3uPlayer = val;
+			}
+		});
 		HTMLFilter.embedM3uPlayer = fproxyConfig.getBoolean("embedM3uPlayerInFreesites");
 
 		fproxyConfig.register("refilterPolicy", "RE_FILTER",
-				configItemOrder++, true, false, "SimpleToadletServer.refilterPolicy", "SimpleToadletServer.refilterPolicyLong", new ReFilterCallback());
-		
+							  configItemOrder++, true, false, "SimpleToadletServer.refilterPolicy", "SimpleToadletServer.refilterPolicyLong", new ReFilterCallback());
+
 		this.refilterPolicy = REFILTER_POLICY.valueOf(fproxyConfig.getString("refilterPolicy"));
-		
+
 		// Network seclevel not physical seclevel because bad filtering can cause network level anonymity breaches.
 		SimpleToadletServer.isPanicButtonToBeShown = fproxyConfig.getBoolean("showPanicButton");
 		SimpleToadletServer.noConfirmPanic = fproxyConfig.getBoolean("noConfirmPanic");
-		
+
 		this.bf = bucketFactory;
 		port = fproxyConfig.getInt("port");
 		bindTo = fproxyConfig.getString("bindTo");
@@ -790,7 +790,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			throw new InvalidConfigValueException("CSS name must not contain slashes or colons!");
 		cssTheme = THEME.themeFromName(cssName);
 		pageMaker = new PageMaker(cssTheme, node);
-	
+
 		if(!fproxyConfig.getOption("CSSOverride").isDefault()) {
 			cssOverride = new File(fproxyConfig.getString("CSSOverride"));
 			pageMaker.setOverride(StaticToadlet.OVERRIDE_URL + cssOverride.getName());
@@ -800,28 +800,28 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		}
 
 		fproxyConfig.register("fetchKeyBoxAboveBookmarks", cssTheme.fetchKeyBoxAboveBookmarks, configItemOrder++,
-				false, false, "SimpleToadletServer.fetchKeyBoxAboveBookmarks",
-				"SimpleToadletServer.fetchKeyBoxAboveBookmarksLong", new BooleanCallback() {
-					@Override
-					public Boolean get() {
-						return fetchKeyBoxAboveBookmarks;
-					}
+							  false, false, "SimpleToadletServer.fetchKeyBoxAboveBookmarks",
+		"SimpleToadletServer.fetchKeyBoxAboveBookmarksLong", new BooleanCallback() {
+			@Override
+			public Boolean get() {
+				return fetchKeyBoxAboveBookmarks;
+			}
 
-					@Override
-					public void set(Boolean val) {
-						if(get().equals(val)) return;
-						fetchKeyBoxAboveBookmarks = val;
-					}
-				});
+			@Override
+			public void set(Boolean val) {
+				if(get().equals(val)) return;
+				fetchKeyBoxAboveBookmarks = val;
+			}
+		});
 		fetchKeyBoxAboveBookmarks = fproxyConfig.getBoolean("fetchKeyBoxAboveBookmarks");
-		
+
 		this.advancedModeEnabled = fproxyConfig.getBoolean("advancedModeEnabled");
 		toadlets = new LinkedList<ToadletElement>();
 
 		if(SSL.available()) {
 			ssl = fproxyConfig.getBoolean("ssl");
 		}
-		
+
 		this.allowedHosts=fproxyConfig.getString("allowedHosts");
 
 		if(!enabled) {
@@ -832,20 +832,20 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			myThread = new Thread(this, "SimpleToadletServer");
 			myThread.setDaemon(true);
 		}
-		
+
 		// Register static toadlet and startup toadlet
-		
+
 		StaticToadlet statictoadlet = new StaticToadlet();
 		register(statictoadlet, null, "/static/", false, false);
 
-		
+
 		// "Freenet is starting up..." page, to be removed at #removeStartupToadlet()
 		startupToadlet = new StartupToadlet(statictoadlet);
 		register(startupToadlet, null, "/", false, false);
 	}
-	
+
 	public StartupToadlet startupToadlet;
-	
+
 	public void removeStartupToadlet() {
 		// setCore() must have been called first. It is in fact called much earlier on.
 		synchronized(this) {
@@ -855,7 +855,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			// Not in the navbar.
 		}
 	}
-	
+
 	private void maybeGetNetworkInterface() throws IOException {
 		if (this.networkInterface!=null) return;
 		if(ssl) {
@@ -863,35 +863,35 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 		} else {
 			this.networkInterface = NetworkInterface.create(port, this.bindTo, allowedHosts, executor, true);
 		}
-	}		
+	}
 
 	@Override
 	public boolean doRobots() {
 		return doRobots;
 	}
-	
+
 	@Override
 	public boolean publicGatewayMode() {
 		return wasPublicGatewayMode;
 	}
-	
+
 	public void start() {
 		if(myThread != null) try {
-			maybeGetNetworkInterface();
-			myThread.start();
-			Logger.normal(this, "Starting FProxy on "+bindTo+ ':' +port);
-			System.out.println("Starting FProxy on "+bindTo+ ':' +port);
-		} catch (IOException e) {
-			Logger.error(this, "Could not bind network port for FProxy?", e);
-		}
+				maybeGetNetworkInterface();
+				myThread.start();
+				Logger.normal(this, "Starting FProxy on "+bindTo+ ':' +port);
+				System.out.println("Starting FProxy on "+bindTo+ ':' +port);
+			} catch (IOException e) {
+				Logger.error(this, "Could not bind network port for FProxy?", e);
+			}
 	}
-	
+
 	public void finishStart() {
 		core.node.securityLevels.addNetworkThreatLevelListener(new SecurityLevelListener<NETWORK_THREAT_LEVEL>() {
 
 			@Override
 			public void onChange(NETWORK_THREAT_LEVEL oldLevel,
-					NETWORK_THREAT_LEVEL newLevel) {
+								 NETWORK_THREAT_LEVEL newLevel) {
 				// At LOW, we do ACCEPT_OLD.
 				// Otherwise we do RE_FILTER.
 				// But we don't change it unless it changes from LOW to not LOW.
@@ -901,7 +901,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 					refilterPolicy = REFILTER_POLICY.RE_FILTER;
 				}
 			}
-			
+
 		});
 		core.node.securityLevels.addPhysicalThreatLevelListener(new SecurityLevelListener<PHYSICAL_THREAT_LEVEL> () {
 
@@ -913,23 +913,23 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 					isPanicButtonToBeShown = true;
 				}
 			}
-			
+
 		});
 		synchronized(this) {
 			finishedStartup = true;
 		}
 	}
-	
+
 	@Override
 	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, boolean fullOnly) {
 		register(t, menu, urlPrefix, atFront, null, null, fullOnly, null, null);
 	}
-	
+
 	@Override
 	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb) {
 		register(t, menu, urlPrefix, atFront, name, title, fullOnly, cb, null);
 	}
-	
+
 	@Override
 	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n) {
 		ToadletElement te = new ToadletElement(t, urlPrefix, menu, name);
@@ -942,7 +942,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			pageMaker.addNavigationLink(menu, urlPrefix, name, title, fullOnly, cb, l10n);
 		}
 	}
-	
+
 	public void registerMenu(String link, String name, String title, FredPluginL10n plugin) {
 		pageMaker.addNavigationCategory(link, name, title, plugin);
 	}
@@ -951,7 +951,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public void unregister(Toadlet t) {
 		ToadletElement e = null;
 		synchronized(toadlets) {
-			for(Iterator<ToadletElement> i=toadlets.iterator();i.hasNext();) {
+			for(Iterator<ToadletElement> i=toadlets.iterator(); i.hasNext();) {
 				e = i.next();
 				if(e.t == t) {
 					i.remove();
@@ -965,16 +965,16 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			}
 		}
 	}
-	
+
 	public StartupToadlet getStartupToadlet() {
 		return startupToadlet;
 	}
-	
+
 	@Override
 	public boolean fproxyHasCompletedWizard() {
 		return fproxyHasCompletedWizard;
 	}
-	
+
 	@Override
 	public Toadlet findToadlet(URI uri) throws PermanentRedirectException {
 		String path = uri.getPath();
@@ -985,13 +985,15 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			//If the user has not completed the wizard, only allow access to the wizard and static
 			//resources. Anything else redirects to the first page of the wizard.
 			if (!(path.startsWith(FirstTimeWizardToadlet.TOADLET_URL) ||
-			      path.startsWith(FirstTimeWizardNewToadlet.TOADLET_URL) ||
-			      path.startsWith(StaticToadlet.ROOT_URL) ||
-			      path.startsWith(ExternalLinkToadlet.PATH) ||
-			      path.equals("/favicon.ico"))) {
+					path.startsWith(FirstTimeWizardNewToadlet.TOADLET_URL) ||
+					path.startsWith(StaticToadlet.ROOT_URL) ||
+					path.startsWith(ExternalLinkToadlet.PATH) ||
+					path.equals("/favicon.ico"))) {
 				try {
 					throw new PermanentRedirectException(new URI(null, null, null, -1, FirstTimeWizardToadlet.TOADLET_URL, uri.getQuery(), null));
-				} catch(URISyntaxException e) { throw new Error(e); }
+				} catch(URISyntaxException e) {
+					throw new Error(e);
+				}
 			}
 		}
 
@@ -1034,20 +1036,20 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			Socket conn = networkInterface.accept();
 			if (WrapperManager.hasShutdownHookBeenTriggered())
 				return;
-            if(conn == null)
-                continue; // timeout
-            if(logMINOR)
-                Logger.minor(this, "Accepted connection");
-            SocketHandler sh = new SocketHandler(conn, finishedStartup);
-            sh.start();
+			if(conn == null)
+				continue; // timeout
+			if(logMINOR)
+				Logger.minor(this, "Accepted connection");
+			SocketHandler sh = new SocketHandler(conn, finishedStartup);
+			sh.start();
 		}
 	}
-	
+
 	public class SocketHandler implements PrioRunnable {
 
 		Socket sock;
 		final boolean finishedStartup;
-		
+
 		public SocketHandler(Socket conn, boolean finishedStartup) {
 			this.sock = conn;
 			this.finishedStartup = finishedStartup;
@@ -1058,14 +1060,14 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 				executor.execute(this, "HTTP socket handler@"+hashCode());
 			else
 				new Thread(this).start();
-            synchronized(SimpleToadletServer.this) {
-            	fproxyConnections++;
-            }
+			synchronized(SimpleToadletServer.this) {
+				fproxyConnections++;
+			}
 		}
-		
+
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
+			freenet.support.Logger.OSThread.logPID(this);
 			if(logMINOR) Logger.minor(this, "Handling connection");
 			try {
 				ToadletContextImpl.handle(sock, SimpleToadletServer.this, pageMaker, getUserAlertManager(), bookmarkManager);
@@ -1074,10 +1076,10 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 				t.printStackTrace();
 				Logger.error(this, "Caught in SimpleToadletServer: "+t, t);
 			} finally {
-	            synchronized(SimpleToadletServer.this) {
-	            	fproxyConnections--;
-	            	SimpleToadletServer.this.notifyAll();
-	            }
+				synchronized(SimpleToadletServer.this) {
+					fproxyConnections--;
+					SimpleToadletServer.this.notifyAll();
+				}
 			}
 			if(logMINOR) Logger.minor(this, "Handled connection");
 		}
@@ -1113,7 +1115,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public synchronized boolean isAdvancedModeEnabled() {
 		return this.advancedModeEnabled;
 	}
-	
+
 	@Override
 	public void setAdvancedMode(boolean enabled) {
 		synchronized(this) {
@@ -1127,17 +1129,17 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public synchronized boolean isFProxyJavascriptEnabled() {
 		return this.fProxyJavascriptEnabled;
 	}
-	
-	public synchronized void enableFProxyJavascript(boolean b){
+
+	public synchronized void enableFProxyJavascript(boolean b) {
 		fProxyJavascriptEnabled = b;
 	}
-	
+
 	@Override
 	public synchronized boolean isFProxyWebPushingEnabled() {
 		return this.fProxyWebPushingEnabled;
 	}
-	
-	public synchronized void enableFProxyWebPushing(boolean b){
+
+	public synchronized void enableFProxyWebPushing(boolean b) {
 		fProxyWebPushingEnabled = b;
 	}
 
@@ -1151,7 +1153,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public boolean isAllowedFullAccess(InetAddress remoteAddr) {
 		return this.allowedFullAccess.allowed(remoteAddr);
 	}
-	
+
 	private static String l10n(String key, String pattern, String value) {
 		return NodeL10n.getBase().getString("SimpleToadletServer."+key, pattern, value);
 	}
@@ -1164,11 +1166,11 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public HTMLNode addFormChild(HTMLNode parentNode, String target, String id) {
 		HTMLNode formNode =
 			parentNode.addChild("div")
-			.addChild("form", new String[] { "action", "method", "enctype", "id",  "accept-charset" }, 
-					new String[] { target, "post", "multipart/form-data", id, "utf-8"} );
-		formNode.addChild("input", new String[] { "type", "name", "value" }, 
-				new String[] { "hidden", "formPassword", getFormPassword() });
-		
+			.addChild("form", new String[] { "action", "method", "enctype", "id",  "accept-charset" },
+					  new String[] { target, "post", "multipart/form-data", id, "utf-8"} );
+		formNode.addChild("input", new String[] { "type", "name", "value" },
+						  new String[] { "hidden", "formPassword", getFormPassword() });
+
 		return formNode;
 	}
 
@@ -1218,7 +1220,7 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public synchronized BucketFactory getBucketFactory() {
 		return bf;
 	}
-	
+
 
 
 	@Override
@@ -1239,15 +1241,15 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 	public PageMaker getPageMaker() {
 		return pageMaker;
 	}
-	
-	public Ticker getTicker(){
+
+	public Ticker getTicker() {
 		return core.node.getTicker();
 	}
-	
-	public NodeClientCore getCore(){
+
+	public NodeClientCore getCore() {
 		return core;
 	}
-	
+
 	private REFILTER_POLICY refilterPolicy;
 
 	@Override

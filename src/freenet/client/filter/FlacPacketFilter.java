@@ -79,7 +79,7 @@ public class FlacPacketFilter  implements CodecPacketFilter {
 				((FlacMetadataBlock)packet).setMetadataBlockType(BlockType.PADDING);
 				break;
 			}
-	}
+		}
 		if(packet instanceof FlacMetadataBlock && logMINOR) Logger.minor(this, "Returning packet of type"+((FlacMetadataBlock)packet).getMetadataBlockType());
 		return packet;
 	}

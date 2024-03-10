@@ -6,56 +6,58 @@ import freenet.support.HexUtil;
 import freenet.support.Logger;
 
 public class ECDHLightContext extends KeyAgreementSchemeContext {
-    static { Logger.registerClass(ECDHLightContext.class); }
-    private static volatile boolean logMINOR;
-    private static volatile boolean logDEBUG;
-    
-    public final ECDH ecdh;
+	static {
+		Logger.registerClass(ECDHLightContext.class);
+	}
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        return sb.toString();
-    }
+	public final ECDH ecdh;
 
-    public ECDHLightContext(ECDH.Curves curve) {
-        this.ecdh = new ECDH(curve);
-        this.lastUsedTime = System.currentTimeMillis();
-    }
-    
-    public ECPublicKey getPublicKey() {
-        return ecdh.getPublicKey();
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
+		return sb.toString();
+	}
 
-    /*
-     * Calling the following is costy; avoid
-     */
-    public byte[] getHMACKey(ECPublicKey peerExponential) {
-        synchronized(this) {
-            lastUsedTime = System.currentTimeMillis();
-        }
-        byte[] sharedKey = ecdh.getAgreedSecret(peerExponential);
+	public ECDHLightContext(ECDH.Curves curve) {
+		this.ecdh = new ECDH(curve);
+		this.lastUsedTime = System.currentTimeMillis();
+	}
 
-        if (logMINOR) {
-            Logger.minor(this, "Curve in use: " + ecdh.curve.toString());
-            if(logDEBUG) {
-            	Logger.debug(this,
-            			"My exponential: " + HexUtil.bytesToHex(ecdh.getPublicKey().getEncoded()));
-            	Logger.debug(
-            			this,
-            			"Peer's exponential: "
-            			+ HexUtil.bytesToHex(peerExponential.getEncoded()));
-            	Logger.debug(this,
-            			"SharedSecret = " + HexUtil.bytesToHex(sharedKey));
-            }
-        }
+	public ECPublicKey getPublicKey() {
+		return ecdh.getPublicKey();
+	}
 
-        return sharedKey;
-    }
+	/*
+	 * Calling the following is costy; avoid
+	 */
+	public byte[] getHMACKey(ECPublicKey peerExponential) {
+		synchronized(this) {
+			lastUsedTime = System.currentTimeMillis();
+		}
+		byte[] sharedKey = ecdh.getAgreedSecret(peerExponential);
 
-    @Override
-    public byte[] getPublicKeyNetworkFormat() {
-        return ecdh.getPublicKeyNetworkFormat();
-    }
+		if (logMINOR) {
+			Logger.minor(this, "Curve in use: " + ecdh.curve.toString());
+			if(logDEBUG) {
+				Logger.debug(this,
+							 "My exponential: " + HexUtil.bytesToHex(ecdh.getPublicKey().getEncoded()));
+				Logger.debug(
+					this,
+					"Peer's exponential: "
+					+ HexUtil.bytesToHex(peerExponential.getEncoded()));
+				Logger.debug(this,
+							 "SharedSecret = " + HexUtil.bytesToHex(sharedKey));
+			}
+		}
+
+		return sharedKey;
+	}
+
+	@Override
+	public byte[] getPublicKeyNetworkFormat() {
+		return ecdh.getPublicKeyNetworkFormat();
+	}
 }

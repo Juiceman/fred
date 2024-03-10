@@ -44,8 +44,8 @@ import freenet.support.io.NullOutputStream;
 /** Metadata parser/writer class. */
 public class Metadata implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    static final long FREENET_METADATA_MAGIC = 0xf053b2842d91482bL;
+	private static final long serialVersionUID = 1L;
+	static final long FREENET_METADATA_MAGIC = 0xf053b2842d91482bL;
 	static final int MAX_SPLITFILE_PARAMS_LENGTH = 32768;
 	/** Soft limit, to avoid memory DoS */
 	static final int MAX_SPLITFILE_BLOCKS = 1000*1000;
@@ -53,7 +53,7 @@ public class Metadata implements Cloneable, Serializable {
 	public static final short SPLITFILE_PARAMS_SIMPLE_SEGMENT = 0;
 	public static final short SPLITFILE_PARAMS_SEGMENT_DEDUCT_BLOCKS = 1;
 	public static final short SPLITFILE_PARAMS_CROSS_SEGMENT = 2;
-	
+
 	// URI at which this Metadata has been/will be inserted.
 	FreenetURI resolvedURI;
 
@@ -64,26 +64,26 @@ public class Metadata implements Cloneable, Serializable {
 
 	// document type
 	DocumentType documentType;
-	
+
 	public enum DocumentType {
-	    SIMPLE_REDIRECT((byte)0),
-	    MULTI_LEVEL_METADATA((byte)1),
-	    SIMPLE_MANIFEST((byte)2),
-	    ARCHIVE_MANIFEST((byte)3),
-	    ARCHIVE_INTERNAL_REDIRECT((byte)4),
-	    ARCHIVE_METADATA_REDIRECT((byte)5),
-	    SYMBOLIC_SHORTLINK((byte)6);
-	    
-	    final byte code;
-	    
-	    DocumentType(byte code) {
-	        this.code = code;
-	    }
-	    
-	    static DocumentType byCode(byte b) {
-	        if(b < 0 || b >= values().length) throw new IllegalArgumentException();
-	        return values()[b];
-	    }
+		SIMPLE_REDIRECT((byte)0),
+		MULTI_LEVEL_METADATA((byte)1),
+		SIMPLE_MANIFEST((byte)2),
+		ARCHIVE_MANIFEST((byte)3),
+		ARCHIVE_INTERNAL_REDIRECT((byte)4),
+		ARCHIVE_METADATA_REDIRECT((byte)5),
+		SYMBOLIC_SHORTLINK((byte)6);
+
+		final byte code;
+
+		DocumentType(byte code) {
+			this.code = code;
+		}
+
+		static DocumentType byCode(byte b) {
+			if(b < 0 || b >= values().length) throw new IllegalArgumentException();
+			return values()[b];
+		}
 	}
 
 	short parsedVersion;
@@ -149,21 +149,21 @@ public class Metadata implements Cloneable, Serializable {
 
 	SplitfileAlgorithm splitfileAlgorithm;
 	public enum SplitfileAlgorithm {
-	    NONREDUNDANT((short)0),
-	    ONION_STANDARD((short)1);
-	    
-	    public final short code;
-	    
-	    SplitfileAlgorithm(short code) {
-	        this.code = code;
-	    }
+		NONREDUNDANT((short)0),
+		ONION_STANDARD((short)1);
 
-        public static SplitfileAlgorithm getByCode(short s) {
-            if(s < 0 || s >= values().length) throw new IllegalArgumentException("Bad splitfile code");
-            return values()[s];
-        }
+		public final short code;
+
+		SplitfileAlgorithm(short code) {
+			this.code = code;
+		}
+
+		public static SplitfileAlgorithm getByCode(short s) {
+			if(s < 0 || s >= values().length) throw new IllegalArgumentException("Bad splitfile code");
+			return values()[s];
+		}
 	}
-	
+
 	public static final int MAX_SIZE_IN_MANIFEST = Short.MAX_VALUE;
 
 	/** Splitfile parameters */
@@ -180,7 +180,7 @@ public class Metadata implements Cloneable, Serializable {
 	private boolean specifySplitfileKey;
 	/** As opposed to hashes of the final content. */
 	byte[] hashThisLayerOnly;
-	
+
 	int blocksPerSegment;
 	int checkBlocksPerSegment;
 	int segmentCount;
@@ -200,8 +200,8 @@ public class Metadata implements Cloneable, Serializable {
 
 	ClientMetadata clientMetadata;
 	private HashResult[] hashes;
-	
-	
+
+
 	public final long topSize;
 	public final long topCompressedSize;
 	public final int topBlocksRequired;
@@ -209,14 +209,14 @@ public class Metadata implements Cloneable, Serializable {
 	public final boolean topDontCompress;
 	public final CompatibilityMode topCompatibilityMode;
 
-        private static volatile boolean logMINOR;
-        private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
 	}
@@ -231,18 +231,18 @@ public class Metadata implements Cloneable, Serializable {
 			throw new Error("Yes it is!");
 		}
 	}
-	
+
 	/** Deep copy those fields that need to be deep copied after clone() */
 	private void finishClone(Metadata orig) {
 		if(orig.segments != null) {
 			segments = new SplitFileSegmentKeys[orig.segments.length];
-			for(int i=0;i<segments.length;i++) {
+			for(int i=0; i<segments.length; i++) {
 				segments[i] = orig.segments[i].clone();
 			}
 		}
 		if(hashes != null) {
 			hashes = new HashResult[orig.hashes.length];
-			for(int i=0;i<hashes.length;i++)
+			for(int i=0; i<hashes.length; i++)
 				hashes[i] = orig.hashes[i].clone();
 		}
 		if(manifestEntries != null) {
@@ -308,9 +308,9 @@ public class Metadata implements Cloneable, Serializable {
 			throw new MetadataParseException("Unsupported version "+version);
 		parsedVersion = version;
 		try {
-		    documentType = DocumentType.byCode(dis.readByte());
+			documentType = DocumentType.byCode(dis.readByte());
 		} catch (IllegalArgumentException e) {
-		    throw new MetadataParseException("Unsupported document type: "+documentType);
+			throw new MetadataParseException("Unsupported document type: "+documentType);
 		}
 		if(logMINOR) Logger.minor(this, "Document type: "+documentType);
 
@@ -341,7 +341,7 @@ public class Metadata implements Cloneable, Serializable {
 			}
 		}
 		hashes = h;
-		
+
 		if(hasTopBlocks) {
 			if(parsedVersion == 0)
 				throw new MetadataParseException("Top size data not supported in version 0");
@@ -351,18 +351,18 @@ public class Metadata implements Cloneable, Serializable {
 			topBlocksTotal = dis.readInt();
 			topDontCompress = dis.readBoolean();
 			short code = dis.readShort();
-			if(CompatibilityMode.hasCode(code) 
-			        && code != CompatibilityMode.COMPAT_CURRENT.code) { // COMPAT_UNKNOWN is OK but COMPAT_CURRENT should never be seen in published metadata
-			    topCompatibilityMode = CompatibilityMode.byCode(code);
-			    if(topSize != 0 && topCompatibilityMode == CompatibilityMode.COMPAT_UNKNOWN)
-			        maxCompatMode = CompatibilityMode.COMPAT_1416;
+			if(CompatibilityMode.hasCode(code)
+					&& code != CompatibilityMode.COMPAT_CURRENT.code) { // COMPAT_UNKNOWN is OK but COMPAT_CURRENT should never be seen in published metadata
+				topCompatibilityMode = CompatibilityMode.byCode(code);
+				if(topSize != 0 && topCompatibilityMode == CompatibilityMode.COMPAT_UNKNOWN)
+					maxCompatMode = CompatibilityMode.COMPAT_1416;
 			} else {
-			    if(CompatibilityMode.maybeFutureCode(code)) {
-                    Logger.warning(this, "Content may have been inserted with a newer version of Freenet?");
-                    topCompatibilityMode = InsertContext.CompatibilityMode.COMPAT_UNKNOWN;
-			    } else {
-			        throw new MetadataParseException("Bad compatibility mode "+code);
-			    }
+				if(CompatibilityMode.maybeFutureCode(code)) {
+					Logger.warning(this, "Content may have been inserted with a newer version of Freenet?");
+					topCompatibilityMode = InsertContext.CompatibilityMode.COMPAT_UNKNOWN;
+				} else {
+					throw new MetadataParseException("Bad compatibility mode "+code);
+				}
 			}
 		} else {
 			topSize = 0;
@@ -398,7 +398,7 @@ public class Metadata implements Cloneable, Serializable {
 				// Pre-1010 isn't supported, so there is only one possibility.
 				splitfileSingleCryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256;
 			}
-			
+
 			if(logMINOR) Logger.minor(this, "Splitfile");
 			dataLength = dis.readLong();
 			if(dataLength < -1)
@@ -455,7 +455,7 @@ public class Metadata implements Cloneable, Serializable {
 
 		if(extraMetadata) {
 			int numberOfExtraFields = (dis.readShort()) & 0xffff;
-			for(int i=0;i<numberOfExtraFields;i++) {
+			for(int i=0; i<numberOfExtraFields; i++) {
 				short type = dis.readShort();
 				int len = (dis.readByte() & 0xff);
 				byte[] buf = new byte[len];
@@ -484,11 +484,11 @@ public class Metadata implements Cloneable, Serializable {
 				}
 			}
 		} else if(splitfile) {
-		    try {
-		        splitfileAlgorithm = SplitfileAlgorithm.getByCode(dis.readShort());
-		    } catch (IllegalArgumentException e) {
-		        throw new MetadataParseException("Invalid splitfile code"); 
-		    }
+			try {
+				splitfileAlgorithm = SplitfileAlgorithm.getByCode(dis.readShort());
+			} catch (IllegalArgumentException e) {
+				throw new MetadataParseException("Invalid splitfile code");
+			}
 			if(!((splitfileAlgorithm == SplitfileAlgorithm.NONREDUNDANT) ||
 					(splitfileAlgorithm == SplitfileAlgorithm.ONION_STANDARD)))
 				throw new MetadataParseException("Unknown splitfile algorithm "+splitfileAlgorithm);
@@ -517,12 +517,12 @@ public class Metadata implements Cloneable, Serializable {
 				throw new MetadataParseException("Invalid number of check blocks: "+splitfileCheckBlocks);
 			if(splitfileCheckBlocks > MAX_SPLITFILE_BLOCKS)
 				throw new MetadataParseException("Too many splitfile check-blocks (soft limit to prevent memory DoS): "+splitfileCheckBlocks);
-			
+
 			// PARSE SPLITFILE PARAMETERS
-			
-			
+
+
 			crossCheckBlocks = 0;
-			
+
 			if(splitfileAlgorithm == SplitfileAlgorithm.NONREDUNDANT) {
 				// Don't need to do much - just fetch everything and piece it together.
 				blocksPerSegment = -1;
@@ -576,7 +576,7 @@ public class Metadata implements Cloneable, Serializable {
 					else if(splitfileSingleCryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256) {
 						minCompatMode = CompatibilityMode.COMPAT_1416;
 						if(maxCompatMode == CompatibilityMode.COMPAT_UNKNOWN)
-						    maxCompatMode = CompatibilityMode.latest();
+							maxCompatMode = CompatibilityMode.latest();
 					}
 					if(params.length < 10)
 						throw new MetadataParseException("Splitfile parameters too short for version 1");
@@ -594,7 +594,7 @@ public class Metadata implements Cloneable, Serializable {
 					} else
 						deductBlocksFromSegments = 0;
 				}
-				
+
 				if(topCompatibilityMode != CompatibilityMode.COMPAT_UNKNOWN) {
 					// If we have top compatibility mode, then we can give a definitive answer immediately, with the splitfile key, with dontcompress, etc etc.
 					if(minCompatMode == CompatibilityMode.COMPAT_UNKNOWN ||
@@ -616,15 +616,15 @@ public class Metadata implements Cloneable, Serializable {
 				checkBlocksPerSegment = checkBlocks;
 
 				segmentCount = (splitfileBlocks + blocksPerSegment + crossCheckBlocks - 1) / (blocksPerSegment + crossCheckBlocks);
-					
+
 				// Onion, 128/192.
 				// Will be segmented.
 			} else throw new MetadataParseException("Unknown splitfile format: "+splitfileAlgorithm);
-			
+
 			segments = new SplitFileSegmentKeys[segmentCount];
-			
+
 			if (segmentCount <= 0) {
-			    throw new MetadataParseException("Splitfile segment count must be strictly positive: " + segmentCount);
+				throw new MetadataParseException("Splitfile segment count must be strictly positive: " + segmentCount);
 			} else if (segmentCount == 1) {
 				// splitfile* will be overwritten, this is bad
 				// so copy them
@@ -632,17 +632,17 @@ public class Metadata implements Cloneable, Serializable {
 			} else {
 				int dataBlocksPtr = 0;
 				int checkBlocksPtr = 0;
-				for(int i=0;i<segments.length;i++) {
+				for(int i=0; i<segments.length; i++) {
 					// Create a segment. Give it its keys.
 					int copyDataBlocks = blocksPerSegment + crossCheckBlocks;
 					int copyCheckBlocks = checkBlocksPerSegment;
 					if(i == segments.length - 1) {
 						// Always accept the remainder as the last segment, but do basic sanity checking.
-						// In practice this can be affected by various things: 1) On old splitfiles before full even 
+						// In practice this can be affected by various things: 1) On old splitfiles before full even
 						// segment splitting with deductBlocksFromSegments (i.e. pre-1255), the last segment could be
 						// significantly smaller than the rest; 2) On 1251-1253, with partial even segment splitting,
 						// up to 131 data blocks per segment, cutting the check blocks if necessary, and with an extra
-						// check block if possible, the last segment could have *more* check blocks than the rest. 
+						// check block if possible, the last segment could have *more* check blocks than the rest.
 						copyDataBlocks = splitfileBlocks - dataBlocksPtr;
 						copyCheckBlocks = splitfileCheckBlocks - checkBlocksPtr;
 						if(copyCheckBlocks <= 0 || copyDataBlocks <= 0)
@@ -663,16 +663,16 @@ public class Metadata implements Cloneable, Serializable {
 				if(checkBlocksPtr != splitfileCheckBlocks)
 					throw new MetadataParseException("Unable to allocate all check blocks to segments - buggy or malicious inserter");
 			}
-			
-			for(int i=0;i<segmentCount;i++) {
+
+			for(int i=0; i<segmentCount; i++) {
 				segments[i].readKeys(dis, false);
 			}
-			for(int i=0;i<segmentCount;i++) {
+			for(int i=0; i<segmentCount; i++) {
 				segments[i].readKeys(dis, true);
 			}
-		
+
 		}
-			
+
 		if(documentType == DocumentType.SIMPLE_MANIFEST) {
 			int manifestEntryCount = dis.readInt();
 			if(manifestEntryCount < 0)
@@ -684,7 +684,7 @@ public class Metadata implements Cloneable, Serializable {
 
 			if(logMINOR)Logger.minor(this, "Simple manifest, "+manifestEntryCount+" entries");
 
-			for(int i=0;i<manifestEntryCount;i++) {
+			for(int i=0; i<manifestEntryCount; i++) {
 				short nameLength = dis.readShort();
 				byte[] buf = new byte[nameLength];
 				dis.readFully(buf);
@@ -730,7 +730,7 @@ public class Metadata implements Cloneable, Serializable {
 		byte[] hash = HashResult.get(hashes, HashType.SHA256);
 		return getCryptoKey(hash);
 	}
-	
+
 	public static byte[] getCryptoKey(byte[] hash) {
 		// This is exactly the same algorithm used by e.g. JFK for generating multiple session keys from a single generated value.
 		// The only difference is we use a constant of more than one byte's length here, to avoid having to keep a registry.
@@ -751,7 +751,7 @@ public class Metadata implements Cloneable, Serializable {
 		}
 		return getCrossSegmentSeed(hash);
 	}
-	
+
 	public static byte[] getCrossSegmentSeed(byte[] hash) {
 		// This is exactly the same algorithm used by e.g. JFK for generating multiple session keys from a single generated value.
 		// The only difference is we use a constant of more than one byte's length here, to avoid having to keep a registry.
@@ -891,7 +891,7 @@ public class Metadata implements Cloneable, Serializable {
 			if(o instanceof String) {
 				// Archive internal redirect
 				target = new Metadata(DocumentType.ARCHIVE_INTERNAL_REDIRECT, null, null, prefix+key,
-					new ClientMetadata(DefaultMIMETypes.guessMIMEType(key, false)));
+									  new ClientMetadata(DefaultMIMETypes.guessMIMEType(key, false)));
 			} else if(o instanceof HashMap) {
 				target = new Metadata(Metadata.forceMap(o), prefix+key+"/");
 			} else throw new IllegalArgumentException("Not String nor HashMap: "+o);
@@ -975,7 +975,7 @@ public class Metadata implements Cloneable, Serializable {
 	public Metadata(DocumentType docType, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, FreenetURI uri, ClientMetadata cm) {
 		this(docType, archiveType, compressionCodec, uri, cm, 0, 0, 0, 0, false, CompatibilityMode.COMPAT_UNKNOWN, null);
 	}
-	
+
 	/**
 	 * Create another kind of simple Metadata object (a redirect or similar object).
 	 * @param docType The document type.
@@ -983,7 +983,7 @@ public class Metadata implements Cloneable, Serializable {
 	 * @param cm The client metadata, if any.
 	 */
 	public Metadata(DocumentType docType, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, FreenetURI uri, ClientMetadata cm, long origDataLength, long origCompressedDataLength, int reqBlocks, int totalBlocks, boolean topDontCompress, CompatibilityMode topCompatibilityMode, HashResult[] hashes) {
-	    assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
+		assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
 		hashCode = super.hashCode();
 		if(hashes != null && hashes.length == 0) {
 			throw new IllegalArgumentException();
@@ -1033,46 +1033,46 @@ public class Metadata implements Cloneable, Serializable {
 	 * @param segmentSize The number of data blocks in a typical segment. Does not include cross-check blocks.
 	 * @param checkSegmentSize The number of check blocks in a typical segment. Does not include cross-check blocks.
 	 * @param deductBlocksFromSegments If this is set, the last few segments will lose a data block, so that all
-	 * the segments are the same size to within 1 block. In older splitfiles, the last segment could be 
+	 * the segments are the same size to within 1 block. In older splitfiles, the last segment could be
 	 * significantly smaller, and this impacted on retrievability.
-	 * @param cm The client metadata i.e. MIME type. 
-	 * @param dataLength The size of the data that this specific splitfile encodes (as opposed to the final data), 
+	 * @param cm The client metadata i.e. MIME type.
+	 * @param dataLength The size of the data that this specific splitfile encodes (as opposed to the final data),
 	 * after compression if necessary.
 	 * @param archiveType The archive type, if the splitfile is a container.
 	 * @param compressionCodec The compression codec used to compress the data.
 	 * @param decompressedLength The length of this specific splitfile's data after it has been decompressed.
 	 * @param isMetadata If true, the splitfile is multi-level metadata i.e. it encodes a bucket full of metadata.
-	 * This usually happens for really big splitfiles, which can be a pyramid of one block with metadata for a 
-	 * splitfile full of metadata, that metadata then encodes another splitfile full of metadata, etc. Hence we 
+	 * This usually happens for really big splitfiles, which can be a pyramid of one block with metadata for a
+	 * splitfile full of metadata, that metadata then encodes another splitfile full of metadata, etc. Hence we
 	 * can support very large files.
-	 * @param hashes Various hashes of <b>the final data</b>. There should always be at least an SHA256 hash, 
+	 * @param hashes Various hashes of <b>the final data</b>. There should always be at least an SHA256 hash,
 	 * unless we are inserting with an old compatibility mode.
-	 * @param hashThisLayerOnly Hash of the data in this layer (before compression). Separate from hashes of the 
-	 * final data. Not currently verified. 
+	 * @param hashThisLayerOnly Hash of the data in this layer (before compression). Separate from hashes of the
+	 * final data. Not currently verified.
 	 * @param origDataSize The size of the final/original data.
 	 * @param origCompressedDataSize The size of the final/original data after it was compressed.
 	 * @param requiredBlocks The number of blocks required on fetch to reconstruct the final data. Hence as soon
 	 * as we have the top splitfile metadata (i.e. hopefully in the top block), we can show an accurate progress
 	 * bar.
 	 * @param totalBlocks The total number of blocks inserted during the whole insert for the final/original data.
-	 * @param topDontCompress Whether dontCompress was enabled. This allows us to figure out reinsert settings 
+	 * @param topDontCompress Whether dontCompress was enabled. This allows us to figure out reinsert settings
 	 * more quickly.
 	 * @param topCompatibilityMode The compatibility mode applying to the insert. This allows us to figure out
 	 * reinsert settings more quickly.
 	 * @param splitfileCryptoAlgorithm The block level crypto algorithm for all the blocks in the splitfile.
 	 * @param splitfileCryptoKey The single encryption key used by all blocks in the splitfile. Older splitfiles
 	 * don't have this so have to specify the full keys; newer splitfiles just specify the 32 byte routing key
-	 * for each data or check key. 
-	 * @param specifySplitfileKey If false, the splitfile crypto key has been automatically computed from the 
+	 * for each data or check key.
+	 * @param specifySplitfileKey If false, the splitfile crypto key has been automatically computed from the
 	 * final or this-layer data hash. If true, it has been specified explicitly, either because it is randomly
 	 * generated (this significantly improves security against mobile attacker source tracing and is the default
-	 * for splitfiles under SSKs), or because a file is being reinserted. 
-	 * @param crossSegmentBlocks The number of cross-check blocks. If this is specified, we are using 
+	 * for splitfiles under SSKs), or because a file is being reinserted.
+	 * @param crossSegmentBlocks The number of cross-check blocks. If this is specified, we are using
 	 * cross-segment redundancy. This greatly improves reliability on files over 80MB, see bug #3370.
 	 */
 	public Metadata(SplitfileAlgorithm algo, ClientCHK[] dataURIs, ClientCHK[] checkURIs, int segmentSize, int checkSegmentSize, int deductBlocksFromSegments,
-			ClientMetadata cm, long dataLength, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, long decompressedLength, boolean isMetadata, HashResult[] hashes, byte[] hashThisLayerOnly, long origDataSize, long origCompressedDataSize, int requiredBlocks, int totalBlocks, boolean topDontCompress, CompatibilityMode topCompatibilityMode, byte splitfileCryptoAlgorithm, byte[] splitfileCryptoKey, boolean specifySplitfileKey, int crossSegmentBlocks) {
-	    assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
+					ClientMetadata cm, long dataLength, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE compressionCodec, long decompressedLength, boolean isMetadata, HashResult[] hashes, byte[] hashThisLayerOnly, long origDataSize, long origCompressedDataSize, int requiredBlocks, int totalBlocks, boolean topDontCompress, CompatibilityMode topCompatibilityMode, byte splitfileCryptoAlgorithm, byte[] splitfileCryptoKey, boolean specifySplitfileKey, int crossSegmentBlocks) {
+		assert(topCompatibilityMode != CompatibilityMode.COMPAT_CURRENT);
 		hashCode = super.hashCode();
 		this.hashes = hashes;
 		this.hashThisLayerOnly = hashThisLayerOnly;
@@ -1103,41 +1103,41 @@ public class Metadata implements Cloneable, Serializable {
 			setMIMEType(cm.getMIMEType());
 		else
 			setMIMEType(DefaultMIMETypes.DEFAULT_MIME_TYPE);
-        if(topCompatibilityMode.ordinal() < CompatibilityMode.COMPAT_1255.ordinal()) {
-            if(splitfileCryptoKey != null) throw new IllegalArgumentException();
-            if(hashes != null) throw new IllegalArgumentException();
-            if(deductBlocksFromSegments != 0) throw new IllegalArgumentException();
-            origDataSize = 0;
-            origCompressedDataSize = 0;
-            requiredBlocks = 0;
-            totalBlocks = 0;
-            parsedVersion = 0;
-        } else {
-            if(splitfileCryptoKey == null) throw new IllegalArgumentException();
-            parsedVersion = 1;
-        }
-        if(origDataSize != 0) {
-            topSize = origDataSize;
-            topCompressedSize = origCompressedDataSize;
-            topBlocksRequired = requiredBlocks;
-            topBlocksTotal = totalBlocks;
-            // Bug for bug compatibility ...
-            if(topCompatibilityMode.ordinal() >= CompatibilityMode.COMPAT_1468.ordinal()) {
-                this.topDontCompress = topDontCompress;
-                this.topCompatibilityMode = topCompatibilityMode;
-            } else {
-                this.topDontCompress = false;
-                this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
-            }
-        } else {
-            topSize = 0;
-            topCompressedSize = 0;
-            topBlocksRequired = 0;
-            topBlocksTotal = 0;
-            this.topDontCompress = false;
-            this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
-        }
-		
+		if(topCompatibilityMode.ordinal() < CompatibilityMode.COMPAT_1255.ordinal()) {
+			if(splitfileCryptoKey != null) throw new IllegalArgumentException();
+			if(hashes != null) throw new IllegalArgumentException();
+			if(deductBlocksFromSegments != 0) throw new IllegalArgumentException();
+			origDataSize = 0;
+			origCompressedDataSize = 0;
+			requiredBlocks = 0;
+			totalBlocks = 0;
+			parsedVersion = 0;
+		} else {
+			if(splitfileCryptoKey == null) throw new IllegalArgumentException();
+			parsedVersion = 1;
+		}
+		if(origDataSize != 0) {
+			topSize = origDataSize;
+			topCompressedSize = origCompressedDataSize;
+			topBlocksRequired = requiredBlocks;
+			topBlocksTotal = totalBlocks;
+			// Bug for bug compatibility ...
+			if(topCompatibilityMode.ordinal() >= CompatibilityMode.COMPAT_1468.ordinal()) {
+				this.topDontCompress = topDontCompress;
+				this.topCompatibilityMode = topCompatibilityMode;
+			} else {
+				this.topDontCompress = false;
+				this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
+			}
+		} else {
+			topSize = 0;
+			topCompressedSize = 0;
+			topBlocksRequired = 0;
+			topBlocksTotal = 0;
+			this.topDontCompress = false;
+			this.topCompatibilityMode = CompatibilityMode.COMPAT_UNKNOWN;
+		}
+
 		if(parsedVersion == 0) {
 			splitfileParams = Fields.intsToBytes(new int[] { segmentSize, checkSegmentSize } );
 		} else {
@@ -1160,7 +1160,7 @@ public class Metadata implements Cloneable, Serializable {
 			System.arraycopy(b, 0, splitfileParams, 0, 2);
 			// FIXME we set the params but we don't include the values in the metadata.
 			// We don't set keys either.
-			// The format of the Metadata object is different for creating one from scratch for 
+			// The format of the Metadata object is different for creating one from scratch for
 			// inserting vs constructing it from a serialized metadata document.
 			if(mode == SPLITFILE_PARAMS_CROSS_SEGMENT)
 				b = Fields.intsToBytes(new int[] { segmentSize, checkSegmentSize, deductBlocksFromSegments, crossSegmentBlocks } );
@@ -1212,21 +1212,21 @@ public class Metadata implements Cloneable, Serializable {
 		}
 		return baos.toByteArray();
 	}
-	
-    public long writtenLength() throws MetadataUnresolvedException {
-        CountedOutputStream cos = new CountedOutputStream(new NullOutputStream());
-        DataOutputStream dos = null;
-        try {
-            dos = new DataOutputStream(cos);
-            writeTo(dos);
-        } catch (IOException e) {
-            throw new Error("Could not write to CountedOutputStream: "+e, e);
-        } finally {
-            Closer.close(dos);
-            Closer.close(cos);
-        }
-        return cos.written();
-    }
+
+	public long writtenLength() throws MetadataUnresolvedException {
+		CountedOutputStream cos = new CountedOutputStream(new NullOutputStream());
+		DataOutputStream dos = null;
+		try {
+			dos = new DataOutputStream(cos);
+			writeTo(dos);
+		} catch (IOException e) {
+			throw new Error("Could not write to CountedOutputStream: "+e, e);
+		} finally {
+			Closer.close(dos);
+			Closer.close(cos);
+		}
+		return cos.written();
+	}
 
 	/**
 	 * Read a key using the current settings.
@@ -1310,18 +1310,18 @@ public class Metadata implements Cloneable, Serializable {
 	}
 
 	/**
-     * Get all documents in the manifest (ignores default doc).
-     * @throws MetadataParseException
-     */
-    public HashMap<String, Metadata> getDocuments() {
-    	HashMap<String, Metadata> docs = new HashMap<String, Metadata>();
+	 * Get all documents in the manifest (ignores default doc).
+	 * @throws MetadataParseException
+	 */
+	public HashMap<String, Metadata> getDocuments() {
+		HashMap<String, Metadata> docs = new HashMap<String, Metadata>();
 		for (Map.Entry<String, Metadata> entry: manifestEntries.entrySet()) {
-        	String st = entry.getKey();
-        	if (st.length()>0)
-        		docs.put(st, entry.getValue());
-        }
-        return docs;
-    }
+			String st = entry.getKey();
+			if (st.length()>0)
+				docs.put(st, entry.getValue());
+		}
+		return docs;
+	}
 
 	/**
 	 * Does the metadata point to a single URI?
@@ -1329,7 +1329,7 @@ public class Metadata implements Cloneable, Serializable {
 	public boolean isSingleFileRedirect() {
 		return ((!splitfile) &&
 				((documentType == DocumentType.SIMPLE_REDIRECT) || (documentType == DocumentType.MULTI_LEVEL_METADATA) ||
-				(documentType == DocumentType.ARCHIVE_MANIFEST)));
+				 (documentType == DocumentType.ARCHIVE_MANIFEST)));
 	}
 
 	/**
@@ -1472,7 +1472,7 @@ public class Metadata implements Cloneable, Serializable {
 				dos.write(hashThisLayerOnly);
 			}
 		}
-		
+
 		if(hasTopBlocks) {
 			dos.writeLong(topSize);
 			dos.writeLong(topCompressedSize);
@@ -1488,7 +1488,7 @@ public class Metadata implements Cloneable, Serializable {
 		}
 
 		if(splitfile) {
-			
+
 			if(parsedVersion >= 1) {
 				// Splitfile single crypto key.
 				dos.writeByte(splitfileSingleCryptoAlgorithm);
@@ -1496,7 +1496,7 @@ public class Metadata implements Cloneable, Serializable {
 					dos.write(splitfileSingleCryptoKey);
 				}
 			}
-			
+
 			dos.writeLong(dataLength);
 		}
 
@@ -1539,22 +1539,22 @@ public class Metadata implements Cloneable, Serializable {
 			dos.writeInt(splitfileBlocks);
 			dos.writeInt(splitfileCheckBlocks);
 			if(segments != null) {
-				for(int i=0;i<segmentCount;i++) {
+				for(int i=0; i<segmentCount; i++) {
 					segments[i].writeKeys(dos, false);
 				}
-				for(int i=0;i<segmentCount;i++) {
+				for(int i=0; i<segmentCount; i++) {
 					segments[i].writeKeys(dos, true);
 				}
 			} else {
 				if(splitfileSingleCryptoKey == null) {
-					for(int i=0;i<splitfileBlocks;i++)
+					for(int i=0; i<splitfileBlocks; i++)
 						writeCHK(dos, splitfileDataKeys[i]);
-					for(int i=0;i<splitfileCheckBlocks;i++)
+					for(int i=0; i<splitfileCheckBlocks; i++)
 						writeCHK(dos, splitfileCheckKeys[i]);
 				} else {
-					for(int i=0;i<splitfileBlocks;i++)
+					for(int i=0; i<splitfileBlocks; i++)
 						dos.write(splitfileDataKeys[i].getRoutingKey());
-					for(int i=0;i<splitfileCheckBlocks;i++)
+					for(int i=0; i<splitfileCheckBlocks; i++)
 						dos.write(splitfileCheckKeys[i].getRoutingKey());
 				}
 			}
@@ -1672,21 +1672,21 @@ public class Metadata implements Cloneable, Serializable {
 	}
 
 	public RandomAccessBucket toBucket(BucketFactory bf) throws MetadataUnresolvedException, IOException {
-	    RandomAccessBucket b = bf.makeBucket(-1);
-	    DataOutputStream dos = null;
-	    boolean success = false;
-	    try {
-	        dos = new DataOutputStream(b.getOutputStream());
-	        writeTo(dos);
-	        dos.close();
-	        dos = null;
-	        b.setReadOnly(); // Must be after dos.close()
-	        success = true;
-	        return b;
-	    } finally {
-	        Closer.close(dos);
-	        if(!success) b.free();
-	    }
+		RandomAccessBucket b = bf.makeBucket(-1);
+		DataOutputStream dos = null;
+		boolean success = false;
+		try {
+			dos = new DataOutputStream(b.getOutputStream());
+			writeTo(dos);
+			dos.close();
+			dos = null;
+			b.setReadOnly(); // Must be after dos.close()
+			success = true;
+			return b;
+		} finally {
+			Closer.close(dos);
+			if(!success) b.free();
+		}
 	}
 
 	public boolean isResolved() {
@@ -1803,7 +1803,7 @@ public class Metadata implements Cloneable, Serializable {
 	}
 
 	private void dumpline(int indent, StringBuffer sb, String string) {
-		for(int i=0;i<indent;i++) sb.append(' ');
+		for(int i=0; i<indent; i++) sb.append(' ');
 		sb.append(string);
 		sb.append("\n");
 	}
@@ -1816,11 +1816,11 @@ public class Metadata implements Cloneable, Serializable {
 	public static HashMap<String, Object> forceMap(Object o) {
 		return (HashMap<String, Object>)o;
 	}
-	
+
 	public short getParsedVersion() {
 		return parsedVersion;
 	}
-	
+
 	public boolean hasTopData() {
 		return topSize != 0 || topCompressedSize != 0 || topBlocksRequired != 0 || topBlocksTotal != 0;
 	}
@@ -1836,7 +1836,7 @@ public class Metadata implements Cloneable, Serializable {
 			return splitfileSingleCryptoKey;
 		return null;
 	}
-	
+
 	public byte[] getSplitfileCryptoKey() {
 		return splitfileSingleCryptoKey;
 	}
@@ -1896,19 +1896,19 @@ public class Metadata implements Cloneable, Serializable {
 		}
 	}
 
-    public SplitFileSegmentKeys[] getSegmentKeys() throws FetchException {
-        synchronized(this) {
-            if(segments == null && splitfileDataKeys != null && splitfileCheckKeys != null)
-                throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Please restart the download, need to re-parse metadata due to internal changes");
-            return segments;
-        }
-    }
+	public SplitFileSegmentKeys[] getSegmentKeys() throws FetchException {
+		synchronized(this) {
+			if(segments == null && splitfileDataKeys != null && splitfileCheckKeys != null)
+				throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Please restart the download, need to re-parse metadata due to internal changes");
+			return segments;
+		}
+	}
 
 	public int getDeductBlocksFromSegments() {
 		return deductBlocksFromSegments;
 	}
 
-	/** Return a best-guess compatibility mode, guaranteed not to be 
+	/** Return a best-guess compatibility mode, guaranteed not to be
 	 * COMPAT_UNKNOWN or COMPAT_CURRENT. */
 	public CompatibilityMode guessCompatibilityMode() {
 		CompatibilityMode mode = getTopCompatibilityMode();
@@ -1927,8 +1927,8 @@ public class Metadata implements Cloneable, Serializable {
 		return max;
 	}
 
-    public static boolean isValidSplitfileCryptoAlgorithm(byte cryptoAlgorithm) {
-        return cryptoAlgorithm == 0 || Key.isValidCryptoAlgorithm(cryptoAlgorithm);
-    }
+	public static boolean isValidSplitfileCryptoAlgorithm(byte cryptoAlgorithm) {
+		return cryptoAlgorithm == 0 || Key.isValidCryptoAlgorithm(cryptoAlgorithm);
+	}
 
 }

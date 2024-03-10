@@ -80,7 +80,7 @@ public class Util {
 	}
 
 	public static void writeMPI(BigInteger num, OutputStream out)
-		throws IOException {
+	throws IOException {
 		out.write(MPIbytes(num));
 	}
 
@@ -138,13 +138,13 @@ public class Util {
 
 	/** Fill specified range of byte array with random data. */
 	static private void randomBytesSlowNextInt(Random r, byte[] buf, int from, int len) {
-	   if (from == 0 && len == buf.length) {
-		   r.nextBytes(buf);
-		   return;
-	   }
-	   byte [] tmp = new byte[len];
-	   r.nextBytes(tmp);
-	   System.arraycopy(tmp, 0, buf, from, len);
+		if (from == 0 && len == buf.length) {
+			r.nextBytes(buf);
+			return;
+		}
+		byte [] tmp = new byte[len];
+		r.nextBytes(tmp);
+		System.arraycopy(tmp, 0, buf, from, len);
 	}
 
 	/** Fill byte array with random data.
@@ -173,10 +173,14 @@ public class Util {
 		final int to = from + len;
 		while(from + 4 <= to) {
 			int rnd = r.nextInt();
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
+			buf[from++] = (byte)rnd;
+			rnd >>= 8;
+			buf[from++] = (byte)rnd;
+			rnd >>= 8;
+			buf[from++] = (byte)rnd;
+			rnd >>= 8;
+			buf[from++] = (byte)rnd;
+			rnd >>= 8;
 		}
 		if(to > from) {
 			assert(to - from < Integer.SIZE/Byte.SIZE);
@@ -184,7 +188,7 @@ public class Util {
 				buf[from++] = (byte)rnd;
 		}
 	}
-	
+
 	@Deprecated // use freenet.support.Fields instead
 	public static boolean byteArrayEqual(byte[] a, byte[] b, int offset, int length) {
 		return freenet.support.Fields.byteArrayEqual(a, b, offset, offset, length);
@@ -226,8 +230,8 @@ public class Util {
 			HashMap<String,Provider> mdProviders_internal = new HashMap<String, Provider>();
 
 			for (String algo: new String[] {
-				"SHA1", "MD5", "SHA-256", "SHA-384", "SHA-512"
-			}) {
+						"SHA1", "MD5", "SHA-256", "SHA-384", "SHA-512"
+					}) {
 				final Class<?> clazz = Util.class;
 				final Provider sun = JceLoader.SUN;
 				MessageDigest md = MessageDigest.getInstance(algo);
@@ -277,29 +281,29 @@ public class Util {
 		int offset,
 		int len) {
 		try {
-		synchronized (ctx) {
-			ctx.digest(); // reinitialize
+			synchronized (ctx) {
+				ctx.digest(); // reinitialize
 
-			int ic = 0;
-			while (len > 0) {
-				ic++;
-				for (int i = 0; i < ic; i++)
-					ctx.update((byte) 0);
-				ctx.update(entropy, 0, entropy.length);
-				int bc;
-				if (len > ctx_length) {
-					ctx.digest(key, offset, ctx_length);
-					bc = ctx_length;
-				} else {
-					byte[] hash = ctx.digest();
-					bc = Math.min(len, hash.length);
-					System.arraycopy(hash, 0, key, offset, bc);
+				int ic = 0;
+				while (len > 0) {
+					ic++;
+					for (int i = 0; i < ic; i++)
+						ctx.update((byte) 0);
+					ctx.update(entropy, 0, entropy.length);
+					int bc;
+					if (len > ctx_length) {
+						ctx.digest(key, offset, ctx_length);
+						bc = ctx_length;
+					} else {
+						byte[] hash = ctx.digest();
+						bc = Math.min(len, hash.length);
+						System.arraycopy(hash, 0, key, offset, bc);
+					}
+					offset += bc;
+					len -= bc;
 				}
-				offset += bc;
-				len -= bc;
 			}
-		}
-		Arrays.fill(entropy, (byte) 0);
+			Arrays.fill(entropy, (byte) 0);
 		} catch(DigestException e) {
 			// impossible
 			throw new Error(e);
@@ -310,7 +314,7 @@ public class Util {
 		//throws UnsupportedCipherException {
 		try {
 			return (BlockCipher) Loader.getInstance(
-				"freenet.crypt.ciphers." + name);
+					   "freenet.crypt.ciphers." + name);
 		} catch (Exception e) {
 			//throw new UnsupportedCipherException(""+e);
 			e.printStackTrace();
@@ -322,9 +326,9 @@ public class Util {
 		//throws UnsupportedCipherException {
 		try {
 			return (BlockCipher) Loader.getInstance(
-				"freenet.crypt.ciphers." + name,
-				new Class<?>[] { Integer.class },
-				new Object[] { Integer.valueOf(keySize)});
+					   "freenet.crypt.ciphers." + name,
+					   new Class<?>[] { Integer.class },
+					   new Object[] { Integer.valueOf(keySize)});
 		} catch (Exception e) {
 			//throw new UnsupportedCipherException(""+e);
 			e.printStackTrace();
@@ -380,7 +384,7 @@ public class Util {
 	}
 
 	public static void readFully(InputStream in, byte[] b, int off, int length)
-		throws IOException {
+	throws IOException {
 		int total = 0;
 		while (total < length) {
 			int got = in.read(b, off + total, length - total);
@@ -395,7 +399,7 @@ public class Util {
 		long asLong = Math.abs(Fields.bytesToLong(digest));
 		// Math.abs can actually return negative...
 		if(asLong == Long.MIN_VALUE)
-				asLong = Long.MAX_VALUE;
+			asLong = Long.MAX_VALUE;
 		return ((double)asLong)/((double)Long.MAX_VALUE);
 	}
 }

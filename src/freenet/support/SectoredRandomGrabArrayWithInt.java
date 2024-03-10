@@ -3,7 +3,7 @@ package freenet.support;
 import freenet.client.async.ClientRequestSelector;
 
 public class SectoredRandomGrabArrayWithInt<T, C extends RemoveRandomWithObject<T>>
-		extends SectoredRandomGrabArray<T, C> implements IntNumberedItem {
+	extends SectoredRandomGrabArray<T, C> implements IntNumberedItem {
 
 	private final int number;
 
@@ -16,7 +16,7 @@ public class SectoredRandomGrabArrayWithInt<T, C extends RemoveRandomWithObject<
 	public int getNumber() {
 		return number;
 	}
-	
+
 	@Override
 	public String toString() {
 		return super.toString() + ":"+number;

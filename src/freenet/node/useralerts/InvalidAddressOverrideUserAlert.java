@@ -10,14 +10,14 @@ import freenet.node.Node;
 import freenet.support.HTMLNode;
 
 public class InvalidAddressOverrideUserAlert extends AbstractUserAlert {
-	
+
 	public InvalidAddressOverrideUserAlert(Node n) {
 		super(false, null, null, null, null, (short) 0, true, null, false, null);
 		this.node = n;
 	}
-	
+
 	final Node node;
-	
+
 	@Override
 	public String getTitle() {
 		return l10n("unknownAddressTitle");
@@ -36,11 +36,11 @@ public class InvalidAddressOverrideUserAlert extends AbstractUserAlert {
 	public HTMLNode getHTMLText() {
 		SubConfig sc = node.config.get("node");
 		Option<?> o = sc.getOption("ipAddressOverride");
-		
+
 		HTMLNode textNode = new HTMLNode("div");
-		NodeL10n.getBase().addL10nSubstitution(textNode, "InvalidAddressOverrideUserAlert.unknownAddressWithConfigLink", 
-				new String[] { "link" }, 
-				new HTMLNode[] { HTMLNode.link("/config/node")});
+		NodeL10n.getBase().addL10nSubstitution(textNode, "InvalidAddressOverrideUserAlert.unknownAddressWithConfigLink",
+											   new String[] { "link" },
+											   new HTMLNode[] { HTMLNode.link("/config/node")});
 		HTMLNode formNode = textNode.addChild("form", new String[] { "action", "method" }, new String[] { "/config/node", "post" });
 		formNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "formPassword", node.clientCore.formPassword });
 		formNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "subconfig", sc.getPrefix() });

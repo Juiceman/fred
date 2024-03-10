@@ -42,7 +42,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private int _dropProbability;
 	// Icky layer violation, but we need to know the Node to work around the EvilJVMBug.
 	private final Node node;
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	private boolean _isDone;
 	private volatile boolean _active = true;
@@ -52,9 +52,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	private long startTime;
 	private final IOStatisticCollector collector;
 
-        static {
-            Logger.registerClass(UdpSocketHandler.class);
-        }
+	static {
+		Logger.registerClass(UdpSocketHandler.class);
+	}
 	private static class socketOptions {
 		private static class socketOptionsHolder {
 			static {
@@ -108,21 +108,23 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 				f.setAccessible(true);
 				ret = f.getInt(fdi);
 			} catch (Exception e) {
-			   Logger.error(UdpSocketHandler.class, e.getMessage(), e);
+				Logger.error(UdpSocketHandler.class, e.getMessage(), e);
 			}
 			return ret;
 		}
 
 		public static boolean setAddressPreference(DatagramSocket s, SOCKET_ADDR_PREFERENCE p) {
 			if(!Platform.isLinux())
-			    return false;
+				return false;
 			int fd = getFd(s);
 			if(fd <= 2)
-			    return false;
+				return false;
 			int ret = -1;
 			try {
-			    ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
-			} catch(Exception e) { Logger.normal(UdpSocketHandler.class, e.getMessage(),e); } //if it fails that's fine
+				ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
+			} catch(Exception e) {
+				Logger.normal(UdpSocketHandler.class, e.getMessage(),e);    //if it fails that's fine
+			}
 			return (ret == 0 ? true : false);
 		}
 	}
@@ -265,10 +267,10 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 					}
 				}
 				if(logMINOR) Logger.minor(this,
-						"Successfully handled packet length " + length);
+											  "Successfully handled packet length " + length);
 			} catch (Throwable t) {
 				Logger.error(this, "Caught " + t + " from "
-						+ lowLevelFilter, t);
+							 + lowLevelFilter, t);
 			}
 		} else {
 			if(logDEBUG) Logger.debug(this, "No packet received");
@@ -283,7 +285,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			InetAddress address = packet.getAddress();
 			boolean isLocal = !IPUtil.isValidAddress(address, false);
 			collector.addInfo(address, packet.getPort(),
-					getHeadersLength(address) + packet.getLength(), 0, isLocal);
+							  getHeadersLength(address) + packet.getLength(), 0, isLocal);
 		} catch (SocketTimeoutException e1) {
 			return false;
 		} catch (IOException e2) {
@@ -366,7 +368,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	public static final int MIN_MTU = MIN_IPv4_MTU;
 
 	private volatile int maxPacketSize = MAX_ALLOWED_MTU;
-	
+
 	/**
 	 * @return The maximum packet size supported by this SocketManager, not including transport (UDP/IP) headers.
 	 */
@@ -383,7 +385,7 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			System.out.println("Max packet size: "+newSize);
 		return maxPacketSize;
 	}
-	
+
 	/** Recalculate the maximum packet size */
 	int innerCalculateMaxPacketSize() { //FIXME: what about passing a peerNode though and doing it on a per-peer basis? How? PMTU would require JNI, although it might be worth it...
 		final int minAdvertisedMTU = node.getMinimumMTU();

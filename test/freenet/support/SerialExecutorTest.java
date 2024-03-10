@@ -8,7 +8,7 @@ import freenet.node.PrioRunnable;
 import freenet.support.io.NativeThread;
 
 public class SerialExecutorTest {
-	
+
 	@Test
 	public void testBlocking() {
 		SerialExecutor exec = new SerialExecutor(NativeThread.NORM_PRIORITY);
@@ -26,14 +26,14 @@ public class SerialExecutorTest {
 						flag.notifyAll();
 					}
 				}
-				
+
 			}
 
 			@Override
 			public int getPriority() {
 				return NativeThread.NORM_PRIORITY;
 			}
-			
+
 		});
 		synchronized(flag) {
 			while(!flag.value) {

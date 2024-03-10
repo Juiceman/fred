@@ -19,7 +19,7 @@ import freenet.support.compress.InvalidCompressionCodecException;
 /**
  * Put a directory, rather than a file.
  * Base class.
- * 
+ *
  * Two forms: ClientPutDiskDir and ClientPutComplexDir
  *
  * Both share:
@@ -60,7 +60,7 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 	final boolean realTimeFlag;
 	final String targetFilename;
 	final boolean ignoreUSKDatehints;
-	
+
 	public ClientPutDirMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
 		global = fs.getBoolean("Global", false);
@@ -160,7 +160,7 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 			} catch (InvalidCompressionCodecException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, global);
 			}
-			if (ca == null) 
+			if (ca == null)
 				codecs = null;
 		}
 		compressorDescriptor = codecs;

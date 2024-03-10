@@ -83,7 +83,7 @@ public class Bzip2CompressorTest {
 	@Test
 	public void testByteArrayDecompress() throws IOException {
 
-        // build 5k array
+		// build 5k array
 		byte[] originalUncompressedData = new byte[5 * 1024];
 		for(int i = 0; i < originalUncompressedData.length; i++) {
 			originalUncompressedData[i] = 1;
@@ -99,7 +99,7 @@ public class Bzip2CompressorTest {
 		assertEquals(originalUncompressedData.length, writtenBytes);
 		assertEquals(originalUncompressedData.length, outUncompressedData.length);
 
-        // check each byte is exactly as expected
+		// check each byte is exactly as expected
 		for (int i = 0; i < outUncompressedData.length; i++) {
 			assertEquals(originalUncompressedData[i], outUncompressedData[i]);
 		}

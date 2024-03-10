@@ -14,7 +14,7 @@ public class IntOption extends Option<Integer> {
 	public IntOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder, boolean expert,
 					 boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, Dimension dimension) {
 		this(conf, optionName, parseString(defaultValueString, dimension), sortOrder, expert, forceWrite,
-				shortDesc, longDesc, cb, dimension);
+			 shortDesc, longDesc, cb, dimension);
 	}
 
 	/**
@@ -22,9 +22,9 @@ public class IntOption extends Option<Integer> {
 	 */
 	@Deprecated
 	public IntOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder, boolean expert,
-	        boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
+					 boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
 		this(conf, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb,
-				isSize ? Dimension.SIZE : Dimension.NOT);
+			 isSize ? Dimension.SIZE : Dimension.NOT);
 	}
 
 	public IntOption(SubConfig conf, String optionName, Integer defaultValue, int sortOrder, boolean expert,
@@ -42,7 +42,7 @@ public class IntOption extends Option<Integer> {
 	public IntOption(SubConfig conf, String optionName, Integer defaultValue, int sortOrder, boolean expert,
 					 boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
 		this(conf, optionName, defaultValue, sortOrder, expert, forceWrite, shortDesc, longDesc, cb,
-				isSize ? Dimension.SIZE : Dimension.NOT);
+			 isSize ? Dimension.SIZE : Dimension.NOT);
 	}
 
 	@Override

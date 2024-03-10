@@ -31,19 +31,19 @@ import freenet.support.io.ResumeFailedException;
  */
 public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompletionCallback, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
-	
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	// Stuff to be passed on to the SingleBlockInserter
 	final BaseClientPutter parent;
 	Bucket data;
@@ -56,7 +56,7 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	public final Object tokenObject;
 	final boolean persistent;
 	final boolean realTimeFlag;
-	
+
 	final InsertableUSK privUSK;
 	final USK pubUSK;
 	/** Scanning for latest slot */
@@ -74,7 +74,7 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	private final int extraInserts;
 	final byte cryptoAlgorithm;
 	final byte[] forceCryptoKey;
-	
+
 	@Override
 	public void schedule(ClientContext context) throws InsertException {
 		// Caller calls schedule()
@@ -158,9 +158,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 		for(FreenetURI uri : hintURIs) {
 			try {
 				Bucket bucket = BucketTools.makeImmutableBucket(context.getBucketFactory(persistent), hintData);
-				SingleBlockInserter sb = 
+				SingleBlockInserter sb =
 					new SingleBlockInserter(parent, bucket, (short) -1, uri,
-							ctx, realTimeFlag, m, false, sourceLength, token, true, true /* we don't use it */, null, context, persistent, true, extraInserts, cryptoAlgorithm, forceCryptoKey);
+											ctx, realTimeFlag, m, false, sourceLength, token, true, true /* we don't use it */, null, context, persistent, true, extraInserts, cryptoAlgorithm, forceCryptoKey);
 				Logger.normal(this, "Inserting "+uri+" with "+sb+" for insert of "+pubUSK);
 				m.add(sb);
 				sb.schedule(context);
@@ -191,7 +191,7 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 			if(logMINOR)
 				Logger.minor(this, "scheduling insert for "+pubUSK.getURI()+ ' ' +edition);
 			sbi = new SingleBlockInserter(parent, data, compressionCodec, privUSK.getInsertableSSK(edition).getInsertURI(),
-					ctx, realTimeFlag, this, isMetadata, sourceLength, token, false, true /* we don't use it */, tokenObject, context, persistent, false, extraInserts, cryptoAlgorithm, forceCryptoKey);
+										  ctx, realTimeFlag, this, isMetadata, sourceLength, token, false, true /* we don't use it */, tokenObject, context, persistent, false, extraInserts, cryptoAlgorithm, forceCryptoKey);
 		}
 		try {
 			sbi.schedule(context);
@@ -265,10 +265,10 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	public int hashCode() {
 		return hashCode;
 	}
-	
-	public USKInserter(BaseClientPutter parent, Bucket data, short compressionCodec, FreenetURI uri, 
-			InsertContext ctx, PutCompletionCallback cb, boolean isMetadata, int sourceLength, int token, 
-			boolean addToParent, Object tokenObject, ClientContext context, boolean freeData, boolean persistent, boolean realTimeFlag, int extraInserts, byte cryptoAlgorithm, byte[] forceCryptoKey) throws MalformedURLException {
+
+	public USKInserter(BaseClientPutter parent, Bucket data, short compressionCodec, FreenetURI uri,
+					   InsertContext ctx, PutCompletionCallback cb, boolean isMetadata, int sourceLength, int token,
+					   boolean addToParent, Object tokenObject, ClientContext context, boolean freeData, boolean persistent, boolean realTimeFlag, int extraInserts, byte cryptoAlgorithm, byte[] forceCryptoKey) throws MalformedURLException {
 		this.hashCode = super.hashCode();
 		this.tokenObject = tokenObject;
 		this.persistent = persistent;
@@ -293,28 +293,28 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 		this.forceCryptoKey = forceCryptoKey;
 		this.realTimeFlag = realTimeFlag;
 	}
-	
+
 	protected USKInserter() {
-	    // For serialization.
-	    this.hashCode = 0;
-	    this.tokenObject = null;
-	    this.persistent = false;
-	    this.parent = null;
-	    this.data = null;
-	    this.compressionCodec = 0;
-	    this.ctx = null;
-	    this.cb = null;
-	    this.isMetadata = false;
-	    this.sourceLength = 0;
-	    this.token = 0;
-	    this.privUSK = null;
-	    this.pubUSK = null;
-	    this.edition = 0;
-	    this.freeData = false;
-	    this.extraInserts = 0;
-	    this.cryptoAlgorithm = 0;
-	    this.forceCryptoKey = null;
-	    this.realTimeFlag = false;
+		// For serialization.
+		this.hashCode = 0;
+		this.tokenObject = null;
+		this.persistent = false;
+		this.parent = null;
+		this.data = null;
+		this.compressionCodec = 0;
+		this.ctx = null;
+		this.cb = null;
+		this.isMetadata = false;
+		this.sourceLength = 0;
+		this.token = 0;
+		this.privUSK = null;
+		this.pubUSK = null;
+		this.edition = 0;
+		this.freeData = false;
+		this.extraInserts = 0;
+		this.cryptoAlgorithm = 0;
+		this.forceCryptoKey = null;
+		this.realTimeFlag = false;
 	}
 
 	@Override
@@ -359,7 +359,7 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	@Override
 	public void onCancelled(ClientContext context) {
 		synchronized(this) {
-		    fetcher = null;
+			fetcher = null;
 			if(finished) return;
 		}
 		Logger.error(this, "Unexpected onCancelled()", new Exception("error"));
@@ -413,26 +413,26 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 		Logger.error(this, "onMetadata on "+this+" from "+state, new Exception("error"));
 		meta.free();
 	}
-	
+
 	private transient boolean resumed = false;
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-        if(resumed) return;
-        resumed = true;
-        if(data != null) data.onResume(context);
-        if(cb != null && cb != parent) cb.onResume(context);
-        if(fetcher != null) fetcher.onResume(context);
-        if(sbi != null) sbi.onResume(context);
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
+		if(resumed) return;
+		resumed = true;
+		if(data != null) data.onResume(context);
+		if(cb != null && cb != parent) cb.onResume(context);
+		if(fetcher != null) fetcher.onResume(context);
+		if(sbi != null) sbi.onResume(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        SingleBlockInserter sbi;
-        synchronized(this) {
-            sbi = this.sbi;
-        }
-        if(sbi != null) sbi.onShutdown(context);
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		SingleBlockInserter sbi;
+		synchronized(this) {
+			sbi = this.sbi;
+		}
+		if(sbi != null) sbi.onShutdown(context);
+	}
 
 }

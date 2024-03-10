@@ -23,19 +23,19 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 import freenet.support.io.InsufficientDiskSpaceException;
 
-/** 
- * Fetch a single block file. Used directly for very simple fetches, but also base class for 
+/**
+ * Fetch a single block file. Used directly for very simple fetches, but also base class for
  * SingleFileFetcher.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
 public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements ClientGetState, Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    SimpleSingleFileFetcher(ClientKey key, int maxRetries, FetchContext ctx, ClientRequester parent, 
-			GetCompletionCallback rcb, boolean isEssential, boolean dontAdd, long l, ClientContext context, boolean deleteFetchContext, boolean realTimeFlag) {
+	SimpleSingleFileFetcher(ClientKey key, int maxRetries, FetchContext ctx, ClientRequester parent,
+							GetCompletionCallback rcb, boolean isEssential, boolean dontAdd, long l, ClientContext context, boolean deleteFetchContext, boolean realTimeFlag) {
 		super(key, maxRetries, ctx, parent, deleteFetchContext, realTimeFlag);
 		this.rcb = rcb;
 		this.token = l;
@@ -47,24 +47,24 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 			parent.notifyClients(context);
 		}
 	}
-    
+
 	final GetCompletionCallback rcb;
 	final long token;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	// Translate it, then call the real onFailure
 	@Override
 	public void onFailure(LowLevelGetException e, SendableRequestItem reqTokenIgnored, ClientContext context) {
-	    onFailure(translateException(e), false, context);
+		onFailure(translateException(e), false, context);
 	}
 
 	// Real onFailure
@@ -133,8 +133,8 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 			onFailure(new FetchException(FetchExceptionMode.TOO_BIG, e), false, context);
 			return null;
 		} catch (InsufficientDiskSpaceException e) {
-		    onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
-		    return null;
+			onFailure(new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE), false, context);
+			return null;
 		} catch (IOException e) {
 			Logger.error(this, "Could not capture data - disk full?: "+e, e);
 			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, e), false, context);
@@ -165,14 +165,14 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 		onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR, "Could not decode block with the URI given, probably invalid as inserted, possible the URI is wrong"), true, context);
 	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Do nothing.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Do nothing.
+	}
 
-    @Override
-    protected ClientGetState getClientGetState() {
-        return this;
-    }
-    
+	@Override
+	protected ClientGetState getClientGetState() {
+		return this;
+	}
+
 }

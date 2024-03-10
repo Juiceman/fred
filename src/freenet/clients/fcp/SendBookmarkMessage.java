@@ -17,20 +17,20 @@ public class SendBookmarkMessage extends SendPeerMessage {
 	private final boolean hasAnAnActiveLink;
 
 	public SendBookmarkMessage(SimpleFieldSet fs)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		super(fs);
 		try {
 			name = fs.get("Name");
 			if (name == null)
 				throw new MessageInvalidException(
-						ProtocolErrorMessage.MISSING_FIELD, "No name",
-						identifier, false);
+					ProtocolErrorMessage.MISSING_FIELD, "No name",
+					identifier, false);
 			uri = new FreenetURI(fs.get("URI"));
 			hasAnAnActiveLink = fs.getBoolean("HasAnActivelink", false);
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(
-					ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e
-							.getMessage(), identifier, false);
+				ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e
+				.getMessage(), identifier, false);
 		}
 	}
 

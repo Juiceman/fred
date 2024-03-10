@@ -23,7 +23,7 @@ import freenet.test.UTFUtil;
 
 /**
  * Test case for {@link freenet.support.URIPreEncoder} class
- * 
+ *
  * @author Alberto Bacchelli &lt;sback@freenetproject.org&gt;
  */
 public class URIPreEncoderTest {
@@ -31,7 +31,7 @@ public class URIPreEncoderTest {
 	private String prtblAscii = new String(UTFUtil.PRINTABLE_ASCII);
 	private String stressedUTF_8Chars = new String(UTFUtil.STRESSED_UTF);
 	public static final String allChars = new String(UTFUtil.ALL_CHARACTERS);
-	
+
 	private boolean containsOnlyValidChars(String aString) {
 		char eachChar;
 		for (int i = 0; i < aString.length(); i++) {
@@ -41,7 +41,7 @@ public class URIPreEncoderTest {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Tests encode(String) method
 	 * to verify if it converts all
@@ -52,7 +52,7 @@ public class URIPreEncoderTest {
 		String toEncode = prtblAscii+stressedUTF_8Chars;
 		String encoded = URIPreEncoder.encode(toEncode);
 		assertTrue(containsOnlyValidChars(encoded));
-		
+
 		encoded = URIPreEncoder.encode(allChars);
 		assertTrue(containsOnlyValidChars(encoded));
 	}

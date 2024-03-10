@@ -41,12 +41,12 @@ public class FeedMessage extends MultipleDataCarryingMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, getName()
-				+ " goes from server to client not the other way around", null, false);
+										  + " goes from server to client not the other way around", null, false);
 	}
 
 	@Override
 	public String getName() {
 		return NAME;
 	}
-	
+
 }

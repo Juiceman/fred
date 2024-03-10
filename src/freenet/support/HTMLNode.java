@@ -11,15 +11,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class HTMLNode implements XMLCharacterClasses, Cloneable {
-	
+
 	private static final Pattern namePattern = Pattern.compile("^[" + NAME + "]*$");
 	private static final Pattern simpleNamePattern = Pattern.compile("^[A-Za-z][A-Za-z0-9]*$");
 	public static HTMLNode STRONG = new HTMLNode("strong").setReadOnly();
 
 	protected final String name;
-	
+
 	private boolean readOnly;
-	
+
 	public HTMLNode setReadOnly() {
 		readOnly = true;
 		return this;
@@ -170,14 +170,14 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		else
 			readOnly = node.readOnly;
 	}
-	
+
 	@Override
 	public HTMLNode clone() {
 		// Implement Cloneable to shut up findbugs. We need a deep copy.
 		// FIXME is clearing read only an abuse of the clone() API? Should we rename the method?
 		return new HTMLNode(this, true);
 	}
-	
+
 	protected boolean checkNamePattern(String str) {
 		// Workaround buggy java regexes, also probably slightly faster.
 		if(str.length() < 1) return false;
@@ -185,7 +185,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		c = str.charAt(0);
 		if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
 			boolean simpleMatch = true;
-			for(int i=1;i<str.length();i++) {
+			for(int i=1; i<str.length(); i++) {
 				c = str.charAt(i);
 				if(!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))) {
 					simpleMatch = false;
@@ -196,10 +196,10 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		}
 		// Regex-based match. Probably more expensive, and problems (infinite recursion in Pattern$6.isSatisfiedBy) have been seen in practice.
 		// Oddly these problems were seen where the answer is almost certainly in the first matcher, because the tag name was "html"...
-		return simpleNamePattern.matcher(str).matches() || 
-			namePattern.matcher(str).matches();
+		return simpleNamePattern.matcher(str).matches() ||
+			   namePattern.matcher(str).matches();
 	}
-	
+
 	public HTMLNode(String name, String[] attributeNames, String[] attributeValues, String content) {
 		if ((name == null) || (!"#".equals(name) && !"%".equals(name) && !checkNamePattern(name))) {
 			throw new IllegalArgumentException("element name is not legal");
@@ -252,28 +252,28 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		if(readOnly)
 			throw new IllegalArgumentException("Read only");
 		if (childNode == null) throw new NullPointerException();
-		//since an efficient algorithm to check the loop presence 
+		//since an efficient algorithm to check the loop presence
 		//is not present, at least it checks if we are trying to
 		//addChild the node itself as a child
-		if (childNode == this)	
+		if (childNode == this)
 			throw new IllegalArgumentException("A HTMLNode cannot be child of himself");
 		if (children.contains(childNode))
 			throw new IllegalArgumentException("Cannot add twice the same HTMLNode as child");
 		children.add(childNode);
 		return childNode;
 	}
-	
+
 	public void addChildren(HTMLNode[] childNodes) {
 		addChildren(Arrays.asList(childNodes));
 	}
-    
-    public void addChildren(List<HTMLNode> childNodes) {
-        if(readOnly)
-            throw new IllegalArgumentException("Read only");
-        for (HTMLNode childNode: childNodes) {
-            addChild(childNode);
-        }
-    }
+
+	public void addChildren(List<HTMLNode> childNodes) {
+		if(readOnly)
+			throw new IllegalArgumentException("Read only");
+		for (HTMLNode childNode: childNodes) {
+			addChild(childNode);
+		}
+	}
 
 	public HTMLNode addChild(String nodeName) {
 		return addChild(nodeName, null);
@@ -283,8 +283,8 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * @param nodeName The tag name e.g. "div". "#" means add content only, no tag.
 	 * @param content The content (to be added as body text).
 	 * @return The added node. You can add more tags inside it with addChild(), or add attributes
-	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this 
-	 * tag in its output. 
+	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this
+	 * tag in its output.
 	 */
 	public HTMLNode addChild(String nodeName, String content) {
 		return addChild(nodeName, (String[]) null, (String[]) null, content);
@@ -295,8 +295,8 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * @param attributeName The name of the attribute, e.g. "class"
 	 * @param attributeValue The value of the attribute.
 	 * @return The added node. You can add more tags inside it with addChild(), or add attributes
-	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this 
-	 * tag in its output. 
+	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this
+	 * tag in its output.
 	 */
 	public HTMLNode addChild(String nodeName, String attributeName, String attributeValue) {
 		return addChild(nodeName, attributeName, attributeValue, null);
@@ -309,8 +309,8 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * @param attributeValue The value of the attribute.
 	 * @param content The content (to be added as body text).
 	 * @return The added node. You can add more tags inside it with addChild(), or add attributes
-	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this 
-	 * tag in its output. 
+	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this
+	 * tag in its output.
 	 */
 	public HTMLNode addChild(String nodeName, String attributeName, String attributeValue, String content) {
 		return addChild(nodeName, new String[] { attributeName }, new String[] { attributeValue }, content);
@@ -322,8 +322,8 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * @param attributeName The name of the attribute, e.g. "class"
 	 * @param attributeValue The value of the attribute.
 	 * @return The added node. You can add more tags inside it with addChild(), or add attributes
-	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this 
-	 * tag in its output. 
+	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this
+	 * tag in its output.
 	 */
 	public HTMLNode addChild(String nodeName, String[] attributeNames, String[] attributeValues) {
 		return addChild(nodeName, attributeNames, attributeValues, null);
@@ -336,8 +336,8 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * @param attributeValue The value of the attribute.
 	 * @param content The content (to be added as body text).
 	 * @return The added node. You can add more tags inside it with addChild(), or add attributes
-	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this 
-	 * tag in its output. 
+	 * with addAttribute() etc. If you render the parent tag with generate(), it will include this
+	 * tag in its output.
 	 */
 	public HTMLNode addChild(String nodeName, String[] attributeNames, String[] attributeValues, String content) {
 		return addChild(new HTMLNode(nodeName, attributeNames, attributeValues, content));
@@ -346,7 +346,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	/**
 	 * Returns the name of the first "real" tag found in the hierarchy below
 	 * this node.
-	 * 
+	 *
 	 * @return The name of the first "real" tag, or <code>null</code> if no
 	 *         "real" tag could be found
 	 */
@@ -379,7 +379,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 				HTMLEncoder.encodeToBuffer(content, tagBuffer);
 				return tagBuffer;
 			}
-			
+
 			for(int childIndex = 0, childCount = children.size(); childIndex < childCount; childIndex++) {
 				HTMLNode childNode = children.get(childIndex);
 				childNode.generate(tagBuffer);
@@ -438,9 +438,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		}
 		return tagBuffer;
 	}
-	
-	public String generateChildren(){
-		if(content!=null){
+
+	public String generateChildren() {
+		if(content!=null) {
 			return content;
 		}
 		StringBuilder tagBuffer=new StringBuilder();
@@ -450,14 +450,14 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		}
 		return tagBuffer.toString();
 	}
-	
-	public void setContent(String newContent){
+
+	public void setContent(String newContent) {
 		if(readOnly)
 			throw new IllegalArgumentException("Read only");
 		content=newContent;
 	}
-	
-	public List<HTMLNode> getChildren(){
+
+	public List<HTMLNode> getChildren() {
 		return children;
 	}
 
@@ -465,7 +465,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	 * Special HTML node for the DOCTYPE declaration. This node differs from a
 	 * normal HTML node in that it's child (and it should only have exactly one
 	 * child, the "html" node) is rendered <em>after</em> this node.
-	 * 
+	 *
 	 * @author David 'Bombe' Roden &lt;bombe@freenetproject.org&gt;
 	 * @version $Id$
 	 */
@@ -474,7 +474,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		private final String systemUri;
 
 		/**
-		 * 
+		 *
 		 */
 		public HTMLDoctype(String doctype, String systemUri) {
 			super(doctype);
@@ -487,9 +487,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		@Override
 		public StringBuilder generate(StringBuilder tagBuffer) {
 			tagBuffer.append("<!DOCTYPE ").append(name).append(" PUBLIC \"").append(systemUri).append("\">\n");
-			//TODO A meaningful exception should be raised 
-			// when trying to call the method for a HTMLDoctype 
-			// with number of child != 1 
+			//TODO A meaningful exception should be raised
+			// when trying to call the method for a HTMLDoctype
+			// with number of child != 1
 			return children.get(0).generate(tagBuffer);
 		}
 
@@ -506,7 +506,7 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	public static HTMLNode text(String text) {
 		return new HTMLNode("#", text);
 	}
-	
+
 	public static HTMLNode text(int count) {
 		return new HTMLNode("#", Integer.toString(count));
 	}
