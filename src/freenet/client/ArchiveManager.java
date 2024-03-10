@@ -53,7 +53,7 @@ public class ArchiveManager {
 	private static boolean logMINOR;
 
 	public enum ARCHIVE_TYPE {
-	    // WARNING: This enum is persisted. Changing member names may break downloads/uploads.
+		// WARNING: This enum is persisted. Changing member names may break downloads/uploads.
 		ZIP((short)0, new String[] { "application/zip", "application/x-zip" }), 	/* eventually get rid of ZIP support at some point */
 		TAR((short)1, new String[] { "application/x-tar" });
 
@@ -336,7 +336,7 @@ public class ArchiveManager {
 							Closer.close(is);
 						}
 					}
-					
+
 				});
 				is = pis;
 			} else if(ctype == COMPRESSOR_TYPE.LZMA) {
@@ -350,7 +350,7 @@ public class ArchiveManager {
 			if(ARCHIVE_TYPE.ZIP == archiveType) {
 				handleZIPArchive(ctx, key, is, element, callback, gotElement, throwAtExit, context);
 			} else if(ARCHIVE_TYPE.TAR == archiveType) {
-				 // COMPRESS-449 workaround, see https://freenet.mantishub.io/view.php?id=6921
+				// COMPRESS-449 workaround, see https://freenet.mantishub.io/view.php?id=6921
 				handleTARArchive(ctx, key, new SkipShieldingInputStream(is), element, callback, gotElement, throwAtExit, context);
 			} else {
 				throw new ArchiveFailureException("Unknown or unsupported archive algorithm " + archiveType);
@@ -363,7 +363,7 @@ public class ArchiveManager {
 			throw new ArchiveFailureException("An IOE occured: "+ioe.getMessage(), ioe);
 		} finally {
 			Closer.close(is);
-	}
+		}
 	}
 
 	private void handleTARArchive(ArchiveStoreContext ctx, FreenetURI key, InputStream data, String element, ArchiveExtractCallback callback, MutableBoolean gotElement, boolean throwAtExit, ClientContext context) throws ArchiveFailureException, ArchiveRestartException {
@@ -379,9 +379,9 @@ public class ArchiveManager {
 			HashSet<String> names = new HashSet<String>();
 			boolean gotMetadata = false;
 
-outerTAR:		while(true) {
+			outerTAR:		while(true) {
 				try {
-				entry = tarIS.getNextEntry();
+					entry = tarIS.getNextEntry();
 				} catch (IllegalArgumentException e) {
 					// Annoyingly, it can throw this on some corruptions...
 					throw new ArchiveFailureException("Error reading archive: "+e.getMessage(), e);
@@ -417,7 +417,7 @@ outerTAR:		while(true) {
 								continue outerTAR;
 							}
 						}
-						
+
 					} finally {
 						if(out != null) out.close();
 					}
@@ -464,7 +464,7 @@ outerTAR:		while(true) {
 			HashSet<String> names = new HashSet<String>();
 			boolean gotMetadata = false;
 
-outerZIP:		while(true) {
+			outerZIP:		while(true) {
 				entry = zis.getNextEntry();
 				if(entry == null) break;
 				if(entry.isDirectory()) continue;
@@ -484,7 +484,7 @@ outerZIP:		while(true) {
 					Bucket output = tempBucketFactory.makeBucket(size);
 					OutputStream out = output.getOutputStream();
 					try {
-						
+
 						int readBytes;
 						while((readBytes = zis.read(buf)) > 0) {
 							out.write(buf, 0, readBytes);
@@ -497,7 +497,7 @@ outerZIP:		while(true) {
 								continue outerZIP;
 							}
 						}
-						
+
 					} finally {
 						if(out != null) out.close();
 					}
@@ -590,7 +590,7 @@ outerZIP:		while(true) {
 	private int resolve(MetadataUnresolvedException e, int x, BucketFactory bf, ArchiveStoreContext ctx, FreenetURI key, MutableBoolean gotElement, String element2, ArchiveExtractCallback callback, ClientContext context) throws IOException, ArchiveFailureException {
 		for(Metadata m: e.mustResolve) {
 			try {
-			    addStoreElement(ctx, key, ".metadata-"+(x++), m.toBucket(bf), gotElement, element2, callback, context);
+				addStoreElement(ctx, key, ".metadata-"+(x++), m.toBucket(bf), gotElement, element2, callback, context);
 			} catch (MetadataUnresolvedException e1) {
 				x = resolve(e, x, bf, ctx, key, gotElement, element2, callback, context);
 				continue;
@@ -693,8 +693,8 @@ outerZIP:		while(true) {
 	 */
 	private void trimStoredData() {
 		synchronized(this) {
-		while(true) {
-			ArchiveStoreItem item;
+			while(true) {
+				ArchiveStoreItem item;
 				if(cachedData <= maxCachedData && storedData.size() <= maxCachedElements) return;
 				if(storedData.isEmpty()) {
 					// Race condition? cachedData out of sync?
@@ -706,10 +706,10 @@ outerZIP:		while(true) {
 				cachedData -= space;
 				// Hard limits = delete file within lock, soft limits = delete outside of lock
 				// Here we use a hard limit
-			if(logMINOR)
-				Logger.minor(this, "Dropping "+item+" : cachedData="+cachedData+" of "+maxCachedData+" stored items : "+storedData.size()+" of "+maxCachedElements);
-			item.close();
-		}
+				if(logMINOR)
+					Logger.minor(this, "Dropping "+item+" : cachedData="+cachedData+" of "+maxCachedData+" stored items : "+storedData.size()+" of "+maxCachedElements);
+				item.close();
+			}
 		}
 	}
 

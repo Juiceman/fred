@@ -7,16 +7,16 @@ import freenet.support.HexUtil;
 import freenet.support.Logger;
 
 public class SimpleGetPubkey implements GetPubkey {
-	
+
 	final PubkeyStore store;
-	
+
 	public SimpleGetPubkey(PubkeyStore store) {
 		this.store = store;
 	}
 
 	@Override
 	public DSAPublicKey getKey(byte[] hash, boolean canReadClientCache,
-			boolean forULPR, BlockMetadata meta) {
+							   boolean forULPR, BlockMetadata meta) {
 		try {
 			return store.fetch(hash, false, false, meta);
 		} catch (IOException e) {
@@ -27,8 +27,8 @@ public class SimpleGetPubkey implements GetPubkey {
 
 	@Override
 	public void cacheKey(byte[] hash, DSAPublicKey key, boolean deep,
-			boolean canWriteClientCache, boolean canWriteDatastore,
-			boolean forULPR, boolean writeLocalToDatastore) {
+						 boolean canWriteClientCache, boolean canWriteDatastore,
+						 boolean forULPR, boolean writeLocalToDatastore) {
 		try {
 			store.put(hash, key, false);
 		} catch (IOException e) {

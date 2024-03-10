@@ -18,13 +18,13 @@ public class YarrowTest {
 	private static final String SEED_FILE_NAME = "prng-test.seed";
 	private static final File SEED_FILE = new File(SEED_FILE_NAME);
 	private static final int SEED_SIZE = 624;
-	private static final byte[] SEED_OUTPUT_YARROW_FILE = new byte[]{
+	private static final byte[] SEED_OUTPUT_YARROW_FILE = new byte[] {
 		(byte)0xEE, (byte)0x9E, (byte)0xE2, (byte)0x3B, (byte)0x8D,
 		(byte)0x1B, (byte)0x97, (byte)0xED, (byte)0x68, (byte)0x40,
 		(byte)0x1F, (byte)0xBD, (byte)0x91, (byte)0xEA, (byte)0xA2,
-		(byte)0xCD, (byte)0xD0, (byte)0xEB, (byte)0x37, (byte)0xF4 
+		(byte)0xCD, (byte)0xD0, (byte)0xEB, (byte)0x37, (byte)0xF4
 	};
-	
+
 	@Before
 	public void setUp() throws Exception {
 		FileWriter fw = new FileWriter(SEED_FILE);
@@ -82,7 +82,7 @@ public class YarrowTest {
 //			}
 //		}
 	}
-	
+
 	@Test
 	public void testNextBoolean() {
 		Yarrow y = new Yarrow(SEED_FILE, "SHA1", "Rijndael", false, false, false);

@@ -39,8 +39,8 @@ import freenet.support.io.ResumeFailedException;
 
 public class ClientPut extends ClientPutBase {
 
-    private static final long serialVersionUID = 1L;
-    ClientPutter putter;
+	private static final long serialVersionUID = 1L;
+	ClientPutter putter;
 	private final UploadFrom uploadFrom;
 	/** Original filename if from disk, otherwise null. Purely for PersistentPut. */
 	private final File origFilename;
@@ -57,16 +57,16 @@ public class ClientPut extends ClientPutBase {
 	private transient boolean compressing;
 	private boolean compressed;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	/**
 	 * Fproxy
 	 * Creates a new persistent insert.
@@ -105,17 +105,17 @@ public class ClientPut extends ClientPutBase {
 	 *            The FCP connection handler
 	 * @param global
 	 *            Whether this insert appears on the global queue
-	 * 
+	 *
 	 * @throws IdentifierCollisionException
-	 * @throws NotAllowedException 
-	 * @throws MetadataUnresolvedException 
-	 * @throws IOException 
-	 * @throws InsertException 
+	 * @throws NotAllowedException
+	 * @throws MetadataUnresolvedException
+	 * @throws IOException
+	 * @throws InsertException
 	 */
-	public ClientPut(PersistentRequestClient globalClient, FreenetURI uri, String identifier, int verbosity, 
-			String charset, short priorityClass, Persistence persistence, String clientToken,
-			boolean getCHKOnly, boolean dontCompress, int maxRetries, UploadFrom uploadFromType, File origFilename,
-			String contentType, RandomAccessBucket data, FreenetURI redirectTarget, String targetFilename, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, InsertContext.CompatibilityMode compatMode, byte[] overrideSplitfileKey, boolean binaryBlob, NodeClientCore core) throws IdentifierCollisionException, NotAllowedException, MetadataUnresolvedException, IOException {
+	public ClientPut(PersistentRequestClient globalClient, FreenetURI uri, String identifier, int verbosity,
+					 String charset, short priorityClass, Persistence persistence, String clientToken,
+					 boolean getCHKOnly, boolean dontCompress, int maxRetries, UploadFrom uploadFromType, File origFilename,
+					 String contentType, RandomAccessBucket data, FreenetURI redirectTarget, String targetFilename, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, InsertContext.CompatibilityMode compatMode, byte[] overrideSplitfileKey, boolean binaryBlob, NodeClientCore core) throws IdentifierCollisionException, NotAllowedException, MetadataUnresolvedException, IOException {
 		super(uri = checkEmptySSK(uri, targetFilename, core.clientContext), identifier, verbosity, charset, null, globalClient, priorityClass, persistence, null, true, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, compatMode, false/*XXX ignoreUSKDatehints*/, core);
 		if(uploadFromType == UploadFrom.DISK) {
 			if(!core.allowUploadFrom(origFilename))
@@ -147,20 +147,20 @@ public class ClientPut extends ClientPutBase {
 		this.data = tempData;
 		this.clientMetadata = cm;
 
-		putter = new ClientPutter(this, data, this.uri, cm, 
-				ctx, priorityClass, 
-				isMetadata, 
-				this.uri.getDocName() == null ? targetFilename : null, binaryBlob, core.clientContext, overrideSplitfileKey, -1);
+		putter = new ClientPutter(this, data, this.uri, cm,
+								  ctx, priorityClass,
+								  isMetadata,
+								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, core.clientContext, overrideSplitfileKey, -1);
 	}
-	
+
 	public ClientPut(FCPConnectionHandler handler, ClientPutMessage message, FCPServer server) throws IdentifierCollisionException, MessageInvalidException, IOException {
-		super(checkEmptySSK(message.uri, message.targetFilename, server.core.clientContext), message.identifier, message.verbosity, null, 
-				handler, message.priorityClass, message.persistence, message.clientToken,
-				message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly, message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable, message.compressorDescriptor, message.extraInsertsSingleBlock, message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode, message.ignoreUSKDatehints, server);
+		super(checkEmptySSK(message.uri, message.targetFilename, server.core.clientContext), message.identifier, message.verbosity, null,
+			  handler, message.priorityClass, message.persistence, message.clientToken,
+			  message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly, message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable, message.compressorDescriptor, message.extraInsertsSingleBlock, message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode, message.ignoreUSKDatehints, server);
 		String salt = null;
 		byte[] saltedHash = null;
 		binaryBlob = message.binaryBlob;
-		
+
 		if(message.uploadFromType == UploadFrom.DISK) {
 			if(!handler.server.core.allowUploadFrom(message.origFilename))
 				throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to upload from "+message.origFilename, identifier, global);
@@ -177,9 +177,9 @@ public class ClientPut extends ClientPutBase {
 					}
 				}
 			} else if(!handler.allowDDAFrom(message.origFilename, false))
-				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "Not allowed to upload from "+message.origFilename+". Have you done a testDDA previously ?", identifier, global);		
+				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "Not allowed to upload from "+message.origFilename+". Have you done a testDDA previously ?", identifier, global);
 		}
-			
+
 		this.targetFilename = message.targetFilename;
 		this.uploadFrom = message.uploadFromType;
 		this.origFilename = message.origFilename;
@@ -200,7 +200,7 @@ public class ClientPut extends ClientPutBase {
 		if(mimeType != null && !DefaultMIMETypes.isPlausibleMIMEType(mimeType)) {
 			throw new MessageInvalidException(ProtocolErrorMessage.BAD_MIME_TYPE, "Bad MIME type in Metadata.ContentType", identifier, global);
 		}
-		
+
 		clientToken = message.clientToken;
 		RandomAccessBucket tempData = message.getRandomAccessBucket();
 		ClientMetadata cm = new ClientMetadata(mimeType);
@@ -210,7 +210,7 @@ public class ClientPut extends ClientPutBase {
 			this.targetURI = message.redirectTarget;
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI, cm);
 			try {
-	            tempData = m.toBucket(server.core.clientContext.getBucketFactory(isPersistentForever()));
+				tempData = m.toBucket(server.core.clientContext.getBucketFactory(isPersistentForever()));
 			} catch (MetadataUnresolvedException e) {
 				// Impossible
 				Logger.error(this, "Impossible: "+e, e);
@@ -225,7 +225,7 @@ public class ClientPut extends ClientPutBase {
 			targetURI = null;
 		this.data = tempData;
 		this.clientMetadata = cm;
-		
+
 		// Check the hash : allow it to be null for backward compatibility and if testDDA is allowed
 		if(salt != null) {
 			MessageDigest md = SHA256.getMessageDigest();
@@ -239,7 +239,7 @@ public class ClientPut extends ClientPutBase {
 				SHA256.returnMessageDigest(md);
 				Logger.error(this, "Got IOE: " + e.getMessage(), e);
 				throw new MessageInvalidException(ProtocolErrorMessage.COULD_NOT_READ_FILE,
-						"Unable to access file: " + e, identifier, global);
+												  "Unable to access file: " + e, identifier, global);
 			} finally {
 				Closer.close(is);
 			}
@@ -251,25 +251,25 @@ public class ClientPut extends ClientPutBase {
 			if(!Arrays.equals(saltedHash, foundHash))
 				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "The hash doesn't match! (salt used : \""+salt+"\")", identifier, global);
 		}
-		
+
 		if(logMINOR) Logger.minor(this, "data = "+data+", uploadFrom = "+uploadFrom);
-		putter = new ClientPutter(this, data, this.uri, cm, 
-				ctx, priorityClass, 
-				isMetadata,
-				this.uri.getDocName() == null ? targetFilename : null, binaryBlob, server.core.clientContext, message.overrideSplitfileCryptoKey, message.metadataThreshold);
+		putter = new ClientPutter(this, data, this.uri, cm,
+								  ctx, priorityClass,
+								  isMetadata,
+								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, server.core.clientContext, message.overrideSplitfileCryptoKey, message.metadataThreshold);
 	}
-	
+
 	protected ClientPut() {
-	    // For serialization.
-	    uploadFrom = null;
-	    origFilename = null;
-	    targetURI = null;
-	    clientMetadata = null;
-	    finishedSize = 0;
-	    targetFilename = null;
-	    binaryBlob = false;
+		// For serialization.
+		uploadFrom = null;
+		origFilename = null;
+		targetURI = null;
+		clientMetadata = null;
+		finishedSize = 0;
+		targetFilename = null;
+		binaryBlob = false;
 	}
-	
+
 	@Override
 	void register(boolean noTags) throws IdentifierCollisionException {
 		if(persistence != Persistence.CONNECTION)
@@ -279,7 +279,7 @@ public class ClientPut extends ClientPutBase {
 			client.queueClientRequestMessage(msg, 0);
 		}
 	}
-	
+
 	@Override
 	public void start(ClientContext context) {
 		if(logMINOR)
@@ -326,7 +326,7 @@ public class ClientPut extends ClientPutBase {
 		}
 		d.free();
 	}
-	
+
 	@Override
 	protected freenet.client.async.ClientRequester getClientRequest() {
 		return putter;
@@ -337,9 +337,9 @@ public class ClientPut extends ClientPutBase {
 		if (putter == null)
 			Logger.error(this, "putter == null", new Exception("error"));
 		// FIXME end
-		return new PersistentPut(identifier, publicURI, uri, verbosity, priorityClass, uploadFrom, targetURI, 
-				persistence, origFilename, clientMetadata.getMIMEType(), client.isGlobalQueue,
-				getDataSize(), clientToken, started, ctx.maxInsertRetries, targetFilename, binaryBlob, this.ctx.getCompatibilityMode(), this.ctx.dontCompress, this.ctx.compressorDescriptor, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null);
+		return new PersistentPut(identifier, publicURI, uri, verbosity, priorityClass, uploadFrom, targetURI,
+								 persistence, origFilename, clientMetadata.getMIMEType(), client.isGlobalQueue,
+								 getDataSize(), clientToken, started, ctx.maxInsertRetries, targetFilename, binaryBlob, this.ctx.getCompatibilityMode(), this.ctx.dontCompress, this.ctx.compressorDescriptor, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null);
 	}
 
 	private boolean isRealTime() {
@@ -430,7 +430,7 @@ public class ClientPut extends ClientPutBase {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void setVarsRestart() {
 		super.setVarsRestart();
@@ -441,7 +441,7 @@ public class ClientPut extends ClientPutBase {
 			}
 		}
 	}
-	
+
 	@Override
 	public void requestWasRemoved(ClientContext context) {
 		if(persistence == Persistence.FOREVER) {
@@ -449,7 +449,7 @@ public class ClientPut extends ClientPutBase {
 		}
 		super.requestWasRemoved(context);
 	}
-	
+
 	public enum COMPRESS_STATE {
 		/** Waiting for a slot on the compression scheduler */
 		WAITING,
@@ -458,7 +458,7 @@ public class ClientPut extends ClientPutBase {
 		/** Inserting the data */
 		WORKING
 	}
-	
+
 	/** Probably not meaningful for ClientPutDir's */
 	public COMPRESS_STATE isCompressing() {
 		if(ctx.dontCompress) return COMPRESS_STATE.WORKING;
@@ -474,7 +474,7 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStartCompressing() {
 		synchronized(this) {
-		    if(compressed) return;
+			if(compressed) return;
 			compressing = true;
 		}
 		if(client != null) {
@@ -488,7 +488,7 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStopCompressing() {
 		synchronized(this) {
-		    if(compressed) return; // Race condition possible
+			if(compressed) return; // Race condition possible
 			compressing = false;
 			compressed = true;
 		}
@@ -517,13 +517,13 @@ public class ClientPut extends ClientPutBase {
 		}
 		File fnam = getOrigFilename();
 		if(fnam != null) fnam = new File(fnam.getPath());
-		
+
 		int total=0, min=0, fetched=0, fatal=0, failed=0;
 		// See ClientRequester.getLatestSuccess() for why this defaults to current time.
 		Date latestSuccess = new Date();
 		Date latestFailure = null;
 		boolean totalFinalized = false;
-		
+
 		if(progressMessage != null) {
 			if(progressMessage instanceof SimpleProgressMessage) {
 				SimpleProgressMessage msg = (SimpleProgressMessage)progressMessage;
@@ -537,29 +537,29 @@ public class ClientPut extends ClientPutBase {
 				totalFinalized = msg.isTotalFinalized();
 			}
 		}
-		
-        return new UploadFileRequestStatus(
-            identifier, persistence, started, finished, succeeded, total, min, fetched,
-            latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
-            uri, failureCode, failureReasonShort, failureReasonLong, getDataSize(), mimeType,
-            fnam, isCompressing());
+
+		return new UploadFileRequestStatus(
+				   identifier, persistence, started, finished, succeeded, total, min, fetched,
+				   latestSuccess, fatal, failed, latestFailure, totalFinalized, priorityClass, finalURI,
+				   uri, failureCode, failureReasonShort, failureReasonLong, getDataSize(), mimeType,
+				   fnam, isCompressing());
 	}
-	
+
 	@Override
 	public void innerResume(ClientContext context) throws ResumeFailedException {
-	    if(data != null)
-	        data.onResume(context);
+		if(data != null)
+			data.onResume(context);
 	}
 
-    @Override
-    RequestType getType() {
-        return RequestType.PUT;
-    }
+	@Override
+	RequestType getType() {
+		return RequestType.PUT;
+	}
 
-    @Override
-    public boolean fullyResumed() {
-        // FIXME we might need this in future.
-        return false;
-    }
+	@Override
+	public boolean fullyResumed() {
+		// FIXME we might need this in future.
+		return false;
+	}
 
 }

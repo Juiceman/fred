@@ -18,7 +18,7 @@ import org.junit.Test;
 public class FieldsTest {
 
 	@Test
-	public void testHexToLong(){
+	public void testHexToLong() {
 
 		long l1 = Fields.hexToLong("0");
 		assertEquals(l1, 0);
@@ -51,7 +51,7 @@ public class FieldsTest {
 			l1 = Fields.hexToLong("abcdef123456789aa"); // 17 chars
 			fail();
 		}
-		catch(NumberFormatException e){
+		catch(NumberFormatException e) {
 			// expect this
 		}
 
@@ -59,7 +59,7 @@ public class FieldsTest {
 			l1 = Fields.hexToLong("DeADC0dER"); // invalid char
 			fail();
 		}
-		catch(NumberFormatException e){
+		catch(NumberFormatException e) {
 			// expect this
 		}
 
@@ -112,7 +112,7 @@ public class FieldsTest {
 			i1 = Fields.hexToInt("0123456789abcdef0"); // 17 chars
 			fail();
 		}
-		catch(NumberFormatException e){
+		catch(NumberFormatException e) {
 			// expect this
 		}
 
@@ -120,7 +120,7 @@ public class FieldsTest {
 			i1 = Fields.hexToInt("C0dER"); // invalid char
 			fail();
 		}
-		catch(NumberFormatException e){
+		catch(NumberFormatException e) {
 			// expect this
 		}
 
@@ -282,7 +282,7 @@ public class FieldsTest {
 			Fields.bytesToLongs(bytes, 0, bytes.length);
 			fail();
 		}
-		catch(IllegalArgumentException e){
+		catch(IllegalArgumentException e) {
 			// expect this
 		}
 	}
@@ -298,7 +298,7 @@ public class FieldsTest {
 		doTestRoundTripBytesArrayToInt(bytes);
 
 		bytes = new byte[] {};
-		try{
+		try {
 			doTestRoundTripBytesArrayToInt(bytes);
 			fail();
 		}
@@ -353,7 +353,7 @@ public class FieldsTest {
 			Fields.bytesToLongs(bytes, 0, bytes.length);
 			fail();
 		}
-		catch(IllegalArgumentException e){
+		catch(IllegalArgumentException e) {
 			// expect this
 		}
 	}
@@ -369,7 +369,7 @@ public class FieldsTest {
 		doTestRoundTripBytesArrayToLong(bytes);
 
 		bytes = new byte[] {};
-		try{
+		try {
 			doTestRoundTripBytesArrayToLong(bytes);
 			fail();
 		}
@@ -405,7 +405,7 @@ public class FieldsTest {
 		assertEquals("a\n", Fields.trimLines("\na\n"));
 		assertEquals("a\nb\n", Fields.trimLines("a\nb"));
 	}
-	
+
 	@Test
 	public void testGetDigits() {
 		assertEquals(1, Fields.getDigits("1.0", 0, true));
@@ -415,7 +415,7 @@ public class FieldsTest {
 		assertEquals(1, Fields.getDigits("1.0", 2, true));
 		assertEquals(0, Fields.getDigits("1.0", 2, false));
 		Random r = new Random(88888);
-		for(int i=0;i<1024;i++) {
+		for(int i=0; i<1024; i++) {
 			int digits = r.nextInt(20)+1;
 			int nonDigits = r.nextInt(20)+1;
 			int digits2 = r.nextInt(20)+1;
@@ -431,23 +431,23 @@ public class FieldsTest {
 
 	private String generateDigits(Random r, int count) {
 		StringBuffer sb = new StringBuffer(count);
-		for(int i=0;i<count;i++) {
+		for(int i=0; i<count; i++) {
 			char c = '0';
 			c += r.nextInt(10);
 			sb.append(c);
 		}
 		return sb.toString();
 	}
-	
+
 	private String generateNonDigits(Random r, int count) {
 		final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 		final String NONDIGITS = "./\\_=+:"+ALPHABET+ALPHABET.toUpperCase();
 		StringBuffer sb = new StringBuffer(count);
-		for(int i=0;i<count;i++)
+		for(int i=0; i<count; i++)
 			sb.append(NONDIGITS.charAt(r.nextInt(NONDIGITS.length())));
 		return sb.toString();
 	}
-	
+
 	@Test
 	public void testCompareVersion() {
 		checkCompareVersionLessThan("1.0", "1.1");

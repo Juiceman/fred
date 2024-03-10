@@ -37,12 +37,12 @@ import freenet.support.io.Closer;
 public class AddPeer extends FCPMessage {
 
 	public static final String NAME = "AddPeer";
-	
+
 	SimpleFieldSet fs;
 	final String identifier;
 	final FRIEND_TRUST trust;
 	final FRIEND_VISIBILITY visibility;
-	
+
 	public AddPeer(SimpleFieldSet fs) throws MessageInvalidException {
 		this.fs = fs;
 		this.identifier = fs.get("Identifier");
@@ -74,7 +74,7 @@ public class AddPeer extends FCPMessage {
 	public String getName() {
 		return NAME;
 	}
-	
+
 	public static StringBuilder getReferenceFromURL(URL url) throws IOException {
 		StringBuilder ref = new StringBuilder(1024);
 		InputStream is = null;
@@ -93,7 +93,7 @@ public class AddPeer extends FCPMessage {
 	}
 
 	public static StringBuilder getReferenceFromFreenetURI(FreenetURI url, HighLevelSimpleClient client)
-			throws IOException, FetchException {
+	throws IOException, FetchException {
 		StringBuilder ref = new StringBuilder(1024); // the 1024 is the initial capacity
 		InputStream is = null;
 		try {
@@ -123,9 +123,9 @@ public class AddPeer extends FCPMessage {
 				try {
 					FreenetURI refUri = new FreenetURI(urlString);
 					HighLevelSimpleClient client = node.clientCore.makeClient(
-							RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
-							true,
-							true);
+													   RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
+													   true,
+													   true);
 					ref = AddPeer.getReferenceFromFreenetURI(refUri, client);
 				} catch (MalformedURLException | FetchException e) {
 					Logger.warning(this, "Url cannot be used as Freenet URI, trying to fetch as URL: " + urlString);
@@ -190,8 +190,8 @@ public class AddPeer extends FCPMessage {
 			} catch (ReferenceSignatureVerificationException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.REF_SIGNATURE_INVALID, "Error adding ref: "+e.getMessage(), identifier, false);
 			} catch (PeerTooOldException e) {
-                throw new MessageInvalidException(ProtocolErrorMessage.REF_PARSE_ERROR, "Error parsing ref: "+e.getMessage(), identifier, false);
-            }
+				throw new MessageInvalidException(ProtocolErrorMessage.REF_PARSE_ERROR, "Error parsing ref: "+e.getMessage(), identifier, false);
+			}
 			if(Arrays.equals(pn.peerECDSAPubKeyHash, node.getOpennetPubKeyHash()))
 				throw new MessageInvalidException(ProtocolErrorMessage.CANNOT_PEER_WITH_SELF, "Node cannot peer with itself", identifier, false);
 			if(!node.addPeerConnection(pn)) {
@@ -208,8 +208,8 @@ public class AddPeer extends FCPMessage {
 			} catch (ReferenceSignatureVerificationException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.REF_SIGNATURE_INVALID, "Error adding ref: "+e.getMessage(), identifier, false);
 			} catch (PeerTooOldException e) {
-                throw new MessageInvalidException(ProtocolErrorMessage.REF_PARSE_ERROR, "Error parsing ref: "+e.getMessage(), identifier, false);
-            }
+				throw new MessageInvalidException(ProtocolErrorMessage.REF_PARSE_ERROR, "Error parsing ref: "+e.getMessage(), identifier, false);
+			}
 			if(Arrays.equals(pn.peerECDSAPubKeyHash, node.getDarknetPubKeyHash()))
 				throw new MessageInvalidException(ProtocolErrorMessage.CANNOT_PEER_WITH_SELF, "Node cannot peer with itself", identifier, false);
 			if(!node.addPeerConnection(pn)) {

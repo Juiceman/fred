@@ -106,8 +106,8 @@ public class BinaryBlobInserter implements ClientPutState {
 
 	class MySendableInsert extends SimpleSendableInsert {
 
-        private static final long serialVersionUID = 1L;
-        final int blockNum;
+		private static final long serialVersionUID = 1L;
+		final int blockNum;
 		private int consecutiveRNFs;
 		private int retries;
 
@@ -214,15 +214,15 @@ public class BinaryBlobInserter implements ClientPutState {
 			parent.onFailure(new InsertException(InsertExceptionMode.TOO_MANY_RETRIES_IN_BLOCKS, errors, null), this, context);
 	}
 
-    @Override
-    public void onResume(ClientContext context) throws InsertException {
-        // TODO binary blob inserter isn't persistent yet, right?
-        throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Persistence not supported yet", null);
-    }
+	@Override
+	public void onResume(ClientContext context) throws InsertException {
+		// TODO binary blob inserter isn't persistent yet, right?
+		throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Persistence not supported yet", null);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 
 }

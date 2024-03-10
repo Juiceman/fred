@@ -60,9 +60,9 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -249,8 +249,8 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 			dis = new DataInputStream(bis);
 
 			EntropySource seedFile = new EntropySource();
-				for(int i = 0; i < 32; i++)
-					acceptEntropy(seedFile, dis.readLong(), 64);
+			for(int i = 0; i < 32; i++)
+				acceptEntropy(seedFile, dis.readLong(), 64);
 			dis.close();
 		} catch(EOFException f) {
 			// Okay.
@@ -269,15 +269,15 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		write_seed(filename, false);
 	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void write_seed(boolean force) {
-        write_seed(seedfile, force);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void write_seed(boolean force) {
+		write_seed(seedfile, force);
+	}
 
-    private void write_seed(File filename, boolean force) {
+	private void write_seed(File filename, boolean force) {
 		if(!force)
 			synchronized(this) {
 				long now = System.currentTimeMillis();
@@ -429,7 +429,8 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 			4, 0x7fffffff
 		}, {
 			4, 0xffffffff
-		}};
+		}
+	};
 
 	// This may *look* more complicated than in is, but in fact it is
 	// loop unrolled, cache and operation optimized.
@@ -472,7 +473,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 
 	@Override
 	public int acceptEntropyBytes(EntropySource source, byte[] buf, int offset,
-		int length, double bias) {
+								  int length, double bias) {
 		int totalRealEntropy = 0;
 		for(int i = 0; i < length; i += 8) {
 			long thingy = 0;
@@ -492,25 +493,25 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		int entropyGuess,
 		double bias) {
 		return accept_entropy(
-			data,
-			source,
-			(int) (bias * Math.min(
-			32,
-			Math.min(estimateEntropy(source, data), entropyGuess))));
+				   data,
+				   source,
+				   (int) (bias * Math.min(
+							  32,
+							  Math.min(estimateEntropy(source, data), entropyGuess))));
 	}
 
 	private int accept_entropy(long data, EntropySource source, int actualEntropy) {
 
 		boolean performedPoolReseed = false;
 		byte[] b = new byte[] {
-				(byte) data,
-				(byte) (data >> 8),
-				(byte) (data >> 16),
-				(byte) (data >> 24),
-				(byte) (data >> 32),
-				(byte) (data >> 40),
-				(byte) (data >> 48),
-				(byte) (data >> 56)
+			(byte) data,
+			(byte) (data >> 8),
+			(byte) (data >> 16),
+			(byte) (data >> 24),
+			(byte) (data >> 32),
+			(byte) (data >> 40),
+			(byte) (data >> 48),
+			(byte) (data >> 56)
 		};
 
 		synchronized(this) {

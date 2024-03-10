@@ -58,7 +58,7 @@ public class ImageElementUpdater extends ReplacerUpdater {
 					MessageManager.get().addMessage(newMsg);
 				}
 				lastMessage = newMsg;
-			}else if(lastMessage!=null){
+			} else if(lastMessage!=null) {
 				MessageManager.get().removeMessage(lastMessage);
 			}
 		}
@@ -66,7 +66,7 @@ public class ImageElementUpdater extends ReplacerUpdater {
 
 	/**
 	 * Creates the progress message for the given progress
-	 * 
+	 *
 	 * @param fetched
 	 *            - The number of the fetched blocks
 	 * @param total
@@ -79,7 +79,7 @@ public class ImageElementUpdater extends ReplacerUpdater {
 
 	/**
 	 * Returns the progress for a given element
-	 * 
+	 *
 	 * @param image
 	 *            - The image element
 	 * @return [0]:the number of fetched blocks [1]:the total number of blocks
@@ -111,7 +111,7 @@ public class ImageElementUpdater extends ReplacerUpdater {
 
 	/**
 	 * Returns the overall progress for all images in the page
-	 * 
+	 *
 	 * @return [0]:the number of fetched blocks [1]:the total number of blocks
 	 */
 	private int[] countImageProgress() {

@@ -46,7 +46,7 @@ public abstract class SendPeerMessage extends DataCarryingMessage {
 			handler.send(msg);
 		} else if (!(pn instanceof DarknetPeerNode)) {
 			throw new MessageInvalidException(ProtocolErrorMessage.DARKNET_ONLY,
-					getName() + " only available for darknet peers", identifier, false);
+											  getName() + " only available for darknet peers", identifier, false);
 		} else {
 			int nodeStatus = handleFeed(((DarknetPeerNode) pn));
 			handler.send(new SentPeerMessage(identifier, nodeStatus));
@@ -69,5 +69,5 @@ public abstract class SendPeerMessage extends DataCarryingMessage {
 	long dataLength() {
 		return dataLength;
 	}
-	
+
 }

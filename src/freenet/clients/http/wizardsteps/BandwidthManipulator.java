@@ -55,7 +55,7 @@ public abstract class BandwidthManipulator {
 	 */
 	protected HTMLNode parseErrorBox(HTMLNode parent, PageHelper helper, String message) {
 		HTMLNode infoBox = helper.getInfobox("infobox-warning", WizardL10n.l10n("bandwidthErrorSettingTitle"),
-		        parent, null, false);
+											 parent, null, false);
 
 		infoBox.addChild("p", message);
 
@@ -68,7 +68,7 @@ public abstract class BandwidthManipulator {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Attempts to detect upstream and downstream bandwidth limits.
 	 * @return Upstream and downstream bandwidth in bytes per second.
@@ -76,7 +76,7 @@ public abstract class BandwidthManipulator {
 	 * @throws IllegalValueException if a limit is unavailable or nonsensically low.
 	 */
 	public static BandwidthLimit detectBandwidthLimits(FredPluginBandwidthIndicator bwIndicator)
-			throws PluginNotFoundException, IllegalValueException {
+	throws PluginNotFoundException, IllegalValueException {
 		if (bwIndicator == null) {
 			throw new PluginNotFoundException("The node does not have a bandwidthIndicator.");
 		}

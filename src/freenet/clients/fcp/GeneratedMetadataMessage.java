@@ -11,17 +11,17 @@ import freenet.support.api.BucketFactory;
 import freenet.support.io.BucketTools;
 
 public class GeneratedMetadataMessage extends BaseDataCarryingMessage {
-	
+
 	GeneratedMetadataMessage(String identifier, boolean global, Bucket data) {
 		this.identifier = identifier;
 		this.global = global;
 		this.data = data;
 	}
-	
+
 	private final Bucket data;
 	final String identifier;
 	final boolean global;
-	
+
 	static final String NAME = "GeneratedMetadata";
 
 	@Override
@@ -31,7 +31,7 @@ public class GeneratedMetadataMessage extends BaseDataCarryingMessage {
 
 	@Override
 	public void readFrom(InputStream is, BucketFactory bf, FCPServer server)
-			throws IOException, MessageInvalidException {
+	throws IOException, MessageInvalidException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -56,7 +56,7 @@ public class GeneratedMetadataMessage extends BaseDataCarryingMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new UnsupportedOperationException();
 	}
 

@@ -19,9 +19,9 @@ import freenet.support.io.NoFreeBucket;
 
 /** Per-PersistentRequestClient cache of status of requests. */
 public class RequestStatusCache {
-	
-    private static volatile boolean logMINOR;
-    
+
+	private static volatile boolean logMINOR;
+
 	static {
 		Logger.registerClass(RequestStatusCache.class);
 	}
@@ -31,7 +31,7 @@ public class RequestStatusCache {
 	private final HashMap<String, RequestStatus> requestsByIdentifier;
 	private final MultiValueTable<FreenetURI, RequestStatus> downloadsByURI;
 	private final MultiValueTable<FreenetURI, RequestStatus> uploadsByFinalURI;
-	
+
 	RequestStatusCache() {
 		downloads = new ArrayList<RequestStatus>();
 		uploads = new ArrayList<RequestStatus>();
@@ -39,39 +39,39 @@ public class RequestStatusCache {
 		downloadsByURI = new MultiValueTable<FreenetURI, RequestStatus>();
 		uploadsByFinalURI = new MultiValueTable<FreenetURI, RequestStatus>();
 	}
-	
+
 	synchronized void addDownload(DownloadRequestStatus status) {
-		RequestStatus old = 
+		RequestStatus old =
 			requestsByIdentifier.put(status.getIdentifier(), status);
 		if(logMINOR) Logger.minor(this, "Starting download "+status.getIdentifier());
 		if(old == status) return;
 		if(old != null)
-		    downloads.remove(old);
+			downloads.remove(old);
 		downloads.add(status);
 		downloadsByURI.put(status.getURI(), status);
 	}
-	
+
 	synchronized void addUpload(UploadRequestStatus status) {
-		RequestStatus old = 
+		RequestStatus old =
 			requestsByIdentifier.put(status.getIdentifier(), status);
 		if(old == status) return;
 		if(logMINOR) Logger.minor(this, "Starting upload "+status.getIdentifier());
 		if(old != null)
-		    uploads.remove(old);
+			uploads.remove(old);
 		uploads.add(status);
 		FreenetURI uri = status.getURI();
 		if(uri != null)
 			uploadsByFinalURI.put(uri, status);
 	}
-	
-	synchronized void finishedDownload(String identifier, boolean success, long dataSize, 
-			String mimeType, FetchExceptionMode failureCode, String failureReasonLong, String failureReasonShort, Bucket dataShadow, boolean filtered) {
+
+	synchronized void finishedDownload(String identifier, boolean success, long dataSize,
+									   String mimeType, FetchExceptionMode failureCode, String failureReasonLong, String failureReasonShort, Bucket dataShadow, boolean filtered) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
 		status.setFinished(success, dataSize, mimeType, failureCode, failureReasonLong,
-				failureReasonShort, dataShadow, filtered);
+						   failureReasonShort, dataShadow, filtered);
 	}
-	
+
 	synchronized void gotFinalURI(String identifier, FreenetURI finalURI) {
 		UploadRequestStatus status = (UploadRequestStatus) requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
@@ -80,10 +80,10 @@ public class RequestStatusCache {
 			uploadsByFinalURI.put(finalURI, status);
 		status.setFinalURI(finalURI);
 	}
-	
-	synchronized void finishedUpload(String identifier, boolean success,  
-			FreenetURI finalURI, InsertExceptionMode failureCode, String failureReasonShort, 
-			String failureReasonLong) {
+
+	synchronized void finishedUpload(String identifier, boolean success,
+									 FreenetURI finalURI, InsertExceptionMode failureCode, String failureReasonShort,
+									 String failureReasonLong) {
 		UploadRequestStatus status = (UploadRequestStatus) requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
 		if(status.getFinalURI() == null && finalURI != null)
@@ -91,20 +91,20 @@ public class RequestStatusCache {
 			uploadsByFinalURI.put(finalURI, status);
 		status.setFinished(success, finalURI, failureCode, failureReasonShort, failureReasonLong);
 	}
-	
+
 	synchronized void updateStatus(String identifier, SplitfileProgressEvent event) {
 		RequestStatus status = requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
 		status.updateStatus(event);
 	}
-	
+
 	synchronized void updateDetectedCompatModes(String identifier, InsertContext.CompatibilityMode[] compatModes, byte[] splitfileKey, boolean dontCompress) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
 		status.updateDetectedCompatModes(compatModes, dontCompress);
 		status.updateDetectedSplitfileKey(splitfileKey);
 	}
-	
+
 	synchronized void removeByIdentifier(String identifier) {
 		RequestStatus status = requestsByIdentifier.remove(identifier);
 		if(status == null) return;
@@ -130,7 +130,7 @@ public class RequestStatusCache {
 	}
 
 	public void updateCompressionStatus(String identifier,
-			COMPRESS_STATE compressing) {
+										COMPRESS_STATE compressing) {
 		UploadFileRequestStatus status = (UploadFileRequestStatus) requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
 		status.updateCompressionStatus(compressing);
@@ -160,14 +160,14 @@ public class RequestStatusCache {
 		if(status == null) return; // Can happen during cancel etc.
 		status.setPriority(newPriorityClass);
 	}
-	
+
 	/** Restart a request. Caller should call ,false first, at which point we setStarted,
 	 * and ,true when it has actually started (a race condition means we don't setStarted
 	 * at that point since it's possible the success/failure callback might happen first). */
 	public synchronized void updateStarted(String identifier, boolean started) {
 		RequestStatus status = requestsByIdentifier.get(identifier);
 		if(status == null) return; // Can happen during cancel etc.
-		
+
 		if(!started)
 			// Caller should call with false first, so we only need to unset finished when setting started=false.
 			status.restart(false);
@@ -175,7 +175,7 @@ public class RequestStatusCache {
 			// Already restarted, just set started = true.
 			status.setStarted(started);
 	}
-	
+
 	/** Restart a download. Caller should call ,false first, at which point we setStarted,
 	 * and ,true when it has actually started (a race condition means we don't setStarted
 	 * at that point since it's possible the success/failure callback might happen first).

@@ -28,38 +28,38 @@ public class MISC implements Step {
 		HTMLNode form = helper.addFormChild(contentNode, ".", "miscForm");
 
 		HTMLNode miscInfoboxContent = helper.getInfobox("infobox-normal", WizardL10n.l10n("autoUpdate"),
-		        form, null, false);
+									  form, null, false);
 
 		miscInfoboxContent.addChild("p", WizardL10n.l10n("autoUpdateLong"));
 		miscInfoboxContent.addChild("p").addChild("input",
-            new String[] { "type", "checked", "name", "value", "id" },
-            new String[] { "radio", "on", "autodeploy", "true", "autodeployTrue" }
-            ).addChild("label",
-              new String[] { "for" },
-              new String[] { "autodeployTrue" }, WizardL10n.l10n("autoUpdateAutodeploy"));
+				new String[] { "type", "checked", "name", "value", "id" },
+				new String[] { "radio", "on", "autodeploy", "true", "autodeployTrue" }
+												 ).addChild("label",
+														 new String[] { "for" },
+														 new String[] { "autodeployTrue" }, WizardL10n.l10n("autoUpdateAutodeploy"));
 		miscInfoboxContent.addChild("p").addChild("input",
-            new String[] { "type", "name", "value", "id" },
-            new String[] { "radio", "autodeploy", "false", "autodeployFalse" }
-            ).addChild("label",
-              new String[] { "for" },
-              new String[] { "autodeployFalse" }, WizardL10n.l10n("autoUpdateNoAutodeploy"));
+				new String[] { "type", "name", "value", "id" },
+				new String[] { "radio", "autodeploy", "false", "autodeployFalse" }
+												 ).addChild("label",
+														 new String[] { "for" },
+														 new String[] { "autodeployFalse" }, WizardL10n.l10n("autoUpdateNoAutodeploy"));
 
 		miscInfoboxContent = helper.getInfobox("infobox-normal", WizardL10n.l10n("plugins"),
-		        form, null, false);
+											   form, null, false);
 
 		miscInfoboxContent.addChild("p", WizardL10n.l10n("pluginsLong"));
 		miscInfoboxContent.addChild("p").addChild("input",
-            new String[] { "type", "checked", "name", "value", "id" },
-            new String[] { "checkbox", "on", "upnp", "true", "upnpTrue" }
-            ).addChild("label",
-              new String[] { "for" },
-              new String[] { "upnpTrue" }, WizardL10n.l10n("enableUPnP"));
+				new String[] { "type", "checked", "name", "value", "id" },
+				new String[] { "checkbox", "on", "upnp", "true", "upnpTrue" }
+												 ).addChild("label",
+														 new String[] { "for" },
+														 new String[] { "upnpTrue" }, WizardL10n.l10n("enableUPnP"));
 		miscInfoboxContent.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+									new String[] { "type", "name", "value" },
+									new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		miscInfoboxContent.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+									new String[] { "type", "name", "value" },
+									new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class MISC implements Step {
 	public void setUPnP(final boolean enableUPnP) {
 		//If its state would not change, don't do anything.
 		if(enableUPnP == core.node.pluginManager.isPluginLoaded("plugins.UPnP.UPnP")) {
-				return;
+			return;
 		}
 
 		core.node.executor.execute(new Runnable() {

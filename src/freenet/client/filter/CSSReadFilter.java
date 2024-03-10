@@ -25,28 +25,28 @@ import freenet.support.io.NullWriter;
 
 public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 
-        private static volatile boolean logDEBUG;
-        private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-                                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		if (logDEBUG)
 			Logger.debug(
 				this,
 				"running "
-					+ this
-					+ "with charset"+charset);
+				+ this
+				+ "with charset"+charset);
 		Reader r = null;
 		Writer w = null;
 		try {
@@ -160,7 +160,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 		for(String m : split) {
 			m = m.trim();
 			int i;
-			for(i=0;i<m.length();i++) {
+			for(i=0; i<m.length(); i++) {
 				char c = m.charAt(i);
 				if(!('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c) || c == '-')
 					break;

@@ -38,5 +38,5 @@ public interface FoundURICallback {
 	public void onText(String text, String type, URI baseURI);
 
 	public void onFinishedPage();
-	
+
 }

@@ -42,11 +42,11 @@ public class JPEGFilter implements ContentDataFilter {
 	private static final int MARKER_RST0 = 0xD0; // First reset marker
 	private static final int MARKER_RST7 = 0xD7; // Last reset marker
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -69,14 +69,14 @@ public class JPEGFilter implements ContentDataFilter {
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		readFilter(input, output, charset, otherParams, cb, deleteComments, deleteExif);
 		output.flush();
 	}
 
 	public void readFilter(InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-			FilterCallback cb, boolean deleteComments, boolean deleteExif)
+						   FilterCallback cb, boolean deleteComments, boolean deleteExif)
 	throws DataFilterException, IOException {
 		CountedInputStream cis = new CountedInputStream(input);
 		DataInputStream dis = new DataInputStream(cis);
@@ -248,7 +248,7 @@ public class JPEGFilter implements ContentDataFilter {
 				case 0xc5: // differential sequential, huffman
 				case 0xc6: // differential progressive, huffman
 				case 0xc7: // differential lossless, huffman
-					// DELETE 0xc8 - "reserved for JPEG extension" - likely to be used for Bad Things
+				// DELETE 0xc8 - "reserved for JPEG extension" - likely to be used for Bad Things
 				case 0xc9: // extended sequential, arithmetic
 				case 0xca: // progressive, arithmetic
 				case 0xcb: // lossless, arithmetic
@@ -256,7 +256,7 @@ public class JPEGFilter implements ContentDataFilter {
 				case 0xcf: // differential lossless, arithmetic
 				case 0xc4: // define huffman tables
 				case 0xcc: // define arithmetic-coding conditioning
-					// Restart markers
+				// Restart markers
 				case 0xd0:
 				case 0xd1:
 				case 0xd2:
@@ -265,7 +265,7 @@ public class JPEGFilter implements ContentDataFilter {
 				case 0xd5:
 				case 0xd6:
 				case 0xd7:
-					// Delimiters:
+				// Delimiters:
 				case 0xd8: // start of image
 				case 0xd9: // end of image
 				case 0xda: // start of scan
@@ -305,7 +305,7 @@ public class JPEGFilter implements ContentDataFilter {
 
 			if(cis.count() != countAtStart + blockLength)
 				throwError("Invalid frame", "The length of the frame is incorrect (read "+
-						(cis.count()-countAtStart)+" bytes, frame length "+blockLength+" for type "+Integer.toHexString(markerType)+").");
+						   (cis.count()-countAtStart)+" bytes, frame length "+blockLength+" for type "+Integer.toHexString(markerType)+").");
 			// Write frame
 			baos.writeTo(output);
 		}

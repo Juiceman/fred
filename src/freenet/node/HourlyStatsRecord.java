@@ -55,7 +55,7 @@ public class HourlyStatsRecord {
 	  * @param location The routing location of the request
 	  */
 	public synchronized void remoteRequest(boolean ssk, boolean success, boolean local,
-			int htl, double location) {
+										   int htl, double location) {
 		if (finishedReporting) throw new IllegalStateException(
 				"Attempted to modify completed stats record.");
 		if (htl < 0) throw new IllegalArgumentException("Invalid HTL.");
@@ -68,7 +68,7 @@ public class HourlyStatsRecord {
 		assert logDist < (-1.0 + 0x1.0p-1022/* Double.MIN_NORMAL */);
 		int distBucket = ((int)Math.floor(-1 * logDist));
 		if (distBucket >= byDist.length) distBucket = byDist.length - 1;
-		
+
 		if(ssk) {
 			byHTL[htl].locDiffSSK.report(logDist);
 		} else {
@@ -169,7 +169,7 @@ public class HourlyStatsRecord {
 				int sskRS = (int)line.sskRemoteSuccess.countReports();
 				int sskF = (int)line.sskFailure.countReports();
 				int sskT = sskLS + sskRS + sskF;
-				
+
 				double locdiffCHK = line.locDiffCHK.currentValue();
 				locdiffCHK = Math.pow(2.0, locdiffCHK);
 				double locdiffSSK = line.locDiffSSK.currentValue();

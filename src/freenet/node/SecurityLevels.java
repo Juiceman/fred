@@ -17,26 +17,26 @@ import freenet.support.Logger;
 import freenet.support.api.StringCallback;
 
 /**
- * We have 3 basic security settings. The user chooses these in the first-time 
+ * We have 3 basic security settings. The user chooses these in the first-time
  * wizard, and can reconfigure them at any time. Each impacts on many other
  * config settings, changing their defaults and changing their values when the
  * security level changes, but the user can change those options independantly if
  * they do not change the security level. These options are important, and there
- * are explanations of every option for each setting. They have their own 
+ * are explanations of every option for each setting. They have their own
  * sub-page on the config toadlet. And the security levels are displayed on the
  * homepage as a useralert (instead of the opennet warning).
  * @author Matthew Toseland <toad@amphibian.dyndns.org> (0xE43DA450)
  */
 public class SecurityLevels {
-	
+
 	private final Node node;
-	
+
 	public enum NETWORK_THREAT_LEVEL {
 		LOW, // turn off every performance impacting security measure
 		NORMAL, // normal setting, darknet/opennet hybrid
 		HIGH, // darknet only, normal settings otherwise
 		MAXIMUM; // paranoid - darknet only, turn off FOAF etc etc
-		
+
 		public static final NETWORK_THREAT_LEVEL[] getOpennetValues() {
 			return new NETWORK_THREAT_LEVEL[] { LOW, NORMAL };
 		}
@@ -44,27 +44,27 @@ public class SecurityLevels {
 			return new NETWORK_THREAT_LEVEL[] { HIGH, MAXIMUM };
 		}
 	}
-	
+
 	public enum FRIENDS_THREAT_LEVEL {
 		LOW, // Friends are ultimately trusted
 		NORMAL, // Share some information
 		HIGH, // Share no/minimal information and take measures to reduce harm if Friends are compromised
 	}
-	
+
 	public enum PHYSICAL_THREAT_LEVEL {
 		LOW, // Don't encrypt temp files etc etc
 		NORMAL, // Encrypt temp files, centralise keys for client cache in master.keys, if that is deleted client cache is unreadable. Later on will include encrypting node.db4o as well, which contains tempfile keys.
 		HIGH, // Password master.keys.
 		MAXIMUM // Transient encryption for client cache, no persistent downloads support, etc.
 	}
-	
+
 	NETWORK_THREAT_LEVEL networkThreatLevel;
 	FRIENDS_THREAT_LEVEL friendsThreatLevel;
 	PHYSICAL_THREAT_LEVEL physicalThreatLevel;
-	
+
 	private MyCallback<NETWORK_THREAT_LEVEL> networkThreatLevelCallback;
 	private MyCallback<PHYSICAL_THREAT_LEVEL> physicalThreatLevelCallback;
-	
+
 	public SecurityLevels(Node node, PersistentConfig config) {
 		this.node = node;
 		SubConfig myConfig = config.createSubConfig("security-levels");
@@ -82,7 +82,7 @@ public class SecurityLevels {
 			public String[] getPossibleValues() {
 				NETWORK_THREAT_LEVEL[] values = NETWORK_THREAT_LEVEL.values();
 				String[] names = new String[values.length];
-				for(int i=0;i<names.length;i++)
+				for(int i=0; i<names.length; i++)
 					names[i] = values[i].name();
 				return names;
 			}
@@ -131,7 +131,7 @@ public class SecurityLevels {
 			public String[] getPossibleValues() {
 				PHYSICAL_THREAT_LEVEL[] values = PHYSICAL_THREAT_LEVEL.values();
 				String[] names = new String[values.length];
-				for(int i=0;i<names.length;i++)
+				for(int i=0; i<names.length; i++)
 					names[i] = values[i].name();
 				return names;
 			}
@@ -160,26 +160,26 @@ public class SecurityLevels {
 			// Call all the callbacks so that the config is consistent with the threat level.
 			setThreatLevel(physLevel);
 		}
-		
+
 		myConfig.finishedInitialization();
 	}
-	
+
 	public synchronized void addNetworkThreatLevelListener(SecurityLevelListener<NETWORK_THREAT_LEVEL> listener) {
 		networkThreatLevelCallback.addListener(listener);
 	}
-	
+
 	public synchronized void addPhysicalThreatLevelListener(SecurityLevelListener<PHYSICAL_THREAT_LEVEL> listener) {
 		physicalThreatLevelCallback.addListener(listener);
 	}
-	
+
 	private abstract class MyCallback<T> extends StringCallback implements EnumerableOptionCallback {
 
 		private final ArrayList<SecurityLevelListener<T>> listeners;
-		
+
 		MyCallback() {
 			listeners = new ArrayList<SecurityLevelListener<T>>();
 		}
-		
+
 		public void addListener(SecurityLevelListener<T> listener) {
 			if(listeners.contains(listener)) {
 				Logger.error(this, "Already have listener "+listener+" in "+this);
@@ -187,7 +187,7 @@ public class SecurityLevels {
 			}
 			listeners.add(listener);
 		}
-		
+
 		@Override
 		public void set(String val) throws InvalidConfigValueException, NodeNeedRestartException {
 			T oldLevel = getValue();
@@ -205,17 +205,17 @@ public class SecurityLevels {
 		protected abstract void setValue(String val) throws InvalidConfigValueException;
 
 		protected abstract T getValue();
-		
+
 	}
 
 	public NETWORK_THREAT_LEVEL getNetworkThreatLevel() {
 		return networkThreatLevel;
 	}
-	
+
 	public PHYSICAL_THREAT_LEVEL getPhysicalThreatLevel() {
 		return physicalThreatLevel;
 	}
-	
+
 	public static NETWORK_THREAT_LEVEL parseNetworkThreatLevel(String arg) {
 		try {
 			return NETWORK_THREAT_LEVEL.valueOf(arg);
@@ -223,7 +223,7 @@ public class SecurityLevels {
 			return null;
 		}
 	}
-	
+
 	private static FRIENDS_THREAT_LEVEL parseFriendsThreatLevel(String arg) {
 		try {
 			return FRIENDS_THREAT_LEVEL.valueOf(arg);
@@ -231,7 +231,7 @@ public class SecurityLevels {
 			return null;
 		}
 	}
-	
+
 	public static PHYSICAL_THREAT_LEVEL parsePhysicalThreatLevel(String arg) {
 		try {
 			return PHYSICAL_THREAT_LEVEL.valueOf(arg);
@@ -250,14 +250,14 @@ public class SecurityLevels {
 		if(newThreatLevel == networkThreatLevel)
 			return null; // Not going to be changed.
 		HTMLNode parent = new HTMLNode("div");
-		if((newThreatLevel == NETWORK_THREAT_LEVEL.HIGH && networkThreatLevel != NETWORK_THREAT_LEVEL.MAXIMUM) || 
+		if((newThreatLevel == NETWORK_THREAT_LEVEL.HIGH && networkThreatLevel != NETWORK_THREAT_LEVEL.MAXIMUM) ||
 				newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 			if(node.peers.getDarknetPeers().length == 0) {
 				parent.addChild("p", l10n("noFriendsWarning"));
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
 					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
-							new HTMLNode[] { HTMLNode.STRONG });
+														   new HTMLNode[] { HTMLNode.STRONG });
 				}
 				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("noFriendsCheckbox"));
 				return parent;
@@ -266,7 +266,7 @@ public class SecurityLevels {
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
 					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
-							new HTMLNode[] { HTMLNode.STRONG });
+														   new HTMLNode[] { HTMLNode.STRONG });
 				}
 				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("noConnectedFriendsCheckbox"));
 				return parent;
@@ -275,7 +275,7 @@ public class SecurityLevels {
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
 					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
-							new HTMLNode[] { HTMLNode.STRONG });
+														   new HTMLNode[] { HTMLNode.STRONG });
 				}
 				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("fewConnectedFriendsCheckbox"));
 				return parent;
@@ -288,16 +288,16 @@ public class SecurityLevels {
 		if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 			HTMLNode p = parent.addChild("p");
 			NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
-					new HTMLNode[] { HTMLNode.STRONG });
+												   new HTMLNode[] { HTMLNode.STRONG });
 			p.addChild("#", " ");
 			NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maxSecurityYouNeedFriends", new String[] { "bold" },
-					new HTMLNode[] { HTMLNode.STRONG });
+												   new HTMLNode[] { HTMLNode.STRONG });
 			parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("maximumNetworkThreatLevelCheckbox"));
 			return parent;
 		}
 		return null;
 	}
-	
+
 	private String l10n(String string) {
 		return NodeL10n.getBase().getString("SecurityLevels."+string);
 	}
@@ -314,7 +314,7 @@ public class SecurityLevels {
 		if(newThreatLevel == null) throw new NullPointerException();
 		NETWORK_THREAT_LEVEL oldLevel;
 		synchronized(this) {
-            if(networkThreatLevel == newThreatLevel) return;
+			if(networkThreatLevel == newThreatLevel) return;
 			oldLevel = networkThreatLevel;
 			networkThreatLevel = newThreatLevel;
 		}
@@ -325,13 +325,13 @@ public class SecurityLevels {
 		if(newThreatLevel == null) throw new NullPointerException();
 		PHYSICAL_THREAT_LEVEL oldLevel;
 		synchronized(this) {
-		    if(physicalThreatLevel == newThreatLevel) return;
+			if(physicalThreatLevel == newThreatLevel) return;
 			oldLevel = physicalThreatLevel;
 			physicalThreatLevel = newThreatLevel;
 		}
 		physicalThreatLevelCallback.onSet(oldLevel, newThreatLevel);
 	}
-	
+
 	public void resetPhysicalThreatLevel(PHYSICAL_THREAT_LEVEL level) {
 		physicalThreatLevel = level;
 	}
@@ -339,7 +339,7 @@ public class SecurityLevels {
 	public static String localisedName(NETWORK_THREAT_LEVEL newThreatLevel) {
 		return NodeL10n.getBase().getString("SecurityLevels.networkThreatLevel.name."+newThreatLevel.name());
 	}
-	
+
 	public static String localisedName(PHYSICAL_THREAT_LEVEL newPhysicalLevel) {
 		return NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevel.name."+newPhysicalLevel.name());
 	}

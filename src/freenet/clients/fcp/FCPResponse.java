@@ -29,7 +29,7 @@ public abstract class FCPResponse extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, getName() +
-		         " is a reply from the node; the client should not send it.", null, false);
+										  " is a reply from the node; the client should not send it.", null, false);
 	}
 
 }

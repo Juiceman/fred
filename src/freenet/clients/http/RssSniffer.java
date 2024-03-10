@@ -15,8 +15,8 @@ public class RssSniffer {
 			return false;
 		}
 		return startsWithString(prefix, "<rss", tlt) ||
-				       startsWithString(prefix, "<feed", tlt) ||
-				       startsWithString(prefix, "<rdf:RDF", tlt);
+			   startsWithString(prefix, "<feed", tlt) ||
+			   startsWithString(prefix, "<rdf:RDF", tlt);
 	}
 
 	/**

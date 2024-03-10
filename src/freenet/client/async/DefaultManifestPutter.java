@@ -23,7 +23,7 @@ import freenet.support.io.ResumeFailedException;
  * <P>default doc:
  * defaultName is just the name, without any '/'!<BR>
  * each item <defaultdocname> is the default doc in the corresponding dir
- 
+
  * <P>pack limits:
  * <UL>
  * <LI>max container size: 2MB (a CHK manifest with 62 CHK redirects)
@@ -39,42 +39,42 @@ import freenet.support.io.ResumeFailedException;
  * <LI>RTFS :P
  * </OL>
  * pack hints for clients:<BR>
- * 
+ *
  *   If the files in the site root directory fits into a container, they are in
  *   the root container (the first fetched container)</BR>
  *   Save formula: (accumulated file size) + (512 Bytes * &lt;subdircount&gt;) &lt; 1,8MB
- * 
+ *
  * @author saces
  */
 
 public class DefaultManifestPutter extends BaseManifestPutter {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(DefaultManifestPutter.class);
 	}
 
 	// the 'physical' limit for container size
-	public static final long DEFAULT_MAX_CONTAINERSIZE = 2048*1024;  
+	public static final long DEFAULT_MAX_CONTAINERSIZE = 2048*1024;
 	public static final long DEFAULT_MAX_CONTAINERITEMSIZE = 1024*1024;
 	// a container > (MAX_CONTAINERSIZE-CONTAINERSIZE_SPARE) is treated as 'full'
 	// this should prevent to big containers
 	public static final long DEFAULT_CONTAINERSIZE_SPARE = 196*1024;
 
-	public DefaultManifestPutter(ClientPutCallback clientCallback, HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName, InsertContext ctx, 
-			boolean persistent, byte[] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
+	public DefaultManifestPutter(ClientPutCallback clientCallback, HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName, InsertContext ctx,
+								 boolean persistent, byte[] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
 		// If the top level key is an SSK, all CHK blocks and particularly splitfiles below it should have
 		// randomised keys. This substantially improves security by making it impossible to identify blocks
 		// even if you know the content. In the user interface, we will offer the option of inserting as a
 		// random SSK to take advantage of this.
 		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx, ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
 	}
-	
+
 	/**
 	 * Implements the pack logic.
-	 * @throws TooManyFilesInsertException 
+	 * @throws TooManyFilesInsertException
 	 * @see freenet.client.async.BaseManifestPutter#makePutHandlers(java.util.HashMap, String)
 	 */
 	@Override
@@ -82,7 +82,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		verifyManifest(manifestElements);
 		makePutHandlers(getRootContainer(), manifestElements, defaultName, "", DEFAULT_MAX_CONTAINERSIZE, null);
 	}
-	
+
 	/**
 	 * Ensure the tree contains only elements we understand, so we do not
 	 * need further checking in the pack algorithm
@@ -114,7 +114,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	 * so we cannot complete the insert.
 	 */
 	private long makePutHandlers(ContainerBuilder containerBuilder, HashMap<String,Object> manifestElements, String defaultName, String prefix, long maxSize, String parentName) throws TooManyFilesInsertException {
-	//(HashMap<String, Object> md, PluginReplySender replysender, String identifier, long maxSize, boolean doInsert, String parentName) throws InsertException {
+		//(HashMap<String, Object> md, PluginReplySender replysender, String identifier, long maxSize, boolean doInsert, String parentName) throws InsertException {
 		if(logMINOR)
 			Logger.minor(this, "STAT: handling "+((parentName==null)?"<root>?": parentName));
 		//if (doInsert && (parentName == null)) throw new IllegalStateException("Parent name cant be null for insert!");
@@ -147,7 +147,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		// step two
 		//  here to ensure to have specific files
 		//  in the root container (@see pack hints for clients)
-		// 
+		//
 		// the files in dir fits into container?
 		if ((wholeSize.getSizeFiles() < maxSize) || (wholeSize.getSizeFilesNoLimit() < maxSize)) {
 			// the files in dir fits into container
@@ -210,8 +210,8 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 
 		// Space used by regular files if they are all put in as redirects.
 		int minUsageForFiles = 0;
-		
-		// Redirects have to go first since we can't move them. 
+
+		// Redirects have to go first since we can't move them.
 		{
 			Iterator<Map.Entry<String, Object>> iter = manifestElements.entrySet().iterator();
 			while(iter.hasNext()) {
@@ -230,7 +230,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 				}
 			}
 		}
-		
+
 		// (last) step three
 		// all subdirs fit into current container?
 		if ((wholeSize.getSizeSubTrees() + tmpSize + minUsageForFiles < maxSize) || (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize)) {
@@ -292,7 +292,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			if (o instanceof ManifestElement) {
 				ManifestElement me = (ManifestElement)o;
 				long size = ContainerSizeEstimator.tarItemSize(me.getSize());
-				if ((me.getSize() <= DEFAULT_MAX_CONTAINERITEMSIZE) && 
+				if ((me.getSize() <= DEFAULT_MAX_CONTAINERITEMSIZE) &&
 						(size < (maxSize-(tmpSize+minUsageForFiles-512 /* this one */)))) {
 					containerBuilder.addItem(name, prefix+name, me, name.equals(defaultName));
 					tmpSize += size;
@@ -305,7 +305,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 		}
 		assert(minUsageForFiles == 0);
-		
+
 		if(tmpSize > maxSize)
 			throw new TooManyFilesInsertException();
 
@@ -357,7 +357,7 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			// fill up a archive
 			long archiveLimit = DEFAULT_CONTAINERSIZE_SPARE;
 			ContainerBuilder archive = makeArchive();
-			
+
 			Iterator<Map.Entry<String, Object> > iter = itemsLeft.entrySet().iterator();
 			while (iter.hasNext()) {
 				Map.Entry<String, Object> entry = iter.next();
@@ -412,12 +412,12 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 				makeEveryThingPutHandlers(containerBuilder, hm, defaultName, "");
 				containerBuilder.popCurrentDir();
 			}
-		}	
+		}
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        notifyClients(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		notifyClients(context);
+	}
 }

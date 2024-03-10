@@ -22,8 +22,8 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		super(core, config);
 		final int KiB = 1024;
 		limits = new BandwidthLimit[] {
-				// FIXME feedback on typical real world ratios on slow connections would be helpful.
-				
+			// FIXME feedback on typical real world ratios on slow connections would be helpful.
+
 //				// Dial-up
 //				// 57.6/33.6; call it 4KB/sec each way
 //				new BandwidthLimit(4*KiB, 4*KiB, "bandwidthConnectionDialUp"),
@@ -37,23 +37,23 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 //				new BandwidthLimit(64*KiB, 8*KiB, "bandwidthConnection1M"),
 //				// 2Mbps/128kbps (slow often => poor ratios)
 //				new BandwidthLimit(128*KiB, 8*KiB, "bandwidthConnection2M"),
-				// 6Mbps/256kbps - 6Mbps is common in parts of china, as well as being the real value in lots of DSL areas
-				new BandwidthLimit(384*KiB, 16*KiB, "bandwidthConnection6M", false),
-				// 8Mbps/512kbps - UK DSL1 is either 448k up or 832k up
-				new BandwidthLimit(512*KiB, 32*KiB, "bandwidthConnection8M", true),
-				// 12Mbps/1Mbps - typical DSL2
-				new BandwidthLimit(768*KiB, 64*KiB, "bandwidthConnection12M", false),
-				// 20Mbps/5Mbps - Slow end of VDSL
-				new BandwidthLimit(1280*KiB, 320*KiB, "bandwidthConnectionVDSL", false),
-				// 100Mbps fibre etc
-				new BandwidthLimit(2048*KiB, 2048*KiB, "bandwidthConnection100M", false)
+			// 6Mbps/256kbps - 6Mbps is common in parts of china, as well as being the real value in lots of DSL areas
+			new BandwidthLimit(384*KiB, 16*KiB, "bandwidthConnection6M", false),
+			// 8Mbps/512kbps - UK DSL1 is either 448k up or 832k up
+			new BandwidthLimit(512*KiB, 32*KiB, "bandwidthConnection8M", true),
+			// 12Mbps/1Mbps - typical DSL2
+			new BandwidthLimit(768*KiB, 64*KiB, "bandwidthConnection12M", false),
+			// 20Mbps/5Mbps - Slow end of VDSL
+			new BandwidthLimit(1280*KiB, 320*KiB, "bandwidthConnectionVDSL", false),
+			// 100Mbps fibre etc
+			new BandwidthLimit(2048*KiB, 2048*KiB, "bandwidthConnection100M", false)
 		};
 	}
 
 	@Override
 	public void getStep(HTTPRequest request, PageHelper helper) {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("bandwidthLimit"));
-		
+
 		HTMLNode formNode = helper.addFormChild(contentNode, ".", "limit");
 
 		if (request.isParameterSet("parseError")) {
@@ -61,10 +61,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		}
 
 		HTMLNode infoBox = helper.getInfobox("infobox-normal", WizardL10n.l10n("bandwidthLimitRateTitle"),
-		        formNode, null, false);
+											 formNode, null, false);
 		NodeL10n.getBase().addL10nSubstitution(infoBox, "FirstTimeWizardToadlet.bandwidthLimitRate",
-		        new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG, 
-		                new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))});
+											   new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG,
+													   new HTMLNode("#", NodeL10n.getBase().getString("ConfigToadlet.node"))
+																									   });
 
 		//Table header
 		HTMLNode table = infoBox.addChild("table");
@@ -92,7 +93,7 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 			addLimitRow(table, helper, current, false, !addedDefault);
 			addedDefault = true;
 		}
-		
+
 		for (BandwidthLimit limit : limits) {
 			addLimitRow(table, helper, limit, false, !addedDefault);
 		}
@@ -101,11 +102,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		HTMLNode customForm = table.addChild("tr");
 		customForm.addChild("td", WizardL10n.l10n("bandwidthCustom"));
 		customForm.addChild("td").addChild("input",
-		        new String[] { "type", "name" },
-		        new String[] { "text", "customDown" });
+										   new String[] { "type", "name" },
+										   new String[] { "text", "customDown" });
 		customForm.addChild("td").addChild("input",
-		        new String[] { "type", "name" },
-		        new String[] { "text", "customUp" });
+										   new String[] { "type", "name" },
+										   new String[] { "text", "customUp" });
 		// This is valid if it's filled in. So don't show the selector.
 		// FIXME javascript to auto-select it?
 //		customForm.addChild("td").addChild("input",
@@ -113,11 +114,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 //				new String[] { "radio", "bandwidth", "custom" });
 
 		infoBox.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+						 new String[] { "type", "name", "value" },
+						 new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		infoBox.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+						 new String[] { "type", "name", "value" },
+						 new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	@Override
@@ -135,7 +136,7 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 			if (!failedLimits.isEmpty()) {
 				//Some at least one limit failed to parse.
 				return "BANDWIDTH_RATE&parseError=true&parseTarget="+
-				        URLEncoder.encode(failedLimits, true);
+					   URLEncoder.encode(failedLimits, true);
 			}
 
 			//Success
@@ -155,14 +156,14 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 					//This should not happen, as there are no units to confound the parser.
 					Logger.error(this, "Failed to parse pre-defined limit! Please report.");
 					return FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH_RATE+"&parseError=true&parseTarget="+
-							URLEncoder.encode(preset, true);
+						   URLEncoder.encode(preset, true);
 				}
 			}
 		} else {
 			Logger.error(this, "No bandwidth limit set!");
 			return FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH_RATE.name();
 		}
-		
+
 		setWizardComplete();
 		return FirstTimeWizardToadlet.WIZARD_STEP.COMPLETE.name();
 	}
@@ -212,11 +213,11 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		row.addChild("td", SizeUtil.formatSize(limit.upBytes)+WizardL10n.l10n("bandwidthPerSecond"));
 
 		HTMLNode buttonCell = row.addChild("td");
-		
-		HTMLNode radio = 
+
+		HTMLNode radio =
 			buttonCell.addChild("input",
-					new String[] { "type", "name", "value" },
-					new String[] { "radio", "bandwidth", limit.downBytes+"/"+limit.upBytes });
+								new String[] { "type", "name", "value" },
+								new String[] { "radio", "bandwidth", limit.downBytes+"/"+limit.upBytes });
 		if(recommended || (useMaybeDefault && limit.maybeDefault))
 			radio.addAttribute("checked", "checked");
 		if (recommended) {

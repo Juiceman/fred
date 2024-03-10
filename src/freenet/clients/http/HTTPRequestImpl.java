@@ -44,14 +44,14 @@ import freenet.support.io.LineReadingInputStream;
  * Used for passing all HTTP request information to the FredPlugin that handles
  * the request. It parses the query string and has several methods for accessing
  * the request parameter values.
- * 
+ *
  * @author nacktschneck
  */
 public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * This map is used to store all parameter values.
-	 *  
+	 *
 	 * Don't access this map directly, use {@link #getParameterValueList(String)} and
 	 * {@link #isParameterSet(String)} instead
 	 */
@@ -61,36 +61,36 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * the original URI as given to the constructor
 	 */
 	private URI uri;
-	
+
 	/**
 	 * The headers sent by the client
 	 */
 	private MultiValueTable<String, String> headers;
-	
+
 	/**
 	 * The data sent in the connection
 	 */
 	private Bucket data;
-	
+
 	/**
 	 * A hashmap of buckets that we use to store all the parts for a multipart/form-data request
 	 */
 	private HashMap<String, RandomAccessBucket> parts;
-	
+
 	private boolean freedParts;
-	
+
 	/** A map for uploaded files. */
 	private Map<String, HTTPUploadedFileImpl> uploadedFiles = new HashMap<String, HTTPUploadedFileImpl>();
-	
+
 	private final BucketFactory bucketfactory;
-	
+
 	private final String method;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -99,7 +99,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	/**
 	 * Create a new HTTPRequest for the given URI and parse its request
 	 * parameters.
-	 * 
+	 *
 	 * @param uri
 	 *            the URI being requested
 	 */
@@ -114,7 +114,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Creates a new HTTPRequest for the given path and url-encoded query string
-	 * 
+	 *
 	 * @param path i.e. /test/test.html
 	 * @param encodedQueryString a=some+text&b=abc%40def.de
 	 * @throws URISyntaxException if the URI is invalid
@@ -131,10 +131,10 @@ public class HTTPRequestImpl implements HTTPRequest {
 		this.method = method;
 		this.parseRequestParameters(uri.getRawQuery(), true, false);
 	}
-	
+
 	/**
 	 * Creates a new HTTPRequest for the given URI and data.
-	 * 
+	 *
 	 * @param uri The URI being requested
 	 * @param h Client headers
 	 * @param d The data
@@ -157,7 +157,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 			}
 		}
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getPath()
@@ -191,7 +191,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * the lists of values for each parameter. If this method is not called at
 	 * all, all other methods would be useless. Because they rely on the
 	 * parameter map to be filled.
-	 * 
+	 *
 	 * @param queryString
 	 *            the query string in its raw form (not yet url-decoded)
 	 * @param doUrlDecoding TODO
@@ -220,7 +220,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Get the first value of the parameter with the given name.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the parameter to get
 	 * @return the first value or <code>null</code> if the parameter was not
@@ -241,7 +241,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * {@link #parameterNameValuesMap}. This list is returned and should be
 	 * used to add parameter values. If you only want to check if a parameter is
 	 * set at all, you must use {@link #isParameterSet(String)}.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the parameter to get
 	 * @return the list of all values for this parameter that were parsed so
@@ -306,12 +306,12 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 			// url-decode the name and value
 			if (doUrlDecoding) {
-					try {
-						name = URLDecoder.decode(name, "UTF-8");
-						value = URLDecoder.decode(value, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						throw new Error("Impossible: JVM doesn't support UTF-8: " + e, e);
-					}
+				try {
+					name = URLDecoder.decode(name, "UTF-8");
+					value = URLDecoder.decode(value, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					throw new Error("Impossible: JVM doesn't support UTF-8: " + e, e);
+				}
 				if(logMINOR) {
 					Logger.minor(HTTPRequestImpl.class, "Decoded name: "+name);
 					Logger.minor(HTTPRequestImpl.class, "Decoded value: "+value);
@@ -462,8 +462,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 
 	// TODO: add similar methods for multiple long, boolean etc.
-	
-	
+
+
 	/**
 	 * Parse submitted data from a bucket.
 	 * Note that if this is application/x-www-form-urlencoded, it will come out as
@@ -568,7 +568,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 							Logger.minor(this, "Parsed type: " + contentType);
 					}
 					else {
-					// Do nothing, irrelevant header
+						// Do nothing, irrelevant header
 					}
 				}
 
@@ -576,13 +576,13 @@ public class HTTPRequestImpl implements HTTPRequest {
 					continue;
 
 				// we should be at the data now. Start reading it in, checking for the
-			// boundary string
+				// boundary string
 
 				// we can only give an upper bound for the size of the bucket
 				filedata = this.bucketfactory.makeBucket(is.available());
 				bucketos = filedata.getOutputStream();
 				// buffer characters that match the boundary so far
-			// FIXME use whatever charset was used
+				// FIXME use whatever charset was used
 				byte[] bbound = boundary.getBytes(StandardCharsets.UTF_8); // ISO-8859-1? boundary should be in US-ASCII
 				int offset = 0;
 				while((is.available() > 0) && (offset < bbound.length)) {
@@ -592,7 +592,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 						offset++;
 					else if((b != bbound[offset]) && (offset > 0)) {
 						// offset bytes matched, but no more
-					// write the bytes that matched, then the non-matching byte
+						// write the bytes that matched, then the non-matching byte
 						bucketos.write(bbound, 0, offset);
 						offset = 0;
 						if(b == bbound[0])
@@ -606,7 +606,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 				bucketos.close();
 				bucketos = null;
-			
+
 				parts.put(name, filedata);
 				if(logMINOR)
 					Logger.minor(this, "Name = " + name + " length = " + filedata.size() + " filename = " + filename);
@@ -621,7 +621,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 			Closer.close(is);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getUploadedFile(java.lang.String)
 	 */
@@ -629,7 +629,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	public HTTPUploadedFile getUploadedFile(String name) {
 		return uploadedFiles.get(name);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getPart(java.lang.String)
 	 */
@@ -638,7 +638,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		return this.parts.get(name);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#isPartSet(java.lang.String)
 	 */
@@ -656,28 +656,28 @@ public class HTTPRequestImpl implements HTTPRequest {
 	public String getPartAsString(String name, int maxlength) {
 		return new String(getPartAsBytes(name, maxlength), StandardCharsets.UTF_8);
 	}
-	
+
 	@Override
 	public String getPartAsStringThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
-		
+
 		if(part == null)
 			throw new NoSuchElementException(name);
-		
+
 		if(part.size() > maxLength)
 			throw new SizeLimitExceededException();
-		
+
 		return getPartAsLimitedString(part, maxLength);
 	}
-	
+
 	@Override
 	public String getPartAsStringFailsafe(String name, int maxLength) {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		return part == null ? "" : getPartAsLimitedString(part, maxLength);
 	}
-	
+
 	private String getPartAsLimitedString(Bucket part, int maxLength) {
 		return new String(getPartAsLimitedBytes(part, maxLength), StandardCharsets.UTF_8);
 	}
@@ -691,9 +691,9 @@ public class HTTPRequestImpl implements HTTPRequest {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		if(part == null) return new byte[0];
-		
+
 		if (part.size() > maxlength) return new byte[0];
-		
+
 		InputStream is = null;
 		DataInputStream dis = null;
 		try {
@@ -703,36 +703,36 @@ public class HTTPRequestImpl implements HTTPRequest {
 			dis.readFully(buf);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			Logger.error(this, "Caught IOE:" + ioe.getMessage());
 		} finally {
 			Closer.close(dis);
 			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
 		}
-		
+
 		return new byte[0];
 	}
-	
+
 	@Override
 	public byte[] getPartAsBytesThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
-		
+
 		if(part == null)
 			throw new NoSuchElementException(name);
-		
+
 		if(part.size() > maxLength)
 			throw new SizeLimitExceededException();
-		
+
 		return getPartAsLimitedBytes(part, maxLength);
 	}
-	
+
 	@Override
 	public byte[] getPartAsBytesFailsafe(String name, int maxLength) {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		return part == null ? new byte[0] : getPartAsLimitedBytes(part, maxLength);
 	}
-	
+
 	private byte[] getPartAsLimitedBytes(Bucket part, int maxLength) {
 		InputStream is = null;
 		DataInputStream dis = null;
@@ -743,21 +743,21 @@ public class HTTPRequestImpl implements HTTPRequest {
 			dis.readFully(buf, 0, buf.length);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
-	         return new byte[0];
+			Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			return new byte[0];
 		} finally {
 			Closer.close(dis);
 			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#freeParts()
 	 */
 	@Override
 	public void freeParts() {
 		if (this.parts == null) return;
-		
+
 		for (Bucket b : this.parts.values()) {
 			b.free();
 		}
@@ -784,7 +784,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Container for uploaded files in HTTP POST requests.
-	 * 
+	 *
 	 * @author David 'Bombe' Roden &lt;bombe@freenetproject.org&gt;
 	 * @version $Id$
 	 */
@@ -802,7 +802,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 		/**
 		 * Creates a new file with the specified filename, content type, and
 		 * data.
-		 * 
+		 *
 		 * @param filename
 		 *            The name of the file
 		 * @param contentType

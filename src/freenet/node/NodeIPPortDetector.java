@@ -34,16 +34,16 @@ public class NodeIPPortDetector {
 	/** Last detected IP address */
 	Peer[] lastPeers;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	NodeIPPortDetector(Node node, NodeIPDetector ipDetector, NodeCrypto crypto, boolean enableARKs) {
 		this.node = node;
 		this.ipDetector = ipDetector;
@@ -69,7 +69,7 @@ public class NodeIPPortDetector {
 	/**
 	 * Get our Peer's. This is a list of IP:port's at which we might be contactable. Some of them
 	 * will have the same port as the listenPort, but if we are behind a NAT which rewrites our
-	 * port number, some of them may not. (If we're behind a symmetric NAT which rewrites it 
+	 * port number, some of them may not. (If we're behind a symmetric NAT which rewrites it
 	 * differently for each connection, we're stuffed, and we tell the user).
 	 */
 	Peer[] detectPrimaryPeers() {
@@ -83,9 +83,9 @@ public class NodeIPPortDetector {
 		}
 		// Now try to get the rewritten port number from our peers.
 		// Only considering those within this crypto port, this time.
-		
+
 		PeerNode[] peerList = crypto.getPeerNodes();
-		
+
 		if(peerList != null) {
 			HashMap<Peer,Integer> countsByPeer = new HashMap<Peer,Integer>();
 			// FIXME use a standard mutable int object, we have one somewhere
@@ -128,7 +128,7 @@ public class NodeIPPortDetector {
 				}
 				if(best != null) {
 					if((bestPopularity > 1) || (addrs.length == 0)) {
- 						if(!addresses.contains(best)) {
+						if(!addresses.contains(best)) {
 							Logger.normal(this, "Adding best peer "+best+" ("+bestPopularity+ ')');
 							addresses.add(best);
 						}
@@ -140,9 +140,9 @@ public class NodeIPPortDetector {
 							if(best.getAddress().equals(secondBest.getAddress()) && bestPopularity == 1) {
 								Logger.error(this, "Hrrrm, maybe this is a symmetric NAT? Expect trouble connecting!");
 								System.err.println("Hrrrm, maybe this is a symmetric NAT? Expect trouble connecting!");
-								
+
 								ipDetector.setMaybeSymmetric();
-								
+
 								Peer p = new Peer(best.getFreenetAddress(), crypto.portNumber);
 								if(!addresses.contains(p))
 									addresses.add(p);
@@ -158,7 +158,7 @@ public class NodeIPPortDetector {
 			Logger.minor(this, "Returning for port "+crypto.portNumber+" : "+Arrays.toString(lastPeers));
 		return lastPeers;
 	}
-	
+
 	void update() {
 		arkPutter.update();
 	}

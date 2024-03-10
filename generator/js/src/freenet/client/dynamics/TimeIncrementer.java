@@ -40,7 +40,7 @@ public class TimeIncrementer implements IDynamic {
 					}
 				}
 			}
-		}.scheduleRepeating(1000);
+		} .scheduleRepeating(1000);
 	}
 
 }

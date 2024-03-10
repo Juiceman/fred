@@ -49,7 +49,7 @@ public class ProbeRequest extends FCPMessage {
 
 			if (this.htl < 0) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
-				                                  "hopsToLive cannot be negative.", null, false);
+												  "hopsToLive cannot be negative.", null, false);
 			}
 
 		} catch (IllegalArgumentException e) {
@@ -129,7 +129,7 @@ public class ProbeRequest extends FCPMessage {
 
 			@Override
 			public void onOverallBulkOutputCapacity(
-					byte bandwidthClassForCapacityUsage, float capacityUsage) {
+				byte bandwidthClassForCapacityUsage, float capacityUsage) {
 				handler.send(new ProbeOverallBulkOutputCapacityUsage(identifier, bandwidthClassForCapacityUsage, capacityUsage));
 			}
 		};

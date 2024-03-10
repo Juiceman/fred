@@ -65,7 +65,7 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 							}
 						}
 					}
-					
+
 				});
 				FetchContext context = hlsc.getFetchContext();
 				if(desperate) {

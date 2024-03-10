@@ -22,7 +22,7 @@ import freenet.support.api.RandomAccessBuffer;
  * @author toad
  */
 public class PartiallyReceivedBulk {
-	
+
 	/** The size of the data being received. Does *not* have to be a multiple of blockSize. */
 	final long size;
 	/** The size of the blocks sent as packets. */
@@ -41,16 +41,16 @@ public class PartiallyReceivedBulk {
 	int _abortReason;
 	String _abortDescription;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	/**
 	 * Construct a PartiallyReceivedBulk.
 	 * @param size Size of the file, does not have to be a multiple of blockSize.
@@ -77,14 +77,14 @@ public class PartiallyReceivedBulk {
 	}
 
 	/**
-	 * Clone the blocksReceived BitArray. Used by BulkTransmitter to find what blocks are available on 
+	 * Clone the blocksReceived BitArray. Used by BulkTransmitter to find what blocks are available on
 	 * creation. BulkTransmitter will have already taken the lock and will keep it over the add() also.
 	 * @return A copy of blocksReceived.
 	 */
 	synchronized BitArray cloneBlocksReceived() {
 		return new BitArray(blocksReceived);
 	}
-	
+
 	/**
 	 * Add a BulkTransmitter to the list of BulkTransmitters. When a block comes in, we will tell each
 	 * BulkTransmitter about it.
@@ -98,7 +98,7 @@ public class PartiallyReceivedBulk {
 			transmitters[transmitters.length-1] = bt;
 		}
 	}
-	
+
 	/**
 	 * Called when a block has been received. Will copy the data from the provided buffer and store it.
 	 * @param blockNum The block number.
@@ -198,11 +198,11 @@ public class PartiallyReceivedBulk {
 		}
 		transmitters = newTrans;
 	}
-	
+
 	public int getAbortReason() {
 		return _abortReason;
 	}
-	
+
 	public String getAbortDescription() {
 		return _abortDescription;
 	}

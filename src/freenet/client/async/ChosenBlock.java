@@ -10,7 +10,7 @@ import freenet.node.SendableRequestItem;
 import freenet.node.SendableRequestSender;
 
 /**
- * A single selected request, including everything needed to execute it. Most important functions 
+ * A single selected request, including everything needed to execute it. Most important functions
  * are the callbacks, which run off-thread, call the upstream callbacks on the SendableGet etc, and
  * remove the fetching keys from the KeysFetchingLocally.
  * @author Matthew Toseland <toad@amphibian.dyndns.org> (0xE43DA450)
@@ -29,7 +29,7 @@ public abstract class ChosenBlock {
 	public transient final boolean canWriteClientCache;
 	public transient final boolean forkOnCacheable;
 	public transient final boolean realTimeFlag;
-	
+
 	public ChosenBlock(SendableRequestItem token, Key key, ClientKey ckey, boolean localRequestOnly, boolean ignoreStore, boolean canWriteClientCache, boolean forkOnCacheable, boolean realTimeFlag, RequestScheduler sched) {
 		this.token = token;
 		if(token == null) throw new NullPointerException();
@@ -61,7 +61,7 @@ public abstract class ChosenBlock {
 	public abstract void onFetchSuccess(ClientContext context);
 
 	public abstract short getPriority();
-	
+
 	private boolean sendIsBlocking;
 
 	public boolean send(NodeClientCore core, RequestScheduler sched) {
@@ -70,13 +70,13 @@ public abstract class ChosenBlock {
 		sendIsBlocking = sender.sendIsBlocking();
 		return sender.send(core, sched, context, this);
 	}
-	
+
 	public abstract SendableRequestSender getSender(ClientContext context);
-	
+
 	public void onDumped() {
 		token.dump();
 	}
-	
+
 	/** Call this after send() */
 	public boolean sendIsBlocking() {
 		return sendIsBlocking;

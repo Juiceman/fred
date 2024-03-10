@@ -12,10 +12,10 @@ import freenet.support.SimpleFieldSet;
 public class ModifyPeer extends FCPMessage {
 
 	static final String NAME = "ModifyPeer";
-	
+
 	final SimpleFieldSet fs;
 	final String identifier;
-	
+
 	public ModifyPeer(SimpleFieldSet fs) {
 		this.fs = fs;
 		this.identifier = fs.get("Identifier");

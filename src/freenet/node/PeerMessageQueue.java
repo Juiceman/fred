@@ -25,9 +25,9 @@ public class PeerMessageQueue {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -35,24 +35,24 @@ public class PeerMessageQueue {
 	}
 
 	private final PrioQueue[] queuesByPriority;
-	
+
 	private boolean mustSendLoadRT;
 	private boolean mustSendLoadBulk;
-	
+
 	private class PrioQueue {
-		
+
 		// FIXME refactor into PrioQueue and RoundRobinByUIDPrioQueue
 		PrioQueue(long timeout, boolean timeoutSinceLastSend) {
 			this.timeout = timeout;
 			this.roundRobinBetweenUIDs = timeoutSinceLastSend;
 		}
-		
+
 		/** The timeout, period after which messages become urgent. */
 		final long timeout;
 		/** If true, do round-robin between UID's, and count the timeout relative
 		 * to the last send. Block transfers need this - both realtime and bulk. */
 		final boolean roundRobinBetweenUIDs;
-		
+
 		private class Items extends DoublyLinkedListImpl.Item<Items> {
 			/** List of messages to send. Stuff to send first is at the beginning. */
 			final LinkedList<MessageItem> items;
@@ -77,17 +77,17 @@ public class PeerMessageQueue {
 				return super.toString()+":"+id+":"+items.size()+":"+timeLastSent;
 			}
 		}
-		
+
 		/** Maximum inter-packet time is 2 minutes for a block transfer (when we have bulk
 		 * flag this will be no higher, and it might be reduced to 30 seconds). Requests
-		 * can wait for 2 minutes now, maybe 10 minutes in future, but round-robin is 
-		 * intended for frequent messages - it doesn't matter in that case. So 3 minutes 
+		 * can wait for 2 minutes now, maybe 10 minutes in future, but round-robin is
+		 * intended for frequent messages - it doesn't matter in that case. So 3 minutes
 		 * is plenty. */
 		static final long FORGET_AFTER = 3*60*1000;
 
-		/** Using DoublyLinkedListImpl so that we can move stuff around without the 
+		/** Using DoublyLinkedListImpl so that we can move stuff around without the
 		 * iterator failing, and also delete efficiently. Ordered by timeLastSent,
-		 * NOT by timeout. Items we have not yet sent are at the beginning with 
+		 * NOT by timeout. Items we have not yet sent are at the beginning with
 		 * timeLastSent = -1. */
 		DoublyLinkedListImpl<Items> nonEmptyItemsWithID;
 		/** Items which have been sent within the last 10 minutes, so we need to track
@@ -125,7 +125,7 @@ public class PeerMessageQueue {
 			}
 			addToNonUrgent(item);
 		}
-		
+
 		private void addToNonUrgent(MessageItem item) {
 			if(itemsNonUrgent == null)
 				itemsNonUrgent = new LinkedList<MessageItem>();
@@ -229,7 +229,7 @@ public class PeerMessageQueue {
 				emptyItemsWithID.remove(list);
 			addToNonEmptyForward(list);
 		}
-		
+
 		private void addToNonEmptyForward(Items list) {
 			if(nonEmptyItemsWithID == null)
 				nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
@@ -249,7 +249,7 @@ public class PeerMessageQueue {
 			emptyItemsWithID.remove(list);
 			addToNonEmptyBackward(list);
 		}
-		
+
 		private void addToNonEmptyBackward(Items list) {
 			if(nonEmptyItemsWithID == null)
 				nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
@@ -338,8 +338,8 @@ public class PeerMessageQueue {
 					output[ptr++] = item;
 			return ptr;
 		}
-		
-		/** Check that nonEmptyItemsWithID is ordered correctly. 
+
+		/** Check that nonEmptyItemsWithID is ordered correctly.
 		 * LOCKING: Caller must synchronize on PeerMessageQueue.this. */
 		private void checkOrder() {
 			if(nonEmptyItemsWithID != null) {
@@ -368,9 +368,9 @@ public class PeerMessageQueue {
 		/** Note that this does NOT consider the length of the queue, which can trigger a
 		 * send. This is intentional, and is relied upon by the bulk-or-realtime logic in
 		 * addMessages().
-		 * @param t The initial urgent time. What we return must be less than or 
-		 * equal to this. Convenient for chaining. 
-		 * @param stopIfBeforeTime If the next urgent time is <= to this time, 
+		 * @param t The initial urgent time. What we return must be less than or
+		 * equal to this. Convenient for chaining.
+		 * @param stopIfBeforeTime If the next urgent time is <= to this time,
 		 * return immediately.
 		 */
 		public long getNextUrgentTime(long t, long stopIfBeforeTime) {
@@ -440,12 +440,12 @@ public class PeerMessageQueue {
 			}
 			return length;
 		}
-		
+
 		private MessageItem addNonUrgentMessages(long now, MutableBoolean addPeerLoadStatsRT, MutableBoolean addPeerLoadStatsBulk) {
 			if(logMINOR) checkOrder();
 			if(itemsNonUrgent == null) return null;
 			MessageItem ret;
-			for(ListIterator<MessageItem> items = itemsNonUrgent.listIterator();items.hasNext();) {
+			for(ListIterator<MessageItem> items = itemsNonUrgent.listIterator(); items.hasNext();) {
 				MessageItem item = items.next();
 				items.remove();
 				item.setDeadline(item.submitted + timeout);
@@ -498,7 +498,7 @@ public class PeerMessageQueue {
 					mustSendLoadBulk = false;
 				}
 				if(logMINOR) checkOrder();
-				
+
 				if(ret != null) return ret;
 			}
 			if(logMINOR) checkOrder();
@@ -511,7 +511,7 @@ public class PeerMessageQueue {
 		 *
 		 * @param now the current time
 		 * @param messages the list that messages will be added to
-		 * @param maxMessages 
+		 * @param maxMessages
 		 * @return the size of <code>messages</code>, multiplied by -1 if there were
 		 * messages that didn't fit
 		 */
@@ -526,7 +526,7 @@ public class PeerMessageQueue {
 				}
 				lists += nonEmptyItemsWithID.size();
 				Items list = nonEmptyItemsWithID.head();
-				for(int i=0;i<lists && list != null;i++) {
+				for(int i=0; i<lists && list != null; i++) {
 					if(logMINOR) checkOrder();
 					if(list.items.isEmpty()) {
 						// Should not happen, but check for it anyway since it keeps happening. :(
@@ -576,7 +576,7 @@ public class PeerMessageQueue {
 			}
 		}
 
-		
+
 		/**
 		 * Add urgent messages, then non-urgent messages. Add a load message if need to.
 		 * @param size
@@ -678,7 +678,7 @@ public class PeerMessageQueue {
 			else
 				return false;
 		}
-		
+
 		public void removeUIDs(Long[] list) {
 			if(logMINOR) checkOrder();
 			if(itemsByID == null) return;
@@ -712,7 +712,7 @@ public class PeerMessageQueue {
 
 	PeerMessageQueue() {
 		queuesByPriority = new PrioQueue[DMT.NUM_PRIORITIES];
-		for(int i=0;i<queuesByPriority.length;i++) {
+		for(int i=0; i<queuesByPriority.length; i++) {
 			if(i == DMT.PRIORITY_BULK_DATA)
 				// Bulk: round-robin between UID's (timeout since last sent), long timeout.
 				queuesByPriority[i] = new PrioQueue(PacketSender.MAX_COALESCING_DELAY_BULK, true);
@@ -779,8 +779,8 @@ public class PeerMessageQueue {
 
 	/**
 	 * like enqueuePrioritizedMessageItem, but adds it to the front of those in the same priority.
-	 * 
-	 * WARNING: Pulling a message and then pushing it back will mess up the fairness 
+	 *
+	 * WARNING: Pulling a message and then pushing it back will mess up the fairness
 	 * between UID's send order. Try to avoid it.
 	 */
 	synchronized void pushfrontPrioritizedMessageItem(MessageItem addMe) {
@@ -812,8 +812,8 @@ public class PeerMessageQueue {
 	 * accurate.
 	 * @param t The current next urgent time. The return value will be no greater
 	 * than this.
-	 * @param returnIfBefore The current time. If the next urgent time is less than 
-	 * this we return immediately rather than computing an accurate past value. 
+	 * @param returnIfBefore The current time. If the next urgent time is less than
+	 * this we return immediately rather than computing an accurate past value.
 	 * Set to Long.MAX_VALUE if you want an accurate value.
 	 * @return The next urgent time, but can be too high if it is less than now.
 	 */
@@ -855,32 +855,32 @@ public class PeerMessageQueue {
 
 	/** Grab a message to send. WARNING: PeerMessageQueue not only removes the message,
 	 * it assumes it has been sent for purposes of fairness between UID's. You should try
-	 * not to call this function if you are not going to be able to send the message: 
+	 * not to call this function if you are not going to be able to send the message:
 	 * check in advance if possible. */
 	public synchronized MessageItem grabQueuedMessageItem(int minPriority) {
 		long now = System.currentTimeMillis();
-		
+
 		MutableBoolean addPeerLoadStatsRT = new MutableBoolean();
 		MutableBoolean addPeerLoadStatsBulk = new MutableBoolean();
-		
+
 		addPeerLoadStatsRT.value = true;
 		addPeerLoadStatsBulk.value = true;
-		
-		for(int i=0;i<DMT.PRIORITY_REALTIME_DATA;i++) {
+
+		for(int i=0; i<DMT.PRIORITY_REALTIME_DATA; i++) {
 			if(i < minPriority) continue;
 			if(logMINOR) Logger.minor(this, "Adding from priority "+i);
 			MessageItem ret = queuesByPriority[i].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
 			if(ret != null) return ret;
 		}
-		
+
 		// Include bulk or realtime, whichever is more urgent.
-		
+
 		boolean tryRealtimeFirst = true;
-		
+
 		// If one is empty, try the other.
 		// Otherwise try whichever is more urgent, favouring realtime if there is a draw.
 		// Realtime is supposed to be bursty.
-		
+
 		if(queuesByPriority[DMT.PRIORITY_REALTIME_DATA].isEmpty()) {
 			tryRealtimeFirst = false;
 		} else if(queuesByPriority[DMT.PRIORITY_BULK_DATA].isEmpty()) {
@@ -890,7 +890,7 @@ public class PeerMessageQueue {
 		} else {
 			tryRealtimeFirst = false;
 		}
-		
+
 		// FIXME token bucket?
 		if(tryRealtimeFirst) {
 			// Try realtime first
@@ -909,7 +909,7 @@ public class PeerMessageQueue {
 			ret = queuesByPriority[DMT.PRIORITY_REALTIME_DATA].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
 			if(ret != null) return ret;
 		}
-		for(int i=DMT.PRIORITY_BULK_DATA+1;i<DMT.NUM_PRIORITIES;i++) {
+		for(int i=DMT.PRIORITY_BULK_DATA+1; i<DMT.NUM_PRIORITIES; i++) {
 			if(i < minPriority) continue;
 			if(logMINOR) Logger.minor(this, "Adding from priority "+i);
 			MessageItem ret = queuesByPriority[i].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
@@ -918,7 +918,7 @@ public class PeerMessageQueue {
 		// Nothing to send.
 		return null;
 	}
-	
+
 	public boolean removeMessage(MessageItem message) {
 		synchronized(this) {
 			short prio = message.getPriority();

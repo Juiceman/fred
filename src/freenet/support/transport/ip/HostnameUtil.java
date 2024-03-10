@@ -9,25 +9,25 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 
 public class HostnameUtil {
-        private static volatile boolean logDEBUG;
+	private static volatile boolean logDEBUG;
 
-        static {
-                Logger.registerLogThresholdCallback(new LogThresholdCallback(){
-                        @Override
-                        public void shouldUpdate(){
-                                logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-                        }
-                });
-        }
+	static {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+			@Override
+			public void shouldUpdate() {
+				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
+			}
+		});
+	}
 
-        /**
-         *
-         * @param hn
-         * @param allowIPAddress
-         * @return
-         */
-        public static boolean isValidHostname(String hn, boolean allowIPAddress) {
-		if(allowIPAddress) {	
+	/**
+	 *
+	 * @param hn
+	 * @param allowIPAddress
+	 * @return
+	 */
+	public static boolean isValidHostname(String hn, boolean allowIPAddress) {
+		if(allowIPAddress) {
 			// debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
 			AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(hn, true);
 			if(logDEBUG)Logger.debug(null, "Address type of '"+hn+"' appears to be '"+addressType+ '\'');

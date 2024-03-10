@@ -10,18 +10,18 @@ import freenet.support.api.RandomAccessBucket;
 
 /**
  * Class to contain everything needed for an insert.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * losing uploads.
  */
 public class InsertBlock implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private RandomAccessBucket data;
+	private static final long serialVersionUID = 1L;
+	private RandomAccessBucket data;
 	private boolean isFreed;
 	public FreenetURI desiredURI;
 	public ClientMetadata clientMetadata;
-	
+
 	public InsertBlock(RandomAccessBucket data, ClientMetadata metadata, FreenetURI desiredURI) {
 		if(data == null) throw new NullPointerException();
 		this.data = data;
@@ -32,12 +32,12 @@ public class InsertBlock implements Serializable {
 			clientMetadata = metadata;
 		this.desiredURI = desiredURI;
 	}
-	
+
 	public RandomAccessBucket getData() {
 		return (isFreed ? null : data);
 	}
-	
-	public void free(){
+
+	public void free() {
 		synchronized (this) {
 			if(isFreed) return;
 			isFreed = true;
@@ -45,7 +45,7 @@ public class InsertBlock implements Serializable {
 		}
 		data.free();
 	}
-	
+
 	/** Null out the data so it doesn't get removed in removeFrom().
 	 * Call this when the data becomes somebody else's problem. */
 	public void nullData() {
@@ -61,5 +61,5 @@ public class InsertBlock implements Serializable {
 	public void nullMetadata() {
 		this.clientMetadata = null;
 	}
-	
+
 }

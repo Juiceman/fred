@@ -11,7 +11,7 @@ class ErrorArchiveStoreItem extends ArchiveStoreItem {
 	/** Error message. Usually something about the file being too big. */
 	String error;
 	boolean tooBig;
-	
+
 	/**
 	 * Create a placeholder item for a file which could not be extracted from the archive.
 	 * @param ctx The context object which tracks all the items with this key.
@@ -45,9 +45,9 @@ class ErrorArchiveStoreItem extends ArchiveStoreItem {
 		if(tooBig) return null;
 		throw new ArchiveFailureException(error);
 	}
-	
+
 	public boolean tooBig() {
 		return tooBig;
 	}
-	
+
 }

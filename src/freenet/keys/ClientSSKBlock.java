@@ -17,11 +17,11 @@ import freenet.support.io.ArrayBucketFactory;
 import freenet.support.io.BucketTools;
 
 public class ClientSSKBlock implements ClientKeyBlock {
-	
+
 	static final int DATA_DECRYPT_KEY_LENGTH = 32;
-	
+
 	static public final int MAX_DECOMPRESSED_DATA_LENGTH = 32768;
-	
+
 	private final SSKBlock block;
 	/** Is metadata. Set on decode. */
 	private boolean isMetadata;
@@ -32,12 +32,12 @@ public class ClientSSKBlock implements ClientKeyBlock {
 
 	/** Compression algorithm from last time tried to decompress. */
 	private short compressionAlgorithm = -1;
-	
+
 	public ClientSSKBlock(byte[] data, byte[] headers, ClientSSK key, boolean dontVerify) throws SSKVerifyException {
 		block = new SSKBlock(data, headers, (NodeSSK) key.getNodeKey(true), dontVerify);
 		this.key = key;
 	}
-	
+
 	public static ClientSSKBlock construct(SSKBlock block, ClientSSK key) throws SSKVerifyException {
 		// Constructor expects clientkey to have the pubkey.
 		// In the case of binary blobs, the block may have it instead.
@@ -45,7 +45,7 @@ public class ClientSSKBlock implements ClientKeyBlock {
 			key.setPublicKey(block.getPubKey());
 		return new ClientSSKBlock(block.data, block.headers, key, false);
 	}
-	
+
 	/**
 	 * Decode the data.
 	 */
@@ -75,7 +75,7 @@ public class ClientSSKBlock implements ClientKeyBlock {
 		pcfb.blockDecipher(dataOutput, 0, dataOutput.length);
 		// 2 bytes - data length
 		int dataLength = ((decryptedHeaders[DATA_DECRYPT_KEY_LENGTH] & 0xff) << 8) +
-			(decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+1] & 0xff);
+						 (decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+1] & 0xff);
 		// Metadata flag is top bit
 		if((dataLength & 32768) != 0) {
 			dataLength = dataLength & ~32768;
@@ -84,21 +84,21 @@ public class ClientSSKBlock implements ClientKeyBlock {
 		if(dataLength > dataOutput.length) {
 			throw new SSKDecodeException("Data length: "+dataLength+" but data.length="+dataOutput.length);
 		}
-		
-        compressionAlgorithm = (short)(((decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+2] & 0xff) << 8) + (decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+3] & 0xff));
-        decoded = true;
-        
-        if(dontDecompress) {
-        	if(compressionAlgorithm == (short)-1)
-        		return BucketTools.makeImmutableBucket(factory, dataOutput, dataLength);
-        	else if(dataLength < 2)
-        		throw new SSKDecodeException("Data length is less than 2 yet compressed!");
-        	else
-        		return BucketTools.makeImmutableBucket(factory, dataOutput, 2, dataLength - 2);
-        }
 
-        Bucket b = Key.decompress(compressionAlgorithm >= 0, dataOutput, dataLength, factory, Math.min(MAX_DECOMPRESSED_DATA_LENGTH, maxLength), compressionAlgorithm, true);
-        return b;
+		compressionAlgorithm = (short)(((decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+2] & 0xff) << 8) + (decryptedHeaders[DATA_DECRYPT_KEY_LENGTH+3] & 0xff));
+		decoded = true;
+
+		if(dontDecompress) {
+			if(compressionAlgorithm == (short)-1)
+				return BucketTools.makeImmutableBucket(factory, dataOutput, dataLength);
+			else if(dataLength < 2)
+				throw new SSKDecodeException("Data length is less than 2 yet compressed!");
+			else
+				return BucketTools.makeImmutableBucket(factory, dataOutput, 2, dataLength - 2);
+		}
+
+		Bucket b = Key.decompress(compressionAlgorithm >= 0, dataOutput, dataLength, factory, Math.min(MAX_DECOMPRESSED_DATA_LENGTH, maxLength), compressionAlgorithm, true);
+		return b;
 	}
 
 	@Override
@@ -116,16 +116,16 @@ public class ClientSSKBlock implements ClientKeyBlock {
 	public short getCompressionCodec() {
 		return compressionAlgorithm;
 	}
-	
+
 	@Override
 	public byte[] memoryDecode() throws KeyDecodeException {
 		return memoryDecode(false);
 	}
-	
-    /**
-     * Decode into RAM, if short.
-     * @throws KeyDecodeException 
-     */
+
+	/**
+	 * Decode into RAM, if short.
+	 * @throws KeyDecodeException
+	 */
 	public byte[] memoryDecode(boolean dontDecompress) throws KeyDecodeException {
 		try {
 			ArrayBucket a = (ArrayBucket) decode(new ArrayBucketFactory(), 32*1024, dontDecompress);
@@ -158,5 +158,5 @@ public class ClientSSKBlock implements ClientKeyBlock {
 	public Key getKey() {
 		return block.getKey();
 	}
-	
+
 }

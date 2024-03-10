@@ -14,18 +14,18 @@ import freenet.support.Logger;
 import freenet.support.Ticker;
 
 public class RequestTracker {
-	
+
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
 		Logger.registerClass(RequestTracker.class);
 	}
-	
+
 	// The runningLocal* are secondary. That is, we take the lock on the
 	// corresponding running* when accessing runningLocal*. Local requests
 	// have a tag in *both*.
-	
+
 	private final HashMap<Long,RequestTag> runningCHKGetUIDsBulk;
 	private final HashMap<Long,RequestTag> runningLocalCHKGetUIDsBulk;
 	private final HashMap<Long,RequestTag> runningSSKGetUIDsBulk;
@@ -47,7 +47,7 @@ public class RequestTracker {
 	private final HashMap<Long,InsertTag> runningLocalSSKPutUIDsRT;
 	private final HashMap<Long,OfferReplyTag> runningCHKOfferReplyUIDsRT;
 	private final HashMap<Long,OfferReplyTag> runningSSKOfferReplyUIDsRT;
-	
+
 	private final PeerManager peers;
 	private final Ticker ticker;
 
@@ -56,7 +56,7 @@ public class RequestTracker {
 	private final HashMap<NodeCHK, RequestSender> transferringRequestSendersBulk;
 	/** UIDs of RequestHandler's currently transferring */
 	private final HashSet<Long> transferringRequestHandlers;
-	
+
 	RequestTracker(PeerManager peers, Ticker ticker) {
 		this.peers = peers;
 		this.ticker = ticker;
@@ -81,7 +81,7 @@ public class RequestTracker {
 		runningLocalSSKPutUIDsBulk = new HashMap<Long,InsertTag>();
 		runningCHKOfferReplyUIDsBulk = new HashMap<Long,OfferReplyTag>();
 		runningSSKOfferReplyUIDsBulk = new HashMap<Long,OfferReplyTag>();
-		
+
 		transferringRequestSendersRT = new HashMap<NodeCHK, RequestSender>();
 		transferringRequestSendersBulk = new HashMap<NodeCHK, RequestSender>();
 		transferringRequestHandlers = new HashSet<Long>();
@@ -202,7 +202,7 @@ public class RequestTracker {
 				} else
 					localMap.remove(uid);
 				if(logMINOR) Logger.minor(this, "Unlocked (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+localMap.size());
-				
+
 			} else {
 				assert(localMap == null);
 			}
@@ -229,13 +229,13 @@ public class RequestTracker {
 	 * @param ssk If true, count SSK requests, if false, count CHK requests.
 	 * @param insert If true, count inserts, otherwise count requests.
 	 * @param offer If true, count offer replies (takes precedence over insert).
-	 * @param realTimeFlag If true, count real-time requests, if false, count bulk requests. 
-	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers. 
+	 * @param realTimeFlag If true, count real-time requests, if false, count bulk requests.
+	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers.
 	 * This is not predictable, so we use an average.
-	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local 
+	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local
 	 * (that is, count imaginary onward transfers etc depending on the request type).
 	 * @param counter Transfer counts for all requests will be added to this counter object.
-	 * @param counterSourceRestarted Transfer counts for requests whose source restarted (and so 
+	 * @param counterSourceRestarted Transfer counts for requests whose source restarted (and so
 	 * are counted as local) will be added to this counter object. */
 	public void countRequests(boolean local, boolean ssk, boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, CountedRequests counter, CountedRequests counterSourceRestarted) {
 		HashMap<Long, ? extends UIDTag> map = getTracker(local, ssk, insert, offer, realTimeFlag);
@@ -282,22 +282,22 @@ public class RequestTracker {
 	 * PERFORMANCE: There is a map for all requests of a given type (local, ssk, etc). However this
 	 * is not divided up by node. FIXME ideally we would countRequests for all PeerNode's
 	 * simultaneously when we need data on more than one. FIXME it would be even better if we could
-	 * just store the status on the PeerNode's, but the memory usage might be an issue and 
+	 * just store the status on the PeerNode's, but the memory usage might be an issue and
 	 * synchronization would likely be problematic.
 	 * @param source The peer the requests were accepted from or routed to.
-	 * @param requestsToNode If true, count requests sent to the node and currently 
+	 * @param requestsToNode If true, count requests sent to the node and currently
 	 * running. If false, count requests originated by the node.
-	 * @param local If true, only include requests which originated locally. 
-	 * @param ssk If true, count SSK requests, if false, count CHK requests. 
+	 * @param local If true, only include requests which originated locally.
+	 * @param ssk If true, count SSK requests, if false, count CHK requests.
 	 * @param insert If true, count inserts, otherwise count requests.
 	 * @param offer If true, count offer replies (takes precedence over insert).
 	 * @param realTimeFlag If true, count real-time requests, if false, count bulk requests.
-	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers. 
+	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers.
 	 * This is not predictable, so we use an average.
-	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local 
+	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local
 	 * (that is, count imaginary onward transfers etc depending on the request type).
 	 * @param counter Transfer counts for all requests will be added to this counter object.
-	 * @param counterSR Transfer counts for requests whose source restarted (and so 
+	 * @param counterSR Transfer counts for requests whose source restarted (and so
 	 * are counted as local) will be added to this counter object. */
 	public void countRequests(PeerNode source, boolean requestsToNode, boolean local, boolean ssk, boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, CountedRequests counter, CountedRequests counterSR) {
 		HashMap<Long, ? extends UIDTag> map = getTracker(local, ssk, insert, offer, realTimeFlag);
@@ -372,20 +372,20 @@ public class RequestTracker {
 			}
 		}
 	}
-	
+
 	/**
 	 * Count all requests, by the peer which originated the request.
 	 * @param source The peer the requests were accepted from or routed to.
-	 * @param local If true, only include requests which originated locally. 
-	 * @param ssk If true, count SSK requests, if false, count CHK requests. 
+	 * @param local If true, only include requests which originated locally.
+	 * @param ssk If true, count SSK requests, if false, count CHK requests.
 	 * @param insert If true, count inserts, otherwise count requests.
 	 * @param offer If true, count offer replies (takes precedence over insert).
 	 * @param realTimeFlag If true, count real-time requests, if false, count bulk requests.
-	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers. 
+	 * @param transfersPerInsert Assume that any insert will cause this many outgoing transfers.
 	 * This is not predictable, so we use an average.
-	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local 
+	 * @param ignoreLocalVsRemote If true, pretend that the request is remote even if it's local
 	 * (that is, count imaginary onward transfers etc depending on the request type).
-	 * @param counterMap Map from PeerNode to CountedRequests counters. We will use "null" for 
+	 * @param counterMap Map from PeerNode to CountedRequests counters. We will use "null" for
 	 * various cases: local requests, requested that have been adopted because their originator
 	 * restarted, requests where the originator PeerNode has been removed from the routing table
 	 * etc. */
@@ -419,12 +419,12 @@ public class RequestTracker {
 			}
 		}
 	}
-	
+
 	public class WaitingForSlots {
 		int local;
 		int remote;
 	}
-	
+
 	/**
 	 * @return [0] is the number of local requests waiting for slots, [1] is the
 	 * number of remote requests waiting for slots.
@@ -443,10 +443,10 @@ public class RequestTracker {
 		countRequestsWaitingForSlots(runningCHKPutUIDsBulk, slots);
 		return slots;
 	}
-	
+
 	private void countRequestsWaitingForSlots(HashMap<Long, ? extends UIDTag> runningUIDs, WaitingForSlots slots) {
 		// FIXME use a counter, but that means make sure it always removes it when something bad happens.
-		
+
 		synchronized(runningUIDs) {
 			for(UIDTag tag : runningUIDs.values()) {
 				if(!tag.isWaitingForSlot()) continue;
@@ -550,12 +550,12 @@ public class RequestTracker {
 				tags = map.values().toArray(new UIDTag[map.size()]);
 			}
 			long now = System.currentTimeMillis();
-			for(int i=0;i<uids.length;i++) {
+			for(int i=0; i<uids.length; i++) {
 				tags[i].maybeLogStillPresent(now, uids[i]);
 			}
 		}
 	};
-	
+
 
 	public void onRestartOrDisconnect(PeerNode pn) {
 		onRestartOrDisconnect(pn, runningSSKGetUIDsRT);
@@ -573,7 +573,7 @@ public class RequestTracker {
 	}
 
 	private void onRestartOrDisconnect(PeerNode pn,
-			HashMap<Long, ? extends UIDTag> uids) {
+									   HashMap<Long, ? extends UIDTag> uids) {
 		synchronized(uids) {
 			for(UIDTag tag : uids.values()) {
 				if(tag.isSource(pn))
@@ -581,7 +581,7 @@ public class RequestTracker {
 			}
 		}
 	}
-	
+
 	public int getNumSSKRequests() {
 		int total = 0;
 		// running* include all requests, local and remote.
@@ -763,7 +763,7 @@ public class RequestTracker {
 		addRunningUIDs(runningSSKOfferReplyUIDsBulk, list);
 		addRunningUIDs(runningCHKOfferReplyUIDsBulk, list);
 	}
-	
+
 	private void addRunningUIDs(HashMap<Long, ? extends UIDTag> runningUIDs, List<Long> list) {
 		synchronized(runningUIDs) {
 			list.addAll(runningUIDs.keySet());
@@ -772,9 +772,9 @@ public class RequestTracker {
 
 	public int getTotalRunningUIDsAlt() {
 		return this.runningCHKGetUIDsRT.size() + this.runningCHKPutUIDsRT.size() + this.runningSSKGetUIDsRT.size() +
-		this.runningSSKPutUIDsRT.size() + this.runningSSKOfferReplyUIDsRT.size() + this.runningCHKOfferReplyUIDsRT.size() +
-		this.runningCHKGetUIDsBulk.size() + this.runningCHKPutUIDsBulk.size() + this.runningSSKGetUIDsBulk.size() +
-		this.runningSSKPutUIDsBulk.size() + this.runningSSKOfferReplyUIDsBulk.size() + this.runningCHKOfferReplyUIDsBulk.size();
+			   this.runningSSKPutUIDsRT.size() + this.runningSSKOfferReplyUIDsRT.size() + this.runningCHKOfferReplyUIDsRT.size() +
+			   this.runningCHKGetUIDsBulk.size() + this.runningCHKPutUIDsBulk.size() + this.runningSSKGetUIDsBulk.size() +
+			   this.runningSSKPutUIDsBulk.size() + this.runningSSKOfferReplyUIDsBulk.size() + this.runningCHKOfferReplyUIDsBulk.size();
 	}
 
 	private ArrayList<Long> completedBuffer = new ArrayList<Long>();
@@ -807,7 +807,7 @@ public class RequestTracker {
 			return transferringRequestSenders.get(key);
 		}
 	}
-	
+
 	/**
 	 * Add a transferring RequestSender to our HashMap.
 	 * Should only be called by UIDTag.

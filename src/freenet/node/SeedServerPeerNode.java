@@ -60,7 +60,7 @@ public class SeedServerPeerNode extends PeerNode {
 			return super.equals(o);
 		} else return false;
 	}
-	
+
 	@Override
 	public void onSuccess(boolean insert, boolean ssk) {
 		// Ignore
@@ -113,7 +113,7 @@ public class SeedServerPeerNode extends PeerNode {
 		}
 		return v.toArray(new InetAddress[v.size()]);
 	}
-	
+
 	@Override
 	public boolean handshakeUnknownInitiator() {
 		return true;
@@ -130,7 +130,7 @@ public class SeedServerPeerNode extends PeerNode {
 		node.peers.disconnectAndRemove(this, false, false, false);
 		return ret;
 	}
-	
+
 	@Override
 	public boolean shouldDisconnectAndRemoveNow() {
 		OpennetManager om = node.getOpennet();
@@ -162,7 +162,7 @@ public class SeedServerPeerNode extends PeerNode {
 		// Disconnect.
 		forceDisconnect();
 	}
-	
+
 	@Override
 	public boolean shallWeRouteAccordingToOurPeersLocation(int htl) {
 		return false; // Irrelevant
@@ -173,19 +173,19 @@ public class SeedServerPeerNode extends PeerNode {
 		return false;
 	}
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
-        return false; // We do not accept announcements from a seednode.
-    }
+	@Override
+	public boolean canAcceptAnnouncements() {
+		return false; // We do not accept announcements from a seednode.
+	}
 
-    @Override
-    protected void writePeers() {
-        // Do not write peers, seeds are kept separately.
-    }
+	@Override
+	protected void writePeers() {
+		// Do not write peers, seeds are kept separately.
+	}
 
 }

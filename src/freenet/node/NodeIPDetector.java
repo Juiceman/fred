@@ -44,9 +44,9 @@ public class NodeIPDetector {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -66,9 +66,9 @@ public class NodeIPDetector {
 	DetectedIP[] pluginDetectedIPs;
 	/** Last detected IP address */
 	FreenetInetAddress[] lastIPAddress;
-	
+
 	private class MinimumMTU {
-		
+
 		/** The minimum reported MTU on all detected interfaces */
 		private int minimumMTU = Integer.MAX_VALUE;
 
@@ -89,10 +89,10 @@ public class NodeIPDetector {
 		}
 
 	}
-	
+
 	private final MinimumMTU minimumMTUIPv4 = new MinimumMTU();
 	private final MinimumMTU minimumMTUIPv6 = new MinimumMTU();
-	
+
 	/** IP address detector */
 	private final IPAddressDetector ipDetector;
 	/** Plugin manager for plugin IP address detectors e.g. STUN */
@@ -114,9 +114,9 @@ public class NodeIPDetector {
 	private NodeIPPortDetector[] portDetectors;
 	private boolean hasValidIP;
 	private boolean firstDetection = true;
-	
+
 	SimpleUserAlert maybeSymmetricAlert;
-	
+
 	public NodeIPDetector(Node node) {
 		this.node = node;
 		ipDetectorManager = new IPDetectorPluginManager(node, this);
@@ -130,13 +130,13 @@ public class NodeIPDetector {
 		portDetectors = Arrays.copyOf(portDetectors, portDetectors.length+1);
 		portDetectors[portDetectors.length - 1] = detector;
 	}
-	
+
 	/**
 	 * What is my IP address? Use all globally available information (everything which isn't
 	 * specific to a given port i.e. opennet or darknet) to determine our current IP addresses.
-	 * Will include more than one IP in many cases when we are not strictly multi-homed. For 
+	 * Will include more than one IP in many cases when we are not strictly multi-homed. For
 	 * example, if we have a DNS name set, we will usually return an IP as well.
-	 * 
+	 *
 	 * Will warn the user with a UserAlert if we don't have sufficient information.
 	 */
 	FreenetInetAddress[] detectPrimaryIPAddress(boolean dumpLocalAddresses) {
@@ -150,66 +150,66 @@ public class NodeIPDetector {
 			if(overrideIPAddress.isRealInternetAddress(false, true, false))
 				addedValidIP = true;
 		}
-		
+
 		if(!node.dontDetect()) {
 			addedValidIP |= innerDetect(addresses);
 		}
-		
-	   	if(node.clientCore != null) {
-	   		boolean hadValidIP;
-	   		synchronized(this) {
-	   			hadValidIP = hasValidIP;
-	   			hasValidIP = addedValidIP;
-	   			if(firstDetection) {
-	   				hadValidIP = !addedValidIP;
-	   				firstDetection = false;
-	   			}
-	   		}
-	   		if(hadValidIP != addedValidIP) {
-	   			if (addedValidIP) {
-	   				if(logMINOR) Logger.minor(this, "Got valid IP");
-	   				onAddedValidIP();
-	   			} else {
-	   				if(logMINOR) Logger.minor(this, "No valid IP");
-	   				onNotAddedValidIP();
-	   			}
-	   		}
-	   	} else if(logMINOR)
-	   		Logger.minor(this, "Client core not loaded");
-	   	synchronized(this) {
-	   		hasValidIP = addedValidIP;
-	   	}
-	   	lastIPAddress = addresses.toArray(new FreenetInetAddress[addresses.size()]);
-	   	if(dumpLocalAddresses) {
-	   		ArrayList<FreenetInetAddress> filtered = new ArrayList<FreenetInetAddress>(lastIPAddress.length);
-	   		for(FreenetInetAddress addr: lastIPAddress) {
-	   			if(addr == null) continue;
-	   			if(addr == overrideIPAddress && addr.hasHostnameNoIP())
-	   				filtered.add(addr);
-	   			else if(addr.hasHostnameNoIP()) continue;
-	   			else if(IPUtil.isValidAddress(addr.getAddress(), false))
-	   				filtered.add(addr);
-	   		}
-	   		return filtered.toArray(new FreenetInetAddress[filtered.size()]);
-	   	}
-	   	return lastIPAddress;
+
+		if(node.clientCore != null) {
+			boolean hadValidIP;
+			synchronized(this) {
+				hadValidIP = hasValidIP;
+				hasValidIP = addedValidIP;
+				if(firstDetection) {
+					hadValidIP = !addedValidIP;
+					firstDetection = false;
+				}
+			}
+			if(hadValidIP != addedValidIP) {
+				if (addedValidIP) {
+					if(logMINOR) Logger.minor(this, "Got valid IP");
+					onAddedValidIP();
+				} else {
+					if(logMINOR) Logger.minor(this, "No valid IP");
+					onNotAddedValidIP();
+				}
+			}
+		} else if(logMINOR)
+			Logger.minor(this, "Client core not loaded");
+		synchronized(this) {
+			hasValidIP = addedValidIP;
+		}
+		lastIPAddress = addresses.toArray(new FreenetInetAddress[addresses.size()]);
+		if(dumpLocalAddresses) {
+			ArrayList<FreenetInetAddress> filtered = new ArrayList<FreenetInetAddress>(lastIPAddress.length);
+			for(FreenetInetAddress addr: lastIPAddress) {
+				if(addr == null) continue;
+				if(addr == overrideIPAddress && addr.hasHostnameNoIP())
+					filtered.add(addr);
+				else if(addr.hasHostnameNoIP()) continue;
+				else if(IPUtil.isValidAddress(addr.getAddress(), false))
+					filtered.add(addr);
+			}
+			return filtered.toArray(new FreenetInetAddress[filtered.size()]);
+		}
+		return lastIPAddress;
 	}
-	
+
 	boolean hasValidIP() {
 		synchronized(this) {
 			return hasValidIP;
 		}
 	}
-	
+
 	private void onAddedValidIP() {
 		node.clientCore.alerts.unregister(primaryIPUndetectedAlert);
 		node.onAddedValidIP();
 	}
-	
+
 	private void onNotAddedValidIP() {
 		node.clientCore.alerts.register(primaryIPUndetectedAlert);
 	}
-	
+
 	/**
 	 * Core of the IP detection algorithm.
 	 * @param addresses
@@ -232,7 +232,7 @@ public class NodeIPDetector {
 					addedValidIP = true;
 			}
 		}
-		
+
 		if((pluginDetectedIPs != null) && (pluginDetectedIPs.length > 0)) {
 			for(DetectedIP pluginDetectedIP: pluginDetectedIPs) {
 				InetAddress addr = pluginDetectedIP.publicAddress;
@@ -246,11 +246,11 @@ public class NodeIPDetector {
 				}
 			}
 		}
-		
+
 		boolean hadAddedValidIP = addedValidIP;
-		
+
 		int confidence = 0;
-		
+
 		// Try to pick it up from our connections
 		if(node.peers != null) {
 			PeerNode[] peerList = node.peers.myPeers();
@@ -287,7 +287,7 @@ public class NodeIPDetector {
 				}
 			}
 			if(countsByPeer.size() == 1) {
-                Entry<FreenetInetAddress, Integer> countByPeer = countsByPeer.entrySet().iterator().next();
+				Entry<FreenetInetAddress, Integer> countByPeer = countsByPeer.entrySet().iterator().next();
 				FreenetInetAddress addr = countByPeer.getKey();
 				confidence = countByPeer.getValue();
 				Logger.minor(this, "Everyone agrees we are "+addr);
@@ -320,13 +320,13 @@ public class NodeIPDetector {
 							hasRealDetectedAddress = true;
 					}
 					if((bestPopularity > 1) || !hasRealDetectedAddress) {
- 						if(!addresses.contains(best)) {
+						if(!addresses.contains(best)) {
 							Logger.minor(this, "Adding best peer "+best+" ("+bestPopularity+ ')');
 							addresses.add(best);
 							if(best.isRealInternetAddress(false, false, false))
 								addedValidIP = true;
 						}
- 						confidence = bestPopularity;
+						confidence = bestPopularity;
 						if((secondBest != null) && (secondBestPopularity > 1)) {
 							if(!addresses.contains(secondBest)) {
 								Logger.minor(this, "Adding second best peer "+secondBest+" ("+secondBest+ ')');
@@ -339,7 +339,7 @@ public class NodeIPDetector {
 				}
 			}
 		}
-		
+
 		// Add the old address only if we have no choice, or if we only have the word of two peers to go on.
 		if((!(hadAddedValidIP || confidence > 2)) && (oldIPAddress != null) && !oldIPAddress.equals(overrideIPAddress)) {
 			addresses.add(oldIPAddress);
@@ -347,10 +347,10 @@ public class NodeIPDetector {
 			// There is an excellent chance that this is out of date.
 			// So we still want to nag the user, until we have some confirmation.
 		}
-		
-	   	return addedValidIP;
+
+		return addedValidIP;
 	}
-	
+
 	private String l10n(String key) {
 		return NodeL10n.getBase().getString("NodeIPDetector."+key);
 	}
@@ -363,7 +363,7 @@ public class NodeIPDetector {
 		if(lastIPAddress == null) return detectPrimaryIPAddress(dumpLocal);
 		return lastIPAddress;
 	}
-	
+
 	public boolean hasDirectlyDetectedIP() {
 		InetAddress[] addrs = ipDetector.getAddress(node.executor);
 		if(addrs == null || addrs.length == 0) return false;
@@ -385,7 +385,7 @@ public class NodeIPDetector {
 	public void processDetectedIPs(DetectedIP[] list) {
 		pluginDetectedIPs = list;
 		for(DetectedIP pluginDetectedIP: pluginDetectedIPs)
-		    reportMTU(pluginDetectedIP.mtu, pluginDetectedIP.publicAddress instanceof Inet6Address);
+			reportMTU(pluginDetectedIP.mtu, pluginDetectedIP.publicAddress instanceof Inet6Address);
 		redetectAddress();
 	}
 
@@ -393,15 +393,15 @@ public class NodeIPDetector {
 	 * Is called by IPAddressDetector to inform NodeIPDetector about the MTU
 	 * associated to this interface
 	 */
-        public void reportMTU(int mtu, boolean forIPv6) {
-	    boolean mtuChanged = false;
-	    if(forIPv6)
-		mtuChanged |= minimumMTUIPv6.report(mtu);
-	    else	
-		mtuChanged |= minimumMTUIPv4.report(mtu);
+	public void reportMTU(int mtu, boolean forIPv6) {
+		boolean mtuChanged = false;
+		if(forIPv6)
+			mtuChanged |= minimumMTUIPv6.report(mtu);
+		else
+			mtuChanged |= minimumMTUIPv4.report(mtu);
 
-	    if (mtuChanged) node.updateMTU();
-        }
+		if (mtuChanged) node.updateMTU();
+	}
 
 	public void redetectAddress() {
 		FreenetInetAddress[] newIP = detectPrimaryIPAddress(false);
@@ -422,16 +422,16 @@ public class NodeIPDetector {
 
 	public int registerConfigs(SubConfig nodeConfig, int sortOrder) {
 		// IP address override
-		nodeConfig.register("ipAddressOverride", "", sortOrder++, true, false, "NodeIPDectector.ipOverride", 
-				"NodeIPDectector.ipOverrideLong", 
-				new StringCallback() {
+		nodeConfig.register("ipAddressOverride", "", sortOrder++, true, false, "NodeIPDectector.ipOverride",
+							"NodeIPDectector.ipOverrideLong",
+		new StringCallback() {
 
 			@Override
 			public String get() {
 				if(overrideIPAddressString == null) return "";
 				else return overrideIPAddressString;
 			}
-			
+
 			@Override
 			public void set(String val) throws InvalidConfigValueException {
 				boolean hadValidAddressOverride = hasValidAddressOverride();
@@ -466,7 +466,7 @@ public class NodeIPDetector {
 				redetectAddress();
 			}
 		});
-		
+
 		hasValidAddressOverride = true;
 		overrideIPAddressString = nodeConfig.getString("ipAddressOverride");
 		if(overrideIPAddressString.length() == 0)
@@ -490,16 +490,16 @@ public class NodeIPDetector {
 				overrideIPAddress = null;
 			}
 		}
-		
+
 		// Temporary IP address hint
-		
+
 		nodeConfig.register("tempIPAddressHint", "", sortOrder++, true, false, "NodeIPDectector.tempAddressHint", "NodeIPDectector.tempAddressHintLong", new StringCallback() {
 
 			@Override
 			public String get() {
 				return "";
 			}
-			
+
 			@Override
 			public void set(String val) throws InvalidConfigValueException {
 				if(val.length() == 0) {
@@ -514,7 +514,7 @@ public class NodeIPDetector {
 				redetectAddress();
 			}
 		});
-		
+
 		String ipHintString = nodeConfig.getString("tempIPAddressHint");
 		if(ipHintString.length() > 0) {
 			try {
@@ -526,7 +526,7 @@ public class NodeIPDetector {
 				oldIPAddress = null;
 			}
 		}
-		
+
 		return sortOrder;
 	}
 
@@ -568,7 +568,7 @@ public class NodeIPDetector {
 			public int getPriority() {
 				return NativeThread.HIGH_PRIORITY;
 			}
-			
+
 		});
 	}
 
@@ -579,7 +579,7 @@ public class NodeIPDetector {
 	public void unregisterIPDetectorPlugin(FredPluginIPDetector detector) {
 		ipDetectorManager.unregisterDetectorPlugin(detector);
 	}
-	
+
 	public synchronized boolean isDetecting() {
 		return !(hasDetectedPM && hasDetectedIAD);
 	}
@@ -603,7 +603,7 @@ public class NodeIPDetector {
 	public void setMaybeSymmetric() {
 		if(ipDetectorManager != null && ipDetectorManager.isEmpty()) {
 			if(maybeSymmetricAlert == null) {
-				maybeSymmetricAlert = new SimpleUserAlert(true, l10n("maybeSymmetricTitle"), 
+				maybeSymmetricAlert = new SimpleUserAlert(true, l10n("maybeSymmetricTitle"),
 						l10n("maybeSymmetric"), l10n("maybeSymmetricShort"), UserAlert.ERROR);
 			}
 			if(node.clientCore != null && node.clientCore.alerts != null)
@@ -621,7 +621,7 @@ public class NodeIPDetector {
 	public void unregisterPortForwardPlugin(FredPluginPortForward forward) {
 		ipDetectorManager.unregisterPortForwardPlugin(forward);
 	}
-	
+
 	//TODO: ugly: deal with multiple instances properly
 	public synchronized void registerBandwidthIndicatorPlugin(FredPluginBandwidthIndicator indicator) {
 		bandwidthIndicator = indicator;
@@ -633,17 +633,17 @@ public class NodeIPDetector {
 		return bandwidthIndicator;
 	}
 	private FredPluginBandwidthIndicator bandwidthIndicator;
-	
+
 	boolean hasValidAddressOverride() {
 		synchronized(this) {
 			return hasValidAddressOverride;
 		}
 	}
-	
+
 	private void onGetValidAddressOverride() {
 		node.clientCore.alerts.unregister(invalidAddressOverrideAlert);
 	}
-	
+
 	private void onNotGetValidAddressOverride() {
 		node.clientCore.alerts.register(invalidAddressOverrideAlert);
 	}

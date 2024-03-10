@@ -20,16 +20,16 @@ import freenet.support.math.RunningAverage;
 /**
  * Starts requests.
  * Nobody starts a request directly, you have to go through RequestStarter.
- * And you have to provide a RequestStarterClient. We do round robin between 
+ * And you have to provide a RequestStarterClient. We do round robin between
  * clients on the same priority level.
  */
 public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionList {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -52,15 +52,15 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	public static final short PREFETCH_PRIORITY_CLASS = 5;
 	/** Anything less important than prefetch (redundant??) */
 	public static final short PAUSED_PRIORITY_CLASS = 6;
-	
+
 	public static final short NUMBER_OF_PRIORITY_CLASSES = PAUSED_PRIORITY_CLASS - MAXIMUM_PRIORITY_CLASS + 1; // include 0 and max !!
-	
-    public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
-    
+
+	public static final short MINIMUM_FETCHABLE_PRIORITY_CLASS = PREFETCH_PRIORITY_CLASS;
+
 	public static boolean isValidPriorityClass(int prio) {
 		return !((prio < MAXIMUM_PRIORITY_CLASS) || (prio > PAUSED_PRIORITY_CLASS));
 	}
-	
+
 	final BaseRequestThrottle throttle;
 	final RunningAverage averageInputBytesPerRequest;
 	final RunningAverage averageOutputBytesPerRequest;
@@ -70,11 +70,11 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	private final boolean isInsert;
 	private final boolean isSSK;
 	final boolean realTime;
-	
+
 	static final int MAX_WAITING_FOR_SLOTS = 50;
-	
-	public RequestStarter(NodeClientCore node, BaseRequestThrottle throttle, String name, 
-			RunningAverage averageOutputBytesPerRequest, RunningAverage averageInputBytesPerRequest, boolean isInsert, boolean isSSK, boolean realTime) {
+
+	public RequestStarter(NodeClientCore node, BaseRequestThrottle throttle, String name,
+						  RunningAverage averageOutputBytesPerRequest, RunningAverage averageInputBytesPerRequest, boolean isInsert, boolean isSSK, boolean realTime) {
 		this.core = node;
 		this.stats = core.nodeStats;
 		this.throttle = throttle;
@@ -89,18 +89,18 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 	void setScheduler(RequestScheduler sched) {
 		this.sched = sched;
 	}
-	
+
 	void start() {
 		core.getExecutor().execute(this, name);
 	}
-	
+
 	final String name;
-	
+
 	@Override
 	public String toString() {
 		return name;
 	}
-	
+
 	void realRun() {
 		ChosenBlock req = null;
 		// The last time at which we sent a request or decided not to
@@ -164,8 +164,8 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 				RejectReason reason;
 				assert(req.realTimeFlag == realTime);
 				if (!req.localRequestOnly) {
-					reason = stats.shouldRejectRequest(true, isInsert, isSSK, true, false, null, false, 
-							Node.PREFER_INSERT_DEFAULT && isInsert, req.realTimeFlag, null);
+					reason = stats.shouldRejectRequest(true, isInsert, isSSK, true, false, null, false,
+													   Node.PREFER_INSERT_DEFAULT && isInsert, req.realTimeFlag, null);
 					if(reason != null) {
 						if(logMINOR)
 							Logger.minor(this, "Not sending local request: "+reason);
@@ -177,7 +177,7 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 					stats.waitUntilNotOverloaded(isInsert);
 				}
 			} else {
-				if(logMINOR) Logger.minor(this, "Waiting...");				
+				if(logMINOR) Logger.minor(this, "Waiting...");
 				// Always take the lock on RequestStarter first. AFAICS we don't synchronize on RequestStarter anywhere else.
 				// Nested locks here prevent extra latency when there is a race, and therefore allow us to sleep indefinitely
 				synchronized(this) {
@@ -226,21 +226,21 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 
 	@Override
 	public void run() {
-	    freenet.support.Logger.OSThread.logPID(this);
-            while(true) {
-                try {
-                    realRun();
-                } catch (Throwable t) {
-                        Logger.error(this, "Caught "+t, t);
-                }
-            }
+		freenet.support.Logger.OSThread.logPID(this);
+		while(true) {
+			try {
+				realRun();
+			} catch (Throwable t) {
+				Logger.error(this, "Caught "+t, t);
+			}
+		}
 	}
-	
+
 	private class SenderThread implements Runnable {
 
 		private final ChosenBlock req;
 		private final Key key;
-		
+
 		public SenderThread(ChosenBlock req, Key key) {
 			this.req = req;
 			this.key = key;
@@ -248,20 +248,20 @@ public class RequestStarter implements Runnable, RandomGrabArrayItemExclusionLis
 
 		@Override
 		public void run() {
-		    freenet.support.Logger.OSThread.logPID(this);
-		    // FIXME ? key is not known for inserts here
-		    if (key != null)
-		    	stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
-		    if(!req.send(core, sched)) {
+			freenet.support.Logger.OSThread.logPID(this);
+			// FIXME ? key is not known for inserts here
+			if (key != null)
+				stats.reportOutgoingLocalRequestLocation(key.toNormalizedDouble());
+			if(!req.send(core, sched)) {
 				if(!((!req.isPersistent()) && req.isCancelled()))
 					Logger.error(this, "run() not able to send a request on "+req);
 				else
 					Logger.normal(this, "run() not able to send a request on "+req+" - request was cancelled");
 			}
-			if(logMINOR) 
+			if(logMINOR)
 				Logger.minor(this, "Finished "+req);
 		}
-		
+
 	}
 
 	/** LOCKING: Caller must avoid locking while calling this function. In particular,

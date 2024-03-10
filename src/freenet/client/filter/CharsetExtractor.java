@@ -10,20 +10,20 @@ import java.io.IOException;
  * possible.
  */
 public interface CharsetExtractor {
-	
+
 	String getCharset(byte[] input, int length, String parseCharset) throws DataFilterException, IOException;
 
-	/** Inspect the first few bytes of the file for any obvious but 
-	 * type-specific BOM. Don't try too hard, if we don't find anything we 
+	/** Inspect the first few bytes of the file for any obvious but
+	 * type-specific BOM. Don't try too hard, if we don't find anything we
 	 * will call getCharset() with some specific charset families to try.
 	 * @param input The data.
 	 * @return The BOM-detected charset family, this is essentially a guess
 	 * which will have to be fed to getCharset().
-	 * (A true BOM would give an exact match, but the caller will have 
-	 * already tested for true BOMs by this point; we are looking for 
+	 * (A true BOM would give an exact match, but the caller will have
+	 * already tested for true BOMs by this point; we are looking for
 	 * "@charset \"" encoded with the given format)
 	 * @throws DataFilterException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	BOMDetection getCharsetByBOM(byte[] input, int length) throws DataFilterException, IOException;
 

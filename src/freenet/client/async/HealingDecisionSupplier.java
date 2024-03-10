@@ -64,9 +64,9 @@ public class HealingDecisionSupplier {
 	 * the best next hop when seen from the originator.
 	 */
 	private static boolean shouldHealBlock(
-										   double nodeLocation,
-										   double keyLocation,
-										   double randomBetweenZeroAndOne) {
+		double nodeLocation,
+		double keyLocation,
+		double randomBetweenZeroAndOne) {
 		double distanceToNodeLocation = Location.distance(nodeLocation, keyLocation);
 		// If the key is inside "our" 20% of the keyspace, heal it with 50% probability.
 		if (distanceToNodeLocation < 0.1) {

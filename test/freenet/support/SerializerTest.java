@@ -20,8 +20,9 @@ public class SerializerTest {
 	public void test() {
 		// Values for basic type testing.
 		final Object[] data = new Object[] { true, (byte)9, (short)0xDE, 1234567, 123467890123L, Math.E,
-			123.4567f, "testing string", new double[] { Math.PI, 0.1234d},
-			new float[] { 2345.678f, 8901.234f }};
+											 123.4567f, "testing string", new double[] { Math.PI, 0.1234d},
+											 new float[] { 2345.678f, 8901.234f }
+										   };
 
 		readWrite(data);
 

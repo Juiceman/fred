@@ -13,13 +13,13 @@ import freenet.support.api.Bucket;
  * plugin to a FCP client.<br>
  * It is the inverse of {@link FCPPluginClientMessage} which parses the on-network format of client
  * to server messages.<br><br>
- * 
+ *
  * There is a similar class {@link FCPPluginMessage} which serves as a container of FCP plugin
  * messages which are produced and consumed by the actual server and client plugin implementations.
  * Consider this class here as an internal representation of FCP plugin messages used solely
  * for encoding server-to-client messages, while the other one is the external representation used
  * for both server and client messages.
- * 
+ *
  * ATTENTION: The on-network name of this message is different: It is {@value #NAME}. The class
  * previously had the same name but it was decided to rename it: Previously, it was only allowed
  * for the server to send messages to the client as a direct <i>reply</i> to a message. Nowadays,
@@ -30,7 +30,7 @@ import freenet.support.api.Bucket;
  * network message name as is. <br>
  * TODO: Would it technically be possible to add a second name to the on-network data so we
  * can get rid of the old name after a transition period?<br><br>
- * 
+ *
  * @link FCPPluginConnection
  *     FCPPluginConnection gives an overview of how plugin messaging works in general.
  * @link FCPPluginConnectionImpl
@@ -41,90 +41,90 @@ import freenet.support.api.Bucket;
  *     xor (xor@freenetproject.org)
  */
 public class FCPPluginServerMessage extends DataCarryingMessage {
-	
-    /**
-     * On-network format name of the message.
-     * 
-     * ATTENTION: This one is different to the class name. For an explanation, see the class-level
-     * JavaDoc {@link FCPPluginServerMessage}.
-     */
-	private static final String NAME = "FCPPluginReply";
-	
-    public static final String PARAM_PREFIX = "Replies";
 
-    /** @see FCPPluginMessage#data */
+	/**
+	 * On-network format name of the message.
+	 *
+	 * ATTENTION: This one is different to the class name. For an explanation, see the class-level
+	 * JavaDoc {@link FCPPluginServerMessage}.
+	 */
+	private static final String NAME = "FCPPluginReply";
+
+	public static final String PARAM_PREFIX = "Replies";
+
+	/** @see FCPPluginMessage#data */
 	private final long dataLength;
 
 	/** @see PluginManager#getPluginFCPServer(String) */
 	private final String plugname;
 
-    /** @see FCPPluginMessage#identifier */
+	/** @see FCPPluginMessage#identifier */
 	private final String identifier;
 
-    /** @see FCPPluginMessage#params */
+	/** @see FCPPluginMessage#params */
 	private final SimpleFieldSet plugparams;
 
-    /** @see FCPPluginMessage#success */
-    private final Boolean success;
+	/** @see FCPPluginMessage#success */
+	private final Boolean success;
 
-    /** @see FCPPluginMessage#errorCode */
-    private final String errorCode;
+	/** @see FCPPluginMessage#errorCode */
+	private final String errorCode;
 
-    /** @see FCPPluginMessage#errorMessage */
-    private final String errorMessage;
+	/** @see FCPPluginMessage#errorMessage */
+	private final String errorMessage;
 
-    /**
-     * @deprecated
-     *     Use {@link #FCPPluginServerMessage(String, String, SimpleFieldSet, Bucket, Boolean,
-     *     String, String)}.<br><br>
-     * 
-     *     <b>ATTENTION:</b> Upon removal of this constructor, you should remove the backend
-     *     constructor so the only remaining constructor is the one which consumes a
-     *     {@link FCPPluginMessage}. Then you should remove all the member variables from this class
-     *     which duplicate the members of that class, and instead store a reference to an object of
-     *     the other class.
-     */
-    @Deprecated
-    public FCPPluginServerMessage(String pluginname, String identifier2, SimpleFieldSet fs,
-            Bucket bucket2) {
-        this(pluginname, identifier2, fs, bucket2, null, null, null);
-    }
+	/**
+	 * @deprecated
+	 *     Use {@link #FCPPluginServerMessage(String, String, SimpleFieldSet, Bucket, Boolean,
+	 *     String, String)}.<br><br>
+	 *
+	 *     <b>ATTENTION:</b> Upon removal of this constructor, you should remove the backend
+	 *     constructor so the only remaining constructor is the one which consumes a
+	 *     {@link FCPPluginMessage}. Then you should remove all the member variables from this class
+	 *     which duplicate the members of that class, and instead store a reference to an object of
+	 *     the other class.
+	 */
+	@Deprecated
+	public FCPPluginServerMessage(String pluginname, String identifier2, SimpleFieldSet fs,
+								  Bucket bucket2) {
+		this(pluginname, identifier2, fs, bucket2, null, null, null);
+	}
 
-    /**
-     * @param pluginname
-     *     The class name of the plugin which is sending the message.<br>
-     *     Must not be null.<br>
-     *     See {@link PluginManager#getPluginInfoByClassName(String)}.
-     */
-    public FCPPluginServerMessage(String pluginname, FCPPluginMessage message) {
-        
-        this(pluginname, message.identifier, message.params, message.data, message.success,
-            message.errorCode, message.errorMessage);
-        
-        assert(pluginname != null);
-    }
+	/**
+	 * @param pluginname
+	 *     The class name of the plugin which is sending the message.<br>
+	 *     Must not be null.<br>
+	 *     See {@link PluginManager#getPluginInfoByClassName(String)}.
+	 */
+	public FCPPluginServerMessage(String pluginname, FCPPluginMessage message) {
 
-    /**
-     * The parameters match the member variables of {@link FCPPluginMessage}, and thus their JavaDoc
-     * applies.
-     */
-    public FCPPluginServerMessage(String pluginname, String identifier2, SimpleFieldSet fs,
-            Bucket bucket2, Boolean success, String errorCode, String errorMessage) {
-        
-        bucket = bucket2;
-        if (bucket == null)
-            dataLength = -1;
-        else {
-            bucket.setReadOnly();
-            dataLength = bucket.size();
-        }
-        plugname = pluginname;
-        identifier = identifier2;
-        plugparams = fs;
-        this.success = success;
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-    }
+		this(pluginname, message.identifier, message.params, message.data, message.success,
+			 message.errorCode, message.errorMessage);
+
+		assert(pluginname != null);
+	}
+
+	/**
+	 * The parameters match the member variables of {@link FCPPluginMessage}, and thus their JavaDoc
+	 * applies.
+	 */
+	public FCPPluginServerMessage(String pluginname, String identifier2, SimpleFieldSet fs,
+								  Bucket bucket2, Boolean success, String errorCode, String errorMessage) {
+
+		bucket = bucket2;
+		if (bucket == null)
+			dataLength = -1;
+		else {
+			bucket.setReadOnly();
+			dataLength = bucket.size();
+		}
+		plugname = pluginname;
+		identifier = identifier2;
+		plugparams = fs;
+		this.success = success;
+		this.errorCode = errorCode;
+		this.errorMessage = errorMessage;
+	}
 
 	@Override
 	String getIdentifier() {
@@ -140,7 +140,7 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 	long dataLength() {
 		return dataLength;
 	}
-	
+
 	@Override
 	String getEndString() {
 		if (dataLength() > 0)
@@ -157,22 +157,22 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 		if (dataLength() > 0)
 			sfs.put("DataLength", dataLength());
 
-        // The sfs.put() would throw IllegalArgumentException if plugparams.isEmpty() == true.
-        if(plugparams != null && !plugparams.isEmpty()) {
-            sfs.put(PARAM_PREFIX, plugparams);
-        }
+		// The sfs.put() would throw IllegalArgumentException if plugparams.isEmpty() == true.
+		if(plugparams != null && !plugparams.isEmpty()) {
+			sfs.put(PARAM_PREFIX, plugparams);
+		}
 
-        if(success != null) {
-            sfs.put("Success", success);
-            
-            if(!success && errorCode != null) {
-                sfs.putSingle("ErrorCode", errorCode);
-                
-                if(errorMessage != null) {
-                    sfs.putSingle("ErrorMessage", errorMessage);
-                }
-            }
-        }
+		if(success != null) {
+			sfs.put("Success", success);
+
+			if(!success && errorCode != null) {
+				sfs.putSingle("ErrorCode", errorCode);
+
+				if(errorMessage != null) {
+					sfs.putSingle("ErrorMessage", errorMessage);
+				}
+			}
+		}
 		return sfs;
 	}
 

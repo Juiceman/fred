@@ -82,108 +82,108 @@ public class SSL {
 
 		// Tracks config parameters related to a SSL
 		sslConfig.register("sslEnable", false, configItemOrder++, true, true, "SSL.enable", "SSL.enable",
-			new BooleanCallback() {
+		new BooleanCallback() {
 
-				@Override
-				public Boolean get() {
-					return enable;
-				}
+			@Override
+			public Boolean get() {
+				return enable;
+			}
 
-				@Override
-				public void set(Boolean newValue) throws InvalidConfigValueException {
-					if (!get().equals(newValue)) {
-						enable = newValue;
-						if(enable)
-							try {
-								loadKeyStore();
-								createSSLContext();
-							} catch(Exception e) {
-								enable = false;
-								e.printStackTrace(System.out);
-								throwConfigError("SSL could not be enabled", e);
-							}
-						else {
-							ssf = null;
-							keyStore = null;
-						}
-					}
-				}
-			});
-
-		sslConfig.register("sslKeyStore", "datastore/certs", configItemOrder++, true, true, "SSL.keyStore", "SSL.keyStore",
-			new StringCallback() {
-
-				@Override
-				public String get() {
-					return keyStore;
-				}
-
-				@Override
-				public void set(String newKeyStore) throws InvalidConfigValueException {
-					if(!newKeyStore.equals(get())) {
-						String oldKeyStore = keyStore;
-						keyStore = newKeyStore;
+			@Override
+			public void set(Boolean newValue) throws InvalidConfigValueException {
+				if (!get().equals(newValue)) {
+					enable = newValue;
+					if(enable)
 						try {
 							loadKeyStore();
-						} catch(Exception e) {
-							keyStore = oldKeyStore;
-							e.printStackTrace(System.out);
-							throwConfigError("Keystore file could not be changed", e);
-						}
-					}
-				}
-			});
-
-		sslConfig.register("sslKeyStorePass", "freenet", configItemOrder++, true, true, "SSL.keyStorePass", "SSL.keyStorePass",
-			new StringCallback() {
-
-				@Override
-				public String get() {
-					return keyStorePass;
-				}
-
-				@Override
-				public void set(String newKeyStorePass) throws InvalidConfigValueException {
-					if(!newKeyStorePass.equals(get())) {
-						String oldKeyStorePass = keyStorePass;
-						keyStorePass = newKeyStorePass;
-						try {
-							storeKeyStore();
-						} catch(Exception e) {
-							keyStorePass = oldKeyStorePass;
-							e.printStackTrace(System.out);
-							throwConfigError("Keystore password could not be changed", e);
-						}
-					}
-				}
-			});
-
-		sslConfig.register("sslKeyPass", "freenet", configItemOrder++, true, true, "SSL.keyPass", "SSL.keyPass",
-			new StringCallback() {
-
-				@Override
-				public String get() {
-					return keyPass;
-				}
-
-				@Override
-				public void set(String newKeyPass) throws InvalidConfigValueException {
-					if(!newKeyPass.equals(get())) {
-						String oldKeyPass = keyPass;
-						keyPass = newKeyPass;
-						try {
-							Certificate[] chain = keystore.getCertificateChain(CHAIN_ALIAS);
-							Key privKey = keystore.getKey(CHAIN_ALIAS, oldKeyPass.toCharArray());
-							keystore.setKeyEntry(CHAIN_ALIAS, privKey, keyPass.toCharArray(), chain);
 							createSSLContext();
 						} catch(Exception e) {
-							keyPass = oldKeyPass;
+							enable = false;
 							e.printStackTrace(System.out);
-							throwConfigError("Private key password could not be changed", e);
+							throwConfigError("SSL could not be enabled", e);
 						}
+					else {
+						ssf = null;
+						keyStore = null;
 					}
 				}
-			});
+			}
+		});
+
+		sslConfig.register("sslKeyStore", "datastore/certs", configItemOrder++, true, true, "SSL.keyStore", "SSL.keyStore",
+		new StringCallback() {
+
+			@Override
+			public String get() {
+				return keyStore;
+			}
+
+			@Override
+			public void set(String newKeyStore) throws InvalidConfigValueException {
+				if(!newKeyStore.equals(get())) {
+					String oldKeyStore = keyStore;
+					keyStore = newKeyStore;
+					try {
+						loadKeyStore();
+					} catch(Exception e) {
+						keyStore = oldKeyStore;
+						e.printStackTrace(System.out);
+						throwConfigError("Keystore file could not be changed", e);
+					}
+				}
+			}
+		});
+
+		sslConfig.register("sslKeyStorePass", "freenet", configItemOrder++, true, true, "SSL.keyStorePass", "SSL.keyStorePass",
+		new StringCallback() {
+
+			@Override
+			public String get() {
+				return keyStorePass;
+			}
+
+			@Override
+			public void set(String newKeyStorePass) throws InvalidConfigValueException {
+				if(!newKeyStorePass.equals(get())) {
+					String oldKeyStorePass = keyStorePass;
+					keyStorePass = newKeyStorePass;
+					try {
+						storeKeyStore();
+					} catch(Exception e) {
+						keyStorePass = oldKeyStorePass;
+						e.printStackTrace(System.out);
+						throwConfigError("Keystore password could not be changed", e);
+					}
+				}
+			}
+		});
+
+		sslConfig.register("sslKeyPass", "freenet", configItemOrder++, true, true, "SSL.keyPass", "SSL.keyPass",
+		new StringCallback() {
+
+			@Override
+			public String get() {
+				return keyPass;
+			}
+
+			@Override
+			public void set(String newKeyPass) throws InvalidConfigValueException {
+				if(!newKeyPass.equals(get())) {
+					String oldKeyPass = keyPass;
+					keyPass = newKeyPass;
+					try {
+						Certificate[] chain = keystore.getCertificateChain(CHAIN_ALIAS);
+						Key privKey = keystore.getKey(CHAIN_ALIAS, oldKeyPass.toCharArray());
+						keystore.setKeyEntry(CHAIN_ALIAS, privKey, keyPass.toCharArray(), chain);
+						createSSLContext();
+					} catch(Exception e) {
+						keyPass = oldKeyPass;
+						e.printStackTrace(System.out);
+						throwConfigError("Private key password could not be changed", e);
+					}
+				}
+			}
+		});
 
 		enable = sslConfig.getBoolean("sslEnable");
 		keyStore = sslConfig.getString("sslKeyStore");
@@ -225,28 +225,28 @@ public class SSL {
 				keystore.load(null, keyStorePass.toCharArray());
 				try {
 					Class<?> certAndKeyGenClazz = anyClass(
-						"sun.security.x509.CertAndKeyGen", // Java 7 and earlier
-						"sun.security.tools.keytool.CertAndKeyGen" // Java 8 and later
-					);
+													  "sun.security.x509.CertAndKeyGen", // Java 7 and earlier
+													  "sun.security.tools.keytool.CertAndKeyGen" // Java 8 and later
+												  );
 					Constructor<?> certAndKeyGenCtor = certAndKeyGenClazz.getConstructor(String.class, String.class, String.class);
 					Object keypair = certAndKeyGenCtor.newInstance(KEY_ALGORITHM, SIG_ALGORITHM, "BC");
 
 					Class<?> x500NameClazz = Class.forName("sun.security.x509.X500Name");
 					Constructor<?> x500NameCtor = x500NameClazz.getConstructor(String.class, String.class,
-					        String.class, String.class, String.class, String.class);
+												  String.class, String.class, String.class, String.class);
 					Object x500Name = x500NameCtor.newInstance(CERTIFICATE_CN, CERTIFICATE_OU, CERTIFICATE_ON, "", "", "");
-					
+
 					Method certAndKeyGenGenerate = certAndKeyGenClazz.getMethod("generate", int.class);
 					certAndKeyGenGenerate.invoke(keypair, KEY_SIZE);
-					
+
 					Method certAndKeyGetPrivateKey = certAndKeyGenClazz.getMethod("getPrivateKey");
 					PrivateKey privKey = (PrivateKey) certAndKeyGetPrivateKey.invoke(keypair);
 
 					Certificate[] chain = new Certificate[1];
 					Method certAndKeyGenGetSelfCertificate = certAndKeyGenClazz.getMethod("getSelfCertificate",
-					        x500NameClazz, long.class);
+							x500NameClazz, long.class);
 					chain[0] = (Certificate) certAndKeyGenGetSelfCertificate.invoke(keypair, x500Name,
-						CERTIFICATE_LIFETIME);
+							   CERTIFICATE_LIFETIME);
 
 					keystore.setKeyEntry("freenet", privKey, keyPass.toCharArray(), chain);
 					storeKeyStore();
@@ -302,7 +302,7 @@ public class SSL {
 	}
 
 	private static void throwConfigError(String message, Throwable cause)
-			throws InvalidConfigValueException {
+	throws InvalidConfigValueException {
 		String causeMsg = cause.getMessage();
 		if (causeMsg == null) {
 			causeMsg = cause.toString();

@@ -12,13 +12,13 @@ public class PeerRemoved extends FCPMessage {
 	final String identity;
 	final String nodeIdentifier;
 	final String identifier;
-	
+
 	public PeerRemoved(String identity, String nodeIdentifier, String identifier) {
 		this.identity = identity;
 		this.nodeIdentifier = nodeIdentifier;
 		this.identifier = identifier;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
@@ -36,7 +36,7 @@ public class PeerRemoved extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PeerRemoved goes from server to client not the other way around", identifier, false);
 	}
 

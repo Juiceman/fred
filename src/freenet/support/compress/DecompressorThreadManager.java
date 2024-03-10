@@ -23,7 +23,7 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.io.Closer;
 
-/** Creates and manages decompressor threads. This class is 
+/** Creates and manages decompressor threads. This class is
  * given all decompressors which should be applied to an
  * InputStream via addDecompressor. The decompressors will be
  * strung together and executed when the execute method is called.
@@ -39,11 +39,11 @@ public class DecompressorThreadManager {
 	private boolean finished = false;
 	private Throwable error = null;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -84,7 +84,7 @@ public class DecompressorThreadManager {
 		}
 		try {
 			int count = 0;
-			while(!threads.isEmpty()){
+			while(!threads.isEmpty()) {
 				if(getError() != null) throw getError();
 				DecompressorThread threadRunnable = threads.remove();
 				if(threads.isEmpty()) threadRunnable.setLast();
@@ -101,7 +101,7 @@ public class DecompressorThreadManager {
 			Closer.close(output);
 		}
 		return input;
-		
+
 	}
 
 	/** Informs the manager that a nonrecoverable exception has occured in the
@@ -197,7 +197,7 @@ public class DecompressorThreadManager {
 			}
 		}
 
-		/** Should be called before executing the thread when there 
+		/** Should be called before executing the thread when there
 		 * are no further decompressors pending*/
 		public void setLast() {
 			isLast = true;

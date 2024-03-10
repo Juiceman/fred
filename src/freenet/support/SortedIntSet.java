@@ -22,14 +22,14 @@ import java.util.SortedSet;
 public class SortedIntSet extends AbstractCollection<Integer> implements SortedSet<Integer> {
 
 	private final ArrayList<Integer> data;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public SortedIntSet() {
 		this.data = new ArrayList<Integer>();
 	}
-	
+
 	public SortedIntSet(int[] input) {
 		assertSorted(input);
 		data = new ArrayList<Integer>(input.length);
@@ -37,7 +37,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 			data.add(i);
 		}
 	}
-	
+
 	@Override
 	public synchronized int size() {
 		return data.size();
@@ -45,7 +45,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get the smallest item on this set
-	 * 
+	 *
 	 * @return the smallest item, or -1 if the set is empty
 	 */
 	public synchronized int getFirst() {
@@ -54,7 +54,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get the largest item on this set
-	 * 
+	 *
 	 * @return the largest item, or -1 if the set is empty
 	 */
 	public synchronized int getLast() {
@@ -63,7 +63,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Check if this set is empty.
-	 * 
+	 *
 	 * @param num
 	 * @return <code>true</code>, if the set is empty.
 	 */
@@ -74,7 +74,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Check if <code>num</code> exist in this set.
-	 * 
+	 *
 	 * @param num
 	 * @return <code>true</code>, if <code>num</code> exist.
 	 */
@@ -85,7 +85,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Remove an item
-	 * 
+	 *
 	 * @param item
 	 *            the item to be removed
 	 */
@@ -111,9 +111,9 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 	/**
 	 * Add the item, if it (or an item of the same number) is not already
 	 * present.
-	 * 
+	 *
 	 * @return <code>true</code>, if we added the item.
-	 */ 
+	 */
 	public synchronized boolean push(int num) {
 		int x = binarySearch(num);
 		if(x >= 0) return false;
@@ -125,11 +125,11 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Add the item.
-	 * 
+	 *
 	 * @throws {@link IllegalArgumentException}
 	 *             if the item already exist
 	 * @return <code>true</code>, if we added the item.
-	 */ 
+	 */
 	public synchronized void add(int num) {
 		int x = binarySearch(num);
 		if(x >= 0) {
@@ -146,7 +146,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Remove and return the smallest item
-	 * 
+	 *
 	 * @return the smallest item
 	 */
 	public int removeFirst() {
@@ -165,7 +165,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get a sorted array of all items
-	 * 
+	 *
 	 * @return sorted array of all items
 	 */
 	public synchronized int[] toIntArray() {
@@ -178,7 +178,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get a sorted array of all items
-	 * 
+	 *
 	 * @return sorted array of all items
 	 */
 	public synchronized int[] toArrayRaw() {

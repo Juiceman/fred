@@ -36,7 +36,7 @@ public class PrioritizedSerialExecutor implements Executor {
 	private final long jobTimeout;
 
 	private final Runner runner = new Runner();
-	
+
 	private final NodeStats statistics;
 
 	class Runner implements PrioRunnable {
@@ -60,58 +60,58 @@ public class PrioritizedSerialExecutor implements Executor {
 				current = Thread.currentThread();
 			}
 			try {
-			boolean calledIdleCallback = false;
-			while(true) {
-				Runnable job = null;
-				synchronized(jobs) {
-					job = checkQueue();
-					if(job == null) {
-						waiting = true;
-						try {
-							//NB: notify only on adding work or this quits early.
-							jobs.wait(jobTimeout);
-						} catch (InterruptedException e) {
-							// Ignore
-						}
-						waiting=false;
+				boolean calledIdleCallback = false;
+				while(true) {
+					Runnable job = null;
+					synchronized(jobs) {
 						job = checkQueue();
 						if(job == null) {
-							if(calledIdleCallback || callback == null) {
-								running=false;
-								current = null;
-								return;
+							waiting = true;
+							try {
+								//NB: notify only on adding work or this quits early.
+								jobs.wait(jobTimeout);
+							} catch (InterruptedException e) {
+								// Ignore
+							}
+							waiting=false;
+							job = checkQueue();
+							if(job == null) {
+								if(calledIdleCallback || callback == null) {
+									running=false;
+									current = null;
+									return;
+								}
 							}
 						}
 					}
-				}
-				if(job == null) {
+					if(job == null) {
+						try {
+							callback.onIdle();
+						} catch (Throwable t) {
+							Logger.error(this, "Idle callback failed: "+t, t);
+						}
+						calledIdleCallback = true;
+						continue;
+					}
+					calledIdleCallback = false;
 					try {
-						callback.onIdle();
+						if(logMINOR)
+							Logger.minor(this, "Running job "+job);
+						long start = System.currentTimeMillis();
+						job.run();
+						long end = System.currentTimeMillis();
+						if(logMINOR) {
+							Logger.minor(this, "Job "+job+" took "+(end-start)+"ms");
+						}
+
+						if(statistics != null) {
+							statistics.reportDatabaseJob(job.toString(), end-start);
+						}
 					} catch (Throwable t) {
-						Logger.error(this, "Idle callback failed: "+t, t);
+						Logger.error(this, "Caught "+t, t);
+						Logger.error(this, "While running "+job+" on "+this);
 					}
-					calledIdleCallback = true;
-					continue;
 				}
-				calledIdleCallback = false;
-				try {
-					if(logMINOR)
-						Logger.minor(this, "Running job "+job);
-					long start = System.currentTimeMillis();
-					job.run();
-					long end = System.currentTimeMillis();
-					if(logMINOR) {
-						Logger.minor(this, "Job "+job+" took "+(end-start)+"ms");
-					}
-				
-					if(statistics != null) {
-						statistics.reportDatabaseJob(job.toString(), end-start);
-					}
-				} catch (Throwable t) {
-					Logger.error(this, "Caught "+t, t);
-					Logger.error(this, "While running "+job+" on "+this);
-				}
-			}
 			} finally {
 				synchronized(jobs) {
 					current = null;
@@ -122,7 +122,7 @@ public class PrioritizedSerialExecutor implements Executor {
 
 		private Runnable checkQueue() {
 			if(!invertOrder) {
-				for(int i=0;i<jobs.length;i++) {
+				for(int i=0; i<jobs.length; i++) {
 					if(!jobs[i].isEmpty()) {
 						if(logMINOR)
 							Logger.minor(this, "Chosen job at priority "+i);
@@ -130,7 +130,7 @@ public class PrioritizedSerialExecutor implements Executor {
 					}
 				}
 			} else {
-				for(int i=jobs.length-1;i>=0;i--) {
+				for(int i=jobs.length-1; i>=0; i--) {
 					if(!jobs[i].isEmpty()) {
 						if(logMINOR)
 							Logger.minor(this, "Chosen job at priority "+i);
@@ -153,8 +153,8 @@ public class PrioritizedSerialExecutor implements Executor {
 	public PrioritizedSerialExecutor(int priority, int internalPriorityCount, int defaultPriority, boolean invertOrder, long jobTimeout, ExecutorIdleCallback callback, NodeStats statistics) {
 		@SuppressWarnings("unchecked")
 		ArrayDeque<Runnable>[] jobs = (ArrayDeque<Runnable>[])
-			new ArrayDeque<?>[internalPriorityCount];
-		for (int i=0;i<jobs.length;i++) {
+									  new ArrayDeque<?>[internalPriorityCount];
+		for (int i=0; i<jobs.length; i++) {
 			jobs[i] = new ArrayDeque<Runnable>();
 		}
 		this.jobs = jobs;
@@ -276,21 +276,21 @@ public class PrioritizedSerialExecutor implements Executor {
 	public int[] getQueuedJobsCountByPriority() {
 		int[] retval = new int[jobs.length];
 		synchronized(jobs) {
-			for(int i=0;i<retval.length;i++)
+			for(int i=0; i<retval.length; i++)
 				retval[i] = jobs[i].size();
 		}
 		return retval;
 	}
-	
+
 	public Runnable[][] getQueuedJobsByPriority() {
 		final Runnable[][] ret = new Runnable[jobs.length][];
-		
+
 		synchronized(jobs) {
 			for(int i=0; i < jobs.length; ++i) {
 				ret[i] = jobs[i].toArray(new Runnable[jobs[i].size()]);
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -309,7 +309,7 @@ public class PrioritizedSerialExecutor implements Executor {
 
 	public boolean anyQueued() {
 		synchronized(jobs) {
-			for(int i=0;i<jobs.length;i++)
+			for(int i=0; i<jobs.length; i++)
 				if(jobs[i].size() > 0) return true;
 		}
 		return false;

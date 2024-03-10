@@ -17,9 +17,9 @@ public class DirectDirPutFile extends DirPutFile {
 
 	private final RandomAccessBucket data;
 	private final long length;
-	
-	public static DirectDirPutFile create(String name, String contentTypeOverride, SimpleFieldSet subset, 
-			String identifier, boolean global, BucketFactory bf) throws MessageInvalidException {
+
+	public static DirectDirPutFile create(String name, String contentTypeOverride, SimpleFieldSet subset,
+										  String identifier, boolean global, BucketFactory bf) throws MessageInvalidException {
 		String s = subset.get("DataLength");
 		if(s == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "UploadFrom=direct requires a DataLength for "+name, identifier, global);
@@ -45,7 +45,7 @@ public class DirectDirPutFile extends DirPutFile {
 			mimeType = contentTypeOverride;
 		return new DirectDirPutFile(name, mimeType, length, data);
 	}
-	
+
 	private DirectDirPutFile(String name, String mimeType, long length, RandomAccessBucket data) {
 		super(name, mimeType);
 		this.length = length;

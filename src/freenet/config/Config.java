@@ -17,11 +17,11 @@ public class Config {
 	};
 
 	protected final LinkedHashMap<String, SubConfig> configsByPrefix;
-	
+
 	public Config() {
 		configsByPrefix = new LinkedHashMap<String, SubConfig>();
 	}
-	
+
 	public void register(SubConfig sc) {
 		synchronized(this) {
 			if(configsByPrefix.containsKey(sc.prefix))
@@ -29,8 +29,8 @@ public class Config {
 			configsByPrefix.put(sc.prefix, sc);
 		}
 	}
-	
-	/** Write current config to disk 
+
+	/** Write current config to disk
 	 * @throws IOException */
 	public void store() {
 		// Do nothing
@@ -38,15 +38,15 @@ public class Config {
 
 	/** Finished initialization */
 	public void finishedInit() {
-	    SubConfig[] configs;
-        synchronized(this) {
-            // FIXME maybe keep a cache of this?
-            configs = configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
-        }
-        for(SubConfig config : configs) {
-            if(!config.hasFinishedInitialization())
-                Logger.error(this, "Not finished initialization: "+config.prefix);
-        }
+		SubConfig[] configs;
+		synchronized(this) {
+			// FIXME maybe keep a cache of this?
+			configs = configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
+		}
+		for(SubConfig config : configs) {
+			if(!config.hasFinishedInitialization())
+				Logger.error(this, "Not finished initialization: "+config.prefix);
+		}
 	}
 
 	public void onRegister(SubConfig config, Option<?> o) {
@@ -57,8 +57,8 @@ public class Config {
 	public synchronized SubConfig[] getConfigs() {
 		return configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
 	}
-	
-	public synchronized SubConfig get(String subConfig){
+
+	public synchronized SubConfig get(String subConfig) {
 		return configsByPrefix.get(subConfig);
 	}
 

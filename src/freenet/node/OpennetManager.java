@@ -63,8 +63,8 @@ import freenet.support.transport.ip.IPUtil;
  * In particular:
  * - Opennet crypto
  * - LRU connections
- * 
- * Both here and in OpennetPeerNode there are lots of dubious heuristics to avoid excessive 
+ *
+ * Both here and in OpennetPeerNode there are lots of dubious heuristics to avoid excessive
  * connection churn.
  * @author toad
  */
@@ -75,21 +75,21 @@ public class OpennetManager {
 	final Announcer announcer;
 	final SeedAnnounceTracker seedTracker = new SeedAnnounceTracker();
 
-	/* The routing table is split into "buckets" by distance, each of which has a separate LRU 
-	 * list. For now there are only 2 buckets; the PETS paper suggested many buckets, but this 
-	 * would have larger overhead, more dependence on the network size, and it is not clear that 
+	/* The routing table is split into "buckets" by distance, each of which has a separate LRU
+	 * list. For now there are only 2 buckets; the PETS paper suggested many buckets, but this
+	 * would have larger overhead, more dependence on the network size, and it is not clear that
 	 * it is necessary at the moment.
-	 * 
-	 * The measured global link length distribution showed a good (1/d) length distribution below 
+	 *
+	 * The measured global link length distribution showed a good (1/d) length distribution below
 	 * 0.01 (but nowhere near enough nodes) and a flat distribution above 0.01. Hence the choice of
-	 * LONG_DISTANCE as 0.01. It appeared that there were very few short links (~ 15% less than 
+	 * LONG_DISTANCE as 0.01. It appeared that there were very few short links (~ 15% less than
 	 * 0.01 distance) and a lot of random long links, which is the opposite of what we need for
 	 * good routing, so requests would mostly bounce around randomly on the long links.
-	 * 
-	 * LONG_PROPORTION is chosen as 30% for two reasons: (a) It is close to the Kleinberg optimum 
-	 * (around 20%), and (b) it ensures that nodes with 10 connections still have 3 long links, so 
+	 *
+	 * LONG_PROPORTION is chosen as 30% for two reasons: (a) It is close to the Kleinberg optimum
+	 * (around 20%), and (b) it ensures that nodes with 10 connections still have 3 long links, so
 	 * long links cannot form chains and the routing still scales if the short routing is broken.
-	 * 
+	 *
 	 * See USK@ZLwcSLwqpM1527Tw1YmnSiXgzITU0neHQ11Cyl0iLmk,f6FLo3TvsEijIcJq-X3BTjjtm0ErVZwAPO7AUd9V7lY,AQACAAE/fix-link-length/7/
 	 * (FIXME move to wiki or other permanent storage)
 	 */
@@ -102,33 +102,33 @@ public class OpennetManager {
 	/** Assumed proportion of slow peers for scaling up the peer count
 	 * to take limited capacity of slow peers into account. */
 	public static final double ASSUMPTION_50_PERCENT_SLOW_PEERS = 0.5;
-	
-    enum LinkLengthClass {
-        /** Shorter than LONG_DISTANCE */
-        SHORT {
-            @Override
-            public int getTargetPeers(int target) {
-                int longPeers = (int) (target * LONG_PROPORTION);
-                return target - longPeers;
-            }
-        },
-        /** Longer than LONG_DISTANCE */
-        LONG {
-            @Override
-            public int getTargetPeers(int target) {
-                int longPeers = (int) (target * LONG_PROPORTION);
-                return longPeers;
-            }
-        };
-        /** Get the target number of peers for this class, given the overall target number of peers */
-        public abstract int getTargetPeers(int target);
-    }
-    
-    /** Peers LRUs by LinkLengthClass. PeerNodes are promoted within their LRU when they 
-     * successfully fetch a key. Normally we take the bottom peer, but if that isn't eligible 
-     * to be dropped, we iterate up the list. */
-    private final EnumMap<LinkLengthClass, LRUQueue<OpennetPeerNode>> peersLRUByDistance;
-	
+
+	enum LinkLengthClass {
+		/** Shorter than LONG_DISTANCE */
+		SHORT {
+			@Override
+			public int getTargetPeers(int target) {
+				int longPeers = (int) (target * LONG_PROPORTION);
+				return target - longPeers;
+			}
+		},
+		/** Longer than LONG_DISTANCE */
+		LONG {
+			@Override
+			public int getTargetPeers(int target) {
+				int longPeers = (int) (target * LONG_PROPORTION);
+				return longPeers;
+			}
+		};
+		/** Get the target number of peers for this class, given the overall target number of peers */
+		public abstract int getTargetPeers(int target);
+	}
+
+	/** Peers LRUs by LinkLengthClass. PeerNodes are promoted within their LRU when they
+	 * successfully fetch a key. Normally we take the bottom peer, but if that isn't eligible
+	 * to be dropped, we iterate up the list. */
+	private final EnumMap<LinkLengthClass, LRUQueue<OpennetPeerNode>> peersLRUByDistance;
+
 	/** Old peers. Opennet peers which we dropped but would still like to talk to
 	 * if we have no other option. */
 	private final LRUQueue<OpennetPeerNode> oldPeers;
@@ -142,7 +142,7 @@ public class OpennetManager {
 	private final EnumMap<ConnectionType,Long> connectionAttemptsAddedPlentySpace;
 	private final EnumMap<ConnectionType,Long> connectionAttemptsRejectedByPerTypeEnforcement;
 	private final EnumMap<ConnectionType,Long> connectionAttemptsRejectedNoPeersDroppable;
-	/** Number of successful CHK requests since last added a node. All values are incremented on a 
+	/** Number of successful CHK requests since last added a node. All values are incremented on a
 	 * successful request, but when we add a node, we reset the value for that type of node. */
 	private final EnumMap<ConnectionType,Long> successCount;
 
@@ -180,9 +180,9 @@ public class OpennetManager {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -197,12 +197,12 @@ public class OpennetManager {
 	public static final boolean ENABLE_PEERS_PER_KB_OUTPUT = true;
 	/** Constant for scaling peers: we multiply bandwidth in kB/sec by this
 	 * and then take the square root. Minimum is MIN_PEERs_FOR_SCALING.
-     *
-     * (define (peers kBps) (sqrt (* kBps scaling)))
-     *
-     * Scaling at 3 gives 4 peers at 5K (min peers),
+	 *
+	 * (define (peers kBps) (sqrt (* kBps scaling)))
+	 *
+	 * Scaling at 3 gives 4 peers at 5K (min peers),
 	 * 5 at 7K, 5 at 10K, 8 at 20K, 9 at 30K, 13 at 60K,
-     * 17 at 100K, 20 at 140K, 87 at 2500K.
+	 * 17 at 100K, 20 at 140K, 87 at 2500K.
 	 * 106 at 30mbit/s (the mean upload in Japan in 2014) and
 	 * 180 at 88mbit/s (the mean upload in Hong Kong in 2014).*/
 	public static final double SCALING_CONSTANT = 3;
@@ -210,8 +210,8 @@ public class OpennetManager {
 	 * Minimum number of peers. As a rough estimate, because the vast majority
 	 * of requests complete in 5 hops, 10 peers give just one binary decision
 	 * per hop. However the distribution of peers before the link length fix
- 	 * showed that having 3 short distance peers still worked, since requests
- 	 * preferentially go through higher capacity nodes with more FOAFs.
+	 * showed that having 3 short distance peers still worked, since requests
+	 * preferentially go through higher capacity nodes with more FOAFs.
 	 */
 	public static final int MIN_PEERS_FOR_SCALING = 4;
 	/** The maximum possible distance between two nodes in the wrapping [0,1) location space. */
@@ -248,7 +248,7 @@ public class OpennetManager {
 	}
 
 	private final long creationTime;
-	
+
 	private boolean stopping;
 
 	public OpennetManager(Node node, NodeCryptoConfig opennetConfig, long startupTime, boolean enableAnnouncement) throws NodeInitException {
@@ -289,7 +289,7 @@ public class OpennetManager {
 		}
 		peersLRUByDistance = new EnumMap<LinkLengthClass, LRUQueue<OpennetPeerNode>>(LinkLengthClass.class);
 		for(LinkLengthClass l : LinkLengthClass.values())
-		    peersLRUByDistance.put(l, new LRUQueue<OpennetPeerNode>());
+			peersLRUByDistance.put(l, new LRUQueue<OpennetPeerNode>());
 		oldPeers = new LRUQueue<OpennetPeerNode>();
 		announcer = (enableAnnouncement ? new Announcer(this) : null);
 	}
@@ -387,14 +387,14 @@ public class OpennetManager {
 			}
 		});
 		for(OpennetPeerNode opn: nodes) {
-		    // Drop any peers which don't have a location yet. That means we haven't connected to 
-		    // them yet, and we need the location to decide which LRU to put them in ...
-		    // This should only be a problem with old nodes; we will include the location in new 
-		    // path folding noderefs...
-		    if(Location.isValid(opn.getLocation()))
-		        lruQueue(opn).push(opn);
-		    else
-		        node.peers.disconnectAndRemove(opn, false, false, false);
+			// Drop any peers which don't have a location yet. That means we haven't connected to
+			// them yet, and we need the location to decide which LRU to put them in ...
+			// This should only be a problem with old nodes; we will include the location in new
+			// path folding noderefs...
+			if(Location.isValid(opn.getLocation()))
+				lruQueue(opn).push(opn);
+			else
+				node.peers.disconnectAndRemove(opn, false, false, false);
 		}
 		if(logMINOR) {
 			Logger.minor(this, "My full compressed ref: "+crypto.myCompressedFullRef().length);
@@ -424,19 +424,19 @@ public class OpennetManager {
 			node.peers.removeOpennetPeers();
 		crypto.socket.getAddressTracker().setPresumedInnocent();
 	}
-	
+
 	synchronized boolean stopping() {
 		return stopping;
 	}
-	
+
 	private LRUQueue<OpennetPeerNode> lruQueue(LinkLengthClass distance) {
-	    return peersLRUByDistance.get(distance);
+		return peersLRUByDistance.get(distance);
 	}
-	
-    private LRUQueue<OpennetPeerNode> lruQueue(OpennetPeerNode pn) {
-        return lruQueue(pn.linkLengthClass());
-    }
-    
+
+	private LRUQueue<OpennetPeerNode> lruQueue(OpennetPeerNode pn) {
+		return lruQueue(pn.linkLengthClass());
+	}
+
 	public boolean alreadyHaveOpennetNode(SimpleFieldSet fs) {
 		try {
 			// FIXME OPT can we do this cheaper?
@@ -457,30 +457,30 @@ public class OpennetManager {
 
 	public OpennetPeerNode addNewOpennetNode(SimpleFieldSet fs, ConnectionType connectionType, boolean allowExisting) throws FSParseException, PeerParseException, ReferenceSignatureVerificationException {
 		try {
-		OpennetPeerNode pn = new OpennetPeerNode(fs, node, crypto, this, false);
-		if(Arrays.equals(pn.peerECDSAPubKeyHash, crypto.ecdsaPubKeyHash)) {
-			if(logMINOR) Logger.minor(this, "Not adding self as opennet peer");
-			return null; // Equal to myself
-		}
-		LinkLengthClass distance = pn.linkLengthClass();
-		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
-		if(peersLRU.contains(pn)) {
-			if(logMINOR) Logger.minor(this, "Not adding "+pn.userToString()+" to opennet list as already there");
-			if(allowExisting) {
-				// However, we can reconnect.
-				return peersLRU.get(pn);
-			} else {
+			OpennetPeerNode pn = new OpennetPeerNode(fs, node, crypto, this, false);
+			if(Arrays.equals(pn.peerECDSAPubKeyHash, crypto.ecdsaPubKeyHash)) {
+				if(logMINOR) Logger.minor(this, "Not adding self as opennet peer");
+				return null; // Equal to myself
+			}
+			LinkLengthClass distance = pn.linkLengthClass();
+			LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
+			if(peersLRU.contains(pn)) {
+				if(logMINOR) Logger.minor(this, "Not adding "+pn.userToString()+" to opennet list as already there");
+				if(allowExisting) {
+					// However, we can reconnect.
+					return peersLRU.get(pn);
+				} else {
+					return null;
+				}
+			}
+			if(pn.isUnroutableOlderVersion() && node.nodeUpdater != null && node.nodeUpdater.dontAllowUOM()) {
+				// We can't send the UOM to it, so we should not accept it.
+				// Plus, some versions around 1320 had big problems with being connected both as a seednode and as an opennet peer.
 				return null;
 			}
-		}
-		if(pn.isUnroutableOlderVersion() && node.nodeUpdater != null && node.nodeUpdater.dontAllowUOM()) {
-			// We can't send the UOM to it, so we should not accept it.
-			// Plus, some versions around 1320 had big problems with being connected both as a seednode and as an opennet peer.
-			return null;
-		}
-		if(wantPeer(pn, true, false, false, connectionType, distance)) return pn;
-		else return null;
-		// Start at bottom. Node must prove itself.
+			if(wantPeer(pn, true, false, false, connectionType, distance)) return pn;
+			else return null;
+			// Start at bottom. Node must prove itself.
 		} catch (Throwable t) {
 			// Don't break the code flow in the caller which is normally a request.
 			Logger.error(this, "Caught "+t+" adding opennet node from fieldset", t);
@@ -493,8 +493,8 @@ public class OpennetManager {
 	private long timeLastOffered;
 
 	void forceAddPeer(OpennetPeerNode nodeToAddNow, boolean addAtLRU) {
-	    LinkLengthClass distance = nodeToAddNow.linkLengthClass();
-        LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
+		LinkLengthClass distance = nodeToAddNow.linkLengthClass();
+		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
 		synchronized(this) {
 			if(addAtLRU)
 				peersLRU.pushLeast(nodeToAddNow);
@@ -506,22 +506,22 @@ public class OpennetManager {
 	}
 
 	public boolean wantPeer(OpennetPeerNode nodeToAddNow, boolean addAtLRU, boolean justChecking, boolean oldOpennetPeer, ConnectionType connectionType) {
-	    if(nodeToAddNow != null) {
-	        if(!Location.isValid(nodeToAddNow.getLocation())) {
-	            Logger.error(this, "Added opennet node reference must include a valid location", new Exception("error"));
-	            return false;
-	        }
-            // We have received a node reference, so we know whether it is long or short.
-	        LinkLengthClass distance = nodeToAddNow.linkLengthClass();
-	        return wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, distance);
-	    } else {
-	        // Initiate path folding if we want a long link *or* a short link.
-	        // FIXME ideally we'd like to indicate whether we want long links or short links.
-	        return wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, LinkLengthClass.SHORT)
-	             || wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, LinkLengthClass.LONG);
-	    }
+		if(nodeToAddNow != null) {
+			if(!Location.isValid(nodeToAddNow.getLocation())) {
+				Logger.error(this, "Added opennet node reference must include a valid location", new Exception("error"));
+				return false;
+			}
+			// We have received a node reference, so we know whether it is long or short.
+			LinkLengthClass distance = nodeToAddNow.linkLengthClass();
+			return wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, distance);
+		} else {
+			// Initiate path folding if we want a long link *or* a short link.
+			// FIXME ideally we'd like to indicate whether we want long links or short links.
+			return wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, LinkLengthClass.SHORT)
+				   || wantPeer(nodeToAddNow, addAtLRU, justChecking, oldOpennetPeer, connectionType, LinkLengthClass.LONG);
+		}
 	}
-	
+
 	/**
 	 * Trim the peers list and possibly add a new node. Note that if we are not adding a new node,
 	 * we will only return true every MIN_TIME_BETWEEN_OFFERS, to prevent problems caused by many
@@ -529,7 +529,7 @@ public class OpennetManager {
 	 * @param nodeToAddNow Node to add. Can be null, which means the caller needs to know whether
 	 * we have space for another node, without actually adding one. This happens e.g. when we are
 	 * the data source and are trying to decide whether to send our noderef downstream for path
-	 * folding. 
+	 * folding.
 	 * @param addAtLRU If there is a node to add, add it at the bottom rather than the top. Normally
 	 * we set this on new path folded nodes so that they will be replaced if during the trial period,
 	 * plus the time it takes to get a new path folding offer, they don't have a successful request.
@@ -547,7 +547,7 @@ public class OpennetManager {
 	 * @return True if the node was added / should be added.
 	 */
 	public boolean wantPeer(OpennetPeerNode nodeToAddNow, boolean addAtLRU, boolean justChecking, boolean oldOpennetPeer, ConnectionType connectionType, LinkLengthClass distance) {
-	    LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
+		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
 		boolean notMany = false;
 		boolean noDisconnect;
 		long now = System.currentTimeMillis();
@@ -656,31 +656,31 @@ public class OpennetManager {
 					}
 				}
 			} else while(canAdd && (size = getSize(distance)) > maxPeers - ((nodeToAddNow == null || outdated) ? 0 : 1)) {
-				OpennetPeerNode toDrop;
-				// can drop peers which are over the limit
-				toDrop = peerToDrop(noDisconnect, false, nodeToAddNow != null, connectionType, maxPeers, distance, peersLRU);
-				if(toDrop == null) {
-					if(logMINOR)
-						Logger.minor(this, "No more peers to drop, still "+peersLRU.size()+" peers, cannot accept peer"+(nodeToAddNow == null ? "" : nodeToAddNow.toString()));
-					canAdd = false;
-					if(nodeToAddNow != null)
-						connectionAttemptsRejectedNoPeersDroppable.put(connectionType, connectionAttemptsRejectedNoPeersDroppable.get(connectionType)+1);
-					break;
+					OpennetPeerNode toDrop;
+					// can drop peers which are over the limit
+					toDrop = peerToDrop(noDisconnect, false, nodeToAddNow != null, connectionType, maxPeers, distance, peersLRU);
+					if(toDrop == null) {
+						if(logMINOR)
+							Logger.minor(this, "No more peers to drop, still "+peersLRU.size()+" peers, cannot accept peer"+(nodeToAddNow == null ? "" : nodeToAddNow.toString()));
+						canAdd = false;
+						if(nodeToAddNow != null)
+							connectionAttemptsRejectedNoPeersDroppable.put(connectionType, connectionAttemptsRejectedNoPeersDroppable.get(connectionType)+1);
+						break;
+					}
+					// Only check per-type limits if we are throwing out connected peers.
+					// This is important for bootstrapping, given the low announcement limit.
+					if(toDrop.isConnected() && enforcePerTypeGracePeriodLimits(maxPeers, connectionType, nodeToAddNow != null, peersLRU)) {
+						if(nodeToAddNow != null)
+							connectionAttemptsRejectedByPerTypeEnforcement.put(connectionType, connectionAttemptsRejectedByPerTypeEnforcement.get(connectionType)+1);
+						return false;
+					}
+					if(nodeToAddNow != null || size > maxPeers) {
+						if(logMINOR)
+							Logger.minor(this, "Drop opennet peer: "+toDrop+" (connected="+toDrop.isConnected()+") of "+peersLRU.size()+":"+getSize(distance));
+						peersLRU.remove(toDrop);
+						dropList.add(toDrop);
+					}
 				}
-				// Only check per-type limits if we are throwing out connected peers.
-				// This is important for bootstrapping, given the low announcement limit.
-				if(toDrop.isConnected() && enforcePerTypeGracePeriodLimits(maxPeers, connectionType, nodeToAddNow != null, peersLRU)) {
-					if(nodeToAddNow != null)
-						connectionAttemptsRejectedByPerTypeEnforcement.put(connectionType, connectionAttemptsRejectedByPerTypeEnforcement.get(connectionType)+1);
-					return false;
-				}
-				if(nodeToAddNow != null || size > maxPeers) {
-					if(logMINOR)
-						Logger.minor(this, "Drop opennet peer: "+toDrop+" (connected="+toDrop.isConnected()+") of "+peersLRU.size()+":"+getSize(distance));
-					peersLRU.remove(toDrop);
-					dropList.add(toDrop);
-				}
-			}
 			if(canAdd && !justChecking) {
 				if(nodeToAddNow != null) {
 					successCount.put(connectionType, 0L);
@@ -718,13 +718,13 @@ public class OpennetManager {
 		}
 		return canAdd;
 	}
-	
+
 	private int maxOutdatedPeers() {
 		return Math.max(5, getNumberOfConnectedPeersToAimIncludingDarknet() / 4);
 	}
-	
+
 	private boolean tooManyOutdatedPeers() {
-	    // This does not check whether they are short or long as it is irrelevant for outdated peers.
+		// This does not check whether they are short or long as it is irrelevant for outdated peers.
 		int maxTooOldPeers = maxOutdatedPeers();
 		int count = 0;
 		OpennetPeerNode[] peers = node.peers.getOpennetPeers();
@@ -780,18 +780,18 @@ public class OpennetManager {
 		if(logMINOR) Logger.minor(this, "Per type grace period limit allowed connection of type "+type+" count is "+count+" limit is "+myLimit+" addingPeer="+addingPeer);
 		return false;
 	}
-	
+
 	void dropAllExcessPeers() {
-        for(LinkLengthClass l : LinkLengthClass.values()) dropExcessPeers(l);
+		for(LinkLengthClass l : LinkLengthClass.values()) dropExcessPeers(l);
 	}
 
 	void dropExcessPeers(LinkLengthClass distance) {
-	    LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
+		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
 		int maxPeers = getNumberOfConnectedPeersToAim(distance);
 		while(peersLRU.size() > maxPeers) {
 			if(logMINOR)
-	            Logger.minor(this, "Dropping opennet peers: currently "+peersLRU.size()+" of "+maxPeers+" for "+distance+" distance links");
-            OpennetPeerNode toDrop;
+				Logger.minor(this, "Dropping opennet peers: currently "+peersLRU.size()+" of "+maxPeers+" for "+distance+" distance links");
+			OpennetPeerNode toDrop;
 			toDrop = peerToDrop(false, false, false, null, maxPeers, distance, peersLRU);
 			if(toDrop == null) toDrop = peerToDrop(false, true, false, null, maxPeers, distance, peersLRU);
 			if(toDrop == null) return;
@@ -807,7 +807,7 @@ public class OpennetManager {
 	// A TOO OLD peer does not count towards the limit, even if it is not connected.
 	// It can however be dumped if it doesn't connect in a reasonable time, and if
 	// it upgrades, it may not have the usual grace period.
-	
+
 	/**
 	 * How many opennet peers do we have?
 	 * Connected but out of date nodes don't count towards the connection limit. Let them connect for
@@ -893,7 +893,7 @@ public class OpennetManager {
 				}
 				if(logMINOR)
 					Logger.minor(this, "Possibly dropping opennet peer "+pn+" "+
-							((connectionType == null) ? "" : ((System.currentTimeMillis() - timeLastDropped.get(connectionType))+" ms since last dropped peer of type "+connectionType)));
+								 ((connectionType == null) ? "" : ((System.currentTimeMillis() - timeLastDropped.get(connectionType))+" ms since last dropped peer of type "+connectionType)));
 				pn.setWasDropped();
 				return pn;
 			}
@@ -909,8 +909,8 @@ public class OpennetManager {
 	}
 
 	public void onSuccess(OpennetPeerNode pn) {
-	    LinkLengthClass distance = pn.linkLengthClass();
-	    LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
+		LinkLengthClass distance = pn.linkLengthClass();
+		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(distance);
 		synchronized(this) {
 			for(ConnectionType type : ConnectionType.values())
 				successCount.put(type, successCount.get(type)+1);
@@ -929,7 +929,7 @@ public class OpennetManager {
 
 	public void onRemove(OpennetPeerNode pn) {
 		long now = System.currentTimeMillis();
-        LRUQueue<OpennetPeerNode> peersLRU = lruQueue(pn);
+		LRUQueue<OpennetPeerNode> peersLRU = lruQueue(pn);
 		synchronized (this) {
 			peersLRU.remove(pn);
 			if(pn.isDroppable(true) && !pn.grabWasDropped()) {
@@ -1032,11 +1032,11 @@ public class OpennetManager {
 
 	/** Get the target number of opennet peers. Do not call while holding locks. */
 	public int getNumberOfConnectedPeersToAim(LinkLengthClass distance) {
-	    if(distance == null) throw new IllegalArgumentException();
-	    int target = getNumberOfConnectedPeersToAim();
-	    return distance.getTargetPeers(target);
+		if(distance == null) throw new IllegalArgumentException();
+		int target = getNumberOfConnectedPeersToAim();
+		return distance.getTargetPeers(target);
 	}
-	
+
 	public int getNumberOfConnectedPeersToAim() {
 		int max = getNumberOfConnectedPeersToAimIncludingDarknet();
 		return max - node.peers.countConnectedDarknetPeers();
@@ -1045,12 +1045,12 @@ public class OpennetManager {
 	public void sendOpennetRef(boolean isReply, long uid, PeerNode peer, byte[] noderef, ByteCounter ctr) throws NotConnectedException {
 		sendOpennetRef(isReply, uid, peer, noderef, ctr, null);
 	}
-	
+
 	/**
 	 * Send our opennet noderef to a node.
 	 * @param isReply If true, send an FNPOpennetConnectReply, else send an FNPOpennetConnectDestination.
 	 * @param uid The unique ID of the request chain involved.
-	 * @param peer The node to send the noderef to. Not necessarily an OpennetPeerNode, as path 
+	 * @param peer The node to send the noderef to. Not necessarily an OpennetPeerNode, as path
 	 * folding and possibly announcement can pass through darknet.
 	 * @param cs The full compressed noderef to send.
 	 * @throws NotConnectedException If the peer becomes disconnected while we are trying to send the noderef.
@@ -1065,7 +1065,7 @@ public class OpennetManager {
 		Util.randomBytes(node.fastWeakRandom, padded, noderef.length, padded.length-noderef.length);
 		long xferUID = node.random.nextLong();
 		Message msg2 = isReply ? DMT.createFNPOpennetConnectReplyNew(uid, xferUID, noderef.length, padded.length) :
-			DMT.createFNPOpennetConnectDestinationNew(uid, xferUID, noderef.length, padded.length);
+					   DMT.createFNPOpennetConnectDestinationNew(uid, xferUID, noderef.length, padded.length);
 		peer.sendAsync(msg2, null, ctr);
 		return innerSendOpennetRef(xferUID, padded, peer, ctr, cb);
 	}
@@ -1075,7 +1075,7 @@ public class OpennetManager {
 	 * @param xferUID The transfer UID
 	 * @param padded The length of the data to transfer.
 	 * @param peer The peer to send it to.
-	 * @param cb 
+	 * @param cb
 	 * @throws NotConnectedException If the peer is not connected, or we lose the connection to the peer,
 	 * or it restarts.
 	 */
@@ -1097,7 +1097,7 @@ public class OpennetManager {
 			double target, short htl) throws NotConnectedException {
 		long xferUID = node.random.nextLong();
 		Message msg = DMT.createFNPOpennetAnnounceRequest(uid, xferUID, noderef.length,
-				paddedSize(noderef.length), target, htl);
+					  paddedSize(noderef.length), target, htl);
 		peer.sendAsync(msg, null, ctr);
 		return xferUID;
 	}
@@ -1128,7 +1128,7 @@ public class OpennetManager {
 		System.arraycopy(noderef, 0, padded, 0, noderef.length);
 		long xferUID = node.random.nextLong();
 		Message msg = DMT.createFNPOpennetAnnounceReply(uid, xferUID, noderef.length,
-				padded.length);
+					  padded.length);
 		peer.sendAsync(msg, null, ctr);
 		innerSendOpennetRef(xferUID, padded, peer, ctr, null);
 	}
@@ -1138,36 +1138,36 @@ public class OpennetManager {
 		void gotNoderef(byte[] noderef);
 		/** Timed out waiting for a noderef. */
 		void timedOut();
-		/** Got an ack - didn't timeout but there won't be a noderef. 
+		/** Got an ack - didn't timeout but there won't be a noderef.
 		 * @param timedOutMessage */
 		void acked(boolean timedOutMessage);
 	}
-	
+
 	private static class SyncNoderefCallback implements NoderefCallback {
 
 		byte[] returned;
 		boolean finished;
 		boolean timedOut;
-		
+
 		@Override
 		public synchronized void timedOut() {
 			timedOut = true;
 			finished = true;
 			notifyAll();
 		}
-		
+
 		@Override
 		public void acked(boolean timedOutMessage) {
 			gotNoderef(null);
 		}
-		
+
 		@Override
 		public synchronized void gotNoderef(byte[] noderef) {
 			returned = noderef;
 			finished = true;
 			notifyAll();
 		}
-		
+
 		public synchronized byte[] waitForResult() throws WaitedTooLongForOpennetNoderefException {
 			while(!finished)
 				try {
@@ -1178,14 +1178,14 @@ public class OpennetManager {
 			if(timedOut) throw new WaitedTooLongForOpennetNoderefException();
 			return returned;
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("serial")
 	static class WaitedTooLongForOpennetNoderefException extends Exception {
-		
+
 	}
-	
+
 	/**
 	 * Wait for an opennet noderef.
 	 * @param isReply If true, wait for an FNPOpennetConnectReply[New], if false wait for an FNPOpennetConnectDestination[New].
@@ -1198,7 +1198,7 @@ public class OpennetManager {
 		waitForOpennetNoderef(isReply, source, uid, ctr, cb, node);
 		return cb.waitForResult();
 	}
-	
+
 	public static void waitForOpennetNoderef(final boolean isReply, final PeerNode source, final long uid, final ByteCounter ctr, final NoderefCallback callback, final Node node) {
 		// FIXME remove back compat code
 		MessageFilter mf =
@@ -1213,16 +1213,16 @@ public class OpennetManager {
 		MessageFilter mfAckTimeout =
 			MessageFilter.create().setSource(source).setField(DMT.UID, uid).
 			setTimeout(RequestSender.OPENNET_TIMEOUT).setType(DMT.FNPOpennetCompletedTimeout);
-		
+
 		mf = mfAck.or(mfAckTimeout.or(mf));
 		try {
 			node.usm.addAsyncFilter(mf, new SlowAsyncMessageFilterCallback() {
-				
+
 				boolean completed;
 
 				@Override
 				public void onMatched(Message msg) {
-					if (msg.getSpec() == DMT.FNPOpennetCompletedAck || 
+					if (msg.getSpec() == DMT.FNPOpennetCompletedAck ||
 							msg.getSpec() == DMT.FNPOpennetCompletedTimeout) {
 						synchronized(this) {
 							if(completed) return;
@@ -1266,7 +1266,7 @@ public class OpennetManager {
 				public int getPriority() {
 					return NativeThread.NORM_PRIORITY;
 				}
-				
+
 				private void complete(byte[] buf) {
 					synchronized(this) {
 						if(completed) return;
@@ -1274,7 +1274,7 @@ public class OpennetManager {
 					}
 					callback.gotNoderef(buf);
 				}
-				
+
 			}, ctr);
 		} catch (DisconnectedException e) {
 			callback.gotNoderef(null);
@@ -1292,8 +1292,8 @@ public class OpennetManager {
 		if (!br.receive()) {
 			if (source.isConnected()) {
 				String msg = "Failed to receive noderef bulk transfer : "
-					+RetrievalException.getErrString(prb.getAbortReason())+" : "
-					+prb.getAbortDescription()+" from "+source;
+							 +RetrievalException.getErrString(prb.getAbortReason())+" : "
+							 +prb.getAbortDescription()+" from "+source;
 				if (prb.getAbortReason() != RetrievalException.SENDER_DISCONNECTED) {
 					Logger.warning(OpennetManager.class, msg);
 				} else {
@@ -1317,7 +1317,7 @@ public class OpennetManager {
 	}
 
 	public static SimpleFieldSet validateNoderef(byte[] noderef, int offset, int length, PeerNode from, boolean forceOpennetEnabled) {
-    	SimpleFieldSet ref;
+		SimpleFieldSet ref;
 		try {
 			ref = PeerNode.compressedNoderefToFieldSet(noderef, 0, noderef.length);
 		} catch (FSParseException e) {
@@ -1371,7 +1371,7 @@ public class OpennetManager {
 		}
 		if(logMINOR) Logger.minor(OpennetManager.class, "Estimated opennet size(session): " + knownIds.size());
 	}
-    //Return the estimated network size based on locations seen after timestamp or for the whole session if -1
+	//Return the estimated network size based on locations seen after timestamp or for the whole session if -1
 	public int getNetworkSizeEstimate(long timestamp) {
 		return knownIds.countValuesAfter(timestamp);
 	}
@@ -1431,7 +1431,7 @@ public class OpennetManager {
 	public boolean waitingForUpdater() {
 		return announcer.isWaitingForUpdater();
 	}
-	
+
 	public void reannounce() {
 		announcer.reannounce();
 	}
@@ -1443,13 +1443,13 @@ public class OpennetManager {
 	/** Called when a connection completes. If it's an opennet peer, we may need to drop a peer
 	 * to make space. If it's a darknet peer, the connection limit for opennet peers may have
 	 * decreased so again we may need to drop a peer. */
-    public void onConnectedPeer(PeerNode pn) {
-        if(pn instanceof OpennetPeerNode) {
-            dropExcessPeers(((OpennetPeerNode)pn).linkLengthClass());
-        } else {
-            // The peer count target may have decreased, so we may need to drop an opennet peer.
-            dropAllExcessPeers();
-        }
-    }
+	public void onConnectedPeer(PeerNode pn) {
+		if(pn instanceof OpennetPeerNode) {
+			dropExcessPeers(((OpennetPeerNode)pn).linkLengthClass());
+		} else {
+			// The peer count target may have decreased, so we may need to drop an opennet peer.
+			dropAllExcessPeers();
+		}
+	}
 
 }

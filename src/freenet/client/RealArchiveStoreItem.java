@@ -16,16 +16,16 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 	private final Bucket bucket;
 	private final long spaceUsed;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	/**
 	 * Create an ArchiveStoreElement from a TempStoreElement.
 	 * @param key2 The key of the archive the file came from.
@@ -64,7 +64,7 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 	long spaceUsed() {
 		return spaceUsed;
 	}
-	
+
 	@Override
 	void innerClose() {
 		if(logMINOR)
@@ -87,5 +87,5 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 	Bucket getReaderBucket() throws ArchiveFailureException {
 		return mb.getReaderBucket();
 	}
-	
+
 }

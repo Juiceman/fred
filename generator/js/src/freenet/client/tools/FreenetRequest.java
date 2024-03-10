@@ -15,7 +15,7 @@ public class FreenetRequest {
 
 	/**
 	 * Sends a request to the given path with the given query parameters
-	 * 
+	 *
 	 * @param path
 	 *            - The path to send the request to
 	 * @param parameters
@@ -28,7 +28,7 @@ public class FreenetRequest {
 
 	/**
 	 * Sends a request to the given path with the given query parameter
-	 * 
+	 *
 	 * @param path
 	 *            - The path to send the request to
 	 * @param parameter
@@ -41,7 +41,7 @@ public class FreenetRequest {
 
 	/**
 	 * Sends a request to the given path with the given query parameter and a callback
-	 * 
+	 *
 	 * @param path
 	 *            - The path to send the request to
 	 * @param parameter
@@ -56,7 +56,7 @@ public class FreenetRequest {
 
 	/**
 	 * Sends a request to the given path with the given query parameters and a callback
-	 * 
+	 *
 	 * @param path
 	 *            - The path to send the request to
 	 * @param parameters

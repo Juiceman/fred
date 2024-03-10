@@ -41,7 +41,7 @@ import freenet.support.api.HTTPRequest;
  * @author toad
  */
 public class ConnectivityToadlet extends Toadlet {
-	
+
 	private final Node node;
 
 	protected ConnectivityToadlet(HighLevelSimpleClient client, Node node) {
@@ -51,7 +51,7 @@ public class ConnectivityToadlet extends Toadlet {
 
 	public void handleMethodGET(URI uri, final HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		PageMaker pageMaker = ctx.getPageMaker();
-		
+
 		PageNode page = pageMaker.getPageNode(NodeL10n.getBase().getString("ConnectivityToadlet.title"), ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
@@ -91,108 +91,108 @@ public class ConnectivityToadlet extends Toadlet {
 		} catch (FSParseException e) {
 			// ignore
 		}
-		
+
 		// Add connection type box.
-		
+
 		node.ipDetector.addConnectionTypeBox(contentNode);
-		
+
 		UdpSocketHandler[] handlers = node.getPacketSocketHandlers();
-		
+
 		HTMLNode summaryContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.summaryTitle"), contentNode, "connectivity-summary", true);
-		
+
 		HTMLNode table = summaryContent.addChild("table", "border", "0");
-		
+
 		for(UdpSocketHandler handler: handlers) {
 			AddressTracker tracker = handler.getAddressTracker();
 			HTMLNode row = table.addChild("tr");
 			row.addChild("td", handler.getTitle());
 			row.addChild("td", AddressTracker.statusString(tracker.getPortForwardStatus()));
 		}
-		
+
 		if(ctx.isAdvancedModeEnabled()) {
-		
-		// One box per port
-		
-		String noreply = l10n("noreply");
-		String local = l10n("local");
-		String remote = l10n("remote");
-		long now = System.currentTimeMillis();
-		
-		for(UdpSocketHandler handler: handlers) {
-			// Peers
-			AddressTracker tracker = handler.getAddressTracker();
-			HTMLNode portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byPortTitle", new String[] { "port", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-port", false);
-			PeerAddressTrackerItem[] items = tracker.getPeerAddressTrackerItems();
-			table = portsContent.addChild("table");
-			HTMLNode row = table.addChild("tr");
-			row.addChild("th", l10n("addressTitle"));
-			row.addChild("th", l10n("sentReceivedTitle"));
-			row.addChild("th", l10n("localRemoteTitle"));
-			row.addChild("th", l10n("firstSendLeadTime"));
-			row.addChild("th", l10n("firstReceiveLeadTime"));
-			for(int j=0;j<AddressTrackerItem.TRACK_GAPS;j++) {
-				row.addChild("th", " "); // FIXME is <th/> valid??
-			}
-			for(PeerAddressTrackerItem item: items) {
-				row = table.addChild("tr");
-				// Address
-				row.addChild("td", item.peer.toString());
-				// Sent/received packets
-				row.addChild("td", item.packetsSent() + "/ " + item.packetsReceived());
-				// Initiator: local/remote FIXME something more graphical e.g. colored cells
-				row.addChild("td", item.packetsReceived() == 0 ? noreply :
-						(item.weSentFirst() ? local : remote));
-				// Lead in time to first packet sent
-				row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstSentPacket()));
-				// Lead in time to first packet received
-				row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstReceivedPacket()));
-				Gap[] gaps = item.getGaps();
-				for(int k=0;k<AddressTrackerItem.TRACK_GAPS;k++) {
-					row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" : 
-						(TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
-				}
-			}
 
-			// IPs
-			portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byIPTitle", new String[] { "ip", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-ip", false);
-			InetAddressAddressTrackerItem[] ipItems = tracker.getInetAddressTrackerItems();
-			table = portsContent.addChild("table");
-			row = table.addChild("tr");
-			row.addChild("th", l10n("addressTitle"));
-			row.addChild("th", l10n("sentReceivedTitle"));
-			row.addChild("th", l10n("localRemoteTitle"));
-			row.addChild("th", l10n("firstSendLeadTime"));
-			row.addChild("th", l10n("firstReceiveLeadTime"));
-			for(int j=0;j<AddressTrackerItem.TRACK_GAPS;j++) {
-				row.addChild("th", " "); // FIXME is <th/> valid??
-			}
-			for(InetAddressAddressTrackerItem item: ipItems) {
-				row = table.addChild("tr");
-				// Address
-				row.addChild("td", item.addr.toString());
-				// Sent/received packets
-				row.addChild("td", item.packetsSent() + "/ " + item.packetsReceived());
-				// Initiator: local/remote FIXME something more graphical e.g. colored cells
-				row.addChild("td", item.packetsReceived() == 0 ? noreply :
-						(item.weSentFirst() ? local : remote));
-				// Lead in time to first packet sent
-				row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstSentPacket()));
-				// Lead in time to first packet received
-				row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstReceivedPacket()));
-				Gap[] gaps = item.getGaps();
-				for(int k=0;k<AddressTrackerItem.TRACK_GAPS;k++) {
-					row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" : 
-						(TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
+			// One box per port
+
+			String noreply = l10n("noreply");
+			String local = l10n("local");
+			String remote = l10n("remote");
+			long now = System.currentTimeMillis();
+
+			for(UdpSocketHandler handler: handlers) {
+				// Peers
+				AddressTracker tracker = handler.getAddressTracker();
+				HTMLNode portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byPortTitle", new String[] { "port", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-port", false);
+				PeerAddressTrackerItem[] items = tracker.getPeerAddressTrackerItems();
+				table = portsContent.addChild("table");
+				HTMLNode row = table.addChild("tr");
+				row.addChild("th", l10n("addressTitle"));
+				row.addChild("th", l10n("sentReceivedTitle"));
+				row.addChild("th", l10n("localRemoteTitle"));
+				row.addChild("th", l10n("firstSendLeadTime"));
+				row.addChild("th", l10n("firstReceiveLeadTime"));
+				for(int j=0; j<AddressTrackerItem.TRACK_GAPS; j++) {
+					row.addChild("th", " "); // FIXME is <th/> valid??
 				}
+				for(PeerAddressTrackerItem item: items) {
+					row = table.addChild("tr");
+					// Address
+					row.addChild("td", item.peer.toString());
+					// Sent/received packets
+					row.addChild("td", item.packetsSent() + "/ " + item.packetsReceived());
+					// Initiator: local/remote FIXME something more graphical e.g. colored cells
+					row.addChild("td", item.packetsReceived() == 0 ? noreply :
+								 (item.weSentFirst() ? local : remote));
+					// Lead in time to first packet sent
+					row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstSentPacket()));
+					// Lead in time to first packet received
+					row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstReceivedPacket()));
+					Gap[] gaps = item.getGaps();
+					for(int k=0; k<AddressTrackerItem.TRACK_GAPS; k++) {
+						row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" :
+									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
+					}
+				}
+
+				// IPs
+				portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byIPTitle", new String[] { "ip", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-ip", false);
+				InetAddressAddressTrackerItem[] ipItems = tracker.getInetAddressTrackerItems();
+				table = portsContent.addChild("table");
+				row = table.addChild("tr");
+				row.addChild("th", l10n("addressTitle"));
+				row.addChild("th", l10n("sentReceivedTitle"));
+				row.addChild("th", l10n("localRemoteTitle"));
+				row.addChild("th", l10n("firstSendLeadTime"));
+				row.addChild("th", l10n("firstReceiveLeadTime"));
+				for(int j=0; j<AddressTrackerItem.TRACK_GAPS; j++) {
+					row.addChild("th", " "); // FIXME is <th/> valid??
+				}
+				for(InetAddressAddressTrackerItem item: ipItems) {
+					row = table.addChild("tr");
+					// Address
+					row.addChild("td", item.addr.toString());
+					// Sent/received packets
+					row.addChild("td", item.packetsSent() + "/ " + item.packetsReceived());
+					// Initiator: local/remote FIXME something more graphical e.g. colored cells
+					row.addChild("td", item.packetsReceived() == 0 ? noreply :
+								 (item.weSentFirst() ? local : remote));
+					// Lead in time to first packet sent
+					row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstSentPacket()));
+					// Lead in time to first packet received
+					row.addChild("td", TimeUtil.formatTime(item.timeFromStartupToFirstReceivedPacket()));
+					Gap[] gaps = item.getGaps();
+					for(int k=0; k<AddressTrackerItem.TRACK_GAPS; k++) {
+						row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" :
+									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
+					}
+				}
+
 			}
 
 		}
-		
-		}
-		
+
 		writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 	}
-	
+
 	private String l10nConn(String string) {
 		return NodeL10n.getBase().getString("DarknetConnectionsToadlet."+string);
 	}
@@ -202,7 +202,7 @@ public class ConnectivityToadlet extends Toadlet {
 	}
 
 	public static final String PATH = "/connectivity/";
-	
+
 	@Override
 	public String path() {
 		return PATH;

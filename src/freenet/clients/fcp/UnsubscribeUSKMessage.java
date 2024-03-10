@@ -26,7 +26,7 @@ public class UnsubscribeUSKMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		handler.unsubscribeUSK(identifier);
 	}
 

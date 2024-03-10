@@ -14,7 +14,7 @@ public class DataFoundMessage extends FCPMessage {
 	final String mimeType;
 	final long dataLength;
 	final long startupTime, completionTime;
-	
+
 	public DataFoundMessage(FetchResult fr, String identifier, boolean global, long startupTime, long completionTime) {
 		this.identifier = identifier;
 		this.global = global;

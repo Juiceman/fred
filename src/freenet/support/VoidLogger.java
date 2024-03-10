@@ -5,7 +5,7 @@ package freenet.support;
 
 /**
  * @author Iakin
- * A LoggerHook implementation that just passes any supplied log messages on to /dev/null 
+ * A LoggerHook implementation that just passes any supplied log messages on to /dev/null
  */
 public class VoidLogger extends Logger
 {
@@ -71,7 +71,7 @@ public class VoidLogger extends Logger
 
 	@Override
 	public final void instanceRegisterLogThresholdCallback(LogThresholdCallback ltc) {}
-	
+
 	@Override
 	public final void instanceUnregisterLogThresholdCallback(LogThresholdCallback ltc) {}
 }

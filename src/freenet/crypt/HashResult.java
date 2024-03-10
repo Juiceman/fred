@@ -16,8 +16,8 @@ import freenet.support.Logger;
 
 public class HashResult implements Comparable<HashResult>, Cloneable, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    /** The type of hash. */
+	private static final long serialVersionUID = 1L;
+	/** The type of hash. */
 	public final HashType type;
 	/** The result of the hash. Immutable. */
 	private final byte[] result;
@@ -37,9 +37,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	protected HashResult() {
-        // For serialization.
-	    type = null;
-	    result = null;
+		// For serialization.
+		type = null;
+		result = null;
 	}
 
 	public static HashResult[] readHashes(DataInputStream dis) throws IOException {
@@ -68,7 +68,7 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	public static void write(HashResult[] hashes, DataOutputStream dos) throws IOException {
-	    if(hashes == null) hashes = new HashResult[0];
+		if(hashes == null) hashes = new HashResult[0];
 		int bitmask = 0;
 		for(HashResult hash : hashes)
 			bitmask |= hash.type.bitmask;
@@ -107,7 +107,7 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 			Logger.error(HashResult.class, "Hashes not equal: "+results.length+" hashes vs "+hashes.length+" hashes");
 			return false;
 		}
-		for(int i=0;i<results.length;i++) {
+		for(int i=0; i<results.length; i++) {
 			if(results[i].type != hashes[i].type) {
 				// FIXME Db4o kludge
 				if(HashType.valueOf(results[i].type.name()) != HashType.valueOf(hashes[i].type.name())) {
@@ -140,7 +140,7 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	public static HashResult[] copy(HashResult[] hashes) {
 		if(hashes == null) return null;
 		HashResult[] out = new HashResult[hashes.length];
-		for(int i=0;i<hashes.length;i++) {
+		for(int i=0; i<hashes.length; i++) {
 			out[i] = hashes[i].clone();
 		}
 		return out;
@@ -160,27 +160,27 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	@Override
-	public boolean equals(Object otherObject){
-	    if(!(otherObject instanceof HashResult)){
-	        return false;
-	    }
+	public boolean equals(Object otherObject) {
+		if(!(otherObject instanceof HashResult)) {
+			return false;
+		}
 
-	    HashResult otherHash = (HashResult) otherObject;
-	    if(type != otherHash.type){
-	        return false;
-	    }
+		HashResult otherHash = (HashResult) otherObject;
+		if(type != otherHash.type) {
+			return false;
+		}
 
-	    return MessageDigest.isEqual(result, otherHash.result);
+		return MessageDigest.isEqual(result, otherHash.result);
 	}
 
 	@Override
-	public int hashCode(){
-	    int hash = 1;
+	public int hashCode() {
+		int hash = 1;
 
-	    hash *= 31 + type.hashCode();
-	    hash *= 31 + result.hashCode();
+		hash *= 31 + type.hashCode();
+		hash *= 31 + result.hashCode();
 
-	    return hash;
+		return hash;
 	}
 
 }

@@ -24,19 +24,19 @@ import freenet.test.UTFUtil;
 
 /**
  * Test case for the {@link freenet.config.Config} class.
- * 
+ *
  * @author Florent Daigni&egrave;re &lt;nextgens@freenetproject.org&gt;
  */
 public class ConfigTest {
 	Config conf;
 	SubConfig sc;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		conf = new Config();
 		sc = conf.createSubConfig("testing");
 	}
-	
+
 	@Test
 	public void testConfig() {
 		assertNotNull(new Config());
@@ -53,9 +53,9 @@ public class ConfigTest {
 		assertNotNull(conf.createSubConfig(sb.toString()));
 
 		/* test if it prevents multiple registrations */
-		try{
+		try {
 			conf.register(sc);
-		}catch (IllegalArgumentException ie){
+		} catch (IllegalArgumentException ie) {
 			return;
 		}
 		fail();
@@ -65,7 +65,7 @@ public class ConfigTest {
 	public void testGetConfigs() {
 		assertNotNull(conf.getConfigs());
 		assertFalse(new Config().getConfigs().equals(conf));
-		assertEquals(1 , conf.getConfigs().length);
+		assertEquals(1, conf.getConfigs().length);
 		assertSame(sc, conf.getConfigs()[0]);
 	}
 

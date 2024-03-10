@@ -18,7 +18,7 @@ public class ByteBufferInputStreamTest {
 
 		assertEquals(0xFF, bis.readUnsignedByte());
 		assertEquals(0xFF00, bis.readUnsignedShort());
-		
+
 		try {
 			bis.readUnsignedByte();
 			fail();

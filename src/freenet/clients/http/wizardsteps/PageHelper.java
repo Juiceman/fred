@@ -68,22 +68,22 @@ public class PageHelper {
 		HTMLNode form = toadletContext.addFormChild(parentNode, target, id);
 		if (persistFields.isUsingPreset()) {
 			form.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "preset", persistFields.preset.name() });
+						  new String[] { "type", "name", "value" },
+						  new String[] { "hidden", "preset", persistFields.preset.name() });
 		}
 		if (persistFields.isSingleStep()) {
 			form.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "singlestep", "true" });
+						  new String[] { "type", "name", "value" },
+						  new String[] { "hidden", "singlestep", "true" });
 		}
 		if (includeOpennet) {
 			form.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "opennet", String.valueOf(persistFields.opennet) });
+						  new String[] { "type", "name", "value" },
+						  new String[] { "hidden", "opennet", String.valueOf(persistFields.opennet) });
 		}
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "hidden", "step", step.name() });
+					  new String[] { "type", "name", "value" },
+					  new String[] { "hidden", "step", step.name() });
 		return form;
 	}
 }

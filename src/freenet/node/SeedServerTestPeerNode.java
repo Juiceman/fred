@@ -16,7 +16,7 @@ public class SeedServerTestPeerNode extends SeedServerPeerNode {
 	public SeedServerTestPeerNode(SimpleFieldSet fs, Node node2, NodeCrypto crypto, boolean fromLocal) throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
 		super(fs, node2, crypto, fromLocal);
 	}
-	
+
 	@Override
 	public SimpleFieldSet exportFieldSet() {
 		SimpleFieldSet sfs = super.exportFieldSet();
@@ -28,10 +28,10 @@ public class SeedServerTestPeerNode extends SeedServerPeerNode {
 	public boolean shouldDisconnectAndRemoveNow() {
 		return false;
 	}
-	
+
 	@Override
 	protected void sendInitialMessages() {}
-	
+
 	public enum FATE {
 		// Never connected
 		NEVER_CONNECTED,
@@ -46,7 +46,7 @@ public class SeedServerTestPeerNode extends SeedServerPeerNode {
 		// Connected but then disconnected for no known reason
 		CONNECTED_DISCONNECTED_UNKNOWN
 	}
-	
+
 	@Override
 	public void onRemove() {
 		long lastReceivedDataPacketTime = lastReceivedDataPacketTime();
@@ -58,7 +58,7 @@ public class SeedServerTestPeerNode extends SeedServerPeerNode {
 			System.err.println(this.getIdentityString()+" : REMOVED: UNKNOWN CAUSE");
 		super.onRemove();
 	}
-	
+
 	public FATE getFate() {
 		long lastReceivedDataPacketTime = lastReceivedDataPacketTime();
 		if(isConnected()) {

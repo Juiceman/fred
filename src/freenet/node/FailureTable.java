@@ -35,26 +35,26 @@ import freenet.support.io.NativeThread;
 // Otherwise it will be much too easy to trace a request if an attacker busts the node afterwards.
 // We can use an HMAC or something to authenticate offers.
 
-// LOCKING: Always take the FailureTable lock first if you need both. Take the FailureTableEntry 
+// LOCKING: Always take the FailureTable lock first if you need both. Take the FailureTableEntry
 // lock only on cheap internal operations.
 
 /**
  * Tracks recently DNFed keys, where they were routed to, what the location was at the time, who requested them.
- * Implements Ultra-Lightweight Persistent Requests: Refuse requests for a key for 10 minutes after it's DNFed 
+ * Implements Ultra-Lightweight Persistent Requests: Refuse requests for a key for 10 minutes after it's DNFed
  * (UNLESS we find a better route for the request), and when it is found, offer it to those who've asked for it
  * in the last hour.
  * LOCKING: Do not lock PeerNode before FailureTable/FailureTableEntry.
  * @author toad
  */
 public class FailureTable {
-	
+
 	private static volatile boolean logMINOR;
 	//private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				//logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -66,13 +66,13 @@ public class FailureTable {
 	/** BlockOfferList by key. Synchronized on self, as it doesn't interact with the main FT. */
 	private final LRUMap<Key,BlockOfferList> blockOfferListByKey;
 	private final Node node;
-	
+
 	/** Maximum number of keys to track */
 	static final int MAX_ENTRIES = 20*1000;
 	/** Maximum number of offers to track */
 	static final int MAX_OFFERS = 10*1000;
 	/** Terminate a request if there was a DNF on the same key less than 10 minutes ago.
-	 * Maximum time for any FailureTable i.e. for this period after a DNF, we will avoid the node that 
+	 * Maximum time for any FailureTable i.e. for this period after a DNF, we will avoid the node that
 	 * DNFed. */
 	static final long REJECT_TIME = MINUTES.toMillis(10);
 	/** Maximum time for a RecentlyFailed. I.e. until this period expires, we take a request into account
@@ -98,14 +98,14 @@ public class FailureTable {
 		offerExecutor = new SerialExecutor(NativeThread.HIGH_PRIORITY);
 		node.ticker.queueTimedJob(new FailureTableCleaner(), CLEANUP_PERIOD);
 	}
-	
+
 	public void start() {
 		offerExecutor.start(node.executor, "FailureTable offers executor for "+node.getDarknetPortNumber());
 	}
-	
+
 	/**
 	 * Called when we route to a node and it fails for some reason, but we continue the request.
-	 * Normally the timeout will be the time it took to route to that node and wait for its 
+	 * Normally the timeout will be the time it took to route to that node and wait for its
 	 * response / timeout waiting for its response.
 	 * @param key
 	 * @param routedTo
@@ -139,11 +139,11 @@ public class FailureTable {
 			trimEntries(now);
 		}
 	}
-	
+
 	/** When a request finishes with a failure, record who generated the failure
 	 * so we don't route to them next time, and also who originated it so we can
 	 * send the data back to them if we find them.
-	 * ORDERING: You should generally call this *before* calling finish() to 
+	 * ORDERING: You should generally call this *before* calling finish() to
 	 * avoid problems.
 	 * LOCKING: NEVER synchronize on PeerNode before calling any FailureTable method.
 	 */
@@ -170,27 +170,27 @@ public class FailureTable {
 			// LOCKING: Taking PeerNode then FT/FTE will deadlock.
 			// However this should not happen.
 			// We have to do this inside the lock to prevent race condition with the cleaner causing us to get dropped because isEmpty() before updating.
-			
+
 			if(routedTo != null)
 				entry.failedTo(routedTo, rfTimeout, ftTimeout, now, htl);
 			if(requestor != null)
 				entry.addRequestor(requestor, now, origHTL);
-			
+
 			trimEntries(now);
 		}
 	}
-	
+
 	private synchronized void trimEntries(long now) {
 		while(entriesByKey.size() > MAX_ENTRIES) {
 			entriesByKey.popKey();
 		}
 	}
 
-	// LOCKING: Synchronized on FailureTable because we need to remove self in deleteOffer(). 
+	// LOCKING: Synchronized on FailureTable because we need to remove self in deleteOffer().
 	private final class BlockOfferList {
 		private BlockOffer[] offers;
 		final FailureTableEntry entry;
-		
+
 		BlockOfferList(FailureTableEntry entry, BlockOffer offer) {
 			this.entry = entry;
 			this.offers = new BlockOffer[] { offer };
@@ -220,7 +220,7 @@ public class FailureTable {
 			synchronized(blockOfferListByKey) {
 				int idx = -1;
 				final int offerLength = offers.length;
-				for(int i=0;i<offerLength;i++) {
+				for(int i=0; i<offerLength; i++) {
 					if(offers[i] == offer) idx = i;
 				}
 				if(idx < 0) return;
@@ -242,13 +242,13 @@ public class FailureTable {
 				offers[offers.length-1] = offer;
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return super.toString()+"("+offers.length+")";
 		}
 	}
-	
+
 	static final class BlockOffer {
 		final long offeredTime;
 		/** Either offered by or offered to this node */
@@ -257,7 +257,7 @@ public class FailureTable {
 		final byte[] authenticator;
 		/** Boot ID when the offer was made */
 		final long bootID;
-		
+
 		BlockOffer(PeerNode pn, long now, byte[] authenticator, long bootID) {
 			this.nodeRef = pn.myRef;
 			this.offeredTime = now;
@@ -277,10 +277,10 @@ public class FailureTable {
 			return isExpired(System.currentTimeMillis());
 		}
 	}
-	
+
 	/**
 	 * Called when a data block is found (after it has been stored; there is a good chance of its being available in the
-	 * near future). If there are nodes waiting for it, we will offer it to them. Removes the list of 
+	 * near future). If there are nodes waiting for it, we will offer it to them. Removes the list of
 	 * nodes that offered the key too (but this is a separate operation).
 	 * LOCKING: Never call when locked PeerNode, and try to avoid other locks as
 	 * they might cause a deadlock. Schedule off-thread if necessary.
@@ -309,17 +309,17 @@ public class FailureTable {
 		if(!node.enableULPRDataPropagation) return;
 		entry.offer();
 	}
-	
-	/** Run onOffer() on a separate thread since it can block for disk I/O, and we don't want to cause 
+
+	/** Run onOffer() on a separate thread since it can block for disk I/O, and we don't want to cause
 	 * transfer timeouts etc because of slow disk. */
 	private final SerialExecutor offerExecutor;
-	
+
 	/**
 	 * Called when we get an offer for a key. If this is an SSK, we will only accept it if we have previously asked for it.
 	 * If it is a CHK, we will accept it if we want it.
 	 * @param key The key we are being offered.
 	 * @param peer The node offering it.
-	 * @param authenticator 
+	 * @param authenticator
 	 */
 	void onOffer(final Key key, final PeerNode peer, final byte[] authenticator) {
 		if(!node.enableULPRDataPropagation) return;
@@ -357,7 +357,7 @@ public class FailureTable {
 			Logger.minor(this, "Already have key");
 			return;
 		}
-		
+
 		// Re-check after potentially long disk I/O.
 		FailureTableEntry entry;
 		long now = System.currentTimeMillis();
@@ -375,29 +375,29 @@ public class FailureTable {
 		 * It's good because it makes the whole structure much more reliable; it's bad because
 		 * it's not entirely under our control - we didn't choose to route it to the node, the node
 		 * routed it to us. Now it's found it before we did...
-		 * 
+		 *
 		 * Attacks:
 		 * - Frost spamming etc: Is it easier to offer data to our peers rather than inserting it? Will
 		 * it result in it being propagated further? The peer node would then do the request, rather than
 		 * this node doing an insert. Is that beneficial?
-		 * 
+		 *
 		 * Not relevant with CHKs anyway.
-		 * 
-		 * On the plus side, propagation to nodes that have asked is worthwhile because reduced polling 
+		 *
+		 * On the plus side, propagation to nodes that have asked is worthwhile because reduced polling
 		 * cost enables more secure messaging systems e.g. outbox polling...
-		 * - Social engineering: If a key is unpopular, you can put a different copy of it on different 
-		 * nodes. You can then use this to trace the requestor - identify that he is or isn't on the target. 
-		 * You can't do this with a regular insert because it will often go several nodes even at htl 0. 
+		 * - Social engineering: If a key is unpopular, you can put a different copy of it on different
+		 * nodes. You can then use this to trace the requestor - identify that he is or isn't on the target.
+		 * You can't do this with a regular insert because it will often go several nodes even at htl 0.
 		 * With subscriptions, you might be able to bypass this - but only if you know no other nodes in the
-		 * neighbourhood are subscribed. Easier with SSKs; with CHKs you have only binary information of 
-		 * whether the person got the key (with social engineering). Hard to exploit on darknet; if you're 
+		 * neighbourhood are subscribed. Easier with SSKs; with CHKs you have only binary information of
+		 * whether the person got the key (with social engineering). Hard to exploit on darknet; if you're
 		 * that close to the suspect there are easier ways to get at them e.g. correlation attacks.
-		 * 
+		 *
 		 * Conclusion: We should accept the request if:
 		 * - We asked for it from that node. (Note that a node might both have asked us and been asked).
 		 * - That node asked for it, and it's a CHK.
 		 */
-		
+
 		boolean weAsked = entry.askedFromPeer(peer, now);
 		boolean heAsked = entry.askedByPeer(peer, now);
 		if(!(weAsked || heAsked)) {
@@ -414,12 +414,12 @@ public class FailureTable {
 				entriesByKey.removeKey(key);
 			}
 		}
-		
+
 		// Valid offer.
-		
+
 		// Add to offers list
-		
-		synchronized(blockOfferListByKey) {			
+
+		synchronized(blockOfferListByKey) {
 			if(logMINOR) Logger.minor(this, "Valid offer");
 			BlockOfferList bl = blockOfferListByKey.get(key);
 			BlockOffer offer = new BlockOffer(peer, now, authenticator, peer.getBootID());
@@ -431,7 +431,7 @@ public class FailureTable {
 			blockOfferListByKey.push(key, bl);
 			trimOffersList(now);
 		}
-		
+
 		// Accept the offer.
 		// Either a peer wants it, in which case we want it for them,
 		// or we want it, or we have requested it in the past, in which case
@@ -499,13 +499,13 @@ public class FailureTable {
 				tag.unlockHandler();
 				return;
 			}
-			
+
 			final Message data = DMT.createFNPSSKDataFoundData(uid, block.getRawData(), realTimeFlag);
 			Message headers = DMT.createFNPSSKDataFoundHeaders(uid, block.getRawHeaders(), realTimeFlag);
 			final int dataLength = block.getRawData().length;
-			
+
 			source.sendAsync(headers, null, senderCounter);
-			
+
 			node.executor.execute(new PrioRunnable() {
 
 				@Override
@@ -526,9 +526,9 @@ public class FailureTable {
 						tag.unlockHandler();
 					}
 				}
-				
+
 			}, "Send offered SSK");
-			
+
 			if(needPubKey) {
 				Message pk = DMT.createFNPSSKPubKey(uid, block.getPubKey(), realTimeFlag);
 				source.sendAsync(pk, null, senderCounter);
@@ -543,19 +543,19 @@ public class FailureTable {
 			}
 			Message df = DMT.createFNPCHKDataFound(uid, block.getRawHeaders());
 			source.sendAsync(df, null, senderCounter);
-        	PartiallyReceivedBlock prb =
-        		new PartiallyReceivedBlock(Node.PACKETS_IN_BLOCK, Node.PACKET_SIZE, block.getRawData());
-        	final BlockTransmitter bt =
-        		new BlockTransmitter(node.usm, node.getTicker(), source, uid, prb, senderCounter, BlockTransmitter.NEVER_CASCADE,
-        				new BlockTransmitterCompletion() {
+			PartiallyReceivedBlock prb =
+				new PartiallyReceivedBlock(Node.PACKETS_IN_BLOCK, Node.PACKET_SIZE, block.getRawData());
+			final BlockTransmitter bt =
+				new BlockTransmitter(node.usm, node.getTicker(), source, uid, prb, senderCounter, BlockTransmitter.NEVER_CASCADE,
+			new BlockTransmitterCompletion() {
 
-					@Override
-					public void blockTransferFinished(boolean success) {
-						tag.unlockHandler();
-					}
-					
-				}, realTimeFlag, node.nodeStats);
-        	node.executor.execute(new PrioRunnable() {
+				@Override
+				public void blockTransferFinished(boolean success) {
+					tag.unlockHandler();
+				}
+
+			}, realTimeFlag, node.nodeStats);
+			node.executor.execute(new PrioRunnable() {
 
 				@Override
 				public int getPriority() {
@@ -566,13 +566,13 @@ public class FailureTable {
 				public void run() {
 					bt.sendAsync();
 				}
-        		
-        	}, "CHK offer sender");
+
+			}, "CHK offer sender");
 		}
 	}
 
 	public final OfferedKeysByteCounter senderCounter = new OfferedKeysByteCounter();
-	
+
 	class OfferedKeysByteCounter implements ByteCounter {
 
 		@Override
@@ -590,9 +590,9 @@ public class FailureTable {
 			node.sentPayload(x);
 			node.nodeStats.offeredKeysSenderSentBytes(-x);
 		}
-		
+
 	}
-	
+
 	class OfferList {
 
 		OfferList(BlockOfferList offerList) {
@@ -609,15 +609,15 @@ public class FailureTable {
 			if(logMINOR)
 				Logger.minor(this, "Offers: "+recentOffers.size()+" recent "+expiredOffers.size()+" expired");
 		}
-		
+
 		private final BlockOfferList offerList;
-		
+
 		private final List<BlockOffer> recentOffers;
 		private final List<BlockOffer> expiredOffers;
-		
+
 		/** The last offer we returned */
 		private BlockOffer lastOffer;
-		
+
 		public BlockOffer getFirstOffer() {
 			if(lastOffer != null) {
 				throw new IllegalStateException("Last offer not dealt with");
@@ -631,7 +631,7 @@ public class FailureTable {
 			// No more offers.
 			return null;
 		}
-		
+
 		/**
 		 * Delete the last offer - we have used it, successfully or not.
 		 */
@@ -647,9 +647,9 @@ public class FailureTable {
 		public void keepLastOffer() {
 			lastOffer = null;
 		}
-		
+
 	}
-	
+
 	/** Have we had any offers for the key?
 	 * @param key The key to check.
 	 * @return True if there are any offers, false otherwise.
@@ -682,7 +682,7 @@ public class FailureTable {
 			return entriesByKey.get(key);
 		}
 	}
-	
+
 	public class FailureTableCleaner implements Runnable {
 
 		@Override
@@ -708,10 +708,10 @@ public class FailureTable {
 				if(entry.cleanup()) {
 					synchronized(FailureTable.this) {
 						synchronized(entry) {
-						if(entry.isEmpty()) {
-							if(logMINOR) Logger.minor(this, "Removing entry for "+entry.key);
-							entriesByKey.removeKey(entry.key);
-						}
+							if(entry.isEmpty()) {
+								if(logMINOR) Logger.minor(this, "Removing entry for "+entry.key);
+								entriesByKey.removeKey(entry.key);
+							}
 						}
 					}
 				}
@@ -729,8 +729,8 @@ public class FailureTable {
 		}
 		return entry.othersWant(apartFrom);
 	}
-        
-        /** @return The lowest HTL at which any peer has requested this key recently */
+
+	/** @return The lowest HTL at which any peer has requested this key recently */
 	public short minOfferedHTL(Key key, short htl) {
 		FailureTableEntry entry;
 		synchronized(this) {

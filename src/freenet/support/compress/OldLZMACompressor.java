@@ -22,11 +22,11 @@ import freenet.support.io.CountedInputStream;
 import freenet.support.io.CountedOutputStream;
 
 public class OldLZMACompressor implements Compressor {
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -48,8 +48,10 @@ public class OldLZMACompressor implements Compressor {
 				Logger.minor(this, "Compressing "+data+" size "+data.size()+" to new bucket "+output);
 			compress(is, os, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
-			is.close(); is = null;
-			os.close(); os = null;
+			is.close();
+			is = null;
+			os.close();
+			os = null;
 		} finally {
 			Closer.close(is);
 			Closer.close(os);
@@ -66,13 +68,13 @@ public class OldLZMACompressor implements Compressor {
 		cis = new CountedInputStream(is);
 		cos = new CountedOutputStream(os);
 		Encoder encoder = new Encoder();
-        encoder.SetEndMarkerMode( true );
-        // Dictionary size 1MB, this is equivalent to lzma -4, it uses 16MB to compress and 2MB to decompress.
-        // Next one up is 2MB = -5 = 26M compress, 3M decompress.
-        encoder.SetDictionarySize( 1 << 20 );
-        // enc.WriteCoderProperties( out );
-        // 5d 00 00 10 00
-        encoder.Code( cis, cos, -1, -1, null );
+		encoder.SetEndMarkerMode( true );
+		// Dictionary size 1MB, this is equivalent to lzma -4, it uses 16MB to compress and 2MB to decompress.
+		// Next one up is 2MB = -5 = 26M compress, 3M decompress.
+		encoder.SetDictionarySize( 1 << 20 );
+		// enc.WriteCoderProperties( out );
+		// 5d 00 00 10 00
+		encoder.Code( cis, cos, -1, -1, null );
 		if(logMINOR)
 			Logger.minor(this, "Read "+cis.count()+" written "+cos.written());
 		if(cos.written() > maxWriteLength)
@@ -103,8 +105,10 @@ public class OldLZMACompressor implements Compressor {
 			if(logMINOR)
 				Logger.minor(this, "Output: "+output+" size "+output.size()+" read "+is.count());
 			// It is essential that the close()'s throw if there is any problem.
-			is.close(); is = null;
-			os.close(); os = null;
+			is.close();
+			is = null;
+			os.close();
+			os = null;
 		} finally {
 			Closer.close(is);
 			Closer.close(os);
@@ -115,19 +119,19 @@ public class OldLZMACompressor implements Compressor {
 	// Copied from DecoderThread
 	// LICENSING: DecoderThread is LGPL 2.1/CPL according to comments.
 
-    static final int propSize = 5;
+	static final int propSize = 5;
 
-    static final byte[] props = new byte[propSize];
+	static final byte[] props = new byte[propSize];
 
-    static {
-        // enc.SetEndMarkerMode( true );
-        // enc.SetDictionarySize( 1 << 20 );
-        props[0] = 0x5d;
-        props[1] = 0x00;
-        props[2] = 0x00;
-        props[3] = 0x10;
-        props[4] = 0x00;
-    }
+	static {
+		// enc.SetEndMarkerMode( true );
+		// enc.SetDictionarySize( 1 << 20 );
+		props[0] = 0x5d;
+		props[1] = 0x00;
+		props[2] = 0x00;
+		props[3] = 0x10;
+		props[4] = 0x00;
+	}
 
 	@Override
 	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {

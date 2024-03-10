@@ -40,7 +40,7 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 		return defaultUploadDir();
 	}
 
-    @Override
+	@Override
 	protected Hashtable<String, String> persistenceFields (Hashtable<String, String> set) {
 		Hashtable<String, String> fieldPairs = new Hashtable<String, String>();
 		FreenetURI furi = null;
@@ -58,7 +58,7 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 			fieldPairs.put("compress", element);
 		}
 
-		element = set.get("compatibilityMode"); 
+		element = set.get("compatibilityMode");
 		if (element != null) {
 			fieldPairs.put("compatibilityMode", element);
 		}

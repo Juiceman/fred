@@ -8,7 +8,7 @@ import freenet.keys.Key;
  */
 public interface KeySalter {
 
-    /** Convert a Key to a byte[], using a global, random salt value. */
-    byte[] saltKey(Key key);
+	/** Convert a Key to a byte[], using a global, random salt value. */
+	byte[] saltKey(Key key);
 
 }

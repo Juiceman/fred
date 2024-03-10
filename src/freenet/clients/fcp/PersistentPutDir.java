@@ -27,13 +27,13 @@ import freenet.support.io.TempBucketFactory;
 public class PersistentPutDir extends FCPMessage {
 
 	static final String name = "PersistentPutDir";
-	
+
 	final String identifier;
 	final FreenetURI uri;
 	final FreenetURI privateURI;
-	final int verbosity; 
+	final int verbosity;
 	final short priorityClass;
-	final Persistence persistence; 
+	final Persistence persistence;
 	final boolean global;
 	private final HashMap<String, Object> manifestElements;
 	final String defaultName;
@@ -47,11 +47,11 @@ public class PersistentPutDir extends FCPMessage {
 	final boolean realTime;
 	final byte[] splitfileCryptoKey;
 	final InsertContext.CompatibilityMode compatMode;
-	
+
 	public PersistentPutDir(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity, short priorityClass,
-	        Persistence persistence, boolean global, String defaultName, HashMap<String, Object> manifestElements,
-	        String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor, boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
-	        InsertContext.CompatibilityMode cmode) {
+							Persistence persistence, boolean global, String defaultName, HashMap<String, Object> manifestElements,
+							String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor, boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
+							InsertContext.CompatibilityMode cmode) {
 		this.identifier = identifier;
 		this.uri = publicURI;
 		this.privateURI = privateURI;
@@ -94,7 +94,7 @@ public class PersistentPutDir extends FCPMessage {
 		//                 Is it really necessary to include the file list here?
 		ManifestElement[] elements = BaseManifestPutter.flatten(manifestElements);
 		fs.putSingle("DefaultName", defaultName);
-		for(int i=0;i<elements.length;i++) {
+		for(int i=0; i<elements.length; i++) {
 			String num = Integer.toString(i);
 			ManifestElement e = elements[i];
 			String mimeOverride = e.getMimeTypeOverride();
@@ -110,7 +110,7 @@ public class PersistentPutDir extends FCPMessage {
 				if(data instanceof DelayedFreeBucket) {
 					data = ((DelayedFreeBucket)data).getUnderlying();
 				} else if(data instanceof DelayedFreeRandomAccessBucket) {
-				    data = ((DelayedFreeRandomAccessBucket)data).getUnderlying();
+					data = ((DelayedFreeRandomAccessBucket)data).getUnderlying();
 				}
 				subset.put("DataLength", e.getSize());
 				if(mimeOverride != null)
@@ -157,7 +157,7 @@ public class PersistentPutDir extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentPut goes from server to client not the other way around", identifier, global);
 	}
 

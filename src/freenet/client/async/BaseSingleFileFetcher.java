@@ -23,14 +23,14 @@ import freenet.support.TimeUtil;
 
 /**
  * Base class implements most of what is needed for fetching a single block.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  * @author toad
  */
 public abstract class BaseSingleFileFetcher extends SendableGet implements HasKeyListener {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	protected final ClientKey key;
 	protected boolean cancelled;
@@ -42,11 +42,11 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 	static final SendableRequestItem[] keys = new SendableRequestItem[] { NullSendableRequestItem.nullItem };
 	private int cachedCooldownTries;
 	private long cachedCooldownTime;
-    public transient long cooldownWakeupTime;
+	public transient long cooldownWakeupTime;
 
-	
+
 	private static volatile boolean logMINOR;
-	
+
 	static {
 		Logger.registerClass(BaseSingleFileFetcher.class);
 	}
@@ -62,17 +62,17 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		this.ctx = ctx;
 		if(ctx == null) throw new NullPointerException();
 	}
-	
+
 	@Override
 	public long countAllKeys(ClientContext context) {
 		return 1;
 	}
-	
+
 	@Override
 	public long countSendableKeys(ClientContext context) {
 		return 1;
 	}
-	
+
 	@Override
 	public SendableRequestItem chooseKey(KeysFetchingLocally fetching, ClientContext context) {
 		Key k = key.getNodeKey(false);
@@ -92,12 +92,12 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		}
 		return keys[0];
 	}
-	
+
 	@Override
 	public ClientKey getKey(SendableRequestItem token) {
 		return key;
 	}
-	
+
 	@Override
 	public FetchContext getContext() {
 		return ctx;
@@ -151,7 +151,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		}
 		innerCheckCachedCooldownData();
 	}
-	
+
 	private void innerCheckCachedCooldownData() {
 		cachedCooldownTries = ctx.getCooldownRetries();
 		cachedCooldownTime = ctx.getCooldownTime();
@@ -177,7 +177,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		}
 		unregisterAll(context);
 	}
-	
+
 	/**
 	 * Remove the pendingKeys item and then remove from the queue as well.
 	 * Call unregister(container) if you only want to remove from the queue.
@@ -196,11 +196,11 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 	public synchronized boolean isCancelled() {
 		return cancelled;
 	}
-	
+
 	public synchronized boolean isEmpty() {
 		return cancelled || finished;
 	}
-	
+
 	@Override
 	public RequestClient getClient() {
 		return parent.getClient();
@@ -227,7 +227,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		unregister(context, getPriorityClass()); // Key has already been removed from pendingKeys
 		onSuccess(block, false, null, context);
 	}
-	
+
 	public void onSuccess(KeyBlock lowLevelBlock, boolean fromStore, SendableRequestItem token, ClientContext context) {
 		ClientKeyBlock block;
 		try {
@@ -237,12 +237,12 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 			onBlockDecodeError(token, context);
 		}
 	}
-	
+
 	protected abstract void onBlockDecodeError(SendableRequestItem token, ClientContext context);
 
 	/** Called when/if the low-level request succeeds. */
 	public abstract void onSuccess(ClientKeyBlock block, boolean fromStore, Object token, ClientContext context);
-	
+
 	@Override
 	public long getCooldownWakeup(SendableRequestItem token, ClientContext context) {
 		return cooldownWakeupTime;
@@ -252,11 +252,11 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		if(key == null) throw new NullPointerException();
 		getScheduler(context).register(this, new SendableGet[] { this }, persistent, ctx.blocks, false);
 	}
-	
+
 	public void reschedule(ClientContext context) {
 		getScheduler(context).register(null, new SendableGet[] { this }, persistent, ctx.blocks, true);
 	}
-	
+
 	public SendableGet getRequest(Key key) {
 		return this;
 	}
@@ -291,7 +291,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 	}
 
 	protected abstract void notFoundInStore(ClientContext context);
-	
+
 	@Override
 	public boolean preRegister(ClientContext context, boolean toNetwork) {
 		if(!toNetwork) return false;
@@ -303,7 +303,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		parent.toNetwork(context);
 		return false;
 	}
-	
+
 	@Override
 	public synchronized long getWakeupTime(ClientContext context, long now) {
 		if(cancelled || finished) return -1;
@@ -319,7 +319,7 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 			return 0;
 		return wakeTime;
 	}
-	
+
 	/** Reread the cached cooldown values (and anything else) from the FetchContext
 	 * after it changes. FIXME: Ideally this should be a generic mechanism, but
 	 * that looks too complex without significant changes to data structures.
@@ -333,15 +333,15 @@ public abstract class BaseSingleFileFetcher extends SendableGet implements HasKe
 		}
 		innerCheckCachedCooldownData();
 	}
-	
+
 	@Override
 	public byte[] getWantedKey() {
 		Key newKey = key.getNodeKey(false);
 		return newKey instanceof NodeSSK ? ((NodeSSK)newKey).getPubKeyHash() : newKey.getRoutingKey();
 	}
 
-    public void onResume(ClientContext context) {
-        schedule(context);
-    }
+	public void onResume(ClientContext context) {
+		schedule(context);
+	}
 
 }

@@ -36,8 +36,10 @@ import freenet.support.io.Closer;
  * @author toad
  */
 public class NodeCrypto {
-    static { Logger.registerClass(NodeCrypto.class); }
-    private static volatile boolean logMINOR;
+	static {
+		Logger.registerClass(NodeCrypto.class);
+	}
+	private static volatile boolean logMINOR;
 
 	/** Length of a node identity */
 	public static final int IDENTITY_LENGTH = 32;
@@ -91,55 +93,55 @@ public class NodeCrypto {
 
 		try {
 
-		int port = config.getPort();
+			int port = config.getPort();
 
-		FreenetInetAddress bindto = config.getBindTo();
+			FreenetInetAddress bindto = config.getBindTo();
 
-		UdpSocketHandler u = null;
+			UdpSocketHandler u = null;
 
-		if(port > 65535) {
-			throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Impossible port number: "+port);
-		} else if(port == -1) {
-			// Pick a random port
-			for(int i=0;i<200000;i++) {
-				int portNo = 1024 + random.nextInt(65535-1024);
+			if(port > 65535) {
+				throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Impossible port number: "+port);
+			} else if(port == -1) {
+				// Pick a random port
+				for(int i=0; i<200000; i++) {
+					int portNo = 1024 + random.nextInt(65535-1024);
+					try {
+						u = new UdpSocketHandler(portNo, bindto.getAddress(), node, startupTime, getTitle(portNo), node.collector);
+						port = u.getPortNumber();
+						break;
+					} catch (Exception e) {
+						Logger.normal(this, "Could not use port: "+bindto+ ':' +portNo+": "+e, e);
+						System.err.println("Could not use port: "+bindto+ ':' +portNo+": "+e);
+						e.printStackTrace();
+						continue;
+					}
+				}
+				if(u == null)
+					throw new NodeInitException(NodeInitException.EXIT_NO_AVAILABLE_UDP_PORTS, "Could not find an available UDP port number for FNP (none specified)");
+			} else {
 				try {
-					u = new UdpSocketHandler(portNo, bindto.getAddress(), node, startupTime, getTitle(portNo), node.collector);
-					port = u.getPortNumber();
-					break;
+					u = new UdpSocketHandler(port, bindto.getAddress(), node, startupTime, getTitle(port), node.collector);
 				} catch (Exception e) {
-					Logger.normal(this, "Could not use port: "+bindto+ ':' +portNo+": "+e, e);
-					System.err.println("Could not use port: "+bindto+ ':' +portNo+": "+e);
+					Logger.error(this, "Caught "+e, e);
+					System.err.println(e);
 					e.printStackTrace();
-					continue;
+					throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Could not bind to port: "+port+" (node already running?)");
 				}
 			}
-			if(u == null)
-				throw new NodeInitException(NodeInitException.EXIT_NO_AVAILABLE_UDP_PORTS, "Could not find an available UDP port number for FNP (none specified)");
-		} else {
-			try {
-				u = new UdpSocketHandler(port, bindto.getAddress(), node, startupTime, getTitle(port), node.collector);
-			} catch (Exception e) {
-				Logger.error(this, "Caught "+e, e);
-				System.err.println(e);
-				e.printStackTrace();
-				throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Could not bind to port: "+port+" (node already running?)");
-			}
-		}
-		socket = u;
+			socket = u;
 
-		Logger.normal(this, "FNP port created on "+bindto+ ':' +port);
-		System.out.println("FNP port created on "+bindto+ ':' +port);
-		portNumber = port;
-		config.setPort(port);
+			Logger.normal(this, "FNP port created on "+bindto+ ':' +port);
+			System.out.println("FNP port created on "+bindto+ ':' +port);
+			portNumber = port;
+			config.setPort(port);
 
-		socket.setDropProbability(config.getDropProbability());
+			socket.setDropProbability(config.getDropProbability());
 
-		packetMangler = new FNPPacketMangler(node, this, socket);
+			packetMangler = new FNPPacketMangler(node, this, socket);
 
-		detector = new NodeIPPortDetector(node, node.ipDetector, this, enableARKs);
+			detector = new NodeIPPortDetector(node, node.ipDetector, this, enableARKs);
 
-		anonSetupCipher = new Rijndael(256,256);
+			anonSetupCipher = new Rijndael(256,256);
 
 		} catch (NodeInitException e) {
 			config.stopping(this);
@@ -189,14 +191,14 @@ public class NodeCrypto {
 			Logger.error(this, "Caught "+e, e);
 			throw new IOException(e.toString());
 		}
-		
+
 		if(ecdsaP256 == null) {
-		    // We don't have a keypair, generate one.
-		    Logger.normal(this, "No ecdsa.P256 field found in noderef: let's generate a new key");
-		    ecdsaP256 = new ECDSA(Curves.P256);
+			// We don't have a keypair, generate one.
+			Logger.normal(this, "No ecdsa.P256 field found in noderef: let's generate a new key");
+			ecdsaP256 = new ECDSA(Curves.P256);
 		}
-        	ecdsaPubKeyHash = SHA256.digest(ecdsaP256.getPublicKey().getEncoded());
-		
+		ecdsaPubKeyHash = SHA256.digest(ecdsaP256.getPublicKey().getEncoded());
+
 		InsertableClientSSK ark = null;
 
 		// ARK
@@ -304,9 +306,9 @@ public class NodeCrypto {
 		} // Don't include IPs for anonymous initiator.
 		// Negotiation types
 		if(!(forARK || forSetup || forAnonInitiator)) {
-		    // We *do* need the location on noderefs exchanged via path folding and announcement.
-		    // This is necessary so we can take the location into account in OpennetManager.wantPeer().
-		    fs.put("location", node.lm.getLocation());
+			// We *do* need the location on noderefs exchanged via path folding and announcement.
+			// This is necessary so we can take the location into account in OpennetManager.wantPeer().
+			fs.put("location", node.lm.getLocation());
 		}
 		fs.putSingle("version", Version.getVersionString()); // Keep, vital that peer know our version. For example, some types may be sent in different formats to different node versions (e.g. Peer).
 		if(!forAnonInitiator)
@@ -322,14 +324,14 @@ public class NodeCrypto {
 			// Anonymous initiator setup type specifies whether the node is opennet or not.
 			fs.put("opennet", isOpennet);
 			synchronized (referenceSync) {
-				if(myReferenceECDSASignature == null || mySignedReference == null || !mySignedReference.equals(fs.toOrderedString())){
+				if(myReferenceECDSASignature == null || mySignedReference == null || !mySignedReference.equals(fs.toOrderedString())) {
 					mySignedReference = fs.toOrderedString();
 					try {
-					    myReferenceECDSASignature = ecdsaSignRef(mySignedReference);
+						myReferenceECDSASignature = ecdsaSignRef(mySignedReference);
 
-					    // Old nodes will verify the signature including sigP256
-					    fs.putSingle("sigP256", myReferenceECDSASignature);
-					    mySignedReference = fs.toOrderedString();
+						// Old nodes will verify the signature including sigP256
+						fs.putSingle("sigP256", myReferenceECDSASignature);
+						mySignedReference = fs.toOrderedString();
 					} catch (NodeInitException e) {
 						node.exit(e.exitCode);
 					}
@@ -359,9 +361,9 @@ public class NodeCrypto {
 		}
 		return fs;
 	}
-	
+
 	private String ecdsaSignRef(String mySignedReference) throws NodeInitException {
-	    if(logMINOR) Logger.minor(this, "Signing reference:\n"+mySignedReference);
+		if(logMINOR) Logger.minor(this, "Signing reference:\n"+mySignedReference);
 
 		byte[] ref = mySignedReference.getBytes(StandardCharsets.UTF_8);
 
@@ -380,11 +382,11 @@ public class NodeCrypto {
 		gis = new DeflaterOutputStream(baos);
 		try {
 			fs.writeTo(gis);
-                } catch (IOException e) {
-                    Logger.error(this, "IOE :"+e.getMessage(), e);
+		} catch (IOException e) {
+			Logger.error(this, "IOE :"+e.getMessage(), e);
 		} finally {
 			Closer.close(gis);
-                        Closer.close(baos);
+			Closer.close(baos);
 		}
 
 		byte[] buf = baos.toByteArray();
@@ -425,7 +427,7 @@ public class NodeCrypto {
 	}
 
 	void addPrivateFields(SimpleFieldSet fs) {
-	    // Let's not add it twice
+		// Let's not add it twice
 		fs.removeSubset("ecdsa");
 		fs.put("ecdsa", ecdsaP256.asFieldSet(true));
 
@@ -436,11 +438,11 @@ public class NodeCrypto {
 	/** Sign data with the node's ECDSA key. The data does not need to be hashed, the signing code
 	 * will handle that for us, using an algorithm appropriate for the keysize. */
 	byte[] ecdsaSign(byte[]... data) {
-	    return ecdsaP256.signToNetworkFormat(data);
+		return ecdsaP256.signToNetworkFormat(data);
 	}
 
 	public ECPublicKey getECDSAP256Pubkey() {
-	    return ecdsaP256.getPublicKey();
+		return ecdsaP256.getPublicKey();
 	}
 
 	public void onSetDropProbability(int val) {
@@ -464,17 +466,17 @@ public class NodeCrypto {
 	}
 
 	public boolean allowConnection(PeerNode pn, FreenetInetAddress addr) {
-    	if(config.oneConnectionPerAddress()) {
-    		// Disallow multiple connections to the same address
+		if(config.oneConnectionPerAddress()) {
+			// Disallow multiple connections to the same address
 			// TODO: this is inadequate for IPv6, should be replaced by
 			// check for "same /64 subnet" [configurable] instead of exact match
-    		if(node.peers.anyConnectedPeerHasAddress(addr, pn) && !detector.includes(addr)
-    				&& addr.isRealInternetAddress(false, false, false)) {
-    			Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn+" : Same IP address as another node");
-    			return false;
-    		}
+			if(node.peers.anyConnectedPeerHasAddress(addr, pn) && !detector.includes(addr)
+					&& addr.isRealInternetAddress(false, false, false)) {
+				Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn+" : Same IP address as another node");
+				return false;
+			}
 		}
-    	return true;
+		return true;
 	}
 
 	/** If oneConnectionPerAddress is not set, but there are peers with the same
@@ -483,7 +485,7 @@ public class NodeCrypto {
 	 * @param address
 	 */
 	public void maybeBootConnection(PeerNode peerNode,
-			FreenetInetAddress address) {
+									FreenetInetAddress address) {
 		if(detector.includes(address)) return;
 		if(!address.isRealInternetAddress(false, false, false)) return;
 		ArrayList<PeerNode> possibleMatches = node.peers.getAllConnectedByAddress(address, true);
@@ -532,7 +534,7 @@ public class NodeCrypto {
 	 * Get my identity.
 	 */
 	public byte[] getIdentity(int negType) {
-	    return ecdsaPubKeyHash;
+		return ecdsaPubKeyHash;
 	}
 
 	public boolean definitelyPortForwarded() {
@@ -550,7 +552,7 @@ public class NodeCrypto {
 	public boolean wantAnonAuth() {
 		return node.wantAnonAuth(isOpennet);
 	}
-	
+
 	public boolean wantAnonAuthChangeIP() {
 		return node.wantAnonAuthChangeIP(isOpennet);
 	}

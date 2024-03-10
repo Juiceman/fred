@@ -12,11 +12,11 @@ import freenet.support.SimpleFieldSet;
  *
  */
 public class PluginInfoMessage extends FCPMessage {
-	
+
 	static final String NAME = "PluginInfo";
-	
+
 	private final String identifier;
-	
+
 	private final boolean detailed;
 
 	private final String classname;

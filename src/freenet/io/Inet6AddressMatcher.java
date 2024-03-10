@@ -36,7 +36,7 @@ public class Inet6AddressMatcher implements AddressMatcher {
 	static {
 		Arrays.fill(FULL_MASK, (byte) 0xff);
 	}
-	
+
 	private byte[] address;
 	private byte[] netmask;
 
@@ -108,7 +108,7 @@ public class Inet6AddressMatcher implements AddressMatcher {
 
 	private String convertToString(byte[] addr) {
 		StringBuilder sb = new StringBuilder(4*8+7);
-		for(int i=0;i<8;i++) {
+		for(int i=0; i<8; i++) {
 			if(i != 0) sb.append(':');
 			int token = ((addr[i*2] & 0xff) << 8) + (addr[i*2+1] & 0xff);
 			sb.append(Integer.toHexString(token));

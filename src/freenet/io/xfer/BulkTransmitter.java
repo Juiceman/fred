@@ -23,18 +23,18 @@ import freenet.support.Logger.LogLevel;
 import freenet.support.io.NativeThread;
 
 /**
- * Bulk data transfer (not block). Bulk transfer is designed for files which may be much bigger than a 
+ * Bulk data transfer (not block). Bulk transfer is designed for files which may be much bigger than a
  * key block, and where we have the whole file at the outset. Do not persist across node restarts.
- * 
+ *
  * Used by update over mandatory, sending a file to our peers attached to an N2NTM etc.
  * @author toad
  */
 public class BulkTransmitter {
-	
+
 	public interface AllSentCallback {
 
 		void allSent(BulkTransmitter bulkTransmitter, boolean anyFailed);
-		
+
 	}
 
 	/** If no packets sent in this period, and no completion acknowledgement / cancellation, assume failure. */
@@ -61,24 +61,24 @@ public class BulkTransmitter {
 	private String cancelReason;
 	private final ByteCounter ctr;
 	private final boolean realTime;
-	
+
 	private static long transfersCompleted;
 	private static long transfersSucceeded;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	public BulkTransmitter(PartiallyReceivedBulk prb, PeerContext peer, long uid, boolean noWait, ByteCounter ctr, boolean realTime) throws DisconnectedException {
 		this(prb, peer, uid, noWait, ctr, realTime, null);
 	}
-	
+
 	/**
 	 * Create a bulk data transmitter.
 	 * @param prb The PartiallyReceivedBulk containing the file we want to send, or the part of it that we have so far.
@@ -108,61 +108,61 @@ public class BulkTransmitter {
 		}
 		try {
 			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(DMT.FNPBulkReceiveAborted).setField(DMT.UID, uid),
-					new AsyncMessageFilterCallback() {
-						@Override
-						public void onMatched(Message m) {
-							cancel("Other side sent FNPBulkReceiveAborted");
-						}
-						@Override
-						public boolean shouldTimeout() {
-							synchronized(BulkTransmitter.this) {
-								if(cancelled || finished) return true;
-							}
-							if(BulkTransmitter.this.prb.isAborted()) return true;
-							return false;
-						}
-						@Override
-						public void onTimeout() {
-							// Ignore
-						}
-						@Override
-						public void onDisconnect(PeerContext ctx) {
-							// Ignore
-						}
-						@Override
-						public void onRestarted(PeerContext ctx) {
-							// Ignore
-						}
+			new AsyncMessageFilterCallback() {
+				@Override
+				public void onMatched(Message m) {
+					cancel("Other side sent FNPBulkReceiveAborted");
+				}
+				@Override
+				public boolean shouldTimeout() {
+					synchronized(BulkTransmitter.this) {
+						if(cancelled || finished) return true;
+					}
+					if(BulkTransmitter.this.prb.isAborted()) return true;
+					return false;
+				}
+				@Override
+				public void onTimeout() {
+					// Ignore
+				}
+				@Override
+				public void onDisconnect(PeerContext ctx) {
+					// Ignore
+				}
+				@Override
+				public void onRestarted(PeerContext ctx) {
+					// Ignore
+				}
 			}, ctr);
 			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(DMT.FNPBulkReceivedAll).setField(DMT.UID, uid),
-					new AsyncMessageFilterCallback() {
-						@Override
-						public void onMatched(Message m) {
-							// send() will terminate, so must call setAllQueued().
-							setAllQueued();
-							completed();
-						}
-						@Override
-						public boolean shouldTimeout() {
-							synchronized(BulkTransmitter.this) {
-								   if (cancelled) return true;
-								   if (finished)  return (System.currentTimeMillis()-finishTime > FINAL_ACK_TIMEOUT);
-							}
-							if(BulkTransmitter.this.prb.isAborted()) return true;
-							return false;
-						}
-						@Override
-						public void onTimeout() {
-							// Ignore
-						}
-						@Override
-						public void onDisconnect(PeerContext ctx) {
-							// Ignore
-						}
-						@Override
-						public void onRestarted(PeerContext ctx) {
-							// Ignore
-						}
+			new AsyncMessageFilterCallback() {
+				@Override
+				public void onMatched(Message m) {
+					// send() will terminate, so must call setAllQueued().
+					setAllQueued();
+					completed();
+				}
+				@Override
+				public boolean shouldTimeout() {
+					synchronized(BulkTransmitter.this) {
+						if (cancelled) return true;
+						if (finished)  return (System.currentTimeMillis()-finishTime > FINAL_ACK_TIMEOUT);
+					}
+					if(BulkTransmitter.this.prb.isAborted()) return true;
+					return false;
+				}
+				@Override
+				public void onTimeout() {
+					// Ignore
+				}
+				@Override
+				public void onDisconnect(PeerContext ctx) {
+					// Ignore
+				}
+				@Override
+				public void onRestarted(PeerContext ctx) {
+					// Ignore
+				}
 			}, ctr);
 		} catch (DisconnectedException e) {
 			cancel("Disconnected");
@@ -189,7 +189,7 @@ public class BulkTransmitter {
 			notifyAll();
 		}
 	}
-	
+
 	private void sendAbortedMessage() {
 		synchronized(this) {
 			if(sentCancel) return;
@@ -237,21 +237,21 @@ public class BulkTransmitter {
 		}
 		if(logMINOR) Logger.minor(this, "Completed transfer successfully "+this);
 	}
-	
+
 	/**
 	 * Send the file.
 	 * @return True if the file was successfully sent. False otherwise.
-	 * @throws DisconnectedException 
+	 * @throws DisconnectedException
 	 */
 	public boolean send() throws DisconnectedException {
 		long lastSentPacket = System.currentTimeMillis();
-outer:	while(true) {
+		outer:	while(true) {
 			int max = Math.min(Integer.MAX_VALUE, prb.blocks);
 			max = Math.min(max, peer.getThrottleWindowSize());
-			// FIXME Need to introduce the global limiter of [code]max[/code] for memory management instead of hard-code for each, no? 
-			max = Math.min(max, 100); 
+			// FIXME Need to introduce the global limiter of [code]max[/code] for memory management instead of hard-code for each, no?
+			max = Math.min(max, 100);
 			if(max < 1) max = 1;
-			
+
 			if(prb.isAborted()) {
 				if(logMINOR)
 					Logger.minor(this, "Aborted "+this);
@@ -301,7 +301,7 @@ outer:	while(true) {
 							// Ignore
 						}
 					}
-					
+
 					// Wait for a packet to come in, BulkReceivedAll or BulkReceiveAborted
 					try {
 						wait(SECONDS.toMillis(60));
@@ -326,7 +326,7 @@ outer:	while(true) {
 				// Already cancelled, quit
 				return false;
 			}
-			
+
 			// Congestion control and bandwidth limiting
 			try {
 				if(logMINOR) Logger.minor(this, "Sending packet "+blockNo);
@@ -353,7 +353,7 @@ outer:	while(true) {
 			}
 		}
 	}
-	
+
 	private void setAllQueued() {
 		if(allSentCallback != null) {
 			boolean callAllSent = false;
@@ -374,7 +374,7 @@ outer:	while(true) {
 			}
 		}
 	}
-	
+
 	private void callAllSentCallbackInner(final boolean anyFailed) {
 		prb.usm.getExecutor().execute(new PrioRunnable() {
 
@@ -387,7 +387,7 @@ outer:	while(true) {
 			public int getPriority() {
 				return NativeThread.HIGH_PRIORITY;
 			}
-			
+
 		});
 	}
 	private int inFlightPackets = 0;
@@ -395,19 +395,19 @@ outer:	while(true) {
 	private boolean failedPacket = false;
 	private boolean allQueued = false;
 	private boolean calledAllSent = false;
-	
+
 	private class UnsentPacketTag implements AsyncMessageCallback {
 
 		private boolean finished;
 		private boolean sent;
-		
+
 		private UnsentPacketTag() {
 			synchronized(BulkTransmitter.this) {
 				inFlightPackets++;
 				unsentPackets++;
 			}
 		}
-		
+
 		@Override
 		public void acknowledged() {
 			complete(false);
@@ -449,7 +449,7 @@ outer:	while(true) {
 		public void sent() {
 			sent(false);
 		}
-		
+
 		public void sent(boolean ignoreFinished) {
 			if(allSentCallback == null) return;
 			synchronized(this) {
@@ -470,18 +470,18 @@ outer:	while(true) {
 			if(logMINOR) Logger.minor(this, "Calling all sent callback on "+this);
 			callAllSentCallbackInner(anyFailed);
 		}
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return "BulkTransmitter:"+uid+":"+peer.shortToString();
 	}
-	
+
 	public String getCancelReason() {
 		return cancelReason;
 	}
-	
+
 	public static synchronized long[] transferSuccess() {
 		return new long[] { transfersCompleted, transfersSucceeded };
 	}

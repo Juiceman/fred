@@ -9,7 +9,7 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * can find a plugin that implements FredPluginFCP
- * 
+ *
  */
 public class GetPluginInfo extends FCPMessage {
 
@@ -41,7 +41,7 @@ public class GetPluginInfo extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		if(detailed && !handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "GetPluginInfo detailed requires full access", identifier, false);
 		}

@@ -11,5 +11,5 @@ package freenet.support;
 public class MutableBoolean {
 
 	public boolean value;
-	
+
 }

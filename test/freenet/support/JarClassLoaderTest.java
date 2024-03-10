@@ -33,9 +33,9 @@ public class JarClassLoaderTest {
 		List<TestInterface> implementations = new ArrayList<>();
 		testInterface.iterator().forEachRemaining(implementations::add);
 		assertThat(implementations, containsInAnyOrder(
-				instanceOf(TestImplementation1.class),
-				instanceOf(TestImplementation2.class)
-		));
+					   instanceOf(TestImplementation1.class),
+					   instanceOf(TestImplementation2.class)
+				   ));
 	}
 
 	/**

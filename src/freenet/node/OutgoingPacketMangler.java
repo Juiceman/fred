@@ -12,7 +12,7 @@ import freenet.io.comm.SocketHandler;
 /**
  * Low-level interface for sending packets.
  * A UDP-based transport will have to implement both this and IncomingPacketFilter, usually
- * on the same class. 
+ * on the same class.
  * @see freenet.io.comm.IncomingPacketFilter
  * @see freenet.node.FNPPacketMangler
  */
@@ -28,12 +28,12 @@ public interface OutgoingPacketMangler {
 	 * Is a peer disconnected?
 	 */
 	public boolean isDisconnected(PeerContext context);
-	
+
 	/**
 	 * List of supported negotiation types in preference order (best last)
 	 */
 	public int[] supportedNegTypes(boolean forPublic);
-	
+
 	/**
 	 * The SocketHandler we are connected to.
 	 */
@@ -48,7 +48,7 @@ public interface OutgoingPacketMangler {
 	 * Get our compressed noderef
 	 */
 	public byte[] getCompressedNoderef();
-	
+
 	/**
 	 * Always allow local addresses?
 	 */

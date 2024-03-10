@@ -23,7 +23,7 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param tracker
 	 *            - The FProxyFetchTracker
 	 * @param maxSize
@@ -39,7 +39,7 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 
 	/**
 	 * Returns the javascript code that initializes the l10n on the client side. It must be inserted to the page.
-	 * 
+	 *
 	 * @return The javascript code that needs to be inserted in order to l10n work
 	 */
 	public static String getClientSideLocalizationScript() {

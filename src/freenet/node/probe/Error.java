@@ -62,20 +62,20 @@ public enum Error {
 	 */
 	static Error valueOf(byte code) throws IllegalArgumentException {
 		switch (code) {
-			case 0:
-				return DISCONNECTED;
-			case 1:
-				return OVERLOAD;
-			case 2:
-				return TIMEOUT;
-			case 3:
-				return UNKNOWN;
-			case 4:
-				return UNRECOGNIZED_TYPE;
-			case 5:
-				return CANNOT_FORWARD;
-			default:
-				throw new IllegalArgumentException("There is no ProbeError with code " + code + ".");
+		case 0:
+			return DISCONNECTED;
+		case 1:
+			return OVERLOAD;
+		case 2:
+			return TIMEOUT;
+		case 3:
+			return UNKNOWN;
+		case 4:
+			return UNRECOGNIZED_TYPE;
+		case 5:
+			return CANNOT_FORWARD;
+		default:
+			throw new IllegalArgumentException("There is no ProbeError with code " + code + ".");
 		}
 	}
 }

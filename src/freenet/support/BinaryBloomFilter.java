@@ -18,7 +18,7 @@ import java.nio.channels.FileChannel.MapMode;
 public class BinaryBloomFilter extends BloomFilter {
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param length
 	 *            length in bits
 	 */
@@ -29,7 +29,7 @@ public class BinaryBloomFilter extends BloomFilter {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param file
 	 *            disk file
 	 * @param length

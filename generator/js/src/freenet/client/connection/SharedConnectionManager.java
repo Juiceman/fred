@@ -65,7 +65,8 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 					if (originalLeader != null) {
 						// If there was an old leader, then notifies the server about the takeover
 						FreenetRequest.sendRequest(UpdaterConstants.failoverPath, new QueryParameter[] { new QueryParameter("requestId", FreenetJs.requestId),
-								new QueryParameter("originalRequestId", originalLeader) });
+													   new QueryParameter("originalRequestId", originalLeader)
+						});
 					}
 					// Starts leading
 					startLeading();
@@ -126,7 +127,7 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 				Cookies.setCookie(LEADER_KEEPALIVE, "" + getTime(), null, null, "/", false);
 				FreenetJs.log("Setting leader keepalive:" + Cookies.getCookie(LEADER_KEEPALIVE));
 			};
-		}.scheduleRepeating(sharedConnectionKeepaliveIntervalInMs);
+		} .scheduleRepeating(sharedConnectionKeepaliveIntervalInMs);
 	}
 
 	/** Stops leading */
@@ -189,7 +190,7 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 
 	/**
 	 * Returns the time. It may be needed to provide smaller numbers
-	 * 
+	 *
 	 * @return The time
 	 */
 	private long getTime() {

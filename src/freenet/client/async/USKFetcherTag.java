@@ -13,14 +13,14 @@ import freenet.support.io.NativeThread;
  * Not the actual fetcher. Just a tag associating a USK with the client that should be called when
  * the fetch has been done. Can be included in persistent requests. On startup, all USK fetches are
  * restarted, but this remains the same: the actual USKFetcher's are always transient.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+ *
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  * @author toad
  */
 class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	/** The callback */
 	public final USKFetcherCallback callback;
 	/** The original USK */
@@ -43,7 +43,7 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	private final boolean checkStoreOnly;
 	private final int hashCode;
 	private final boolean realTimeFlag;
-	
+
 	private USKFetcherTag(USK origUSK, USKFetcherCallback callback, boolean persistent, boolean realTime, FetchContext ctx, boolean keepLastData, long token, boolean hasOwnFetchContext, boolean checkStoreOnly) {
 		this.callback = callback;
 		this.origUSK = origUSK;
@@ -61,12 +61,12 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 		this.hashCode = super.hashCode();
 		if(logMINOR) Logger.minor(this, "Created tag for "+origUSK+" and "+callback+" : "+this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return hashCode;
 	}
-	
+
 	/**
 	 * For a persistent request, the caller must call removeFromDatabase() when finished. Note that the caller is responsible for
 	 * deleting the USKFetcherCallback and the FetchContext.
@@ -79,12 +79,12 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	 * @param token
 	 * @return
 	 */
-	public static USKFetcherTag create(USK usk, USKFetcherCallback callback, boolean persistent, boolean realTime, 
-			FetchContext ctx, boolean keepLast, int token, boolean hasOwnFetchContext, boolean checkStoreOnly) {
+	public static USKFetcherTag create(USK usk, USKFetcherCallback callback, boolean persistent, boolean realTime,
+									   FetchContext ctx, boolean keepLast, int token, boolean hasOwnFetchContext, boolean checkStoreOnly) {
 		USKFetcherTag tag = new USKFetcherTag(usk, callback, persistent, realTime, ctx, keepLast, token, hasOwnFetchContext, checkStoreOnly);
 		return tag;
 	}
-	
+
 	synchronized void updatedEdition(long ed) {
 		if(edition < ed) edition = ed;
 	}
@@ -133,8 +133,8 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 			finished = true;
 		}
 		if(persistent) {
-		    // This can be called from USKFetcher, in which case we want to run on the 
-		    // PersistentJobRunner.
+			// This can be called from USKFetcher, in which case we want to run on the
+			// PersistentJobRunner.
 			try {
 				context.jobRunner.queue(new PersistentJob() {
 
@@ -145,7 +145,7 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 						callback.onCancelled(context);
 						return false;
 					}
-					
+
 				}, NativeThread.HIGH_PRIORITY);
 			} catch (PersistenceDisabledException e) {
 				// Impossible.
@@ -178,7 +178,7 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 						callback.onFailure(context);
 						return true;
 					}
-					
+
 				}, NativeThread.HIGH_PRIORITY);
 			} catch (PersistenceDisabledException e) {
 				// Impossible.
@@ -225,7 +225,7 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 						callback.onFoundEdition(l, key, context, metadata, codec, data, newKnownGood, newSlotToo);
 						return false;
 					}
-					
+
 				}, NativeThread.HIGH_PRIORITY);
 			} catch (PersistenceDisabledException e) {
 				// Impossible.
@@ -243,10 +243,10 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 	private static volatile boolean logMINOR;
 //	private static volatile boolean logDEBUG;
-	
+
 	static {
 		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
-			
+
 			@Override
 			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
@@ -254,16 +254,16 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 			}
 		});
 	}
-	
-    @Override
-    public void onResume(ClientContext context) {
-        if(finished) return;
-        start(context.uskManager, context);
-    }
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
-	
+	@Override
+	public void onResume(ClientContext context) {
+		if(finished) return;
+		start(context.uskManager, context);
+	}
+
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
+
 }

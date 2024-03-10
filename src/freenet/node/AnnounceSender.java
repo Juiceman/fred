@@ -24,9 +24,9 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -144,7 +144,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			if(onlyNode == null) {
 				// Route it
 				next = node.peers.closerPeer(source, nodesRoutedTo, target, true, node.isAdvancedModeEnabled(), -1,
-				        null, null, htl, 0, source == null, false, false);
+											 null, null, htl, 0, source == null, false, false);
 			} else {
 				next = onlyNode;
 				if(nodesRoutedTo.contains(onlyNode)) {
@@ -237,7 +237,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			}
 
 			if(logMINOR) Logger.minor(this, "Got Accepted");
-			
+
 			if(cb != null)
 				cb.acceptedSomewhere();
 
@@ -365,7 +365,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			}
 		}
 	}
-	
+
 	private int waitingForTransfers = 0;
 
 	/**
@@ -435,7 +435,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 					}
 				}
 			}
-			
+
 		};
 		try {
 			node.executor.execute(r);
@@ -482,15 +482,15 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 		if(cb != null) cb.nodeFailed(next, "timed out");
 	}
 
-        private synchronized void waitForRunningTransfers() {
-           while(waitingForTransfers > 0) {
-              try {
-                 wait();
-              } catch (InterruptedException e) {
-                 // Ignore.
-              }
-           }
-        }
+	private synchronized void waitForRunningTransfers() {
+		while(waitingForTransfers > 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// Ignore.
+			}
+		}
+	}
 
 	private void rnf(PeerNode next) {
 		waitForRunningTransfers();

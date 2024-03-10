@@ -33,26 +33,26 @@ import freenet.support.math.MersenneTwister;
 /** A ClientSSK that has a private key and therefore can be inserted. */
 public class InsertableClientSSK extends ClientSSK {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public final DSAPrivateKey privKey;
-	
+	public final DSAPrivateKey privKey;
+
 	private static boolean logMINOR;
 	static {
-	    Logger.registerClass(InsertableClientSSK.class);
+		Logger.registerClass(InsertableClientSSK.class);
 	}
-	
+
 	public InsertableClientSSK(String docName, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey, byte[] cryptoKey, byte cryptoAlgorithm) throws MalformedURLException {
 		super(docName, pubKeyHash, getExtraBytes(cryptoAlgorithm), pubKey, cryptoKey);
 		if(pubKey == null) throw new NullPointerException();
 		this.privKey = privKey;
 	}
-	
+
 	protected InsertableClientSSK() {
-	    // For serialization.
-	    privKey = null;
+		// For serialization.
+		privKey = null;
 	}
-	
+
 	public static InsertableClientSSK create(FreenetURI uri) throws MalformedURLException {
 		if(uri.getKeyType().equalsIgnoreCase("KSK"))
 			return ClientKSK.create(uri);
@@ -61,7 +61,7 @@ public class InsertableClientSSK extends ClientSSK {
 			throw new MalformedURLException("Insertable SSK URIs must have a private key!: "+uri);
 		if(uri.getCryptoKey() == null)
 			throw new MalformedURLException("Insertable SSK URIs must have a private key!: "+uri);
-		
+
 		byte keyType;
 
 		byte[] extra = uri.getExtra();
@@ -81,9 +81,9 @@ public class InsertableClientSSK extends ClientSSK {
 		else {
 			throw new MalformedURLException("Not a valid SSK insert URI type: "+uri.getKeyType());
 		}
-		
-		// Allow docName="" for SSKs. E.g. GenerateSSK returns these; we want to be consistent. 
-		// However, we recommend that you not use this, especially not for a freesite, as 
+
+		// Allow docName="" for SSKs. E.g. GenerateSSK returns these; we want to be consistent.
+		// However, we recommend that you not use this, especially not for a freesite, as
 		// SSK@blah,blah,blah//filename is confusing for clients, browsers etc.
 		if(uri.getDocName() == null)
 			throw new MalformedURLException("SSK URIs must have a document name (to avoid ambiguity)");
@@ -102,13 +102,13 @@ public class InsertableClientSSK extends ClientSSK {
 	}
 
 	public ClientSSKBlock encode(
-			Bucket sourceData,
-			boolean asMetadata,
-			boolean dontCompress,
-			short alreadyCompressedCodec,
-			long sourceLength,
-			RandomSource r,
-			String compressordescriptor) throws SSKEncodeException, IOException, InvalidCompressionCodecException {
+		Bucket sourceData,
+		boolean asMetadata,
+		boolean dontCompress,
+		short alreadyCompressedCodec,
+		long sourceLength,
+		RandomSource r,
+		String compressordescriptor) throws SSKEncodeException, IOException, InvalidCompressionCodecException {
 		byte[] compressedData;
 		short compressionAlgo;
 		try {
@@ -132,7 +132,7 @@ public class InsertableClientSSK extends ClientSSK {
 				data = Arrays.copyOf(compressedData, SSKBlock.DATA_LENGTH);
 				if (compressedData.length > data.length) {
 					throw new RuntimeException("compressedData.length = " + compressedData.length + " but data.length="
-							+ data.length);
+											   + data.length);
 				}
 				Util.randomBytes(mt, data, compressedData.length, SSKBlock.DATA_LENGTH - compressedData.length);
 			} else {
@@ -225,7 +225,7 @@ public class InsertableClientSSK extends ClientSSK {
 			System.arraycopy(bs, 0, buf, len - bs.length, bs.length);
 			return buf;
 		} else { // if (bs.length > len) {
-			for(int i=0;i<(bs.length-len);i++) {
+			for(int i=0; i<(bs.length-len); i++) {
 				if(bs[i] != 0)
 					throw new IllegalStateException("Cannot truncate");
 			}
@@ -241,8 +241,8 @@ public class InsertableClientSSK extends ClientSSK {
 		DSAPublicKey pubKey = new DSAPublicKey(g, privKey);
 		try {
 			byte[] pkHash = SHA256.digest(pubKey.asBytes());
-			return new InsertableClientSSK(docName, pkHash, pubKey, privKey, ckey, 
-					Key.ALGO_AES_PCFB_256_SHA256);
+			return new InsertableClientSSK(docName, pkHash, pubKey, privKey, ckey,
+										   Key.ALGO_AES_PCFB_256_SHA256);
 		} catch (MalformedURLException e) {
 			throw new Error(e);
 		}
@@ -261,5 +261,5 @@ public class InsertableClientSSK extends ClientSSK {
 	public DSAGroup getCryptoGroup() {
 		return Global.DSAgroupBigA;
 	}
-	
+
 }

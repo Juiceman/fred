@@ -28,7 +28,7 @@ public class NewPacketFormatKeyContext {
 	/** Index of the packet with the lowest sequence number */
 	public int watchListPointer = 0;
 	public int watchListOffset = 0;
-	
+
 	private final TreeMap<Integer, Long> acks = new TreeMap<Integer, Long>();
 	private final HashMap<Integer, SentPacket> sentPackets = new HashMap<Integer, SentPacket>();
 	/** Keep this many sent times for lost packets, so we can compute an accurate round trip time if
@@ -36,24 +36,24 @@ public class NewPacketFormatKeyContext {
 	private static final int MAX_LOST_SENT_TIMES = 128;
 	/** We add all lost packets sequence numbers and the corresponding sent time to this cache. */
 	private final SentTimeCache lostSentTimes = new SentTimeCache(MAX_LOST_SENT_TIMES);
-	
+
 	private final Object sequenceNumberLock = new Object();
-	
+
 	private static final int REKEY_THRESHOLD = 100;
 	/** All acks must be sent within 200ms */
 	static final int MAX_ACK_DELAY = 200;
-	/** Minimum RTT for purposes of calculating whether to retransmit. 
+	/** Minimum RTT for purposes of calculating whether to retransmit.
 	 * Must be greater than MAX_ACK_DELAY */
 	private static final int MIN_RTT_FOR_RETRANSMIT = 250;
-	
+
 	private int maxSeenInFlight;
-	
+
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -63,14 +63,14 @@ public class NewPacketFormatKeyContext {
 	NewPacketFormatKeyContext(int ourFirstSeqNum, int theirFirstSeqNum) {
 		ourFirstSeqNum &= 0x7FFFFFFF;
 		theirFirstSeqNum &= 0x7FFFFFFF;
-		
+
 		this.nextSeqNum = ourFirstSeqNum;
 		this.watchListOffset = theirFirstSeqNum;
-		
+
 		this.highestReceivedSeqNum = theirFirstSeqNum - 1;
 		if(this.highestReceivedSeqNum == -1) this.highestReceivedSeqNum = Integer.MAX_VALUE;
 	}
-	
+
 	boolean canAllocateSeqNum() {
 		synchronized(sequenceNumberLock) {
 			return nextSeqNum != firstSeqNumUsed;
@@ -88,7 +88,7 @@ public class NewPacketFormatKeyContext {
 					pn.startRekeying();
 					return -1;
 				}
-				
+
 				if(firstSeqNumUsed > nextSeqNum) {
 					if(firstSeqNumUsed - nextSeqNum < REKEY_THRESHOLD) pn.startRekeying();
 				} else {
@@ -165,7 +165,7 @@ public class NewPacketFormatKeyContext {
 		/** Are there any urgent acks? */
 		final boolean anyUrgentAcks;
 		private final HashMap<Integer, Long> moved;
-		
+
 		public AddedAcks(boolean mustSend, HashMap<Integer, Long> moved) {
 			this.anyUrgentAcks = mustSend;
 			this.moved = moved;
@@ -177,7 +177,7 @@ public class NewPacketFormatKeyContext {
 			}
 		}
 	}
-	
+
 	/** Add as many acks as possible to the packet.
 	 * @return True if there are any old acks i.e. acks that will force us to send a packet
 	 * even if there isn't anything else in it. */
@@ -219,7 +219,7 @@ public class NewPacketFormatKeyContext {
 	}
 
 	public void sent(SentPacket sentPacket, int seqNum, int length) {
-	    sentPacket.sent(length);
+		sentPacket.sent(length);
 		synchronized(sentPackets) {
 			sentPackets.put(seqNum, sentPacket);
 			int inFlight = sentPackets.size();
@@ -227,12 +227,12 @@ public class NewPacketFormatKeyContext {
 				maxSeenInFlight = inFlight;
 				if (logDEBUG) {
 					Logger.debug(this, "Max seen in flight new record: " + maxSeenInFlight +
-							" for " + this);
+								 " for " + this);
 				}
 			}
 		}
 	}
-	
+
 	public long timeCheckForLostPackets(double averageRTT) {
 		long timeCheck = Long.MAX_VALUE;
 		// Because MIN_RTT_FOR_RETRANSMIT > MAX_ACK_DELAY, and because averageRTT() includes the
@@ -243,8 +243,8 @@ public class NewPacketFormatKeyContext {
 			for (SentPacket s : sentPackets.values()) {
 				long t = s.getSentTime() + maxDelay;
 				if (t < timeCheck) {
-				    timeCheck = t;
-			    }
+					timeCheck = t;
+				}
 			}
 		}
 		return timeCheck;
@@ -254,13 +254,13 @@ public class NewPacketFormatKeyContext {
 		//Mark packets as lost
 		int bigLostCount = 0;
 		int count = 0;
-		
+
 		// Because MIN_RTT_FOR_RETRANSMIT > MAX_ACK_DELAY, and because averageRTT() includes the
 		// actual ack delay, we don't need to add it on here.
 		double avgRtt = Math.max(MIN_RTT_FOR_RETRANSMIT, averageRTT);
 		long maxDelay = (long)(avgRtt + MAX_ACK_DELAY * 1.1);
 		long threshold = curTime - maxDelay;
-		
+
 		synchronized(sentPackets) {
 			Iterator<Map.Entry<Integer, SentPacket>> it = sentPackets.entrySet().iterator();
 			while(it.hasNext()) {
@@ -269,16 +269,16 @@ public class NewPacketFormatKeyContext {
 				if (s.getSentTime() < threshold) {
 					if (logMINOR) {
 						Logger.minor(this, "Assuming packet " + e.getKey() + " has been lost. "
-						                + "Delay " + (curTime - s.getSentTime()) + "ms, "
-						                + "threshold " + threshold + "ms");
+									 + "Delay " + (curTime - s.getSentTime()) + "ms, "
+									 + "threshold " + threshold + "ms");
 					}
 					// Store the packet sentTime in our lost sent times cache, so we can calculate
 					// RTT if an ack may surface later on.
 					if(!s.messages.isEmpty()) {
-				        lostSentTimes.report(e.getKey(), s.getSentTime());
-			        }
-			        // Mark the packet as lost and remove it from our active packets.
-			        s.lost();
+						lostSentTimes.report(e.getKey(), s.getSentTime());
+					}
+					// Mark the packet as lost and remove it from our active packets.
+					s.lost();
 					it.remove();
 					bigLostCount++;
 				} else {

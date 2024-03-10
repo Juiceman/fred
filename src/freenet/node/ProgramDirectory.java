@@ -48,7 +48,9 @@ public class ProgramDirectory {
 	*/
 	public void move(String file) throws IOException {
 		File dir = new File(file);
-		if (this.dir != null && !dir.equals(this.dir)) { throw new IOException("move not implemented"); }
+		if (this.dir != null && !dir.equals(this.dir)) {
+			throw new IOException("move not implemented");
+		}
 
 		if (!((dir.exists() && dir.isDirectory()) || (dir.mkdir()))) {
 			throw new IOException("Could not find or make a directory called: " + l10n(file));
@@ -69,7 +71,10 @@ public class ProgramDirectory {
 
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
-			if (dir == null) { dir = new File(val); return; }
+			if (dir == null) {
+				dir = new File(val);
+				return;
+			}
 			if (dir.equals(new File(val))) return;
 			// FIXME support it
 			// Don't need to translate the below as very few users will use it.
@@ -85,7 +90,10 @@ public class ProgramDirectory {
 	public class RWDirectoryCallback extends DirectoryCallback {
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
-			if (dir == null) { dir = new File(val); return; }
+			if (dir == null) {
+				dir = new File(val);
+				return;
+			}
 			if (dir.equals(new File(val))) return;
 			File f = new File(val);
 			if(!((f.exists() && f.isDirectory()) || (f.mkdir())))
