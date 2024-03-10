@@ -26,13 +26,13 @@ jobs:
       - name: Get modified files
         id: get_files
         run: |
-          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})"
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
           echo "Modified files:"
-          cat ${{ steps.get_files.outputs.files }}
+          cat changed_files.txt
 
       - name: Format modified files
         run: |
-          IFS=$'\n' read -r -d '' -a files <<< "${{ steps.get_files.outputs.files }}"
+          IFS=$'\n' read -r -d '' -a files <<< changed_files.txt
           for file in "${files[@]}"; do
             astyle --indent=force-tab=4 --suffix=none "$file"
           done
