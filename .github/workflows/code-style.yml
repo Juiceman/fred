@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'  # Update with Node.js 20 or the desired version
+          
       - name: Check out code
         uses: actions/checkout@v4.1.1
         with:
@@ -21,15 +26,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y astyle
 
-      - name: Format code
+      - name: Get modified files
+        id: get_files
         run: |
-          astyle --indent=force-tab=4 --suffix=none --recursive *.java
-          
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: '20'  # Update with Node.js 20 or the desired version
+          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
 
+      - name: Format modified files
+        run: |
+          IFS=$'\n' read -r -d '' -a files <<< "${{ steps.get_files.outputs.files }}"
+          for file in "${files[@]}"; do
+            astyle --indent=force-tab=4 --suffix=none "$file"
+          done
+          
       - name: Git Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v5.0.0
           
