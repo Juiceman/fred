@@ -1,6 +1,6 @@
 /* This code is part of Freenet. It is distributed under the GNU General
  * Public License, version 2 (or at your option any later version). See
- * http://www.gnu.org/ for further details of the GPL. 
+ * http://www.gnu.org/ for further details of the GPL.
  * Note that the mime type list is from the debian mime-types package,
  * which is public information and public domain software. */
 package freenet.client;
@@ -16,26 +16,26 @@ import freenet.support.MediaType;
  * Holds the default MIME types.
  */
 public class DefaultMIMETypes {
-	
+
 	/** Default MIME type - what to set it to if we don't know any better */
 	public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
-	
+
 	/** MIME types: number -> name */
 	private static Vector<String> mimeTypesByNumber = new Vector<String>();
-	
+
 	/** MIME types: name -> number */
 	private static HashMap<String, Short> mimeTypesByName = new HashMap<String, Short>();
-	
+
 	/** MIME types by extension. One extension maps to one MIME type, but not necessarily
 	 * the other way around. */
 	private static HashMap<String, Short> mimeTypesByExtension = new HashMap<String, Short>();
-	
+
 	/** Primary extension by MIME type number. */
 	private static HashMap<Short, String> primaryExtensionByMimeNumber = new HashMap<Short, String>();
-	
+
 	/** All extension (String[]) by MIME type number. */
 	private static HashMap<Short, String[]> allExtensionsByMimeNumber = new HashMap<Short, String[]>();
-	
+
 	/**
 	 * Add a MIME type, without any extensions.
 	 * @param number The number of the MIME type for compression. This *must not change*
@@ -84,7 +84,7 @@ public class DefaultMIMETypes {
 		}
 		if(outExtension != null)
 			primaryExtensionByMimeNumber.put(t, outExtension);
-				
+
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class DefaultMIMETypes {
 	protected static synchronized void addMIMEType(short number, String type, String extensions, String outExtension) {
 		addMIMEType(number, type, extensions.split(" "), outExtension);
 	}
-	
+
 	/**
 	 * Get a known MIME type by number.
 	 */
@@ -112,7 +112,7 @@ public class DefaultMIMETypes {
 			return null;
 		return mimeTypesByNumber.get(x);
 	}
-	
+
 	/**
 	 * Get the number of a MIME type, or -1 if it is not in the table of known MIME
 	 * types, in which case it will have to be sent uncompressed.
@@ -122,15 +122,15 @@ public class DefaultMIMETypes {
 		if(x != null) return x.shortValue();
 		else return -1;
 	}
-	
+
 	/* From toad's /etc/mime.types
-	 * cat /etc/mime.types | sed "/^$/d;/#/d" | tr --squeeze '\t' ' ' | 
-	 * (y=0; while read x; do echo "$x" | 
+	 * cat /etc/mime.types | sed "/^$/d;/#/d" | tr --squeeze '\t' ' ' |
+	 * (y=0; while read x; do echo "$x" |
 	 * sed -n "s/^\([^ ]*\)$/addMIMEType\($y, \"\1\"\);/p;s/^\([^ (),]\+\) \(.*\)$/addMIMEType\($y, \"\1\", \"\2\"\);/p;"; y=$((y+1)); done)
 	 */
 
 	// FIXME should we support aliases?
-	
+
 	static {
 		addMIMEType((short)0, "application/activemessage");
 		addMIMEType((short)1, "application/andrew-inset", "ez");
@@ -755,7 +755,7 @@ public class DefaultMIMETypes {
 		addMIMEType((short)620, "audio/ogg", "oga");
 		addMIMEType((short)621, "audio/flac", "flac");
 	}
-	
+
 	/** Guess a MIME type from a filename.
 	 * @param noDefault If true, no default MIME type; return null if not recognized.
 	 * Otherwise if we don't recognize the extension we return DEFAULT_MIME_TYPE. */
@@ -775,35 +775,35 @@ public class DefaultMIMETypes {
 		if(typeNumber < 0) return null;
 		return primaryExtensionByMimeNumber.get(typeNumber);
 	}
-	
+
 	public synchronized static boolean isValidExt(String expectedMimeType, String oldExt) {
 		short typeNumber = byName(expectedMimeType);
 		if(typeNumber < 0) return false;
-		
+
 		String[] extensions = allExtensionsByMimeNumber.get(typeNumber);
 		if(extensions == null) return false;
 		for(String extension: extensions)
 			if(oldExt.equalsIgnoreCase(extension)) return true;
 		return false;
 	}
-	
-    public static boolean isValidExt(MediaType parsedType, String forceCompatibleExtension) {
-        return isValidExt(parsedType.getPlainType(), forceCompatibleExtension);
-    }
-	
+
+	public static boolean isValidExt(MediaType parsedType, String forceCompatibleExtension) {
+		return isValidExt(parsedType.getPlainType(), forceCompatibleExtension);
+	}
+
 	private static final String TOP_LEVEL = "(?>[a-zA-Z-]+)";
 	private static final String CHARS = "(?>[a-zA-Z0-9+_\\-\\.]+)";
 	private static final String PARAM = "(?>;\\s*"+CHARS+"="+"(("+CHARS+")|(\".*\")))";
 	private static Pattern MIME_TYPE = Pattern.compile(TOP_LEVEL+"/"+CHARS+"\\s*"+PARAM+"*");
 
 	private static Pattern INFOCALYPSE_DIRTY_HACK = Pattern.compile("application/mercurial-bundle;[0-9]{1,6}");
-	
+
 	public static boolean isPlausibleMIMEType(String mimeType) {
 		if(MIME_TYPE.matcher(mimeType).matches()) return true;
 		// FIXME dirty hack for backwards compatibility with old Infocalypse repo's
 		return INFOCALYPSE_DIRTY_HACK.matcher(mimeType).matches();
 	}
-	
+
 	static String[] getMIMETypes() {
 		return mimeTypesByNumber.toArray(new String[mimeTypesByNumber.size()]);
 	}

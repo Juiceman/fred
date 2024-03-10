@@ -28,8 +28,8 @@ import freenet.support.io.ResumeFailedException;
 /** A high level insert. */
 public class ClientPutter extends BaseClientPutter implements PutCompletionCallback {
 
-    private static final long serialVersionUID = 1L;
-    /** Callback for when the insert completes. */
+	private static final long serialVersionUID = 1L;
+	/** Callback for when the insert completes. */
 	final ClientPutCallback client;
 	/** The data to insert. */
 	final RandomAccessBucket data;
@@ -62,11 +62,11 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	private final long metadataThreshold;
 	private boolean gotFinalMetadata;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -74,8 +74,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 
 	/**
 	 * @param client The object to call back when we complete, or don't.
-	 * @param data The data to insert. This will be freed when the insert has completed, whether 
-	 * it succeeds or not, so wrap it in a @link freenet.support.io.NoFreeBucket if you don't want 
+	 * @param data The data to insert. This will be freed when the insert has completed, whether
+	 * it succeeds or not, so wrap it in a @link freenet.support.io.NoFreeBucket if you don't want
 	 * it to be freed.
 	 * @param targetURI
 	 * @param cm
@@ -89,9 +89,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 * @param metadataThreshold
 	 */
 	public ClientPutter(ClientPutCallback client, RandomAccessBucket data, FreenetURI targetURI, ClientMetadata cm, InsertContext ctx,
-			short priorityClass,
-			boolean isMetadata, String targetFilename, boolean binaryBlob, ClientContext context, byte[] overrideSplitfileCrypto,
-			long metadataThreshold) {
+						short priorityClass,
+						boolean isMetadata, String targetFilename, boolean binaryBlob, ClientContext context, byte[] overrideSplitfileCrypto,
+						long metadataThreshold) {
 		super(priorityClass, client.getRequestClient());
 		this.cm = cm;
 		this.isMetadata = isMetadata;
@@ -153,7 +153,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 						return false;
 					}
 					if(finished)
-					    startedStarting = false;
+						startedStarting = false;
 					finished = false;
 				}
 				if(startedStarting) {
@@ -180,8 +180,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 						ClientMetadata meta = cm;
 						if(meta != null) meta = persistent() ? meta.clone() : meta;
 						currentState =
-							new SingleFileInserter(this, this, new InsertBlock(data, meta, targetURI), isMetadata, ctx, realTimeFlag, 
-									false, false, null, null, false, targetFilename, false, persistent(), 0, 0, null, cryptoAlgorithm, cryptoKey, metadataThreshold);
+							new SingleFileInserter(this, this, new InsertBlock(data, meta, targetURI), isMetadata, ctx, realTimeFlag,
+												   false, false, null, null, false, targetFilename, false, persistent(), 0, 0, null, cryptoAlgorithm, cryptoKey, metadataThreshold);
 					} else
 						currentState =
 							new BinaryBlobInserter(data, this, getClient(), false, priorityClass, ctx, context);
@@ -273,8 +273,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			// If only generating the key, splitfile may not have reported the blocks as inserted.
 			if (!uri.isUSK() && !ctx.getCHKOnly)
 				Logger.error(this, "Failed blocks: "+failedBlocks+", Fatally failed blocks: "+fatallyFailedBlocks+
-						", Successful blocks: "+successfulBlocks+", Total blocks: "+totalBlocks+" but success?! on "+this+" from "+state,
-						new Exception("debug"));
+							 ", Successful blocks: "+successfulBlocks+", Total blocks: "+totalBlocks+" but success?! on "+this+" from "+state,
+							 new Exception("debug"));
 		}
 		client.onSuccess(this);
 	}
@@ -295,23 +295,23 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	public void onEncode(BaseClientKey key, ClientPutState state, ClientContext context) {
 		FreenetURI u;
 		synchronized(this) {
-		    u = key.getURI(); 
+			u = key.getURI();
 			if(gotFinalMetadata) {
 				Logger.error(this, "Generated URI *and* sent final metadata??? on "+this+" from "+state);
 			}
 			if(targetFilename != null)
 				u = u.pushMetaString(targetFilename);
 			if(this.uri != null) {
-			    if(!this.uri.equals(u)) {
-			        Logger.error(this, "onEncode() called twice with different URIs: "+this.uri+" -> "+u+" for "+this, new Exception("error"));
-			    }
-			    return;
+				if(!this.uri.equals(u)) {
+					Logger.error(this, "onEncode() called twice with different URIs: "+this.uri+" -> "+u+" for "+this, new Exception("error"));
+				}
+				return;
 			}
-            this.uri = u;
+			this.uri = u;
 		}
 		client.onGeneratedURI(u, this);
 	}
-	
+
 	/** Called when metadataThreshold was specified and metadata is being returned
 	 * instead of a URI. */
 	public void onMetadata(Bucket finalMetadata, ClientPutState state, ClientContext context) {
@@ -356,14 +356,14 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	public synchronized boolean isFinished() {
 		return finished || cancelled;
 	}
-	
+
 	/**
 	 * @return The data {@link Bucket} which is used by this ClientPutter.
 	 */
 	public Bucket getData() {
 		return data;
 	}
-	
+
 	/**
 	 * Get the target URI with which this insert was started.
 	 */
@@ -397,7 +397,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			}
 		}
 		if(persistent())
-		    context.jobRunner.setCheckpointASAP();
+			context.jobRunner.setCheckpointASAP();
 		Logger.normal(this, "onTransition: cur=" + currentState + ", old=" + oldState + ", new=" + newState);
 	}
 
@@ -410,12 +410,12 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 
 	/** The number of blocks that will be needed to fetch the data. We put this in the top block metadata. */
 	protected int minSuccessFetchBlocks;
-	
+
 	@Override
 	public int getMinSuccessFetchBlocks() {
 		return minSuccessFetchBlocks;
 	}
-	
+
 	@Override
 	public void addBlock() {
 		synchronized(this) {
@@ -423,7 +423,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		}
 		super.addBlock();
 	}
-	
+
 	@Override
 	public void addBlocks(int num) {
 		synchronized(this) {
@@ -431,7 +431,7 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		}
 		super.addBlocks(num);
 	}
-	
+
 	/** Add one or more blocks to the number of requires blocks, and don't notify the clients. */
 	@Override
 	public void addMustSucceedBlocks(int blocks) {
@@ -441,14 +441,14 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		super.addMustSucceedBlocks(blocks);
 	}
 
-	/** Add one or more blocks to the number of requires blocks, and don't notify the clients. 
+	/** Add one or more blocks to the number of requires blocks, and don't notify the clients.
 	 * These blocks are added to the minSuccessFetchBlocks for the insert, but not to the counter for what
 	 * the requestor must fetch. */
 	@Override
 	public void addRedundantBlocksInsert(int blocks) {
 		super.addMustSucceedBlocks(blocks);
 	}
-	
+
 	@Override
 	protected void clearCountersOnRestart() {
 		minSuccessFetchBlocks = 0;
@@ -457,19 +457,19 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 
 	@Override
 	protected void innerNotifyClients(ClientContext context) {
-	    SplitfileProgressEvent e;
-	    synchronized(this) {
-	        e = new SplitfileProgressEvent(
-	            this.totalBlocks,
-	            this.successfulBlocks,
-	            this.latestSuccess,
-	            this.failedBlocks,
-	            this.fatallyFailedBlocks,
-	            this.latestFailure,
-	            this.minSuccessBlocks,
-	            this.minSuccessFetchBlocks,
-	            this.blockSetFinalized);
-	    }
+		SplitfileProgressEvent e;
+		synchronized(this) {
+			e = new SplitfileProgressEvent(
+				this.totalBlocks,
+				this.successfulBlocks,
+				this.latestSuccess,
+				this.failedBlocks,
+				this.fatallyFailedBlocks,
+				this.latestFailure,
+				this.minSuccessBlocks,
+				this.minSuccessFetchBlocks,
+				this.blockSetFinalized);
+		}
 		ctx.eventProducer.produceEvent(e, context);
 	}
 
@@ -515,8 +515,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	@Override
 	public void onTransition(ClientGetState oldState, ClientGetState newState, ClientContext context) {
 		// Ignore, at the moment
-	    // This exists here because e.g. USKInserter does requests as well as inserts.
-	    // FIXME I'm not sure that's a good enough reason though! Get rid ...
+		// This exists here because e.g. USKInserter does requests as well as inserts.
+		// FIXME I'm not sure that's a good enough reason though! Get rid ...
 	}
 
 	@Override
@@ -526,42 +526,42 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		System.out.println("Finished: "+finished);
 		System.out.println("Data: "+data);
 	}
-	
-    public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
-        if(client instanceof PersistentClientCallback) {
-            return getClientDetail((PersistentClientCallback)client, checker);
-        } else
-            return new byte[0];
-    }
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        if(currentState != null) {
-            try {
-                currentState.onResume(context);
-            } catch (InsertException e) {
-                this.onFailure(e, null, context);
-                return;
-            }
-        }
-        if(data != null)
-            data.onResume(context);
-        notifyClients(context);
-    }
+	public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
+		if(client instanceof PersistentClientCallback) {
+			return getClientDetail((PersistentClientCallback)client, checker);
+		} else
+			return new byte[0];
+	}
 
-    @Override
-    protected ClientBaseCallback getCallback() {
-        return client;
-    }
-    
-    @Override
-    public void onShutdown(ClientContext context) {
-        ClientPutState state;
-        synchronized(this) {
-            state = currentState;
-        }
-        if(state != null)
-            state.onShutdown(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		if(currentState != null) {
+			try {
+				currentState.onResume(context);
+			} catch (InsertException e) {
+				this.onFailure(e, null, context);
+				return;
+			}
+		}
+		if(data != null)
+			data.onResume(context);
+		notifyClients(context);
+	}
+
+	@Override
+	protected ClientBaseCallback getCallback() {
+		return client;
+	}
+
+	@Override
+	public void onShutdown(ClientContext context) {
+		ClientPutState state;
+		synchronized(this) {
+			state = currentState;
+		}
+		if(state != null)
+			state.onShutdown(context);
+	}
 }

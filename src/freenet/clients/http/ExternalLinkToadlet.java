@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- * The External Link Toadlet 
+ * The External Link Toadlet
  */
 public class ExternalLinkToadlet extends Toadlet {
 
@@ -62,21 +62,21 @@ public class ExternalLinkToadlet extends Toadlet {
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 		HTMLNode warnboxContent = ctx.getPageMaker().getInfobox("infobox-warning",
-			l10n("confirmExternalLinkSubTitle"), contentNode, "confirm-external-link", true);
+								  l10n("confirmExternalLinkSubTitle"), contentNode, "confirm-external-link", true);
 		HTMLNode externalLinkForm = ctx.addFormChild(warnboxContent, PATH, "confirmExternalLinkForm");
 
 		final String target = request.getParam(magicHTTPEscapeString);
 		externalLinkForm.addChild("#", l10n("confirmExternalLinkWithURL", "url", target));
 		externalLinkForm.addChild("br");
 		externalLinkForm.addChild("input",
-			new String[]{"type", "name", "value"},
-			new String[]{"hidden", magicHTTPEscapeString, target});
+								  new String[] {"type", "name", "value"},
+								  new String[] {"hidden", magicHTTPEscapeString, target});
 		externalLinkForm.addChild("input",
-			new String[]{"type", "name", "value"},
-			new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
+								  new String[] {"type", "name", "value"},
+								  new String[] {"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 		externalLinkForm.addChild("input",
-			new String[]{"type", "name", "value"},
-			new String[]{"submit", "Go", l10n("goToExternalLink")});
+								  new String[] {"type", "name", "value"},
+								  new String[] {"submit", "Go", l10n("goToExternalLink")});
 
 		this.writeHTMLReply(ctx, 200, "OK", null, pageNode.generate(), true);
 	}
@@ -91,7 +91,7 @@ public class ExternalLinkToadlet extends Toadlet {
 	}
 
 	private static String l10n(String key, String pattern, String value) {
-		return NodeL10n.getBase().getString("WelcomeToadlet." + key, new String[]{pattern}, new String[]{value});
+		return NodeL10n.getBase().getString("WelcomeToadlet." + key, new String[] {pattern}, new String[] {value});
 	}
 
 	private static String l10n(String key) {

@@ -9,7 +9,7 @@ import freenet.support.SimpleFieldSet;
 
 public class ConfigData extends FCPMessage {
 	static final String name = "ConfigData";
-	
+
 	final Node node;
 	final boolean withCurrent;
 	final boolean withDefaults;
@@ -20,7 +20,7 @@ public class ConfigData extends FCPMessage {
 	final boolean withLongDescription;
 	final boolean withDataTypes;
 	final String identifier;
-	
+
 	public ConfigData(Node node, boolean withCurrent, boolean withDefaults, boolean withSortOrder, boolean withExpertFlag, boolean withForceWriteFlag, boolean withShortDescription, boolean withLongDescription, boolean withDataTypes, String identifier) {
 		this.node = node;
 		this.withCurrent = withCurrent;
@@ -34,7 +34,7 @@ public class ConfigData extends FCPMessage {
 		this.identifier = identifier;
 	}
 
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
@@ -98,7 +98,7 @@ public class ConfigData extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "ConfigData goes from server to client not the other way around", null, false);
 	}
 

@@ -25,9 +25,9 @@ public class RequestStarterGroup {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -48,7 +48,7 @@ public class RequestStarterGroup {
 	final RequestStarter sskRequestStarterBulk;
 	final MyRequestThrottle sskInsertThrottleBulk;
 	final RequestStarter sskInsertStarterBulk;
-	
+
 	final MyRequestThrottle chkRequestThrottleRT;
 	final RequestStarter chkRequestStarterRT;
 	final MyRequestThrottle chkInsertThrottleRT;
@@ -71,10 +71,10 @@ public class RequestStarterGroup {
 	RequestStarterGroup(Node node, NodeClientCore core, int portNumber, RandomSource random, Config config, SimpleFieldSet fs, ClientContext ctx) throws InvalidConfigValueException {
 		SubConfig schedulerConfig = config.createSubConfig("node.scheduler");
 		this.stats = core.nodeStats;
-		
+
 		throttleWindowBulk = new ThrottleWindowManager(2.0, fs == null ? null : fs.subset("ThrottleWindow"), node);
 		throttleWindowRT = new ThrottleWindowManager(2.0, fs == null ? null : fs.subset("ThrottleWindowRT"), node);
-		
+
 		throttleWindowCHK = new ThrottleWindowManager(2.0, fs == null ? null : fs.subset("ThrottleWindowCHK"), node);
 		throttleWindowSSK = new ThrottleWindowManager(2.0, fs == null ? null : fs.subset("ThrottleWindowSSK"), node);
 		throttleWindowInsert = new ThrottleWindowManager(2.0, fs == null ? null : fs.subset("ThrottleWindowInsert"), node);
@@ -87,9 +87,9 @@ public class RequestStarterGroup {
 		chkFetchSchedulerRT = new ClientRequestScheduler(false, false, true, random, chkRequestStarterRT, node, core, "CHKrequester", ctx);
 		chkRequestStarterBulk.setScheduler(chkFetchSchedulerBulk);
 		chkRequestStarterRT.setScheduler(chkFetchSchedulerRT);
-		
+
 		registerSchedulerConfig(schedulerConfig, "CHKrequester", chkFetchSchedulerBulk, chkFetchSchedulerRT, false, false);
-		
+
 		//insertThrottle = new ChainedRequestThrottle(10000, 2.0F, requestThrottle);
 		// FIXME reenable the above
 		chkInsertThrottleBulk = new MyRequestThrottle(20000, "CHK Insert", fs == null ? null : fs.subset("CHKInsertThrottle"), 32768, false);
@@ -100,9 +100,9 @@ public class RequestStarterGroup {
 		chkPutSchedulerRT = new ClientRequestScheduler(true, false, true, random, chkInsertStarterRT, node, core, "CHKinserter", ctx);
 		chkInsertStarterBulk.setScheduler(chkPutSchedulerBulk);
 		chkInsertStarterRT.setScheduler(chkPutSchedulerRT);
-		
+
 		registerSchedulerConfig(schedulerConfig, "CHKinserter", chkPutSchedulerBulk, chkPutSchedulerRT, false, true);
-		
+
 		sskRequestThrottleBulk = new MyRequestThrottle(5000, "SSK Request", fs == null ? null : fs.subset("SSKRequestThrottle"), 1024, false);
 		sskRequestThrottleRT = new MyRequestThrottle(5000, "SSK Request (RT)", fs == null ? null : fs.subset("SSKRequestThrottleRT"), 1024, true);
 		sskRequestStarterBulk = new RequestStarter(core, sskRequestThrottleBulk, "SSK Request starter ("+portNumber+ ')', stats.localSskFetchBytesSentAverage, stats.localSskFetchBytesReceivedAverage, false, true, false);
@@ -111,9 +111,9 @@ public class RequestStarterGroup {
 		sskFetchSchedulerRT = new ClientRequestScheduler(false, true, true, random, sskRequestStarterRT, node, core, "SSKrequester", ctx);
 		sskRequestStarterBulk.setScheduler(sskFetchSchedulerBulk);
 		sskRequestStarterRT.setScheduler(sskFetchSchedulerRT);
-		
+
 		registerSchedulerConfig(schedulerConfig, "SSKrequester", sskFetchSchedulerBulk, sskFetchSchedulerRT, true, false);
-		
+
 		//insertThrottle = new ChainedRequestThrottle(10000, 2.0F, requestThrottle);
 		// FIXME reenable the above
 		sskInsertThrottleBulk = new MyRequestThrottle(20000, "SSK Insert", fs == null ? null : fs.subset("SSKInsertThrottle"), 1024, false);
@@ -124,20 +124,20 @@ public class RequestStarterGroup {
 		sskPutSchedulerRT = new ClientRequestScheduler(true, true, true, random, sskInsertStarterRT, node, core, "SSKinserter", ctx);
 		sskInsertStarterBulk.setScheduler(sskPutSchedulerBulk);
 		sskInsertStarterRT.setScheduler(sskPutSchedulerRT);
-		
+
 		registerSchedulerConfig(schedulerConfig, "SSKinserter", sskPutSchedulerBulk, sskPutSchedulerRT, true, true);
-		
+
 		schedulerConfig.finishedInitialization();
 	}
-	
+
 	private void registerSchedulerConfig(SubConfig schedulerConfig,
-			String name, ClientRequestScheduler csBulk,
-			ClientRequestScheduler csRT, boolean forSSKs, boolean forInserts) throws InvalidConfigValueException {
+										 String name, ClientRequestScheduler csBulk,
+										 ClientRequestScheduler csRT, boolean forSSKs, boolean forInserts) throws InvalidConfigValueException {
 		PrioritySchedulerCallback callback = new PrioritySchedulerCallback();
 		schedulerConfig.register(name+"_priority_policy", ClientRequestScheduler.PRIORITY_SOFT, name.hashCode(), true, false,
-				"RequestStarterGroup.scheduler"+(forSSKs?"SSK" : "CHK")+(forInserts?"Inserts":"Requests"),
-				"RequestStarterGroup.schedulerLong",
-				callback);
+								 "RequestStarterGroup.scheduler"+(forSSKs?"SSK" : "CHK")+(forInserts?"Inserts":"Requests"),
+								 "RequestStarterGroup.schedulerLong",
+								 callback);
 		callback.init(csRT, csBulk, schedulerConfig.getString(name+"_priority_policy"));
 	}
 
@@ -151,7 +151,7 @@ public class RequestStarterGroup {
 		sskRequestStarterBulk.start();
 		sskInsertStarterBulk.start();
 	}
-	
+
 	public class MyRequestThrottle implements BaseRequestThrottle {
 		private final BootstrappingDecayingRunningAverage roundTripTime;
 		/** Data size for purposes of getRate() */
@@ -188,7 +188,7 @@ public class RequestStarterGroup {
 			if(logMINOR)
 				Logger.minor(this, "Reported successful completion: "+rtt+" on "+this+" avg "+roundTripTime.currentValue());
 		}
-		
+
 		@Override
 		public String toString() {
 			return "rtt: "+roundTripTime.currentValue()+" _s="+getThrottleWindow().currentValue(realTime)+" RT="+realTime;
@@ -212,37 +212,37 @@ public class RequestStarterGroup {
 	public static class PrioritySchedulerCallback extends StringCallback implements EnumerableOptionCallback {
 		ClientRequestScheduler csRT;
 		ClientRequestScheduler csBulk;
-		private final String[] possibleValues = new String[]{ ClientRequestScheduler.PRIORITY_HARD, ClientRequestScheduler.PRIORITY_SOFT };
-		
-		public void init(ClientRequestScheduler csRT, ClientRequestScheduler csBulk, String config) throws InvalidConfigValueException{
+		private final String[] possibleValues = new String[] { ClientRequestScheduler.PRIORITY_HARD, ClientRequestScheduler.PRIORITY_SOFT };
+
+		public void init(ClientRequestScheduler csRT, ClientRequestScheduler csBulk, String config) throws InvalidConfigValueException {
 			this.csRT = csRT;
 			this.csBulk = csBulk;
 			set(config);
 		}
-		
+
 		@Override
-		public String get(){
+		public String get() {
 			if(csBulk != null)
 				return csBulk.getChoosenPriorityScheduler();
 			else
 				return ClientRequestScheduler.PRIORITY_SOFT;
 		}
-		
+
 		@Override
-		public void set(String val) throws InvalidConfigValueException{
+		public void set(String val) throws InvalidConfigValueException {
 			String value;
 			if(val == null || val.equalsIgnoreCase(get())) return;
-			if(val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_HARD)){
+			if(val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_HARD)) {
 				value = ClientRequestScheduler.PRIORITY_HARD;
-			}else if(val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_SOFT)){
+			} else if(val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_SOFT)) {
 				value = ClientRequestScheduler.PRIORITY_SOFT;
-			}else{
+			} else {
 				throw new InvalidConfigValueException("Invalid priority scheme");
 			}
 			csBulk.setPriorityScheduler(value);
 			csRT.setPriorityScheduler(value);
 		}
-		
+
 		@Override
 		public String[] getPossibleValues() {
 			return possibleValues;
@@ -260,13 +260,13 @@ public class RequestStarterGroup {
 		(isInsert ? throttleWindowInsert : throttleWindowRequest).requestCompleted();
 		stats.reportOutgoingRequestLocation(key.toNormalizedDouble());
 	}
-	
+
 	public void rejectedOverload(boolean isSSK, boolean isInsert, boolean realTime) {
 		getThrottleWindow(realTime).rejectedOverload();
 		(isSSK ? throttleWindowSSK : throttleWindowCHK).rejectedOverload();
 		(isInsert ? throttleWindowInsert : throttleWindowRequest).rejectedOverload();
 	}
-	
+
 	/**
 	 * Persist the throttle data to a SimpleFieldSet.
 	 */
@@ -286,7 +286,7 @@ public class RequestStarterGroup {
 		fs.put("SSKInsertThrottleRT", sskInsertThrottleRT.exportFieldSet());
 		return fs;
 	}
-	
+
 	public double getWindow(boolean realTime) {
 		return getThrottleWindow(realTime).currentValue(realTime);
 	}
@@ -298,7 +298,7 @@ public class RequestStarterGroup {
 	public double getDelay(boolean isSSK, boolean isInsert, boolean realTime) {
 		return getThrottle(isSSK, isInsert, realTime).getDelay();
 	}
-	
+
 	MyRequestThrottle getThrottle(boolean isSSK, boolean isInsert, boolean realTime) {
 		if(realTime) {
 			if(isSSK) {
@@ -359,13 +359,13 @@ public class RequestStarterGroup {
 
 	public long countQueuedRequests() {
 		return chkFetchSchedulerBulk.countQueuedRequests() +
-			sskFetchSchedulerBulk.countQueuedRequests() +
-			chkPutSchedulerBulk.countQueuedRequests() +
-			sskPutSchedulerBulk.countQueuedRequests() +
-			chkFetchSchedulerRT.countQueuedRequests() +
-			sskFetchSchedulerRT.countQueuedRequests() +
-			chkPutSchedulerRT.countQueuedRequests() +
-			sskPutSchedulerRT.countQueuedRequests();
+			   sskFetchSchedulerBulk.countQueuedRequests() +
+			   chkPutSchedulerBulk.countQueuedRequests() +
+			   sskPutSchedulerBulk.countQueuedRequests() +
+			   chkFetchSchedulerRT.countQueuedRequests() +
+			   sskFetchSchedulerRT.countQueuedRequests() +
+			   chkPutSchedulerRT.countQueuedRequests() +
+			   sskPutSchedulerRT.countQueuedRequests();
 	}
 
 	public ClientRequestScheduler getScheduler(boolean ssk, boolean insert,
@@ -385,15 +385,15 @@ public class RequestStarterGroup {
 		}
 	}
 
-    public void setGlobalSalt(byte[] salt) {
-        chkFetchSchedulerBulk.startCore(salt);
-        sskFetchSchedulerBulk.startCore(salt);
-        chkPutSchedulerBulk.startCore(salt);
-        sskPutSchedulerBulk.startCore(salt);
-        chkFetchSchedulerRT.startCore(salt);
-        sskFetchSchedulerRT.startCore(salt);
-        chkPutSchedulerRT.startCore(salt);
-        sskPutSchedulerRT.startCore(salt);
-    }
+	public void setGlobalSalt(byte[] salt) {
+		chkFetchSchedulerBulk.startCore(salt);
+		sskFetchSchedulerBulk.startCore(salt);
+		chkPutSchedulerBulk.startCore(salt);
+		sskPutSchedulerBulk.startCore(salt);
+		chkFetchSchedulerRT.startCore(salt);
+		sskFetchSchedulerRT.startCore(salt);
+		chkPutSchedulerRT.startCore(salt);
+		sskPutSchedulerRT.startCore(salt);
+	}
 
 }

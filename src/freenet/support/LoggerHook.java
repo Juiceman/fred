@@ -17,11 +17,11 @@ public abstract class LoggerHook extends Logger {
 		}
 	}
 
-	protected LoggerHook(LogLevel thresh){
+	protected LoggerHook(LogLevel thresh) {
 		this.threshold = thresh;
 	}
 
-	LoggerHook(String thresh) throws InvalidThresholdException{
+	LoggerHook(String thresh) throws InvalidThresholdException {
 		this.threshold = parseThreshold(thresh.toUpperCase());
 	}
 
@@ -30,7 +30,7 @@ public abstract class LoggerHook extends Logger {
 
 	/**
 	 * Log a message
-	 * 
+	 *
 	 * @param o
 	 *            The object where this message was generated.
 	 * @param source
@@ -45,11 +45,11 @@ public abstract class LoggerHook extends Logger {
 	 */
 	@Override
 	public abstract void log(
-			Object o,
-			Class<?> source,
-			String message,
-			Throwable e,
-			LogLevel priority);
+		Object o,
+		Class<?> source,
+		String message,
+		Throwable e,
+		LogLevel priority);
 
 	/**
 	 * Log a message.
@@ -61,11 +61,11 @@ public abstract class LoggerHook extends Logger {
 	@Override
 	public void log(Object source, String message, LogLevel priority) {
 		if (!instanceShouldLog(priority,source)) return;
-		log(source, source == null ? null : source.getClass(), 
-				message, null, priority);
+		log(source, source == null ? null : source.getClass(),
+			message, null, priority);
 	}
 
-	/** 
+	/**
 	 * Log a message with an exception.
 	 * @param o   The source object where this message was generated.
 	 * @param message  A clear and verbose message describing the event.
@@ -75,8 +75,8 @@ public abstract class LoggerHook extends Logger {
 	 * @see #log(Object o, String message, int priority)
 	 */
 	@Override
-	public void log(Object o, String message, Throwable e, 
-			LogLevel priority) {
+	public void log(Object o, String message, Throwable e,
+					LogLevel priority) {
 		if (!instanceShouldLog(priority,o)) return;
 		log(o, o == null ? null : o.getClass(), message, e, priority);
 	}
@@ -116,7 +116,7 @@ public abstract class LoggerHook extends Logger {
 	public LogLevel getThresholdNew() {
 		return threshold;
 	}
-	
+
 	private LogLevel parseThreshold(String threshold) throws InvalidThresholdException {
 		if(threshold == null) throw new InvalidThresholdException(threshold);
 		try {
@@ -196,10 +196,10 @@ public abstract class LoggerHook extends Logger {
 		}
 		if ((c != null) && (thresholds.length > 0)) {
 			String cname = c.getName();
-				for(DetailedThreshold dt : thresholds) {
-					if(cname.startsWith(dt.section))
-						thresh = dt.dThreshold;
-				}
+			for(DetailedThreshold dt : thresholds) {
+				if(cname.startsWith(dt.section))
+					thresh = dt.dThreshold;
+			}
 		}
 		return priority.matchesThreshold(thresh);
 	}
@@ -216,7 +216,7 @@ public abstract class LoggerHook extends Logger {
 		// Call the new callback to avoid code duplication
 		ltc.shouldUpdate();
 	}
-	
+
 	@Override
 	public final void instanceUnregisterLogThresholdCallback(LogThresholdCallback ltc) {
 		thresholdsCallbacks.remove(ltc);

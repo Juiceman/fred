@@ -70,12 +70,12 @@ public class StoreCallbackStats implements DataStoreStats {
 	public double distanceStats() throws StatsNotAvailableException {
 		return nodeStats.distanceStats();
 	}
-	
+
 	@Override
 	public StoreAccessStats getSessionAccessStats() {
 		return sessionAccessStats;
 	}
-	
+
 	@Override
 	public StoreAccessStats getTotalAccessStats() throws StatsNotAvailableException {
 		if(totalAccessStats == null) throw new StatsNotAvailableException();

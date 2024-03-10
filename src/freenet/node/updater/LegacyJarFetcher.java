@@ -24,7 +24,7 @@ import freenet.support.io.FileUtil;
  * @author toad
  */
 class LegacyJarFetcher implements ClientGetCallback {
-	
+
 	final FreenetURI uri;
 	final File tempFile;
 	final File saveTo;
@@ -73,9 +73,9 @@ class LegacyJarFetcher implements ClientGetCallback {
 				return;
 			}
 			tempFile = tmp;
-			cg = new ClientGetter(this,  
-					uri, ctx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
-					null, new BinaryBlobWriter(new FileBucket(tempFile, false, false, false, false)));
+			cg = new ClientGetter(this,
+								  uri, ctx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
+								  null, new BinaryBlobWriter(new FileBucket(tempFile, false, false, false, false)));
 			fetched = false;
 		}
 	}
@@ -113,7 +113,7 @@ class LegacyJarFetcher implements ClientGetCallback {
 		}
 		return blobBucket.size();
 	}
-	
+
 	public File getBlobFile() {
 		if(failed || !fetched) {
 			Logger.error(this, "Asking for blob but failed="+failed+" fetched="+fetched);
@@ -127,7 +127,7 @@ class LegacyJarFetcher implements ClientGetCallback {
 	public synchronized boolean fetched() {
 		return fetched;
 	}
-	
+
 	public synchronized boolean failed() {
 		return failed;
 	}
@@ -154,14 +154,14 @@ class LegacyJarFetcher implements ClientGetCallback {
 		cb.onFailure(e, this);
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        // Do nothing. Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		// Do nothing. Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return client;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return client;
+	}
 
 }

@@ -1,15 +1,15 @@
 package freenet.node.stats;
 
 public abstract class StoreAccessStats {
-	
+
 	public abstract long hits();
-	
+
 	public abstract long misses();
-	
+
 	public abstract long falsePos();
-	
+
 	public abstract long writes();
-	
+
 	public long readRequests() {
 		return hits() + misses();
 	}

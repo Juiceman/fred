@@ -17,7 +17,7 @@ import freenet.support.ByteArrayWrapper;
 import freenet.support.math.MersenneTwister;
 
 public class PubkeyStoreTest {
-	
+
 	@Test
 	public void testSimple() throws IOException {
 		final int keys = 10;
@@ -26,7 +26,7 @@ public class PubkeyStoreTest {
 		DSAGroup group = Global.DSAgroupBigA;
 		Random random = new MersenneTwister(1010101);
 		HashMap<ByteArrayWrapper, DSAPublicKey> map = new HashMap<ByteArrayWrapper, DSAPublicKey>();
-		for(int i=0;i<keys;i++) {
+		for(int i=0; i<keys; i++) {
 			DSAPrivateKey privKey = new DSAPrivateKey(group, random);
 			DSAPublicKey key = new DSAPublicKey(group, privKey);
 			byte[] hash = key.asBytesHash();

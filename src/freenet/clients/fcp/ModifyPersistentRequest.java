@@ -14,7 +14,7 @@ import freenet.support.io.NativeThread;
 
 /**
  * FCP message: Modify a persistent request.
- * 
+ *
  * ModifyPersistentRequest
  * Identifier=request identifier
  * Verbosity=1023 // change verbosity
@@ -27,13 +27,13 @@ import freenet.support.io.NativeThread;
 public class ModifyPersistentRequest extends FCPMessage {
 
 	static final String NAME = "ModifyPersistentRequest";
-	
+
 	final String identifier;
 	final boolean global;
 	// negative means don't change
 	final short priorityClass;
 	final String clientToken;
-	
+
 	ModifyPersistentRequest(SimpleFieldSet fs) throws MessageInvalidException {
 		this.global = fs.getBoolean("Global", false);
 		this.identifier = fs.get("Identifier");
@@ -52,7 +52,7 @@ public class ModifyPersistentRequest extends FCPMessage {
 		} else
 			priorityClass = -1;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
@@ -71,32 +71,32 @@ public class ModifyPersistentRequest extends FCPMessage {
 
 	@Override
 	public void run(final FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
-		
+	throws MessageInvalidException {
+
 		ClientRequest req = handler.getRebootRequest(global, handler, identifier);
 		if(req == null) {
-		    try {
-                node.clientCore.clientContext.jobRunner.queue(new PersistentJob() {
-                    
-                    @Override
-                    public boolean run(ClientContext context) {
-                        ClientRequest req = handler.getForeverRequest(global, handler, identifier);
-                        if(req==null){
-                            Logger.error(this, "Huh ? the request is null!");
-                            ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
-                            handler.send(msg);
-                            return false;
-                        } else {
-                            req.modifyRequest(clientToken, priorityClass, handler.server);
-                        }
-                        return true;
-                    }
-                    
-                }, NativeThread.NORM_PRIORITY);
-            } catch (PersistenceDisabledException e) {
-                ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
-                handler.send(msg);
-            }
+			try {
+				node.clientCore.clientContext.jobRunner.queue(new PersistentJob() {
+
+					@Override
+					public boolean run(ClientContext context) {
+						ClientRequest req = handler.getForeverRequest(global, handler, identifier);
+						if(req==null) {
+							Logger.error(this, "Huh ? the request is null!");
+							ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+							handler.send(msg);
+							return false;
+						} else {
+							req.modifyRequest(clientToken, priorityClass, handler.server);
+						}
+						return true;
+					}
+
+				}, NativeThread.NORM_PRIORITY);
+			} catch (PersistenceDisabledException e) {
+				ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+				handler.send(msg);
+			}
 		} else {
 			req.modifyRequest(clientToken, priorityClass, node.clientCore.getFCPServer());
 		}

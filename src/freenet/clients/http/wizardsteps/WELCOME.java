@@ -34,9 +34,9 @@ public class WELCOME implements Step {
 		boolean fProxyJavascriptEnabled = config.get("fproxy").getBoolean("javascriptEnabled");
 		if (fProxyJavascriptEnabled) {
 			contentNode.addChild("script", "type", "text/javascript")
-					.addChild(
-							"%",
-							"window.location.replace(\"" + FirstTimeWizardNewToadlet.TOADLET_URL + " \");");
+			.addChild(
+				"%",
+				"window.location.replace(\"" + FirstTimeWizardNewToadlet.TOADLET_URL + " \");");
 		}
 
 		HTMLNode optionsTable = contentNode.addChild("table");
@@ -96,10 +96,10 @@ public class WELCOME implements Step {
 		HTMLNode centerForm = tableCell.addChild("div", "style", "text-align:center;");
 		HTMLNode secForm = helper.addFormChild(centerForm, ".", "SecForm"+preset);
 		secForm.addChild("input",
-		        new String[]{"type", "name", "value", },
-		        new String[]{"hidden", "incognito", String.valueOf(incognito), });
+						 new String[] {"type", "name", "value", },
+						 new String[] {"hidden", "incognito", String.valueOf(incognito), });
 		secForm.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", "preset" + preset, WizardL10n.l10n("presetChoose" + preset)});
+						 new String[] {"type", "name", "value"},
+						 new String[] {"submit", "preset" + preset, WizardL10n.l10n("presetChoose" + preset)});
 	}
 }

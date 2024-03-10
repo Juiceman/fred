@@ -56,8 +56,8 @@ import freenet.support.io.ResumeFailedException;
  */
 public class SingleBlockInserter extends SendableInsert implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -148,7 +148,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	protected ClientKeyBlock innerEncode(RandomSource random) throws InsertException {
 		try {
 			return innerEncode(random, uri, sourceData, isMetadata, compressionCodec, sourceLength, ctx.compressorDescriptor,
-					cryptoAlgorithm, cryptoKey);
+							   cryptoAlgorithm, cryptoKey);
 		} catch (KeyEncodeException e) {
 			Logger.error(SingleBlockInserter.class, "Caught "+e, e);
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null);
@@ -164,19 +164,19 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	}
 
 	protected static ClientKeyBlock innerEncode(
-			RandomSource random,
-			FreenetURI uri,
-			Bucket sourceData,
-			boolean isMetadata,
-			short compressionCodec,
-			int sourceLength,
-			String compressorDescriptor,
-			byte cryptoAlgorithm,
-			byte[] cryptoKey) throws InsertException, CHKEncodeException, IOException, SSKEncodeException, MalformedURLException, InvalidCompressionCodecException {
+		RandomSource random,
+		FreenetURI uri,
+		Bucket sourceData,
+		boolean isMetadata,
+		short compressionCodec,
+		int sourceLength,
+		String compressorDescriptor,
+		byte cryptoAlgorithm,
+		byte[] cryptoKey) throws InsertException, CHKEncodeException, IOException, SSKEncodeException, MalformedURLException, InvalidCompressionCodecException {
 		String uriType = uri.getKeyType();
 		if(uriType.equals("CHK")) {
 			return ClientCHKBlock.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, compressorDescriptor,
-          cryptoKey, cryptoAlgorithm);
+										 cryptoKey, cryptoAlgorithm);
 		} else if(uriType.equals("SSK") || uriType.equals("KSK")) {
 			InsertableClientSSK ik = InsertableClientSSK.create(uri);
 			return ik.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, random, compressorDescriptor);
@@ -193,26 +193,26 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		}
 		if(!persistent) {
 			context.mainExecutor.execute(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					cb.onEncode(key, SingleBlockInserter.this, context);
 				}
 			}, "Got URI");
 		} else {
-		    context.jobRunner.queueNormalOrDrop(new PersistentJob() { 
-		        // Will be reported on restart in innerOnResume() if necessary.
-		        
-                @Override
-                public boolean run(ClientContext context) {
-                    cb.onEncode(key, SingleBlockInserter.this, context);
-                    return false;
-                }
-		        
-		    });
+			context.jobRunner.queueNormalOrDrop(new PersistentJob() {
+				// Will be reported on restart in innerOnResume() if necessary.
+
+				@Override
+				public boolean run(ClientContext context) {
+					cb.onEncode(key, SingleBlockInserter.this, context);
+					return false;
+				}
+
+			});
 		}
 	}
-	
+
 	protected ClientKeyBlock encode(ClientContext context, boolean calledByCB) throws InsertException {
 		ClientKeyBlock block;
 		boolean shouldSend;
@@ -232,7 +232,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			cb.onEncode(block.getClientKey(), this, context);
 		return block;
 	}
-	
+
 	@Override
 	public short getPriorityClass() {
 		return parent.getPriorityClass(); // Not much point deactivating
@@ -248,7 +248,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			return;
 		}
 		if(logMINOR) Logger.minor(this, "onFailure() on "+e+" for "+this);
-		
+
 		switch(e.code) {
 		case LowLevelPutException.COLLISION:
 			fail(new InsertException(InsertExceptionMode.COLLISION), context);
@@ -292,7 +292,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	private void fail(InsertException e, ClientContext context) {
 		fail(e, false, context);
 	}
-	
+
 	private void fail(InsertException e, boolean forceFatal, ClientContext context) {
 		synchronized(this) {
 			if(finished) return;
@@ -338,7 +338,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		if(ctx.getCHKOnly || ctx.earlyEncode) {
 			tryEncode(context);
 		}
-		if(ctx.getCHKOnly) { 
+		if(ctx.getCHKOnly) {
 			onSuccess(null, getKeyNoEncode(), context);
 		} else {
 			getScheduler(context).registerInsert(this, persistent);
@@ -359,21 +359,21 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		getBlock(context, true);
 		synchronized(this) {
 			// FIXME not really necessary? resultingKey is never dropped, only set.
-		    return resultingKey.getURI();
+			return resultingKey.getURI();
 		}
 	}
 
 	public synchronized FreenetURI getURINoEncode() {
 		return resultingKey == null ? null : resultingKey.getURI();
 	}
-	
+
 	public synchronized ClientKey getKeyNoEncode() {
-	    return resultingKey;
+		return resultingKey;
 	}
 
 	@Override
 	public void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context) {
-	    onEncode(key, context);
+		onEncode(key, context);
 		if(logMINOR) Logger.minor(this, "Succeeded ("+this+"): "+token);
 		if(parent.isCancelled()) {
 			fail(new InsertException(InsertExceptionMode.CANCELLED), context);
@@ -394,11 +394,11 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			}
 			finished = true;
 			if(resultingKey == null) {
-			    shouldSendKey = true;
-			    resultingKey = key;
+				shouldSendKey = true;
+				resultingKey = key;
 			} else {
-			    if(!resultingKey.equals(key))
-			        Logger.error(this, "Different key: "+resultingKey+" -> "+key+" for "+this);
+				if(!resultingKey.equals(key))
+					Logger.error(this, "Different key: "+resultingKey+" -> "+key+" for "+this);
 			}
 		}
 		if(freeData) {
@@ -409,7 +409,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		unregister(context, getPriorityClass());
 		if(logMINOR) Logger.minor(this, "Calling onSuccess for "+cb);
 		if(shouldSendKey)
-		    cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
+			cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
 		cb.onSuccess(this, context);
 	}
 
@@ -436,7 +436,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	public synchronized boolean isEmpty() {
 		return finished;
 	}
-	
+
 	@Override
 	public synchronized boolean isCancelled() {
 		return finished;
@@ -465,7 +465,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			try {
 				try {
 					encodedBlock = innerEncode(context.random, block.uri, block.copyBucket, block.isMetadata, block.compressionCodec, block.sourceLength, compressorDescriptor,
-							block.cryptoAlgorithm, block.cryptoKey);
+											   block.cryptoAlgorithm, block.cryptoKey);
 					b = encodedBlock.getBlock();
 				} catch (CHKEncodeException e) {
 					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
@@ -487,13 +487,13 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				key = encodedBlock.getClientKey();
 				k = key;
 				context.getJobRunner(block.persistent).queueNormalOrDrop(new PersistentJob() {
-				    
-				    @Override
-				    public boolean run(ClientContext context) {
-				        orig.onEncode(key, context);
-				        return true;
-				    }
-				    
+
+					@Override
+					public boolean run(ClientContext context) {
+						orig.onEncode(key, context);
+						return true;
+					}
+
 				});
 				if(req.localRequestOnly)
 					try {
@@ -511,11 +511,10 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 								throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Collided, can't find block, but still collides!", e);
 							}
 						}
-						
+
 						failed.setCollidedBlock(collided);
 						throw failed;
-					}
-				else
+					} else
 					core.realPut(b, req.canWriteClientCache, req.forkOnCacheable, Node.PREFER_INSERT_DEFAULT, Node.IGNORE_LOW_BACKOFF_DEFAULT, req.realTimeFlag);
 			} catch (LowLevelPutException e) {
 				if(logMINOR) Logger.minor(this, "Caught "+e, e);
@@ -531,8 +530,8 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 							return true;
 						} else {
 							if(SingleBlockInserter.logMINOR) Logger.minor(this, "Apparently real collision: collided.isMetadata="+collided.isMetadata()+" block.isMetadata="+block.isMetadata+
-									" collided.codec="+collided.getCompressionCodec()+" block.codec="+block.compressionCodec+
-									" collided.datalength="+data.length+" block.datalength="+inserting.length+" H(collided)="+Fields.hashCode(data)+" H(inserting)="+Fields.hashCode(inserting));
+										" collided.codec="+collided.getCompressionCodec()+" block.codec="+block.compressionCodec+
+										" collided.datalength="+data.length+" block.datalength="+inserting.length+" H(collided)="+Fields.hashCode(data)+" H(inserting)="+Fields.hashCode(inserting));
 						}
 					} catch (KeyVerifyException e1) {
 						Logger.error(this, "Caught "+e1+" when checking collision!", e1);
@@ -559,7 +558,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		}
 	}
 
-	
+
 	@Override
 	public SendableRequestSender getSender(ClientContext context) {
 		String compress;
@@ -620,7 +619,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				if(finished) return null;
 				key = new BlockItemKey(this, hashCode());
 				if(ignored.hasInsert(key))
-				    return null;
+					return null;
 				return getBlockItem(key, context);
 			}
 		} catch (InsertException e) {
@@ -628,17 +627,17 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			return null;
 		}
 	}
-	
+
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
-	    KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
-	    synchronized(this) {
-	        if(finished) return -1;
-            BlockItemKey key = new BlockItemKey(this, hashCode());
-            if(keysFetching.hasInsert(key))
-                return Long.MAX_VALUE;
-            return 0;
-	    }
+		KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
+		synchronized(this) {
+			if(finished) return -1;
+			BlockItemKey key = new BlockItemKey(this, hashCode());
+			if(keysFetching.hasInsert(key))
+				return Long.MAX_VALUE;
+			return 0;
+		}
 	}
 
 	private BlockItem getBlockItem(BlockItemKey key, ClientContext context) throws InsertException {
@@ -662,28 +661,28 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			}
 			CompatibilityMode cmode = ctx.getCompatibilityMode();
 			return new BlockItem(key, data, isMetadata, compressionCodec, sourceLength, u, persistent,
-					cryptoAlgorithm, cryptoKey);
+								 cryptoAlgorithm, cryptoKey);
 		} catch (IOException e) {
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		}
 	}
-	
+
 	/** Everything needed to check whether we are already running a request */
 	private static class BlockItemKey implements SendableRequestItemKey {
 		private final int hashCode;
 		/** STRICTLY for purposes of equals() !!! */
 		private final SingleBlockInserter parent;
-		
+
 		BlockItemKey(SingleBlockInserter parent, int hashCode) {
 			this.parent = parent;
 			this.hashCode = hashCode;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return hashCode;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			if(o instanceof BlockItemKey) {
@@ -691,7 +690,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			}
 			return false;
 		}
-		
+
 	}
 
 	/** Everything needed to actually run a request, without access to the SingleBlockInserter (this is
@@ -709,15 +708,15 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		public byte[] cryptoKey;
 
 		BlockItem(
-				BlockItemKey key,
-				Bucket bucket,
-				boolean meta,
-				short codec,
-				int srclen,
-				FreenetURI u,
-				boolean persistent,
-				byte cryptoAlgorithm,
-				byte[] cryptoKey) {
+			BlockItemKey key,
+			Bucket bucket,
+			boolean meta,
+			short codec,
+			int srclen,
+			FreenetURI u,
+			boolean persistent,
+			byte cryptoAlgorithm,
+			byte[] cryptoKey) {
 			this.key = key;
 			this.copyBucket = bucket;
 			this.uri = u;
@@ -728,7 +727,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			this.cryptoAlgorithm = cryptoAlgorithm;
 			this.cryptoKey = cryptoKey;
 		}
-		
+
 		@Override
 		public void dump() {
 			copyBucket.free();
@@ -738,44 +737,44 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		public SendableRequestItemKey getKey() {
 			return key;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean canWriteClientCache() {
 		boolean retval = ctx.canWriteClientCache;
 		return retval;
 	}
-	
+
 	@Override
 	public boolean localRequestOnly() {
 		boolean retval = ctx.localRequestOnly;
 		return retval;
 	}
-	
+
 	@Override
 	public boolean forkOnCacheable() {
 		boolean retval = ctx.forkOnCacheable;
 		return retval;
 	}
-	
+
 	@Override
 	public void onEncode(SendableRequestItem token, ClientKey key, ClientContext context) {
 		onEncode(key, context);
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
-        sourceData.onResume(context);
-        if(cb != parent) cb.onResume(context);
-        if(resultingKey != null)
-            cb.onEncode(resultingKey, SingleBlockInserter.this, context);
-        this.schedule(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
+		sourceData.onResume(context);
+		if(cb != parent) cb.onResume(context);
+		if(resultingKey != null)
+			cb.onEncode(resultingKey, SingleBlockInserter.this, context);
+		this.schedule(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 
 }

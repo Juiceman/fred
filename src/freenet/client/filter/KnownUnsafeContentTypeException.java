@@ -13,18 +13,18 @@ import freenet.support.HTMLEncoder;
 public class KnownUnsafeContentTypeException extends UnsafeContentTypeException {
 	private static final long serialVersionUID = -1;
 	FilterMIMEType type;
-	
+
 	public KnownUnsafeContentTypeException(FilterMIMEType type) {
 		this.type = type;
 	}
-	
-	
+
+
 	@Override
 	public String getMessage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(l10n("knownUnsafe"));
 		sb.append(l10n("noFilter"));
-		
+
 		return sb.toString();
 	}
 
@@ -47,7 +47,7 @@ public class KnownUnsafeContentTypeException extends UnsafeContentTypeException 
 	public String getRawTitle() {
 		return l10n("title", "type", type.primaryMimeType);
 	}
-	
+
 	private static String l10n(String key) {
 		return NodeL10n.getBase().getString("KnownUnsafeContentTypeException."+key);
 	}

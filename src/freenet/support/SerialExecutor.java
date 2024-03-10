@@ -14,9 +14,9 @@ public class SerialExecutor implements Executor {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -49,33 +49,33 @@ public class SerialExecutor implements Executor {
 				runningThread = Thread.currentThread();
 			}
 			try {
-			while(true) {
-				synchronized (syncLock) {
-						threadWaiting = true;
-				}
-				Runnable job = null;
-						try {
-					job = jobs.poll(NEWJOB_TIMEOUT, TimeUnit.MILLISECONDS);
-						} catch (InterruptedException e) {
-					// ignore
-						}
-				synchronized (syncLock) {
-						threadWaiting=false;
-						}
-				if (job == null) {
+				while(true) {
 					synchronized (syncLock) {
-						threadStarted = false;
+						threadWaiting = true;
 					}
-					return;
-				}
+					Runnable job = null;
+					try {
+						job = jobs.poll(NEWJOB_TIMEOUT, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+					synchronized (syncLock) {
+						threadWaiting=false;
+					}
+					if (job == null) {
+						synchronized (syncLock) {
+							threadStarted = false;
+						}
+						return;
+					}
 
-				try {
-					job.run();
-				} catch (Throwable t) {
-					Logger.error(this, "Caught "+t, t);
-					Logger.error(this, "While running "+job+" on "+this);
+					try {
+						job.run();
+					} catch (Throwable t) {
+						Logger.error(this, "Caught "+t, t);
+						Logger.error(this, "While running "+job+" on "+this);
+					}
 				}
-			}
 			} finally {
 				synchronized(syncLock) {
 					runningThread = null;
@@ -88,7 +88,7 @@ public class SerialExecutor implements Executor {
 	public SerialExecutor(int priority) {
 		this(priority, 0);
 	}
-	
+
 	public SerialExecutor(int priority, int bound) {
 		if(bound > 0)
 			jobs = new LinkedBlockingQueue<Runnable>(bound);
@@ -110,7 +110,7 @@ public class SerialExecutor implements Executor {
 
 	private void reallyStart() {
 		synchronized (syncLock) {
-		threadStarted=true;
+			threadStarted=true;
 		}
 		if (logMINOR)
 			Logger.minor(this, "Starting thread... " + name + " : " + runner);
@@ -126,7 +126,7 @@ public class SerialExecutor implements Executor {
 	public void execute(Runnable job, String jobName) {
 		if (logMINOR)
 			Logger.minor(this, "Running " + jobName + " : " + job + " started=" + threadStarted + " waiting="
-			        + threadWaiting);
+						 + threadWaiting);
 		jobs.offer(job);
 
 		synchronized (syncLock) {

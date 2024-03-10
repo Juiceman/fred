@@ -24,7 +24,7 @@ public class OggPage {
 	boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 	static final byte[] magicNumber = new byte[] {0x4f, 0x67, 0x67, 0x53};
 	/*This CRC lookup table was taken from libogg. These values
-	 * are XORed with 
+	 * are XORed with
 	 * See: http://www.ross.net/crc/download/crc_v3.txt
 	 */
 	static final private int crc_lookup[]= new int[] {
@@ -92,7 +92,7 @@ public class OggPage {
 		0x9abc8bd5,0x9e7d9662,0x933eb0bb,0x97ffad0c,
 		0xafb010b1,0xab710d06,0xa6322bdf,0xa2f33668,
 		0xbcb4666d,0xb8757bda,0xb5365d03,0xb1f740b4
-		};
+	};
 
 	//Page header contained here
 	final byte version;
@@ -245,15 +245,16 @@ public class OggPage {
 		array[24] = 0;
 		array[25] = 0;
 		int crc_reg = 0;
-		for(int i=0;i<array.length;i++) {
+		for(int i=0; i<array.length; i++) {
 			/*Ugly, no? This line was taken from jorbis, which, I'd bet money, adapted it to java from libogg,
 			 * which in turn took it from http://www.ross.net/crc/download/crc_v3.txt */
 			crc_reg=(crc_reg<<8) ^ crc_lookup[((crc_reg>>>24) & 0xff) ^ (array[i] & 0xff)];
 		}
 		return new byte[] { (byte)crc_reg,
-				(byte) (crc_reg>>>8),
-				(byte) (crc_reg>>>16),
-				(byte) (crc_reg>>>24)};
+							(byte) (crc_reg>>>8),
+							(byte) (crc_reg>>>16),
+							(byte) (crc_reg>>>24)
+						  };
 	}
 
 	/**Rewrites the stored sizes of this page's segments.

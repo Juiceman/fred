@@ -131,14 +131,14 @@ public class Announcer {
 			timeAddedSeeds = now;
 			if(seeds.size() == 0) {
 				registerEvent(STATUS_NO_SEEDNODES);
-        /*
-         * Developers might run nodes in empty directories instead of one made by an installer.
-         * They can copy in the seed nodes file, so check for it periodically to support loading it
-         * without the need to restart the node.
-         *
-         * TODO: If the seed nodes file is found it does not unregister the STATUS_NO_SEEDNODES
-         * event.
-         */
+				/*
+				 * Developers might run nodes in empty directories instead of one made by an installer.
+				 * They can copy in the seed nodes file, so check for it periodically to support loading it
+				 * without the need to restart the node.
+				 *
+				 * TODO: If the seed nodes file is found it does not unregister the STATUS_NO_SEEDNODES
+				 * event.
+				 */
 				node.getTicker().queueTimedJob(new Runnable() {
 					public void run() {
 						maybeSendAnnouncement();
@@ -169,7 +169,7 @@ public class Announcer {
 			}
 			if(logMINOR)
 				Logger.minor(this, "count = "+count+
-						" announced = "+announcedToIdentities.size()+" running = "+runningAnnouncements+" still connecting "+stillConnecting);
+							 " announced = "+announcedToIdentities.size()+" running = "+runningAnnouncements+" still connecting "+stillConnecting);
 			if(count == 0 && runningAnnouncements == 0) {
 				// No more peers to connect to, and no announcements running.
 				// Are there any peers which we are still trying to connect to?
@@ -225,11 +225,11 @@ public class Announcer {
 				SeedServerPeerNode seed =
 					new SeedServerPeerNode(fs, node, om.crypto, false);
 				if(node.wantAnonAuth(true) && Arrays.equals(node.getOpennetPubKeyHash(), seed.peerECDSAPubKeyHash)) {
-                                    if(logMINOR)
-                                        Logger.minor("Not adding: I am a seednode attempting to connect to myself!", seed.userToString());
-                                    continue;
-                                }
-                                if(announcedToIdentities.contains(new ByteArrayWrapper(seed.peerECDSAPubKeyHash))) {
+					if(logMINOR)
+						Logger.minor("Not adding: I am a seednode attempting to connect to myself!", seed.userToString());
+					continue;
+				}
+				if(announcedToIdentities.contains(new ByteArrayWrapper(seed.peerECDSAPubKeyHash))) {
 					if(logMINOR)
 						Logger.minor(this, "Not adding: already announced-to: "+seed.userToString());
 					continue;
@@ -254,9 +254,9 @@ public class Announcer {
 				Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
 				continue;
 			} catch (PeerTooOldException e) {
-                Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
-                continue;
-            }
+				Logger.error(this, "Invalid seed in file: "+e+" for\n"+fs, e);
+				continue;
+			}
 		}
 		if(logMINOR) Logger.minor(this, "connectSomeNodesInner() returning "+count);
 		return count;
@@ -306,9 +306,9 @@ public class Announcer {
 		return target;
 	}
 
-	private SimpleUserAlert announcementDisabledAlert = 
-		new SimpleUserAlert(false, l10n("announceDisabledTooOldTitle"), l10n("announceDisabledTooOld"), l10n("announceDisabledTooOldShort"), UserAlert.CRITICAL_ERROR) {
-		
+	private SimpleUserAlert announcementDisabledAlert =
+	new SimpleUserAlert(false, l10n("announceDisabledTooOldTitle"), l10n("announceDisabledTooOld"), l10n("announceDisabledTooOldShort"), UserAlert.CRITICAL_ERROR) {
+
 		@Override
 		public HTMLNode getHTMLText() {
 			HTMLNode div = new HTMLNode("div");
@@ -320,7 +320,7 @@ public class Announcer {
 			// No point with !armed() or blown() because they have their own messages.
 			return div;
 		}
-		
+
 		@Override
 		public String getText() {
 			StringBuilder sb = new StringBuilder();
@@ -331,7 +331,7 @@ public class Announcer {
 			}
 			return sb.toString();
 		}
-		
+
 		@Override
 		public boolean isValid() {
 			if(node.nodeUpdater.isEnabled()) return false;
@@ -340,10 +340,10 @@ public class Announcer {
 				return killedAnnouncementTooOld;
 			}
 		}
-		
+
 	};
 
-	
+
 	/** @return True if we have enough peers that we don't need to announce. */
 	boolean enoughPeers() {
 		if(om.stopping()) return true;
@@ -382,7 +382,7 @@ public class Announcer {
 			}
 
 		}
-		
+
 		if(killAnnouncement) {
 			node.executor.execute(new Runnable() {
 
@@ -395,7 +395,7 @@ public class Announcer {
 						node.peers.disconnectAndRemove(pn, true, true, true);
 					}
 				}
-				
+
 			});
 			return true;
 		} else {
@@ -411,7 +411,7 @@ public class Announcer {
 				return true;
 			}
 		}
-		
+
 		synchronized(timeGotEnoughPeersLock) {
 			timeGotEnoughPeers = -1;
 		}
@@ -567,7 +567,7 @@ public class Announcer {
 
 	private synchronized void addAnnouncedIPs(InetAddress[] addrs) {
 		for (InetAddress addr : addrs)
-	        announcedToIPs.add(addr);
+			announcedToIPs.add(addr);
 	}
 
 	/**
@@ -745,15 +745,15 @@ public class Announcer {
 						disconnectedSeednodes++;
 				}
 				sb.append(l10n("announceDetails",
-						new String[] { "addedNodes", "refusedNodes", "recentSentAnnouncements", "runningAnnouncements", "connectedSeednodes", "disconnectedSeednodes" },
-						new String[] {
-						Integer.toString(addedNodes),
-						Integer.toString(refusedNodes),
-						Integer.toString(recentSentAnnouncements),
-						Integer.toString(runningAnnouncements),
-						Integer.toString(connectedSeednodes),
-						Integer.toString(disconnectedSeednodes)
-				}));
+							   new String[] { "addedNodes", "refusedNodes", "recentSentAnnouncements", "runningAnnouncements", "connectedSeednodes", "disconnectedSeednodes" },
+							   new String[] {
+								   Integer.toString(addedNodes),
+								   Integer.toString(refusedNodes),
+								   Integer.toString(recentSentAnnouncements),
+								   Integer.toString(runningAnnouncements),
+								   Integer.toString(connectedSeednodes),
+								   Integer.toString(disconnectedSeednodes)
+							   }));
 				if(coolingOffSeconds > 0) {
 					sb.append(' ');
 					sb.append(l10n("coolingOff", "time", Long.toString(coolingOffSeconds)));

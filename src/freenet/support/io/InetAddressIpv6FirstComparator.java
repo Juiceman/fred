@@ -45,7 +45,7 @@ public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 		} else if (arg0.isLinkLocalAddress() && !arg1.isLinkLocalAddress()) {
 			return 1;
 		}
-		// prefer reachable over unreachable addresses. This is usually a ping. TODO: This actually pings all advertised ip addresses. Is that OK? Do we need a maximum number of accepted addresses to prevent abuse as DDoS? 
+		// prefer reachable over unreachable addresses. This is usually a ping. TODO: This actually pings all advertised ip addresses. Is that OK? Do we need a maximum number of accepted addresses to prevent abuse as DDoS?
 		int a = arg0.hashCode();
 		int b = arg1.hashCode();
 		Boolean reachable0 = reachabilityCache.get(a);

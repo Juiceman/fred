@@ -20,29 +20,29 @@ public class IntervalPusherManager {
 	private final Ticker				ticker;
 
 	/** The job, that will refresh the elements */
-	private Runnable					refresherJob	= 
-		new Runnable() {
-		
+	private Runnable					refresherJob	=
+	new Runnable() {
+
 		@Override
 		public void run() {
 			// Updating
 			for (BaseUpdateableElement element : elements) {
 				pushDataManager.updateElement(element.getUpdaterId(null));
 			}
-			
+
 			// If there are more elements, it reschedules
 			if (elements.size() > 0) {
 				ticker.queueTimedJob(this, "Stats refresher", REFRESH_PERIOD, false, true);
 			}
 		}
 	};
-	
+
 	/** The elements that are pushed at a fixed interval */
 	private List<BaseUpdateableElement>	elements		= new CopyOnWriteArrayList<BaseUpdateableElement>();
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param ticker
 	 *            - The Ticker
 	 * @param pushDataManager
@@ -55,7 +55,7 @@ public class IntervalPusherManager {
 
 	/**
 	 * Registers an element to be pushed at a fixed interval
-	 * 
+	 *
 	 * @param element
 	 *            - The element
 	 */
@@ -73,7 +73,7 @@ public class IntervalPusherManager {
 
 	/**
 	 * Removes the element from interval pushing
-	 * 
+	 *
 	 * @param element
 	 *            - The element to be removed
 	 */

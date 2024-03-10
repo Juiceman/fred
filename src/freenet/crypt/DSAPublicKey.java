@@ -23,7 +23,7 @@ public class DSAPublicKey extends CryptoKey implements StorableBlock {
 	/** Null means use Global.DSAgroupBigA. This makes persistence simpler. */
 	private final DSAGroup group;
 	private byte[] fingerprint = null;
-	
+
 	public DSAPublicKey(DSAGroup g, BigInteger y) {
 		if(y.signum() != 1)
 			throw new IllegalArgumentException();
@@ -78,11 +78,11 @@ public class DSAPublicKey extends CryptoKey implements StorableBlock {
 			throw new CryptFormatException(e);
 		}
 	}
-	
+
 	protected DSAPublicKey() {
-	    // For serialization.
-	    y = null;
-	    group = null;
+		// For serialization.
+		y = null;
+		group = null;
 	}
 
 	public BigInteger getY() {
@@ -153,7 +153,7 @@ public class DSAPublicKey extends CryptoKey implements StorableBlock {
 	public byte[] fingerprint() {
 		synchronized(this) {
 			if(fingerprint == null)
-				fingerprint = fingerprint(new BigInteger[]{y});
+				fingerprint = fingerprint(new BigInteger[] {y});
 			return fingerprint;
 		}
 	}

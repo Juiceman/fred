@@ -21,16 +21,16 @@ public class RedirectException extends Exception {
 	public RedirectException(String newURI) throws URISyntaxException {
 		this.newuri = new URI(newURI);
 	}
-	
+
 	public RedirectException(URI newURI) {
 		this.newuri = newURI;
 	}
-	
+
 	/**
 	 * @return The URI to which this Exception shall redirect.
 	 */
 	public URI getTarget() {
-	    return newuri;
+		return newuri;
 	}
 
 }

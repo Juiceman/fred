@@ -22,8 +22,8 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 	private String sourceNodeName;
 
 	public BookmarkFeedUserAlert(DarknetPeerNode sourcePeerNode,
-			String name, String description, boolean hasAnActivelink, int fileNumber, FreenetURI uri,
-			long composed, long sent, long received) {
+								 String name, String description, boolean hasAnActivelink, int fileNumber, FreenetURI uri,
+								 long composed, long sent, long received) {
 		super(true, null, null, null, null, UserAlert.MINOR, true, null, true, null);
 		this.name = name;
 		this.description = description;
@@ -61,12 +61,13 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 	public HTMLNode getHTMLText() {
 		HTMLNode alertNode = new HTMLNode("div");
 		alertNode.addChild("a", "href",
-				"/?newbookmark=" + uri + "&desc=" + name + "&hasAnActivelink=" + hasAnActivelink)
-				.addChild(
-						"img",
-						new String[] { "src", "alt", "title" },
-						new String[] { "/static/icon/bookmark-new.png", l10n("addAsABookmark"),
-								l10n("addAsABookmark") });
+						   "/?newbookmark=" + uri + "&desc=" + name + "&hasAnActivelink=" + hasAnActivelink)
+		.addChild(
+			"img",
+			new String[] { "src", "alt", "title" },
+			new String[] { "/static/icon/bookmark-new.png", l10n("addAsABookmark"),
+						   l10n("addAsABookmark")
+						 });
 		alertNode.addChild("a", "href", "/freenet:" + uri.toString()).addChild("#", name);
 		if (description != null && description.length() != 0) {
 			String[] lines = description.split("\n");

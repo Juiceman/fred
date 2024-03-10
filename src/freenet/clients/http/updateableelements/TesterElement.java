@@ -54,8 +54,8 @@ public class TesterElement extends BaseUpdateableElement {
 	public String getUpdaterId(String requestId) {
 		return getId(requestId,id);
 	}
-	
-	public static String getId(String requestId,String id){
+
+	public static String getId(String requestId,String id) {
 		return Base64.encodeStandardUTF8(("test:" + requestId + "id:" + id+"gndfjkghghdfukggherugbdfkutg54ibngjkdfgyisdhiterbyjhuyfghdightw7i4tfgsdgo;dfnghsdbfuiyfgfoinfsdbufvwte4785tu4kgjdfnzukfbyfhe48e54gjfdjgbdruserigbfdnvbxdio;fherigtuseofjuodsvbyfhsd8ofghfio;"));
 	}
 

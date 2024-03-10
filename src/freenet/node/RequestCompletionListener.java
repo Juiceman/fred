@@ -10,8 +10,8 @@ public interface RequestCompletionListener {
 
 	/** The request succeeded. The key has been tripped separately. */
 	void onSucceeded();
-	
+
 	/** The request failed. */
 	void onFailed(LowLevelGetException e);
-	
+
 }

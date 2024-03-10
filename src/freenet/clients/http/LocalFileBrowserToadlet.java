@@ -22,7 +22,7 @@ import java.util.Map;
  * @author David 'Bombe' Roden &lt;bombe@freenetproject.org&gt;
  * @version $Id$
  */
-public abstract class LocalFileBrowserToadlet extends Toadlet {	
+public abstract class LocalFileBrowserToadlet extends Toadlet {
 	protected final NodeClientCore core;
 	private static final int MAX_POST_SIZE = 1024*1024;
 
@@ -30,12 +30,12 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 		super(highLevelSimpleClient);
 		this.core = core;
 	}
-	
+
 	@Override
 	public abstract String path();
-	
+
 	protected abstract String postTo();
-	
+
 	/**
 	 * Last directory from which an action was performed. If accessible, this is used instead of the fallback
 	 * default directory.
@@ -72,7 +72,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * a selection button or directory-changing button for it.
 	 */
 	protected abstract boolean allowedDir(File path);
-	
+
 	/**
 	 * Performs sanity checks and generates parameter persistence fields.
 	 * @param set page parts/parameters
@@ -94,7 +94,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected String defaultUploadDir() {
 		if ((core.getAllowedUploadDirs().length == 1 && core.getAllowedUploadDirs()[0].toString().equals("all"))
-		        || core.getAllowedUploadDirs().length == 0) {
+				|| core.getAllowedUploadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the home directory.
 			 * If none are allowed, any directory will result in an error anyway.
 			 */
@@ -111,7 +111,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected String defaultDownloadDir() {
 		if ((core.getAllowedDownloadDirs().length == 1 && core.getAllowedDownloadDirs()[0].toString().equals("all"))
-		        || core.getAllowedDownloadDirs().length == 0) {
+				|| core.getAllowedDownloadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the default download directory.
 			 * If none are allowed, any directory will result in an error anyway.
 			 */
@@ -129,11 +129,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected void createSelectDirectoryButton (HTMLNode node, String absolutePath, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", selectDir, l10n("insert")});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"submit", selectDir, l10n("insert")});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", filenameField(), absolutePath});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"hidden", filenameField(), absolutePath});
 		node.addChild(persistence);
 	}
 
@@ -145,11 +145,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	protected void createSelectFileButton (HTMLNode node, String absolutePath, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", selectFile, l10n("insert")});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"submit", selectFile, l10n("insert")});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", filenameField(), absolutePath});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"hidden", filenameField(), absolutePath});
 		node.addChild(persistence);
 	}
 
@@ -161,14 +161,14 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	private void createChangeDirButton (HTMLNode node, String buttonText, String path, HTMLNode persistence) {
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"submit", changeDir, buttonText});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"submit", changeDir, buttonText});
 		node.addChild("input",
-		        new String[]{"type", "name", "value"},
-		        new String[]{"hidden", "path", path});
+					  new String[] {"type", "name", "value"},
+					  new String[] {"hidden", "path", path});
 		node.addChild(persistence);
 	}
-	
+
 	/**
 	 * Returns a Hashtable of all URL parameters.
 	 * @param request contains URL parameters
@@ -181,7 +181,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 		}
 		return set;
 	}
-	
+
 	/**
 	 * Returns a Hashtable of all POST parts up to a length of 1024*1024 characters.
 	 * @param request contains POST parts
@@ -194,7 +194,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 		}
 		return set;
 	}
-	
+
 	/**
 	 * Renders hidden fields.
 	 * @param fieldPairs Pairs of values to be rendered
@@ -203,20 +203,20 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	private HTMLNode renderPersistenceFields (Hashtable<String, String> fieldPairs) {
 		HTMLNode result = new HTMLNode("div", "id", "persistenceFields");
 		for (Map.Entry<String,String> entry : fieldPairs.entrySet()) {
-			result.addChild("input", 
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", entry.getKey(), entry.getValue() });
+			result.addChild("input",
+							new String[] { "type", "name", "value" },
+							new String[] { "hidden", entry.getKey(), entry.getValue() });
 		}
 		return result;
 	}
 
 	private String selectedValue(HTTPRequest request) {
 		if (request.isParameterSet(filenameField()) &&
-		    (request.isParameterSet(selectDir) || request.isParameterSet(selectFile))) {
+				(request.isParameterSet(selectDir) || request.isParameterSet(selectFile))) {
 			//Request is a GET.
 			return request.getParam(filenameField());
 		} else if (request.isPartSet(filenameField()) &&
-		           (request.isPartSet(selectDir) || request.isPartSet(selectFile))) {
+				   (request.isPartSet(selectDir) || request.isPartSet(selectFile))) {
 			//Request is a POST.
 			return request.getPartAsStringFailsafe(filenameField(), MAX_POST_SIZE);
 		}
@@ -236,14 +236,14 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @see "<a href="freenet/clients/http/ToadletContext.html">ToadletContext</a>
 	 */
 	public void handleMethodGET (URI uri, HTTPRequest request, final ToadletContext ctx)
-	        throws ToadletContextClosedException, IOException, RedirectException {
+	throws ToadletContextClosedException, IOException, RedirectException {
 		renderPage(persistenceFields(readGET(request)), request.getParam("path"), ctx, selectedValue(request));
 	}
 
 	public void handleMethodPOST (URI uri, HTTPRequest request, final ToadletContext ctx)
-	        throws ToadletContextClosedException, IOException, RedirectException {
+	throws ToadletContextClosedException, IOException, RedirectException {
 		renderPage(persistenceFields(readPOST(request)), request.getPartAsStringFailsafe("path", MAX_POST_SIZE),
-		           ctx, selectedValue(request));
+				   ctx, selectedValue(request));
 	}
 
 	/**
@@ -258,7 +258,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @throws RedirectException
 	 */
 	private void renderPage (Hashtable<String, String> fieldPairs, String path, final ToadletContext ctx, String filename)
-	        throws ToadletContextClosedException, IOException, RedirectException {
+	throws ToadletContextClosedException, IOException, RedirectException {
 		HTMLNode persistenceFields = renderPersistenceFields(fieldPairs);
 
 		if (filename != null) {
@@ -270,7 +270,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 				throw new RedirectException(postTo());
 			} catch (URISyntaxException e) {
 				sendErrorPage(ctx, 500, NodeL10n.getBase().getString("Toadlet.internalErrorPleaseReport"),
-				              e.getMessage());
+							  e.getMessage());
 			}
 		}
 
@@ -291,33 +291,33 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 		if (currentPath != null && !allowedDir(currentPath)) {
 			PageNode page = pageMaker.getPageNode(l10n("listingTitle", "path", attemptedPath), ctx);
 			pageMaker.getInfobox("infobox-error",  "Forbidden", page.content, "access-denied", true).
-			        addChild("#", l10n("dirAccessDenied"));
+			addChild("#", l10n("dirAccessDenied"));
 
 			sendErrorPage(ctx, 403, "Forbidden", l10n("dirAccessDenied"));
 			return;
 		}
-		
+
 		HTMLNode pageNode;
 
 		if (currentPath != null && currentPath.exists() && currentPath.isDirectory() && currentPath.canRead()) {
 			PageNode page = pageMaker.getPageNode(l10n("listingTitle", "path",
-			        currentPath.getAbsolutePath()), ctx);
+												  currentPath.getAbsolutePath()), ctx);
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
 			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
-			
+
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path",
-			        currentPath.getAbsolutePath()));
+								currentPath.getAbsolutePath()));
 			HTMLNode listingDiv = infoboxDiv.addChild("div", "class", "infobox-content");
-			
+
 			File[] files = currentPath.listFiles();
-			
+
 			if (files == null) {
 				sendErrorPage(ctx, 403, "Forbidden", l10n("dirAccessDenied"));
 				return;
 			}
-			
+
 			Arrays.sort(files, new Comparator<File>() {
 				@Override
 				public int compare(File firstFile, File secondFile) {
@@ -341,26 +341,26 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 			/* add filesystem roots (fsck windows) */
 			for (File currentRoot : File.listRoots()) {
 				if (allowedDir(currentRoot)) {
-				HTMLNode rootRow = listingTable.addChild("tr");
-				rootRow.addChild("td");
-				HTMLNode rootLinkCellNode = rootRow.addChild("td");
-				HTMLNode rootLinkFormNode = ctx.addFormChild(rootLinkCellNode, path(),
-				        "insertLocalFileForm");
+					HTMLNode rootRow = listingTable.addChild("tr");
+					rootRow.addChild("td");
+					HTMLNode rootLinkCellNode = rootRow.addChild("td");
+					HTMLNode rootLinkFormNode = ctx.addFormChild(rootLinkCellNode, path(),
+												"insertLocalFileForm");
 					createChangeDirButton(rootLinkFormNode, currentRoot.getCanonicalPath(),
-					        currentRoot.getAbsolutePath(), persistenceFields);
-				rootRow.addChild("td");
+										  currentRoot.getAbsolutePath(), persistenceFields);
+					rootRow.addChild("td");
 				}
 			}
 			/* add back link */
 			if (currentPath.getParent() != null) {
 				if (allowedDir(currentPath.getParentFile())) {
-				HTMLNode backlinkRow = listingTable.addChild("tr");
-				backlinkRow.addChild("td");
-				HTMLNode backLinkCellNode = backlinkRow.addChild("td");
-				HTMLNode backLinkFormNode = ctx.addFormChild(backLinkCellNode, path(),
-				        "insertLocalFileForm");
+					HTMLNode backlinkRow = listingTable.addChild("tr");
+					backlinkRow.addChild("td");
+					HTMLNode backLinkCellNode = backlinkRow.addChild("td");
+					HTMLNode backLinkFormNode = ctx.addFormChild(backLinkCellNode, path(),
+												"insertLocalFileForm");
 					createChangeDirButton(backLinkFormNode, "..", currentPath.getParent(), persistenceFields);
-				backlinkRow.addChild("td");
+					backlinkRow.addChild("td");
 				}
 			}
 			for (File currentFile : files) {
@@ -375,24 +375,24 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 					if (currentFile.canRead()) {
 						// Select directory
 						if (allowedDir(currentFile)) {
-						HTMLNode cellNode = fileRow.addChild("td");
-						HTMLNode formNode = ctx.addFormChild(cellNode, path(),
-						        "insertLocalFileForm");
+							HTMLNode cellNode = fileRow.addChild("td");
+							HTMLNode formNode = ctx.addFormChild(cellNode, path(),
+																 "insertLocalFileForm");
 
 							createSelectDirectoryButton(formNode, currentFile.getAbsolutePath(),
-							        persistenceFields);
+														persistenceFields);
 
-						// Change directory
-						HTMLNode directoryCellNode = fileRow.addChild("td");
-						HTMLNode directoryFormNode = ctx.addFormChild(directoryCellNode, path(),
-						        "insertLocalFileForm");
+							// Change directory
+							HTMLNode directoryCellNode = fileRow.addChild("td");
+							HTMLNode directoryFormNode = ctx.addFormChild(directoryCellNode, path(),
+														 "insertLocalFileForm");
 							createChangeDirButton(directoryFormNode, currentFile.getName(),
-							        currentFile.getAbsolutePath(), persistenceFields);
+												  currentFile.getAbsolutePath(), persistenceFields);
 						}
 					} else {
 						fileRow.addChild("td");
 						fileRow.addChild("td", "class", "unreadable-file",
-						        currentFile.getName());
+										 currentFile.getName());
 					}
 					fileRow.addChild("td");
 				} else {
@@ -400,19 +400,19 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 						//Select file
 						HTMLNode cellNode = fileRow.addChild("td");
 						HTMLNode formNode = ctx.addFormChild(cellNode, path(),
-						        "insertLocalFileForm");
+															 "insertLocalFileForm");
 						createSelectFileButton(formNode, currentFile.getAbsolutePath(),
-						        persistenceFields);
-						
+											   persistenceFields);
+
 						fileRow.addChild("td", currentFile.getName());
 						fileRow.addChild("td", "class", "right-align",
-						        String.valueOf(currentFile.length()));
+										 String.valueOf(currentFile.length()));
 					} else {
 						fileRow.addChild("td");
 						fileRow.addChild("td", "class", "unreadable-file",
-						        currentFile.getName());
+										 currentFile.getName());
 						fileRow.addChild("td", "class", "right-align",
-						        String.valueOf(currentFile.length()));
+										 String.valueOf(currentFile.length()));
 					}
 				}
 			}
@@ -421,7 +421,7 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
 			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
-			
+
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path", attemptedPath));
 			HTMLNode listingDiv = infoboxDiv.addChild("div", "class", "infobox-content");
@@ -437,8 +437,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 
 	private String l10n (String key, String pattern, String value) {
 		return NodeL10n.getBase().getString("LocalFileInsertToadlet."+key,
-		        new String[] { pattern },
-		        new String[] { value });
+											new String[] { pattern },
+											new String[] { value });
 	}
 
 	private String l10n(String msg) {

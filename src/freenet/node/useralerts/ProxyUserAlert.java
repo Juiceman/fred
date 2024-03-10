@@ -13,12 +13,12 @@ public class ProxyUserAlert extends AbstractUserAlert {
 	private UserAlert alert;
 	private final UserAlertManager uam;
 	private final boolean autoRegister;
-	
+
 	public ProxyUserAlert(UserAlertManager uam, boolean autoRegister) {
 		this.uam = uam;
 		this.autoRegister = autoRegister;
 	}
-	
+
 	public void setAlert(UserAlert a) {
 		UserAlert old = alert;
 		alert = a;
@@ -31,7 +31,7 @@ public class ProxyUserAlert extends AbstractUserAlert {
 				uam.unregister(this);
 		}
 	}
-	
+
 	@Override
 	public boolean userCanDismiss() {
 		return alert.userCanDismiss();

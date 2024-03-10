@@ -11,8 +11,8 @@ import freenet.support.api.StringCallback;
 
 public class ConfigurablePersister extends Persister {
 
-	public ConfigurablePersister(Persistable t, SubConfig nodeConfig, String optionName, 
-			String defaultFilename, int sortOrder, boolean expert, boolean forceWrite, String shortDesc, String longDesc, Ticker ps, File baseDir) throws NodeInitException {
+	public ConfigurablePersister(Persistable t, SubConfig nodeConfig, String optionName,
+								 String defaultFilename, int sortOrder, boolean expert, boolean forceWrite, String shortDesc, String longDesc, Ticker ps, File baseDir) throws NodeInitException {
 		super(t, ps);
 		nodeConfig.register(optionName, new File(baseDir, defaultFilename).toString(), sortOrder, expert, forceWrite, shortDesc, longDesc, new StringCallback() {
 
@@ -26,7 +26,7 @@ public class ConfigurablePersister extends Persister {
 				setThrottles(val);
 			}
 		});
-		
+
 		String throttleFile = nodeConfig.getString(optionName);
 		try {
 			setThrottles(throttleFile);
@@ -67,7 +67,7 @@ public class ConfigurablePersister extends Persister {
 				}
 			}
 		}
-		
+
 		synchronized(this) {
 			persistTarget = f;
 			persistTemp = tmp;

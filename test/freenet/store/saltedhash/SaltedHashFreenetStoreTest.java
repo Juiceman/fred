@@ -89,7 +89,7 @@ public class SaltedHashFreenetStoreTest {
 		SaltedHashFreenetStore<CHKBlock> saltStore = SaltedHashFreenetStore.construct(f, "testSaltedHashFreenetStoreCHK", store, weakPRNG, 10, false, SemiOrderedShutdownHook.get(), true, true, ticker, null);
 		saltStore.start(null, true);
 
-		for(int i=0;i<5;i++) {
+		for(int i=0; i<5; i++) {
 			String test = "test" + i;
 			ClientCHKBlock block = encodeBlockCHK(test);
 			store.put(block.getBlock(), false);
@@ -117,7 +117,7 @@ public class SaltedHashFreenetStoreTest {
 		saltStore.start(null, true);
 		RandomSource random = new DummyRandomSource(12345);
 
-		for(int i=0;i<5;i++) {
+		for(int i=0; i<5; i++) {
 			String test = "test" + i;
 			ClientSSKBlock block = encodeBlockSSK(test, random);
 			SSKBlock sskBlock = (SSKBlock) block.getBlock();
@@ -144,7 +144,7 @@ public class SaltedHashFreenetStoreTest {
 		byte[] data = test.getBytes(StandardCharsets.UTF_8);
 		SimpleReadOnlyArrayBucket bucket = new SimpleReadOnlyArrayBucket(data);
 		return ClientCHKBlock.encode(bucket, false, false, (short)-1, bucket.size(), Compressor.DEFAULT_COMPRESSORDESCRIPTOR,
-        null, (byte)0);
+									 null, (byte)0);
 	}
 
 	@Test

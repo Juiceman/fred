@@ -14,7 +14,7 @@ import freenet.support.io.ResumeFailedException;
 
 /**
  * <P>plain/dumb manifest putter: every file item is a redirect (no containers at all)
- * 
+ *
  * <P>default doc:<BR>
  * defaultName is just the name, without any '/'!<BR>
  * each item &lt;defaultName&gt; is the default doc in the corresponding dir.
@@ -22,15 +22,15 @@ import freenet.support.io.ResumeFailedException;
 
 public class PlainManifestPutter extends BaseManifestPutter {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logDEBUG;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logDEBUG;
 
 	static {
 		Logger.registerClass(PlainManifestPutter.class);
 	}
 
 	public PlainManifestPutter(ClientPutCallback clientCallback, HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName, InsertContext ctx, boolean getCHKOnly,
-			boolean earlyEncode, boolean persistent, byte [] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
+							   boolean earlyEncode, boolean persistent, byte [] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
 		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx, ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
 	}
 
@@ -39,7 +39,7 @@ public class PlainManifestPutter extends BaseManifestPutter {
 		if(logDEBUG) Logger.debug(this, "Root map : "+manifestElements.size()+" elements");
 		makePutHandlers(getRootBuilder(), manifestElements, defaultName);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void makePutHandlers(FreeFormBuilder builder, HashMap<String, Object> manifestElements, Object defaultName) {
 		for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
@@ -59,10 +59,10 @@ public class PlainManifestPutter extends BaseManifestPutter {
 		}
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws ResumeFailedException {
-        super.innerOnResume(context);
-        notifyClients(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws ResumeFailedException {
+		super.innerOnResume(context);
+		notifyClients(context);
+	}
 }
 

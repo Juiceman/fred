@@ -13,9 +13,9 @@ import freenet.support.io.FileBucket;
 public class DiskDirPutFile extends DirPutFile {
 
 	final File file;
-	
-	public static DiskDirPutFile create(String name, String contentTypeOverride, SimpleFieldSet subset, 
-			String identifier, boolean global) throws MessageInvalidException {
+
+	public static DiskDirPutFile create(String name, String contentTypeOverride, SimpleFieldSet subset,
+										String identifier, boolean global) throws MessageInvalidException {
 		String s = subset.get("Filename");
 		if(s == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field: Filename on "+name, identifier, global);
@@ -27,11 +27,11 @@ public class DiskDirPutFile extends DirPutFile {
 			mimeType = contentTypeOverride;
 		return new DiskDirPutFile(name, mimeType, file);
 	}
-	
+
 	// FIXME implement FileHash support
 	public DiskDirPutFile(String name, String mimeType, File f) {
 		super(name, mimeType);
- 		this.file = f;
+		this.file = f;
 	}
 
 	protected static String guessMIME(String name, File file) {

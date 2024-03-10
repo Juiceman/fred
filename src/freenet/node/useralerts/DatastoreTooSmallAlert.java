@@ -108,7 +108,7 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		sizesNode.addChild("#", l10n("available", "size", availableSize + " GiB"));
 		alertNode.addChild(sizesNode);
 		alertNode.addChild("a", "href", "/wizard/?step=DATASTORE_SIZE&singlestep=true")
-			.addChild("#", l10n("submit"));
+		.addChild("#", l10n("submit"));
 
 		return alertNode;
 	}

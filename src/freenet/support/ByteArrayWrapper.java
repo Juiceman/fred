@@ -11,10 +11,10 @@ import java.util.Comparator;
  * @author toad
  */
 public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
-	
+
 	private final byte[] buf;
 	private int hashCode;
-	
+
 	public static final Comparator<ByteArrayWrapper> FAST_COMPARATOR = new Comparator<ByteArrayWrapper>() {
 
 		@Override
@@ -23,14 +23,14 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 			if(o1.hashCode < o2.hashCode) return -1;
 			return o1.compareTo(o2);
 		}
-		
+
 	};
-	
+
 	public ByteArrayWrapper(byte[] data) {
 		buf = data;
 		hashCode = Fields.hashCode(buf);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof ByteArrayWrapper) {
@@ -40,12 +40,12 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return hashCode;
 	}
-	
+
 	/** DO NOT MODIFY THE RETURNED DATA! */
 	public byte[] get() {
 		return buf;

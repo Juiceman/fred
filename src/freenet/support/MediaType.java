@@ -67,7 +67,7 @@ public class MediaType {
 			throw new NullPointerException("contentType must not be null");
 		}
 		if(!DefaultMIMETypes.isPlausibleMIMEType(mediaType))
-		    throw new MalformedURLException("Doesn't look like a MIME type");
+			throw new MalformedURLException("Doesn't look like a MIME type");
 		int slash = mediaType.indexOf('/');
 		if (slash == -1) {
 			throw new MalformedURLException("mediaType does not contain ‘/’!");
@@ -88,7 +88,7 @@ public class MediaType {
 			String name = parameter.substring(0, equals).trim().toLowerCase();
 			String value = parameter.substring(equals + 1).trim();
 			if(value.startsWith("\"") && value.endsWith("\""))
-			    value = value.substring(1, value.length()-1).trim();
+				value = value.substring(1, value.length()-1).trim();
 			this.parameters.put(name, value);
 		}
 	}
@@ -262,22 +262,22 @@ public class MediaType {
 			return null;
 		}
 	}
-	
+
 	public static String getCharsetRobustOrUTF(String expectedMimeType) {
 		String charset = getCharsetRobust(expectedMimeType);
 		if(charset == null) return "UTF-8";
 		return charset;
 	}
 
-    public LinkedHashMap<String, String> getParameters() {
-        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-        map.putAll(parameters);
-        return map;
-    }
+	public LinkedHashMap<String, String> getParameters() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		map.putAll(parameters);
+		return map;
+	}
 
-    /** Get the base type without any parameters */
-    public String getPlainType() {
-        return type + '/' + subtype;
-    }
+	/** Get the base type without any parameters */
+	public String getPlainType() {
+		return type + '/' + subtype;
+	}
 
 }

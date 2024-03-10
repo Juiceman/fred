@@ -56,7 +56,7 @@ class CSSTokenizerFilter {
 		Logger.registerClass(CSSTokenizerFilter.class);
 	}
 
-	CSSTokenizerFilter(){
+	CSSTokenizerFilter() {
 		passedCharset = "UTF-8";
 		stopAtDetectedCharset = false;
 		isInline = false;
@@ -71,14 +71,10 @@ class CSSTokenizerFilter {
 		this.isInline = isInline;
 	}
 
-	public boolean isValidURI(String URI)
-	{
-		try
-		{
+	public boolean isValidURI(String URI) {
+		try {
 			return URI.equals(cb.processURI(URI, null));
-		}
-		catch(CommentException e)
-		{
+		} catch(CommentException e) {
 			return false;
 		}
 	}
@@ -332,8 +328,7 @@ class CSSTokenizerFilter {
 	 * e.g. [ <color> | transparent]{1,4}. It is explained in detail in CSSPropertyVerifier class
 	 */
 	private final static CSSPropertyVerifier[] auxilaryVerifiers=new CSSPropertyVerifier[148];
-	static
-	{
+	static {
 		/*CSSPropertyVerifier(String[] allowedValues,String[] possibleValues,String expression,boolean onlyValueVerifier)*/
 		//for background-position
 		auxilaryVerifiers[2]=new CSSPropertyVerifier(Arrays.asList("left","center","right"),Arrays.asList("pe","le"),null,null,true);
@@ -420,7 +415,7 @@ class CSSTokenizerFilter {
 		// used in nav-down, nav-left, nav-right and nav-up
 		auxilaryVerifiers[143] = new CSSPropertyVerifier(null, Arrays.asList("se"), null, null, true);
 		auxilaryVerifiers[144] = new CSSPropertyVerifier(Arrays.asList("current", "root"), Arrays.asList("st"), null, null, true);
-		
+
 		// <transition-delay> & <transition-duration>
 		auxilaryVerifiers[145]=new CSSPropertyVerifier(null, Arrays.asList("ti"), null, null, true);
 		// <transition-property>
@@ -432,8 +427,7 @@ class CSSTokenizerFilter {
 	/* This function loads a verifier object in elementVerifiers.
 	 * After the object has been loaded, property name is removed from allelementVerifier.
 	 */
-	private static void addVerifier(String element)
-	{
+	private static void addVerifier(String element) {
 		if ("align-content".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA, null,Arrays.asList("121a124"), true,true));
 			allelementVerifiers.remove(element);
@@ -448,57 +442,44 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[1]=new CSSPropertyVerifier(Arrays.asList("behind"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("leftwards","rightwards"),ElementInfo.AURALMEDIA,Arrays.asList("an"),Arrays.asList("0a1")));
 			allelementVerifiers.remove(element);
-		}
-		else if("background-attachment".equalsIgnoreCase(element)){
+		} else if("background-attachment".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[60] = new CSSPropertyVerifier(Arrays.asList("local","scroll","fixed"), null, null, null, true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("60<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("background-clip".equalsIgnoreCase(element))
-		{
+		} else if("background-clip".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("61<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("background-color".equalsIgnoreCase(element)){
+		} else if("background-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("transparent"),ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("background-image".equalsIgnoreCase(element)){
+		} else if("background-image".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[56] = new CSSPropertyVerifier(Arrays.asList("none"),Arrays.asList("ur"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("56<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("background-origin".equalsIgnoreCase(element))
-		{
+		} else if("background-origin".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("61<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("background-position".equalsIgnoreCase(element))
-		{       // FIXME: css3 http://www.w3.org/TR/css3-background/#background-position
+		} else if("background-position".equalsIgnoreCase(element)) {
+			// FIXME: css3 http://www.w3.org/TR/css3-background/#background-position
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("2 3?","4a5")));
 			allelementVerifiers.remove(element);
-		}
-		else if("background-repeat".equalsIgnoreCase(element))
-		{
+		} else if("background-repeat".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[57] = new CSSPropertyVerifier(Arrays.asList("repeat","space","round","no-repeat"),null,null,null,true);
 			auxilaryVerifiers[58] = new CSSPropertyVerifier(Arrays.asList("repeat-x","repeat-y"), null, null, null, true);
 			auxilaryVerifiers[59] = new CSSPropertyVerifier(null, null, Arrays.asList("58","57<1,2>"), null, true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("59<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("background-size".equalsIgnoreCase(element))
-		{
+		} else if("background-size".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[61] = new CSSPropertyVerifier(Arrays.asList("auto"),Arrays.asList("le", "pe"),null,null,true);
 			auxilaryVerifiers[62] = new CSSPropertyVerifier(Arrays.asList("cover", "contain"), null, null, null, true);
 			auxilaryVerifiers[63] = new CSSPropertyVerifier(null, null, Arrays.asList("61<1,2>", "62"), null, true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("63<1,65535>"), true,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("background".equalsIgnoreCase(element))
-		{    // FIXME: CSS3 http://www.w3.org/TR/css3-background/#background
+		} else if("background".equalsIgnoreCase(element)) {
+			// FIXME: CSS3 http://www.w3.org/TR/css3-background/#background
 			//background-attachment
 			auxilaryVerifiers[6]=new CSSPropertyVerifier(Arrays.asList("scroll","fixed"),null,null,null,true);
 			//background-color
@@ -511,254 +492,160 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[10]=new CSSPropertyVerifier(Arrays.asList("repeat","repeat-x","repeat-y","no-repeat"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("6a7a8a9a10")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-collapse".equalsIgnoreCase(element))
-		{
+		} else if("border-collapse".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("collapse","separate"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("border-color".equalsIgnoreCase(element))
-		{
+		} else if("border-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("co"),Arrays.asList("11<1,4>")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("border-top-color".equalsIgnoreCase(element))
-		{
+		} else if("border-top-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("11"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-color".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("11"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-color".equalsIgnoreCase(element))
-		{
+		} else if("border-left-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("11"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-color".equalsIgnoreCase(element))
-		{
+		} else if("border-right-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("11"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-spacing".equalsIgnoreCase(element))
-		{
+		} else if("border-spacing".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[12]=new CSSPropertyVerifier(null,Arrays.asList("le"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("12 12?")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-style".equalsIgnoreCase(element))
-		{
+		} else if("border-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-style".equalsIgnoreCase(element))
-		{
+		} else if("border-top-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("13"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-style".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("13"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-style".equalsIgnoreCase(element))
-		{
+		} else if("border-left-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("13"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-style".equalsIgnoreCase(element))
-		{
+		} else if("border-right-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("13"), ElementInfo.VISUALMEDIA, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left".equalsIgnoreCase(element))
-		{
+		} else if("border-left".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13a14a15")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top".equalsIgnoreCase(element))
-		{
+		} else if("border-top".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13a14a15")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right".equalsIgnoreCase(element))
-		{
+		} else if("border-right".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13a14a15")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13a14a15")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-color".equalsIgnoreCase(element))
-		{
+		} else if("border-top-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("transparent"),ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("border-right-color".equalsIgnoreCase(element))
-		{
+		} else if("border-right-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("transparent"),ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-color".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("transparent"),ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-color".equalsIgnoreCase(element))
-		{
+		} else if("border-left-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("transparent"),ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-style".equalsIgnoreCase(element))
-		{
+		} else if("border-top-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","hidden","dotted","dashed","solid","double","groove","ridge","inset","outset"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-style".equalsIgnoreCase(element))
-		{
+		} else if("border-right-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","hidden","dotted","dashed","solid","double","groove","ridge","inset","outset"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-style".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","hidden","dotted","dashed","solid","double","groove","ridge","inset","outset"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-style".equalsIgnoreCase(element))
-		{
+		} else if("border-left-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","hidden","dotted","dashed","solid","double","groove","ridge","inset","outset"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-width".equalsIgnoreCase(element))
-		{
+		} else if("border-top-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-width".equalsIgnoreCase(element))
-		{
+		} else if("border-right-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-width".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-width".equalsIgnoreCase(element))
-		{
+		} else if("border-left-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-width".equalsIgnoreCase(element))
-		{
+		} else if("border-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-width".equalsIgnoreCase(element))
-		{
+		} else if("border-top-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-width".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-width".equalsIgnoreCase(element))
-		{
+		} else if("border-left-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-width".equalsIgnoreCase(element))
-		{
+		} else if("border-right-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border".equalsIgnoreCase(element))
-		{
+		} else if("border".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13a14a15")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-radius".equalsIgnoreCase(element))
-		{
+		} else if("border-radius".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[65]=new CSSPropertyVerifier(Arrays.asList("/"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("64<1,4>", "64<1,4> 65 64<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-top-radius".equalsIgnoreCase(element))
-		{
+		} else if("border-top-radius".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("64<1,2>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-bottom-radius".equalsIgnoreCase(element))
-		{
+		} else if("border-bottom-radius".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("64<1,2>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-left-radius".equalsIgnoreCase(element))
-		{
+		} else if("border-left-radius".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("64<1,2>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-right-radius".equalsIgnoreCase(element))
-		{
+		} else if("border-right-radius".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("64<1,2>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image-source".equalsIgnoreCase(element))
-		{
+		} else if("border-image-source".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("76")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image-slice".equalsIgnoreCase(element))
-		{
+		} else if("border-image-slice".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[66]=new CSSPropertyVerifier(null,Arrays.asList("pe","in"),null,null,true);
 			auxilaryVerifiers[67]=new CSSPropertyVerifier(Arrays.asList("fill"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("66<1,4> 67?")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image-width".equalsIgnoreCase(element))
-		{
+		} else if("border-image-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("77")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image-outset".equalsIgnoreCase(element))
-		{
+		} else if("border-image-outset".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[69]=new CSSPropertyVerifier(null,Arrays.asList("le","in"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("69<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image-repeat".equalsIgnoreCase(element))
-		{
+		} else if("border-image-repeat".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("78")));
 			allelementVerifiers.remove(element);
-		}
-		else if("border-image".equalsIgnoreCase(element))
-		{ // FIXME: css3: not sure how to do the rest
+		} else if("border-image".equalsIgnoreCase(element)) {
+			// FIXME: css3: not sure how to do the rest
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("76a77a78")));
 			allelementVerifiers.remove(element);
-		}
-		else if("bottom".equalsIgnoreCase(element))
-		{
+		} else if("bottom".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("box-decoration-break".equalsIgnoreCase(element))
-		{
+		} else if("box-decoration-break".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("slice","clone"),ElementInfo.VISUALMEDIA,null));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("box-shadow".equalsIgnoreCase(element))
-		{ // way more permissive than it should be
+		} else if("box-shadow".equalsIgnoreCase(element)) {
+			// way more permissive than it should be
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"), ElementInfo.VISUALMEDIA, null, Arrays.asList("75<1,65535>"), true, true));
 			allelementVerifiers.remove(element);
 
@@ -768,94 +655,62 @@ class CSSTokenizerFilter {
 		} else if ("box-suppress".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element, new CSSPropertyVerifier(Arrays.asList("show", "discard", "hide"), ElementInfo.VISUALMEDIA, null));
 			allelementVerifiers.remove(element);
-		}
-		else if("caption-side".equalsIgnoreCase(element))
-		{
+		} else if("caption-side".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("top","bottom"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
 
 		} else if ("caret-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element, new CSSPropertyVerifier(Arrays.asList("auto", "transparent"), ElementInfo.VISUALMEDIA, Arrays.asList("co")));
 			allelementVerifiers.remove(element);
-		}
-		else if("clear".equalsIgnoreCase(element))
-		{
+		} else if("clear".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","left","right","both"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("clip".equalsIgnoreCase(element))
-		{
+		} else if("clip".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("sh")));
 			allelementVerifiers.remove(element);
-		}
-				else if("break-after".equalsIgnoreCase(element))
-		{
+		} else if("break-after".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","always","avoid","left","right", "page", "column", "avoid-page", "avoid-column" ),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("break-before".equalsIgnoreCase(element))
-		{
+		} else if("break-before".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","always","avoid","left","right", "page", "column", "avoid-page", "avoid-column" ),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("break-inside".equalsIgnoreCase(element))
-		{
+		} else if("break-inside".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","avoid","avoid-page", "avoid-column"),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-				else if("column-count".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("in")));
+		} else if("column-count".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("in")));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-fill".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto", "balance"),ElementInfo.VISUALMEDIA));
+		} else if("column-fill".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto", "balance"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-gap".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
+		} else if("column-gap".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-rule-color".equalsIgnoreCase(element))
-				{
+		} else if("column-rule-color".equalsIgnoreCase(element)) {
 
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-rule-style".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13<1,4>")));
+		} else if("column-rule-style".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("13<1,4>")));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-rule-width".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14<1,4>")));
+		} else if("column-rule-width".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("14<1,4>")));
 			allelementVerifiers.remove(element);
-				}
-		else if("column-rule".equalsIgnoreCase(element))
-				{
+		} else if("column-rule".equalsIgnoreCase(element)) {
 			// column-rule-width
 			auxilaryVerifiers[54] = new CSSPropertyVerifier(null,null,null,Arrays.asList("14<1,4>"));
 			// border-style
 			auxilaryVerifiers[55] = new CSSPropertyVerifier(null,null,null,Arrays.asList("13<1,4>"));
 			// color || transparent 13
-						elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("54a55a15")));
+			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("54a55a15")));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-span".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("1", "all"),ElementInfo.VISUALMEDIA));
+		} else if("column-span".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("1", "all"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-				}
-				else if("column-width".equalsIgnoreCase(element))
-				{
-						elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
+		} else if("column-width".equalsIgnoreCase(element)) {
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-				}
-		else if("columns".equalsIgnoreCase(element))
-		{
+		} else if("columns".equalsIgnoreCase(element)) {
 			// column-width
 			auxilaryVerifiers[52]=new CSSPropertyVerifier(Arrays.asList("auto"),Arrays.asList("le"),null,null,true);
 			// column-count
@@ -863,60 +718,42 @@ class CSSTokenizerFilter {
 
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("52a53")));
 			allelementVerifiers.remove(element);
-		}
-				else if ("color".equalsIgnoreCase(element))
-		{
+		} else if ("color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if ("color-interpolation".equalsIgnoreCase(element))
-		{
+		} else if ("color-interpolation".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","sRGB","linearRGB"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
 
-		}
-		else if ("color-rendering".equalsIgnoreCase(element))
-		{
+		} else if ("color-rendering".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","optimizeSpeed","optimizeQuality"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("content".equalsIgnoreCase(element))
-		{
+		} else if("content".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[16]=new ContentPropertyVerifier(Arrays.asList("open-quote","close-quote","no-open-quote", "no-close-quote"));
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","none"),ElementInfo.MEDIA,null,Arrays.asList("16<1,"+ ElementInfo.UPPERLIMIT+">")));
 			allelementVerifiers.remove(element);
-		}
-		else if("counter-increment".equalsIgnoreCase(element))
-		{
+		} else if("counter-increment".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[17]=new CSSPropertyVerifier(null,Arrays.asList("id"),null,null,true);
 			auxilaryVerifiers[18]=new CSSPropertyVerifier(null,Arrays.asList("in"),null,null,true);
 			auxilaryVerifiers[19]=new CSSPropertyVerifier(null,null,Arrays.asList("17 18?"),null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.MEDIA,null,Arrays.asList("19<1,"+ElementInfo.UPPERLIMIT+">[1,2]")));
 			allelementVerifiers.remove(element);
-		}
-		else if("counter-reset".equalsIgnoreCase(element))
-		{
+		} else if("counter-reset".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[20]=new CSSPropertyVerifier(null,Arrays.asList("id"),null,null,true);
 			auxilaryVerifiers[21]=new CSSPropertyVerifier(null,Arrays.asList("in"),null,null,true);
 			auxilaryVerifiers[22]=new CSSPropertyVerifier(null,null,Arrays.asList("20 21?"),null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.MEDIA,null,Arrays.asList("22<1,"+ElementInfo.UPPERLIMIT+">[1,2]")));
 			allelementVerifiers.remove(element);
-		}
-		else if("cue-after".equalsIgnoreCase(element))
-		{
+		} else if("cue-after".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.AURALMEDIA,Arrays.asList("ur")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("cue-before".equalsIgnoreCase(element))
-		{
+		} else if("cue-before".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.AURALMEDIA,Arrays.asList("ur")));
 			allelementVerifiers.remove(element);
-		}
-		else if("cue".equalsIgnoreCase(element))
-		{
+		} else if("cue".equalsIgnoreCase(element)) {
 			//cue-before
 			auxilaryVerifiers[23]=new CSSPropertyVerifier(Arrays.asList("none"),Arrays.asList("ur"),null,null,true);
 			//cue-after
@@ -924,9 +761,7 @@ class CSSTokenizerFilter {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.MEDIA,null,Arrays.asList("23a24")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("cursor".equalsIgnoreCase(element))
-		{
+		} else if("cursor".equalsIgnoreCase(element)) {
 			// <cursor> = [ [<url> [<x> <y>]?,]*
 			// [ auto | default | none |
 			//	 context-menu | help | pointer | progress | wait |
@@ -938,21 +773,17 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[141] = new CSSPropertyVerifier(null, Arrays.asList("in", "re"), null, null, true);
 			auxilaryVerifiers[142] = new CSSPropertyVerifier(null, null, null, Arrays.asList("25 141 141", "25"), true, true);
 			auxilaryVerifiers[26] = new CSSPropertyVerifier(
-			Arrays.asList("auto", "default", "none",
-					"context-menu", "help", "pointer", "progress", "wait",
-					"cell", "crosshair", "text", "vertical-text",
-					"alias", "copy", "move", "no-drop", "not-allowed", "grab", "grabbing",
-					"e-resize", "n-resize", "ne-resize", "nw-resize", "s-resize", "se-resize", "sw-resize", "w-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "col-resize", "row-resize", "all-scroll", "zoom-in", "zoom-out"),null,null,null,true);
+				Arrays.asList("auto", "default", "none",
+							  "context-menu", "help", "pointer", "progress", "wait",
+							  "cell", "crosshair", "text", "vertical-text",
+							  "alias", "copy", "move", "no-drop", "not-allowed", "grab", "grabbing",
+							  "e-resize", "n-resize", "ne-resize", "nw-resize", "s-resize", "se-resize", "sw-resize", "w-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "col-resize", "row-resize", "all-scroll", "zoom-in", "zoom-out"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALINTERACTIVEMEDIA,null,Arrays.asList("142<0,"+ElementInfo.UPPERLIMIT+">[1,3] 26"),false,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("direction".equalsIgnoreCase(element))
-		{
+		} else if("direction".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("ltr","rtl"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("display".equalsIgnoreCase(element))
-		{
+		} else if("display".equalsIgnoreCase(element)) {
 			// [ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>
 			// <display-outside>
 			auxilaryVerifiers[131] = new CSSPropertyVerifier(Arrays.asList("block", "inline", "run-in"), null, null, null, true);
@@ -975,19 +806,13 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[140] = new CSSPropertyVerifier(null, null, Arrays.asList("133b135b136"), null, true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null, null, Arrays.asList("131a132", "140<0,1>[1,3]", "137", "138", "139"), null, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("elevation".equalsIgnoreCase(element))
-		{
+		} else if("elevation".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("below","level","above","higher","lower"),ElementInfo.AURALMEDIA,Arrays.asList("an")));
 			allelementVerifiers.remove(element);
-		}
-		else if("empty-cells".equalsIgnoreCase(element))
-		{
+		} else if("empty-cells".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("show","hide"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("float".equalsIgnoreCase(element))
-		{
+		} else if("float".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("left","right","none"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
 		} else if ("flex".equalsIgnoreCase(element)) {
@@ -1020,35 +845,23 @@ class CSSTokenizerFilter {
 		} else if ("flex-wrap".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element, new CSSPropertyVerifier(Arrays.asList("nowrap", "wrap", "wrap-reverse"), ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("font-family".equalsIgnoreCase(element))
-		{
+		} else if("font-family".equalsIgnoreCase(element)) {
 
 			elementVerifiers.put(element,new FontPropertyVerifier(false));
 			allelementVerifiers.remove(element);
-		}
-		else if("font-size".equalsIgnoreCase(element))
-		{
+		} else if("font-size".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("xx-small","x-small","small","medium","large","x-large","xx-large","larger","smaller"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("font-style".equalsIgnoreCase(element))
-		{
+		} else if("font-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","italic","oblique"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("font-variant".equalsIgnoreCase(element))
-		{
+		} else if("font-variant".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","small-caps"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("font-weight".equalsIgnoreCase(element))
-		{
+		} else if("font-weight".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","bold","bolder","lighter","100","200","300","400","500","600","700","800","900"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("font".equalsIgnoreCase(element))
-		{
+		} else if("font".equalsIgnoreCase(element)) {
 
 			//font-style
 			auxilaryVerifiers[27]=new CSSPropertyVerifier(Arrays.asList("normal","italic","oblique"),null,null,null,true);
@@ -1080,17 +893,13 @@ class CSSTokenizerFilter {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("caption","icon","menu","message-box","small-caption","status-bar"),ElementInfo.VISUALMEDIA,null,Arrays.asList("30<0,1>[1,3] 31<0,1>[1,3] 59"),false,true));
 			//elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("caption","icon","menu","message-box","small-caption","status-bar"),ElementInfo.VISUALMEDIA,null,Arrays.asList("31<1,1>[1,3]")));
 			allelementVerifiers.remove(element);
-		}
-		else if("hanging-punctuation".equalsIgnoreCase(element))
-		{
+		} else if("hanging-punctuation".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[97]=new CSSPropertyVerifier(Arrays.asList("allow-end","force-end"),null,null,null,true);
 			auxilaryVerifiers[98]=new CSSPropertyVerifier(Arrays.asList("first"),null,null,null,true);
 			auxilaryVerifiers[99]=new CSSPropertyVerifier(Arrays.asList("last"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("97a98a99")));
 			allelementVerifiers.remove(element);
-		}
-		else if("height".equalsIgnoreCase(element))
-		{
+		} else if("height".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
 		} else if ("justify-content".equalsIgnoreCase(element)) {
@@ -1102,44 +911,28 @@ class CSSTokenizerFilter {
 		} else if ("justify-self".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto", "stretch", "baseline", "last-baseline"), ElementInfo.VISUALMEDIA, null, Arrays.asList("127"), true, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("left".equalsIgnoreCase(element))
-		{
+		} else if("left".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("letter-spacing".equalsIgnoreCase(element))
-		{
+		} else if("letter-spacing".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,null,ElementInfo.VISUALMEDIA,Arrays.asList("85<1,3>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("line-height".equalsIgnoreCase(element))
-		{
+		} else if("line-height".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe","re","in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("line-break".equalsIgnoreCase(element))
-		{
+		} else if("line-break".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","newspaper","normal","strict","keep-all"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("list-style-image".equalsIgnoreCase(element))
-		{
+		} else if("list-style-image".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,Arrays.asList("ur")));
 			allelementVerifiers.remove(element);
-		}
-		else if("list-style-position".equalsIgnoreCase(element))
-		{
+		} else if("list-style-position".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("inside","outside"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("list-style-type".equalsIgnoreCase(element))
-		{
+		} else if("list-style-type".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("disc","circle","square","decimal","decimal-leading-zero","lower-roman","upper-roman","lower-greek","lower-latin","upper-latin","armenian","georgian","lower-alpha","upper-alpha","none"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("list-style".equalsIgnoreCase(element))
-		{
+		} else if("list-style".equalsIgnoreCase(element)) {
 			//list-style-image
 			auxilaryVerifiers[33]=new CSSPropertyVerifier(Arrays.asList("none"),Arrays.asList("ur"),null,null,true);
 			//list-style-position
@@ -1148,52 +941,34 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[35]=new CSSPropertyVerifier(Arrays.asList("disc","circle","square","decimal","decimal-leading-zero","lower-roman","upper-roman","lower-greek","lower-latin","upper-latin","armenian","georgian","lower-alpha","upper-alpha","none"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("33a34a35")));
 			allelementVerifiers.remove(element);
-		}
-		else if("margin-right".equalsIgnoreCase(element))
-		{
+		} else if("margin-right".equalsIgnoreCase(element)) {
 			//margin-width=Length|Percentage|Auto
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("margin-left".equalsIgnoreCase(element))
-		{
+		} else if("margin-left".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("margin-top".equalsIgnoreCase(element))
-		{
+		} else if("margin-top".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("margin-bottom".equalsIgnoreCase(element))
-		{
+		} else if("margin-bottom".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("margin".equalsIgnoreCase(element))
-		{
+		} else if("margin".equalsIgnoreCase(element)) {
 			//margin-width
 			auxilaryVerifiers[36]=new CSSPropertyVerifier(Arrays.asList("auto"),Arrays.asList("le","pe"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("36<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("max-height".equalsIgnoreCase(element))
-		{
+		} else if("max-height".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("max-width".equalsIgnoreCase(element))
-		{
+		} else if("max-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("min-height".equalsIgnoreCase(element))
-		{
+		} else if("min-height".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("min-width".equalsIgnoreCase(element))
-		{
+		} else if("min-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
 		} else if ("nav-down".equalsIgnoreCase(element)) {
@@ -1208,40 +983,28 @@ class CSSTokenizerFilter {
 		} else if ("nav-up".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element, new CSSPropertyVerifier(Arrays.asList("auto"), ElementInfo.VISUALINTERACTIVEMEDIA, null, Arrays.asList("143 144?")));
 			allelementVerifiers.remove(element);
-		}
-		else if("opacity".equalsIgnoreCase(element))
-		{
+		} else if("opacity".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALPAGEDMEDIA,Arrays.asList("re")));
 			allelementVerifiers.remove(element);
 		} else if ("order".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALPAGEDMEDIA,Arrays.asList("in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("orphans".equalsIgnoreCase(element))
-		{
+		} else if("orphans".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALPAGEDMEDIA,Arrays.asList("in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("outline-color".equalsIgnoreCase(element))
-		{
+		} else if("outline-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("invert"),ElementInfo.VISUALINTERACTIVEMEDIA,Arrays.asList("co")));
 			allelementVerifiers.remove(element);
 		} else if ("outline-offset".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element, new CSSPropertyVerifier(null, ElementInfo.VISUALMEDIA, Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("outline-style".equalsIgnoreCase(element))
-		{
+		} else if("outline-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none","hidden","dotted","dashed","solid","double","groove","ridge","inset","outset"),ElementInfo.VISUALINTERACTIVEMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("outline-width".equalsIgnoreCase(element))
-		{
+		} else if("outline-width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),ElementInfo.VISUALINTERACTIVEMEDIA,Arrays.asList("le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("outline".equalsIgnoreCase(element))
-		{
+		} else if("outline".equalsIgnoreCase(element)) {
 			//outline-color
 			auxilaryVerifiers[37]=new CSSPropertyVerifier(Arrays.asList("invert"),Arrays.asList("co"),null,null,true);
 			//outline-style
@@ -1250,85 +1013,55 @@ class CSSTokenizerFilter {
 			auxilaryVerifiers[39]=new CSSPropertyVerifier(Arrays.asList("thin","medium","thick"),Arrays.asList("le"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALINTERACTIVEMEDIA,Arrays.asList("le"),Arrays.asList("37a38a39")));
 			allelementVerifiers.remove(element);
-		}
-		else if("overflow".equalsIgnoreCase(element))
-		{
+		} else if("overflow".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("visible","hidden","scroll","auto"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("padding-top".equalsIgnoreCase(element))
-		{
+		} else if("padding-top".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("padding-right".equalsIgnoreCase(element))
-		{
+		} else if("padding-right".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("padding-bottom".equalsIgnoreCase(element))
-		{
+		} else if("padding-bottom".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("padding-left".equalsIgnoreCase(element))
-		{
+		} else if("padding-left".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("padding".equalsIgnoreCase(element))
-		{
+		} else if("padding".equalsIgnoreCase(element)) {
 			//padding-width
 			auxilaryVerifiers[40]=new CSSPropertyVerifier(null,Arrays.asList("le","pe"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("40<1,4>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("page-break-after".equalsIgnoreCase(element))
-		{
+		} else if("page-break-after".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","always","avoid","left","right"),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("page-break-before".equalsIgnoreCase(element))
-		{
+		} else if("page-break-before".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","always","avoid","left","right"),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("page-break-inside".equalsIgnoreCase(element))
-		{
+		} else if("page-break-inside".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto","avoid"),ElementInfo.VISUALPAGEDMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("pause-after".equalsIgnoreCase(element))
-		{
+		} else if("pause-after".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.AURALMEDIA,Arrays.asList("ti","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("pause-before".equalsIgnoreCase(element))
-		{
+		} else if("pause-before".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.AURALMEDIA,Arrays.asList("ti","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("pause".equalsIgnoreCase(element))
-		{
+		} else if("pause".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[41]=new CSSPropertyVerifier(null,Arrays.asList("ti","pe"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,null,null,Arrays.asList("41<1,2>")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("pitch-range".equalsIgnoreCase(element))
-		{
+		} else if("pitch-range".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.AURALMEDIA,Arrays.asList("in","re")));
 			allelementVerifiers.remove(element);
-		}
-		else if("pitch".equalsIgnoreCase(element))
-		{
+		} else if("pitch".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("x-low","low","medium","high","x-high"),ElementInfo.AURALMEDIA,Arrays.asList("fr")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("play-during".equalsIgnoreCase(element))
-		{
+		} else if("play-during".equalsIgnoreCase(element)) {
 
 			auxilaryVerifiers[42]=new CSSPropertyVerifier(null,Arrays.asList("ur"),null,null,true);
 			auxilaryVerifiers[43]=new CSSPropertyVerifier(Arrays.asList("mix"),null,null,null,true);
@@ -1338,9 +1071,7 @@ class CSSTokenizerFilter {
 			allelementVerifiers.remove(element);
 
 
-		}
-		else if("punctuation-trim".equalsIgnoreCase(element))
-		{
+		} else if("punctuation-trim".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[86]=new CSSPropertyVerifier(Arrays.asList("start"),null,null,null,true);
 			auxilaryVerifiers[87]=new CSSPropertyVerifier(Arrays.asList("end","allow-end"),null,null,null,true);
 			auxilaryVerifiers[88]=new CSSPropertyVerifier(Arrays.asList("adjacent"),null,null,null,true);
@@ -1348,14 +1079,10 @@ class CSSTokenizerFilter {
 
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.AURALMEDIA,null,Arrays.asList("89")));
 			allelementVerifiers.remove(element);
-		}
-		else if("position".equalsIgnoreCase(element))
-		{
+		} else if("position".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("static","relative","absolute","fixed","sticky"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("quotes".equalsIgnoreCase(element))
-		{
+		} else if("quotes".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[46]=new CSSPropertyVerifier(null,Arrays.asList("st"),null,null,true);
 			auxilaryVerifiers[47]=new CSSPropertyVerifier(null,null,Arrays.asList("46 46"),null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),null,ElementInfo.VISUALMEDIA,Arrays.asList("47<1,"+ ElementInfo.UPPERLIMIT+">[2,2]")));
@@ -1363,66 +1090,43 @@ class CSSTokenizerFilter {
 		} else if ("resize".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none", "both", "horizontal", "vertical"),ElementInfo.VISUALMEDIA,null));
 			allelementVerifiers.remove(element);
-		}
-		else if("richness".equalsIgnoreCase(element))
-		{
+		} else if("richness".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.AURALMEDIA,Arrays.asList("re","in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("right".equalsIgnoreCase(element))
-		{
+		} else if("right".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("speak-header".equalsIgnoreCase(element))
-		{
+		} else if("speak-header".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("once","always"),ElementInfo.AURALMEDIA));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("speak-numeral".equalsIgnoreCase(element))
-		{
+		} else if("speak-numeral".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("digits","continuous"),ElementInfo.AURALMEDIA));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("speak-punctuation".equalsIgnoreCase(element))
-		{
+		} else if("speak-punctuation".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("code", "none"),ElementInfo.AURALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("speak".equalsIgnoreCase(element))
-		{
+		} else if("speak".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","none","spell-out"),ElementInfo.AURALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("speech-rate".equalsIgnoreCase(element))
-		{
+		} else if("speech-rate".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("x-slow","slow","medium","fast","x-fast","faster","slower"),ElementInfo.AURALMEDIA,Arrays.asList("re","in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("stress".equalsIgnoreCase(element))
-		{
+		} else if("stress".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.AURALMEDIA,Arrays.asList("re","in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("table-layout".equalsIgnoreCase(element))
-		{
+		} else if("table-layout".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("auto","fixed"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-align".equalsIgnoreCase(element))
-		{  // FIXME: We don't support "one character" as the spec says http://www.w3.org/TR/css3-text/#text-align0
+		} else if("text-align".equalsIgnoreCase(element)) {
+			// FIXME: We don't support "one character" as the spec says http://www.w3.org/TR/css3-text/#text-align0
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("start","end","left","right","center","justify","match-parent"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-align-last".equalsIgnoreCase(element))
-		{
+		} else if("text-align-last".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("start","end","left","right","center","justify"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-autospace".equalsIgnoreCase(element))
-		{
+		} else if("text-autospace".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[90]=new CSSPropertyVerifier(Arrays.asList("ideograph-numeric"),null,null,null,true);
 			auxilaryVerifiers[91]=new CSSPropertyVerifier(Arrays.asList("ideograph-alpha"),null,null,null,true);
 			auxilaryVerifiers[92]=new CSSPropertyVerifier(Arrays.asList("ideograph-space"),null,null,null,true);
@@ -1430,27 +1134,19 @@ class CSSTokenizerFilter {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("90a91a92a93")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-decoration".equalsIgnoreCase(element))
-		{
+		} else if("text-decoration".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("115a103a104a116")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-decoration-color".equalsIgnoreCase(element))
-		{
+		} else if("text-decoration-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("103")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-decoration-line".equalsIgnoreCase(element))
-		{
+		} else if("text-decoration-line".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("100a101a102")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-decoration-skip".equalsIgnoreCase(element))
-		{
+		} else if("text-decoration-skip".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[48]=new CSSPropertyVerifier(Arrays.asList("images"),null,null,null,true);
 			auxilaryVerifiers[49]=new CSSPropertyVerifier(Arrays.asList("spaces"),null,null,null,true);
 			auxilaryVerifiers[50]=new CSSPropertyVerifier(Arrays.asList("ink"),null,null,null,true);
@@ -1458,97 +1154,65 @@ class CSSTokenizerFilter {
 
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("48a49a50a51")));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-decoration-style".equalsIgnoreCase(element))
-		{
+		} else if("text-decoration-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("104")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-emphasis".equalsIgnoreCase(element))
-		{
+		} else if("text-emphasis".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("103a107")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-emphasis-color".equalsIgnoreCase(element))
-		{
+		} else if("text-emphasis-color".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("103")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-emphasis-position".equalsIgnoreCase(element))
-		{
+		} else if("text-emphasis-position".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("over","under"),ElementInfo.VISUALMEDIA,null,null));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-emphasis-style".equalsIgnoreCase(element))
-		{
+		} else if("text-emphasis-style".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("107")));
 			allelementVerifiers.remove(element);
 
-		}
-		else if("text-indent".equalsIgnoreCase(element))
-		{
+		} else if("text-indent".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[94]=new CSSPropertyVerifier(Arrays.asList("hanging", "each-line"),null,null,null,true);
 			auxilaryVerifiers[95]=new CSSPropertyVerifier(null,null,Arrays.asList("94<0,2>"),null,true);
 			auxilaryVerifiers[96]=new CSSPropertyVerifier(null,Arrays.asList("le","pe"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("96 95")));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-justify".equalsIgnoreCase(element))
-		{
+		} else if("text-justify".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[83]=new CSSPropertyVerifier(Arrays.asList("inter-word","inter-ideograph","inter-cluster","distribute","kashida"),null,null,null,true);
 			auxilaryVerifiers[84]=new CSSPropertyVerifier(Arrays.asList("trim"),null,null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,null,Arrays.asList("84a83")));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-outline".equalsIgnoreCase(element))
-		{
+		} else if("text-outline".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[108]=new CSSPropertyVerifier(null,null,Arrays.asList("73 72 72<0,1>"),null,true);
 			auxilaryVerifiers[109]=new CSSPropertyVerifier(null,null,Arrays.asList("72 72<0,1> 73"),null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("108a109")));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-overflow".equalsIgnoreCase(element))
-		{
+		} else if("text-overflow".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("clip","ellipsis"),ElementInfo.VISUALMEDIA,Arrays.asList("st")));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-shadow".equalsIgnoreCase(element))
-		{
+		} else if("text-shadow".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("none"),ElementInfo.VISUALMEDIA,null,Arrays.asList("79<0,65535>"),true,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-transform".equalsIgnoreCase(element))
-		{
+		} else if("text-transform".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("capitalize","uppercase","lowercase","none","fullwidth","large-kana"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-underline-position".equalsIgnoreCase(element))
-		{
+		} else if("text-underline-position".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("auto","under","alphabetic","over"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("text-wrap".equalsIgnoreCase(element))
-		{
+		} else if("text-wrap".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("normal","unrestricted","none","suppress"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("top".equalsIgnoreCase(element))
-		{
+		} else if("top".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("transform".equalsIgnoreCase(element))
-		{
+		} else if("transform".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[110]=new CSSPropertyVerifier(null,Arrays.asList("tr"),null,null,true);
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("110<0,65536>"),true, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("transform-origin".equalsIgnoreCase(element))
-		{
+		} else if("transform-origin".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[111]=new CSSPropertyVerifier(null,null,Arrays.asList("2 3<0,1>"),null,true);
 			auxilaryVerifiers[112]=new CSSPropertyVerifier(Arrays.asList("left","center","right"),null,null,null,true);
 			auxilaryVerifiers[113]=new CSSPropertyVerifier(Arrays.asList("top","center","bottom"),null,null,null,true);
@@ -1556,92 +1220,58 @@ class CSSTokenizerFilter {
 
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("111","114"),true, true));
 			allelementVerifiers.remove(element);
-		}
-		else if("unicode-bidi".equalsIgnoreCase(element))
-		{
+		} else if("unicode-bidi".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier( Arrays.asList("normal", "embed", "bidi-override"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("vertical-align".equalsIgnoreCase(element))
-		{
+		} else if("vertical-align".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("baseline","sub","super","top","text-top","middle","bottom","text-bottom"),ElementInfo.VISUALMEDIA,Arrays.asList("pe","le")));
 			allelementVerifiers.remove(element);
-		}
-		else if("visibility".equalsIgnoreCase(element))
-		{
+		} else if("visibility".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("visible","hidden","collapse"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("voice-family".equalsIgnoreCase(element))
-		{
+		} else if("voice-family".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new VoiceFamilyPropertyVerifier(false));
 			allelementVerifiers.remove(element);
-		}
-		else if("volume".equalsIgnoreCase(element))
-		{
+		} else if("volume".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("silent","x-soft","soft","medium","loud","x-loud"),ElementInfo.AURALMEDIA,Arrays.asList("re","le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("white-space".equalsIgnoreCase(element))
-		{
+		} else if("white-space".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","pre","nowrap","pre-wrap","pre-line"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("white-space-collapsing".equalsIgnoreCase(element))
-		{
+		} else if("white-space-collapsing".equalsIgnoreCase(element)) {
 			auxilaryVerifiers[80]=new CSSPropertyVerifier(Arrays.asList("preserve","preserve-break"),null,null,null,true);
 			auxilaryVerifiers[81]=new CSSPropertyVerifier(Arrays.asList("trim-inner"),null,null,null,true);
 			auxilaryVerifiers[82]=new CSSPropertyVerifier(null,null,Arrays.asList("80a81"),null,true);
-			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("collapse" ,"discard"),null,ElementInfo.VISUALMEDIA,Arrays.asList("82")));
+			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("collapse","discard"),null,ElementInfo.VISUALMEDIA,Arrays.asList("82")));
 			allelementVerifiers.remove(element);
-		}
-		else if("widows".equalsIgnoreCase(element))
-		{
+		} else if("widows".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,Arrays.asList("in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("width".equalsIgnoreCase(element))
-		{
+		} else if("width".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("le","pe")));
 			allelementVerifiers.remove(element);
-		}
-		else if("word-break".equalsIgnoreCase(element))
-		{
+		} else if("word-break".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal","break-all","hyphenate"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("word-spacing".equalsIgnoreCase(element))
-		{
+		} else if("word-spacing".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,null,ElementInfo.VISUALMEDIA,Arrays.asList("85<1,3>")));
 			allelementVerifiers.remove(element);
-		}
-		else if("word-wrap".equalsIgnoreCase(element))
-		{
+		} else if("word-wrap".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("normal", "break-word", "anywhere"),ElementInfo.VISUALMEDIA));
 			allelementVerifiers.remove(element);
-		}
-		else if("z-index".equalsIgnoreCase(element))
-		{
+		} else if("z-index".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(Arrays.asList("auto"),ElementInfo.VISUALMEDIA,Arrays.asList("in")));
 			allelementVerifiers.remove(element);
-		}
-		else if("transition-delay".equalsIgnoreCase(element))
-		{
+		} else if("transition-delay".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("145<1,65535>"),false,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("transition-duration".equalsIgnoreCase(element))
-		{
+		} else if("transition-duration".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("145<1,65535>"),false,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("transition-property".equalsIgnoreCase(element))
-		{
+		} else if("transition-property".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("146<1,65535>"),false,true));
 			allelementVerifiers.remove(element);
-		}
-		else if("transition-timing-function".equalsIgnoreCase(element))
-		{
+		} else if("transition-timing-function".equalsIgnoreCase(element)) {
 			elementVerifiers.put(element,new CSSPropertyVerifier(null,ElementInfo.VISUALMEDIA,null,Arrays.asList("147<1,65535>"),false,true));
 			allelementVerifiers.remove(element);
 		}
@@ -1652,17 +1282,14 @@ class CSSTokenizerFilter {
 	 * This function returns the Verifier for a property. If it is not already loaded in the elementVerifier, then it is loaded and then returned to the caller.
 	 * FIXME: Lazy init probably doesn't make sense, but while we are initting lazily, we need to hold a lock here.
 	 */
-	private synchronized static CSSPropertyVerifier getVerifier(String element)
-	{
+	private synchronized static CSSPropertyVerifier getVerifier(String element) {
 		element=element.toLowerCase();
 		if(elementVerifiers.get(element)!=null)
 			return elementVerifiers.get(element);
-		else if(allelementVerifiers.contains(element))
-		{
+		else if(allelementVerifiers.contains(element)) {
 			addVerifier(element);
 			return elementVerifiers.get(element);
-		}
-		else
+		} else
 			return null;
 	}
 	/*
@@ -1677,12 +1304,10 @@ class CSSTokenizerFilter {
 	 * value: 10pt
 	 *
 	 */
-	private boolean verifyToken(String[] media,String[] elements,CSSPropertyVerifier obj,ParsedWord[] words)
-	{
+	private boolean verifyToken(String[] media,String[] elements,CSSPropertyVerifier obj,ParsedWord[] words) {
 		if(words == null) return false;
 		if(logDEBUG) Logger.debug(this, "verifyToken for "+CSSPropertyVerifier.toString(words));
-		if(obj==null)
-		{
+		if(obj==null) {
 			return false;
 		}
 		int important = checkImportant(words);
@@ -1701,7 +1326,7 @@ class CSSTokenizerFilter {
 		}
 		if(words.length >= 2 && words[words.length-1] instanceof ParsedIdentifier && words[words.length-2] instanceof SimpleParsedWord) {
 			if(((SimpleParsedWord)words[words.length-2]).original.equals("!") &&
-				((ParsedIdentifier)words[words.length-1]).original.equalsIgnoreCase("important"))
+					((ParsedIdentifier)words[words.length-1]).original.equalsIgnoreCase("important"))
 				return 2;
 		}
 		return 0;
@@ -1714,14 +1339,12 @@ class CSSTokenizerFilter {
 	 * @param isIDSelector True if we only allow an ID selector, which must include an ID, may
 	 * include an element name or *, but must not contain anything else.
 	 */
-	public static String HTMLelementVerifier(String elementString, boolean isIDSelector)
-	{
+	public static String HTMLelementVerifier(String elementString, boolean isIDSelector) {
 		if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "varifying element/selector: \""+elementString+"\"");
 		String HTMLelement="",pseudoClass="",className="",id="";
 		StringBuilder fBuffer=new StringBuilder();
 		ArrayList<String> attSelections = null;
-		while(elementString.indexOf('[')!=-1 && elementString.indexOf(']')!=-1 && (elementString.indexOf('[')<elementString.indexOf(']')))
-		{
+		while(elementString.indexOf('[')!=-1 && elementString.indexOf(']')!=-1 && (elementString.indexOf('[')<elementString.indexOf(']'))) {
 			if(isIDSelector) return null;
 			String attSelection=elementString.substring(elementString.indexOf('[')+1,elementString.indexOf(']')).trim();
 			StringBuilder buf=new StringBuilder(elementString);
@@ -1731,42 +1354,32 @@ class CSSTokenizerFilter {
 			if(attSelections == null) attSelections = new ArrayList<String>();
 			attSelections.add(attSelection);
 		}
-		if(elementString.indexOf(':')!=-1)
-		{
+		if(elementString.indexOf(':')!=-1) {
 			if(isIDSelector) return null;
 			int index=elementString.indexOf(':');
-			if(index!=elementString.length()-1)
-			{
+			if(index!=elementString.length()-1) {
 				pseudoClass=elementString.substring(index+1,elementString.length()).trim();
 				HTMLelement=elementString.substring(0,index).trim();
 				if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "pseudoclass="+pseudoClass+" HTMLelement="+HTMLelement);
-			}
-			else
-			{
+			} else {
 				HTMLelement=elementString.trim();
 			}
-		}
-		else
+		} else
 			HTMLelement=elementString.trim();
 
-		if(HTMLelement.indexOf('.')!=-1)
-		{
+		if(HTMLelement.indexOf('.')!=-1) {
 			if(isIDSelector) return null;
 			int index=HTMLelement.indexOf('.');
-			if(index!=HTMLelement.length()-1)
-			{
+			if(index!=HTMLelement.length()-1) {
 				className=HTMLelement.substring(index+1,HTMLelement.length()).trim();
 				HTMLelement=HTMLelement.substring(0,index).trim();
 				if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "class="+className+" HTMLelement="+HTMLelement);
 			}
 
-		}
-		else if(HTMLelement.indexOf('#')!=-1)
-		{
+		} else if(HTMLelement.indexOf('#')!=-1) {
 			// Allowed in an ID selector.
 			int index=HTMLelement.indexOf('#');
-			if(index!=HTMLelement.length()-1)
-			{
+			if(index!=HTMLelement.length()-1) {
 				id=HTMLelement.substring(index+1,HTMLelement.length()).trim();
 				HTMLelement=HTMLelement.substring(0,index).trim();
 				if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "id="+id+" element="+HTMLelement);
@@ -1776,29 +1389,29 @@ class CSSTokenizerFilter {
 		if(isIDSelector && id.isEmpty()) return null; // No ID
 
 		boolean elementValid =
-		    "*".equals(HTMLelement) ||
-		    "~".equals(HTMLelement) ||
-		    (ElementInfo.isValidHTMLTag(HTMLelement.toLowerCase())) ||
-		    (HTMLelement.trim().isEmpty() &&
-                    ((!className.isEmpty()) || (!id.isEmpty()) || attSelections!=null ||
-                            !pseudoClass.isEmpty()));
+			"*".equals(HTMLelement) ||
+			"~".equals(HTMLelement) ||
+			(ElementInfo.isValidHTMLTag(HTMLelement.toLowerCase())) ||
+			(HTMLelement.trim().isEmpty() &&
+			 ((!className.isEmpty()) || (!id.isEmpty()) || attSelections!=null ||
+			  !pseudoClass.isEmpty()));
 		if(!elementValid) return null;
-		
+
 		if(!className.isEmpty()) {
-		    // Note that the definition of isValidName() allows chained classes because it allows . in class names.
-		    if(!ElementInfo.isValidName(className))
-		        return null;
+			// Note that the definition of isValidName() allows chained classes because it allows . in class names.
+			if(!ElementInfo.isValidName(className))
+				return null;
 		} else if(!id.isEmpty()) {
-		    if(!ElementInfo.isValidName(id))
-		        return null;
+			if(!ElementInfo.isValidName(id))
+				return null;
 		}
 
 		if(!pseudoClass.isEmpty()) {
-		    if(!ElementInfo.isValidPseudoClass(pseudoClass)) {
-		        return null;
-		    } else if(ElementInfo.isBannedPseudoClass(pseudoClass)) {
-		        return "";
-		    }
+			if(!ElementInfo.isValidPseudoClass(pseudoClass)) {
+				return null;
+			} else if(ElementInfo.isBannedPseudoClass(pseudoClass)) {
+				return "";
+			}
 		}
 
 		if(attSelections!=null) {
@@ -1810,20 +1423,20 @@ class CSSTokenizerFilter {
 
 				List<String> operators = Arrays.asList("|=", "~=", "^=", "$=", "*=", "=");
 				for (String comparisonOperator : operators) {
-						if (attSelection.contains(comparisonOperator)) {
-							attSelectionParts = new String[2];
-							attSelectionParts[0] = attSelection
-									.substring(0, attSelection.indexOf(comparisonOperator));
-							attSelectionParts[1] = attSelection
-									.substring(attSelection.indexOf(comparisonOperator) + comparisonOperator.length());
-							break;
-						}
+					if (attSelection.contains(comparisonOperator)) {
+						attSelectionParts = new String[2];
+						attSelectionParts[0] = attSelection
+											   .substring(0, attSelection.indexOf(comparisonOperator));
+						attSelectionParts[1] = attSelection
+											   .substring(attSelection.indexOf(comparisonOperator) + comparisonOperator.length());
+						break;
 					}
+				}
 
 				//Verifying whether each character is alphanumeric or _
 				if(logDEBUG) Logger.debug(CSSTokenizerFilter.class,
-						"HTMLelementVerifier length of attSelectionParts="+
-						attSelectionParts.length);
+											  "HTMLelementVerifier length of attSelectionParts="+
+											  attSelectionParts.length);
 
 				if(attSelectionParts[0].length()==0)
 					return null;
@@ -1831,7 +1444,7 @@ class CSSTokenizerFilter {
 					char c=attSelectionParts[0].charAt(0);
 					if(!((c>='a' && c<='z') || (c>='A' && c<='Z')))
 						return null;
-					for(int i=1;i<attSelectionParts[0].length();i++) {
+					for(int i=1; i<attSelectionParts[0].length(); i++) {
 						c=attSelectionParts[0].charAt(i);
 						if(!((c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_' || c=='-'))
 							return null;
@@ -1842,7 +1455,7 @@ class CSSTokenizerFilter {
 					// What about the right hand side?
 					// The grammar says it's an IDENT.
 					if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "RHS is \""+
-							attSelectionParts[1]+"\"");
+												  attSelectionParts[1]+"\"");
 					if(!(ElementInfo.isValidIdentifier(attSelectionParts[1]) ||
 							ElementInfo.isValidStringWithQuotes(attSelectionParts[1])))
 						return null;
@@ -1852,15 +1465,15 @@ class CSSTokenizerFilter {
 
 		fBuffer.append(HTMLelement);
 		if(!className.isEmpty()) {
-		    fBuffer.append('.');
-		    fBuffer.append(className);
+			fBuffer.append('.');
+			fBuffer.append(className);
 		} else if(!id.isEmpty()) {
-		    fBuffer.append('#');
-		    fBuffer.append(id);
+			fBuffer.append('#');
+			fBuffer.append(id);
 		}
 		if(!pseudoClass.isEmpty()) {
-		    fBuffer.append(':');
-		    fBuffer.append(pseudoClass);
+			fBuffer.append(':');
+			fBuffer.append(pseudoClass);
 		}
 		if(attSelections!=null) {
 			for(String attSelection:attSelections) {
@@ -1878,8 +1491,7 @@ class CSSTokenizerFilter {
 	 * This would call HTMLelementVerifier with div and p:first-child
 	 * Returns null on failure (selector invalid), empty string on banned but otherwise valid selector.
 	 */
-	public String recursiveSelectorVerifier(String selectorString)
-	{
+	public String recursiveSelectorVerifier(String selectorString) {
 		if (logDEBUG) Logger.debug(this, "selector: \""+selectorString+"\"");
 		selectorString=selectorString.trim();
 
@@ -1894,7 +1506,7 @@ class CSSTokenizerFilter {
 		int bracketing = 0;
 		boolean eatLF = false;
 		int escapedDigits = 0;
-		for(int i=0;i<selectorString.length();i++) {
+		for(int i=0; i<selectorString.length(); i++) {
 			c = selectorString.charAt(i);
 			if(c == '+' && quoting == 0 && !escaping && bracketing == 0) {
 				if(index == -1 || index == i-1 && selector == ' ') {
@@ -2031,19 +1643,14 @@ class CSSTokenizerFilter {
 			currentState = STATE3;
 		}
 
-		while(true)
-		{
-			try
-			{
+		while(true) {
+			try {
 				x=r.read();
-			}
-			catch(IOException e)
-			{
+			} catch(IOException e) {
 				throw e;
 			}
 
-			if(x==-1)
-			{
+			if(x==-1) {
 				if(currentState == STATE3 && c != ';' && !propertyName.isEmpty() && propertyValue.isEmpty()) {
 					// Finish off the current property.
 					// Common for e.g. HTML: style='background-image:url(blah)'
@@ -2064,12 +1671,10 @@ class CSSTokenizerFilter {
 			prevc=c;
 			c=(char) x;
 			if(logDEBUG) Logger.debug(this, "Read: "+c+ " 0x"+Integer.toHexString(c));
-			if(prevc=='/' && c=='*' && currentState!=STATE1INQUOTE && currentState!=STATE2INQUOTE && currentState!=STATE3INQUOTE&&currentState!=STATECOMMENT)
-			{
+			if(prevc=='/' && c=='*' && currentState!=STATE1INQUOTE && currentState!=STATE2INQUOTE && currentState!=STATE3INQUOTE&&currentState!=STATECOMMENT) {
 				stateBeforeComment=currentState;
 				currentState=STATECOMMENT;
-				if(buffer.charAt(buffer.length()-1)=='/')
-				{
+				if(buffer.charAt(buffer.length()-1)=='/') {
 					buffer.deleteCharAt(buffer.length()-1);
 				}
 				if(logDEBUG) Logger.debug(this, "Comment detected: buffer="+buffer);
@@ -2077,10 +1682,9 @@ class CSSTokenizerFilter {
 			}
 			if(c == 0)
 				continue; // Strip nulls
-			switch(currentState)
-			{
+			switch(currentState) {
 			case STATE1:
-				switch(c){
+				switch(c) {
 				case '\n':
 				case ' ':
 				case '\t':
@@ -2109,7 +1713,7 @@ class CSSTokenizerFilter {
 					isState1Present=false;
 
 					int i = 0;
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2124,7 +1728,7 @@ class CSSTokenizerFilter {
 							return;
 						}
 						buffer.delete(0, 4);
-						for(i=0;i<buffer.length();i++) {
+						for(i=0; i<buffer.length(); i++) {
 							char c1 = buffer.charAt(i);
 							if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 								continue;
@@ -2133,7 +1737,7 @@ class CSSTokenizerFilter {
 						braceSpace += buffer.substring(0, i);
 						buffer.delete(0, i);
 					}
-					for(i=buffer.length()-1;i>=0;i--) {
+					for(i=buffer.length()-1; i>=0; i--) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2148,75 +1752,69 @@ class CSSTokenizerFilter {
 					buffer.setLength(0);
 					boolean valid = false;
 					if(parts != null) {
-					if(parts.length<1)
-					{
-						ignoreElementsS1=true;
-						if(logDEBUG) Logger.debug(this, "STATE1 CASE {: Does not have one part. ignoring "+buffer.toString());
-						valid = false;
-					}
-					else if(parts[0] instanceof SimpleParsedWord && "@media".equals(((SimpleParsedWord)parts[0]).original.toLowerCase()))
-					{
-						if(parts.length<2)
-						{
+						if(parts.length<1) {
 							ignoreElementsS1=true;
-							if(logDEBUG) Logger.debug(this, "STATE1 CASE {: Does not have two parts. ignoring "+buffer.toString());
+							if(logDEBUG) Logger.debug(this, "STATE1 CASE {: Does not have one part. ignoring "+buffer.toString());
 							valid = false;
-						} else {
-						ArrayList<String> medias = commaListFromIdentifiers(parts, 1);
-						if(medias != null && medias.size() > 0) {
-							for(i=0;i<medias.size();i++) {
-								if(!FilterUtils.isMedia(medias.get(i))) {
-									// Unrecognised media, don't pass it.
-									medias.remove(i);
-									i--; // Don't skip next
+						} else if(parts[0] instanceof SimpleParsedWord && "@media".equals(((SimpleParsedWord)parts[0]).original.toLowerCase())) {
+							if(parts.length<2) {
+								ignoreElementsS1=true;
+								if(logDEBUG) Logger.debug(this, "STATE1 CASE {: Does not have two parts. ignoring "+buffer.toString());
+								valid = false;
+							} else {
+								ArrayList<String> medias = commaListFromIdentifiers(parts, 1);
+								if(medias != null && medias.size() > 0) {
+									for(i=0; i<medias.size(); i++) {
+										if(!FilterUtils.isMedia(medias.get(i))) {
+											// Unrecognised media, don't pass it.
+											medias.remove(i);
+											i--; // Don't skip next
+										}
+									}
+								}
+								if(medias != null && medias.size() > 0) {
+									filteredTokens.append(braceSpace);
+									filteredTokens.append("@media ");
+									boolean first = true;
+									for(String media : medias) {
+										if(!first) filteredTokens.append(", ");
+										first = false;
+										filteredTokens.append(media);
+									}
+									filteredTokens.append(postSpace);
+									filteredTokens.append("{");
+									valid = true;
+									currentMedia = medias.toArray(new String[medias.size()]);
 								}
 							}
-						}
-						if(medias != null && medias.size() > 0) {
-							filteredTokens.append(braceSpace);
-							filteredTokens.append("@media ");
-							boolean first = true;
-							for(String media : medias) {
-								if(!first) filteredTokens.append(", ");
-								first = false;
-								filteredTokens.append(media);
-							}
-							filteredTokens.append(postSpace);
-							filteredTokens.append("{");
-							valid = true;
-							currentMedia = medias.toArray(new String[medias.size()]);
-						}
-						}
-					} else if(parts[0] instanceof SimpleParsedWord && "@page".equals(((SimpleParsedWord)parts[0]).original.toLowerCase()))
-						{
-						if(parts.length == 0) {
-							valid = true;
-						} else {
-							valid = true;
-							for(int j=1;j<parts.length;j++) {
-								if(!(parts[j] instanceof SimpleParsedWord)) {
-									valid = false;
-									break;
-								} else {
-									String s = ((SimpleParsedWord)parts[j]).original;
-									if(!(s.equalsIgnoreCase(":left") || s.equalsIgnoreCase(":right") || s.equals(":first"))) {
+						} else if(parts[0] instanceof SimpleParsedWord && "@page".equals(((SimpleParsedWord)parts[0]).original.toLowerCase())) {
+							if(parts.length == 0) {
+								valid = true;
+							} else {
+								valid = true;
+								for(int j=1; j<parts.length; j++) {
+									if(!(parts[j] instanceof SimpleParsedWord)) {
 										valid = false;
 										break;
+									} else {
+										String s = ((SimpleParsedWord)parts[j]).original;
+										if(!(s.equalsIgnoreCase(":left") || s.equalsIgnoreCase(":right") || s.equals(":first"))) {
+											valid = false;
+											break;
+										}
 									}
 								}
 							}
+							if(valid) {
+								forPage = true;
+								filteredTokens.append(braceSpace);
+								filteredTokens.append(orig);
+								filteredTokens.append(postSpace);
+								filteredTokens.append("{");
+							}
 						}
-						if(valid) {
-							forPage = true;
-							filteredTokens.append(braceSpace);
-							filteredTokens.append(orig);
-							filteredTokens.append(postSpace);
-							filteredTokens.append("{");
-						}
-					}
 					} // else valid = false
-					if(!valid)
-					{
+					if(!valid) {
 						ignoreElementsS1=true;
 						// No valid media types.
 						if(logDEBUG) Logger.debug(this, "STATE1 CASE {: Failed verification test. ignoring "+buffer.toString());
@@ -2243,7 +1841,7 @@ class CSSTokenizerFilter {
 					if(logDEBUG) Logger.debug(this, "buffer in state 1 ; : \""+buffer.toString()+"\"");
 					//should be @import
 
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2259,7 +1857,7 @@ class CSSTokenizerFilter {
 							return;
 						}
 						buffer.delete(0, 4);
-						for(i=0;i<buffer.length();i++) {
+						for(i=0; i<buffer.length(); i++) {
 							char c1 = buffer.charAt(i);
 							if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 								continue;
@@ -2270,14 +1868,12 @@ class CSSTokenizerFilter {
 					}
 
 					// If ignoreElementsS1, then just delete everything up to the semicolon. After that, fresh start.
-					if(canImport && !ignoreElementsS1 && buffer.toString().contains("@import"))
-					{
+					if(canImport && !ignoreElementsS1 && buffer.toString().contains("@import")) {
 						if(logDEBUG) Logger.debug(this, "STATE1 CASE ;statement="+buffer.toString());
 
 						String strbuffer=buffer.toString().trim();
 						int importIndex=strbuffer.toLowerCase().indexOf("@import");
-						if("".equals(strbuffer.substring(0,importIndex).trim()))
-						{
+						if("".equals(strbuffer.substring(0,importIndex).trim())) {
 							String str1=strbuffer.substring(importIndex+7,strbuffer.length());
 							ParsedWord[] strparts=split(str1, false);
 							if(strparts != null && strparts.length > 0 && (strparts[0] instanceof ParsedURL || strparts[0] instanceof ParsedString)) {
@@ -2356,22 +1952,20 @@ class CSSTokenizerFilter {
 					break;
 				default:
 					buffer.append(c);
-				if(!isState1Present)
-				{
-					String s = buffer.toString().trim();
-					if(!(s.isEmpty() || s.equals("/") || s.equals("<") || s.equals("<!") || s.equals("<!-") || s.equals("<!--")))
-						currentState=STATE2;
-				}
-				if(logDEBUG) Logger.debug(this, "STATE1 default CASE: "+c);
-				break;
+					if(!isState1Present) {
+						String s = buffer.toString().trim();
+						if(!(s.isEmpty() || s.equals("/") || s.equals("<") || s.equals("<!") || s.equals("<!-") || s.equals("<!--")))
+							currentState=STATE2;
+					}
+					if(logDEBUG) Logger.debug(this, "STATE1 default CASE: "+c);
+					break;
 
 				}
 				break;
 
 			case STATE1INQUOTE:
 				if(logDEBUG) Logger.debug(this, "STATE1INQUOTE: "+c);
-				switch(c)
-				{
+				switch(c) {
 				case '"':
 					if(currentQuote=='"' && prevc!='\\')
 						currentState=STATE1;
@@ -2386,7 +1980,7 @@ class CSSTokenizerFilter {
 					if(prevc == '\r') {
 						break;
 					}
-					// Otherwise same as \r ...
+				// Otherwise same as \r ...
 				case '\f':
 				case '\r':
 					if(prevc != '\\') {
@@ -2400,7 +1994,7 @@ class CSSTokenizerFilter {
 					}
 				default:
 					buffer.append(c);
-				break;
+					break;
 				}
 				break;
 
@@ -2410,8 +2004,7 @@ class CSSTokenizerFilter {
 				charsetPossible=false;
 				if(stopAtDetectedCharset)
 					return;
-				switch(c)
-				{
+				switch(c) {
 				case '{':
 					if(prevc == '\\') {
 						// Leave in buffer, encoded.
@@ -2420,7 +2013,7 @@ class CSSTokenizerFilter {
 					}
 
 					int i = 0;
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2437,7 +2030,7 @@ class CSSTokenizerFilter {
 							return;
 						}
 						buffer.delete(0, 4);
-						for(i=0;i<buffer.length();i++) {
+						for(i=0; i<buffer.length(); i++) {
 							char c1 = buffer.charAt(i);
 							if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 								continue;
@@ -2448,30 +2041,23 @@ class CSSTokenizerFilter {
 					}
 
 					openBraces++;
-					if(!buffer.toString().trim().isEmpty())
-					{
+					if(!buffer.toString().trim().isEmpty()) {
 						String filtered=recursiveSelectorVerifier(buffer.toString());
-						if(filtered!=null && !"".equals(filtered))
-						{
-							if(s2Comma)
-							{
+						if(filtered!=null && !"".equals(filtered)) {
+							if(s2Comma) {
 								filteredTokens.append(",");
 								s2Comma=false;
 							}
 							filteredTokens.append(ws);
 							filteredTokens.append(filtered);
 							filteredTokens.append(" {");
-						}
-						else if(s2Comma && "".equals(filtered))
-						{
+						} else if(s2Comma && "".equals(filtered)) {
 							// There was a comma, so filteredTokens already contains some tokens.
 							// The current selector is valid, yet banned. Ignore it.
 							s2Comma=false;
 							filteredTokens.append(ws);
 							filteredTokens.append(" {");
-						}
-						else
-						{
+						} else {
 							ignoreElementsS2=true;
 							// If there was a comma, filteredTokens may contain some tokens.
 							// These are invalid, as per the spec: we wipe the whole selector out.
@@ -2501,7 +2087,7 @@ class CSSTokenizerFilter {
 						buffer.append(c);
 						break;
 					}
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2519,7 +2105,7 @@ class CSSTokenizerFilter {
 								return;
 							}
 							buffer.delete(0, 4);
-							for(i=0;i<buffer.length();i++) {
+							for(i=0; i<buffer.length(); i++) {
 								char c1 = buffer.charAt(i);
 								if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 									continue;
@@ -2533,17 +2119,14 @@ class CSSTokenizerFilter {
 
 					String filtered=recursiveSelectorVerifier(buffer.toString().trim());
 					if(logDEBUG) Logger.debug(this, "STATE2 CASE , filtered elements"+filtered);
-					if(filtered!=null && !"".equals(filtered))
-					{
+					if(filtered!=null && !"".equals(filtered)) {
 						if(s2Comma)
 							filteredTokens.append(",");
 						else
 							s2Comma=true;
 						filteredTokens.append(ws);
 						filteredTokens.append(filtered);
-					}
-					else if("".equals(filtered))
-					{
+					} else if("".equals(filtered)) {
 						// This selector was banned. Ignore it.
 						filteredTokens.append(ws);
 					}
@@ -2595,16 +2178,15 @@ class CSSTokenizerFilter {
 
 				default:
 					buffer.append(c);
-				if(logDEBUG) Logger.debug(this, "STATE2 default CASE: "+c);
-				break;
+					if(logDEBUG) Logger.debug(this, "STATE2 default CASE: "+c);
+					break;
 				}
 				break;
 
 			case STATE2INQUOTE:
 				if(logDEBUG) Logger.debug(this, "STATE2INQUOTE: "+c);
 				charsetPossible=false;
-				switch(c)
-				{
+				switch(c) {
 				case '"':
 					if(currentQuote=='"'&& prevc!='\\')
 						currentState=STATE2;
@@ -2619,7 +2201,7 @@ class CSSTokenizerFilter {
 					if(prevc == '\r') {
 						break;
 					}
-					// Otherwise same as \r ...
+				// Otherwise same as \r ...
 				case '\f':
 				case '\r':
 					if(prevc != '\\') {
@@ -2634,7 +2216,7 @@ class CSSTokenizerFilter {
 					}
 				default:
 					buffer.append(c);
-				break;
+					break;
 				}
 				break;
 
@@ -2642,8 +2224,7 @@ class CSSTokenizerFilter {
 				charsetPossible=false;
 				if(stopAtDetectedCharset)
 					return;
-				switch(c)
-				{
+				switch(c) {
 				case ':':
 					if(prevc == '\\') {
 						// Leave in buffer, encoded.
@@ -2657,7 +2238,7 @@ class CSSTokenizerFilter {
 						break;
 					}
 					int i = 0;
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2685,7 +2266,7 @@ class CSSTokenizerFilter {
 					}
 
 					i = 0;
-					for(i=0;i<buffer.length();i++) {
+					for(i=0; i<buffer.length(); i++) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2699,23 +2280,22 @@ class CSSTokenizerFilter {
 
 					CSSPropertyVerifier obj=getVerifier(propertyName);
 					if(obj != null) {
-					ParsedWord[] words = split(propertyValue, obj.allowCommaDelimiters);
-					if(logDEBUG) Logger.debug(this, "Split: "+CSSPropertyVerifier.toString(words));
-					if(words != null && !ignoreElementsS2 && !ignoreElementsS3 && verifyToken(currentMedia,elements,obj,words))
-					{
-						if(changedAnything(words)) propertyValue = reconstruct(words);
-						filteredTokens.append(whitespaceBeforeProperty);
-						whitespaceBeforeProperty = "";
-						filteredTokens.append(propertyName);
-												filteredTokens.append(':');
-												filteredTokens.append(whitespaceAfterColon);
-												filteredTokens.append(propertyValue);
-												filteredTokens.append(';');
-						if(logDEBUG) Logger.debug(this, "STATE3 CASE ;: appending "+ propertyName+":"+propertyValue);
-						if(logDEBUG) Logger.debug(this, "filtered tokens now: \""+filteredTokens.toString()+"\"");
-					} else {
-						if(logDEBUG) Logger.debug(this, "filtered tokens now (ignored): \""+filteredTokens.toString()+"\" words="+CSSPropertyVerifier.toString(words)+" ignoreS1="+ignoreElementsS1+" ignoreS2="+ignoreElementsS2+" ignoreS3="+ignoreElementsS3);
-					}
+						ParsedWord[] words = split(propertyValue, obj.allowCommaDelimiters);
+						if(logDEBUG) Logger.debug(this, "Split: "+CSSPropertyVerifier.toString(words));
+						if(words != null && !ignoreElementsS2 && !ignoreElementsS3 && verifyToken(currentMedia,elements,obj,words)) {
+							if(changedAnything(words)) propertyValue = reconstruct(words);
+							filteredTokens.append(whitespaceBeforeProperty);
+							whitespaceBeforeProperty = "";
+							filteredTokens.append(propertyName);
+							filteredTokens.append(':');
+							filteredTokens.append(whitespaceAfterColon);
+							filteredTokens.append(propertyValue);
+							filteredTokens.append(';');
+							if(logDEBUG) Logger.debug(this, "STATE3 CASE ;: appending "+ propertyName+":"+propertyValue);
+							if(logDEBUG) Logger.debug(this, "filtered tokens now: \""+filteredTokens.toString()+"\"");
+						} else {
+							if(logDEBUG) Logger.debug(this, "filtered tokens now (ignored): \""+filteredTokens.toString()+"\" words="+CSSPropertyVerifier.toString(words)+" ignoreS1="+ignoreElementsS1+" ignoreS2="+ignoreElementsS2+" ignoreS3="+ignoreElementsS3);
+						}
 					} else {
 						if(logDEBUG) Logger.debug(this, "No such property name \""+propertyName+"\"");
 					}
@@ -2738,7 +2318,7 @@ class CSSTokenizerFilter {
 						break;
 					}
 					if(openBraces < 0) openBraces = 0;
-					for(i=buffer.length()-1;i>=0;i--) {
+					for(i=buffer.length()-1; i>=0; i--) {
 						char c1 = buffer.charAt(i);
 						if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 							continue;
@@ -2748,11 +2328,10 @@ class CSSTokenizerFilter {
 					String postSpace = buffer.substring(i);
 					buffer.setLength(i);
 					// This (string!=) is okay as we set it directly by propertyName="" to indicate there is no property name.
-					if(propertyName!="")
-					{
+					if(propertyName!="") {
 
 						i = 0;
-						for(i=0;i<buffer.length();i++) {
+						for(i=0; i<buffer.length(); i++) {
 							char c1 = buffer.charAt(i);
 							if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 								continue;
@@ -2771,15 +2350,14 @@ class CSSTokenizerFilter {
 						if(obj != null) {
 							ParsedWord[] words = split(propertyValue,obj.allowCommaDelimiters);
 							if(logDEBUG) Logger.debug(this, "Split: "+CSSPropertyVerifier.toString(words));
-							if(!ignoreElementsS2 && !ignoreElementsS3 && verifyToken(currentMedia,elements,obj,words))
-							{
+							if(!ignoreElementsS2 && !ignoreElementsS3 && verifyToken(currentMedia,elements,obj,words)) {
 								if(changedAnything(words)) propertyValue = reconstruct(words);
 								filteredTokens.append(whitespaceBeforeProperty);
 								whitespaceBeforeProperty = "";
 								filteredTokens.append(propertyName);
-																filteredTokens.append(':');
-																filteredTokens.append(whitespaceAfterColon);
-																filteredTokens.append(propertyValue);
+								filteredTokens.append(':');
+								filteredTokens.append(whitespaceAfterColon);
+								filteredTokens.append(propertyValue);
 								if(logDEBUG) Logger.debug(this, "STATE3 CASE }: appending "+ propertyName+":"+propertyValue);
 							}
 						} else {
@@ -2789,7 +2367,7 @@ class CSSTokenizerFilter {
 					} else {
 						// Whitespace at end
 						i = 0;
-						for(i=0;i<buffer.length();i++) {
+						for(i=0; i<buffer.length(); i++) {
 							char c1 = buffer.charAt(i);
 							if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 								continue;
@@ -2846,8 +2424,8 @@ class CSSTokenizerFilter {
 
 				default:
 					buffer.append(c);
-				if(logDEBUG) Logger.debug(this, "STATE3 default CASE : "+c);
-				break;
+					if(logDEBUG) Logger.debug(this, "STATE3 default CASE : "+c);
+					break;
 
 				}
 				break;
@@ -2857,8 +2435,7 @@ class CSSTokenizerFilter {
 				if(stopAtDetectedCharset)
 					return;
 				if(logDEBUG) Logger.debug(this, "STATE3INQUOTE: "+c);
-				switch(c)
-				{
+				switch(c) {
 				case '"':
 					if(currentQuote=='"'&& prevc!='\\')
 						currentState=STATE3;
@@ -2873,7 +2450,7 @@ class CSSTokenizerFilter {
 					if(prevc == '\r') {
 						break;
 					}
-					// Otherwise same as \r ...
+				// Otherwise same as \r ...
 				case '\r':
 				case '\f':
 					if(prevc != '\\') {
@@ -2887,7 +2464,7 @@ class CSSTokenizerFilter {
 					}
 				default:
 					buffer.append(c);
-				break;
+					break;
 				}
 				break;
 
@@ -2896,11 +2473,9 @@ class CSSTokenizerFilter {
 				charsetPossible=false;
 				if(stopAtDetectedCharset)
 					return;
-				switch(c)
-				{
+				switch(c) {
 				case '/':
-					if(prevc=='*')
-					{
+					if(prevc=='*') {
 						currentState=stateBeforeComment;
 						c = 0;
 						if(logDEBUG) Logger.debug(this, "Exiting the comment state "+currentState);
@@ -2913,13 +2488,13 @@ class CSSTokenizerFilter {
 
 		if(logDEBUG) Logger.debug(this, "Filtered tokens: \""+filteredTokens+"\"");
 		w.write(filteredTokens.toString());
-		for(int i=0;i<openBraces;i++)
+		for(int i=0; i<openBraces; i++)
 			w.write('}');
 
 		if(logDEBUG) Logger.debug(this, "Remaining buffer: \""+buffer+"\"");
 
 		int i = 0;
-		for(i=0;i<buffer.length();i++) {
+		for(i=0; i<buffer.length(); i++) {
 			char c1 = buffer.charAt(i);
 			if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 				continue;
@@ -2931,7 +2506,7 @@ class CSSTokenizerFilter {
 		while(buffer.toString().trim().equals("-->")) {
 			w.write("-->");
 			buffer.delete(0, 3);
-			for(i=0;i<buffer.length();i++) {
+			for(i=0; i<buffer.length(); i++) {
 				char c1 = buffer.charAt(i);
 				if(c1 == ' ' || c1 == '\f' || c1 == '\t' || c1 == '\r' || c1 == '\n')
 					continue;
@@ -2996,7 +2571,7 @@ class CSSTokenizerFilter {
 				} else if(word instanceof SimpleParsedWord) {
 					String data = ((SimpleParsedWord)word).original;
 					String[] split = FilterUtils.removeWhiteSpace(data.split(","),false);
-										medias.addAll(Arrays.asList(split));
+					medias.addAll(Arrays.asList(split));
 				} else return null;
 			}
 		}
@@ -3025,7 +2600,7 @@ class CSSTokenizerFilter {
 			}
 		}
 
-				@Override
+		@Override
 		public String toString() {
 			return super.toString()+":\""+original+"\"";
 		}
@@ -3057,7 +2632,7 @@ class CSSTokenizerFilter {
 		protected void innerEncode(boolean unicode, StringBuilder out) {
 			char prevc = 0;
 			char c = 0;
-			for(int i=0;i<decoded.length();i++) {
+			for(int i=0; i<decoded.length(); i++) {
 				prevc = c;
 				c = decoded.charAt(i);
 				if(!mustEncode(c, i, prevc, unicode)) {
@@ -3079,7 +2654,7 @@ class CSSTokenizerFilter {
 				throw new IllegalStateException();
 			else {
 				int x = 6 - s.length();
-				for(int i=0;i<x;i++)
+				for(int i=0; i<x; i++)
 					sb.append('0');
 				sb.append(s);
 			}
@@ -3107,11 +2682,11 @@ class CSSTokenizerFilter {
 			// It is an identifier.
 			if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
 					(c >= '0' && c <= '9') || c == '-' || c == '_'
-						|| (c >= (char)0x00A1 && unicode)) {
+					|| (c >= (char)0x00A1 && unicode)) {
 				// Cannot start with a digit or a hyphen followed by a digit.
 				if(!((i == 0 && (c >= '0' && c <= '9')) ||
 						(i == 1 && prevc == '-' &&
-								(c >= '0' && c <= '9'))))
+						 (c >= '0' && c <= '9'))))
 					return false;
 			}
 			return true;
@@ -3147,7 +2722,7 @@ class CSSTokenizerFilter {
 			return false;
 		}
 
-				@Override
+		@Override
 		protected void innerEncode(boolean unicode, StringBuilder out) {
 			out.append(stringChar);
 			super.innerEncode(unicode, out);
@@ -3162,7 +2737,7 @@ class CSSTokenizerFilter {
 			super(original, decoded, changed || stringChar == 0, stringChar == 0 ? '"' : stringChar);
 		}
 
-				@Override
+		@Override
 		protected void innerEncode(boolean unicode, StringBuilder out) {
 			out.append("url(");
 			super.innerEncode(unicode, out);
@@ -3181,7 +2756,7 @@ class CSSTokenizerFilter {
 			super(original, decoded, changed);
 		}
 
-				@Override
+		@Override
 		protected void innerEncode(boolean unicode, StringBuilder out) {
 			out.append("attr(");
 			super.innerEncode(unicode, out);
@@ -3275,7 +2850,7 @@ class CSSTokenizerFilter {
 		boolean addComma = false;
 		// Brackets prevent tokenisation, see e.g. rgb().
 		int bracketCount = 0;
-		for(int i=0;i<input.length();i++) {
+		for(int i=0; i<input.length(); i++) {
 			c = input.charAt(i);
 			if(stringchar == 0) {
 				if(eatLF && c == '\n') {
@@ -3297,7 +2872,7 @@ class CSSTokenizerFilter {
 									lastWord.changed = true;
 								} else
 									lastWord.postComma = true;
-							// Comma is not added to the buffer, so this works even for element , element
+								// Comma is not added to the buffer, so this works even for element , element
 							} else {
 								if(addComma) {
 									if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "Extra comma after a comma in \""+input+"\" i="+i);
@@ -3374,7 +2949,7 @@ class CSSTokenizerFilter {
 						origToken.append(c);
 						decodedToken.append(c);
 					}
-				} else /*if(escaping && escape.length() != 0)*/ {
+				} else { /*if(escaping && escape.length() != 0)*/
 					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 						escape.append(c);
 						if(escape.length() == 6) {
@@ -3527,13 +3102,13 @@ class CSSTokenizerFilter {
 
 				String strippedOrig = s.substring(4, s.length()-1);
 				int i;
-				for(i=0;i<strippedOrig.length();i++) {
+				for(i=0; i<strippedOrig.length(); i++) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 				}
 				decodedToken.delete(0, i);
 				strippedOrig = strippedOrig.substring(i);
-				for(i=strippedOrig.length()-1;i>=0;i--) {
+				for(i=strippedOrig.length()-1; i>=0; i--) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 					if(i > 0 && strippedOrig.charAt(i-1) == '\\') break;
@@ -3572,13 +3147,13 @@ class CSSTokenizerFilter {
 
 				String strippedOrig = s.substring(4, s.length()-1);
 				int i;
-				for(i=0;i<strippedOrig.length();i++) {
+				for(i=0; i<strippedOrig.length(); i++) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 				}
 				decodedToken.delete(0, i);
 				strippedOrig = strippedOrig.substring(i);
-				for(i=strippedOrig.length()-1;i>=0;i--) {
+				for(i=strippedOrig.length()-1; i>=0; i--) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 					if(i > 0 && strippedOrig.charAt(i-1) == '\\') break;
@@ -3603,13 +3178,13 @@ class CSSTokenizerFilter {
 
 				String strippedOrig = s.substring(len, s.length()-1);
 				int i;
-				for(i=0;i<strippedOrig.length();i++) {
+				for(i=0; i<strippedOrig.length(); i++) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 				}
 				decodedToken.delete(0, i);
 				strippedOrig = strippedOrig.substring(i);
-				for(i=strippedOrig.length()-1;i>=0;i--) {
+				for(i=strippedOrig.length()-1; i>=0; i--) {
 					char c = strippedOrig.charAt(i);
 					if(!(c == ' ' || c == '\t')) break;
 					if(i > 0 && strippedOrig.charAt(i-1) == '\\') break;
@@ -3664,13 +3239,12 @@ class CSSTokenizerFilter {
 	 * parserExpression is used for verifying regular expression for Property value
 	 * e.g. [ <color> | transparent]{1,4}.
 	 */
-	static class CSSPropertyVerifier
-	{
+	static class CSSPropertyVerifier {
 		public final boolean onlyValueVerifier;
 		public final boolean allowCommaDelimiters;
 
 		public final Set<String> allowedValues; //immutable HashSet for all String constants that this CSS property can assume like "auto"
-												// Defaulting Keywords ("initial", "inherit" and "unset") are always accepted
+		// Defaulting Keywords ("initial", "inherit" and "unset") are always accepted
 		public final Set<String> allowedMedia; // immutable HashSet for all valid Media for this CSS property.
 
 		/*
@@ -3695,21 +3269,18 @@ class CSSTokenizerFilter {
 
 		private final List<String> parserExpressions;
 
-		CSSPropertyVerifier(boolean allowCommaDelimiters)
-		{
+		CSSPropertyVerifier(boolean allowCommaDelimiters) {
 			this(null, null, null, null, false, allowCommaDelimiters);
 		}
 
 		CSSPropertyVerifier(Collection<String> allowedValues,
-							Collection<String> allowedMedia)
-		{
+							Collection<String> allowedMedia) {
 			this(allowedValues, allowedMedia, null, null);
 		}
 
 		CSSPropertyVerifier(Collection<String> allowedValues,
 							Collection<String> allowedMedia,
-							Collection<String> possibleValues)
-		{
+							Collection<String> possibleValues) {
 			this(allowedValues, allowedMedia, possibleValues, null);
 		}
 
@@ -3717,16 +3288,14 @@ class CSSTokenizerFilter {
 							Collection<String> possibleValues,
 							Collection<String> parseExpression,
 							Collection<String> allowedMedia,
-							boolean onlyValueVerifier)
-		{
+							boolean onlyValueVerifier) {
 			this(allowedValues, allowedMedia, possibleValues, parseExpression, onlyValueVerifier, false);
 		}
 
 		CSSPropertyVerifier(Collection<String> allowedValues,
 							Collection<String> allowedMedia,
 							Collection<String> possibleValues,
-							Collection<String> parseExpression)
-		{
+							Collection<String> parseExpression) {
 			this(allowedValues, allowedMedia, possibleValues, parseExpression, false, false);
 		}
 
@@ -3735,17 +3304,16 @@ class CSSTokenizerFilter {
 							Collection<String> possibleValues,
 							Collection<String> parseExpression,
 							boolean onlyValueVerifier,
-							boolean allowCommaDelimiters)
-		{
+							boolean allowCommaDelimiters) {
 			this.onlyValueVerifier = onlyValueVerifier;
 			this.allowCommaDelimiters = allowCommaDelimiters;
 
 			boolean isInteger, isReal, isPercentage, isLength, isAngle, isColor,
-				isIDSelector, isURI, isShape, isString, isCounter, isIdentifier,
-				isTime, isFrequency, isTransform;
+					isIDSelector, isURI, isShape, isString, isCounter, isIdentifier,
+					isTime, isFrequency, isTransform;
 			isInteger = isReal = isPercentage = isLength = isAngle = isColor = isURI
-				= isShape = isString = isCounter = isIdentifier = isTime = isIDSelector
-				= isFrequency = isTransform = false;
+												= isShape = isString = isCounter = isIdentifier = isTime = isIDSelector
+														= isFrequency = isTransform = false;
 			if(possibleValues != null) {
 				for(String possibleValue : possibleValues) {
 					if("in".equals(possibleValue))
@@ -3764,8 +3332,7 @@ class CSSTokenizerFilter {
 						isURI=true;	//ur
 					else if ("se".equals(possibleValue)) {
 						isIDSelector = true; //se
-					}
-					else if("sh".equals(possibleValue))
+					} else if("sh".equals(possibleValue))
 						isShape=true;	//sh
 					else if("st".equals(possibleValue))
 						isString=true;//st
@@ -3816,33 +3383,30 @@ class CSSTokenizerFilter {
 			}
 		}
 
-		public static boolean isIntegerChecker(String value)
-		{
-			try{
+		public static boolean isIntegerChecker(String value) {
+			try {
 				Integer.parseInt(value); //CSS Property has a valid integer.
 				return true;
+			} catch(Exception e) {
+				return false;
 			}
-			catch(Exception e) {return false; }
 
 		}
 
 
-		public static boolean isRealChecker(String value)
-		{
-			try
-			{
+		public static boolean isRealChecker(String value) {
+			try {
 				Float.parseFloat(value); //Valid float
 				return true;
+			} catch(Exception e) {
+				return false;
 			}
-			catch(Exception e){return false; }
 		}
 
-		public static boolean isValidURI(ParsedURL word, FilterCallback cb)
-		{
+		public static boolean isValidURI(ParsedURL word, FilterCallback cb) {
 			String w = CSSTokenizerFilter.removeOuterQuotes(word.getDecoded());
 			//if(debug) Logger.debug(this, "CSSPropertyVerifier isVaildURI called cb="+cb);
-			try
-			{
+			try {
 				//if(debug) Logger.debug(this, "CSSPropertyVerifier isVaildURI "+cb.processURI(URI, null));
 				String s = cb.processURI(w, null);
 				if(s == null || s.isEmpty()) return false;
@@ -3850,32 +3414,26 @@ class CSSTokenizerFilter {
 				if(logDEBUG) Logger.debug(CSSTokenizerFilter.class, "New url: \""+s+"\" from \""+w+"\"");
 				word.setNewURL(s);
 				return true;
-			}
-			catch(CommentException e)
-			{
+			} catch(CommentException e) {
 				//if(debug) Logger.debug(this, "CSSPropertyVerifier isVaildURI Exception"+e.toString());
 				return false;
 			}
 
 		}
 
-		public boolean checkValidity(ParsedWord[] words, FilterCallback cb)
-		{
+		public boolean checkValidity(ParsedWord[] words, FilterCallback cb) {
 			return this.checkValidity(null,null, words, cb);
 		}
 
-		public boolean checkValidity(ParsedWord word, FilterCallback cb)
-		{
+		public boolean checkValidity(ParsedWord word, FilterCallback cb) {
 			return this.checkValidity(null,null, new ParsedWord[] { word }, cb);
 		}
 
 		// Verifies whether this CSS property can have a value under given media and HTML elements
-		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] words, FilterCallback cb)
-		{
+		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] words, FilterCallback cb) {
 
 			if(logDEBUG) Logger.debug(this, "checkValidity for "+toString(words)+" for "+this);
-			if(!onlyValueVerifier)
-			{
+			if(!onlyValueVerifier) {
 				if(allowedMedia!=null) {
 					boolean allowed = false;
 					for(String m : media)
@@ -3908,120 +3466,110 @@ class CSSTokenizerFilter {
 
 			if(words.length == 1) {
 
-			if(words[0] instanceof ParsedIdentifier) {
-				String lowerCaseWord = ((ParsedIdentifier)words[0]).original.toLowerCase();
-				if (allowedValues != null && allowedValues.contains(lowerCaseWord)) {
-					// CSS Property has one of the explicitly defined values
-					return true;
-				}
-				if (lowerCaseWord.equals("initial") || lowerCaseWord.equals("inherit") || lowerCaseWord.equals("unset")) {
-					// CSS Property is one of the Defaulting Keywords (http://www.w3.org/TR/css3-cascade/#defaulting-keywords)
-					return true;
-				}
-			}
-
-
-			if(words[0] instanceof SimpleParsedWord) {
-
-				String word = ((SimpleParsedWord)words[0]).original;
-
-				// Numeric explicitly defined value is possible
-				if(allowedValues != null && allowedValues.contains(word))
-					return true;
-
-				// These are all numeric so they will have parsed as a SimpleParsedWord.
-
-				if(isInteger && isIntegerChecker(word))
-				{
-					return true;
-				}
-
-				if(isReal && isRealChecker(word))
-				{
-					return true;
-				}
-
-				if(isPercentage && FilterUtils.isPercentage(word)) //Valid percentage X%
-				{
-					return true;
-				}
-
-				if(isLength && FilterUtils.isLength(word,false)) //Valid unit Vxx where xx is unit or V
-				{
-					return true;
-				}
-
-				if(isAngle && FilterUtils.isAngle(word))
-				{
-					return true;
-				}
-				// This is not numeric but will still have parsed as a SimpleParsedWord, as it either starts with a # or has brackets in.
-				if(isColor)
-				{
-					if(FilterUtils.isColor(word))
+				if(words[0] instanceof ParsedIdentifier) {
+					String lowerCaseWord = ((ParsedIdentifier)words[0]).original.toLowerCase();
+					if (allowedValues != null && allowedValues.contains(lowerCaseWord)) {
+						// CSS Property has one of the explicitly defined values
 						return true;
+					}
+					if (lowerCaseWord.equals("initial") || lowerCaseWord.equals("inherit") || lowerCaseWord.equals("unset")) {
+						// CSS Property is one of the Defaulting Keywords (http://www.w3.org/TR/css3-cascade/#defaulting-keywords)
+						return true;
+					}
 				}
 
-				if(isShape)
+
+				if(words[0] instanceof SimpleParsedWord) {
+
+					String word = ((SimpleParsedWord)words[0]).original;
+
+					// Numeric explicitly defined value is possible
+					if(allowedValues != null && allowedValues.contains(word))
+						return true;
+
+					// These are all numeric so they will have parsed as a SimpleParsedWord.
+
+					if(isInteger && isIntegerChecker(word)) {
+						return true;
+					}
+
+					if(isReal && isRealChecker(word)) {
+						return true;
+					}
+
+					if(isPercentage && FilterUtils.isPercentage(word)) { //Valid percentage X%
+						return true;
+					}
+
+					if(isLength && FilterUtils.isLength(word,false)) { //Valid unit Vxx where xx is unit or V
+						return true;
+					}
+
+					if(isAngle && FilterUtils.isAngle(word)) {
+						return true;
+					}
+					// This is not numeric but will still have parsed as a SimpleParsedWord, as it either starts with a # or has brackets in.
+					if(isColor) {
+						if(FilterUtils.isColor(word))
+							return true;
+					}
+
+					if(isShape) {
+						if(FilterUtils.isValidCSSShape(word))
+							return true;
+					}
+
+					if(isFrequency) {
+						if(FilterUtils.isFrequency(word))
+							return true;
+					}
+
+					if(isTime) {
+						if(FilterUtils.isTime(word))
+							return true;
+					}
+
+					if(isTransform) {
+						if(FilterUtils.isCSSTransform(word))
+							return true;
+					}
+				}
+
+				if(words[0] instanceof ParsedIdentifier && isColor) {
+					if(FilterUtils.isColor(((ParsedIdentifier)words[0]).original))
+						return true;
+
+				}
+				if(isURI && words[0] instanceof ParsedURL)
+
 				{
-					if(FilterUtils.isValidCSSShape(word))
-						return true;
+					return isValidURI((ParsedURL)words[0], cb);
 				}
 
-				if(isFrequency)
-				{
-					if(FilterUtils.isFrequency(word))
-						return true;
-				}
-
-				if(isTime) {
-					if(FilterUtils.isTime(word))
-						return true;
-				}
-
-				if(isTransform) {
-					if(FilterUtils.isCSSTransform(word))
-						return true;
-				}
-			}
-
-			if(words[0] instanceof ParsedIdentifier && isColor) {
-				if(FilterUtils.isColor(((ParsedIdentifier)words[0]).original))
-					return true;
-
-			}
-			if(isURI && words[0] instanceof ParsedURL)
-
-			{
-				return isValidURI((ParsedURL)words[0], cb);
-			}
-
-			if(isIdentifier && words[0] instanceof ParsedIdentifier)
-			{
-				return true;
-			}
-
-			if (isIDSelector) {
-				// In accordance with spec for e.g. nav-*, we only allow ID selectors.
-				// See http://www.w3.org/TR/css3-ui/
-				// REDFLAG If we allow more general selectors (which some browsers may accept) we
-				// have two new problems:
-				// 1) They may occupy more than one word, which greatly complicates parsing here,
-				// 2) We should sanitize the selectors, not just pass them on. Which in turn may
-				// cause them to take up more than one word!
-				String result = HTMLelementVerifier(words[0].original, true);
-				if (!(result == null || result.isEmpty())) {
+				if(isIdentifier && words[0] instanceof ParsedIdentifier) {
 					return true;
 				}
-			}
 
-			if(isString && words[0] instanceof ParsedString)
-			{
-				if(ElementInfo.ALLOW_ALL_VALID_STRINGS || ElementInfo.isValidStringDecoded(((ParsedString)words[0]).getDecoded()))
-					return true;
-				else
-					return false;
-			}
+				if (isIDSelector) {
+					// In accordance with spec for e.g. nav-*, we only allow ID selectors.
+					// See http://www.w3.org/TR/css3-ui/
+					// REDFLAG If we allow more general selectors (which some browsers may accept) we
+					// have two new problems:
+					// 1) They may occupy more than one word, which greatly complicates parsing here,
+					// 2) We should sanitize the selectors, not just pass them on. Which in turn may
+					// cause them to take up more than one word!
+					String result = HTMLelementVerifier(words[0].original, true);
+					if (!(result == null || result.isEmpty())) {
+						return true;
+					}
+				}
+
+				if(isString && words[0] instanceof ParsedString) {
+					if(ElementInfo.ALLOW_ALL_VALID_STRINGS || ElementInfo.isValidStringDecoded(((ParsedString)words[0]).getDecoded()))
+						return true;
+					else
+						return false;
+				}
 
 			}
 
@@ -4044,8 +3592,7 @@ class CSSTokenizerFilter {
 			/*
 			 * For each parserExpression, recursiveParserExpressionVerifier() would be called with parserExpression and value.
 			 */
-			for(String parserExpression : parserExpressions)
-			{
+			for(String parserExpression : parserExpressions) {
 				boolean result=recursiveParserExpressionVerifier(parserExpression,words,cb);
 
 				if(result)
@@ -4080,11 +3627,9 @@ class CSSTokenizerFilter {
 		 * If all combinations are failed then it would return false. If any combination gives true value
 		 * then return value would be true.
 		 */
-		public boolean recursiveParserExpressionVerifier(String expression,ParsedWord[] words, FilterCallback cb)
-		{
+		public boolean recursiveParserExpressionVerifier(String expression,ParsedWord[] words, FilterCallback cb) {
 			if(logDEBUG) Logger.debug(this, "1recursiveParserExpressionVerifier called: with "+expression+" "+toString(words));
-			if((expression==null || (expression.trim().isEmpty())))
-			{
+			if((expression==null || (expression.trim().isEmpty()))) {
 				if(words==null || words.length == 0)
 					return true;
 				else
@@ -4092,15 +3637,12 @@ class CSSTokenizerFilter {
 			}
 
 			int tokensCanBeGivenLowerLimit=1,tokensCanBeGivenUpperLimit=1;
-			for(int i=0;i<expression.length();i++)
-			{
-				if(expression.charAt(i)=='a') //Identifying ||
-				{
+			for(int i=0; i<expression.length(); i++) {
+				if(expression.charAt(i)=='a') { //Identifying ||
 					int noOfa=0;
 					int endIndex=expression.length();
 					//Detecting the other end
-					for(int j=0;j<expression.length();j++)
-					{
+					for(int j=0; j<expression.length(); j++) {
 						char c = expression.charAt(j);
 						if(c == 'a') {
 							noOfa++;
@@ -4120,13 +3662,11 @@ class CSSTokenizerFilter {
 						// This happens every time we have "1a2a3" with nothing after it, so it is tested by the unit tests already.
 						j = words.length;
 					}
-					for(;j<=words.length;j++)
-					{
+					for(; j<=words.length; j++) {
 						if(logDEBUG) Logger.debug(this, "2Making recursiveDoubleBarVerifier to consume "+j+" words");
 						ParsedWord[] partToPassToDB = Arrays.copyOf(words, j);
 						if(logDEBUG) Logger.debug(this, "3Calling recursiveDoubleBarVerifier with "+firstPart+" "+CSSPropertyVerifier.toString(partToPassToDB));
-						if(recursiveDoubleBarVerifier(firstPart,partToPassToDB,cb)) //This function is written to verify || operator.
-						{
+						if(recursiveDoubleBarVerifier(firstPart,partToPassToDB,cb)) { //This function is written to verify || operator.
 							ParsedWord[] partToPass = Arrays.copyOfRange(words, j, words.length);
 							if(logDEBUG) Logger.debug(this, "4recursiveDoubleBarVerifier true calling itself with "+secondPart+CSSPropertyVerifier.toString(partToPass));
 							if(recursiveParserExpressionVerifier(secondPart,partToPass,cb))
@@ -4161,17 +3701,13 @@ class CSSTokenizerFilter {
 						}
 					}
 					return false;
-				}
-				else if(expression.charAt(i)==' ')
-				{
+				} else if(expression.charAt(i)==' ') {
 					String firstPart=expression.substring(0,i);
 					String secondPart=expression.substring(i+1,expression.length());
-					if(words!=null && words.length>0)
-					{
+					if(words!=null && words.length>0) {
 						int index=Integer.parseInt(firstPart);
 						boolean result=CSSTokenizerFilter.auxilaryVerifiers[index].checkValidity(words[0], cb);
-						if(result)
-						{
+						if(result) {
 							ParsedWord[] partToPass = Arrays.copyOfRange(words, 1, words.length);
 							if(logDEBUG) Logger.debug(this, "8First part is true. partToPass="+CSSPropertyVerifier.toString(partToPass));
 							if(recursiveParserExpressionVerifier(secondPart,partToPass, cb))
@@ -4179,38 +3715,28 @@ class CSSTokenizerFilter {
 						}
 					}
 					return false;
-				}
-				else if(expression.charAt(i)=='?')
-				{
+				} else if(expression.charAt(i)=='?') {
 					String firstPart=expression.substring(0,i);
 					String secondPart=expression.substring(i+1,expression.length());
 					int index=Integer.parseInt(firstPart);
-					if(words.length>0)
-					{
+					if(words.length>0) {
 						boolean result= CSSTokenizerFilter.auxilaryVerifiers[index].checkValidity(words[0], cb);
-						if(result)
-						{
+						if(result) {
 							ParsedWord[] partToPass = Arrays.copyOfRange(words, 1, words.length);
 							if(recursiveParserExpressionVerifier(secondPart,partToPass, cb))
 								return true;
 						}
-					}
-					else if(recursiveParserExpressionVerifier(secondPart,words, cb))
+					} else if(recursiveParserExpressionVerifier(secondPart,words, cb))
 						return true;
 
 					return false;
-				}
-				else if(expression.charAt(i)=='<')
-				{
+				} else if(expression.charAt(i)=='<') {
 					int tindex=expression.indexOf('>');
-					if(tindex>i)
-					{
+					if(tindex>i) {
 						int firstIndex=tindex+1;
-						if((tindex!=expression.length()-1) && expression.charAt(tindex+1)=='[')
-						{
+						if((tindex!=expression.length()-1) && expression.charAt(tindex+1)=='[') {
 							int indexOfSecondBracket=expression.indexOf(']');
-							if(indexOfSecondBracket>(tindex+1))
-							{
+							if(indexOfSecondBracket>(tindex+1)) {
 								tokensCanBeGivenLowerLimit=Integer.parseInt(expression.substring(tindex+2,indexOfSecondBracket).split(",")[0]);
 								tokensCanBeGivenUpperLimit=Integer.parseInt(expression.substring(tindex+2,indexOfSecondBracket).split(",")[1]);
 								firstIndex=expression.indexOf(']')+1;
@@ -4226,8 +3752,7 @@ class CSSTokenizerFilter {
 						if(logDEBUG) Logger.debug(this, "9in < firstPart="+firstPart+" secondPart="+secondPart+" tokensCanBeGivenLowerLimit="+tokensCanBeGivenLowerLimit+" tokensCanBeGivenUpperLimit="+tokensCanBeGivenUpperLimit);
 						int index=Integer.parseInt(firstPart);
 						String[] strLimits=expression.substring(i+1,tindex).split(",");
-						if(strLimits.length==2)
-						{
+						if(strLimits.length==2) {
 							int lowerLimit=Integer.parseInt(strLimits[0]);
 							int upperLimit=Integer.parseInt(strLimits[1]);
 
@@ -4280,8 +3805,7 @@ class CSSTokenizerFilter {
 						} else {
 							ignoredParts = ignoredParts+"b"+firstPart;
 						}
-					}
-					else ignoredParts = "";
+					} else ignoredParts = "";
 					firstPart = expression.substring(lastB+1,i);
 					lastB = i;
 
@@ -4343,18 +3867,15 @@ class CSSTokenizerFilter {
 		/*
 		 * This function takes an array of string and concatenates everything in a " " seperated string.
 		 */
-		public static String getStringFromArray(String[] parts,int lowerIndex,int upperIndex)
-		{
+		public static String getStringFromArray(String[] parts,int lowerIndex,int upperIndex) {
 			StringBuilder buffer=new StringBuilder();
-			if(parts!=null && lowerIndex<parts.length)
-			{
-				for(int i=lowerIndex;i<upperIndex && i<parts.length;i++) {
+			if(parts!=null && lowerIndex<parts.length) {
+				for(int i=lowerIndex; i<upperIndex && i<parts.length; i++) {
 					buffer.append(parts[i]);
-										buffer.append(' ');
-								}
+					buffer.append(' ');
+				}
 				return buffer.toString();
-			}
-			else
+			} else
 				return "";
 
 		}
@@ -4365,25 +3886,20 @@ class CSSTokenizerFilter {
 			return getStringFromArray(parts, 0, parts.length-1);
 		}
 		//Creates a new sub array from the main array and returns it.
-		public static ParsedWord[] getSubArray(ParsedWord[] array,int lowerIndex,int upperIndex)
-		{
+		public static ParsedWord[] getSubArray(ParsedWord[] array,int lowerIndex,int upperIndex) {
 			ParsedWord[] arrayToReturn=new ParsedWord[upperIndex-lowerIndex];
-			if(array!=null && lowerIndex<array.length)
-			{
-				for(int i=lowerIndex;i<upperIndex && i<array.length;i++)
-				{
+			if(array!=null && lowerIndex<array.length) {
+				for(int i=lowerIndex; i<upperIndex && i<array.length; i++) {
 					arrayToReturn[i-lowerIndex]=array[i];
 				}
 				return arrayToReturn;
-			}
-			else
+			} else
 				return new ParsedWord[0];
 		}
 		/*
 		 * For verifying part of the ParseExpression with [] operator.
 		 */
-		public boolean recursiveVariableOccuranceVerifier(int verifierIndex,ParsedWord[] valueParts,int lowerLimit,int upperLimit,int tokensCanBeGivenLowerLimit,int tokensCanBeGivenUpperLimit, String secondPart, FilterCallback cb)
-		{
+		public boolean recursiveVariableOccuranceVerifier(int verifierIndex,ParsedWord[] valueParts,int lowerLimit,int upperLimit,int tokensCanBeGivenLowerLimit,int tokensCanBeGivenUpperLimit, String secondPart, FilterCallback cb) {
 
 			if(logDEBUG) Logger.debug(this, "recursiveVariableOccurranceVerifier("+verifierIndex+","+toString(valueParts)+","+lowerLimit+","+upperLimit+","+tokensCanBeGivenLowerLimit+","+tokensCanBeGivenUpperLimit+","+secondPart+")");
 			if((valueParts==null || valueParts.length==0) && lowerLimit == 0)
@@ -4403,7 +3919,7 @@ class CSSTokenizerFilter {
 				return false;
 			}
 
-			for(int i=tokensCanBeGivenLowerLimit; i<=tokensCanBeGivenUpperLimit && i <= valueParts.length;i++) {
+			for(int i=tokensCanBeGivenLowerLimit; i<=tokensCanBeGivenUpperLimit && i <= valueParts.length; i++) {
 				ParsedWord[] before = Arrays.copyOf(valueParts, i);
 				if(CSSTokenizerFilter.auxilaryVerifiers[verifierIndex].checkValidity(before, cb)) {
 					if(logDEBUG) Logger.debug(this, "first "+i+" tokens using "+verifierIndex+" match "+toString(before));
@@ -4448,8 +3964,7 @@ class CSSTokenizerFilter {
 		 * 3 would try to consume "Hello" and rest would try to consume "world program"
 		 * and so on.
 		 */
-		public boolean recursiveDoubleBarVerifier(String expression,ParsedWord[] words,FilterCallback cb)
-		{
+		public boolean recursiveDoubleBarVerifier(String expression,ParsedWord[] words,FilterCallback cb) {
 			if(logDEBUG) Logger.debug(this, "11in recursiveDoubleBarVerifier expression="+expression+" value="+toString(words));
 			if(words==null || words.length == 0)
 				return true;
@@ -4462,17 +3977,14 @@ class CSSTokenizerFilter {
 			assert(expression.length() != 0);
 			assert(expression.charAt(expression.length()-1) != 'a');
 			assert(expression.charAt(0) != 'a');
-			for(int i=0;i<=expression.length();i++)
-			{
-				if(i == expression.length() || expression.charAt(i)=='a')
-				{
+			for(int i=0; i<=expression.length(); i++) {
+				if(i == expression.length() || expression.charAt(i)=='a') {
 					if(!firstPart.isEmpty()) {
 						if(ignoredParts.length() == 0)
 							ignoredParts = firstPart;
 						else
 							ignoredParts = ignoredParts+"a"+firstPart;
-					}
-					else ignoredParts = "";
+					} else ignoredParts = "";
 					firstPart=expression.substring(lastA+1,i);
 					lastA = i;
 					if(i == expression.length())
@@ -4484,13 +3996,11 @@ class CSSTokenizerFilter {
 					boolean result=false;
 
 					int index=Integer.parseInt(firstPart);
-					for(int j=0;j<words.length;j++)
-					{
+					for(int j=0; j<words.length; j++) {
 						// Check the first j+1 words against this verifier: A single verifier can consume more than one word.
 						result=CSSTokenizerFilter.auxilaryVerifiers[index].checkValidity(getSubArray(words, 0, j+1), cb);
 						if(logDEBUG) Logger.debug(this, "14in for loop result:"+result+" for "+toString(words)+" for "+firstPart);
-						if(result)
-						{
+						if(result) {
 							// Check the remaining words...
 							ParsedWord[] valueToPass = Arrays.copyOfRange(words, j+1, words.length);
 							if(valueToPass.length == 0) {
@@ -4504,8 +4014,7 @@ class CSSTokenizerFilter {
 							if(logDEBUG) Logger.debug(this, "14a "+toString(getSubArray(words, 0, j+1))+" can be consumed by "+index+ " passing on expression="+pattern+ " value="+toString(valueToPass));
 							if(pattern.isEmpty()) return false;
 							result=recursiveDoubleBarVerifier(pattern,valueToPass, cb);
-							if(result)
-							{
+							if(result) {
 								if(logDEBUG) Logger.debug(this, "15else part is true, value consumed="+words[j]);
 								return true;
 							}
@@ -4529,17 +4038,14 @@ class CSSTokenizerFilter {
 
 	}
 	//CSSPropertyVerifier class extended for verifying content property.
-	static class ContentPropertyVerifier extends CSSPropertyVerifier
-	{
+	static class ContentPropertyVerifier extends CSSPropertyVerifier {
 
-		ContentPropertyVerifier(Collection<String> allowedValues)
-		{
+		ContentPropertyVerifier(Collection<String> allowedValues) {
 			super(allowedValues,null,null,null);
 		}
 
 		@Override
-		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb)
-		{
+		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb) {
 			if(logDEBUG) Logger.debug(this, "ContentPropertyVerifier checkValidity called: "+toString(value));
 
 			if(value.length != 1) return false;
@@ -4603,15 +4109,13 @@ class CSSTokenizerFilter {
 
 	//For verifying ’font-size’[ / ’line-height’]? of Font property
 
-	static class FontPartPropertyVerifier extends CSSPropertyVerifier
-	{
+	static class FontPartPropertyVerifier extends CSSPropertyVerifier {
 		FontPartPropertyVerifier() {
 			super(false);
 		}
 
 		@Override
-		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb)
-		{
+		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb) {
 
 			if(logDEBUG) Logger.debug(this, "FontPartPropertyVerifier called with "+toString(value));
 			CSSPropertyVerifier fontSize=new CSSPropertyVerifier(Arrays.asList("xx-small","x-small","small","medium","large","x-large","xx-large","larger","smaller"),Arrays.asList("le","pe"),null,null,true);
@@ -4622,8 +4126,7 @@ class CSSTokenizerFilter {
 				if(fontSize.checkValidity(word, cb)) continue;
 				if(word instanceof SimpleParsedWord) {
 					String orig = ((SimpleParsedWord)word).original;
-					if(orig.indexOf("/")!=-1)
-					{
+					if(orig.indexOf("/")!=-1) {
 						int slashIndex=orig.indexOf("/");
 						String firstPart=orig.substring(0,slashIndex);
 						String secondPart=orig.substring(slashIndex+1,orig.length());
@@ -4657,12 +4160,11 @@ class CSSTokenizerFilter {
 		// Quite possible, but not a high priority, "verdana,arial,times new roman,sans-serif" is not dangerous, it's just hard to parse.
 
 		@Override
-		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb)
-		{
+		public boolean checkValidity(String[] media,String[] elements,ParsedWord[] value,FilterCallback cb) {
 			if(logDEBUG) Logger.debug(this, "font verifier: "+toString(value));
 			if(value.length == 1) {
 				if(value[0] instanceof ParsedIdentifier && "inherit".equalsIgnoreCase(((ParsedIdentifier)value[0]).original)) {
-				//CSS Property has one of the explicitly defined values
+					//CSS Property has one of the explicitly defined values
 					if(logDEBUG) Logger.debug(this, "font: inherit");
 					return true;
 				}
@@ -4683,7 +4185,7 @@ class CSSTokenizerFilter {
 			ArrayList<String> fontWords = new ArrayList<String>();
 			// FIXME delete fonts we don't know about but let through ones we do.
 			// Or allow unknown fonts given [a-z][A-Z][0-9] ???
-outer:		for(int i=0;i<value.length;i++) {
+			outer:		for(int i=0; i<value.length; i++) {
 				ParsedWord word = value[i];
 				String s = null;
 				if(word instanceof ParsedString) {
@@ -4692,7 +4194,8 @@ outer:		for(int i=0;i<value.length;i++) {
 					// It's actually quoted, great.
 					if(isSpecificFamily(decoded.toLowerCase())) {
 						continue;
-					} if(isGenericFamily(decoded.toLowerCase())) {
+					}
+					if(isGenericFamily(decoded.toLowerCase())) {
 						continue;
 					} else
 						s = decoded;
@@ -4724,7 +4227,7 @@ outer:		for(int i=0;i<value.length;i++) {
 				if(!possiblyValidFontWords(fontWords))
 					return false;
 				boolean last = false;
-				for(int j=i+1;j<value.length;j++) {
+				for(int j=i+1; j<value.length; j++) {
 					ParsedWord newWord = value[j];
 					if (j == value.length-1) last = true;
 					String s1;
@@ -4765,7 +4268,7 @@ outer:		for(int i=0;i<value.length;i++) {
 			}
 			if(logDEBUG) Logger.debug(this, "font: reached end, valid");
 			return true;
-			}
+		}
 
 		private boolean possiblyValidFontWords(ArrayList<String> fontWords) {
 			if(ElementInfo.disallowUnknownSpecificFonts) {
@@ -4873,7 +4376,7 @@ outer:		for(int i=0;i<value.length;i++) {
 			Logger.setupStdoutLogging(Logger.LogLevel.DEBUG, "");
 
 			ContentFilter.filter(inputStream, outputStream, "text/css",
-					new URI("http://127.0.0.1:8888/freenet:USK@ZupQjDFZSc3I4orBpl1iTEAPZKo2733RxCUbZ2Q7iH0,EO8Tuf8SP3lnDjQdAPdCM2ve2RaUEN8m-hod3tQ5oQE,AQACAAE/jFreesite/19/Style/"), null, null, null, null);
+								 new URI("http://127.0.0.1:8888/freenet:USK@ZupQjDFZSc3I4orBpl1iTEAPZKo2733RxCUbZ2Q7iH0,EO8Tuf8SP3lnDjQdAPdCM2ve2RaUEN8m-hod3tQ5oQE,AQACAAE/jFreesite/19/Style/"), null, null, null, null);
 		} finally {
 			Closer.close(inputStream);
 			Closer.close(outputStream);

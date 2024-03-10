@@ -20,21 +20,21 @@ public class PutWaiter implements ClientPutCallback {
 	private InsertException error;
 	final RequestClient client;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
 
 	public PutWaiter(RequestClient client) {
-	    this.client = client;
-    }
+		this.client = client;
+	}
 
-    @Override
+	@Override
 	public synchronized void onSuccess(BaseClientPutter state) {
 		succeeded = true;
 		finished = true;
@@ -87,14 +87,14 @@ public class PutWaiter implements ClientPutCallback {
 		metadata.free();
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        throw new UnsupportedOperationException(); // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		throw new UnsupportedOperationException(); // Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return client;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return client;
+	}
 
 }

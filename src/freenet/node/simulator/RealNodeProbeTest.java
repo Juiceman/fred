@@ -80,30 +80,30 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			nodes[i].start(false);
 		}
 
-        System.out.println();
-        System.out.println("Ping average > 95%, lets do some inserts/requests");
-        System.out.println();
-        
-        if(DO_INSERT_TEST) {
-        	
-            waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
-            
-            RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
-            
-            waitForAllConnected(nodes);
-            
-            while(true) {
-            	try {
-            		waitForAllConnected(nodes);
-            		int status = tester.insertRequestTest();
-            		if(status == -1) continue;
-            		System.out.println("Insert test completed with status "+status);
-            		break;
-            	} catch (Throwable t) {
-            		Logger.error(RealNodeRequestInsertTest.class, "Caught "+t, t);
-            	}
-            }
-        }
+		System.out.println();
+		System.out.println("Ping average > 95%, lets do some inserts/requests");
+		System.out.println();
+
+		if(DO_INSERT_TEST) {
+
+			waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
+
+			RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
+
+			waitForAllConnected(nodes);
+
+			while(true) {
+				try {
+					waitForAllConnected(nodes);
+					int status = tester.insertRequestTest();
+					if(status == -1) continue;
+					System.out.println("Insert test completed with status "+status);
+					break;
+				} catch (Throwable t) {
+					Logger.error(RealNodeRequestInsertTest.class, "Caught "+t, t);
+				}
+			}
+		}
 
 		final NumberFormat nf = NumberFormat.getInstance();
 		Listener print = new Listener() {
@@ -122,7 +122,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			@Override
 			public void onOutputBandwidth(float outputBandwidth) {
 				System.out.println("Probe got bandwidth limit " + nf.format(outputBandwidth) +
-					" KiB per second.");
+								   " KiB per second.");
 			}
 
 			@Override
@@ -168,9 +168,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 
 			@Override
 			public void onOverallBulkOutputCapacity(
-					byte bandwidthClassForCapacityUsage, float outputBulkCapacityUsed) {
+				byte bandwidthClassForCapacityUsage, float outputBulkCapacityUsed) {
 				System.out.println("Probe got output capacity "+nf.format(outputBulkCapacityUsed)+
-						"% (bandwidth class "+bandwidthClassForCapacityUsage+")");
+								   "% (bandwidth class "+bandwidthClassForCapacityUsage+")");
 			}
 		};
 
@@ -210,7 +210,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			System.err.println("10) Pick another node");
 			System.err.println("11) Pick another HTL");
 			System.err.println("12) Pick current node's refusals");
-			
+
 			System.err.println("Anything else to exit.");
 			System.err.println("Select: ");
 			try {
@@ -218,8 +218,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 				if (selection == types.length) {
 					System.err.print("Enter new node index ([0-" + (NUMBER_OF_NODES - 1) + "]):");
 					index = Integer.valueOf(r.readLine());
-				}
-				else if (selection == types.length+1) {
+				} else if (selection == types.length+1) {
 					System.err.print("Enter new HTL: ");
 					htl = Byte.valueOf(r.readLine());
 				} else if (selection == types.length+2) {

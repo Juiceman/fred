@@ -21,8 +21,8 @@ public interface Compressor {
 	String DEFAULT_COMPRESSORDESCRIPTOR = null;
 
 	enum COMPRESSOR_TYPE implements Compressor {
-	    // WARNING: Changing non-transient members on classes that are Serializable can result in
-	    // restarting downloads or losing uploads.
+		// WARNING: Changing non-transient members on classes that are Serializable can result in
+		// restarting downloads or losing uploads.
 
 		// Codecs will be tried in order: put the less resource consuming first
 		GZIP("GZIP", new GzipCompressor(), (short) 0),
@@ -138,8 +138,8 @@ public interface Compressor {
 				if (result.contains(COMPRESSOR_TYPE.LZMA)) {
 					// OldLZMA should no longer be used. Only accept it if it is the only codec in the list.
 					Logger.warning(
-							Compressor.class,
-							"OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting old keys.");
+						Compressor.class,
+						"OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting old keys.");
 					if (result.size() > 1) {
 						logLzmaOldRemovedWarning();
 						result.remove(COMPRESSOR_TYPE.LZMA);
@@ -151,26 +151,26 @@ public interface Compressor {
 
 		private static void logLzmaOldRemovedWarning() {
 			Logger.warning(
-					Compressor.class,
-					"Codecs to choose contained ''LZMA'' along others. It was ignored. Please replace it with LZMA_NEW.");
+				Compressor.class,
+				"Codecs to choose contained ''LZMA'' along others. It was ignored. Please replace it with LZMA_NEW.");
 		}
 
 		@Override
 		public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-				throws IOException, CompressionOutputSizeException {
+		throws IOException, CompressionOutputSizeException {
 			return compressor.compress(data, bf, maxReadLength, maxWriteLength);
 		}
 
 		@Override
 		public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength)
-				throws IOException, CompressionOutputSizeException {
+		throws IOException, CompressionOutputSizeException {
 			return compressor.compress(is, os, maxReadLength, maxWriteLength);
 		}
 
 		@Override
 		public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 							 long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
-				throws IOException, CompressionRatioException {
+		throws IOException, CompressionRatioException {
 			return compressor.compress(is, os, maxReadLength, maxWriteLength, amountOfDataToCheckCompressionRatio, minimumCompressionPercentage);
 		}
 
@@ -201,7 +201,7 @@ public interface Compressor {
 	 * @throws CompressionOutputSizeException If the compressed data is larger than maxWriteLength.
 	 */
 	Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException;
+	throws IOException, CompressionOutputSizeException;
 
 	/**
 	 * Compress the data.
@@ -214,7 +214,7 @@ public interface Compressor {
 	 * @throws CompressionOutputSizeException If the compressed data is larger than maxWriteLength.
 	 */
 	long compress(InputStream input, OutputStream output, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException;
+	throws IOException, CompressionOutputSizeException;
 
 	/**
 	 * Compress the data (@see {@link #compress(InputStream, OutputStream, long, long)}) with checking of compression effect.
@@ -225,7 +225,7 @@ public interface Compressor {
 	 */
 	long compress(InputStream input, OutputStream output, long maxReadLength, long maxWriteLength,
 				  long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
-			throws IOException, CompressionRatioException;
+	throws IOException, CompressionRatioException;
 
 	/**
 	 * Decompress data.

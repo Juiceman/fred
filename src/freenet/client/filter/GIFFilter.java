@@ -25,15 +25,15 @@ public class GIFFilter implements ContentDataFilter {
 
 	static final int HEADER_SIZE = 6;
 	static final byte[] gif87aHeader =
-		{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'7', (byte)'a' };
+	{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'7', (byte)'a' };
 	static final byte[] gif89aHeader =
-		{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'9', (byte)'a' };
+	{ (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'9', (byte)'a' };
 
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		DataInputStream dis = new DataInputStream(input);
 		try {
 			// Check the header
@@ -145,17 +145,17 @@ public class GIFFilter implements ContentDataFilter {
 			int lastByte;
 			while (!terminated && (lastByte = input.read()) != -1) {
 				switch(lastByte) {
-					case IMAGE_SEPARATOR:
-						imageSeen |= filterImage();
-						break;
-					case GIF_TERMINATOR:
-						terminated |= imageSeen;
-						break;
-					case EXTENSION_INTRODUCER:
-						filterExtensionBlock();
-						break;
-					default:
-						// The specification expects us to skip other data; we can simply omit it.
+				case IMAGE_SEPARATOR:
+					imageSeen |= filterImage();
+					break;
+				case GIF_TERMINATOR:
+					terminated |= imageSeen;
+					break;
+				case EXTENSION_INTRODUCER:
+					filterExtensionBlock();
+					break;
+				default:
+					// The specification expects us to skip other data; we can simply omit it.
 				}
 			}
 			if (!imageSeen) {
@@ -319,7 +319,7 @@ public class GIFFilter implements ContentDataFilter {
 		}
 
 		static void filter(InputStream input, OutputStream output)
-				throws IOException, DataFilterException {
+		throws IOException, DataFilterException {
 			new GIF87aValidator(input, output).filter();
 		}
 	}
@@ -353,7 +353,7 @@ public class GIFFilter implements ContentDataFilter {
 		}
 
 		static void filter(InputStream input, OutputStream output)
-				throws IOException, DataFilterException {
+		throws IOException, DataFilterException {
 			new GIF89aValidator(input, output).filter();
 		}
 
@@ -361,14 +361,14 @@ public class GIFFilter implements ContentDataFilter {
 		protected void filterExtensionBlock() throws IOException {
 			int label = readByte();
 			switch (label) {
-				case GRAPHIC_CONTROL_LABEL:
-					readGraphicControl();
-					break;
-				case APPLICATION_LABEL:
-					filterApplicationBlock();
-					break;
-				default:
-					skipSubBlocks();
+			case GRAPHIC_CONTROL_LABEL:
+				readGraphicControl();
+				break;
+			case APPLICATION_LABEL:
+				filterApplicationBlock();
+				break;
+			default:
+				skipSubBlocks();
 			}
 		}
 

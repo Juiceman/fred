@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 /**
  * Class that provides data structures filled with HTML Entities and correspondent char value
- * 
+ *
  * @author Alberto Bacchelli &lt;sback@freenetproject.org&gt;
  */
 public final class HTMLEntities {
@@ -33,7 +33,7 @@ public final class HTMLEntities {
 	 * a Map where the HTML Entity is the key and the correspondent char is the value
 	 */
 	public static final HashMap<String, Character> decodeMap;
-	
+
 	private static final Object[][] charArray = {
 		{Character.valueOf((char)0), "#0"},
 		{Character.valueOf((char)34), "quot"},
@@ -306,17 +306,17 @@ public final class HTMLEntities {
 		{Character.valueOf((char)9829), "hearts"},
 		{Character.valueOf((char)9830), "diams"}
 	};
-	
-	
+
+
 	static {
 		encodeMap = new HashMap<Character, String>();
 		decodeMap = new HashMap<String, Character>();
-		
+
 		for(Object[] ch: charArray) {
 			encodeMap.put((Character) ch[0], (String) ch[1]);
 			decodeMap.put((String) ch[1], (Character) ch[0]);
 		}
-		
+
 	}
 
 }

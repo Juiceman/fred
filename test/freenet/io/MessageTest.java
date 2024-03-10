@@ -25,17 +25,19 @@ public class MessageTest {
 	private static final String DOUBLE_ARRAY = "double[]";
 	private static final String FLOAT_ARRAY = "float[]";
 
-	private static final MessageType test = new MessageType("test", DMT.PRIORITY_LOW) {{
-		addField(BOOLEAN, Boolean.class);
-		addField(BYTE, Byte.class);
-		addField(SHORT, Short.class);
-		addField(INT, Integer.class);
-		addField(LONG, Long.class);
-		addField(DOUBLE, Double.class);
-		addField(FLOAT, Float.class);
-		addField(DOUBLE_ARRAY, double[].class);
-		addField(FLOAT_ARRAY, float[].class);
-	}};
+	private static final MessageType test = new MessageType("test", DMT.PRIORITY_LOW) {
+		{
+			addField(BOOLEAN, Boolean.class);
+			addField(BYTE, Byte.class);
+			addField(SHORT, Short.class);
+			addField(INT, Integer.class);
+			addField(LONG, Long.class);
+			addField(DOUBLE, Double.class);
+			addField(FLOAT, Float.class);
+			addField(DOUBLE_ARRAY, double[].class);
+			addField(FLOAT_ARRAY, float[].class);
+		}
+	};
 
 	/**
 	 * Test that different types can be set and retrieved to and from a Message.

@@ -32,7 +32,7 @@ import freenet.support.io.FilenameGenerator;
 import freenet.support.io.TempBucketFactory;
 
 public class SlashdotStoreTest {
-	
+
 	private RandomSource strongPRNG = new DummyRandomSource(43210);
 	private Random weakPRNG = new Random(12340);
 	private PooledExecutor exec = new PooledExecutor();
@@ -48,35 +48,35 @@ public class SlashdotStoreTest {
 		tbf = new TempBucketFactory(exec, fg, 4096, 65536, weakPRNG, false, 2*1024*1024, null);
 		exec.start();
 	}
-	
+
 	@After
 	public void tearDown() {
 		FileUtil.removeAll(tempDir);
 	}
-	
+
 	@Test
 	public void testSimple() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
 		CHKStore store = new CHKStore();
 		new SlashdotStore<CHKBlock>(store, 10, 30*1000, 5*1000, new TrivialTicker(exec), tbf);
-		
+
 		// Encode a block
 		String test = "test";
 		ClientCHKBlock block = encodeBlock(test);
 		store.put(block.getBlock(), false);
-		
+
 		ClientCHK key = block.getClientKey();
-		
+
 		CHKBlock verify = store.fetch(key.getNodeCHK(), false, false, null);
 		String data = decodeBlock(verify, key);
 		assertEquals(test, data);
 	}
-	
+
 	@Test
 	public void testDeletion() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException, InterruptedException {
 		CHKStore store = new CHKStore();
 		SpeedyTicker st = new SpeedyTicker();
 		SlashdotStore<CHKBlock> ss = new SlashdotStore<>(store, 10, 0, 100, st, tbf);
-		
+
 		// Encode a block
 		String test = "test";
 		ClientCHKBlock block = encodeBlock(test);
@@ -84,9 +84,9 @@ public class SlashdotStoreTest {
 
 		// Do the same as what the ticker would have done...
 		ss.purgeOldData();
-		
+
 		ClientCHK key = block.getClientKey();
-		
+
 		CHKBlock verify = store.fetch(key.getNodeCHK(), false, false, null);
 		if(verify == null) return; // Expected outcome
 		String data = decodeBlock(verify, key);
@@ -105,7 +105,7 @@ public class SlashdotStoreTest {
 		byte[] data = test.getBytes(StandardCharsets.UTF_8);
 		SimpleReadOnlyArrayBucket bucket = new SimpleReadOnlyArrayBucket(data);
 		return ClientCHKBlock.encode(bucket, false, false, (short)-1, bucket.size(), Compressor.DEFAULT_COMPRESSORDESCRIPTOR,
-        null, (byte)0);
+									 null, (byte)0);
 	}
 
 }

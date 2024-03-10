@@ -19,23 +19,23 @@ import freenet.support.Logger.LogLevel;
 
 /**
  * Simple SendableInsert implementation. No feedback, no retries, just insert the
- * block. Not designed for use by the client layer (and not persistent). Used by the node layer 
+ * block. Not designed for use by the client layer (and not persistent). Used by the node layer
  * for the 1 in every 200 successful requests which starts an insert.
  */
 public class SimpleSendableInsert extends SendableInsert {
 
-    private static final long serialVersionUID = 1L;
-    public final KeyBlock block;
+	private static final long serialVersionUID = 1L;
+	public final KeyBlock block;
 	public final short prioClass;
 	private boolean finished;
 	public final RequestClient client;
 	public final ClientRequestScheduler scheduler;
-	      
-        private static volatile boolean logMINOR;
+
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -55,7 +55,7 @@ public class SimpleSendableInsert extends SendableInsert {
 		if(!scheduler.isInsertScheduler())
 			throw new IllegalStateException("Scheduler "+scheduler+" is not an insert scheduler!");
 	}
-	
+
 	public SimpleSendableInsert(KeyBlock block, short prioClass, RequestClient client, ClientRequestScheduler scheduler) {
 		super(false, false);
 		this.block = block;
@@ -63,7 +63,7 @@ public class SimpleSendableInsert extends SendableInsert {
 		this.client = client;
 		this.scheduler = scheduler;
 	}
-	
+
 	@Override
 	public void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context) {
 		// Yay!
@@ -102,7 +102,7 @@ public class SimpleSendableInsert extends SendableInsert {
 				}
 				if(logMINOR) Logger.minor(this, "Request succeeded: "+this);
 				onSuccess(req.token, null, context);
-                sched.removeRunningInsert(SimpleSendableInsert.this, req.token.getKey());
+				sched.removeRunningInsert(SimpleSendableInsert.this, req.token.getKey());
 				return true;
 			}
 
@@ -124,15 +124,15 @@ public class SimpleSendableInsert extends SendableInsert {
 	}
 
 	@Override
-    public ClientRequestSchedulerGroup getSchedulerGroup() {
-	    return null;
+	public ClientRequestSchedulerGroup getSchedulerGroup() {
+		return null;
 	}
 
 	@Override
 	public boolean isCancelled() {
 		return finished;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return finished;
@@ -162,56 +162,56 @@ public class SimpleSendableInsert extends SendableInsert {
 		if(finished) return 0;
 		return 1;
 	}
-	
+
 	// FIXME share with SingleBlockInserter???
 	private static class MySendableRequestItem implements SendableRequestItem, SendableRequestItemKey {
-	    
-	    final SimpleSendableInsert parent;
 
-        public MySendableRequestItem(SimpleSendableInsert parent) {
-            this.parent = parent;
-        }
+		final SimpleSendableInsert parent;
 
-        @Override
-        public void dump() {
-            // Ignore.
-        }
+		public MySendableRequestItem(SimpleSendableInsert parent) {
+			this.parent = parent;
+		}
 
-        @Override
-        public SendableRequestItemKey getKey() {
-            return this;
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if(o instanceof MySendableRequestItem) {
-                return ((MySendableRequestItem)o).parent == parent;
-            } else return false;
-        }
-        
-        @Override
-        public int hashCode() {
-            return parent.hashCode();
-        }
-	    
+		@Override
+		public void dump() {
+			// Ignore.
+		}
+
+		@Override
+		public SendableRequestItemKey getKey() {
+			return this;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if(o instanceof MySendableRequestItem) {
+				return ((MySendableRequestItem)o).parent == parent;
+			} else return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return parent.hashCode();
+		}
+
 	}
 
 	@Override
 	public synchronized SendableRequestItem chooseKey(KeysFetchingLocally keys, ClientContext context) {
-	    MySendableRequestItem mine = new MySendableRequestItem(this);
+		MySendableRequestItem mine = new MySendableRequestItem(this);
 		if(keys.hasInsert(mine))
 			return null;
 		if(finished) return null;
 		else
 			return mine;
 	}
-	
+
 	@Override
 	public synchronized long getWakeupTime(ClientContext context, long now) {
-	    if(isEmpty()) return -1;
-	    if(scheduler.fetchingKeys().hasInsert(new MySendableRequestItem(this)))
-	        return Long.MAX_VALUE;
-	    return 0;
+		if(isEmpty()) return -1;
+		if(scheduler.fetchingKeys().hasInsert(new MySendableRequestItem(this)))
+			return Long.MAX_VALUE;
+		return 0;
 	}
 
 	@Override
@@ -239,9 +239,9 @@ public class SimpleSendableInsert extends SendableInsert {
 		return false;
 	}
 
-    @Override
-    protected void innerOnResume(ClientContext context) throws InsertException {
-        // Do nothing.
-    }
+	@Override
+	protected void innerOnResume(ClientContext context) throws InsertException {
+		// Do nothing.
+	}
 
 }

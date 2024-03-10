@@ -5,12 +5,10 @@ package freenet.support;
  * or contains an illegal character.
  */
 public class IllegalBase64Exception
-  extends Exception
-{
-	
+	extends Exception {
+
 	private static final long serialVersionUID = -1;
-  public IllegalBase64Exception(String descr)
-  {
-    super(descr);
-  }
+	public IllegalBase64Exception(String descr) {
+		super(descr);
+	}
 }

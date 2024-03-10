@@ -18,8 +18,7 @@ import freenet.support.Fields;
 public class CryptUtilTest {
 
 	@Test
-	public void testRandomBytes()
-	{
+	public void testRandomBytes() {
 		// two predictable pseudo-random sequence
 		MersenneTwister mt1 = new MersenneTwister(Long.MAX_VALUE);
 		MersenneTwister mt2 = new MersenneTwister(Long.MAX_VALUE);
@@ -31,13 +30,12 @@ public class CryptUtilTest {
 				mt1.nextBytes(b1);
 				Util.randomBytes(mt2, b2, off, len);
 				assertTrue("Random offset="+off+" length="+len,
-						Fields.byteArrayEqual(b1, b2, 0, off, len));
+						   Fields.byteArrayEqual(b1, b2, 0, off, len));
 			}
 		}
 	}
 	@Test
-	public void testSecureRandomBytes()
-	{
+	public void testSecureRandomBytes() {
 		SecureRandom r1;
 		SecureRandom r2;
 		try {
@@ -74,7 +72,7 @@ public class CryptUtilTest {
 				r1.nextBytes(b1);
 				Util.randomBytes(r2, b2, off, len);
 				assertTrue("SecureRandom offset="+off+" length="+len,
-						Fields.byteArrayEqual(b1, b2, 0, off, len));
+						   Fields.byteArrayEqual(b1, b2, 0, off, len));
 			}
 		}
 	}

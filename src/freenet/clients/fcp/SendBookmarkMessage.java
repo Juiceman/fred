@@ -17,20 +17,20 @@ public class SendBookmarkMessage extends SendPeerMessage {
 	private final boolean hasAnAnActiveLink;
 
 	public SendBookmarkMessage(SimpleFieldSet fs)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		super(fs);
 		try {
 			name = fs.get("Name");
 			if (name == null)
 				throw new MessageInvalidException(
-						ProtocolErrorMessage.MISSING_FIELD, "No name",
-						identifier, false);
+					ProtocolErrorMessage.MISSING_FIELD, "No name",
+					identifier, false);
 			uri = new FreenetURI(fs.get("URI"));
 			hasAnAnActiveLink = fs.getBoolean("HasAnActivelink", false);
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(
-					ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e
-							.getMessage(), identifier, false);
+				ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e
+				.getMessage(), identifier, false);
 		}
 	}
 
@@ -54,8 +54,7 @@ public class SendBookmarkMessage extends SendPeerMessage {
 			if(dataLength() > 0) {
 				byte[] description = BucketTools.toByteArray(bucket);
 				return pn.sendBookmarkFeed(uri, name, new String(description, StandardCharsets.UTF_8), hasAnAnActiveLink);
-			}
-			else
+			} else
 				return pn.sendBookmarkFeed(uri, name, null, hasAnAnActiveLink);
 		} catch (IOException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "", null, false);

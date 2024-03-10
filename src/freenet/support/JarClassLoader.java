@@ -1,16 +1,16 @@
 /*
  * freenet - JarClassLoader.java Copyright © 2007 David Roden
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -41,7 +41,7 @@ import freenet.support.io.FileUtil;
  * Class loader that loads classes from a JAR file. The JAR file gets copied
  * to a temporary location; requests for classes and resources from this class
  * loader are then satisfied from this local copy.
- * 
+ *
  * @author <a href="mailto:dr@ina-germany.de">David Roden</a>
  * @version $Id$
  */
@@ -53,11 +53,11 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 
 	/** The temporary jar file. */
 	private JarFile tempJarFile;
-	
+
 	/**
 	 * Constructs a new jar class loader that loads classes from the jar file
 	 * with the given name in the local file system.
-	 * 
+	 *
 	 * @param fileName
 	 *            The name of the jar file
 	 * @throws IOException
@@ -70,7 +70,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	/**
 	 * Constructs a new jar class loader that loads classes from the specified
 	 * URL.
-	 * 
+	 *
 	 * @param fileUrl
 	 *            The URL to load the jar file from
 	 * @param length
@@ -86,7 +86,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	/**
 	 * Constructs a new jar class loader that loads classes from the specified
 	 * file.
-	 * 
+	 *
 	 * @param file
 	 *            The file to load classes from
 	 * @throws IOException
@@ -99,7 +99,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	/**
 	 * Copies the contents of the input stream (which are supposed to be the
 	 * contents of a jar file) to a temporary location.
-	 * 
+	 *
 	 * @param inputStream
 	 *            The input stream to read from
 	 * @param length
@@ -122,7 +122,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * <p>
 	 * This method searches the temporary copy of the jar file for an entry
 	 * that is specified by the given class name.
-	 * 
+	 *
 	 * @see java.lang.ClassLoader#findClass(java.lang.String)
 	 */
 	@Override
@@ -140,7 +140,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 				byte[] classBytes = classBytesOutputStream.toByteArray();
 
 				definePackage(name);
-					
+
 				Class<?> clazz = defineClass(name, classBytes, 0, classBytes.length);
 				return clazz;
 			}
@@ -215,7 +215,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 * If the resource is found in this jar, opens the stream using ZipEntry's,
 	 * so when tempJarFile is closed, so are all the streams, hence we can delete
 	 * the jar on Windows.
-	 * 
+	 *
 	 * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
 	 */
 	@Override
@@ -255,7 +255,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	/**
 	 * Transforms the class name into a file name that can be used to locate
 	 * an entry in the jar file.
-	 * 
+	 *
 	 * @param name
 	 *            The name of the class
 	 * @return The path name of the entry in the jar file
@@ -263,7 +263,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	private String transformName(String name) {
 		return name.replace('.', '/') + ".class";
 	}
-	
+
 	protected Package definePackage(String name) throws IllegalArgumentException {
 		Package pkg = null;
 		int i = name.lastIndexOf('.');
@@ -326,7 +326,7 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 		}
 		return definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, sealBase);
 	}
-	
+
 	@Override
 	public void close() throws IOException {
 		tempJarFile.close();

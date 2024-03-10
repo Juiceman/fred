@@ -131,7 +131,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		this.maxSize = maxSize2;
 		this.timeStarted = System.currentTimeMillis();
 		this.fctx = fctx;
-        this.rc = rc;
+		this.rc = rc;
 		FetchContext alteredFctx = new FetchContext(fctx, FetchContext.IDENTICAL_MASK);
 		alteredFctx.maxOutputLength = fctx.maxTempLength = maxSize;
 		alteredFctx.eventProducer.addEventListener(this);
@@ -151,7 +151,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		return tracker;
 	}
 
-	public synchronized void addCustomWaiter(FProxyFetchWaiter waiter){
+	public synchronized void addCustomWaiter(FProxyFetchWaiter waiter) {
 		waiters.add(waiter);
 	}
 
@@ -162,7 +162,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 			res = new FProxyFetchResult(this, data, mimeType, timeStarted, goneToNetwork, getETA(), hasWaited);
 		else {
 			res = new FProxyFetchResult(this, mimeType, size, timeStarted, goneToNetwork,
-					totalBlocks, requiredBlocks, fetchedBlocks, failedBlocks, fatallyFailedBlocks, finalizedBlocks, failed, getETA(), hasWaited);
+										totalBlocks, requiredBlocks, fetchedBlocks, failedBlocks, fatallyFailedBlocks, finalizedBlocks, failed, getETA(), hasWaited);
 		}
 		results.add(res);
 		if(data != null || failed != null) {
@@ -324,7 +324,7 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 
 	@Override
 	public void receive(ClientEvent ce, ClientContext context) {
-		try{
+		try {
 			if(ce instanceof SplitfileProgressEvent) {
 				SplitfileProgressEvent split = (SplitfileProgressEvent) ce;
 				synchronized(this) {
@@ -356,8 +356,8 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 				if(!goneToNetwork) return;
 			} else return;
 			wakeWaiters(false);
-		}finally{
-			for(FProxyFetchListener l:new ArrayList<FProxyFetchListener>(listener)){
+		} finally {
+			for(FProxyFetchListener l:new ArrayList<FProxyFetchListener>(listener)) {
 				l.onEvent();
 			}
 		}
@@ -371,8 +371,8 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		for(FProxyFetchWaiter w : waiting) {
 			w.wakeUp(finished);
 		}
-		if(finished==true){
-			for(FProxyFetchListener l:new ArrayList<FProxyFetchListener>(listener)){
+		if(finished==true) {
+			for(FProxyFetchListener l:new ArrayList<FProxyFetchListener>(listener)) {
 				l.onEvent();
 			}
 		}
@@ -507,8 +507,8 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 
 	/** Adds a listener that will be notified when a change occurs to this fetch
 	 * @param listener - The listener to be added*/
-	public synchronized void addListener(FProxyFetchListener listener){
-		if(logMINOR){
+	public synchronized void addListener(FProxyFetchListener listener) {
+		if(logMINOR) {
 			Logger.minor(this,"Registered listener:"+listener);
 		}
 		this.listener.add(listener);
@@ -516,18 +516,18 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 
 	/** Removes a listener
 	 * @param listener - The listener to be removed*/
-	public synchronized void removeListener(FProxyFetchListener listener){
-		if(logMINOR){
+	public synchronized void removeListener(FProxyFetchListener listener) {
+		if(logMINOR) {
 			Logger.minor(this,"Removed listener:"+listener);
 		}
 		this.listener.remove(listener);
-		if(logMINOR){
+		if(logMINOR) {
 			Logger.minor(this,"can cancel now?:"+canCancel());
 		}
 	}
 
 	/** Allows the fetch to be removed immediately*/
-	public synchronized void requestImmediateCancel(){
+	public synchronized void requestImmediateCancel() {
 		requestImmediateCancel=true;
 	}
 
@@ -546,14 +546,14 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 		return true;
 	}
 
-    @Override
-    public void onResume(ClientContext context) {
-        throw new UnsupportedOperationException(); // Not persistent.
-    }
+	@Override
+	public void onResume(ClientContext context) {
+		throw new UnsupportedOperationException(); // Not persistent.
+	}
 
-    @Override
-    public RequestClient getRequestClient() {
-        return rc;
-    }
+	@Override
+	public RequestClient getRequestClient() {
+		return rc;
+	}
 
 }

@@ -12,7 +12,7 @@ public class EventDumper implements ClientEventListener {
 
 	final Writer w;
 	final boolean removeWithProducer;
-	
+
 	public EventDumper(Writer writer, boolean removeWithProducer) {
 		this.w = writer;
 		this.removeWithProducer = removeWithProducer;

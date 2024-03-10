@@ -19,7 +19,7 @@ import freenet.support.SimpleFieldSet;
 public class PersistentGet extends FCPMessage {
 
 	static final String name = "PersistentGet";
-	
+
 	final String identifier;
 	final FreenetURI uri;
 	final int verbosity;
@@ -34,10 +34,10 @@ public class PersistentGet extends FCPMessage {
 	final boolean binaryBlob;
 	final long maxSize;
 	final boolean realTime;
-	
-	public PersistentGet(String identifier, FreenetURI uri, int verbosity, 
-			short priorityClass, ReturnType returnType, Persistence persistence, 
-			File targetFile, String clientToken, boolean global, boolean started, int maxRetries, boolean binaryBlob, long maxSize, boolean realTime) {
+
+	public PersistentGet(String identifier, FreenetURI uri, int verbosity,
+						 short priorityClass, ReturnType returnType, Persistence persistence,
+						 File targetFile, String clientToken, boolean global, boolean started, int maxRetries, boolean binaryBlob, long maxSize, boolean realTime) {
 		this.identifier = identifier;
 		this.uri = uri;
 		// This has been seen in practice (bug #3606), lets try to get an earlier stack trace...
@@ -86,7 +86,7 @@ public class PersistentGet extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
-			throws MessageInvalidException {
+	throws MessageInvalidException {
 		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentGet goes from server to client not the other way around", identifier, global);
 	}
 

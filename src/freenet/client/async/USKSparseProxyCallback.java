@@ -19,8 +19,8 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 	private byte[] lastData;
 	private boolean lastWasKnownGoodToo;
 	private boolean roundFinished;
-	
-    private static volatile boolean logMINOR;
+
+	private static volatile boolean logMINOR;
 	static {
 		Logger.registerClass(USKSparseProxyCallback.class);
 	}
@@ -34,9 +34,9 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 	}
 
 	@Override
-	public void onFoundEdition(long l, USK key, 
-			ClientContext context, boolean metadata, short codec, byte[] data,
-			boolean newKnownGood, boolean newSlotToo) {
+	public void onFoundEdition(long l, USK key,
+							   ClientContext context, boolean metadata, short codec, byte[] data,
+							   boolean newKnownGood, boolean newSlotToo) {
 		synchronized(this) {
 			if(l < lastEdition) {
 				if(!roundFinished) return;
@@ -74,7 +74,7 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 	public void onRoundFinished(ClientContext context) {
 		innerRoundFinished(context, true);
 	}
-	
+
 	private void innerRoundFinished(ClientContext context, boolean finishedRound) {
 		long ed;
 		boolean meta;

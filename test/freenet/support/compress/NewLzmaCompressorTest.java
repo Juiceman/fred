@@ -69,7 +69,7 @@ public class NewLzmaCompressorTest {
 	@Test
 	public void testByteArrayDecompress() throws IOException {
 
-        // build 5k array
+		// build 5k array
 		byte[] originalUncompressedData = new byte[5 * 1024];
 		for(int i = 0; i < originalUncompressedData.length; i++) {
 			originalUncompressedData[i] = 1;
@@ -85,7 +85,7 @@ public class NewLzmaCompressorTest {
 		assertEquals(writtenBytes, originalUncompressedData.length);
 		assertEquals(originalUncompressedData.length, outUncompressedData.length);
 
-        // check each byte is exactly as expected
+		// check each byte is exactly as expected
 		for (int i = 0; i < outUncompressedData.length; i++) {
 			assertEquals(originalUncompressedData[i], outUncompressedData[i]);
 		}
@@ -96,7 +96,7 @@ public class NewLzmaCompressorTest {
 
 		Random random = new Random(1234);
 
-		for(int rounds=0;rounds<100;rounds++) {
+		for(int rounds=0; rounds<100; rounds++) {
 			int scale = random.nextInt(19) + 1;
 			int size = random.nextInt(1 << scale);
 

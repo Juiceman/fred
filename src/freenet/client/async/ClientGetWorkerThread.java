@@ -69,32 +69,32 @@ public class ClientGetWorkerThread extends Thread {
 	 */
 	@Deprecated // use @GetClientWorkerThread with schemeHostAndPort instead, pass null if needed.
 	public ClientGetWorkerThread(InputStream input, OutputStream output, FreenetURI uri,
-			String mimeType, HashResult[] hashes, boolean filterData, String charset,
-			FoundURICallback prefetchHook, TagReplacerCallback tagReplacer,
-			LinkFilterExceptionProvider linkFilterExceptionProvider) throws URISyntaxException {
-			this(input, output, uri,
-			mimeType, null, hashes, filterData, charset,
-			prefetchHook, tagReplacer, linkFilterExceptionProvider);
-		}
+								 String mimeType, HashResult[] hashes, boolean filterData, String charset,
+								 FoundURICallback prefetchHook, TagReplacerCallback tagReplacer,
+								 LinkFilterExceptionProvider linkFilterExceptionProvider) throws URISyntaxException {
+		this(input, output, uri,
+			 mimeType, null, hashes, filterData, charset,
+			 prefetchHook, tagReplacer, linkFilterExceptionProvider);
+	}
 
-	 /**
-	 * @param input The stream to read the data from
-	 * @param output The final destination to which the data will be written
-	 * @param uri The URI of the fetched data. Needed for the ContentFilter. Optional.
-	 * @param mimeType MIME of the fetched data. The best guess is needed for the
-	 * ContentFilter. Optional.
-	 * @param hashes Hashes of the fetched data, to be compared against. Optional.
-	 * @param filterData If true, the ContentFilter will be invoked
-	 * @param charset Charset to be passed to the ContentFilter.
-	 * Only needed if filterData is true.
-	 * @param prefetchHook Only needed if filterData is true.
-	 * @param tagReplacer Used for web-pushing. Only needed if filterData is true.
-	 * @param linkFilterExceptionProvider Provider for link filter exceptions
-	 * @throws URISyntaxException
-	 */
+	/**
+	* @param input The stream to read the data from
+	* @param output The final destination to which the data will be written
+	* @param uri The URI of the fetched data. Needed for the ContentFilter. Optional.
+	* @param mimeType MIME of the fetched data. The best guess is needed for the
+	* ContentFilter. Optional.
+	* @param hashes Hashes of the fetched data, to be compared against. Optional.
+	* @param filterData If true, the ContentFilter will be invoked
+	* @param charset Charset to be passed to the ContentFilter.
+	* Only needed if filterData is true.
+	* @param prefetchHook Only needed if filterData is true.
+	* @param tagReplacer Used for web-pushing. Only needed if filterData is true.
+	* @param linkFilterExceptionProvider Provider for link filter exceptions
+	* @throws URISyntaxException
+	*/
 	public ClientGetWorkerThread(InputStream input, OutputStream output, FreenetURI uri,
-			String mimeType, String schemeHostAndPort, HashResult[] hashes, boolean filterData, String charset,
-			FoundURICallback prefetchHook, TagReplacerCallback tagReplacer, LinkFilterExceptionProvider linkFilterExceptionProvider) throws URISyntaxException {
+								 String mimeType, String schemeHostAndPort, HashResult[] hashes, boolean filterData, String charset,
+								 FoundURICallback prefetchHook, TagReplacerCallback tagReplacer, LinkFilterExceptionProvider linkFilterExceptionProvider) throws URISyntaxException {
 		super("ClientGetWorkerThread-"+counter());
 		this.input = input;
 		if(uri != null) this.uri = uri.toURI("/");
@@ -124,31 +124,30 @@ public class ClientGetWorkerThread extends Thread {
 				input = hashStream;
 			}
 			//Filter the data, if we are supposed to
-			if(filterData){
+			if(filterData) {
 				if(logMINOR) Logger.minor(this, "Running content filter... Prefetch hook: "+prefetchHook+" tagReplacer: "+tagReplacer);
 				if(mimeType == null || uri == null || input == null || output == null) throw new IOException("Insufficient arguements to worker thread");
 				// Send XHTML as HTML because we can't use web-pushing on XHTML.
 				FilterStatus filterStatus = ContentFilter.filter(input, output, mimeType, uri,
-						schemeHostAndPort, prefetchHook, tagReplacer, charset, linkFilterExceptionProvider);
+											schemeHostAndPort, prefetchHook, tagReplacer, charset, linkFilterExceptionProvider);
 
 				String detectedMIMEType = filterStatus.mimeType.concat(filterStatus.charset == null ? "" : "; charset="+filterStatus.charset);
 				synchronized(this) {
 					clientMetadata = new ClientMetadata(detectedMIMEType);
 				}
-			}
-			else {
+			} else {
 				if(logMINOR) Logger.minor(this, "Ignoring content filter. The final result has not been written. Writing now.");
 				FileUtil.copy(input, output, -1);
 			}
 			// Dump the rest.
 			try {
 				while(true) {
-				    // FileInputStream.skip() doesn't do what we want. Use read().
-				    // Note this is only necessary because we might have an AEADInputStream?
-				    // FIXME get rid - they should check the end anyway?
-				    byte[] buf = new byte[4096];
-				    int r = input.read(buf);
-				    if(r < 0) break;
+					// FileInputStream.skip() doesn't do what we want. Use read().
+					// Note this is only necessary because we might have an AEADInputStream?
+					// FIXME get rid - they should check the end anyway?
+					byte[] buf = new byte[4096];
+					int r = input.read(buf);
+					if(r < 0) break;
 				}
 			} catch (EOFException e) {
 				// Okay.

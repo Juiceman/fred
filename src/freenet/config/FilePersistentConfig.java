@@ -36,11 +36,11 @@ public class FilePersistentConfig extends PersistentConfig {
 	protected final Object storeSync = new Object();
 	protected boolean writeOnFinished;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -170,12 +170,11 @@ public class FilePersistentConfig extends PersistentConfig {
 			fos.close();
 			fos = null;
 			FileUtil.renameTo(tempFilename, filename);
-		}
-		finally {
+		} finally {
 			Closer.close(fos);
 		}
 	}
-	
+
 	public void finishedInit() {
 		super.finishedInit();
 		if(writeOnFinished) {

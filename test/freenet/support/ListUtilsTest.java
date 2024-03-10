@@ -104,16 +104,16 @@ public class ListUtilsTest {
 	static class NotRandomAlwaysTop extends Random {
 		// Fake random, always remove highest possible value in nextInt
 		@Override
-			public int nextInt(int top) {
-				return top - 1;
-			}
+		public int nextInt(int top) {
+			return top - 1;
+		}
 	}
 	static class NotRandomAlwaysZero extends Random {
 		// Fake random, always remove lowest possible value in nextInt
 		@Override
-			public int nextInt(int top) {
-				return 0;
-			}
+		public int nextInt(int top) {
+			return 0;
+		}
 	}
 	@Test
 	public void testRemoveByRandom() {

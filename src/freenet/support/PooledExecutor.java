@@ -189,7 +189,7 @@ public class PooledExecutor implements Executor {
 			threadNo = threadCounter;
 			nextJob = firstJob;
 		}
-		
+
 		@Override
 		public void realRun() {
 			int nativePriority = getNativePriority();
@@ -207,7 +207,7 @@ public class PooledExecutor implements Executor {
 		public int getJobId() {
 			return job != null ? job.id : nextJob != null ? nextJob.id : 0;
 		}
-		
+
 		private void innerRun(int nativePriority) {
 			long ranJobs = 0;
 			while(true) {

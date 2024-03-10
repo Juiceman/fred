@@ -23,7 +23,7 @@ public class NAME_SELECTION implements Step {
 	public void getStep(HTTPRequest request, PageHelper helper) {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("step2Title"));
 		HTMLNode nnameInfoboxContent = helper.getInfobox("infobox-normal", WizardL10n.l10n("chooseNodeName"),
-		        contentNode, null, false);
+									   contentNode, null, false);
 
 		nnameInfoboxContent.addChild("#", WizardL10n.l10n("chooseNodeNameLong"));
 		HTMLNode nnameForm = helper.addFormChild(nnameInfoboxContent, ".", "nnameForm");
@@ -31,11 +31,11 @@ public class NAME_SELECTION implements Step {
 
 		HTMLNode lineBelow = nnameForm.addChild("div");
 		lineBelow.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+						   new String[] { "type", "name", "value" },
+						   new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		lineBelow.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+						   new String[] { "type", "name", "value" },
+						   new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	@Override

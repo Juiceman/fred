@@ -22,16 +22,16 @@ abstract class DirPutFile {
 	final String name;
 	ClientMetadata meta;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
-	
+
 	protected DirPutFile(String name, String mimeType) {
 		this.name = name;
 		meta = new ClientMetadata(mimeType);

@@ -10,22 +10,22 @@ import freenet.support.Logger.LogLevel;
 
 /**
  * Number in hexadecimal format are used throughout Freenet.
- * 
- * <p>Unless otherwise stated, the conventions follow the rules outlined in the 
+ *
+ * <p>Unless otherwise stated, the conventions follow the rules outlined in the
  * Java Language Specification.</p>
- * 
+ *
  * @author syoung
  */
 public class HexUtil {
 	final
 	private static boolean logDEBUG =Logger.shouldLog(LogLevel.DEBUG,HexUtil.class);
-	private HexUtil() {		
-	}	
-	
+	private HexUtil() {
+	}
+
 
 	/**
 	 * Converts a byte array into a string of lower case hex chars.
-	 * 
+	 *
 	 * @param bs
 	 *            A byte array
 	 * @param off
@@ -72,7 +72,7 @@ public class HexUtil {
 
 	/**
 	 * Converts a String of hex characters into an array of bytes.
-	 * 
+	 *
 	 * @param s
 	 *            A string of hex characters (upper case or lower) of even
 	 *            length.
@@ -82,8 +82,8 @@ public class HexUtil {
 	 *            The first byte to write of the array
 	 */
 	public static void hexToBytes(String s, byte[] out, int off)
-		throws NumberFormatException, IndexOutOfBoundsException {
-		
+	throws NumberFormatException, IndexOutOfBoundsException {
+
 		int slen = s.length();
 		if ((slen % 2) != 0) {
 			s = '0' + s;
@@ -92,11 +92,11 @@ public class HexUtil {
 		if (out.length < off + slen / 2) {
 			throw new IndexOutOfBoundsException(
 				"Output buffer too small for input ("
-					+ out.length
-					+ '<'
-                        + off
-					+ slen / 2
-					+ ')');
+				+ out.length
+				+ '<'
+				+ off
+				+ slen / 2
+				+ ')');
 		}
 
 		// Safe to assume the string is even length
@@ -122,13 +122,13 @@ public class HexUtil {
 		byte[] b = new byte[bytesAlloc];
 		StringBuilder sb =null;
 		if(logDEBUG) sb = new StringBuilder(8*bytesAlloc); //TODO: Should it be 2*8*bytesAlloc here?
-		for(int i=0;i<b.length;i++) {
+		for(int i=0; i<b.length; i++) {
 			short s = 0;
-			for(int j=0;j<8;j++) {
+			for(int j=0; j<8; j++) {
 				int idx = i*8+j;
-				boolean val = 
+				boolean val =
 					idx > size - 1 ? false :
-						ba.get(idx);
+					ba.get(idx);
 				s |= val ? (1<<j) : 0;
 				if(logDEBUG) sb.append(val ? '1' : '0');
 			}
@@ -136,7 +136,7 @@ public class HexUtil {
 			b[i] = (byte)s;
 		}
 		if(logDEBUG) Logger.debug(HexUtil.class, "bytes: "+bytesAlloc+" returned from bitsToBytes("
-				+ba+ ',' +size+"): "+bytesToHex(b)+" for "+sb.toString());
+									  +ba+ ',' +size+"): "+bytesToHex(b)+" for "+sb.toString());
 		return b;
 	}
 
@@ -171,7 +171,7 @@ public class HexUtil {
 		if(logDEBUG) Logger.debug(HexUtil.class, "bytesToBits("+bytesToHex(b)+",ba,"+maxSize);
 		int x = 0;
 		for(byte bi: b) {
-			for(int j=0;j<8;j++) {
+			for(int j=0; j<8; j++) {
 				if(x > maxSize) break;
 				int mask = 1 << j;
 				boolean value = (mask & bi) != 0;
@@ -186,50 +186,50 @@ public class HexUtil {
 	 * Read a hex string of bits and write it into a bitset
 	 * @param s hex string of the stored bits
 	 * @param ba the bitset to store the bits in
-	 * @param length the maximum number of bits to store 
+	 * @param length the maximum number of bits to store
 	 */
 	public static void hexToBits(String s, BitSet ba, int length) {
 		byte[] b = hexToBytes(s);
 		bytesToBits(b, ba, length);
 	}
-	
-	/**
-     * Write a (reasonably short) BigInteger to a stream.
-     * @param integer the BigInteger to write
-     * @param out the stream to write it to
-     */
-    public static void writeBigInteger(BigInteger integer, DataOutputStream out) throws IOException {
-        if(integer.signum() == -1) {
-            //dump("Negative BigInteger", LogLevel.ERROR, true);
-            throw new IllegalStateException("Negative BigInteger!");
-        }
-        byte[] buf = integer.toByteArray();
-        if(buf.length > Short.MAX_VALUE)
-            throw new IllegalStateException("Too long: "+buf.length);
-        out.writeShort((short)buf.length);
-        out.write(buf);
-    }
 
-    /**
+	/**
+	 * Write a (reasonably short) BigInteger to a stream.
+	 * @param integer the BigInteger to write
+	 * @param out the stream to write it to
+	 */
+	public static void writeBigInteger(BigInteger integer, DataOutputStream out) throws IOException {
+		if(integer.signum() == -1) {
+			//dump("Negative BigInteger", LogLevel.ERROR, true);
+			throw new IllegalStateException("Negative BigInteger!");
+		}
+		byte[] buf = integer.toByteArray();
+		if(buf.length > Short.MAX_VALUE)
+			throw new IllegalStateException("Too long: "+buf.length);
+		out.writeShort((short)buf.length);
+		out.write(buf);
+	}
+
+	/**
 	 * Read a (reasonably short) BigInteger from a DataInputStream
 	 * @param dis the stream to read from
 	 * @return a BigInteger
 	 */
 	public static BigInteger readBigInteger(DataInputStream dis) throws IOException {
-	    short i = dis.readShort();
-	    if(i < 0) throw new IOException("Invalid BigInteger length: "+i);
-	    byte[] buf = new byte[i];
-	    dis.readFully(buf);
-	    return new BigInteger(1,buf);
+		short i = dis.readShort();
+		if(i < 0) throw new IOException("Invalid BigInteger length: "+i);
+		byte[] buf = new byte[i];
+		dis.readFully(buf);
+		return new BigInteger(1,buf);
 	}
 
 
-    /**
-     * Turn a BigInteger into a hex string.
-     * BigInteger.toString(16) NPEs on Sun/Oracle JDK 1.4.2_05. :<
-     * The bugs in their Big* are getting seriously irritating...
-     */
-    public static String biToHex(BigInteger bi) {
-        return bytesToHex(bi.toByteArray());
-    }
+	/**
+	 * Turn a BigInteger into a hex string.
+	 * BigInteger.toString(16) NPEs on Sun/Oracle JDK 1.4.2_05. :<
+	 * The bugs in their Big* are getting seriously irritating...
+	 */
+	public static String biToHex(BigInteger bi) {
+		return bytesToHex(bi.toByteArray());
+	}
 }

@@ -19,8 +19,8 @@ public class ConnectionsListUpdater extends ReplacerUpdater {
 			if (e.getAttribute("name").compareTo("pageTitle") == 0) {
 				Window.setTitle(e.getAttribute("value"));
 				RootPanel htmlTitlePanel=RootPanel.get("topbar");
-				if(htmlTitlePanel!=null){
-					if(htmlTitlePanel.getElement().getElementsByTagName("h1").getLength()==1){
+				if(htmlTitlePanel!=null) {
+					if(htmlTitlePanel.getElement().getElementsByTagName("h1").getLength()==1) {
 						htmlTitlePanel.getElement().getElementsByTagName("h1").getItem(0).setInnerHTML(e.getAttribute("value"));
 					}
 				}

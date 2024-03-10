@@ -18,16 +18,16 @@ import freenet.support.HexUtil;
 import freenet.support.Logger;
 
 /**
- * SSKBlock. Contains a full fetched key. Can do a node-level verification. Can 
+ * SSKBlock. Contains a full fetched key. Can do a node-level verification. Can
  * decode original data when fed a ClientSSK.
  */
 public class SSKBlock implements KeyBlock {
 	private static volatile boolean logMINOR;
-	
+
 	static {
 		Logger.registerClass(SSKBlock.class);
 	}
-	
+
 	// how much of the headers we compare in order to consider two
 	// SSKBlocks equal - necessary because the last 64 bytes need not
 	// be the same for the same data and the same key (see comments below)
@@ -46,57 +46,57 @@ public class SSKBlock implements KeyBlock {
 	 *  2 bytes - data compression algorithm or -1
 	 * IMPLICIT - hash of data
 	 * IMPLICIT - hash of remaining fields, including the implicit hash of data
-	 * 
+	 *
 	 * SIGNATURE ON THE ABOVE HASH:
 	 *  32 bytes - signature: R (unsigned bytes)
 	 *  32 bytes - signature: S (unsigned bytes)
-	 * 
+	 *
 	 * PLUS THE PUBKEY:
 	 *  Pubkey
 	 *  Group
 	 */
 	final NodeSSK nodeKey;
 	final DSAPublicKey pubKey;
-    final short hashIdentifier;
-    final short symCipherIdentifier;
-    final int hashCode;
-    
-    public static final short DATA_LENGTH = 1024;
-    /* Maximum length of compressed payload */
-	public static final int MAX_COMPRESSED_DATA_LENGTH = DATA_LENGTH - 2;
-    
-    static final short SIG_R_LENGTH = 32;
-    static final short SIG_S_LENGTH = 32;
-    static final short E_H_DOCNAME_LENGTH = 32;
-    static public final short TOTAL_HEADERS_LENGTH = 2 + SIG_R_LENGTH + SIG_S_LENGTH + 2 + 
-    	E_H_DOCNAME_LENGTH + ClientSSKBlock.DATA_DECRYPT_KEY_LENGTH + 2 + 2;
-    
-    static final short ENCRYPTED_HEADERS_LENGTH = 36;
-    
-    @Override
-	public boolean equals(Object o) {
-    	if(!(o instanceof SSKBlock)) return false;
-    	SSKBlock block = (SSKBlock)o;
+	final short hashIdentifier;
+	final short symCipherIdentifier;
+	final int hashCode;
 
-    	if(!block.pubKey.equals(pubKey)) return false;
-    	if(!block.nodeKey.equals(nodeKey)) return false;
-    	if(block.headersOffset != headersOffset) return false;
-    	if(block.hashIdentifier != hashIdentifier) return false;
-    	if(block.symCipherIdentifier != symCipherIdentifier) return false;
-    	// only compare some of the headers (see top)
-    	for (int i = 0; i < HEADER_COMPARE_TO; i++) {
-    		if (block.headers[i] != headers[i]) return false;
-    	}
-    	//if(!Arrays.equals(block.headers, headers)) return false;
-    	if(!Arrays.equals(block.data, data)) return false;
-    	return true;
-    }
-    
-    @Override
-	public int hashCode(){
-    	return hashCode;
-    }
-    
+	public static final short DATA_LENGTH = 1024;
+	/* Maximum length of compressed payload */
+	public static final int MAX_COMPRESSED_DATA_LENGTH = DATA_LENGTH - 2;
+
+	static final short SIG_R_LENGTH = 32;
+	static final short SIG_S_LENGTH = 32;
+	static final short E_H_DOCNAME_LENGTH = 32;
+	static public final short TOTAL_HEADERS_LENGTH = 2 + SIG_R_LENGTH + SIG_S_LENGTH + 2 +
+			E_H_DOCNAME_LENGTH + ClientSSKBlock.DATA_DECRYPT_KEY_LENGTH + 2 + 2;
+
+	static final short ENCRYPTED_HEADERS_LENGTH = 36;
+
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof SSKBlock)) return false;
+		SSKBlock block = (SSKBlock)o;
+
+		if(!block.pubKey.equals(pubKey)) return false;
+		if(!block.nodeKey.equals(nodeKey)) return false;
+		if(block.headersOffset != headersOffset) return false;
+		if(block.hashIdentifier != hashIdentifier) return false;
+		if(block.symCipherIdentifier != symCipherIdentifier) return false;
+		// only compare some of the headers (see top)
+		for (int i = 0; i < HEADER_COMPARE_TO; i++) {
+			if (block.headers[i] != headers[i]) return false;
+		}
+		//if(!Arrays.equals(block.headers, headers)) return false;
+		if(!Arrays.equals(block.data, data)) return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return hashCode;
+	}
+
 	/**
 	 * Initialize, and verify data, headers against key. Provided
 	 * key must have a pubkey, or we throw.
@@ -112,11 +112,11 @@ public class SSKBlock implements KeyBlock {
 		this.pubKey = nodeKey.getPubKey();
 		if(pubKey == null)
 			throw new SSKVerifyException("PubKey was null from "+nodeKey);
-        // Now verify it
-        hashIdentifier = (short)(((headers[0] & 0xff) << 8) + (headers[1] & 0xff));
-        if(hashIdentifier != HASH_SHA256)
-            throw new SSKVerifyException("Hash not SHA-256");
-        int x = 2;
+		// Now verify it
+		hashIdentifier = (short)(((headers[0] & 0xff) << 8) + (headers[1] & 0xff));
+		if(hashIdentifier != HASH_SHA256)
+			throw new SSKVerifyException("Hash not SHA-256");
+		int x = 2;
 		symCipherIdentifier = (short)(((headers[x] & 0xff) << 8) + (headers[x+1] & 0xff));
 		x+=2;
 		// Then E(H(docname))
@@ -132,7 +132,7 @@ public class SSKBlock implements KeyBlock {
 		if(!dontVerify || logMINOR) {	// force verify on log minor
 			byte[] bufR = new byte[SIG_R_LENGTH];
 			byte[] bufS = new byte[SIG_S_LENGTH];
-			
+
 			System.arraycopy(headers, x, bufR, 0, SIG_R_LENGTH);
 			x+=SIG_R_LENGTH;
 			System.arraycopy(headers, x, bufS, 0, SIG_S_LENGTH);
@@ -153,7 +153,7 @@ public class SSKBlock implements KeyBlock {
 			} finally {
 				SHA256.returnMessageDigest(md);
 			}
-			
+
 			// Now verify it
 			BigInteger r = new BigInteger(1, bufR);
 			BigInteger s = new BigInteger(1, bufS);
@@ -164,7 +164,7 @@ public class SSKBlock implements KeyBlock {
 			// but that's what the legacy code was doing...
 			// @see comments in Global before touching it
 			if(!(dsa.verifySignature(Global.truncateHash(overallHash), r, s) ||
-			     dsa.verifySignature(overallHash, r, s))
+					dsa.verifySignature(overallHash, r, s))
 			  ) {
 				if (dontVerify)
 					Logger.error(this, "DSA verification failed with dontVerify!!!!");
@@ -209,5 +209,5 @@ public class SSKBlock implements KeyBlock {
 	public byte[] getRoutingKey() {
 		return getKey().getRoutingKey();
 	}
-	
+
 }

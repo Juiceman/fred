@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public final class StringValidityChecker {
-	
+
 	/**
 	 * Taken from http://kb.mozillazine.org/Network.IDN.blacklist_chars
 	 */
 	private static final HashSet<Character> idnBlacklist = new HashSet<Character>(Arrays.asList(
-			new Character[] {
+				new Character[] {
 					0x0020, /* SPACE */
 					0x00A0, /* NO-BREAK SPACE */
 					0x00BC, /* VULGAR FRACTION ONE QUARTER */
@@ -96,43 +96,44 @@ public final class StringValidityChecker {
 					0xFFFB, /* INTERLINEAR ANNOTATION TERMINATOR */
 					0xFFFC, /* OBJECT REPLACEMENT CHARACTER */
 					0xFFFD, /* REPLACEMENT CHARACTER */
-			}));
-	
+				}));
+
 	/**
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<Character> windowsReservedPrintableFilenameCharacters = new HashSet<Character>(Arrays.asList(
-			new Character[] { '/', '\\', '?', '*', ':', '|', '\"', '<', '>'}));
+				new Character[] { '/', '\\', '?', '*', ':', '|', '\"', '<', '>'}));
 
 	/**
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<String> windowsReservedFilenames = new HashSet<String>(Arrays.asList(
-			new String[] { "aux", "clock$", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "con",
-					"lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "nul", "prn"}));
-	
+				new String[] { "aux", "clock$", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "con",
+							   "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "nul", "prn"
+							 }));
+
 	/**
 	 * Taken from http://en.wikipedia.org/w/index.php?title=Filename&oldid=344618757
 	 */
 	private static final HashSet<Character> macOSReservedPrintableFilenameCharacters = new HashSet<Character>(Arrays.asList(
-			new Character[] { ':', '/'}));
+				new Character[] { ':', '/'}));
 
-	
+
 	/**
 	 * Returns true if the given character is one of the reserved printable character in filenames on Windows.
 	 * ATTENTION: This function does NOT check whether the given character is a control character, those are also forbidden!
-	 * (Control characters are usually disallowed for all operating systems in filenames by our validity checker so it checks them separately)   
+	 * (Control characters are usually disallowed for all operating systems in filenames by our validity checker so it checks them separately)
 	 */
 	public static boolean isWindowsReservedPrintableFilenameCharacter(Character c) {
 		return windowsReservedPrintableFilenameCharacters.contains(c);
 	}
-	
+
 	public static boolean isWindowsReservedFilename(String filename) {
 		filename = filename.toLowerCase();
 		int nameEnd = filename.indexOf('.'); // For files with multiple dots, the part before the first dot counts as the filename. E.g. "con.blah.txt" is reserved.
 		if(nameEnd == -1)
 			nameEnd = filename.length();
-		
+
 		return windowsReservedFilenames.contains(filename.substring(0, nameEnd));
 	}
 
@@ -144,28 +145,28 @@ public final class StringValidityChecker {
 	public static boolean isMacOSReservedPrintableFilenameCharacter(Character c) {
 		return macOSReservedPrintableFilenameCharacters.contains(c);
 	}
-	
+
 	public static boolean isUnixReservedPrintableFilenameCharacter(char c) {
 		return c == '/';
 	}
-	
+
 	public static boolean containsNoIDNBlacklistCharacters(String text) {
 		for(Character c : text.toCharArray()) {
 			if(idnBlacklist.contains(c))
 				return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public static boolean containsNoLinebreaks(String text) {
 		for(Character c : text.toCharArray()) {
 			if(Character.getType(c) == Character.LINE_SEPARATOR
-			   || Character.getType(c) == Character.PARAGRAPH_SEPARATOR
-			   || c == '\n' || c == '\r')
+					|| Character.getType(c) == Character.PARAGRAPH_SEPARATOR
+					|| c == '\n' || c == '\r')
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -179,7 +180,7 @@ public final class StringValidityChecker {
 			i += Character.charCount(c);
 
 			if ((c & 0xFFFE) == 0xFFFE
-				|| Character.getType(c) == Character.SURROGATE)
+					|| Character.getType(c) == Character.SURROGATE)
 				return false;
 		}
 
@@ -210,28 +211,24 @@ public final class StringValidityChecker {
 
 		for (Character c : text.toCharArray()) {
 			if (c == 0x202A			// LEFT-TO-RIGHT EMBEDDING
-				|| c == 0x202B		// RIGHT-TO-LEFT EMBEDDING
-				|| c == 0x202D		// LEFT-TO-RIGHT OVERRIDE
-				|| c == 0x202E) {	// RIGHT-TO-LEFT OVERRIDE
+					|| c == 0x202B		// RIGHT-TO-LEFT EMBEDDING
+					|| c == 0x202D		// LEFT-TO-RIGHT OVERRIDE
+					|| c == 0x202E) {	// RIGHT-TO-LEFT OVERRIDE
 				dirCount++;
-			}
-			else if (c == 0x202C) {	// POP DIRECTIONAL FORMATTING
+			} else if (c == 0x202C) {	// POP DIRECTIONAL FORMATTING
 				dirCount--;
 				if (dirCount < 0)
 					return false;
-			}
-			else if (c == 0xFFF9) {	// INTERLINEAR ANNOTATION ANCHOR
+			} else if (c == 0xFFF9) {	// INTERLINEAR ANNOTATION ANCHOR
 				if (inAnnotatedText || inAnnotation)
 					return false;
 				inAnnotatedText = true;
-			}
-			else if (c == 0xFFFA) {	// INTERLINEAR ANNOTATION SEPARATOR
+			} else if (c == 0xFFFA) {	// INTERLINEAR ANNOTATION SEPARATOR
 				if (!inAnnotatedText)
 					return false;
 				inAnnotatedText = false;
 				inAnnotation = true;
-			}
-			else if (c == 0xFFFB) { // INTERLINEAR ANNOTATION TERMINATOR
+			} else if (c == 0xFFFB) { // INTERLINEAR ANNOTATION TERMINATOR
 				if (!inAnnotation)
 					return false;
 				inAnnotation = false;
@@ -240,7 +237,7 @@ public final class StringValidityChecker {
 
 		return (dirCount == 0 && !inAnnotatedText && !inAnnotation);
 	}
-	
+
 	public static boolean isLatinLettersAndNumbersOnly(String text) {
 		for(char c : text.toCharArray()) {
 			if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c >= '0' && c <= '9')
@@ -248,7 +245,7 @@ public final class StringValidityChecker {
 			else
 				return false;
 		}
-		
+
 		return true;
 	}
 

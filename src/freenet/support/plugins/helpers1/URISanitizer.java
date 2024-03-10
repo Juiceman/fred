@@ -28,7 +28,7 @@ public class URISanitizer {
 
 		FreenetURI tempURI = key;
 
-Outer:	for (Options option: options) {
+		Outer:	for (Options option: options) {
 			switch (option) {
 			case NOMETASTRINGS: {
 				if (tempURI.hasMetaStrings()) {
@@ -54,7 +54,8 @@ Outer:	for (Options option: options) {
 				}
 				break;
 			}
-			default : Logger.error(URISanitizer.class, "Illegal Option, how can this happen?");
+			default :
+				Logger.error(URISanitizer.class, "Illegal Option, how can this happen?");
 			}
 		}
 		return tempURI;

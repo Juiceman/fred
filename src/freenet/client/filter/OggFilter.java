@@ -28,12 +28,12 @@ import freenet.support.io.CountedOutputStream;
  * <a href="http://www.xiph.org/ogg/doc/rfc3533.txt">http://www.xiph.org/ogg/doc/rfc3533.txt</a>
  * @author sajack
  */
-public class OggFilter implements ContentDataFilter{
+public class OggFilter implements ContentDataFilter {
 
 	public void readFilter(
-      InputStream input, OutputStream output,
-      String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+		InputStream input, OutputStream output,
+		String charset, Map<String, String> otherParams,
+		String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		HashMap<Integer, OggBitstreamFilter> streamFilters = new HashMap<Integer, OggBitstreamFilter>();
 		LinkedList<OggPage> splitPages = new LinkedList<OggPage>();
 		CountedOutputStream out = new CountedOutputStream(output);
@@ -84,7 +84,7 @@ public class OggFilter implements ContentDataFilter{
 		int pageCount = 0;
 		ByteArrayOutputStream data = null;
 		DataInputStream in = null;
-		try{
+		try {
 			//Populate a byte array with all the data in which a subpage might hide
 			data = new ByteArrayOutputStream();
 			data.write(page.toArray());
@@ -129,8 +129,8 @@ public class OggFilter implements ContentDataFilter{
 	}
 
 	public void writeFilter(InputStream input, OutputStream output,
-			String charset, HashMap<String, String> otherParams,
-			FilterCallback cb) throws DataFilterException, IOException {
+							String charset, HashMap<String, String> otherParams,
+							FilterCallback cb) throws DataFilterException, IOException {
 		// TODO Auto-generated method stub
 
 	}

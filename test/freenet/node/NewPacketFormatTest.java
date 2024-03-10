@@ -29,7 +29,7 @@ public class NewPacketFormatTest {
 		// so lets turn off the keepalives.
 		NewPacketFormat.DO_KEEPALIVES = false;
 	}
-	
+
 	@Test
 	public void testEmptyCreation() throws BlockedTooLongException {
 		NewPacketFormat npf = new NewPacketFormat(null, 0, 0);
@@ -52,8 +52,9 @@ public class NewPacketFormatTest {
 		//Packet that should be acked
 		p = new NPFPacket();
 		p.addMessageFragment(new MessageFragment(true, false, true, 0, 8, 8, 0, new byte[] {(byte) 0x01,
-		                (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xAB, (byte) 0xCD,
-		                (byte) 0xEF }, null));
+							 (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xAB, (byte) 0xCD,
+							 (byte) 0xEF
+																						   }, null));
 		assertEquals(1, npf.handleDecryptedPacket(p, s).size());
 
 		Thread.sleep(NewPacketFormatKeyContext.MAX_ACK_DELAY*2);
@@ -98,7 +99,9 @@ public class NewPacketFormatTest {
 
 		try {
 			Thread.sleep(2000); //RTT is 250ms by default since there is no PeerNode to track it
-		} catch (InterruptedException e) { fail(); }
+		} catch (InterruptedException e) {
+			fail();
+		}
 
 		NPFPacket resend1 = sender.createPacket(512, senderQueue, senderKey, false);
 		if(resend1 == null) fail("No packet to resend");
@@ -184,7 +187,7 @@ public class NewPacketFormatTest {
 		//Same message, new sequence number ie. resend
 		assertEquals(0, receiver.handleDecryptedPacket(packet1, receiverKey).size());
 	}
-	
+
 	// Test sending it when the peer wants it to be sent. This is as a real message, *not* as a lossy message.
 	@Test
 	public void testLoadStatsSendWhenPeerWants() throws BlockedTooLongException, InterruptedException {
@@ -192,9 +195,9 @@ public class NewPacketFormatTest {
 		final MutableBoolean gotMessage = new MutableBoolean();
 		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
 		NullBasePeerNode senderNode = new NullBasePeerNode() {
-			
+
 			boolean shouldSend = true;
-			
+
 			@Override
 			public MessageItem makeLoadStats(boolean realtime, boolean highPriority, boolean noRemember) {
 				return new MessageItem(loadMessage, null, null, (short)0);
@@ -211,7 +214,7 @@ public class NewPacketFormatTest {
 			public synchronized void setSendLoadStatsASAP(boolean realtime) {
 				shouldSend = true;
 			}
-			
+
 			@Override
 			public SessionKey getCurrentKeyTracker() {
 				return senderKey;
@@ -221,7 +224,7 @@ public class NewPacketFormatTest {
 		NewPacketFormat sender = new NewPacketFormat(senderNode, 0, 0);
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 		NullBasePeerNode receiverNode = new NullBasePeerNode() {
-			
+
 			@Override
 			public void handleMessage(Message msg) {
 				assert(msg.getSpec().equals(DMT.FNPVoid));
@@ -229,7 +232,7 @@ public class NewPacketFormatTest {
 					gotMessage.value = true;
 				}
 			}
-			
+
 			@Override
 			public void processDecryptedMessage(byte[] data, int offset, int length, int overhead) {
 				Message m = Message.decodeMessageFromPacket(data, offset, length, this, overhead);
@@ -237,7 +240,7 @@ public class NewPacketFormatTest {
 					handleMessage(m);
 				}
 			}
-			
+
 		};
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
 		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
@@ -258,20 +261,20 @@ public class NewPacketFormatTest {
 			decoder.processDecryptedMessage(buffer, 0, buffer.length, 0);
 		}
 		decoder.complete();
-		
+
 		synchronized(gotMessage) {
 			assert(gotMessage.value);
 		}
 	}
-	
+
 	// Test sending it as a per-packet lossy message.
 	@Test
 	public void testLoadStatsLowLevel() throws BlockedTooLongException, InterruptedException {
-		final byte[] loadMessage = 
+		final byte[] loadMessage =
 			new byte[] { (byte)0xFF, (byte)0xEE, (byte)0xDD, (byte)0xCC, (byte)0xBB, (byte)0xAA};
 		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
 		NullBasePeerNode senderNode = new NullBasePeerNode() {
-			
+
 			@Override
 			public MessageItem makeLoadStats(boolean realtime, boolean highPriority, boolean noRemember) {
 				return new MessageItem(loadMessage, null, false, null, (short) 0, false, false);
@@ -285,7 +288,7 @@ public class NewPacketFormatTest {
 		};
 		NewPacketFormat sender = new NewPacketFormat(senderNode, 0, 0);
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
-		
+
 		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false, true), 1024);
 
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY*2);
@@ -296,14 +299,14 @@ public class NewPacketFormatTest {
 		NPFPacketTest.checkEquals(loadMessage, packet1.getLossyMessages().get(0));
 		// Don't decode the packet because it's not a real message.
 	}
-	
+
 	// Test sending load message as a per-packet lossy message, including message decoding.
 	@Test
 	public void testLoadStatsHighLevel() throws BlockedTooLongException, InterruptedException {
 		final Message loadMessage = DMT.createFNPVoid();
 		final MutableBoolean gotMessage = new MutableBoolean();
 		NullBasePeerNode senderNode = new NullBasePeerNode() {
-			
+
 			@Override
 			public MessageItem makeLoadStats(boolean realtime, boolean highPriority, boolean noRemember) {
 				return new MessageItem(loadMessage, null, null, (short)0);
@@ -321,7 +324,7 @@ public class NewPacketFormatTest {
 		NewPacketFormat sender = new NewPacketFormat(senderNode, 0, 0);
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 		NullBasePeerNode receiverNode = new NullBasePeerNode() {
-			
+
 			@Override
 			public void handleMessage(Message msg) {
 				assert(msg.getSpec().equals(DMT.FNPVoid));
@@ -329,7 +332,7 @@ public class NewPacketFormatTest {
 					gotMessage.value = true;
 				}
 			}
-			
+
 		};
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
 		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
@@ -349,28 +352,28 @@ public class NewPacketFormatTest {
 			assert(gotMessage.value);
 		}
 	}
-	
+
 	/* This checks the output of the sequence number encryption function to
 	 * make sure it doesn't change accidentally. */
 	@Test
 	public void testSequenceNumberEncryption() {
 		BlockCipher ivCipher = new Rijndael();
 		ivCipher.initialize(new byte[] {
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00
-		});
+								0x00, 0x00, 0x00, 0x00,
+								0x00, 0x00, 0x00, 0x00,
+								0x00, 0x00, 0x00, 0x00,
+								0x00, 0x00, 0x00, 0x00
+							});
 
 		byte[] ivNonce = new byte[16];
 
 		BlockCipher incommingCipher = new Rijndael();
 		incommingCipher.initialize(new byte[] {
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00
-		});
+									   0x00, 0x00, 0x00, 0x00,
+									   0x00, 0x00, 0x00, 0x00,
+									   0x00, 0x00, 0x00, 0x00,
+									   0x00, 0x00, 0x00, 0x00
+								   });
 
 		SessionKey sessionKey = new SessionKey(null, null, null, incommingCipher, null, ivCipher, ivNonce, null, null, -1);
 
@@ -386,7 +389,7 @@ public class NewPacketFormatTest {
 
 	@Test
 	public void testEncryption()
-			throws BlockedTooLongException, UnknownHostException, InterruptedException {
+	throws BlockedTooLongException, UnknownHostException, InterruptedException {
 		Random random = new Random(120116);
 		NullBasePeerNode senderNode = new NullBasePeerNode();
 		NullBasePeerNode receiverNode = new NullBasePeerNode();
@@ -410,29 +413,29 @@ public class NewPacketFormatTest {
 		int receiverStartSeq = 2000;
 
 		NewPacketFormatKeyContext senderContext =
-				new NewPacketFormatKeyContext(senderStartSeq, receiverStartSeq);
+			new NewPacketFormatKeyContext(senderStartSeq, receiverStartSeq);
 
 		NewPacketFormatKeyContext receiverContext =
-				new NewPacketFormatKeyContext(receiverStartSeq, senderStartSeq);
+			new NewPacketFormatKeyContext(receiverStartSeq, senderStartSeq);
 
 		SessionKey senderSessionKey = new SessionKey(null, outgoingCipher, outgoingKey,
-							     incomingCipher, incomingKey, ivCipher,
-							     ivNonce, hmacKey, senderContext, 0);
+				incomingCipher, incomingKey, ivCipher,
+				ivNonce, hmacKey, senderContext, 0);
 
 		SessionKey receiverSessionKey = new SessionKey(null, incomingCipher, incomingKey,
-							       outgoingCipher, outgoingKey,
-							       ivCipher, ivNonce, hmacKey,
-							       receiverContext, 0);
+				outgoingCipher, outgoingKey,
+				ivCipher, ivNonce, hmacKey,
+				receiverContext, 0);
 
 		senderNode.currentKey = senderSessionKey;
 		receiverNode.currentKey = receiverSessionKey;
 
 		NewPacketFormat
-				senderNPF =
-				new NewPacketFormat(senderNode, senderStartSeq, receiverStartSeq);
+		senderNPF =
+			new NewPacketFormat(senderNode, senderStartSeq, receiverStartSeq);
 		NewPacketFormat
-				receiverNPF =
-				new NewPacketFormat(receiverNode, receiverStartSeq, senderStartSeq);
+		receiverNPF =
+			new NewPacketFormat(receiverNode, receiverStartSeq, senderStartSeq);
 
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 
@@ -441,8 +444,8 @@ public class NewPacketFormatTest {
 		byte[] copyOfMessage = Arrays.copyOf(message, message.length);
 
 		senderQueue.queueAndEstimateSize(
-				new MessageItem(message, null, false, null, (short) 0, false,
-						false), 1024);
+			new MessageItem(message, null, false, null, (short) 0, false,
+							false), 1024);
 
 		senderNode.messageQueue = senderQueue;
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY * 2);
@@ -455,7 +458,7 @@ public class NewPacketFormatTest {
 
 		receiverNode.decryptedMessages = new ArrayList<byte[]>();
 		receiverNPF.handleReceivedPacket(data, 0, data.length, System.currentTimeMillis(),
-						 PEER);
+										 PEER);
 
 		assertEquals(1, receiverNode.decryptedMessages.size());
 		assertTrue(Arrays.equals(message, copyOfMessage));

@@ -16,66 +16,66 @@ import freenet.support.SimpleFieldSet;
 public class DSAPrivateKey extends CryptoKey {
 	private static final long serialVersionUID = -1;
 
-    private final BigInteger x;
+	private final BigInteger x;
 
-    public DSAPrivateKey(BigInteger x, DSAGroup g) {
-        this.x = x;
-        if(x.signum() != 1 || x.compareTo(g.getQ()) > -1 || x.compareTo(BigInteger.ZERO) < 1)
-        	throw new IllegalArgumentException();
-    }
+	public DSAPrivateKey(BigInteger x, DSAGroup g) {
+		this.x = x;
+		if(x.signum() != 1 || x.compareTo(g.getQ()) > -1 || x.compareTo(BigInteger.ZERO) < 1)
+			throw new IllegalArgumentException();
+	}
 
-    // this is dangerous...  better to force people to construct the
-    // BigInteger themselves so they know what is going on with the sign
-    //public DSAPrivateKey(byte[] x) {
-    //    this.x = new BigInteger(1, x);
-    //}
+	// this is dangerous...  better to force people to construct the
+	// BigInteger themselves so they know what is going on with the sign
+	//public DSAPrivateKey(byte[] x) {
+	//    this.x = new BigInteger(1, x);
+	//}
 
-    public DSAPrivateKey(DSAGroup g, Random r) {
-        BigInteger tempX;
-        do {
-            tempX = new BigInteger(256, r);
-        } while (tempX.compareTo(g.getQ()) > -1 || tempX.compareTo(BigInteger.ZERO) < 1);
-        this.x = tempX;
-    }
-    
-    protected DSAPrivateKey() {
-        // For serialization.
-        x = null;
-    }
+	public DSAPrivateKey(DSAGroup g, Random r) {
+		BigInteger tempX;
+		do {
+			tempX = new BigInteger(256, r);
+		} while (tempX.compareTo(g.getQ()) > -1 || tempX.compareTo(BigInteger.ZERO) < 1);
+		this.x = tempX;
+	}
 
-    @Override
+	protected DSAPrivateKey() {
+		// For serialization.
+		x = null;
+	}
+
+	@Override
 	public String keyType() {
-        return "DSA.s";
-    }
-    
-    public BigInteger getX() {
-        return x;
-    }
-    
-    public static CryptoKey read(InputStream i, DSAGroup g) throws IOException {
-        return new DSAPrivateKey(Util.readMPI(i), g);
-    }
-    
-    @Override
-    public String toLongString() {
-        return "x="+HexUtil.biToHex(x);
-    }
-    
-    // what?  why is DSAGroup passed in?
-    //public static CryptoKey readFromField(DSAGroup group, String field) {
-    //    //BigInteger x=Util.byteArrayToMPI(Util.hexToBytes(field));
-    //    return new DSAPrivateKey(new BigInteger(field, 16));
-    //}
-    
-    @Override
+		return "DSA.s";
+	}
+
+	public BigInteger getX() {
+		return x;
+	}
+
+	public static CryptoKey read(InputStream i, DSAGroup g) throws IOException {
+		return new DSAPrivateKey(Util.readMPI(i), g);
+	}
+
+	@Override
+	public String toLongString() {
+		return "x="+HexUtil.biToHex(x);
+	}
+
+	// what?  why is DSAGroup passed in?
+	//public static CryptoKey readFromField(DSAGroup group, String field) {
+	//    //BigInteger x=Util.byteArrayToMPI(Util.hexToBytes(field));
+	//    return new DSAPrivateKey(new BigInteger(field, 16));
+	//}
+
+	@Override
 	public byte[] asBytes() {
-        return Util.MPIbytes(x);
-    }
-    
-    @Override
+		return Util.MPIbytes(x);
+	}
+
+	@Override
 	public byte[] fingerprint() {
-        return fingerprint(new BigInteger[] {x});
-    }
+		return fingerprint(new BigInteger[] {x});
+	}
 
 	public SimpleFieldSet asFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);

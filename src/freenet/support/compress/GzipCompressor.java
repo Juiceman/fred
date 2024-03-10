@@ -22,7 +22,7 @@ public class GzipCompressor extends AbstractCompressor {
 
 	@Override
 	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength)
-			throws IOException, CompressionOutputSizeException {
+	throws IOException, CompressionOutputSizeException {
 		RandomAccessBucket output = bf.makeBucket(maxWriteLength);
 		InputStream is = null;
 		OutputStream os = null;
@@ -33,8 +33,10 @@ public class GzipCompressor extends AbstractCompressor {
 			SingleOffsetReplacingOutputStream osByteFixingOs = new SingleOffsetReplacingOutputStream(os, 9, 0);
 			compress(is, osByteFixingOs, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
-			is.close(); is = null;
-			os.close(); os = null;
+			is.close();
+			is = null;
+			os.close();
+			os = null;
 		} finally {
 			Closer.close(is);
 			Closer.close(os);
@@ -45,7 +47,7 @@ public class GzipCompressor extends AbstractCompressor {
 	@Override
 	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 						 long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
-			throws IOException, CompressionRatioException {
+	throws IOException, CompressionRatioException {
 		if(maxReadLength < 0)
 			throw new IllegalArgumentException();
 		GZIPOutputStream gos = null;

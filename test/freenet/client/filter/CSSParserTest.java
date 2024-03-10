@@ -46,10 +46,10 @@ public class CSSParserTest {
 		CSS1_SELECTOR.put("h1 h2 {}","h1 h2");
 		CSS1_SELECTOR.put("h1:active {}","h1:active");
 		CSS1_SELECTOR.put("h1:hover {}","h1:hover");
-		CSS1_SELECTOR.put("h1:focus {}" ,"h1:focus");
-		CSS1_SELECTOR.put("h1:first-line {}" ,"h1:first-line");
-		CSS1_SELECTOR.put("h1:first-letter {}" ,"h1:first-letter");
-		CSS1_SELECTOR.put("input:checked {}" ,"input:checked");
+		CSS1_SELECTOR.put("h1:focus {}","h1:focus");
+		CSS1_SELECTOR.put("h1:first-line {}","h1:first-line");
+		CSS1_SELECTOR.put("h1:first-letter {}","h1:first-letter");
+		CSS1_SELECTOR.put("input:checked {}","input:checked");
 	}
 
 	// FIXME should specify exact output values
@@ -105,7 +105,7 @@ public class CSSParserTest {
 		CSS2_SELECTOR.put("h1[foo=\"bar\\\" bar\"] {}", "h1[foo=\"bar\\\" bar\"]");
 		// Wierd one from the CSS spec
 		CSS2_SELECTOR.put("p[example=\"public class foo\\\n{\\\n    private int x;\\\n\\\n    foo(int x) {\\\n        this.x = x;\\\n    }\\\n\\\n}\"] { color: red }",
-				"p[example=\"public class foo{    private int x;    foo(int x) {        this.x = x;    }}\"] { color: red }");
+						  "p[example=\"public class foo{    private int x;    foo(int x) {        this.x = x;    }}\"] { color: red }");
 		// Escaped anything inside an attribute selector. This is allowed.
 		CSS2_SELECTOR.put("h1[foo=\"hello\\202 \"] {}", "h1[foo=\"hello\\202 \"] {}");
 		// Escaped quotes inside a string inside an attribute selector. This is allowed.
@@ -115,7 +115,7 @@ public class CSSParserTest {
 		CSS2_SELECTOR.put("h1[foo] h2 > p + b { color: green;}", "h1[foo] h2>p+b { color: green;}");
 		CSS2_SELECTOR.put("h1[foo] h2 > p + b:before { color: green;}", "h1[foo] h2>p+b:before { color: green;}");
 		CSS2_SELECTOR.put("table          { border-collapse: collapse; border: 5px solid yellow; } *#col1         { border: 3px solid black; } td             { border: 1px solid red; padding: 1em; } td.cell5       { border: 5px dashed blue; } td.cell6       { border: 5px solid green; }",
-				"table { border-collapse: collapse; border: 5px solid yellow; } *#col1 { border: 3px solid black; } td { border: 1px solid red; padding: 1em; } td.cell5 { border: 5px dashed blue; } td.cell6 { border: 5px solid green; }");
+						  "table { border-collapse: collapse; border: 5px solid yellow; } *#col1 { border: 3px solid black; } td { border: 1px solid red; padding: 1em; } td.cell5 { border: 5px dashed blue; } td.cell6 { border: 5px solid green; }");
 		CSS2_SELECTOR.put("td { border-right: hidden; border-bottom: hidden }", "td { border-right: hidden; border-bottom: hidden }");
 
 
@@ -757,7 +757,7 @@ public class CSSParserTest {
 		propertyTests.put("blockquote { letter-spacing: normal }", "blockquote { letter-spacing: normal }");
 		propertyTests.put("h1 { word-spacing: 1em }", "h1 { word-spacing: 1em }");
 		propertyTests.put("h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }",
-                          "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
+						  "h1 { word-wrap: normal } h2 { word-wrap: break-word } h1 { word-wrap: anywhere }");
 		propertyTests.put("h1 { text-transform: uppercase }", "h1 { text-transform: uppercase }");
 		propertyTests.put("pre        { white-space: pre } p          { white-space: normal } td[nowrap] { white-space: nowrap }", "pre { white-space: pre } p { white-space: normal } td[nowrap] { white-space: nowrap }");
 		propertyTests.put("pre[wrap]  { white-space: pre-wrap }", "pre[wrap] { white-space: pre-wrap }");
@@ -767,7 +767,7 @@ public class CSSParserTest {
 
 		// Tables
 		propertyTests.put("table    { display: table }\ntr       { display: table-row }\nthead    { display: table-header-group }\ntbody    { display: table-row-group }\ntfoot    { display: table-footer-group }\ncol      { display: table-column }\ncolgroup { display: table-column-group }\ntd, th   { display: table-cell }\ncaption  { display: table-caption }",
-				"table { display: table }\ntr { display: table-row }\nthead { display: table-header-group }\ntbody { display: table-row-group }\ntfoot { display: table-footer-group }\ncol { display: table-column }\ncolgroup { display: table-column-group }\ntd, th { display: table-cell }\ncaption { display: table-caption }");
+						  "table { display: table }\ntr { display: table-row }\nthead { display: table-header-group }\ntbody { display: table-row-group }\ntfoot { display: table-footer-group }\ncol { display: table-column }\ncolgroup { display: table-column-group }\ntd, th { display: table-cell }\ncaption { display: table-caption }");
 		propertyTests.put("caption { caption-side: bottom; \n width: auto;\n text-align: left }", "caption { caption-side: bottom; \n width: auto;\n text-align: left }");
 		propertyTests.put("table { table-layout: fixed; margin-left: 2em;margin-right: 2em }", "table { table-layout: fixed; margin-left: 2em;margin-right: 2em }");
 		propertyTests.put("table { border-collapse: collapse; border-spacing: 12em 11cm; border-spacing: 10px; border-spacing: 0; border-spacing: inherit }", "table { border-collapse: collapse; border-spacing: 12em 11cm; border-spacing: 10px; border-spacing: 0; border-spacing: inherit }");
@@ -779,7 +779,7 @@ public class CSSParserTest {
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) url(hyper.cur) pointer }", ":link { cursor: url(\"example.svg#linkcursor\") url(\"hyper.cur\") pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor), url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\"), url(\"hyper.cur\"), pointer }");
 		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2 5, url(hyper.cur), pointer }", ":link { cursor: url(\"example.svg#linkcursor\") 2 5, url(\"hyper.cur\"), pointer }");
-                propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
+		propertyTests.put(":link,:visited { cursor: url(example.svg#linkcursor) 2, url(hyper.cur), pointer }", ":link { }");
 
 		// UI colors
 		propertyTests.put("p { color: WindowText; background-color: Window }", "p { color: WindowText; background-color: Window }");
@@ -791,12 +791,12 @@ public class CSSParserTest {
 		propertyTests.put("@media speech {\n  body { voice-family: Paul }\n}", "@media speech {\n  body { voice-family: Paul }}");
 		propertyTests.put("@media aural {\n  body { voice-family: Paul }\n}", "@media aural {\n  body { voice-family: Paul }}");
 		propertyTests.put("@media speech { h1, h2, h3, h4, h5, h6 { voice-family: Paul; stress: 20; richness: 90; cue-before: url(\"ping.au\") } p.heidi { azimuth: center-left } p.peter { azimuth: right } p.goat { volume: x-soft }}",
-				"@media speech { h1, h2, h3, h4, h5, h6 { voice-family: Paul; stress: 20; richness: 90; cue-before: url(\"ping.au\") } p.heidi { azimuth: center-left } p.peter { azimuth: right } p.goat { volume: x-soft }}");
+						  "@media speech { h1, h2, h3, h4, h5, h6 { voice-family: Paul; stress: 20; richness: 90; cue-before: url(\"ping.au\") } p.heidi { azimuth: center-left } p.peter { azimuth: right } p.goat { volume: x-soft }}");
 		propertyTests.put("@media speech { body { volume: 10 } h1, h2 { volume: 50% } h3, h4 { volume: silent } p { volume: inherit }}",
-				"@media speech { body { volume: 10 } h1, h2 { volume: 50% } h3, h4 { volume: silent } p { volume: inherit }}");
+						  "@media speech { body { volume: 10 } h1, h2 { volume: 50% } h3, h4 { volume: silent } p { volume: inherit }}");
 		propertyTests.put("@media aural { q { speak: spell-out }}", "@media aural { q { speak: spell-out }}");
 		propertyTests.put("@media aural { blockquote { pause-after: 1s } h1 { pause-before: 10% } p { pause-after: inherit }}",
-				"@media aural { blockquote { pause-after: 1s } h1 { pause-before: 10% } p { pause-after: inherit }}");
+						  "@media aural { blockquote { pause-after: 1s } h1 { pause-before: 10% } p { pause-after: inherit }}");
 		propertyTests.put("@media speech { h1 { pause: 10ms 10% } p { pause: inherit }}", "@media speech { h1 { pause: 10ms 10% } p { pause: inherit }}");
 		propertyTests.put("@media speech { h1 { cue-before: none; cue-after: url(\"h1.au\") } }", "@media speech { h1 { cue-before: none; cue-after: url(\"h1.au\") }}");
 		propertyTests.put("@media speech { a {cue-before: url(\"bell.aiff\"); cue-after: url(\"dong.wav\") }}","@media speech { a {cue-before: url(\"bell.aiff\"); cue-after: url(\"dong.wav\") }}");
@@ -973,9 +973,9 @@ public class CSSParserTest {
 	@Test
 	public void testBackgroundURL() throws IOException, URISyntaxException {
 		assertEquals("key=" + CSS_BACKGROUND_URL + " value=\"" + filter(CSS_BACKGROUND_URL) + "\" should be \"" + CSS_BACKGROUND_URLC + "\"",
-			CSS_BACKGROUND_URLC,
-			filter(CSS_BACKGROUND_URL)
-		);
+					 CSS_BACKGROUND_URLC,
+					 filter(CSS_BACKGROUND_URL)
+					);
 		assertEquals(
 			"key=" + CSS_LCASE_BACKGROUND_URL + " value=\"" + filter(CSS_LCASE_BACKGROUND_URL) + "\"",
 			CSS_LCASE_BACKGROUND_URLC,
@@ -1118,12 +1118,12 @@ public class CSSParserTest {
 		ArrayBucket outputBucket = new ArrayBucket();
 		FilterStatus filterStatus;
 		try (
-			InputStream inputStream = inputBucket.getInputStream();
-			OutputStream outputStream = outputBucket.getOutputStream()
-		) {
+				InputStream inputStream = inputBucket.getInputStream();
+				OutputStream outputStream = outputBucket.getOutputStream()
+			) {
 			filterStatus = ContentFilter.filter(inputStream, outputStream, "text/css", new URI("/CHK@OR904t6ylZOwoobMJRmSn7HsPGefHSP7zAjoLyenSPw,x2EzszO4oobMJRmSn7HsPGefHSP7zAjoLyenSPw,x2EzszO4Kqot8akqmKYXJbkD-fSj6noOVGB-K2YisZ4,AAIC--8/1-works.html"),
-				null, null, null, null
-			);
+												null, null, null, null
+											   );
 		}
 		assertEquals("text/css", filterStatus.mimeType);
 		assertEquals(charset, filterStatus.charset);
@@ -1155,11 +1155,11 @@ public class CSSParserTest {
 		Bucket outputBucket = new ArrayBucket();
 		FilterStatus filterStatus;
 		try (
-			InputStream inputStream = inputBucket.getInputStream();
-			OutputStream outputStream = outputBucket.getOutputStream()
-		) {
+				InputStream inputStream = inputBucket.getInputStream();
+				OutputStream outputStream = outputBucket.getOutputStream()
+			) {
 			filterStatus = ContentFilter.filter(inputStream, outputStream, "text/css", new URI("/CHK@OR904t6ylZOwoobMJRmSn7HsPGefHSP7zAjoLyenSPw,x2EzszO4Kqot8akqmKYXJbkD-fSj6noOVGB-K2YisZ4,AAIC--8/1-works.html"),
-				null, null, null, null);
+												null, null, null, null);
 		}
 		// It is safe to return utf-8, as long as we clobber the actual content; utf-8 is the default, but other stuff decoded to it is unlikely to be coherent...
 		MatcherAssert.assertThat(
@@ -1194,11 +1194,11 @@ public class CSSParserTest {
 		Bucket outputBucket = new ArrayBucket();
 		FilterStatus filterStatus;
 		try (
-			InputStream inputStream = inputBucket.getInputStream();
-			OutputStream outputStream = outputBucket.getOutputStream()
-		) {
+				InputStream inputStream = inputBucket.getInputStream();
+				OutputStream outputStream = outputBucket.getOutputStream()
+			) {
 			filterStatus = ContentFilter.filter(inputStream, outputStream, "text/css", new URI("/CHK@OR904t6ylZOwoobMJRmSn7HsPGefHSP7zAjoLyenSPw,x2EzszO4Kqot8akqmKYXJbkD-fSj6noOVGB-K2YisZ4,AAIC--8/1-works.html"),
-				null, null, null, charset);
+												null, null, null, charset);
 		}
 		assertEquals(charset, filterStatus.charset);
 		assertEquals("text/css", filterStatus.mimeType);

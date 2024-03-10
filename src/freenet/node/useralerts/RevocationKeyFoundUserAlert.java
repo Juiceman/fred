@@ -7,15 +7,15 @@ import freenet.l10n.NodeL10n;
 import freenet.support.HTMLNode;
 
 public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
-	public RevocationKeyFoundUserAlert(String msg, boolean disabledNotBlown){
+	public RevocationKeyFoundUserAlert(String msg, boolean disabledNotBlown) {
 		super(false,
-				getTitle(disabledNotBlown),
-				getText(disabledNotBlown, msg),
-				getText(disabledNotBlown, msg),
-				getHTML(disabledNotBlown, msg), 
-				UserAlert.CRITICAL_ERROR, true, null, false, null);
+			  getTitle(disabledNotBlown),
+			  getText(disabledNotBlown, msg),
+			  getText(disabledNotBlown, msg),
+			  getHTML(disabledNotBlown, msg),
+			  UserAlert.CRITICAL_ERROR, true, null, false, null);
 	}
-	
+
 	private static HTMLNode getHTML(boolean disabledNotBlown, String msg) {
 		HTMLNode div = new HTMLNode("div");
 		if(disabledNotBlown) {
@@ -31,10 +31,10 @@ public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
 	private static String getText(boolean disabledNotBlown, String msg) {
 		if(disabledNotBlown) {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabled") + " " +
-				NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabledDetail", "message", msg);
+				   NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabledDetail", "message", msg);
 		} else {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.text") + " " +
-				NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDetail", "message", msg);
+				   NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDetail", "message", msg);
 		}
 	}
 
@@ -46,8 +46,8 @@ public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
 	}
 
 	@Override
-	public void isValid(boolean b){
+	public void isValid(boolean b) {
 		// We ignore it : it's ALWAYS valid !
 	}
-	
+
 }

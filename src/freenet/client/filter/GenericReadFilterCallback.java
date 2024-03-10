@@ -51,11 +51,11 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 	/** Provider for link filter exceptions. */
 	private final LinkFilterExceptionProvider linkFilterExceptionProvider;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -115,7 +115,7 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 
 	private static final Pattern anchorRegex;
 	static {
-	    anchorRegex = Pattern.compile("^#" + FRAGMENT + "$");
+		anchorRegex = Pattern.compile("^#" + FRAGMENT + "$");
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 
 	@Override
 	public String processURI(String u, String overrideType, String forceSchemeHostAndPort, boolean inline)
-			throws CommentException {
+	throws CommentException {
 		URI uri;
 		String filtered;
 		try {
@@ -298,7 +298,7 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 	}
 
 	@Override
-	public String makeURIAbsolute(String uri) throws URISyntaxException{
+	public String makeURIAbsolute(String uri) throws URISyntaxException {
 		return baseURI.resolve(URIPreEncoder.encodeURI(uri).normalize()).toASCIIString();
 	}
 
@@ -381,11 +381,11 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 			String p = path;
 			if(typeOverride != null)
 				p += "?type="+typeOverride;
-			if(u.getFragment() != null){
-				try{
-				// FIXME encode it properly
+			if(u.getFragment() != null) {
+				try {
+					// FIXME encode it properly
 					p += URLEncoder.encode(u.getFragment(),"UTF-8");
-				}catch (UnsupportedEncodingException e1){
+				} catch (UnsupportedEncodingException e1) {
 					throw new Error("Impossible: JVM doesn't support UTF-8: " + e, e);
 				}
 			}
@@ -475,9 +475,9 @@ public class GenericReadFilterCallback implements FilterCallback, URIProcessor {
 	 * @return The replacement for the tag, or null, if no replacement needed*/
 	@Override
 	public String processTag(ParsedTag pt) {
-		if(trc!=null){
+		if(trc!=null) {
 			return trc.processTag(pt,this);
-		}else{
+		} else {
 			return null;
 		}
 	}

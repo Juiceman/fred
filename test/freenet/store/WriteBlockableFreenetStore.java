@@ -12,15 +12,15 @@ public class WriteBlockableFreenetStore<T extends StorableBlock> extends ProxyFr
 	private final Lock lock = new ReentrantLock();
 	private final Condition blockedChanged = lock.newCondition();
 	private final Condition countBlockedIncreased = lock.newCondition();
-	
+
 	public WriteBlockableFreenetStore(FreenetStore<T> backDatastore, boolean initialValue) {
 		super(backDatastore);
 		blocked = initialValue;
 	}
-	
+
 	@Override
 	public void put(T block, byte[] data, byte[] header, boolean overwrite,
-			boolean oldBlock) throws IOException, KeyCollisionException {
+					boolean oldBlock) throws IOException, KeyCollisionException {
 		waitForUnblocked();
 		super.put(block, data, header, overwrite, oldBlock);
 	}
@@ -38,7 +38,7 @@ public class WriteBlockableFreenetStore<T extends StorableBlock> extends ProxyFr
 			lock.unlock();
 		}
 	}
-	
+
 	public void setBlocked(boolean blocked) {
 		lock.lock();
 		try {
@@ -48,15 +48,15 @@ public class WriteBlockableFreenetStore<T extends StorableBlock> extends ProxyFr
 			lock.unlock();
 		}
 	}
-	
+
 	public void unblock() {
 		setBlocked(false);
 	}
-	
+
 	public void block() {
 		setBlocked(true);
 	}
-	
+
 	public int countBlocked() {
 		lock.lock();
 		try {
@@ -65,7 +65,7 @@ public class WriteBlockableFreenetStore<T extends StorableBlock> extends ProxyFr
 			lock.unlock();
 		}
 	}
-	
+
 	public void waitForSomeBlocked(int minBlocked) {
 		lock.lock();
 		try {
@@ -76,7 +76,7 @@ public class WriteBlockableFreenetStore<T extends StorableBlock> extends ProxyFr
 			lock.unlock();
 		}
 	}
-	
+
 	public void waitForSomeBlocked() {
 		waitForSomeBlocked(1);
 	}

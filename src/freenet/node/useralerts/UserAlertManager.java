@@ -113,7 +113,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	/**
 	 * Tries to find the user alert with the given hash code and dismisses it,
 	 * if found.
-	 * 
+	 *
 	 * @see #unregister(UserAlert)
 	 * @param alertHashCode
 	 *            The hash code of the user alert to dismiss
@@ -207,10 +207,10 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		}
 		return alertsNode;
 	}
-	
+
 	/**
 	 * Renders the given alert and returns the rendered HTML node.
-	 * 
+	 *
 	 * @param userAlert
 	 *            The user alert to render
 	 * @return The rendered HTML node
@@ -235,11 +235,11 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			dismissFormNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "disable", String.valueOf(userAlert.hashCode()) });
 			dismissFormNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "formPassword", core.formPassword });
 			dismissFormNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "dismiss-user-alert", userAlert.dismissButtonText() });
-			
+
 			if (redirectToAfterDisable != null) {
 				dismissFormNode.addChild("input",
-					new String[] { "type", "name", "value" },
-					new String[] { "hidden", "redirectToAfterDisable", redirectToAfterDisable });
+										 new String[] { "type", "name", "value" },
+										 new String[] { "hidden", "redirectToAfterDisable", redirectToAfterDisable });
 			}
 		}
 		return result;
@@ -265,7 +265,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		// a summary of alerts. With a status bar, we only show full errors here.
 		return createAlerts(true);
 	}
-	
+
 	static final HTMLNode ALERTS_LINK = new HTMLNode("a", "href", "/alerts/").setReadOnly();
 
 	/**
@@ -321,7 +321,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			if (separatorNeeded)
 				alertSummaryString.append(separator);
 			if(oneLine) {
-			alertSummaryString.append(numberOfWarning).append(' ').append(l10n("warningCountLabel").replace(":", ""));
+				alertSummaryString.append(numberOfWarning).append(' ').append(l10n("warningCountLabel").replace(":", ""));
 			} else {
 				alertSummaryString.append(l10n("warningCountLabel")).append(' ').append(numberOfWarning);
 			}
@@ -361,7 +361,7 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		if(!oneLine) {
 			summaryContent.addChild("#", alertSummaryString.toString() + separator + " ");
 			NodeL10n.getBase().addL10nSubstitution(summaryContent, "UserAlertManager.alertsOnAlertsPage",
-				new String[] { "link" }, new HTMLNode[] { ALERTS_LINK });
+												   new String[] { "link" }, new HTMLNode[] { ALERTS_LINK });
 		} else {
 			summaryContent.addChild("a", "href", "/alerts/", NodeL10n.getBase().getString("StatusBar.alerts") + " " + alertSummaryString.toString());
 		}

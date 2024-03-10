@@ -6,5 +6,5 @@ import freenet.support.api.Bucket;
 public interface NotPersistentBucket extends Bucket {
 
 	// No methods
-	
+
 }

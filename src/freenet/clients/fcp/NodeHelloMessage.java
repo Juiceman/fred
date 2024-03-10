@@ -21,13 +21,13 @@ import freenet.support.compress.Compressor;
  */
 public class NodeHelloMessage extends FCPMessage {
 	public static final String NAME = "NodeHello";
-	
+
 	private final String id;
-		
+
 	public NodeHelloMessage(String id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);

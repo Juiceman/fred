@@ -21,28 +21,28 @@ import org.junit.Test;
 
 /**
  * Utility class used throught test cases classes
- * 
+ *
  * @author Alberto Bacchelli &lt;sback@freenetproject.org&gt;
  */
 public final class UTFUtil {
 
 	@Test
 	public void testFake() {
-		
+
 	}
-	
+
 	/**
 	 * Contains all unicode characters except the low and high surrogates (they are no valid characters and constructing strings with them will cause
 	 * the JRE to replace them with the default replacement character). Even 0x0000 is included.
 	 */
 	public static final char[] ALL_CHARACTERS;
-	
+
 	static {
 		ALL_CHARACTERS = new char[Character.MAX_VALUE - Character.MIN_VALUE + 1];
-		
+
 		for(int i = 0; i <= (Character.MAX_VALUE - Character.MIN_VALUE); ++i) {
 			int characterValue = (Character.MIN_VALUE + i);
-			
+
 			// The low and high surrogates are no valid unicode characters.
 			if(characterValue >= Character.MIN_LOW_SURROGATE && characterValue <= Character.MAX_LOW_SURROGATE)
 				ALL_CHARACTERS[i]  = ' ';
@@ -52,14 +52,15 @@ public final class UTFUtil {
 				ALL_CHARACTERS[i] = (char)characterValue;
 		}
 	}
-	
+
 	//printable ascii symbols
 	public static final char PRINTABLE_ASCII[] = {
 		' ','!','@','#','$','%','^','&','(',')','+','=','{','}','[',']',':',';','\\','\"','\'',
-		',','<','>','.','?','~','`'};
+		',','<','>','.','?','~','`'
+	};
 
 	//stressed UTF chars values
-	public static final char STRESSED_UTF[] = { 
+	public static final char STRESSED_UTF[] = {
 		//ÉâûĔĭņşÊãüĕĮŇŠËäýĖįňšÌåþėİŉŢÍæÿĘıŊţÎçĀęĲŋŤÏèāĚĳŌťÐéĂěĴōŦÑêăĜĵŎŧ
 		'\u00c9','\u00e2','\u00fb','\u0114','\u012d','\u0146','\u015f','\u00ca','\u00e3','\u00fc',
 		'\u0115','\u012e','\u0147','\u0160','\u00cb','\u00e4','\u00fd','\u0116','\u012f','\u0148',
@@ -81,8 +82,9 @@ public final class UTFUtil {
 		'\u0127','\u0140','\u0159','\u0172','\u00dd','\u00f6','\u010f','\u0128','\u0141','\u015a',
 		'\u0173','\u00de','\u00f7','\u0110','\u0129','\u0142','\u015b','\u0174','\u00df','\u00f8',
 		'\u0111','\u012a','\u0143','\u015c','\u0175','\u00e0','\u00f9','\u0112','\u012b','\u0144',
-		'\u015d','\u0176','\u00e1','\u00fa','\u0113','\u012c','\u0145','\u015e','\u0177'};
-	
+		'\u015d','\u0176','\u00e1','\u00fa','\u0113','\u012c','\u0145','\u015e','\u0177'
+	};
+
 	/*
 	 * HTML entities ISO-88591
 	 * see for reference http://www.w3.org/TR/html4/sgml/entities.html#iso-88591

@@ -10,7 +10,7 @@ import freenet.support.TimeUtil;
 public class OfferReplyTag extends UIDTag {
 
 	final boolean ssk;
-	
+
 	public OfferReplyTag(boolean isSSK, PeerNode source, boolean realTimeFlag, long uid, Node node) {
 		super(source, realTimeFlag, uid, node);
 		ssk = isSSK;
@@ -26,13 +26,13 @@ public class OfferReplyTag extends UIDTag {
 
 	@Override
 	public int expectedTransfersIn(boolean ignoreLocalVsRemote,
-			int outwardTransfersPerInsert, boolean forAccept) {
+								   int outwardTransfersPerInsert, boolean forAccept) {
 		return 0;
 	}
 
 	@Override
 	public int expectedTransfersOut(boolean ignoreLocalVsRemote,
-			int outwardTransfersPerInsert, boolean forAccept) {
+									int outwardTransfersPerInsert, boolean forAccept) {
 		return 1;
 	}
 

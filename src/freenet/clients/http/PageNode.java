@@ -2,12 +2,12 @@ package freenet.clients.http;
 
 import freenet.support.HTMLNode;
 
-/** PageNode is a wrapper similar to InfoboxNode for a whole page. Similarly, PageNode.outer is the 
- * HTML for the whole page, PageNode.content is where you add content to the page, and headNode is 
+/** PageNode is a wrapper similar to InfoboxNode for a whole page. Similarly, PageNode.outer is the
+ * HTML for the whole page, PageNode.content is where you add content to the page, and headNode is
  * the <head> element so you can add headers. The title will already have been added. */
 public class PageNode extends InfoboxNode {
 
-	/** Return the HTMLNode corresponding to the &lt;head&gt; tag, so we can add stuff to it, e.g. 
+	/** Return the HTMLNode corresponding to the &lt;head&gt; tag, so we can add stuff to it, e.g.
 	 * &lt;meta&gt; tags. */
 	public final HTMLNode headNode;
 
@@ -15,7 +15,7 @@ public class PageNode extends InfoboxNode {
 		super(page, content);
 		this.headNode = head;
 	}
-	
+
 	/**
 	 * Adds a custom style sheet to the header of the page.
 	 *

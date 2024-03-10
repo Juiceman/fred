@@ -16,12 +16,12 @@ public abstract class StoringUserEvent<T extends StoringUserEvent<T>> extends Ab
 	}
 
 	protected StoringUserEvent(Type eventType, boolean userCanDismiss, String title, String text,
-			String shortText, HTMLNode htmlText, short priorityClass,
-			boolean valid, String dismissButtonText,
-			boolean shouldUnregisterOnDismiss, Object userIdentifier, Map<String, T> events) {
+							   String shortText, HTMLNode htmlText, short priorityClass,
+							   boolean valid, String dismissButtonText,
+							   boolean shouldUnregisterOnDismiss, Object userIdentifier, Map<String, T> events) {
 		super(eventType, userCanDismiss, title, text, shortText, htmlText, priorityClass,
-				valid, dismissButtonText, shouldUnregisterOnDismiss,
-				userIdentifier);
+			  valid, dismissButtonText, shouldUnregisterOnDismiss,
+			  userIdentifier);
 		this.events = events;
 	}
 

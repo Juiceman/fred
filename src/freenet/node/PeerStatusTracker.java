@@ -8,11 +8,11 @@ import freenet.support.WeakHashSet;
 
 /** Track a collection of PeerNode's for each status. */
 class PeerStatusTracker<K extends Object> {
-	
-    private static volatile boolean logMINOR;
-    static {
-        Logger.registerClass(PeerManager.class);
-    }
+
+	private static volatile boolean logMINOR;
+	static {
+		Logger.registerClass(PeerManager.class);
+	}
 
 	/** PeerNode statuses, by status. WARNING: LOCK THIS LAST. Must NOT call PeerNode inside this lock. */
 	private final HashMap<K, WeakHashSet<PeerNode>> statuses;
@@ -47,7 +47,7 @@ class PeerStatusTracker<K extends Object> {
 	}
 
 	public synchronized void removeStatus(K peerNodeStatus, PeerNode peerNode,
-			boolean noLog) {
+										  boolean noLog) {
 		WeakHashSet<PeerNode> statusSet = statuses.get(peerNodeStatus);
 		if(statusSet != null) {
 			if(!statusSet.remove(peerNode)) {
@@ -61,14 +61,14 @@ class PeerStatusTracker<K extends Object> {
 		if(logMINOR)
 			Logger.minor(this, "removePeerNodeStatus(): removing PeerNode for '" + peerNode.getIdentityString() + "' with status '" + peerNodeStatus + "'");
 	}
-	
+
 	public synchronized void changePeerNodeStatus(PeerNode peerNode, K oldPeerNodeStatus,
 			K peerNodeStatus, boolean noLog) {
 		if(logMINOR) Logger.minor(this, "Peer status change: "+oldPeerNodeStatus+" -> "+peerNodeStatus+" on "+peerNode);
 		removeStatus(oldPeerNodeStatus, peerNode, noLog);
 		addStatus(peerNodeStatus, peerNode, noLog);
 	}
-	
+
 	public synchronized void addStatusList(List<K> list) {
 		list.addAll(statuses.keySet());
 	}

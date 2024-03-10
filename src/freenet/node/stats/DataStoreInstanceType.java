@@ -39,8 +39,8 @@ public class DataStoreInstanceType {
 	@Override
 	public String toString() {
 		return "DataStoreInstanceType{" +
-				"store=" + store +
-				", key=" + key +
-				'}';
+			   "store=" + store +
+			   ", key=" + key +
+			   '}';
 	}
 }

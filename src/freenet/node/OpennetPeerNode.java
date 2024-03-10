@@ -18,7 +18,7 @@ public class OpennetPeerNode extends PeerNode {
 	private long timeLastSuccess;
 	// Not persisted across restart, since after restart grace periods don't apply anyway (except disconnection, which is really separate anyway).
 	private ConnectionType opennetNodeAddedReason;
-	
+
 	public OpennetPeerNode(SimpleFieldSet fs, Node node2, NodeCrypto crypto, OpennetManager opennet, boolean fromLocal) throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
 		super(fs, node2, crypto, fromLocal);
 
@@ -26,7 +26,7 @@ public class OpennetPeerNode extends PeerNode {
 			SimpleFieldSet metadata = fs.subset("metadata");
 			timeLastSuccess = metadata.getLong("timeLastSuccess", 0);
 		}
-		
+
 		this.opennet = opennet;
 	}
 
@@ -62,14 +62,14 @@ public class OpennetPeerNode extends PeerNode {
 		TOO_LOW_UPTIME,
 		RECONNECT_GRACE_PERIOD
 	}
-	
+
 	public boolean isDroppable(boolean ignoreDisconnect) {
 		return isDroppableWithReason(ignoreDisconnect) == NOT_DROP_REASON.DROPPABLE;
 	}
-		
-	/** Is the peer droppable? 
-	 * SIDE EFFECT: If we are now outside the grace period, we reset peerAddedTime and opennetPeerAddedReason. 
-	 * Note that the caller must check separately whether the node is TOO OLD and connected. */ 
+
+	/** Is the peer droppable?
+	 * SIDE EFFECT: If we are now outside the grace period, we reset peerAddedTime and opennetPeerAddedReason.
+	 * Note that the caller must check separately whether the node is TOO OLD and connected. */
 	public NOT_DROP_REASON isDroppableWithReason(boolean ignoreDisconnect) {
 		long now = System.currentTimeMillis();
 		int status = getPeerNodeStatus();
@@ -94,20 +94,20 @@ public class OpennetPeerNode extends PeerNode {
 		if(now - node.usm.getStartedTime() < OpennetManager.DROP_STARTUP_DELAY)
 			return NOT_DROP_REASON.TOO_LOW_UPTIME; // Give them time to connect after we startup
 		if(!ignoreDisconnect) {
-		synchronized(this) {
-			// This only applies after it has connected, and only if !ignoreDisconnect.
-			// Hence only DISCONNECTED and not NEVER CONNECTED.
-			if((status == PeerManager.PEER_NODE_STATUS_DISCONNECTED) && (!super.neverConnected()) && 
-					now - timeLastDisconnect < OpennetManager.DROP_DISCONNECT_DELAY &&
-					now - timePrevDisconnect > OpennetManager.DROP_DISCONNECT_DELAY_COOLDOWN) {
-				// Grace period for node restarting
-				return NOT_DROP_REASON.RECONNECT_GRACE_PERIOD;
+			synchronized(this) {
+				// This only applies after it has connected, and only if !ignoreDisconnect.
+				// Hence only DISCONNECTED and not NEVER CONNECTED.
+				if((status == PeerManager.PEER_NODE_STATUS_DISCONNECTED) && (!super.neverConnected()) &&
+						now - timeLastDisconnect < OpennetManager.DROP_DISCONNECT_DELAY &&
+						now - timePrevDisconnect > OpennetManager.DROP_DISCONNECT_DELAY_COOLDOWN) {
+					// Grace period for node restarting
+					return NOT_DROP_REASON.RECONNECT_GRACE_PERIOD;
+				}
 			}
-		}
 		}
 		return NOT_DROP_REASON.DROPPABLE;
 	}
-	
+
 	@Override
 	public void onSuccess(boolean insert, boolean ssk) {
 		if(insert || ssk) return;
@@ -120,7 +120,7 @@ public class OpennetPeerNode extends PeerNode {
 		opennet.onRemove(this);
 		super.onRemove();
 	}
-	
+
 	@Override
 	public synchronized SimpleFieldSet exportMetadataFieldSet(long now) {
 		SimpleFieldSet fs = super.exportMetadataFieldSet(now);
@@ -131,7 +131,7 @@ public class OpennetPeerNode extends PeerNode {
 	public final long timeLastSuccess() {
 		return timeLastSuccess;
 	}
-	
+
 	/**
 	 * Is the SimpleFieldSet a valid noderef?
 	 */
@@ -149,7 +149,7 @@ public class OpennetPeerNode extends PeerNode {
 	public boolean recordStatus() {
 		return true;
 	}
- 
+
 	@Override
 	public boolean equals(Object o) {
 		if(o == this) return true;
@@ -158,18 +158,18 @@ public class OpennetPeerNode extends PeerNode {
 			return super.equals(o);
 		} else return false;
 	}
-	
+
 	@Override
 	public final boolean shouldDisconnectAndRemoveNow() {
 		// Allow announced peers 15 minutes to download the auto-update.
 		if(isConnected() && isUnroutableOlderVersion()) {
-			return shouldDisconnectTooOld(); 
+			return shouldDisconnectTooOld();
 		}
 		return false;
 	}
 
 	/** If a node is TOO OLD, we should keep it connected for a brief period for it to
-	 * allow it to issue a UOM request, we should keep it connected while the UOM transfer 
+	 * allow it to issue a UOM request, we should keep it connected while the UOM transfer
 	 * is in progress, but otherwise we should disconnect. */
 	private boolean shouldDisconnectTooOld() {
 		long uptime = System.currentTimeMillis() - timeLastConnectionCompleted();
@@ -200,35 +200,35 @@ public class OpennetPeerNode extends PeerNode {
 		super.onConnect();
 		opennet.crypto.socket.getAddressTracker().setPresumedGuiltyAt(System.currentTimeMillis() + HOURS.toMillis(1));
 	}
-	
+
 	private boolean wasDropped;
 
 	synchronized void setWasDropped() {
 		wasDropped = true;
 	}
-	
+
 	synchronized boolean wasDropped() {
 		return wasDropped;
 	}
-	
+
 	synchronized boolean grabWasDropped() {
 		boolean ret = wasDropped;
 		wasDropped = false;
 		return ret;
 	}
-	
+
 	@Override
 	public synchronized void setAddedReason(ConnectionType connectionType) {
 		opennetNodeAddedReason = connectionType;
 	}
-	
+
 	@Override
 	public synchronized ConnectionType getAddedReason() {
 		return opennetNodeAddedReason;
 	}
 
 	@Override
-	/** Opennet nodes need to know when a peer node was added. 
+	/** Opennet nodes need to know when a peer node was added.
 	 * We do NOT clear it on connect, because we use it for determining whether we are in the initial grace period.
 	 * However we will reset it after the grace period expires, in isDroppableWithReason(). */
 	protected void maybeClearPeerAddedTimeOnConnect() {
@@ -239,12 +239,12 @@ public class OpennetPeerNode extends PeerNode {
 			public void run() {
 				isDroppableWithReason(false);
 			}
-			
+
 		}, OpennetManager.DROP_MIN_AGE+1);
 	}
 
 	@Override
-	/* Opennet peers do not export the peer added time. It is only relevant for the grace period anyway. */ 
+	/* Opennet peers do not export the peer added time. It is only relevant for the grace period anyway. */
 	protected boolean shouldExportPeerAddedTime() {
 		return false;
 	}
@@ -261,7 +261,7 @@ public class OpennetPeerNode extends PeerNode {
 		// Disconnect.
 		forceDisconnect();
 	}
-	
+
 	@Override
 	public boolean shallWeRouteAccordingToOurPeersLocation(int htl) {
 		return node.shallWeRouteAccordingToOurPeersLocation(htl);
@@ -271,32 +271,32 @@ public class OpennetPeerNode extends PeerNode {
 	boolean dontKeepFullFieldSet() {
 		return true;
 	}
-	
-    public LinkLengthClass linkLengthClass() {
-        if(!Location.isValid(getLocation())) {
-            Logger.error(this, "No location on "+this, new Exception("debug"));
-            return LinkLengthClass.SHORT; // FIXME add unknown to enum? Would need more complex error handling...
-        }
-        // FIXME OPTIMISE This should not change since we don't swap on opennet.
-        if(Location.distance(this, opennet.node.getLocation()) > OpennetManager.LONG_DISTANCE)
-            return LinkLengthClass.LONG;
-        else
-            return LinkLengthClass.SHORT;
-    }
 
-    @Override
-    public boolean isOpennetForNoderef() {
-        return true;
-    }
+	public LinkLengthClass linkLengthClass() {
+		if(!Location.isValid(getLocation())) {
+			Logger.error(this, "No location on "+this, new Exception("debug"));
+			return LinkLengthClass.SHORT; // FIXME add unknown to enum? Would need more complex error handling...
+		}
+		// FIXME OPTIMISE This should not change since we don't swap on opennet.
+		if(Location.distance(this, opennet.node.getLocation()) > OpennetManager.LONG_DISTANCE)
+			return LinkLengthClass.LONG;
+		else
+			return LinkLengthClass.SHORT;
+	}
 
-    @Override
-    public boolean canAcceptAnnouncements() {
-        return true;
-    }
+	@Override
+	public boolean isOpennetForNoderef() {
+		return true;
+	}
 
-    @Override
-    protected void writePeers() {
-        node.peers.writePeers(true);
-    }
+	@Override
+	public boolean canAcceptAnnouncements() {
+		return true;
+	}
+
+	@Override
+	protected void writePeers() {
+		node.peers.writePeers(true);
+	}
 
 }
