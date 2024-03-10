@@ -24,9 +24,9 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 	private static volatile boolean logMINOR;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -144,7 +144,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			if(onlyNode == null) {
 				// Route it
 				next = node.peers.closerPeer(source, nodesRoutedTo, target, true, node.isAdvancedModeEnabled(), -1,
-				        null, null, htl, 0, source == null, false, false);
+											 null, null, htl, 0, source == null, false, false);
 			} else {
 				next = onlyNode;
 				if(nodesRoutedTo.contains(onlyNode)) {
@@ -179,7 +179,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 				 * FNPRejectedOverload - go to another node
 				 */
 
-					MessageFilter mfAccepted = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT).setType(DMT.FNPAccepted);
+				MessageFilter mfAccepted = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT).setType(DMT.FNPAccepted);
 				MessageFilter mfRejectedLoop = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT).setType(DMT.FNPRejectedLoop);
 				MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT).setType(DMT.FNPRejectedOverload);
 				MessageFilter mfOpennetDisabled = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT).setType(DMT.FNPOpennetDisabled);
@@ -196,8 +196,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 					break;
 				}
 
-				if(msg == null)
-				{
+				if(msg == null) {
 					if(logMINOR) Logger.minor(this, "Timeout waiting for Accepted");
 					// Try next node
 					msg = null;
@@ -238,8 +237,8 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			}
 
 			if(logMINOR) Logger.minor(this, "Got Accepted");
-			
-			 if(cb != null)
+
+			if(cb != null)
 				cb.acceptedSomewhere();
 
 			// Send the rest
@@ -260,7 +259,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 
 				MessageFilter mfAnnounceCompleted = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPOpennetAnnounceCompleted);
 				MessageFilter mfRouteNotFound = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPRouteNotFound);
-				MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPRejectedOverload);
+				  MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPRejectedOverload);
 				MessageFilter mfAnnounceReply = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPOpennetAnnounceReply);
 				MessageFilter mfOpennetDisabled = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPOpennetDisabled);
 				MessageFilter mfNotWanted = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ANNOUNCE_TIMEOUT).setType(DMT.FNPOpennetAnnounceNodeNotWanted);
@@ -366,7 +365,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 			}
 		}
 	}
-	
+
 	private int waitingForTransfers = 0;
 
 	/**
@@ -436,7 +435,7 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 					}
 				}
 			}
-			
+
 		};
 		try {
 			node.executor.execute(r);
@@ -483,15 +482,15 @@ public class AnnounceSender implements PrioRunnable, ByteCounter {
 		if(cb != null) cb.nodeFailed(next, "timed out");
 	}
 
-        private synchronized void waitForRunningTransfers() {
-           while(waitingForTransfers > 0) {
-              try {
-                 wait();
-              } catch (InterruptedException e) {
-                 // Ignore.
-              }
-           }
-        }
+	private synchronized void waitForRunningTransfers() {
+		while(waitingForTransfers > 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// Ignore.
+			}
+		}
+	}
 
 	private void rnf(PeerNode next) {
 		waitForRunningTransfers();
