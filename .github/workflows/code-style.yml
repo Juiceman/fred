@@ -3,23 +3,15 @@ name: Astyle Code Formatter
 on:
   pull_request:
     branches:
-      - next  # Update with your main branch name or the branch you want to target
+      - next  # Change the pull request branch name to 'next'
 
 jobs:
   format:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: '20'  # Update with Node.js 20 or the desired version
-          
       - name: Check out code
         uses: actions/checkout@v4.1.1
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
 
       - name: Install Astyle
         run: |
@@ -29,10 +21,7 @@ jobs:
       - name: Get modified files
         id: get_files
         run: |
-          echo "::set-output name=files::$(git diff --name-only ${{ github.event.pull_request.head.repo.full_name }} ${{ github.head_ref }})"
-          echo "git diff --name-only ${{ github.event.pull_request.head.repo.full_name }} ${{ github.head_ref }}"
-        #echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.head_ref }})"
-
+          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
 
       - name: Format modified files
         run: |
@@ -40,17 +29,29 @@ jobs:
           for file in "${files[@]}"; do
             astyle --indent=force-tab=4 --suffix=none "$file"
           done
-          
-      - name: Git Auto Commit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'  # Update with Node.js 20 or the desired version
+
+      - name: Create commit
         uses: stefanzweifel/git-auto-commit-action@v5.0.0
-          
+        with:
+          commit_message: "Format code using Astyle"
+          commit_user_name: "GitHub Actions"
+          commit_user_email: "actions@github.com"
+
       - name: Create Notification
         uses: actions/github-script@v7.0.1
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
+            const { context, github } = require('@actions/github');
+            const issueComment = `Hello! Astyle code formatter has formatted the code in this pull request. Please review the changes.`;
+            github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Hello! Astyle code formatter has formatted the code in this pull request. Please review the changes.'
-            })
+              body: issueComment
+            });
