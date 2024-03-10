@@ -1,0 +1,45 @@
+name: Astyle Code Formatter
+
+on:
+  pull_request:
+    branches:
+      - next  # Update with your main branch name or the branch you want to target
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+
+      - name: Install Astyle
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y astyle
+
+      - name: Format code
+        run: |
+          astyle --style=java --indent=force-tab --recursive *.java
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'  # Update with Node.js 20 or the desired version
+
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v5.0.0
+          
+      - name: Create Notification
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Hello! Astyle code formatter has formatted the code in this pull request. Please review the changes.'
+            })
