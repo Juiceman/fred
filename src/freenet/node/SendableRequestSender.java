@@ -19,7 +19,8 @@ public interface SendableRequestSender {
 	 * and the methods to call to indicate success/failure.
 	 * @return True if a request was sent, false otherwise (in which case the request will
 	 * be removed if it hasn't already been). */
-	public abstract boolean send(NodeClientCore node, RequestScheduler sched, ClientContext context, ChosenBlock request);
+	public abstract boolean send(NodeClientCore node, RequestScheduler sched, ClientContext context,
+								 ChosenBlock request);
 
 	public abstract boolean sendIsBlocking();
 

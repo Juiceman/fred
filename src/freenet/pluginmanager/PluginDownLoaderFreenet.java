@@ -48,7 +48,8 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 	}
 
 	@Override
-	InputStream getInputStream(final PluginProgress progress) throws IOException, PluginNotFoundException {
+	InputStream getInputStream(final PluginProgress progress) throws IOException,
+		PluginNotFoundException {
 		FreenetURI uri = getSource();
 		System.out.println("Downloading plugin from Freenet: "+uri);
 		while (true) {
@@ -61,7 +62,8 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 						if(ce instanceof SplitfileProgressEvent) {
 							SplitfileProgressEvent split = (SplitfileProgressEvent) ce;
 							if(split.finalizedTotal) {
-								progress.setDownloadProgress(split.minSuccessfulBlocks, split.succeedBlocks, split.totalBlocks, split.failedBlocks, split.fatallyFailedBlocks, split.finalizedTotal);
+								progress.setDownloadProgress(split.minSuccessfulBlocks, split.succeedBlocks, split.totalBlocks,
+															 split.failedBlocks, split.fatallyFailedBlocks, split.finalizedTotal);
 							}
 						}
 					}
@@ -83,14 +85,17 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 				FetchResult res = fw.waitForCompletion();
 				return res.asBucket().getInputStream();
 			} catch (FetchException e) {
-				if ((e.getMode() == FetchExceptionMode.PERMANENT_REDIRECT) || (e.getMode() == FetchExceptionMode.TOO_MANY_PATH_COMPONENTS)) {
+				if ((e.getMode() == FetchExceptionMode.PERMANENT_REDIRECT)
+						|| (e.getMode() == FetchExceptionMode.TOO_MANY_PATH_COMPONENTS)) {
 					uri = e.newURI;
 					continue;
 				}
-				if(e.isFatal())
+				if(e.isFatal()) {
 					fatalFailure = true;
+				}
 				Logger.error(this, "error while fetching plugin: " + getSource(), e);
-				throw new PluginNotFoundException("error while fetching plugin: " + e.getMessage() + " for key "  + getSource(), e);
+				throw new PluginNotFoundException("error while fetching plugin: " + e.getMessage() + " for key "  +
+												  getSource(), e);
 			}
 		}
 	}
@@ -111,8 +116,9 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 
 	@Override
 	void tryCancel() {
-		if(get != null)
+		if(get != null) {
 			get.cancel(node.clientCore.clientContext);
+		}
 	}
 
 	@Override

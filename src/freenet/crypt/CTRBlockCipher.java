@@ -61,8 +61,9 @@ public class CTRBlockCipher {
 	 */
 	public void init(byte[] iv, int offset, int length)
 	throws IllegalArgumentException {
-		if(length != IV.length)
+		if(length != IV.length) {
 			throw new IllegalArgumentException();
+		}
 		System.arraycopy(iv, offset, IV, 0, IV.length);
 		System.arraycopy(IV, 0, counter, 0, counter.length);
 		processBlock();
@@ -100,9 +101,12 @@ public class CTRBlockCipher {
 			/* handle first partially consumed block */
 			int len = Math.min(blockSize - blockOffset, length);
 			length -= len;
-			while(len-- > 0)
+			while(len-- > 0) {
 				output[offsetOut++] = (byte) (input[offsetIn++] ^ counterOut[blockOffset++]);
-			if(length == 0) return;
+			}
+			if(length == 0) {
+				return;
+			}
 			processBlock();
 		}
 		assert(blockOffset == 0);
@@ -110,12 +114,15 @@ public class CTRBlockCipher {
 			/* consume full blocks */
 			// note: we skip *last* full block to avoid extra processBlock()
 			length -= blockSize;
-			while (blockOffset < blockSize)
+			while (blockOffset < blockSize) {
 				output[offsetOut++] = (byte) (input[offsetIn++] ^ counterOut[blockOffset++]);
+			}
 			processBlock();
 		}
 		assert(blockOffset == 0 && length <= blockSize);
-		if (length == 0) return;
+		if (length == 0) {
+			return;
+		}
 		while (length-- > 0) {
 			/* handle final block */
 			output[offsetOut++] = (byte) (input[offsetIn++] ^ counterOut[blockOffset++]);

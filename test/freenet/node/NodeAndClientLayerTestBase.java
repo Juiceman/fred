@@ -29,7 +29,8 @@ public class NodeAndClientLayerTestBase {
 
 	};
 
-	protected InsertBlock generateBlock(DummyRandomSource random, boolean createUsk) throws MalformedURLException {
+	protected InsertBlock generateBlock(DummyRandomSource random,
+										boolean createUsk) throws MalformedURLException {
 		byte[] data = new byte[FILE_SIZE];
 		random.nextBytes(data);
 		RandomAccessBucket bucket = new SimpleReadOnlyArrayBucket(data);

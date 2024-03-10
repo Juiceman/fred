@@ -56,7 +56,9 @@ public class OggFilter implements ContentDataFilter {
 				filter = OggBitstreamFilter.getBitstreamFilter(page);
 				streamFilters.put(page.getSerial(), filter);
 			}
-			if(filter == null) continue;
+			if(filter == null) {
+				continue;
+			}
 			page = filter.parse(page);
 			//Don't write a continuous pages unless they are all valid
 			if(page != null && page.headerValid() && !hasValidSubpage(page, nextPage)) {
@@ -67,11 +69,14 @@ public class OggFilter implements ContentDataFilter {
 						out.write(part.toArray());
 					}
 				}
-			} else if(!splitPages.isEmpty()) splitPages.clear();
+			} else if(!splitPages.isEmpty()) {
+				splitPages.clear();
+			}
 		}
 		out.flush();
 		if(out.written() == 0) {
-			throw new DataFilterException(l10n("EmptyOutputTitle"), l10n("EmptyOutputTitle"), l10n("EmptyOutputDescription"));
+			throw new DataFilterException(l10n("EmptyOutputTitle"), l10n("EmptyOutputTitle"),
+										  l10n("EmptyOutputDescription"));
 		}
 	}
 
@@ -88,7 +93,9 @@ public class OggFilter implements ContentDataFilter {
 			//Populate a byte array with all the data in which a subpage might hide
 			data = new ByteArrayOutputStream();
 			data.write(page.toArray());
-			if(nextPage != null) data.write(nextPage.toArray());
+			if(nextPage != null) {
+				data.write(nextPage.toArray());
+			}
 			in = new DataInputStream(new ByteArrayInputStream(data.toByteArray()));
 			data.close();
 			while(true) {
@@ -117,7 +124,9 @@ public class OggFilter implements ContentDataFilter {
 		try {
 			while(true) {
 				OggPage subpage = OggPage.readPage(in);
-				if(subpage.headerValid()) return true;
+				if(subpage.headerValid()) {
+					return true;
+				}
 			}
 		} catch(EOFException e) {
 			//We've ran out of data to read. Break.

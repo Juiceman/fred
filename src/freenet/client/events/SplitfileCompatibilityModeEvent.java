@@ -22,7 +22,8 @@ public class SplitfileCompatibilityModeEvent implements ClientEvent {
 		return "CompatibilityMode between "+minCompatibilityMode+" and "+maxCompatibilityMode;
 	}
 
-	public SplitfileCompatibilityModeEvent(CompatibilityMode min, CompatibilityMode max, byte[] splitfileCryptoKey, boolean dontCompress, boolean bottomLayer) {
+	public SplitfileCompatibilityModeEvent(CompatibilityMode min, CompatibilityMode max,
+										   byte[] splitfileCryptoKey, boolean dontCompress, boolean bottomLayer) {
 		this.minCompatibilityMode = min;
 		this.maxCompatibilityMode = max;
 		this.splitfileCryptoKey = splitfileCryptoKey;

@@ -9,7 +9,8 @@ import freenet.support.Ticker;
 
 public class FreenetFilePersistentConfig extends FilePersistentConfig {
 
-	final protected static String DEFAULT_HEADER = "This file is overwritten whenever Freenet shuts down, so only edit it when the node is not running.";
+	final protected static String DEFAULT_HEADER =
+		"This file is overwritten whenever Freenet shuts down, so only edit it when the node is not running.";
 
 	private volatile boolean isWritingConfig = false;
 	private volatile boolean hasNodeStarted = false;
@@ -40,11 +41,13 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 		}
 	};
 
-	public FreenetFilePersistentConfig(SimpleFieldSet set, File filename, File tempFilename) throws IOException {
+	public FreenetFilePersistentConfig(SimpleFieldSet set, File filename,
+									   File tempFilename) throws IOException {
 		super(set, filename, tempFilename, DEFAULT_HEADER);
 	}
 
-	public static FreenetFilePersistentConfig constructFreenetFilePersistentConfig(File f) throws IOException {
+	public static FreenetFilePersistentConfig constructFreenetFilePersistentConfig(
+		File f) throws IOException {
 		File filename = f;
 		File tempFilename = new File(f.getPath()+".tmp");
 		return new FreenetFilePersistentConfig(load(filename, tempFilename), filename, tempFilename);
@@ -61,7 +64,8 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 		}
 		synchronized(storeSync) {
 			if(isWritingConfig || ticker == null) {
-				Logger.normal(this, "Already writing the config file to disk or the node object hasn't been set : refusing to proceed");
+				Logger.normal(this,
+							  "Already writing the config file to disk or the node object hasn't been set : refusing to proceed");
 				return;
 			}
 			isWritingConfig = true;
@@ -77,7 +81,9 @@ public class FreenetFilePersistentConfig extends FilePersistentConfig {
 
 	public void setHasNodeStarted() {
 		synchronized (this) {
-			if(hasNodeStarted) Logger.error(this, "It has already been called! that shouldn't happen!");
+			if(hasNodeStarted) {
+				Logger.error(this, "It has already been called! that shouldn't happen!");
+			}
 			this.hasNodeStarted = true;
 			notifyAll();
 		}

@@ -69,16 +69,20 @@ public class FileInsertWizardToadlet extends Toadlet implements LinkEnabledCallb
 		HTMLNode contentNode = page.content;
 
 		/* add alert summary box */
-		if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
+		if (ctx.isAllowedFullAccess()) {
+			contentNode.addChild(ctx.getAlertManager().createSummary());
+		}
 
 		contentNode.addChild(createInsertBox(pageMaker, ctx, ctx.isAdvancedModeEnabled()));
-		if(ctx.isAdvancedModeEnabled())
+		if(ctx.isAdvancedModeEnabled()) {
 			contentNode.addChild(createFilterBox(pageMaker, ctx));
+		}
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.generate());
 	}
 
-	private HTMLNode createInsertBox (PageMaker pageMaker, ToadletContext ctx, boolean isAdvancedModeEnabled) {
+	private HTMLNode createInsertBox (PageMaker pageMaker, ToadletContext ctx,
+									  boolean isAdvancedModeEnabled) {
 		/* the insert file box */
 		InfoboxNode infobox = pageMaker.getInfobox(
 								  NodeL10n.getBase().getString("QueueToadlet.insertFile"), "insert-queue", true);
@@ -101,8 +105,9 @@ public class FileInsertWizardToadlet extends Toadlet implements LinkEnabledCallb
 							new String[] { "keytypeChk" }
 						   ).addChild("b", l10n("insertCanonicalTitle"));
 		insertForm.addChild("#", ": "+l10n("insertCanonical"));
-		if(isAdvancedModeEnabled)
+		if(isAdvancedModeEnabled) {
 			insertForm.addChild("#", " "+l10n("insertCanonicalAdvanced"));
+		}
 		insertForm.addChild("br");
 		input = insertForm.addChild("input",
 									new String[] { "type", "name", "value", "id" },
@@ -115,8 +120,9 @@ public class FileInsertWizardToadlet extends Toadlet implements LinkEnabledCallb
 							new String[] { "keytypeSsk" }
 						   ).addChild("b", l10n("insertRandomTitle"));
 		insertForm.addChild("#", ": "+l10n("insertRandom"));
-		if(isAdvancedModeEnabled)
+		if(isAdvancedModeEnabled) {
 			insertForm.addChild("#", " "+l10n("insertRandomAdvanced"));
+		}
 		if (isAdvancedModeEnabled) {
 			insertForm.addChild("br");
 			insertForm.addChild("input",
@@ -151,11 +157,15 @@ public class FileInsertWizardToadlet extends Toadlet implements LinkEnabledCallb
 			insertForm.addChild("#", NodeL10n.getBase().getString("QueueToadlet.compatModeLabel")+": ");
 			HTMLNode select = insertForm.addChild("select", "name", "compatibilityMode");
 			for(CompatibilityMode mode : InsertContext.CompatibilityMode.values()) {
-				if(mode == CompatibilityMode.COMPAT_UNKNOWN) continue;
+				if(mode == CompatibilityMode.COMPAT_UNKNOWN) {
+					continue;
+				}
 				// FIXME l10n???
 				HTMLNode option = select.addChild("option", "value", mode.name(),
 												  NodeL10n.getBase().getString("InsertContext.CompatibilityMode."+mode.name()));
-				if (mode == CompatibilityMode.COMPAT_DEFAULT) option.addAttribute("selected", "");
+				if (mode == CompatibilityMode.COMPAT_DEFAULT) {
+					option.addAttribute("selected", "");
+				}
 			}
 			insertForm.addChild("br");
 			insertForm.addChild("#", l10n("splitfileCryptoKeyLabel")+": ");
@@ -197,7 +207,8 @@ public class FileInsertWizardToadlet extends Toadlet implements LinkEnabledCallb
 								  l10n("previewFilterFile"), "insert-queue", true);
 		HTMLNode insertBox = infobox.outer;
 		HTMLNode insertContent = infobox.content;
-		HTMLNode insertForm = ctx.addFormChild(insertContent, ContentFilterToadlet.PATH, "filterPreviewForm");
+		HTMLNode insertForm = ctx.addFormChild(insertContent, ContentFilterToadlet.PATH,
+											   "filterPreviewForm");
 		insertForm.addChild("#", l10n("filterFileLabel"));
 		insertForm.addChild("br");
 		insertForm.addChild("br");

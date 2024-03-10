@@ -27,7 +27,9 @@ public final class MasterSecret implements Serializable {
 	}
 
 	public MasterSecret(byte[] secret) {
-		if(secret.length != 64) throw new IllegalArgumentException();
+		if(secret.length != 64) {
+			throw new IllegalArgumentException();
+		}
 		masterKey = KeyGenUtils.getSecretKey(KeyType.HMACSHA512, secret);
 	}
 

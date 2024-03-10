@@ -41,9 +41,11 @@ public class TranslationToadlet extends Toadlet {
 		this.translatingFor = "Node";
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if(!ctx.checkFullAccess(this))
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		boolean showEverything = !request.isParameterSet("toTranslateOnly");
 
@@ -51,12 +53,15 @@ public class TranslationToadlet extends Toadlet {
 		if (request.isParameterSet("getOverrideTranlationFile")) {
 			SimpleFieldSet sfs = this.base.getOverrideForCurrentLanguageTranslation();
 			if(sfs == null) {
-				super.sendErrorPage(ctx, 503 /* Service Unavailable */, "Service Unavailable", l10n("noCustomTranslations"));
+				super.sendErrorPage(ctx, 503 /* Service Unavailable */, "Service Unavailable",
+									l10n("noCustomTranslations"));
 				return;
 			}
 			byte[] data = sfs.toOrderedString().getBytes(StandardCharsets.UTF_8);
 			MultiValueTable<String, String> head = new MultiValueTable<String, String>();
-			head.put("Content-Disposition", "attachment; filename=\"" + this.base.getL10nOverrideFileName(this.base.getSelectedLanguage()) + '"');
+			head.put("Content-Disposition",
+					 "attachment; filename=\"" + this.base.getL10nOverrideFileName(this.base.getSelectedLanguage()) +
+					 '"');
 			ctx.sendReplyHeaders(200, "Found", head, "text/plain; charset=utf-8", data.length);
 			ctx.writeData(data);
 			return;
@@ -86,11 +91,14 @@ public class TranslationToadlet extends Toadlet {
 							   );
 
 			HTMLNode footer = translationNode.addChild("div", "class", "warning");
-			footer.addChild("a", "href", TOADLET_URL+"?getOverrideTranlationFile").addChild("#", l10n("downloadTranslationsFile"));
+			footer.addChild("a", "href", TOADLET_URL+"?getOverrideTranlationFile").addChild("#",
+					l10n("downloadTranslationsFile"));
 			footer.addChild("%", "&nbsp;&nbsp;");
-			footer.addChild("a", "href", TOADLET_URL+"?translate="+key+ (showEverything ? "" : "&toTranslateOnly")).addChild("#", l10n("reEdit"));
+			footer.addChild("a", "href", TOADLET_URL+"?translate="+key+ (showEverything ? "" :
+							"&toTranslateOnly")).addChild("#", l10n("reEdit"));
 			footer.addChild("%", "&nbsp;&nbsp;");
-			footer.addChild("a", "href", TOADLET_URL + (showEverything ? "" : "?toTranslateOnly")).addChild("#", l10n("returnToTranslations"));
+			footer.addChild("a", "href", TOADLET_URL + (showEverything ? "" : "?toTranslateOnly")).addChild("#",
+					l10n("returnToTranslations"));
 
 			this.writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 			return;
@@ -133,7 +141,8 @@ public class TranslationToadlet extends Toadlet {
 								new String[] { "type", "name", "value" },
 								new String[] { "submit", "translation_update", l10n("updateTranslationCommand")
 											 });
-			updateForm.addChild("input", new String[] { "type", "name", (gotoNext ? "checked" : "unchecked") }, new String[] { "checkbox", "gotoNext", ""}, l10n("gotoNext"));
+			updateForm.addChild("input", new String[] { "type", "name", (gotoNext ? "checked" : "unchecked") },
+								new String[] { "checkbox", "gotoNext", ""}, l10n("gotoNext"));
 			if(!showEverything)
 				updateForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "toTranslateOnly", key });
 
@@ -146,7 +155,8 @@ public class TranslationToadlet extends Toadlet {
 			HTMLNode pageNode = page.outer;
 			HTMLNode contentNode = page.content;
 
-			HTMLNode content = ctx.getPageMaker().getInfobox("infobox-warning", l10n("removeOverrideWarningTitle"), contentNode, "translation-override", true);
+			HTMLNode content = ctx.getPageMaker().getInfobox("infobox-warning",
+							   l10n("removeOverrideWarningTitle"), contentNode, "translation-override", true);
 			content.addChild("p").addChild("#",
 										   NodeL10n.getBase().getString("TranslationToadlet.confirmRemoveOverride", new String[] { "key", "value" },
 												   new String[] { key, this.base.getString(key) }));
@@ -165,7 +175,8 @@ public class TranslationToadlet extends Toadlet {
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 
-		final HTMLNode translatingForBox = ctx.getPageMaker().getInfobox(null, l10n("selectTranslation"), contentNode);
+		final HTMLNode translatingForBox = ctx.getPageMaker().getInfobox(null, l10n("selectTranslation"),
+										   contentNode);
 		ArrayList<String> elementsToTranslate = new ArrayList<String>();
 		elementsToTranslate.add("Node");
 		for(PluginInfoWrapper pluginInfo : this.core.node.pluginManager.getPlugins()) {
@@ -176,8 +187,10 @@ public class TranslationToadlet extends Toadlet {
 			elementsToTranslate.add(pluginInfo.getPluginClassName());
 		}
 
-		final HTMLNode translatingForForm = ctx.addFormChild(translatingForBox, TOADLET_URL, "ChooseWhatToTranslate").addChild("p", l10n("showTranslationOf"));
-		final HTMLNode translatingForOption = translatingForForm.addChild("select", "name", "translating_for");
+		final HTMLNode translatingForForm = ctx.addFormChild(translatingForBox, TOADLET_URL,
+											"ChooseWhatToTranslate").addChild("p", l10n("showTranslationOf"));
+		final HTMLNode translatingForOption = translatingForForm.addChild("select", "name",
+											  "translating_for");
 		for(String element : elementsToTranslate) {
 			final HTMLNode option =	translatingForOption.addChild("option", "name", element, element);
 			if(element.equals(this.translatingFor)) {
@@ -188,13 +201,17 @@ public class TranslationToadlet extends Toadlet {
 
 		HTMLNode translationNode = contentNode.addChild("div", "class", "translation");
 		HTMLNode translationHeaderNode = translationNode.addChild("p");
-		translationHeaderNode.addChild("#", l10n("contributingToLabelWithLang", "lang", this.base.getSelectedLanguage().fullName));
-		translationHeaderNode.addChild("a", "href", TOADLET_URL+"?getOverrideTranlationFile").addChild("#", l10n("downloadTranslationsFile"));
+		translationHeaderNode.addChild("#", l10n("contributingToLabelWithLang", "lang",
+									   this.base.getSelectedLanguage().fullName));
+		translationHeaderNode.addChild("a", "href", TOADLET_URL+"?getOverrideTranlationFile").addChild("#",
+				l10n("downloadTranslationsFile"));
 		translationHeaderNode.addChild("#", " ");
-		if(showEverything)
-			translationHeaderNode.addChild("a", "href", TOADLET_URL+"?toTranslateOnly").addChild("#", l10n("hideAlreadyTranslated"));
-		else
+		if(showEverything) {
+			translationHeaderNode.addChild("a", "href", TOADLET_URL+"?toTranslateOnly").addChild("#",
+					l10n("hideAlreadyTranslated"));
+		} else {
 			translationHeaderNode.addChild("a", "href", TOADLET_URL).addChild("#", l10n("showEverything"));
+		}
 		HTMLNode legendTable = translationNode.addChild("table", "class", "translation");
 
 		HTMLNode legendRow = legendTable.addChild("tr");
@@ -207,7 +224,9 @@ public class TranslationToadlet extends Toadlet {
 		while(it.hasNext()) {
 			String key = it.nextKey();
 			boolean isOverriden = this.base.isOverridden(key);
-			if(!showEverything && (isOverriden || (this.base.getString(key, true) != null))) continue;
+			if(!showEverything && (isOverriden || (this.base.getString(key, true) != null))) {
+				continue;
+			}
 			HTMLNode contentRow = legendTable.addChild("tr");
 			contentRow.addChild("td", "class", "translation-key",
 								key
@@ -216,15 +235,18 @@ public class TranslationToadlet extends Toadlet {
 								this.base.getDefaultString(key)
 							   );
 
-			contentRow.addChild("td", "class", "translation-new").addChild(_setOrRemoveOverride(key, isOverriden, showEverything));
+			contentRow.addChild("td", "class", "translation-new").addChild(_setOrRemoveOverride(key,
+					isOverriden, showEverything));
 		}
 
 		this.writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 	}
 
-	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if(!ctx.checkFullAccess(this))
+	public void handleMethodPOST(URI uri, HTTPRequest request,
+								 ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		if(request.isPartSet("translating_for")) {
 			final String translateFor = request.getPartAsStringFailsafe("translating_for", 255);
@@ -250,7 +272,8 @@ public class TranslationToadlet extends Toadlet {
 
 		if(request.getPartAsStringFailsafe("translation_update", 32).length() > 0) {
 			String key = request.getPartAsStringFailsafe("key", 256);
-			this.base.setOverride(key, new String(BucketTools.toByteArray(request.getPart("trans")), StandardCharsets.UTF_8).trim());
+			this.base.setOverride(key, new String(BucketTools.toByteArray(request.getPart("trans")),
+												  StandardCharsets.UTF_8).trim());
 
 			if("on".equalsIgnoreCase(request.getPartAsStringFailsafe("gotoNext", 7))) {
 				KeyIterator it = base.getDefaultLanguageTranslation().keyIterator("");
@@ -258,26 +281,32 @@ public class TranslationToadlet extends Toadlet {
 				while(it.hasNext()) {
 					String newKey = it.nextKey();
 					boolean isOverriden = this.base.isOverridden(newKey);
-					if(isOverriden || (this.base.getString(newKey, true) != null))
+					if(isOverriden || (this.base.getString(newKey, true) != null)) {
 						continue;
-					redirectTo(ctx, TOADLET_URL+"?gotoNext&translate="+newKey+ (toTranslateOnly ? "&toTranslateOnly" : ""));
+					}
+					redirectTo(ctx, TOADLET_URL+"?gotoNext&translate="+newKey+ (toTranslateOnly ? "&toTranslateOnly" :
+							   ""));
 					return;
 				}
 			}
 
-			redirectTo(ctx, TOADLET_URL+"?translation_updated="+key+ (toTranslateOnly ? "&toTranslateOnly" : ""));
+			redirectTo(ctx, TOADLET_URL+"?translation_updated="+key+ (toTranslateOnly ? "&toTranslateOnly" :
+					   ""));
 			return;
 		} else if(request.getPartAsStringFailsafe("remove_confirmed", 32).length() > 0) {
 			String key = request.getPartAsStringFailsafe("remove_confirm", 256).trim();
 			this.base.setOverride(key, "");
 
-			redirectTo(ctx, TOADLET_URL+"?translation_updated="+key+ (toTranslateOnly ? "&toTranslateOnly" : ""));
+			redirectTo(ctx, TOADLET_URL+"?translation_updated="+key+ (toTranslateOnly ? "&toTranslateOnly" :
+					   ""));
 			return;
-		} else // Shouldn't reach that point!
+		} else { // Shouldn't reach that point!
 			redirectTo(ctx, "/");
+		}
 	}
 
-	private void redirectTo(ToadletContext ctx, String target) throws ToadletContextClosedException, IOException {
+	private void redirectTo(ToadletContext ctx, String target) throws ToadletContextClosedException,
+		IOException {
 		MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
 		headers.put("Location", target);
 		ctx.sendReplyHeaders(302, "Found", headers, null, 0);
@@ -287,15 +316,23 @@ public class TranslationToadlet extends Toadlet {
 	private HTMLNode _setOrRemoveOverride(String key, boolean isOverriden, boolean showEverything) {
 		String value = this.base.getString(key, true);
 
-		HTMLNode translationField = new HTMLNode("span", "class", isOverriden ? "translate_d" : "translate_it");
+		HTMLNode translationField = new HTMLNode("span", "class",
+				isOverriden ? "translate_d" : "translate_it");
 		if(value == null) {
 			translationField.addChild("#", this.base.getDefaultString(key));
-			translationField.addChild("a", "href", TranslationToadlet.TOADLET_URL+"?translate=" + key + (showEverything ? "" : "&toTranslateOnly")).addChild("small", l10n("bracketTranslateIt"));
+			translationField.addChild("a", "href",
+									  TranslationToadlet.TOADLET_URL+"?translate=" + key + (showEverything ? "" :
+											  "&toTranslateOnly")).addChild("small", l10n("bracketTranslateIt"));
 		} else {
 			translationField.addChild("#", this.base.getString(key));
-			translationField.addChild("a", "href", TranslationToadlet.TOADLET_URL+"?translate=" + key + (showEverything ? "" : "&toTranslateOnly")).addChild("small", l10n("bracketUpdateTranslation"));
-			if(isOverriden)
-				translationField.addChild("a", "href", TranslationToadlet.TOADLET_URL+"?remove=" + key + (showEverything ? "" : "&toTranslateOnly")).addChild("small", l10n("bracketRemoveOverride"));
+			translationField.addChild("a", "href",
+									  TranslationToadlet.TOADLET_URL+"?translate=" + key + (showEverything ? "" :
+											  "&toTranslateOnly")).addChild("small", l10n("bracketUpdateTranslation"));
+			if(isOverriden) {
+				translationField.addChild("a", "href",
+										  TranslationToadlet.TOADLET_URL+"?remove=" + key + (showEverything ? "" :
+												  "&toTranslateOnly")).addChild("small", l10n("bracketRemoveOverride"));
+			}
 		}
 
 		return translationField;
@@ -306,7 +343,8 @@ public class TranslationToadlet extends Toadlet {
 	}
 
 	private String l10n(String key, String pattern, String value) {
-		return NodeL10n.getBase().getString("TranslationToadlet."+key, new String[] { pattern }, new String[] { value });
+		return NodeL10n.getBase().getString("TranslationToadlet."+key, new String[] { pattern }, new
+											String[] { value });
 	}
 
 	@Override

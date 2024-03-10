@@ -68,40 +68,51 @@ public class FreenetInetAddress {
 		int firstByte = dis.readUnsignedByte();
 		byte[] ba;
 		if(firstByte == 255) {
-			if(logMINOR) Logger.minor(this, "New format IPv6 address");
+			if(logMINOR) {
+				Logger.minor(this, "New format IPv6 address");
+			}
 			// New format IPv6 address
 			ba = new byte[16];
 			dis.readFully(ba);
 		} else if(firstByte == 0) {
-			if(logMINOR) Logger.minor(this, "New format IPv4 address");
+			if(logMINOR) {
+				Logger.minor(this, "New format IPv4 address");
+			}
 			// New format IPv4 address
 			ba = new byte[4];
 			dis.readFully(ba);
 		} else {
-			throw new IOException("Unknown type byte (old form? corrupt stream? too short/long prev field?): "+firstByte);
+			throw new IOException("Unknown type byte (old form? corrupt stream? too short/long prev field?): "
+								  +firstByte);
 		}
 		_address = InetAddress.getByAddress(ba);
 		String name = null;
 		String s = dis.readUTF();
-		if(s.length() > 0)
+		if(s.length() > 0) {
 			name = s;
+		}
 		hostname = name;
 	}
 
 	/**
 	 * Create from serialized form on a DataInputStream.
 	 */
-	public FreenetInetAddress(DataInput dis, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException,
+	public FreenetInetAddress(DataInput dis,
+							  boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException,
 		IOException {
 		int firstByte = dis.readUnsignedByte();
 		byte[] ba;
 		if(firstByte == 255) {
-			if(logMINOR) Logger.minor(this, "New format IPv6 address");
+			if(logMINOR) {
+				Logger.minor(this, "New format IPv6 address");
+			}
 			// New format IPv6 address
 			ba = new byte[16];
 			dis.readFully(ba);
 		} else if(firstByte == 0) {
-			if(logMINOR) Logger.minor(this, "New format IPv4 address");
+			if(logMINOR) {
+				Logger.minor(this, "New format IPv4 address");
+			}
 			// New format IPv4 address
 			ba = new byte[4];
 			dis.readFully(ba);
@@ -114,11 +125,14 @@ public class FreenetInetAddress {
 		_address = InetAddress.getByAddress(ba);
 		String name = null;
 		String s = dis.readUTF();
-		if(s.length() > 0)
+		if(s.length() > 0) {
 			name = s;
+		}
 		hostname = name;
 		if(checkHostnameOrIPSyntax && null != hostname) {
-			if(!HostnameUtil.isValidHostname(hostname, true)) throw new HostnameSyntaxException();
+			if(!HostnameUtil.isValidHostname(hostname, true)) {
+				throw new HostnameSyntaxException();
+			}
 		}
 	}
 
@@ -134,18 +148,25 @@ public class FreenetInetAddress {
 	public FreenetInetAddress(String host, boolean allowUnknown) throws UnknownHostException {
 		InetAddress addr = null;
 		if(host != null) {
-			if(host.startsWith("/")) host = host.substring(1);
+			if(host.startsWith("/")) {
+				host = host.substring(1);
+			}
 			host = host.trim();
 		}
 		// if we were created with an explicit IP address, use it as such
 		// debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
 		AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
-		if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		if(logDEBUG) {
+			Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		}
 		if(addressType != AddressIdentifier.AddressType.OTHER) {
 			// Is an IP address
 			addr = InetAddress.getByName(host);
 			// Don't catch UnknownHostException here, if it happens there's a bug in AddressIdentifier.
-			if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+addr.getHostAddress()+ '\'');
+			if(logDEBUG) {
+				Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+addr.getHostAddress()+
+							 '\'');
+			}
 			if(addr != null) {
 				host = null;
 			} else {
@@ -153,7 +174,9 @@ public class FreenetInetAddress {
 			}
 		}
 		if( addr == null ) {
-			if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
+			if(logDEBUG) {
+				Logger.debug(this, '\'' +host+"' does not look like an IP address");
+			}
 		}
 		this._address = addr;
 		this.hostname = host;
@@ -161,38 +184,54 @@ public class FreenetInetAddress {
 		// until it's needed to work better with dynamic DNS hostnames
 	}
 
-	public FreenetInetAddress(String host, boolean allowUnknown, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, UnknownHostException {
+	public FreenetInetAddress(String host, boolean allowUnknown,
+							  boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, UnknownHostException {
 		InetAddress addr = null;
 		if(host != null) {
-			if(host.startsWith("/")) host = host.substring(1);
+			if(host.startsWith("/")) {
+				host = host.substring(1);
+			}
 			host = host.trim();
 		}
 		// if we were created with an explicit IP address, use it as such
 		// debugging log messages because AddressIdentifier doesn't appear to handle all IPv6 literals correctly, such as "fe80::204:1234:dead:beef"
 		AddressIdentifier.AddressType addressType = AddressIdentifier.getAddressType(host);
-		if(logDEBUG) Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		if(logDEBUG) {
+			Logger.debug(this, "Address type of '"+host+"' appears to be '"+addressType+ '\'');
+		}
 		if(addressType != AddressIdentifier.AddressType.OTHER) {
 			try {
 				addr = InetAddress.getByName(host);
 			} catch (UnknownHostException e) {
-				if(!allowUnknown) throw e;
+				if(!allowUnknown) {
+					throw e;
+				}
 				addr = null;
 			}
-			if(logDEBUG) Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+(addr != null ? addr.getHostAddress()+ '\'' : ""));
+			if(logDEBUG) {
+				Logger.debug(this, "host is '"+host+"' and addr.getHostAddress() is '"+
+							 (addr != null ? addr.getHostAddress()+ '\'' : ""));
+			}
 			if(addr != null && addr.getHostAddress().equals(host)) {
-				if(logDEBUG) Logger.debug(this, '\'' +host+"' looks like an IP address");
+				if(logDEBUG) {
+					Logger.debug(this, '\'' +host+"' looks like an IP address");
+				}
 				host = null;
 			} else {
 				addr = null;
 			}
 		}
 		if( addr == null ) {
-			if(logDEBUG) Logger.debug(this, '\'' +host+"' does not look like an IP address");
+			if(logDEBUG) {
+				Logger.debug(this, '\'' +host+"' does not look like an IP address");
+			}
 		}
 		this._address = addr;
 		this.hostname = host;
 		if(checkHostnameOrIPSyntax && null != this.hostname) {
-			if(!HostnameUtil.isValidHostname(this.hostname, true)) throw new HostnameSyntaxException();
+			if(!HostnameUtil.isValidHostname(this.hostname, true)) {
+				throw new HostnameSyntaxException();
+			}
 		}
 		// we're created with a hostname so delay the lookup of the address
 		// until it's needed to work better with dynamic DNS hostnames
@@ -201,7 +240,9 @@ public class FreenetInetAddress {
 	public boolean laxEquals(FreenetInetAddress addr) {
 		if(hostname != null) {
 			if(addr.hostname == null) {
-				if(_address == null) return false; // No basis for comparison.
+				if(_address == null) {
+					return false;    // No basis for comparison.
+				}
 				if(addr._address != null) {
 					return _address.equals(addr._address);
 				}
@@ -210,13 +251,16 @@ public class FreenetInetAddress {
 					return false;
 				}
 				// Now that we know we have the same hostname, we can propagate the IP.
-				if((_address != null) && (addr._address == null))
+				if((_address != null) && (addr._address == null)) {
 					addr._address = _address;
-				if((addr._address != null) && (_address == null))
+				}
+				if((addr._address != null) && (_address == null)) {
 					_address = addr._address;
+				}
 				// Except if we actually do have two different looked-up IPs!
-				if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
+				if((addr._address != null) && (_address != null) && !addr._address.equals(_address)) {
 					return false;
+				}
 				// Equal.
 				return true;
 			}
@@ -232,24 +276,29 @@ public class FreenetInetAddress {
 		}
 		FreenetInetAddress addr = (FreenetInetAddress)o;
 		if(hostname != null) {
-			if(addr.hostname == null)
+			if(addr.hostname == null) {
 				return false;
+			}
 			if (!hostname.equalsIgnoreCase(addr.hostname)) {
 				return false;
 			}
 			// Now that we know we have the same hostname, we can propagate the IP.
-			if((_address != null) && (addr._address == null))
+			if((_address != null) && (addr._address == null)) {
 				addr._address = _address;
-			if((addr._address != null) && (_address == null))
+			}
+			if((addr._address != null) && (_address == null)) {
 				_address = addr._address;
+			}
 			// Except if we actually do have two different looked-up IPs!
-			if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
+			if((addr._address != null) && (_address != null) && !addr._address.equals(_address)) {
 				return false;
+			}
 			// Equal.
 			return true;
 		}
-		if(addr.hostname != null)
+		if(addr.hostname != null) {
 			return false;
+		}
 
 		// No hostname, go by address.
 		if(!_address.equals(addr._address)) {
@@ -261,19 +310,23 @@ public class FreenetInetAddress {
 
 	public boolean strictEquals(FreenetInetAddress addr) {
 		if(hostname != null) {
-			if(addr.hostname == null)
+			if(addr.hostname == null) {
 				return false;
+			}
 			if (!hostname.equalsIgnoreCase(addr.hostname)) {
 				return false;
 			}
 			// Now that we know we have the same hostname, we can propagate the IP.
-			if((_address != null) && (addr._address == null))
+			if((_address != null) && (addr._address == null)) {
 				addr._address = _address;
-			if((addr._address != null) && (_address == null))
+			}
+			if((addr._address != null) && (_address == null)) {
 				_address = addr._address;
+			}
 			// Except if we actually do have two different looked-up IPs!
-			if((addr._address != null) && (_address != null) && !addr._address.equals(_address))
+			if((addr._address != null) && (_address != null) && !addr._address.equals(_address)) {
 				return false;
+			}
 			// Equal.
 			return true;
 		} else if(addr.hostname != null /* && hostname == null */) {
@@ -310,7 +363,9 @@ public class FreenetInetAddress {
 		if (_address != null) {
 			return _address;
 		} else {
-			if(!doDNSRequest) return null;
+			if(!doDNSRequest) {
+				return null;
+			}
 			InetAddress addr = getHandshakeAddress();
 			if( addr != null ) {
 				this._address = addr;
@@ -327,10 +382,14 @@ public class FreenetInetAddress {
 	public InetAddress getHandshakeAddress() {
 		// Since we're handshaking, hostname-to-IP may have changed
 		if ((_address != null) && (hostname == null)) {
-			if(logMINOR) Logger.minor(this, "hostname is null, returning "+_address);
+			if(logMINOR) {
+				Logger.minor(this, "hostname is null, returning "+_address);
+			}
 			return _address;
 		} else {
-			if(logMINOR) Logger.minor(this, "Looking up '"+hostname+"' in DNS", new Exception("debug"));
+			if(logMINOR) {
+				Logger.minor(this, "Looking up '"+hostname+"' in DNS", new Exception("debug"));
+			}
 			/*
 			 * Peers are constructed from an address once a
 			 * handshake has been completed, so this lookup
@@ -343,7 +402,9 @@ public class FreenetInetAddress {
 			 */
 			try {
 				InetAddress[] addresses = InetAddress.getAllByName(hostname);
-				if(logMINOR) Logger.minor(this, "Look up got '"+addresses+ '\'');
+				if(logMINOR) {
+					Logger.minor(this, "Look up got '"+addresses+ '\'');
+				}
 				if( addresses.length > 1 ) {
 					/* sort by IPv6 first */
 					Arrays.sort(addresses, InetAddressIpv6FirstComparator.COMPARATOR);
@@ -354,11 +415,15 @@ public class FreenetInetAddress {
 					 * latest value from DNS (minus Java's caching)
 					 */
 					this._address = InetAddress.getByAddress(addresses[0].getAddress());
-					if(logMINOR) Logger.minor(this, "Setting address to "+_address);
+					if(logMINOR) {
+						Logger.minor(this, "Setting address to "+_address);
+					}
 				}
 				return addresses[0];
 			} catch (UnknownHostException e) {
-				if(logMINOR) Logger.minor(this, "DNS said hostname '"+hostname+"' is an unknown host, returning null");
+				if(logMINOR) {
+					Logger.minor(this, "DNS said hostname '"+hostname+"' is an unknown host, returning null");
+				}
 				return null;
 			}
 		}
@@ -383,25 +448,30 @@ public class FreenetInetAddress {
 	}
 
 	public String toStringPrefNumeric() {
-		if(_address != null)
+		if(_address != null) {
 			return _address.getHostAddress();
-		else
+		} else {
 			return hostname;
+		}
 	}
 
 	public void writeToDataOutputStream(DataOutputStream dos) throws IOException {
 		InetAddress addr = this.getAddress();
-		if (addr == null) throw new UnknownHostException();
+		if (addr == null) {
+			throw new UnknownHostException();
+		}
 		byte[] data = addr.getAddress();
-		if(data.length == 4)
+		if(data.length == 4) {
 			dos.write(0);
-		else
+		} else {
 			dos.write(255);
+		}
 		dos.write(data);
-		if(hostname != null)
+		if(hostname != null) {
 			dos.writeUTF(hostname);
-		else
+		} else {
 			dos.writeUTF("");
+		}
 	}
 
 	/**
@@ -410,23 +480,28 @@ public class FreenetInetAddress {
 	 * known, return it, otherwise return the textual IP address.
 	 */
 	public static String getHostName(InetAddress primaryIPAddress) {
-		if(primaryIPAddress == null) return null;
+		if(primaryIPAddress == null) {
+			return null;
+		}
 		String s = primaryIPAddress.toString();
 		String addr = s.substring(0, s.indexOf('/')).trim();
-		if(addr.length() == 0)
+		if(addr.length() == 0) {
 			return primaryIPAddress.getHostAddress();
-		else
+		} else {
 			return addr;
+		}
 	}
 
-	public boolean isRealInternetAddress(boolean lookup, boolean defaultVal, boolean allowLocalAddresses) {
+	public boolean isRealInternetAddress(boolean lookup, boolean defaultVal,
+										 boolean allowLocalAddresses) {
 		if(_address != null) {
 			return IPUtil.isValidAddress(_address, allowLocalAddresses);
 		} else {
 			if(lookup) {
 				InetAddress a = getAddress();
-				if(a != null)
+				if(a != null) {
 					return IPUtil.isValidAddress(a, allowLocalAddresses);
+				}
 			}
 			return defaultVal;
 		}
@@ -446,7 +521,9 @@ public class FreenetInetAddress {
 		}
 		if(hostname != null) {
 			return new FreenetInetAddress(_address);
-		} else return this;
+		} else {
+			return this;
+		}
 	}
 
 	public boolean hasHostname() {
@@ -458,9 +535,10 @@ public class FreenetInetAddress {
 	}
 
 	public boolean isIPv6(boolean defaultValue) {
-		if(_address == null)
+		if(_address == null) {
 			return defaultValue;
-		else
+		} else {
 			return (_address instanceof Inet6Address);
+		}
 	}
 }

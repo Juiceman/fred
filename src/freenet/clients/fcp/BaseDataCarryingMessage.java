@@ -10,7 +10,8 @@ public abstract class BaseDataCarryingMessage extends FCPMessage {
 
 	abstract long dataLength();
 
-	public abstract void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException;
+	public abstract void readFrom(InputStream is, BucketFactory bf,
+								  FCPServer server) throws IOException, MessageInvalidException;
 
 	@Override
 	public void send(OutputStream os) throws IOException {

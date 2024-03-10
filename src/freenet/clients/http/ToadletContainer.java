@@ -33,7 +33,8 @@ public interface ToadletContainer {
 	 *        are advised to check for full access themselves, possibly returning a
 	 *        403 error code.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, boolean fullAccessOnly);
+	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront,
+						 boolean fullAccessOnly);
 
 	/**
 	 * Registers a Toadlet and optionally adds a navigation link to the menu. All
@@ -60,7 +61,8 @@ public interface ToadletContainer {
 	 * @param cb A LinkEnabledCalback, allowing fine control of when the navigation
 	 *        link is visible and when it isn't. Passing null means it is always visible.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb);
+	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name,
+						 String title, boolean fullOnly, LinkEnabledCallback cb);
 
 	/**
 	 * Registers a Toadlet and optionally adds a navigation link to the menu. All
@@ -89,7 +91,8 @@ public interface ToadletContainer {
 	 * @param l10n A FredPluginL10n instance for translating the name and title parameters.
 	 *        May be null.
 	 */
-	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n);
+	public void register(Toadlet t, String menu, String urlPrefix, boolean atFront, String name,
+						 String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n);
 
 	public void unregister(Toadlet t);
 

@@ -29,8 +29,9 @@ public class WrapperConfig {
 	public static String getWrapperProperty(String name) {
 		synchronized(WrapperConfig.class) {
 			String override = overrides.get(name);
-			if(override != null)
+			if(override != null) {
 				return override;
+			}
 		}
 		return WrapperManager.getProperties().getProperty(name, null);
 	}
@@ -115,10 +116,12 @@ public class WrapperConfig {
 			}
 			br.close();
 			fis = null;
-			if(!written)
+			if(!written) {
 				bw.write(name+'='+value+'\n');
-			if(!writtenReload)
+			}
+			if(!writtenReload) {
 				bw.write("wrapper.restart.reload_configuration=TRUE\n");
+			}
 			bw.close();
 			fos = null;
 		} catch(IOException e) {
@@ -126,7 +129,9 @@ public class WrapperConfig {
 			Closer.close(fos);
 			fis = null;
 			fos = null;
-			if(oldConfig.exists()) newConfig.delete();
+			if(oldConfig.exists()) {
+				newConfig.delete();
+			}
 			Logger.error(WrapperConfig.class, "Cannot update wrapper property "+"name: "+e, e);
 			System.err.println("Unable to update wrapper property "+name+" : "+e);
 			return false;
@@ -141,23 +146,28 @@ public class WrapperConfig {
 				try {
 					oldOldConfig = File.createTempFile(wrapperDir + "/wrapper.conf", ".old.tmp", new File("."));
 				} catch (IOException e) {
-					String error = "Unable to create temporary file and unable to copy wrapper.conf to wrapper.conf.old. Could not update wrapper.conf trying to set property "+name;
+					String error =
+						"Unable to create temporary file and unable to copy wrapper.conf to wrapper.conf.old. Could not update wrapper.conf trying to set property "
+						+name;
 					Logger.error(WrapperConfig.class, error);
 					System.err.println(error);
 					return false;
 				}
 			if(!oldConfig.renameTo(oldOldConfig)) {
-				String error = "Unable to change property "+name+": Could not move old config file "+oldConfig+", so could not rename new config file "+newConfig+" over it (already tried without deleting.";
+				String error = "Unable to change property "+name+": Could not move old config file "+oldConfig
+							   +", so could not rename new config file "+newConfig+" over it (already tried without deleting.";
 				Logger.error(WrapperConfig.class, error);
 				System.err.println(error);
 				return false;
 			}
 			if(!newConfig.renameTo(oldConfig)) {
-				String error = "Unable to rename "+newConfig+" to "+oldConfig+" even after moving the old config file out of the way! Trying to restore previous config file so the node will start up...";
+				String error = "Unable to rename "+newConfig+" to "+oldConfig
+							   +" even after moving the old config file out of the way! Trying to restore previous config file so the node will start up...";
 				Logger.error(WrapperConfig.class, error);
 				System.err.println(error);
 				if(!oldOldConfig.renameTo(oldConfig)) {
-					System.err.println("CATASTROPHIC UPDATE ERROR: Unable to rename backup copy of config file over the current config file, after failing to update config file! The node will not boot until you get a new wrapper.conf!\n"+
+					System.err.println("CATASTROPHIC UPDATE ERROR: Unable to rename backup copy of config file over the current config file, after failing to update config file! The node will not boot until you get a new wrapper.conf!\n"
+									   +
 									   "The old config file is saved in "+oldOldConfig+" and it should be renamed to wrapper.conf");
 					System.exit(NodeInitException.EXIT_BROKE_WRAPPER_CONF);
 				}

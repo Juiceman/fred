@@ -20,7 +20,8 @@ public interface PacketSocketHandler extends SocketHandler {
 	 * @param blockToSend The data block to send.
 	 * @param destination The peer to send it to.
 	 */
-	public void sendPacket(byte[] blockToSend, Peer destination, boolean allowLocalAddresses) throws LocalAddressException;
+	public void sendPacket(byte[] blockToSend, Peer destination,
+						   boolean allowLocalAddresses) throws LocalAddressException;
 
 	/**
 	 * Get the size of the transport layer headers, for byte accounting purposes.

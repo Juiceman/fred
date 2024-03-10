@@ -18,14 +18,19 @@ public class CHKStore extends StoreCallback<CHKBlock> {
 
 	@Override
 	public CHKBlock construct(byte[] data, byte[] headers,
-							  byte[] routingKey, byte[] fullKey, boolean canReadClientCache, boolean canReadSlashdotCache, BlockMetadata meta, DSAPublicKey ignored) throws KeyVerifyException {
-		if(data == null || headers == null) throw new CHKVerifyException("Need either data and headers");
+							  byte[] routingKey, byte[] fullKey, boolean canReadClientCache, boolean canReadSlashdotCache,
+							  BlockMetadata meta, DSAPublicKey ignored) throws KeyVerifyException {
+		if(data == null || headers == null) {
+			throw new CHKVerifyException("Need either data and headers");
+		}
 		return CHKBlock.construct(data, headers, NodeCHK.cryptoAlgorithmFromFullKey(fullKey));
 	}
 
-	public CHKBlock fetch(NodeCHK chk, boolean dontPromote, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+	public CHKBlock fetch(NodeCHK chk, boolean dontPromote, boolean ignoreOldBlocks,
+						  BlockMetadata meta) throws IOException {
 		// FIXME optimize: change API so we can just pass in the crypto algorithm rather than having to construct the full key???
-		return store.fetch(chk.getRoutingKey(), chk.getFullKey(), dontPromote, false, false, ignoreOldBlocks, meta);
+		return store.fetch(chk.getRoutingKey(), chk.getFullKey(), dontPromote, false, false,
+						   ignoreOldBlocks, meta);
 	}
 
 	public void put(CHKBlock b, boolean isOldBlock) throws IOException {

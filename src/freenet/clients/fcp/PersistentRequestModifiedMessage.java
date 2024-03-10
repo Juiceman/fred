@@ -25,7 +25,8 @@ public class PersistentRequestModifiedMessage extends FCPMessage {
 		this(identifier, global, (short)(-1), clientToken); // priorityClass not set
 	}
 
-	public PersistentRequestModifiedMessage(String identifier, boolean global, short priorityClass, String clientToken) {
+	public PersistentRequestModifiedMessage(String identifier, boolean global, short priorityClass,
+											String clientToken) {
 		this.ident = identifier;
 		this.global = global;
 		this.priorityClass = priorityClass;
@@ -37,8 +38,12 @@ public class PersistentRequestModifiedMessage extends FCPMessage {
 		final SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", ident);
 		fs.put("Global", global);
-		if(priorityClass >= 0)   fs.put("PriorityClass", priorityClass);
-		if(clientToken != null ) fs.putSingle("ClientToken", clientToken);
+		if(priorityClass >= 0) {
+			fs.put("PriorityClass", priorityClass);
+		}
+		if(clientToken != null ) {
+			fs.putSingle("ClientToken", clientToken);
+		}
 		return fs;
 	}
 
@@ -49,7 +54,8 @@ public class PersistentRequestModifiedMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentRequestModified goes from server to client not the other way around", ident, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PersistentRequestModified goes from server to client not the other way around", ident, global);
 	}
 
 }

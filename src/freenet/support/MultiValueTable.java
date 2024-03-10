@@ -108,10 +108,11 @@ public class MultiValueTable<K,V> {
 		synchronized (table) {
 			v = table.get(key);
 		}
-		if(v != null)
+		if(v != null) {
 			return v.size();
-		else
+		} else {
 			return 0;
+		}
 	}
 
 	public Object getSync(K key) {
@@ -123,9 +124,9 @@ public class MultiValueTable<K,V> {
 	public Object[] getArray(K key) {
 		synchronized (table) {
 			Vector<V> v = table.get(key);
-			if (v == null)
+			if (v == null) {
 				return null;
-			else {
+			} else {
 				Object[] r = new Object[v.size()];
 				v.copyInto(r);
 				return r;
@@ -154,12 +155,13 @@ public class MultiValueTable<K,V> {
 	public boolean removeElement(K key, V value) {
 		synchronized (table) {
 			Vector<V> v = table.get(key);
-			if (v == null)
+			if (v == null) {
 				return false;
-			else {
+			} else {
 				boolean b = v.removeElement(value);
-				if (v.isEmpty())
+				if (v.isEmpty()) {
 					table.remove(key);
+				}
 				return b;
 			}
 		}
@@ -173,10 +175,11 @@ public class MultiValueTable<K,V> {
 
 	public Enumeration<V> elements() {
 		synchronized (table) {
-			if (table.isEmpty())
+			if (table.isEmpty()) {
 				return new EmptyEnumeration<V>();
-			else
+			} else {
 				return new MultiValueEnumeration();
+			}
 		}
 	}
 
@@ -210,8 +213,9 @@ public class MultiValueTable<K,V> {
 		}
 
 		public final void step() {
-			while (!current.hasMoreElements() && global.hasMoreElements())
+			while (!current.hasMoreElements() && global.hasMoreElements()) {
 				current = global.nextElement().elements();
+			}
 		}
 
 		@Override

@@ -71,7 +71,8 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 	private final int dataSize;
 	private final int fullKeySize;
 
-	public SlashdotStore(StoreCallback<T> callback, int maxKeys, long maxLifetime, long purgePeriod, Ticker ticker, TempBucketFactory tbf) {
+	public SlashdotStore(StoreCallback<T> callback, int maxKeys, long maxLifetime, long purgePeriod,
+						 Ticker ticker, TempBucketFactory tbf) {
 		this.callback = callback;
 		this.blocksByRoutingKey = LRUMap.createSafeMap(ByteArrayWrapper.FAST_COMPARATOR);
 		this.maxKeys = maxKeys;
@@ -102,7 +103,8 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 	 * @param meta IGNORED!
 	 */
 	@Override
-	public T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+	public T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote, boolean canReadClientCache,
+				   boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
 		DiskBlock block;
 		long timeAccessed;
@@ -128,7 +130,8 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 		}
 		try {
 			T ret =
-				callback.construct(data, header, routingKey, fk, canReadClientCache, canReadSlashdotCache, null, null);
+				callback.construct(data, header, routingKey, fk, canReadClientCache, canReadSlashdotCache, null,
+								   null);
 			synchronized(this) {
 				hits++;
 				if(!dontPromote) {
@@ -136,7 +139,10 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 					blocksByRoutingKey.push(key, block);
 				}
 			}
-			if(logDEBUG) Logger.debug(this, "Block was last accessed "+(System.currentTimeMillis() - timeAccessed)+"ms ago");
+			if(logDEBUG) {
+				Logger.debug(this, "Block was last accessed "+(System.currentTimeMillis() - timeAccessed)
+							 +"ms ago");
+			}
 			return ret;
 		} catch (KeyVerifyException e) {
 			block.data.free();
@@ -184,7 +190,8 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 	 * stuff that shouldn't be cached; really it's all in the latter category anyway here!
 	 */
 	@Override
-	public void put(T block, byte[] data, byte[] header, boolean overwrite, boolean isOldBlock) throws IOException, KeyCollisionException {
+	public void put(T block, byte[] data, byte[] header, boolean overwrite,
+					boolean isOldBlock) throws IOException, KeyCollisionException {
 		byte[] routingkey = block.getRoutingKey();
 		byte[] fullKey = block.getFullKey();
 
@@ -205,7 +212,9 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 
 	@Override
 	public void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException {
-		if(maxStoreKeys > Integer.MAX_VALUE) throw new IllegalArgumentException();
+		if(maxStoreKeys > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException();
+		}
 		this.maxKeys = (int) maxStoreKeys;
 		if(shrinkNow) {
 			purgeOldData();
@@ -240,21 +249,31 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 				addFirst.lastAccessed = now;
 				oldBlock = blocksByRoutingKey.push(key, addFirst);
 				if(oldBlock != null) {
-					if(blocks == null) blocks = new ArrayList<DiskBlock>();
+					if(blocks == null) {
+						blocks = new ArrayList<DiskBlock>();
+					}
 					blocks.add(oldBlock);
 				}
 				writes++;
 			}
 			while(true) {
-				if(blocksByRoutingKey.isEmpty()) break;
+				if(blocksByRoutingKey.isEmpty()) {
+					break;
+				}
 				DiskBlock block = blocksByRoutingKey.peekValue();
-				if(now - block.lastAccessed < maxLifetime && blocksByRoutingKey.size() < maxKeys) break;
-				if(blocks == null) blocks = new ArrayList<DiskBlock>();
+				if(now - block.lastAccessed < maxLifetime && blocksByRoutingKey.size() < maxKeys) {
+					break;
+				}
+				if(blocks == null) {
+					blocks = new ArrayList<DiskBlock>();
+				}
 				blocks.add(block);
 				blocksByRoutingKey.popValue();
 			}
 		}
-		if(blocks == null) return;
+		if(blocks == null) {
+			return;
+		}
 		for(DiskBlock block : blocks) {
 			block.data.free();
 		}

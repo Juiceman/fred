@@ -91,7 +91,8 @@ public abstract class Logger {
 								return procFields[ fieldNumber ];
 							}
 						} catch (PatternSyntaxException e) {
-							error(o, "Caught PatternSyntaxException in readLine.trim().split(\" \") of OSThread.getFieldFromProcSelfStat() while parsing '"+readLine+"'", e);
+							error(o, "Caught PatternSyntaxException in readLine.trim().split(\" \") of OSThread.getFieldFromProcSelfStat() while parsing '"
+								  +readLine+"'", e);
 						}
 					}
 				} else {
@@ -123,7 +124,8 @@ public abstract class Logger {
 			try {
 				pid = Integer.parseInt( pidString.trim() );
 			} catch (NumberFormatException e) {
-				error(o, "Caught NumberFormatException in Integer.parseInt() of OSThread.getPIDFromProcSelfStat() while parsing '"+pidString+"'", e);
+				error(o, "Caught NumberFormatException in Integer.parseInt() of OSThread.getPIDFromProcSelfStat() while parsing '"
+					  +pidString+"'", e);
 			}
 			return pid;
 		}
@@ -150,7 +152,8 @@ public abstract class Logger {
 			try {
 				ppid = Integer.parseInt( ppidString.trim() );
 			} catch (NumberFormatException e) {
-				error(o, "Caught NumberFormatException in Integer.parseInt() of OSThread.getPPIDFromProcSelfStat() while parsing '"+ppidString+"'", e);
+				error(o, "Caught NumberFormatException in Integer.parseInt() of OSThread.getPPIDFromProcSelfStat() while parsing '"
+					  +ppidString+"'", e);
 			}
 			return ppid;
 		}
@@ -220,8 +223,9 @@ public abstract class Logger {
 		@Deprecated
 		public static LogLevel fromOrdinal(int ordinal) {
 			for(LogLevel level : LogLevel.values()) {
-				if(level.ordinal() == ordinal)
+				if(level.ordinal() == ordinal) {
 					return level;
+				}
 			}
 
 			throw new RuntimeException("Invalid ordinal: " + ordinal);
@@ -252,7 +256,8 @@ public abstract class Logger {
 	static Logger logger = new VoidLogger();
 
 	/** Log to standard output. */
-	public synchronized static FileLoggerHook setupStdoutLogging(LogLevel level, String detail) throws InvalidThresholdException {
+	public synchronized static FileLoggerHook setupStdoutLogging(LogLevel level,
+			String detail) throws InvalidThresholdException {
 		setupChain();
 		logger.setThreshold(level);
 		logger.setDetailedThresholds(detail);
@@ -263,14 +268,17 @@ public abstract class Logger {
 			// Impossible
 			throw new Error(e);
 		}
-		if (detail != null) fh.setDetailedThresholds(detail);
+		if (detail != null) {
+			fh.setDetailedThresholds(detail);
+		}
 		((LoggerHookChain) logger).addHook(fh);
 		fh.start();
 		return fh;
 	}
 
 	@Deprecated
-	public synchronized static FileLoggerHook setupStdoutLogging(int level, String detail) throws InvalidThresholdException {
+	public synchronized static FileLoggerHook setupStdoutLogging(int level,
+			String detail) throws InvalidThresholdException {
 		return setupStdoutLogging(LogLevel.fromOrdinal(level), detail);
 	}
 
@@ -613,7 +621,9 @@ public abstract class Logger {
 				} catch (IllegalAccessException e) {
 				}
 
-				if (!done) Logger.error(this, "No log level field for " + clazz);
+				if (!done) {
+					Logger.error(this, "No log level field for " + clazz);
+				}
 			}
 		};
 
@@ -635,7 +645,9 @@ public abstract class Logger {
 	 * are not filtered out by the global logger hook chain's thresholds
 	 * will be passed to this logger. */
 	public synchronized static void globalAddHook(LoggerHook logger2) {
-		if (logger instanceof VoidLogger) setupChain();
+		if (logger instanceof VoidLogger) {
+			setupChain();
+		}
 		((LoggerHookChain)logger).addHook(logger2);
 	}
 
@@ -673,7 +685,9 @@ public abstract class Logger {
 	 * chain by replacing it with a VoidLogger, which simply ignores
 	 * everything logged. */
 	public synchronized static void destroyChainIfEmpty() {
-		if (logger instanceof VoidLogger) return;
+		if (logger instanceof VoidLogger) {
+			return;
+		}
 		if ((logger instanceof LoggerHookChain) && (((LoggerHookChain)logger).getHooks().length == 0)) {
 			logger = new VoidLogger();
 		}

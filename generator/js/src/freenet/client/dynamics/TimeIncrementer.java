@@ -22,7 +22,8 @@ public class TimeIncrementer implements IDynamic {
 					Element e = list.getItem(i);
 					String classAttr = e.getAttribute("class");
 					// Checks if the element's class indicates that it needs to be incremented
-					if (classAttr != null && (classAttr.compareTo("needsIncrement") == 0 || classAttr.compareTo("needsDecrement") == 0)) {
+					if (classAttr != null && (classAttr.compareTo("needsIncrement") == 0
+											  || classAttr.compareTo("needsDecrement") == 0)) {
 						Element inputElement = e.getElementsByTagName("input").getItem(0);
 						// Reads the current time value from the hidden input
 						int current = Integer.parseInt(inputElement.getAttribute("value"));

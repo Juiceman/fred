@@ -57,13 +57,15 @@ public class ECDSA {
 			PrivateKey pk = key.getPrivate();
 			byte [] pubkey = pub.getEncoded();
 			byte [] pkey = pk.getEncoded();
-			if(pubkey.length > modulusSize || pubkey.length == 0)
+			if(pubkey.length > modulusSize || pubkey.length == 0) {
 				throw new Error("Unexpected pubkey length: "+pubkey.length+"!="+modulusSize);
+			}
 			PublicKey pub2 = kf.generatePublic(
 				new X509EncodedKeySpec(pubkey)
 			);
-			if(!Arrays.equals(pub2.getEncoded(), pubkey))
+			if(!Arrays.equals(pub2.getEncoded(), pubkey)) {
 				throw new Error("Pubkey encoding mismatch");
+			}
 			PrivateKey pk2 = kf.generatePrivate(
 				new PKCS8EncodedKeySpec(pkey)
 			);
@@ -81,8 +83,9 @@ public class ECDSA {
 			byte[] sign = sig.sign();
 			sig.initVerify(key.getPublic());
 			boolean verified = sig.verify(sign);
-			if (!verified)
+			if (!verified) {
 				throw new Error("Verification failed");
+			}
 		}
 
 		private Curves(String name, String defaultHashAlgorithm, int modulusSize, int maxSigSize) {
@@ -102,7 +105,8 @@ public class ECDSA {
 					key = selftest(kg, kf, modulusSize);
 				} catch(Throwable e) {
 					/* we don't care why we fail, just fallback */
-					Logger.warning(this, "default KeyPairGenerator provider ("+(kg != null ? kg.getProvider() : null)+") is broken, falling back to BouncyCastle", e);
+					Logger.warning(this, "default KeyPairGenerator provider ("+(kg != null ? kg.getProvider() : null)
+								   +") is broken, falling back to BouncyCastle", e);
 					kg = KeyPairGenerator.getInstance("EC", JceLoader.BouncyCastle);
 					kf = KeyFactory.getInstance("EC", JceLoader.BouncyCastle);
 					kg.initialize(this.spec);
@@ -114,7 +118,8 @@ public class ECDSA {
 					selftest_sign(key, sig);
 				} catch(Throwable e) {
 					/* we don't care why we fail, just fallback */
-					Logger.warning(this, "default Signature provider ("+(sig != null ? sig.getProvider() : null)+") is broken or incompatible with KeyPairGenerator, falling back to BouncyCastle", e);
+					Logger.warning(this, "default Signature provider ("+(sig != null ? sig.getProvider() : null)
+								   +") is broken or incompatible with KeyPairGenerator, falling back to BouncyCastle", e);
 					kg = KeyPairGenerator.getInstance("EC", JceLoader.BouncyCastle);
 					kf = KeyFactory.getInstance("EC", JceLoader.BouncyCastle);
 					kg.initialize(this.spec);
@@ -184,8 +189,9 @@ public class ECDSA {
 		byte[] pri = null;
 		try {
 			pub = Base64.decode(sfs.get("pub"));
-			if (pub.length > curve.modulusSize)
+			if (pub.length > curve.modulusSize) {
 				throw new InvalidKeyException();
+			}
 			ECPublicKey pubK = getPublicKey(pub, curve);
 
 			pri = Base64.decode(sfs.get("pri"));
@@ -207,17 +213,21 @@ public class ECDSA {
 				// FIXME: we hardcode bouncycastle here because right now that's the only that works
 				// verifying with a legacy non-deterministic (SHA256withECDSA) sig
 				// will *not* work with a bouncycastle SHA256withECDDSA verifier
-				Signature sig = Signature.getInstance(curve.defaultHashAlgorithm.replace("ECDSA", "ECDDSA"), JceLoader.BouncyCastle);
+				Signature sig = Signature.getInstance(curve.defaultHashAlgorithm.replace("ECDSA", "ECDDSA"),
+													  JceLoader.BouncyCastle);
 				sig.initSign(key.getPrivate());
-				for(byte[] d: data)
+				for(byte[] d: data) {
 					sig.update(d);
+				}
 				result = sig.sign();
 				// It's a DER encoded signature, most sigs will fit in N bytes
 				// If it doesn't let's re-sign.
-				if(result.length <= curve.maxSigSize)
+				if(result.length <= curve.maxSigSize) {
 					break;
-				else
-					Logger.error(this, "DER encoded signature used "+result.length+" bytes, more than expected "+curve.maxSigSize+" - re-signing...");
+				} else {
+					Logger.error(this, "DER encoded signature used "+result.length+" bytes, more than expected "
+								 +curve.maxSigSize+" - re-signing...");
+				}
 			}
 		} catch (NoSuchAlgorithmException e) {
 			Logger.error(this, "NoSuchAlgorithmException : "+e.getMessage(),e);
@@ -268,7 +278,8 @@ public class ECDSA {
 
 	/* Calculates the actual signature length based on the encoded length of the DER sequence
 	 * contained in the signature. If decoding fails, a SignatureException is thrown. */
-	private static int actualSignatureLength(byte[] signature, int sigOff, int sigLen) throws SignatureException {
+	private static int actualSignatureLength(byte[] signature, int sigOff,
+			int sigLen) throws SignatureException {
 		// SEQUENCE, universal, constructed
 		if (sigLen < 2 || signature[sigOff] != 0x30) {
 			throw new SignatureException("Not a sequence");
@@ -301,15 +312,18 @@ public class ECDSA {
 		return length + 2 + size;
 	}
 
-	public static boolean verify(Curves curve, ECPublicKey key, byte[] signature, int sigoffset, int siglen,  byte[]... data) {
-		if(key == null || curve == null || signature == null || data == null)
+	public static boolean verify(Curves curve, ECPublicKey key, byte[] signature, int sigoffset,
+								 int siglen,  byte[]... data) {
+		if(key == null || curve == null || signature == null || data == null) {
 			return false;
+		}
 		boolean result = false;
 		try {
 			Signature sig = Signature.getInstance(curve.defaultHashAlgorithm, curve.sigProvider);
 			sig.initVerify(key);
-			for(byte[] d: data)
+			for(byte[] d: data) {
 				sig.update(d);
+			}
 			// Strip padding: BC 1.54 cannot deal with it.
 			siglen = actualSignatureLength(signature, sigoffset, siglen);
 			result = sig.verify(signature, sigoffset, siglen);
@@ -367,8 +381,9 @@ public class ECDSA {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		SimpleFieldSet fsCurve = new SimpleFieldSet(true);
 		fsCurve.putSingle("pub", Base64.encode(key.getPublic().getEncoded()));
-		if(includePrivate)
+		if(includePrivate) {
 			fsCurve.putSingle("pri", Base64.encode(key.getPrivate().getEncoded()));
+		}
 		fs.put(curve.name(), fsCurve);
 		return fs;
 	}

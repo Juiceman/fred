@@ -34,7 +34,8 @@ public class PluginStores {
 		}
 	}
 
-	private void writePluginStoreInner(String storeIdentifier, PluginStore pluginStore, boolean isEncrypted, boolean backup) throws IOException {
+	private void writePluginStoreInner(String storeIdentifier, PluginStore pluginStore,
+									   boolean isEncrypted, boolean backup) throws IOException {
 		Bucket bucket = makePluginStoreBucket(storeIdentifier, isEncrypted, backup);
 		OutputStream os = bucket.getOutputStream();
 		try {
@@ -49,10 +50,12 @@ public class PluginStores {
 	private File getPluginStoreFile(String storeIdentifier, boolean encrypted, boolean backup) {
 		String filename = storeIdentifier;
 		filename += ".data";
-		if(backup)
+		if(backup) {
 			filename += ".bak";
-		if(encrypted)
+		}
+		if(encrypted) {
 			filename += ".crypt";
+		}
 		return pluginStoresDir.file(filename);
 	}
 
@@ -75,7 +78,9 @@ public class PluginStores {
 	private Bucket findPluginStoreBucket(String storeIdentifier, boolean isEncrypted, boolean backup)
 	throws FileNotFoundException {
 		File f = getPluginStoreFile(storeIdentifier, isEncrypted, backup);
-		if(!f.exists()) return null;
+		if(!f.exists()) {
+			return null;
+		}
 		Bucket bucket = new FileBucket(f, false, false, false, false);
 		if(isEncrypted) {
 			byte[] key = node.getPluginStoreKey(storeIdentifier);
@@ -92,12 +97,18 @@ public class PluginStores {
 	public PluginStore loadPluginStore(String storeIdentifier) {
 		boolean isEncrypted = node.wantEncryptedDatabase();
 		PluginStore store = loadPluginStore(storeIdentifier, isEncrypted, false);
-		if(store != null) return store;
+		if(store != null) {
+			return store;
+		}
 		store = loadPluginStore(storeIdentifier, isEncrypted, true);
-		if(store != null) return store;
+		if(store != null) {
+			return store;
+		}
 		isEncrypted = !isEncrypted;
 		store = loadPluginStore(storeIdentifier, isEncrypted, false);
-		if(store != null) return store;
+		if(store != null) {
+			return store;
+		}
 		store = loadPluginStore(storeIdentifier, isEncrypted, true);
 		return store;
 	}
@@ -106,7 +117,9 @@ public class PluginStores {
 		Bucket bucket;
 		try {
 			bucket = findPluginStoreBucket(storeIdentifier, isEncrypted, backup);
-			if(bucket == null) return null;
+			if(bucket == null) {
+				return null;
+			}
 		} catch (FileNotFoundException e) {
 			return null;
 		}
@@ -120,7 +133,9 @@ public class PluginStores {
 				// Do NOT use Closer.close().
 				// We use authenticated encryption, which will throw at close() time if the file is corrupt,
 				// or has been modified while the node was offline etc.
-				if(is != null) is.close();
+				if(is != null) {
+					is.close();
+				}
 			}
 		} catch (IOException e) {
 			// Hence, if close() throws, we DO need to catch it here.
@@ -151,8 +166,10 @@ public class PluginStores {
 			FileUtil.secureDelete(backup);
 		}
 		if(main.exists()) {
-			if(!main.renameTo(backup))
-				System.err.println("Unable to rename "+main+" to "+backup+" when writing pluginstore for "+storeIdentifier);
+			if(!main.renameTo(backup)) {
+				System.err.println("Unable to rename "+main+" to "+backup+" when writing pluginstore for "
+								   +storeIdentifier);
+			}
 		}
 		writePluginStoreInner(storeIdentifier, store, isEncrypted, false);
 		File f = getPluginStoreFile(storeIdentifier, !isEncrypted, true);

@@ -170,7 +170,8 @@ public class DMT {
 	// Assimilation
 
 	// New data transmission messages
-	public static final MessageType packetTransmit = new MessageType("packetTransmit", PRIORITY_BULK_DATA) {
+	public static final MessageType packetTransmit = new MessageType("packetTransmit",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(PACKET_NO, Integer.class);
@@ -179,14 +180,16 @@ public class DMT {
 		}
 	};
 
-	public static Message createPacketTransmit(long uid, int packetNo, BitArray sent, Buffer data, boolean realTime) {
+	public static Message createPacketTransmit(long uid, int packetNo, BitArray sent, Buffer data,
+			boolean realTime) {
 		Message msg = new Message(packetTransmit);
 		msg.set(UID, uid);
 		msg.set(PACKET_NO, packetNo);
 		msg.set(SENT, sent);
 		msg.set(DATA, data);
-		if(realTime)
+		if(realTime) {
 			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -239,7 +242,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPBulkPacketSend = new MessageType("FNPBulkPacketSend", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPBulkPacketSend = new MessageType("FNPBulkPacketSend",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(PACKET_NO, Integer.class);
@@ -247,7 +251,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPBulkPacketSend(long uid, int packetNo, ShortBuffer data, boolean realTime) {
+	public static Message createFNPBulkPacketSend(long uid, int packetNo, ShortBuffer data,
+			boolean realTime) {
 		Message msg = new Message(FNPBulkPacketSend);
 		msg.set(UID, uid);
 		msg.set(PACKET_NO, packetNo);
@@ -255,11 +260,13 @@ public class DMT {
 		return msg;
 	}
 
-	public static Message createFNPBulkPacketSend(long uid, int packetNo, byte[] data, boolean realTime) {
+	public static Message createFNPBulkPacketSend(long uid, int packetNo, byte[] data,
+			boolean realTime) {
 		return createFNPBulkPacketSend(uid, packetNo, new ShortBuffer(data), realTime);
 	}
 
-	public static final MessageType FNPBulkSendAborted = new MessageType("FNPBulkSendAborted", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPBulkSendAborted = new MessageType("FNPBulkSendAborted",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -271,7 +278,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPBulkReceiveAborted = new MessageType("FNPBulkReceiveAborted", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPBulkReceiveAborted = new MessageType("FNPBulkReceiveAborted",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -283,7 +291,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPBulkReceivedAll = new MessageType("FNPBulkReceivedAll", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPBulkReceivedAll = new MessageType("FNPBulkReceivedAll",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -295,7 +304,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testTransferSend = new MessageType("testTransferSend", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testTransferSend = new MessageType("testTransferSend",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -307,7 +317,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testTransferSendAck = new MessageType("testTransferSendAck", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testTransferSendAck = new MessageType("testTransferSendAck",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -351,7 +362,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testDataNotFound = new MessageType("testDataNotFound", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testDataNotFound = new MessageType("testDataNotFound",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -363,7 +375,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testDataReply = new MessageType("testDataReply", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testDataReply = new MessageType("testDataReply",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(TEST_CHK_HEADERS, Buffer.class);
@@ -377,7 +390,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testSendCHKAck = new MessageType("testSendCHKAck", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testSendCHKAck = new MessageType("testSendCHKAck",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(FREENET_URI, String.class);
@@ -390,7 +404,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testDataReplyAck = new MessageType("testDataReplyAck", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testDataReplyAck = new MessageType("testDataReplyAck",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -402,7 +417,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testDataNotFoundAck = new MessageType("testDataNotFoundAck", PRIORITY_UNSPECIFIED) {
+	public static final MessageType testDataNotFoundAck = new MessageType("testDataNotFoundAck",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -415,7 +431,8 @@ public class DMT {
 
 	// Internal only messages
 
-	public static final MessageType testReceiveCompleted = new MessageType("testReceiveCompleted", PRIORITY_UNSPECIFIED, true, false) {
+	public static final MessageType testReceiveCompleted = new MessageType("testReceiveCompleted",
+	PRIORITY_UNSPECIFIED, true, false) {
 		{
 			addField(UID, Long.class);
 			addField(SUCCESS, Boolean.class);
@@ -431,7 +448,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType testSendCompleted = new MessageType("testSendCompleted", PRIORITY_UNSPECIFIED, true, false) {
+	public static final MessageType testSendCompleted = new MessageType("testSendCompleted",
+	PRIORITY_UNSPECIFIED, true, false) {
 		{
 			addField(UID, Long.class);
 			addField(SUCCESS, Boolean.class);
@@ -448,7 +466,8 @@ public class DMT {
 	}
 
 	// Node-To-Node Message (generic)
-	public static final MessageType nodeToNodeMessage = new MessageType("nodeToNodeMessage", PRIORITY_LOW, false, false) {
+	public static final MessageType nodeToNodeMessage = new MessageType("nodeToNodeMessage",
+	PRIORITY_LOW, false, false) {
 		{
 			addField(NODE_TO_NODE_MESSAGE_TYPE, Integer.class);
 			addField(NODE_TO_NODE_MESSAGE_DATA, ShortBuffer.class);
@@ -463,7 +482,8 @@ public class DMT {
 	}
 
 	// FNP messages
-	public static final MessageType FNPCHKDataRequest = new MessageType("FNPCHKDataRequest", PRIORITY_LOW) {
+	public static final MessageType FNPCHKDataRequest = new MessageType("FNPCHKDataRequest",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -481,7 +501,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPSSKDataRequest = new MessageType("FNPSSKDataRequest", PRIORITY_LOW) {
+	public static final MessageType FNPSSKDataRequest = new MessageType("FNPSSKDataRequest",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -516,22 +537,25 @@ public class DMT {
 
 	// Too many requests for present capacity. Fail, propagate back
 	// to source, and reduce send rate.
-	public static final MessageType FNPRejectedOverload = new MessageType("FNPRejectOverload", PRIORITY_HIGH) {
+	public static final MessageType FNPRejectedOverload = new MessageType("FNPRejectOverload",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(IS_LOCAL, Boolean.class);
 		}
 	};
 
-	public static Message createFNPRejectedOverload(long id, boolean isLocal, boolean needsLoad, boolean realTimeFlag) {
+	public static Message createFNPRejectedOverload(long id, boolean isLocal, boolean needsLoad,
+			boolean realTimeFlag) {
 		Message msg = new Message(FNPRejectedOverload);
 		msg.set(UID, id);
 		msg.set(IS_LOCAL, isLocal);
 		if(needsLoad) {
-			if(realTimeFlag)
+			if(realTimeFlag) {
 				msg.setNeedsLoadRT();
-			else
+			} else {
 				msg.setNeedsLoadBulk();
+			}
 		}
 		return msg;
 	}
@@ -548,7 +572,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPDataNotFound = new MessageType("FNPDataNotFound", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPDataNotFound = new MessageType("FNPDataNotFound",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -560,7 +585,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPRecentlyFailed = new MessageType("FNPRecentlyFailed", PRIORITY_HIGH) {
+	public static final MessageType FNPRecentlyFailed = new MessageType("FNPRecentlyFailed",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(TIME_LEFT, Integer.class);
@@ -574,7 +600,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPCHKDataFound = new MessageType("FNPCHKDataFound", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPCHKDataFound = new MessageType("FNPCHKDataFound",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(BLOCK_HEADERS, ShortBuffer.class);
@@ -588,7 +615,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPRouteNotFound = new MessageType("FNPRouteNotFound", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPRouteNotFound = new MessageType("FNPRouteNotFound",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -602,7 +630,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPInsertRequest = new MessageType("FNPInsertRequest", PRIORITY_LOW) {
+	public static final MessageType FNPInsertRequest = new MessageType("FNPInsertRequest",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -620,7 +649,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPInsertReply = new MessageType("FNPInsertReply", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPInsertReply = new MessageType("FNPInsertReply",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -646,7 +676,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPInsertTransfersCompleted = new MessageType("FNPInsertTransfersCompleted", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPInsertTransfersCompleted = new
+	MessageType("FNPInsertTransfersCompleted", PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(ANY_TIMED_OUT, Boolean.class);
@@ -667,7 +698,8 @@ public class DMT {
 	// any of which can timeout independantly. Arguably that's bad design and we should
 	// just send one message now that we have new packet format, see the discussion on
 	// FNPSSKInsertRequestNew vs the old version.
-	public static final MessageType FNPRejectedTimeout = new MessageType("FNPTooSlow", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPRejectedTimeout = new MessageType("FNPTooSlow",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 		}
@@ -679,7 +711,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPDataInsertRejected = new MessageType("FNPDataInsertRejected", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPDataInsertRejected = new MessageType("FNPDataInsertRejected",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(DATA_INSERT_REJECTED_REASON, Short.class);
@@ -699,21 +732,23 @@ public class DMT {
 	public static final short DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED = 4;
 
 	public static String getDataInsertRejectedReason(short reason) {
-		if(reason == DATA_INSERT_REJECTED_VERIFY_FAILED)
+		if(reason == DATA_INSERT_REJECTED_VERIFY_FAILED) {
 			return "Verify failed";
-		else if(reason == DATA_INSERT_REJECTED_RECEIVE_FAILED)
+		} else if(reason == DATA_INSERT_REJECTED_RECEIVE_FAILED) {
 			return "Receive failed";
-		else if(reason == DATA_INSERT_REJECTED_SSK_ERROR)
+		} else if(reason == DATA_INSERT_REJECTED_SSK_ERROR) {
 			return "SSK error";
-		else if(reason == DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED)
+		} else if(reason == DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED) {
 			return "Timeout waiting for Accepted (moved on)";
+		}
 		return "Unknown reason code: "+reason;
 	}
 
 	// FIXME consider using this again now we have new packet format which can handle big messages on any connection.
 	// FIXME be careful if we do - make sure boost priority if realtime, and note timeout issues associated with sending a request at BULK.
 
-	public static final MessageType FNPSSKInsertRequest = new MessageType("FNPSSKInsertRequest", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPSSKInsertRequest = new MessageType("FNPSSKInsertRequest",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -725,7 +760,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPSSKInsertRequest(long uid, short htl, NodeSSK myKey, byte[] headers, byte[] data, byte[] pubKeyHash, boolean realTime) {
+	public static Message createFNPSSKInsertRequest(long uid, short htl, NodeSSK myKey, byte[] headers,
+			byte[] data, byte[] pubKeyHash, boolean realTime) {
 		Message msg = new Message(FNPSSKInsertRequest);
 		msg.set(UID, uid);
 		msg.set(HTL, htl);
@@ -734,11 +770,14 @@ public class DMT {
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
 		msg.set(PUBKEY_HASH, new ShortBuffer(pubKeyHash));
 		msg.set(DATA, new ShortBuffer(data));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
-	public static final MessageType FNPSSKInsertRequestNew = new MessageType("FNPSSKInsertRequestNew", PRIORITY_LOW) {
+	public static final MessageType FNPSSKInsertRequestNew = new MessageType("FNPSSKInsertRequestNew",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -756,7 +795,8 @@ public class DMT {
 
 	// SSK inserts data and headers. These are BULK_DATA or REALTIME.
 
-	public static final MessageType FNPSSKInsertRequestHeaders = new MessageType("FNPSSKInsertRequestHeaders", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPSSKInsertRequestHeaders = new
+	MessageType("FNPSSKInsertRequestHeaders", PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(BLOCK_HEADERS, ShortBuffer.class);
@@ -767,11 +807,14 @@ public class DMT {
 		Message msg = new Message(FNPSSKInsertRequestHeaders);
 		msg.set(UID, uid);
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
-	public static final MessageType FNPSSKInsertRequestData = new MessageType("FNPSSKInsertRequestData", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPSSKInsertRequestData = new MessageType("FNPSSKInsertRequestData",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(DATA, ShortBuffer.class);
@@ -782,7 +825,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKInsertRequestData);
 		msg.set(UID, uid);
 		msg.set(DATA, new ShortBuffer(data));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -790,7 +835,8 @@ public class DMT {
 	// Requests wait for them all equally, so there is no reason for them to be different,
 	// plus everything is throttled now.
 
-	public static final MessageType FNPSSKDataFoundHeaders = new MessageType("FNPSSKDataFoundHeaders", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPSSKDataFoundHeaders = new MessageType("FNPSSKDataFoundHeaders",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(BLOCK_HEADERS, ShortBuffer.class);
@@ -801,11 +847,14 @@ public class DMT {
 		Message msg = new Message(FNPSSKDataFoundHeaders);
 		msg.set(UID, uid);
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
-	public static final MessageType FNPSSKDataFoundData = new MessageType("FNPSSKDataFoundData", PRIORITY_BULK_DATA) {
+	public static final MessageType FNPSSKDataFoundData = new MessageType("FNPSSKDataFoundData",
+	PRIORITY_BULK_DATA) {
 		{
 			addField(UID, Long.class);
 			addField(DATA, ShortBuffer.class);
@@ -816,7 +865,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKDataFoundData);
 		msg.set(UID, uid);
 		msg.set(DATA, new ShortBuffer(data));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -845,11 +896,14 @@ public class DMT {
 		Message msg = new Message(FNPSSKPubKey);
 		msg.set(UID, uid);
 		msg.set(PUBKEY_AS_BYTES, new ShortBuffer(pubkey.asPaddedBytes()));
-		if(realTime) msg.boostPriority();
+		if(realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
-	public final static MessageType FNPSSKPubKeyAccepted = new MessageType("FNPSSKPubKeyAccepted", PRIORITY_HIGH) {
+	public final static MessageType FNPSSKPubKeyAccepted = new MessageType("FNPSSKPubKeyAccepted",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -865,7 +919,8 @@ public class DMT {
 
 	/** Sent when a request to an opennet node is completed, but the data source does not want to
 	 * path fold. Sent even on pure darknet. A better name might be FNPRequestCompletedAck. */
-	public final static MessageType FNPOpennetCompletedAck = new MessageType("FNPOpennetCompletedAck", PRIORITY_HIGH) {
+	public final static MessageType FNPOpennetCompletedAck = new MessageType("FNPOpennetCompletedAck",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -878,7 +933,8 @@ public class DMT {
 	}
 
 	/** Sent when we wait for an FNP transfer or a completion from upstream and it never comes. */
-	public final static MessageType FNPOpennetCompletedTimeout = new MessageType("FNPOpennetCompletedTimeout", PRIORITY_HIGH) {
+	public final static MessageType FNPOpennetCompletedTimeout = new
+	MessageType("FNPOpennetCompletedTimeout", PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -893,7 +949,8 @@ public class DMT {
 	/** Sent when a request completes and the data source wants to path fold. Starts a bulk data
 	 * transfer including the (padded) noderef.
 	 */
-	public final static MessageType FNPOpennetConnectDestinationNew = new MessageType("FNPConnectDestinationNew",
+	public final static MessageType FNPOpennetConnectDestinationNew = new
+	MessageType("FNPConnectDestinationNew",
 	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class); // UID of original message chain
@@ -903,7 +960,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPOpennetConnectDestinationNew(long uid, long transferUID, int noderefLength, int paddedLength) {
+	public static Message createFNPOpennetConnectDestinationNew(long uid, long transferUID,
+			int noderefLength, int paddedLength) {
 		Message msg = new Message(FNPOpennetConnectDestinationNew);
 		msg.set(UID, uid);
 		msg.set(TRANSFER_UID, transferUID);
@@ -925,7 +983,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPOpennetConnectReplyNew(long uid, long transferUID, int noderefLength, int paddedLength) {
+	public static Message createFNPOpennetConnectReplyNew(long uid, long transferUID, int noderefLength,
+			int paddedLength) {
 		Message msg = new Message(FNPOpennetConnectReplyNew);
 		msg.set(UID, uid);
 		msg.set(TRANSFER_UID, transferUID);
@@ -939,7 +998,8 @@ public class DMT {
 	/**
 	 * Announcement request. Noderef is attached, will be transferred before anything else is done.
 	 */
-	public final static MessageType FNPOpennetAnnounceRequest = new MessageType("FNPOpennetAnnounceRequest",
+	public final static MessageType FNPOpennetAnnounceRequest = new
+	MessageType("FNPOpennetAnnounceRequest",
 	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
@@ -952,7 +1012,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPOpennetAnnounceRequest(long uid, long transferUID, int noderefLength, int paddedLength, double target, short htl) {
+	public static Message createFNPOpennetAnnounceRequest(long uid, long transferUID, int noderefLength,
+			int paddedLength, double target, short htl) {
 		Message msg = new Message(FNPOpennetAnnounceRequest);
 		msg.set(UID, uid);
 		msg.set(TRANSFER_UID, transferUID);
@@ -969,7 +1030,8 @@ public class DMT {
 	 * request will result in many reply's. When the announcement is done, we return a DataNotFound; if
 	 * we run into a dead-end, we return a RejectedLoop; if we can't accept it, RejectedOverload.
 	 */
-	public final static MessageType FNPOpennetAnnounceReply = new MessageType("FNPOpennetAnnounceReply", PRIORITY_UNSPECIFIED) {
+	public final static MessageType FNPOpennetAnnounceReply = new MessageType("FNPOpennetAnnounceReply",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(TRANSFER_UID, Long.class);
@@ -978,7 +1040,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPOpennetAnnounceReply(long uid, long transferUID, int noderefLength, int paddedLength) {
+	public static Message createFNPOpennetAnnounceReply(long uid, long transferUID, int noderefLength,
+			int paddedLength) {
 		Message msg = new Message(FNPOpennetAnnounceReply);
 		msg.set(UID, uid);
 		msg.set(TRANSFER_UID, transferUID);
@@ -987,7 +1050,8 @@ public class DMT {
 		return msg;
 	}
 
-	public final static MessageType FNPOpennetAnnounceCompleted = new MessageType("FNPOpennetAnnounceCompleted",
+	public final static MessageType FNPOpennetAnnounceCompleted = new
+	MessageType("FNPOpennetAnnounceCompleted",
 	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
@@ -1000,7 +1064,8 @@ public class DMT {
 		return msg;
 	}
 
-	public final static MessageType FNPOpennetDisabled = new MessageType("FNPOpennetDisabled", PRIORITY_HIGH) {
+	public final static MessageType FNPOpennetDisabled = new MessageType("FNPOpennetDisabled",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -1012,7 +1077,8 @@ public class DMT {
 		return msg;
 	}
 
-	public final static MessageType FNPOpennetNoderefRejected = new MessageType("FNPOpennetNoderefRejected",
+	public final static MessageType FNPOpennetNoderefRejected = new
+	MessageType("FNPOpennetNoderefRejected",
 	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
@@ -1079,7 +1145,8 @@ public class DMT {
 	}
 
 	// Short timeout so PRIORITY_HIGH
-	public final static MessageType FNPGetOfferedKey = new MessageType("FNPGetOfferedKey", PRIORITY_LOW) {
+	public final static MessageType FNPGetOfferedKey = new MessageType("FNPGetOfferedKey",
+	PRIORITY_LOW) {
 		{
 			addField(KEY, Key.class);
 			addField(OFFER_AUTHENTICATOR, ShortBuffer.class);
@@ -1088,7 +1155,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPGetOfferedKey(Key key, byte[] authenticator, boolean needPubkey, long uid) {
+	public static Message createFNPGetOfferedKey(Key key, byte[] authenticator, boolean needPubkey,
+			long uid) {
 		Message msg = new Message(FNPGetOfferedKey);
 		msg.set(KEY, key);
 		msg.set(OFFER_AUTHENTICATOR, new ShortBuffer(authenticator));
@@ -1098,7 +1166,8 @@ public class DMT {
 	}
 
 	// Permanently rejected. RejectedOverload means temporarily rejected.
-	public final static MessageType FNPGetOfferedKeyInvalid = new MessageType("FNPGetOfferedKeyInvalid", PRIORITY_HIGH) {
+	public final static MessageType FNPGetOfferedKeyInvalid = new MessageType("FNPGetOfferedKeyInvalid",
+	PRIORITY_HIGH) {
 		{
 			// short timeout
 			addField(UID, Long.class);
@@ -1140,7 +1209,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPRHProbeReply = new MessageType("FNPRHProbeReply", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPRHProbeReply = new MessageType("FNPRHProbeReply",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(NEAREST_LOCATION, Double.class);
@@ -1151,7 +1221,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPRHProbeReply(long uid, double nearest, double best, short counter, short uniqueCounter, short linearCounter) {
+	public static Message createFNPRHProbeReply(long uid, double nearest, double best, short counter,
+			short uniqueCounter, short linearCounter) {
 		Message msg = new Message(FNPRHProbeReply);
 		msg.set(UID, uid);
 		msg.set(NEAREST_LOCATION, nearest);
@@ -1261,7 +1332,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType ProbeIdentifier = new MessageType("ProbeIdentifier", PRIORITY_HIGH) {
+	public static final MessageType ProbeIdentifier = new MessageType("ProbeIdentifier",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(PROBE_IDENTIFIER, Long.class);
@@ -1284,7 +1356,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType ProbeLinkLengths = new MessageType("ProbeLinkLengths", PRIORITY_HIGH) {
+	public static final MessageType ProbeLinkLengths = new MessageType("ProbeLinkLengths",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(LINK_LENGTHS, float[].class);
@@ -1364,7 +1437,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType ProbeRejectStats = new MessageType("ProbeRejectStats", PRIORITY_HIGH) {
+	public static final MessageType ProbeRejectStats = new MessageType("ProbeRejectStats",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(REJECT_STATS, ShortBuffer.class);
@@ -1385,7 +1459,8 @@ public class DMT {
 	/** Minimum value of bandwidth class */
 	static final byte CAPACITY_USAGE_MIN = 1;
 
-	public static final MessageType ProbeOverallBulkOutputCapacityUsage = new MessageType("ProbeOverallBulkOutputCapacityUsage", PRIORITY_HIGH) {
+	public static final MessageType ProbeOverallBulkOutputCapacityUsage = new
+	MessageType("ProbeOverallBulkOutputCapacityUsage", PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class); // UID for the probe
 			addField(OUTPUT_BANDWIDTH_CLASS, Byte.class); // Approximate bandwidth, severely truncated.
@@ -1399,7 +1474,8 @@ public class DMT {
 		return (byte) Math.max(bandwidthLimit, CAPACITY_USAGE_MIN);
 	}
 
-	public static final Message createProbeOverallBulkOutputCapacityUsage(long uid, byte outputBandwidthClass, float capacityUsage) {
+	public static final Message createProbeOverallBulkOutputCapacityUsage(long uid,
+			byte outputBandwidthClass, float capacityUsage) {
 		Message msg = new Message(ProbeOverallBulkOutputCapacityUsage);
 		msg.set(UID, uid);
 		msg.set(OUTPUT_BANDWIDTH_CLASS, outputBandwidthClass);
@@ -1423,7 +1499,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPSwapRejected = new MessageType("FNPSwapRejected", PRIORITY_HIGH) {
+	public static final MessageType FNPSwapRejected = new MessageType("FNPSwapRejected",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -1463,7 +1540,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPSwapComplete = new MessageType("FNPSwapComplete", PRIORITY_HIGH) {
+	public static final MessageType FNPSwapComplete = new MessageType("FNPSwapComplete",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(DATA, ShortBuffer.class);
@@ -1477,7 +1555,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPLocChangeNotificationNew = new MessageType("FNPLocationChangeNotification2", PRIORITY_LOW) {
+	public static final MessageType FNPLocChangeNotificationNew = new
+	MessageType("FNPLocationChangeNotification2", PRIORITY_LOW) {
 		{
 			addField(LOCATION, Double.class);
 			addField(PEER_LOCATIONS, ShortBuffer.class);
@@ -1501,7 +1580,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPRoutedPing(long uid, double targetLocation, short htl, int counter, byte[] nodeIdentity) {
+	public static Message createFNPRoutedPing(long uid, double targetLocation, short htl, int counter,
+			byte[] nodeIdentity) {
 		Message msg = new Message(FNPRoutedPing);
 		msg.setRoutedToNodeFields(uid, targetLocation, htl, nodeIdentity);
 		msg.set(COUNTER, counter);
@@ -1522,7 +1602,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPRoutedRejected = new MessageType("FNPRoutedRejected", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPRoutedRejected = new MessageType("FNPRoutedRejected",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(UID, Long.class);
 			addField(HTL, Short.class);
@@ -1536,7 +1617,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPDetectedIPAddress = new MessageType("FNPDetectedIPAddress", PRIORITY_HIGH) {
+	public static final MessageType FNPDetectedIPAddress = new MessageType("FNPDetectedIPAddress",
+	PRIORITY_HIGH) {
 		{
 			addField(EXTERNAL_ADDRESS, Peer.class);
 		}
@@ -1619,7 +1701,8 @@ public class DMT {
 		}
 	};
 
-	public static Message createFNPDisconnect(boolean remove, boolean purge, int messageType, ShortBuffer messageData) {
+	public static Message createFNPDisconnect(boolean remove, boolean purge, int messageType,
+			ShortBuffer messageData) {
 		Message msg = new Message(FNPDisconnect);
 		msg.set(REMOVE, remove);
 		msg.set(PURGE, purge);
@@ -1652,7 +1735,8 @@ public class DMT {
 
 	public static Message createUOMAnnouncement(String mainKey, String revocationKey,
 			boolean haveRevocation, long mainJarVersion, long timeLastTriedRevocationFetch,
-			int revocationDNFCount, long revocationKeyLength, long mainJarLength, int pingTime, int bwlimitDelayTime) {
+			int revocationDNFCount, long revocationKeyLength, long mainJarLength, int pingTime,
+			int bwlimitDelayTime) {
 		Message msg = new Message(UOMAnnouncement);
 
 		msg.set(MAIN_JAR_KEY, mainKey);
@@ -1669,7 +1753,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType UOMRequestRevocation = new MessageType("UOMRequestRevocation", PRIORITY_HIGH) {
+	public static final MessageType UOMRequestRevocation = new MessageType("UOMRequestRevocation",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 		}
@@ -1682,7 +1767,8 @@ public class DMT {
 	}
 
 	// Used by new UOM.
-	public static final MessageType UOMRequestMainJar = new MessageType("UOMRequestMainJar", PRIORITY_LOW) {
+	public static final MessageType UOMRequestMainJar = new MessageType("UOMRequestMainJar",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 		}
@@ -1694,7 +1780,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType UOMSendingRevocation = new MessageType("UOMSendingRevocation", PRIORITY_HIGH) {
+	public static final MessageType UOMSendingRevocation = new MessageType("UOMSendingRevocation",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			// Probably excessive, but lengths are always long's, and wasting a few bytes here
@@ -1713,7 +1800,8 @@ public class DMT {
 	}
 
 	// Used by new UOM. We need to distinguish them in NodeDispatcher.
-	public static final MessageType UOMSendingMainJar = new MessageType("UOMSendingMainJar", PRIORITY_LOW) {
+	public static final MessageType UOMSendingMainJar = new MessageType("UOMSendingMainJar",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			addField(FILE_LENGTH, Long.class);
@@ -1735,7 +1823,8 @@ public class DMT {
 	 * knows both the size and hash of the file. If we don't want to send
 	 * the data we should send an FNPBulkReceiveAborted, otherwise we just
 	 * send the data as a BulkTransmitter transfer. */
-	public static final MessageType UOMFetchDependency = new MessageType("UOMFetchDependency", PRIORITY_LOW) {
+	public static final MessageType UOMFetchDependency = new MessageType("UOMFetchDependency",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class); // This will be used for the transfer.
 			addField(EXPECTED_HASH, ShortBuffer.class); // Fetch by hash
@@ -1753,7 +1842,8 @@ public class DMT {
 
 	// Secondary messages (debug messages attached to primary messages)
 
-	public static final MessageType FNPSwapNodeUIDs = new MessageType("FNPSwapNodeUIDs", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPSwapNodeUIDs = new MessageType("FNPSwapNodeUIDs",
+	PRIORITY_UNSPECIFIED) {
 		{
 			addField(NODE_UIDS, ShortBuffer.class);
 		}
@@ -1767,7 +1857,8 @@ public class DMT {
 
 	// More permanent secondary messages (should perhaps be replaced by new main messages when stable)
 
-	public static final MessageType FNPBestRoutesNotTaken = new MessageType("FNPBestRoutesNotTaken", PRIORITY_UNSPECIFIED) {
+	public static final MessageType FNPBestRoutesNotTaken = new MessageType("FNPBestRoutesNotTaken",
+	PRIORITY_UNSPECIFIED) {
 		{
 			// Maybe this should be some sort of typed array?
 			// It's just a bunch of double's anyway.
@@ -1787,11 +1878,14 @@ public class DMT {
 
 	public static Message createFNPBestRoutesNotTaken(Double[] doubles) {
 		double[] locs = new double[doubles.length];
-		for(int i=0; i<locs.length; i++) locs[i] = doubles[i].doubleValue();
+		for(int i=0; i<locs.length; i++) {
+			locs[i] = doubles[i].doubleValue();
+		}
 		return createFNPBestRoutesNotTaken(locs);
 	}
 
-	public static final MessageType FNPRoutingStatus = new MessageType("FNPRoutingStatus", PRIORITY_HIGH) {
+	public static final MessageType FNPRoutingStatus = new MessageType("FNPRoutingStatus",
+	PRIORITY_HIGH) {
 		{
 			addField(ROUTING_ENABLED, Boolean.class);
 		}
@@ -1804,7 +1898,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPSubInsertForkControl = new MessageType("FNPSubInsertForkControl", PRIORITY_HIGH) {
+	public static final MessageType FNPSubInsertForkControl = new MessageType("FNPSubInsertForkControl",
+	PRIORITY_HIGH) {
 		{
 			addField(ENABLE_INSERT_FORK_WHEN_CACHEABLE, Boolean.class);
 		}
@@ -1816,7 +1911,8 @@ public class DMT {
 		return msg;
 	}
 
-	public static final MessageType FNPSubInsertPreferInsert = new MessageType("FNPSubInsertPreferInsert", PRIORITY_HIGH) {
+	public static final MessageType FNPSubInsertPreferInsert = new
+	MessageType("FNPSubInsertPreferInsert", PRIORITY_HIGH) {
 		{
 			addField(PREFER_INSERT, Boolean.class);
 		}
@@ -1829,7 +1925,8 @@ public class DMT {
 
 	}
 
-	public static final MessageType FNPSubInsertIgnoreLowBackoff = new MessageType("FNPSubInsertIgnoreLowBackoff", PRIORITY_HIGH) {
+	public static final MessageType FNPSubInsertIgnoreLowBackoff = new
+	MessageType("FNPSubInsertIgnoreLowBackoff", PRIORITY_HIGH) {
 		{
 			addField(IGNORE_LOW_BACKOFF, Boolean.class);
 		}
@@ -1842,7 +1939,8 @@ public class DMT {
 
 	}
 
-	public static final MessageType FNPRejectIsSoft = new MessageType("FNPRejectIsSoft", PRIORITY_HIGH) {
+	public static final MessageType FNPRejectIsSoft = new MessageType("FNPRejectIsSoft",
+	PRIORITY_HIGH) {
 		{
 			// No fields???
 		}
@@ -1854,7 +1952,8 @@ public class DMT {
 
 	// New load management
 
-	public static final MessageType FNPPeerLoadStatusByte = new MessageType("FNPPeerLoadStatusByte", PRIORITY_HIGH, false, true) {
+	public static final MessageType FNPPeerLoadStatusByte = new MessageType("FNPPeerLoadStatusByte",
+	PRIORITY_HIGH, false, true) {
 		{
 			addField(OTHER_TRANSFERS_OUT_CHK, Byte.class);
 			addField(OTHER_TRANSFERS_IN_CHK, Byte.class);
@@ -1875,7 +1974,8 @@ public class DMT {
 		}
 	};
 
-	public static final MessageType FNPPeerLoadStatusShort = new MessageType("FNPPeerLoadStatusShort", PRIORITY_HIGH, false, true) {
+	public static final MessageType FNPPeerLoadStatusShort = new MessageType("FNPPeerLoadStatusShort",
+	PRIORITY_HIGH, false, true) {
 		{
 			addField(OTHER_TRANSFERS_OUT_CHK, Short.class);
 			addField(OTHER_TRANSFERS_IN_CHK, Short.class);
@@ -1896,7 +1996,8 @@ public class DMT {
 		}
 	};
 
-	public static final MessageType FNPPeerLoadStatusInt = new MessageType("FNPPeerLoadStatusInt", PRIORITY_HIGH, false, true) {
+	public static final MessageType FNPPeerLoadStatusInt = new MessageType("FNPPeerLoadStatusInt",
+	PRIORITY_HIGH, false, true) {
 		{
 			addField(OTHER_TRANSFERS_OUT_CHK, Integer.class);
 			addField(OTHER_TRANSFERS_IN_CHK, Integer.class);
@@ -1998,7 +2099,8 @@ public class DMT {
 
 	public static final String REAL_TIME_FLAG = "realTimeFlag";
 
-	public static final MessageType FNPRealTimeFlag = new MessageType("FNPRealTimeFlag", PRIORITY_HIGH) {
+	public static final MessageType FNPRealTimeFlag = new MessageType("FNPRealTimeFlag",
+	PRIORITY_HIGH) {
 		{
 			addField(REAL_TIME_FLAG, Boolean.class);
 		}
@@ -2012,7 +2114,9 @@ public class DMT {
 
 	public static boolean getRealTimeFlag(Message m) {
 		Message bulk = m.getSubMessage(FNPRealTimeFlag);
-		if(bulk == null) return false;
+		if(bulk == null) {
+			return false;
+		}
 		return bulk.getBoolean(REAL_TIME_FLAG);
 	}
 
@@ -2024,19 +2128,22 @@ public class DMT {
 
 	public static boolean isLoadLimitedRequest(Message m) {
 		MessageType spec = m.getSpec();
-		return (spec == FNPCHKDataRequest || spec == FNPSSKDataRequest || spec == FNPSSKInsertRequest || spec == FNPInsertRequest || spec == FNPSSKInsertRequestNew || spec == FNPGetOfferedKey);
+		return (spec == FNPCHKDataRequest || spec == FNPSSKDataRequest || spec == FNPSSKInsertRequest
+				|| spec == FNPInsertRequest || spec == FNPSSKInsertRequestNew || spec == FNPGetOfferedKey);
 	}
 
 	// Extended fatal timeout handling.
 
-	public static final MessageType FNPCheckStillRunning = new MessageType("FNPCheckStillRunning", PRIORITY_HIGH) {
+	public static final MessageType FNPCheckStillRunning = new MessageType("FNPCheckStillRunning",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class); // UID for this message, used to identify reply
 			addField(LIST_OF_UIDS, ShortBuffer.class);
 		}
 	};
 
-	public static final MessageType FNPIsStillRunning = new MessageType("FNPIsStillRunning", PRIORITY_HIGH) {
+	public static final MessageType FNPIsStillRunning = new MessageType("FNPIsStillRunning",
+	PRIORITY_HIGH) {
 		{
 			addField(UID, Long.class);
 			addField(UID_STILL_RUNNING_FLAGS, BitArray.class);
@@ -2045,7 +2152,8 @@ public class DMT {
 
 	// Friend-of-a-friend (FOAF) related messages
 
-	public static final MessageType FNPGetYourFullNoderef = new MessageType("FNPGetYourFullNoderef", PRIORITY_LOW) {
+	public static final MessageType FNPGetYourFullNoderef = new MessageType("FNPGetYourFullNoderef",
+	PRIORITY_LOW) {
 		{
 		}
 	};
@@ -2054,7 +2162,8 @@ public class DMT {
 		return new Message(FNPGetYourFullNoderef);
 	}
 
-	public static final MessageType FNPMyFullNoderef = new MessageType("FNPMyFullNoderef", PRIORITY_LOW) {
+	public static final MessageType FNPMyFullNoderef = new MessageType("FNPMyFullNoderef",
+	PRIORITY_LOW) {
 		{
 			addField(UID, Long.class);
 			// Not necessary to pad it since it's not propagated across the network.

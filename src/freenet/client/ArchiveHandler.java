@@ -67,7 +67,8 @@ public interface ArchiveHandler {
 	 * @throws ArchiveFailureException
 	 * @throws ArchiveRestartException
 	 */
-	public abstract void extractToCache(Bucket bucket, ArchiveContext actx, String element, ArchiveExtractCallback callback, ArchiveManager manager,
+	public abstract void extractToCache(Bucket bucket, ArchiveContext actx, String element,
+										ArchiveExtractCallback callback, ArchiveManager manager,
 										ClientContext context) throws ArchiveFailureException, ArchiveRestartException;
 
 	public abstract ArchiveHandler cloneHandler();

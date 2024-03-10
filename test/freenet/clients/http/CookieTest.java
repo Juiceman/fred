@@ -86,13 +86,17 @@ public class CookieTest {
 	@Test
 	public void testEqualsObject() throws URISyntaxException {
 		assertEquals(cookie, cookie);
-		assertEquals(cookie, new Cookie(validPath, VALID_NAME, VALID_VALUE, new Date(System.currentTimeMillis() + 60 * 1000)));
+		assertEquals(cookie, new Cookie(validPath, VALID_NAME, VALID_VALUE,
+										new Date(System.currentTimeMillis() + 60 * 1000)));
 
 		// Value is not checked in equals().
-		assertEquals(cookie, new Cookie(validPath, VALID_NAME, "", new Date(System.currentTimeMillis() + 60 * 1000)));
+		assertEquals(cookie, new Cookie(validPath, VALID_NAME, "",
+										new Date(System.currentTimeMillis() + 60 * 1000)));
 
-		assertFalse(cookie.equals(new Cookie(new URI(VALID_PATH.toLowerCase()), VALID_NAME, VALID_VALUE, validExpiresDate)));
-		assertEquals(cookie, new Cookie(validPath, VALID_NAME.toLowerCase(), VALID_VALUE, validExpiresDate));
+		assertFalse(cookie.equals(new Cookie(new URI(VALID_PATH.toLowerCase()), VALID_NAME, VALID_VALUE,
+											 validExpiresDate)));
+		assertEquals(cookie, new Cookie(validPath, VALID_NAME.toLowerCase(), VALID_VALUE,
+										validExpiresDate));
 
 		// TODO: Test domain. This is currently done in ReceivedCookieTest
 	}

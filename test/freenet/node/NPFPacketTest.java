@@ -360,7 +360,8 @@ public class NPFPacketTest {
 		NPFPacket p = new NPFPacket();
 		p.setSequenceNumber(100);
 		p.addMessageFragment(new MessageFragment(true, false, true, 0, 8, 8, 0,
-							 new byte[] {(byte)0x01, (byte)0x23, (byte)0x45, (byte)0x67, (byte)0x89, (byte)0xAB, (byte)0xCD, (byte)0xEF}, null));
+							 new byte[] {(byte)0x01, (byte)0x23, (byte)0x45, (byte)0x67, (byte)0x89, (byte)0xAB, (byte)0xCD, (byte)0xEF},
+							 null));
 
 		byte[] correctData = new byte[] {(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x64, //Sequence number (100)
 										 (byte)0x00,
@@ -395,7 +396,8 @@ public class NPFPacketTest {
 		p.addAck(1005559, MAX_PACKET_SIZE);
 
 		p.addMessageFragment(new MessageFragment(true, false, true, 0, 8, 8, 0,
-							 new byte[] {(byte)0x01, (byte)0x23, (byte)0x45, (byte)0x67, (byte)0x89, (byte)0xAB, (byte)0xCD, (byte)0xEF}, null));
+							 new byte[] {(byte)0x01, (byte)0x23, (byte)0x45, (byte)0x67, (byte)0x89, (byte)0xAB, (byte)0xCD, (byte)0xEF},
+							 null));
 		p.addMessageFragment(new MessageFragment(false, true, false, 4095, 14, 1024, 256, new byte[] {
 								 (byte)0xfd, (byte)0x47, (byte)0xc2, (byte)0x30,
 								 (byte)0x41, (byte)0x53, (byte)0x57, (byte)0x56,

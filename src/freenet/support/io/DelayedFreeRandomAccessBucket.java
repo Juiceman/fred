@@ -21,7 +21,8 @@ import freenet.support.api.Bucket;
 import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
 
-public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, RandomAccessBucket, DelayedFree {
+public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, RandomAccessBucket,
+	DelayedFree {
 
 	private static final long serialVersionUID = 1L;
 	// Only set on construction and on onResume() on startup. So shouldn't need locking.
@@ -49,13 +50,17 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 		this.factory = factory;
 		this.bucket = bucket;
 		this.createdCommitID = factory.commitID();
-		if(bucket == null) throw new NullPointerException();
+		if(bucket == null) {
+			throw new NullPointerException();
+		}
 	}
 
 	@Override
 	public OutputStream getOutputStream() throws IOException {
 		synchronized(this) {
-			if(freed) throw new IOException("Already freed");
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getOutputStream();
 	}
@@ -63,7 +68,9 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 	@Override
 	public OutputStream getOutputStreamUnbuffered() throws IOException {
 		synchronized(this) {
-			if(freed) throw new IOException("Already freed");
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getOutputStreamUnbuffered();
 	}
@@ -71,7 +78,9 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 	@Override
 	public InputStream getInputStream() throws IOException {
 		synchronized(this) {
-			if(freed) throw new IOException("Already freed");
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getInputStream();
 	}
@@ -79,7 +88,9 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 	@Override
 	public InputStream getInputStreamUnbuffered() throws IOException {
 		synchronized(this) {
-			if(freed) throw new IOException("Already freed");
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getInputStreamUnbuffered();
 	}
@@ -105,18 +116,23 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 	}
 
 	public synchronized Bucket getUnderlying() {
-		if(freed) return null;
+		if(freed) {
+			return null;
+		}
 		return bucket;
 	}
 
 	@Override
 	public void free() {
 		synchronized(this) {
-			if(freed) return;
+			if(freed) {
+				return;
+			}
 			freed = true;
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Freeing "+this+" underlying="+bucket, new Exception("debug"));
+		}
 		this.factory.delayedFree(this, createdCommitID);
 	}
 
@@ -155,14 +171,18 @@ public class DelayedFreeRandomAccessBucket implements Bucket, Serializable, Rand
 											PersistentFileTracker persistentFileTracker, MasterSecret masterKey)
 	throws StorageFormatException, IOException, ResumeFailedException {
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		bucket = (RandomAccessBucket) BucketTools.restoreFrom(dis, fg, persistentFileTracker, masterKey);
 	}
 
 	@Override
 	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
 		synchronized(this) {
-			if(freed) throw new IOException("Already freed");
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		setReadOnly();
 		return new DelayedFreeRandomAccessBuffer(bucket.toRandomAccessBuffer(), factory);

@@ -22,14 +22,16 @@ public class HealingDecisionSupplier {
 	private final Supplier<Boolean> isOpennetEnabled;
 	private final Supplier<Double> randomNumberSupplier;
 
-	public HealingDecisionSupplier(Supplier<Double> currentNodeLocation, Supplier<Boolean> isOpennetEnabled) {
+	public HealingDecisionSupplier(Supplier<Double> currentNodeLocation,
+								   Supplier<Boolean> isOpennetEnabled) {
 
 		this.currentNodeLocation = currentNodeLocation;
 		this.isOpennetEnabled = isOpennetEnabled;
 		randomNumberSupplier = NodeStarter.getGlobalSecureRandom()::nextDouble;
 	}
 
-	HealingDecisionSupplier(Supplier<Double> currentNodeLocation, Supplier<Boolean> isOpennetEnabled, Supplier<Double> randomNumberSupplier) {
+	HealingDecisionSupplier(Supplier<Double> currentNodeLocation, Supplier<Boolean> isOpennetEnabled,
+							Supplier<Double> randomNumberSupplier) {
 
 		this.currentNodeLocation = currentNodeLocation;
 		this.isOpennetEnabled = isOpennetEnabled;

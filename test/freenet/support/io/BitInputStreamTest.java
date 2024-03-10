@@ -53,7 +53,8 @@ public class BitInputStreamTest {
 			5, 4, 3,
 			9, 8, 7, 6
 		};
-		try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(ba), ByteOrder.LITTLE_ENDIAN)) {
+		try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(ba),
+					ByteOrder.LITTLE_ENDIAN)) {
 			assertEquals(5, in.readInt(8));
 			assertEquals(258, in.readInt(16));
 			assertEquals(197637, in.readInt(24));
@@ -63,9 +64,10 @@ public class BitInputStreamTest {
 
 	@Test
 	public void unalignedBytesTest() throws IOException {
-		String bitData = "0101 00001 00001 00010 00011 00101 01000 01101 10101" // 5: 1, 1, 2, 3, 5, 8, 13, 21
-						 + "0011 000 001 010 011 100 101 110" // 3: 0, 1, 2, 3, 4, 5, 6
-						 + "101 11 111 1110 00100 00"; // 5, 3, 7, 14, 4, plus two additional bits for align data
+		String bitData =
+			"0101 00001 00001 00010 00011 00101 01000 01101 10101" // 5: 1, 1, 2, 3, 5, 8, 13, 21
+			+ "0011 000 001 010 011 100 101 110" // 3: 0, 1, 2, 3, 4, 5, 6
+			+ "101 11 111 1110 00100 00"; // 5, 3, 7, 14, 4, plus two additional bits for align data
 		BigInteger bi = new BigInteger(bitData.replaceAll(" ", ""), 2);
 		System.out.println("0x" + bi.toString(16) + " = 0b" + bi.toString(2));
 		byte[] byteData = bi.toByteArray();

@@ -40,7 +40,9 @@ public class AllowedHosts {
 	 *            The new list of allowed hosts s
 	 */
 	public void setAllowedHosts(String allowedHosts) {
-		if(allowedHosts == null || allowedHosts.isEmpty()) allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
+		if(allowedHosts == null || allowedHosts.isEmpty()) {
+			allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
+		}
 		StringTokenizer allowedHostsTokens = new StringTokenizer(allowedHosts, ",");
 		List<AddressMatcher> newAddressMatchers = new ArrayList<AddressMatcher>();
 		while (allowedHostsTokens.hasMoreTokens()) {
@@ -73,7 +75,9 @@ public class AllowedHosts {
 
 	public synchronized boolean allowed(AddressType clientAddressType, InetAddress clientAddress) {
 		for(AddressMatcher matcher: addressMatchers) {
-			if(matcher.matches(clientAddress)) return true;
+			if(matcher.matches(clientAddress)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -82,8 +86,12 @@ public class AllowedHosts {
 		StringBuilder sb = new StringBuilder();
 		for(int i=0; i<addressMatchers.size(); i++) {
 			AddressMatcher matcher = addressMatchers.get(i);
-			if(matcher instanceof EverythingMatcher) return "*";
-			if(i != 0) sb.append(',');
+			if(matcher instanceof EverythingMatcher) {
+				return "*";
+			}
+			if(i != 0) {
+				sb.append(',');
+			}
 			sb.append(matcher.getHumanRepresentation());
 		}
 		return sb.toString();

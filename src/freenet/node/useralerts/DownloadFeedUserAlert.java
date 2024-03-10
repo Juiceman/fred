@@ -42,8 +42,9 @@ public class DownloadFeedUserAlert extends AbstractUserAlert {
 	public String getText() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(l10n("fileURI")).append(" ").append(uri).append("\n");
-		if(description != null && description.length() != 0)
+		if(description != null && description.length() != 0) {
 			sb.append(l10n("fileDescription")).append(" ").append(description);
+		}
 		return sb.toString();
 	}
 
@@ -64,8 +65,9 @@ public class DownloadFeedUserAlert extends AbstractUserAlert {
 			alertNode.addChild("br");
 			for (int i = 0; i < lines.length; i++) {
 				alertNode.addChild("#", lines[i]);
-				if (i != lines.length - 1)
+				if (i != lines.length - 1) {
 					alertNode.addChild("br");
+				}
 			}
 		}
 		return alertNode;
@@ -87,21 +89,24 @@ public class DownloadFeedUserAlert extends AbstractUserAlert {
 	@Override
 	public void onDismiss() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if(pn != null)
+		if(pn != null) {
 			pn.deleteExtraPeerDataFile(fileNumber);
+		}
 	}
 
 	@Override
 	public FCPMessage getFCPMessage() {
-		return new URIFeedMessage(getTitle(), getShortText(), getText(), getPriorityClass(), getUpdatedTime(),
+		return new URIFeedMessage(getTitle(), getShortText(), getText(), getPriorityClass(),
+								  getUpdatedTime(),
 								  sourceNodeName, composed, sent, received, uri, description);
 	}
 
 	@Override
 	public boolean isValid() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if(pn != null)
+		if(pn != null) {
 			sourceNodeName = pn.getName();
+		}
 		return true;
 	}
 }

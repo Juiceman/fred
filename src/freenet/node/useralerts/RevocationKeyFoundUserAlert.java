@@ -20,10 +20,12 @@ public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
 		HTMLNode div = new HTMLNode("div");
 		if(disabledNotBlown) {
 			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabled"));
-			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabledDetail", "message", msg));
+			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDisabledDetail",
+						 "message", msg));
 		} else {
 			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.text"));
-			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDetail", "message", msg));
+			div.addChild("p", NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.textDetail", "message",
+						 msg));
 		}
 		return div;
 	}
@@ -39,10 +41,11 @@ public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
 	}
 
 	private static String getTitle(boolean disabledNotBlown) {
-		if(disabledNotBlown)
+		if(disabledNotBlown) {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.titleDisabled");
-		else
+		} else {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.title");
+		}
 	}
 
 	@Override

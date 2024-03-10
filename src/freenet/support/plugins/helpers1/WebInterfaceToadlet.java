@@ -69,8 +69,9 @@ public abstract class WebInterfaceToadlet extends Toadlet implements LinkEnabled
 	 */
 	protected boolean isFormPassword(HTTPRequest req) {
 		String passwd = req.getParam("formPassword", null);
-		if (passwd == null)
+		if (passwd == null) {
 			passwd = req.getPartAsStringFailsafe("formPassword", 32);
+		}
 		return (passwd != null) && passwd.equals(pluginContext.clientCore.formPassword);
 	}
 
@@ -78,7 +79,8 @@ public abstract class WebInterfaceToadlet extends Toadlet implements LinkEnabled
 		return createErrorBox(errors, null, null, null);
 	}
 
-	public HTMLNode createErrorBox(List<String> errors, String path, FreenetURI retryUri, String extraParams) {
+	public HTMLNode createErrorBox(List<String> errors, String path, FreenetURI retryUri,
+								   String extraParams) {
 		InfoboxNode box = pluginContext.pageMaker.getInfobox("infobox-alert", "ERROR");
 		HTMLNode errorBox = box.content;
 		for (String error : errors) {

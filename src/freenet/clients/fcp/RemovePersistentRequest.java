@@ -25,8 +25,10 @@ public class RemovePersistentRequest extends FCPMessage {
 	public RemovePersistentRequest(SimpleFieldSet fs) throws MessageInvalidException {
 		this.global = fs.getBoolean("Global", false);
 		this.identifier = fs.get("Identifier");
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must have Identifier", null, global);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must have Identifier", null,
+											  global);
+		}
 	}
 
 	@Override
@@ -70,7 +72,8 @@ public class RemovePersistentRequest extends FCPMessage {
 
 				}, NativeThread.HIGH_PRIORITY);
 			} catch (PersistenceDisabledException e) {
-				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence disabled and non-persistent request not found", identifier, global);
+				FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false,
+						"Persistence disabled and non-persistent request not found", identifier, global);
 				handler.send(err);
 			}
 		}

@@ -139,10 +139,12 @@ public class SimpleFieldSetTest {
 		boolean retValue = true;
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		//putting values
-		for (int i = 0; i < aPairsArray.length; i++)
+		for (int i = 0; i < aPairsArray.length; i++) {
 			methodSFS.putSingle(aPairsArray[i][0], aPairsArray[i][1]);
-		for (int i = 0; i < aPairsArray.length; i++)		//getting values
+		}
+		for (int i = 0; i < aPairsArray.length; i++) {	//getting values
 			retValue &= methodSFS.get(aPairsArray[i][0]).equals(aPairsArray[i][1]);
+		}
 		retValue &= checkSimpleFieldSetSize(methodSFS, aPairsArray.length);
 		return retValue;
 	}
@@ -278,10 +280,12 @@ public class SimpleFieldSetTest {
 	public void testPut_StringBoolean() {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		int length = 15;
-		for(int i = 0; i < length; i++)
+		for(int i = 0; i < length; i++) {
 			methodSFS.put(Integer.toString(i),true);
-		for (int i = 0; i < length; i++)
+		}
+		for (int i = 0; i < length; i++) {
 			assertEquals(methodSFS.getBoolean(Integer.toString(i),false),true);
+		}
 		assertTrue(checkSimpleFieldSetSize(methodSFS,length));
 	}
 
@@ -317,8 +321,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		int[][] methodPairsArray =
 		{ {1,1},{2,2},{3,3},{4,4} };
-		for (int i = 0; i < methodPairsArray.length; i++)
+		for (int i = 0; i < methodPairsArray.length; i++) {
 			methodSFS.put(Integer.toString(methodPairsArray[i][0]), methodPairsArray[i][1]);
+		}
 
 		assertTrue(checkSimpleFieldSetSize(methodSFS,methodPairsArray.length));
 
@@ -348,8 +353,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		long[][] methodPairsArray =
 		{ {1,1},{2,2},{3,3},{4,4} };
-		for (int i = 0; i < methodPairsArray.length; i++)
+		for (int i = 0; i < methodPairsArray.length; i++) {
 			methodSFS.put(Long.toString(methodPairsArray[i][0]), methodPairsArray[i][1]);
+		}
 
 		assertTrue(checkSimpleFieldSetSize(methodSFS,methodPairsArray.length));
 
@@ -379,8 +385,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		char[][] methodPairsArray =
 		{ {'1','1'},{'2','2'},{'3','3'},{'4','4'} };
-		for (int i = 0; i < methodPairsArray.length; i++)
+		for (int i = 0; i < methodPairsArray.length; i++) {
 			methodSFS.put(String.valueOf(methodPairsArray[i][0]), methodPairsArray[i][1]);
+		}
 
 		assertTrue(checkSimpleFieldSetSize(methodSFS,methodPairsArray.length));
 
@@ -410,8 +417,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		short[][] methodPairsArray =
 		{ {1,1},{2,2},{3,3},{4,4} };
-		for (int i = 0; i < methodPairsArray.length; i++)
+		for (int i = 0; i < methodPairsArray.length; i++) {
 			methodSFS.put(Short.toString(methodPairsArray[i][0]), methodPairsArray[i][1]);
+		}
 
 		assertTrue(checkSimpleFieldSetSize(methodSFS,methodPairsArray.length));
 
@@ -441,8 +449,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		double[][] methodPairsArray =
 		{ {1,1},{2,2},{3,3},{4,4} };
-		for (int i = 0; i < methodPairsArray.length; i++)
+		for (int i = 0; i < methodPairsArray.length; i++) {
 			methodSFS.put(Double.toString(methodPairsArray[i][0]), methodPairsArray[i][1]);
+		}
 
 		assertTrue(checkSimpleFieldSetSize(methodSFS,methodPairsArray.length));
 
@@ -471,8 +480,10 @@ public class SimpleFieldSetTest {
 	private String sfsReadyString(String[][] aStringPairsArray) {
 
 		StringBuilder methodStringToReturn = new StringBuilder();
-		for(int i = 0; i < aStringPairsArray.length; i++)
-			methodStringToReturn.append(aStringPairsArray[i][0]).append(KEY_VALUE_SEPARATOR).append(aStringPairsArray[i][1]).append('\n');
+		for(int i = 0; i < aStringPairsArray.length; i++) {
+			methodStringToReturn.append(aStringPairsArray[i][0]).append(KEY_VALUE_SEPARATOR).append(
+				aStringPairsArray[i][1]).append('\n');
+		}
 		methodStringToReturn.append(SAMPLE_END_MARKER);
 		return methodStringToReturn.toString();
 	}
@@ -581,8 +592,9 @@ public class SimpleFieldSetTest {
 		SimpleFieldSet methodSFS = sfsFromSampleStringPairs();
 		String expectedSubset = SAMPLE_STRING_PAIRS[0][0];	//"foo"
 		Iterator<String> methodIter = methodSFS.directSubsetNameIterator();
-		while (methodIter.hasNext())
+		while (methodIter.hasNext()) {
 			assertEquals(methodIter.next(), expectedSubset);
+		}
 		methodSFS = new SimpleFieldSet(true);
 		methodIter = methodSFS.directSubsetNameIterator();
 		assertNull(methodIter);
@@ -610,8 +622,9 @@ public class SimpleFieldSetTest {
 		String[] methodValues = {"boo","bar","zoo"};
 		String expectedResult = "zoo";
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
-		for (int i = 0 ; i < methodValues.length; i++)
+		for (int i = 0 ; i < methodValues.length; i++) {
 			methodSFS.putOverwrite(methodKey,methodValues[i]);
+		}
 		assertEquals(methodSFS.get(methodKey),expectedResult);
 	}
 
@@ -638,8 +651,9 @@ public class SimpleFieldSetTest {
 								+"bar"+SimpleFieldSet.MULTI_VALUE_CHAR
 								+"zoo";
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
-		for (int i = 0 ; i < methodValues.length; i++)
+		for (int i = 0 ; i < methodValues.length; i++) {
 			methodSFS.putAppend(methodKey,methodValues[i]);
+		}
 		assertEquals(methodSFS.get(methodKey),expectedResult);
 	}
 
@@ -651,8 +665,9 @@ public class SimpleFieldSetTest {
 		String methodKey = "foo.bar";
 		String[] methodValues = {"boo","bar","zoo"};
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
-		for (int i = 0 ; i < methodValues.length; i++)
+		for (int i = 0 ; i < methodValues.length; i++) {
 			methodSFS.putAppend(methodKey,methodValues[i]);
+		}
 		assertTrue(Arrays.equals(methodSFS.getAll(methodKey),methodValues));
 	}
 
@@ -663,11 +678,13 @@ public class SimpleFieldSetTest {
 	public void testGetIntArray() {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		String keyPrefix = "foo";
-		for (int i = 0; i<15; i++)
+		for (int i = 0; i<15; i++) {
 			methodSFS.putAppend(keyPrefix,String.valueOf(i));
+		}
 		int[] result = methodSFS.getIntArray(keyPrefix);
-		for (int i = 0; i<15; i++)
+		for (int i = 0; i<15; i++) {
 			assertTrue(result[i]==i);
+		}
 
 	}
 
@@ -678,11 +695,13 @@ public class SimpleFieldSetTest {
 	public void testGetDoubleArray() {
 		SimpleFieldSet methodSFS = new SimpleFieldSet(true);
 		String keyPrefix = "foo";
-		for (int i = 0; i<15; i++)
+		for (int i = 0; i<15; i++) {
 			methodSFS.putAppend(keyPrefix,String.valueOf((double)i));
+		}
 		double[] result = methodSFS.getDoubleArray(keyPrefix);
-		for (int i = 0; i<15; i++)
+		for (int i = 0; i<15; i++) {
 			assertTrue(result[i]== (i));
+		}
 
 	}
 
@@ -706,8 +725,9 @@ public class SimpleFieldSetTest {
 	public void testRemoveSubset() {
 		SimpleFieldSet methodSFS = sfsFromSampleStringPairs();
 		methodSFS.removeSubset("foo");
-		for(int i = 1; i< 4; i++)
+		for(int i = 1; i< 4; i++) {
 			assertNull(methodSFS.get(SAMPLE_STRING_PAIRS[i][0]));
+		}
 		assertEquals(methodSFS.get(SAMPLE_STRING_PAIRS[0][0]),
 					 SAMPLE_STRING_PAIRS[0][1]);
 		for(int i = 4; i< 6; i++)
@@ -725,8 +745,9 @@ public class SimpleFieldSetTest {
 	 */
 	private boolean isAKey(String[][] aStringPairsArray, String aPrefix, String aKey) {
 		for (int i=0; i<aStringPairsArray.length; i++)
-			if (aKey.equals(aPrefix+aStringPairsArray[i][0]))
+			if (aKey.equals(aPrefix+aStringPairsArray[i][0])) {
 				return true;
+			}
 		return false;
 	}
 
@@ -741,7 +762,8 @@ public class SimpleFieldSetTest {
 	 * @param aIterator
 	 * @return true if they have the same key set
 	 */
-	private boolean areAllContainedKeys(String[][] aStringPairsArray, String aPrefix, Iterator<String> aIterator) {
+	private boolean areAllContainedKeys(String[][] aStringPairsArray, String aPrefix,
+										Iterator<String> aIterator) {
 		boolean retValue = true;
 		int actualLength = 0;
 		while (aIterator.hasNext()) {

@@ -54,7 +54,9 @@ public class JVMVersion {
 	}
 
 	static boolean isEOL(String version) {
-		if (version == null) return false;
+		if (version == null) {
+			return false;
+		}
 
 		return compareVersion(version, EOL_THRESHOLD) < 0;
 	}

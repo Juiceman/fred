@@ -43,13 +43,15 @@ public class ImageCreatorToadlet extends Toadlet {
 		super(client);
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
+	public void handleMethodGET(URI uri, HTTPRequest req,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
 		boolean needsGeneration = true;
 		// If the browser has requested this image, then it will send this header
 		if (ctx.getHeaders().containsKey("if-modified-since")) {
 			try {
 				// If the received date is equal to the last modification of this class, then it doesn't need regeneration
-				if (ToadletContextImpl.parseHTTPDate(ctx.getHeaders().get("if-modified-since")).compareTo(LAST_MODIFIED) == 0) {
+				if (ToadletContextImpl.parseHTTPDate(ctx.getHeaders().get("if-modified-since")).compareTo(
+							LAST_MODIFIED) == 0) {
 					// So we just send the NOT_MODIFIED response, and skip the generation
 					ctx.sendReplyHeadersStatic(304, "Not Modified", null, "image/png", 0, LAST_MODIFIED);
 					needsGeneration = false;
@@ -62,8 +64,12 @@ public class ImageCreatorToadlet extends Toadlet {
 			// The text that will be drawn
 			String text = req.getParam("text");
 			// If width or height is specified, we use it, if not, then we use the default
-			int requiredWidth = req.getParam("width").compareTo("") != 0 ? Integer.parseInt(req.getParam("width").endsWith("px")?req.getParam("width").substring(0, req.getParam("width").length()-2):req.getParam("width")) : DEFAULT_WIDTH;
-			int requiredHeight = req.getParam("height").compareTo("") != 0 ? Integer.parseInt(req.getParam("height").endsWith("px")?req.getParam("height").substring(0, req.getParam("height").length()-2):req.getParam("height")) : DEFAULT_HEIGHT;
+			int requiredWidth = req.getParam("width").compareTo("") != 0 ? Integer.parseInt(
+									req.getParam("width").endsWith("px")?req.getParam("width").substring(0,
+											req.getParam("width").length()-2):req.getParam("width")) : DEFAULT_WIDTH;
+			int requiredHeight = req.getParam("height").compareTo("") != 0 ? Integer.parseInt(
+									 req.getParam("height").endsWith("px")?req.getParam("height").substring(0,
+											 req.getParam("height").length()-2):req.getParam("height")) : DEFAULT_HEIGHT;
 			// Validate image size
 			if (requiredWidth <= 0 || requiredHeight <= 0) {
 				writeHTMLReply(ctx, 400, "Bad request", "Illegal argument");
@@ -84,7 +90,8 @@ public class ImageCreatorToadlet extends Toadlet {
 			g2.fillRect(0, 0, requiredWidth, requiredHeight);
 			g2.setColor(new Color(255, 255, 255));
 			// We position it to the center. Note that this is not the upper left corner
-			g2.drawString(text, (int) (requiredWidth / 2 - bounds.getWidth() / 2), (int) (requiredHeight / 2 + bounds.getHeight() / 4));
+			g2.drawString(text, (int) (requiredWidth / 2 - bounds.getWidth() / 2),
+						  (int) (requiredHeight / 2 + bounds.getHeight() / 4));
 
 			// Write the data, and send the modification data to let the client cache it
 			Bucket data = ctx.getBucketFactory().makeBucket(-1);

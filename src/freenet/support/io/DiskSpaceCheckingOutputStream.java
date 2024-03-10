@@ -7,7 +7,8 @@ import java.io.OutputStream;
 
 public class DiskSpaceCheckingOutputStream extends FilterOutputStream {
 
-	public DiskSpaceCheckingOutputStream(OutputStream out, DiskSpaceChecker checker, File file, int bufferSize) {
+	public DiskSpaceCheckingOutputStream(OutputStream out, DiskSpaceChecker checker, File file,
+										 int bufferSize) {
 		super(out);
 		this.checker = checker;
 		this.file = file;
@@ -33,8 +34,9 @@ public class DiskSpaceCheckingOutputStream extends FilterOutputStream {
 	@Override
 	public synchronized void write(byte[] buf, int offset, int length) throws IOException {
 		if(written + length - lastChecked >= bufferSize) {
-			if(!checker.checkDiskSpace(file, length, bufferSize))
+			if(!checker.checkDiskSpace(file, length, bufferSize)) {
 				throw new InsufficientDiskSpaceException();
+			}
 			lastChecked = written;
 		}
 		out.write(buf, offset, length);

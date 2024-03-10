@@ -123,18 +123,22 @@ public class ClientGetter extends BaseClientGetter
 	}
 
 	public ClientGetter(ClientGetCallback client,
-						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket, BinaryBlobWriter binaryBlobWriter) {
+						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket,
+						BinaryBlobWriter binaryBlobWriter) {
 		this(client, uri, ctx, priorityClass, returnBucket, binaryBlobWriter, null);
 	}
 
 	public ClientGetter(ClientGetCallback client,
-						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket, BinaryBlobWriter binaryBlobWriter, Bucket initialMetadata) {
+						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket,
+						BinaryBlobWriter binaryBlobWriter, Bucket initialMetadata) {
 		this(client, uri, ctx, priorityClass, returnBucket, binaryBlobWriter, false, initialMetadata);
 	}
 
 	public ClientGetter(ClientGetCallback client,
-						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket, BinaryBlobWriter binaryBlobWriter, boolean dontFinalizeBlobWriter, Bucket initialMetadata) {
-		this(client, uri, ctx, priorityClass, returnBucket, binaryBlobWriter, dontFinalizeBlobWriter, initialMetadata, null);
+						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket,
+						BinaryBlobWriter binaryBlobWriter, boolean dontFinalizeBlobWriter, Bucket initialMetadata) {
+		this(client, uri, ctx, priorityClass, returnBucket, binaryBlobWriter, dontFinalizeBlobWriter,
+			 initialMetadata, null);
 	}
 
 	/**
@@ -153,7 +157,9 @@ public class ClientGetter extends BaseClientGetter
 	 * @param dontFinalizeBlobWriter If true, the caller is responsible for BlobWriter finalization
 	 */
 	public ClientGetter(ClientGetCallback client,
-						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket, BinaryBlobWriter binaryBlobWriter, boolean dontFinalizeBlobWriter, Bucket initialMetadata, String forceCompatibleExtension) {
+						FreenetURI uri, FetchContext ctx, short priorityClass, Bucket returnBucket,
+						BinaryBlobWriter binaryBlobWriter, boolean dontFinalizeBlobWriter, Bucket initialMetadata,
+						String forceCompatibleExtension) {
 		super(priorityClass, client.getRequestClient());
 		this.clientCallback = client;
 		this.returnBucket = returnBucket;
@@ -193,9 +199,11 @@ public class ClientGetter extends BaseClientGetter
 	 * @return True if we restarted, false if we didn't (but only in a few cases).
 	 * @throws FetchException If we were unable to restart.
 	 */
-	public boolean start(boolean restart, FreenetURI overrideURI, ClientContext context) throws FetchException {
-		if(logMINOR)
+	public boolean start(boolean restart, FreenetURI overrideURI,
+						 ClientContext context) throws FetchException {
+		if(logMINOR) {
 			Logger.minor(this, "Starting "+this+" persistent="+persistent()+" for "+uri);
+		}
 		try {
 			// FIXME synchronization is probably unnecessary.
 			// But we DEFINITELY do not want to synchronize while calling currentState.schedule(),
@@ -203,11 +211,16 @@ public class ClientGetter extends BaseClientGetter
 			HashResult[] oldHashes = null;
 			String overrideMIME = ctx.overrideMIME;
 			synchronized(this) {
-				if(restart)
+				if(restart) {
 					clearCountersOnRestart();
-				if(overrideURI != null) uri = overrideURI;
+				}
+				if(overrideURI != null) {
+					uri = overrideURI;
+				}
 				if(finished) {
-					if(!restart) return false;
+					if(!restart) {
+						return false;
+					}
 					currentState = null;
 					cancelled = false;
 					finished = false;
@@ -225,18 +238,24 @@ public class ClientGetter extends BaseClientGetter
 															uri, ctx, actx, ctx.maxNonSplitfileRetries, 0, false, -1, true,
 															true, context, realTimeFlag, initialMetadata != null);
 				}
-				if(overrideMIME != null)
+				if(overrideMIME != null) {
 					expectedMIME = overrideMIME;
+				}
 			}
-			if(cancelled) cancel();
+			if(cancelled) {
+				cancel();
+			}
 			// schedule() may deactivate stuff, so store it now.
 			if(currentState != null && !finished) {
 				if(initialMetadata != null && currentState instanceof SingleFileFetcher && !resumedFetcher) {
 					((SingleFileFetcher)currentState).startWithMetadata(initialMetadata, context);
-				} else
+				} else {
 					currentState.schedule(context);
+				}
 			}
-			if(cancelled) cancel();
+			if(cancelled) {
+				cancel();
+			}
 		} catch (MalformedURLException e) {
 			throw new FetchException(FetchExceptionMode.INVALID_URI, e);
 		}
@@ -258,25 +277,32 @@ public class ClientGetter extends BaseClientGetter
 	 * @param state The ClientGetState which retrieved the data.
 	 */
 	@Override
-	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
-		if(logMINOR)
+	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata,
+						  List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
+		if(logMINOR) {
 			Logger.minor(this, "Succeeded from "+state+" on "+this);
+		}
 		// Fetching the container is essentially a full success, we should update the latest known good.
 		context.uskManager.checkUSK(uri, persistent(), false);
 		try {
-			if (binaryBlobWriter != null && !dontFinalizeBlobWriter) binaryBlobWriter.finalizeBucket();
+			if (binaryBlobWriter != null && !dontFinalizeBlobWriter) {
+				binaryBlobWriter.finalizeBucket();
+			}
 		} catch (IOException ioe) {
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream: "+ioe), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to close binary blob stream: "+ioe), null, context);
 			return;
 		} catch (BinaryBlobAlreadyClosedException e) {
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream, already closed: "+e, e), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to close binary blob stream, already closed: "+e, e), null, context);
 			return;
 		}
 		String mimeType = clientMetadata == null ? null : clientMetadata.getMIMEType();
 
 		if(forceCompatibleExtension != null && ctx.filterData) {
 			if(mimeType == null) {
-				onFailure(new FetchException(FetchExceptionMode.MIME_INCOMPATIBLE_WITH_EXTENSION, "No MIME type but need specific extension \""+forceCompatibleExtension+"\""), null, context);
+				onFailure(new FetchException(FetchExceptionMode.MIME_INCOMPATIBLE_WITH_EXTENSION,
+											 "No MIME type but need specific extension \""+forceCompatibleExtension+"\""), null, context);
 				return;
 			}
 			try {
@@ -323,22 +349,33 @@ public class ClientGetter extends BaseClientGetter
 
 		FetchException ex = null; // set on failure
 		try {
-			if(returnBucket == null) finalResult = context.getBucketFactory(persistent()).makeBucket(maxLen);
-			else finalResult = returnBucket;
-			if(logMINOR) Logger.minor(this, "Writing final data to "+finalResult+" return bucket is "+returnBucket);
+			if(returnBucket == null) {
+				finalResult = context.getBucketFactory(persistent()).makeBucket(maxLen);
+			} else {
+				finalResult = returnBucket;
+			}
+			if(logMINOR) {
+				Logger.minor(this, "Writing final data to "+finalResult+" return bucket is "+returnBucket);
+			}
 			dataOutput .connect(dataInput);
 			result = new FetchResult(clientMetadata, finalResult);
 
 			// Decompress
 			if(decompressors != null) {
-				if(logMINOR) Logger.minor(this, "Decompressing...");
+				if(logMINOR) {
+					Logger.minor(this, "Decompressing...");
+				}
 				decompressorManager =  new DecompressorThreadManager(dataInput, decompressors, maxLen);
 				dataInput = decompressorManager.execute();
 			}
 
 			output = finalResult.getOutputStream();
-			if(ctx.overrideMIME != null) mimeType = ctx.overrideMIME;
-			worker = new ClientGetWorkerThread(new BufferedInputStream(dataInput), output, uri, mimeType, ctx.getSchemeHostAndPort(), hashes, ctx.filterData, ctx.charset, ctx.prefetchHook, ctx.tagReplacer, context.linkFilterExceptionProvider);
+			if(ctx.overrideMIME != null) {
+				mimeType = ctx.overrideMIME;
+			}
+			worker = new ClientGetWorkerThread(new BufferedInputStream(dataInput), output, uri, mimeType,
+											   ctx.getSchemeHostAndPort(), hashes, ctx.filterData, ctx.charset, ctx.prefetchHook, ctx.tagReplacer,
+											   context.linkFilterExceptionProvider);
 			worker.start();
 			try {
 				streamGenerator.writeTo(dataOutput, context);
@@ -351,11 +388,15 @@ public class ClientGetter extends BaseClientGetter
 
 			// An error will propagate backwards, so wait for the worker first.
 
-			if(logMINOR) Logger.minor(this, "Waiting for hashing, filtration, and writing to finish");
+			if(logMINOR) {
+				Logger.minor(this, "Waiting for hashing, filtration, and writing to finish");
+			}
 			worker.waitFinished();
 
 			if(decompressorManager != null) {
-				if(logMINOR) Logger.minor(this, "Waiting for decompression to finalize");
+				if(logMINOR) {
+					Logger.minor(this, "Waiting for decompression to finalize");
+				}
 				decompressorManager.waitFinished();
 			}
 
@@ -370,7 +411,8 @@ public class ClientGetter extends BaseClientGetter
 			}
 		} catch(UnsafeContentTypeException e) {
 			Logger.normal(this, "Error filtering content: will not validate", e);
-			ex = e.createFetchException(ctx.overrideMIME != null ? ctx.overrideMIME : expectedMIME, expectedSize);
+			ex = e.createFetchException(ctx.overrideMIME != null ? ctx.overrideMIME : expectedMIME,
+										expectedSize);
 			/*Not really the state's fault*/
 		} catch(URISyntaxException e) {
 			//Impossible
@@ -416,12 +458,16 @@ public class ClientGetter extends BaseClientGetter
 						  ClientGetState state, ClientContext context) {
 		context.uskManager.checkUSK(uri, persistent(), false);
 		try {
-			if (binaryBlobWriter != null && !dontFinalizeBlobWriter) binaryBlobWriter.finalizeBucket();
+			if (binaryBlobWriter != null && !dontFinalizeBlobWriter) {
+				binaryBlobWriter.finalizeBucket();
+			}
 		} catch (IOException ioe) {
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream: "+ioe), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to close binary blob stream: "+ioe), null, context);
 			return;
 		} catch (BinaryBlobAlreadyClosedException e) {
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream, already closed: "+e, e), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to close binary blob stream, already closed: "+e, e), null, context);
 			return;
 		}
 		File completionFile = getCompletionFile();
@@ -433,8 +479,9 @@ public class ClientGetter extends BaseClientGetter
 		FetchResult result = null;
 		try {
 			raf = new RandomAccessFile(tempFile, "rw");
-			if(raf.length() < length)
+			if(raf.length() < length) {
 				throw new IOException("File is shorter than target length "+length);
+			}
 			raf.setLength(length);
 			InputStream is = new BufferedInputStream(new FileInputStream(raf.getFD()));
 			// Check hashes...
@@ -442,10 +489,14 @@ public class ClientGetter extends BaseClientGetter
 			DecompressorThreadManager decompressorManager = null;
 			ClientGetWorkerThread worker = null;
 
-			worker = new ClientGetWorkerThread(is, new NullOutputStream(), uri, null, ctx.getSchemeHostAndPort(), hashes, false, null, ctx.prefetchHook, ctx.tagReplacer, context.linkFilterExceptionProvider);
+			worker = new ClientGetWorkerThread(is, new NullOutputStream(), uri, null,
+											   ctx.getSchemeHostAndPort(), hashes, false, null, ctx.prefetchHook, ctx.tagReplacer,
+											   context.linkFilterExceptionProvider);
 			worker.start();
 
-			if(logMINOR) Logger.minor(this, "Waiting for hashing, filtration, and writing to finish");
+			if(logMINOR) {
+				Logger.minor(this, "Waiting for hashing, filtration, and writing to finish");
+			}
 			worker.waitFinished();
 
 			is.close();
@@ -454,8 +505,10 @@ public class ClientGetter extends BaseClientGetter
 
 			// We are still here so it worked.
 
-			if(!FileUtil.renameTo(tempFile, completionFile))
-				throw new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to rename from temp file "+tempFile);
+			if(!FileUtil.renameTo(tempFile, completionFile)) {
+				throw new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to rename from temp file "+tempFile);
+			}
 
 			// Success!
 
@@ -513,12 +566,15 @@ public class ClientGetter extends BaseClientGetter
 	 * @param force If true, finished may already have been set. This is usually
 	 * set when called from onSuccess after it has set finished = true.
 	 */
-	public void onFailure(FetchException e, ClientGetState state, ClientContext context, boolean force) {
-		if(logMINOR)
+	public void onFailure(FetchException e, ClientGetState state, ClientContext context,
+						  boolean force) {
+		if(logMINOR) {
 			Logger.minor(this, "Failed from "+state+" : "+e+" on "+this, e);
+		}
 		ClientGetState oldState = null;
-		if(expectedSize > 0 && (e.expectedSize <= 0 || finalBlocksTotal != 0))
+		if(expectedSize > 0 && (e.expectedSize <= 0 || finalBlocksTotal != 0)) {
 			e.expectedSize = expectedSize;
+		}
 
 		context.getJobRunner(persistent()).setCheckpointASAP();
 
@@ -527,8 +583,9 @@ public class ClientGetter extends BaseClientGetter
 			if(e.finalizedSize()) {
 				// Since the size is finalized, so must the MIME type be.
 				String mime = e.getExpectedMimeType();
-				if(ctx.overrideMIME != null)
+				if(ctx.overrideMIME != null) {
 					mime = ctx.overrideMIME;
+				}
 				if(mime != null && !mime.isEmpty()) {
 					// Even if it's the default, it is set because we have the final size.
 					UnsafeContentTypeException unsafe = ContentFilter.checkMIMEType(mime);
@@ -546,11 +603,12 @@ public class ClientGetter extends BaseClientGetter
 					archiveRestarts++;
 					ar = archiveRestarts;
 				}
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Archive restart on "+this+" ar="+ar);
-				if(ar > ctx.maxArchiveRestarts)
+				}
+				if(ar > ctx.maxArchiveRestarts) {
 					e = new FetchException(FetchExceptionMode.TOO_MANY_ARCHIVE_RESTARTS);
-				else {
+				} else {
 					try {
 						start(context);
 					} catch (FetchException e1) {
@@ -563,38 +621,51 @@ public class ClientGetter extends BaseClientGetter
 			boolean alreadyFinished = false;
 			synchronized(this) {
 				if(finished && !force) {
-					if(!cancelled)
+					if(!cancelled) {
 						Logger.error(this, "Already finished - not calling callbacks on "+this, new Exception("error"));
+					}
 					alreadyFinished = true;
 				}
 				finished = true;
 				oldState = currentState;
 				currentState = null;
 				String mime = e.getExpectedMimeType();
-				if(mime != null)
+				if(mime != null) {
 					this.expectedMIME = mime;
+				}
 			}
 			if(!alreadyFinished) {
 				try {
-					if (binaryBlobWriter != null && !dontFinalizeBlobWriter) binaryBlobWriter.finalizeBucket();
+					if (binaryBlobWriter != null && !dontFinalizeBlobWriter) {
+						binaryBlobWriter.finalizeBucket();
+					}
 				} catch (IOException ioe) {
 					// the request is already failed but fblob creation failed too
 					// the invalid fblob must be told, more important then an valid but incomplete fblob (ADNF for example)
-					if(e.mode != FetchExceptionMode.CANCELLED && !force)
-						e = new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream: "+ioe);
+					if(e.mode != FetchExceptionMode.CANCELLED && !force) {
+						e = new FetchException(FetchExceptionMode.BUCKET_ERROR,
+											   "Failed to close binary blob stream: "+ioe);
+					}
 				} catch (BinaryBlobAlreadyClosedException ee) {
-					if(e.mode != FetchExceptionMode.BUCKET_ERROR && e.mode != FetchExceptionMode.CANCELLED && !force)
-						e = new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to close binary blob stream, already closed: "+ee, ee);
+					if(e.mode != FetchExceptionMode.BUCKET_ERROR && e.mode != FetchExceptionMode.CANCELLED && !force) {
+						e = new FetchException(FetchExceptionMode.BUCKET_ERROR,
+											   "Failed to close binary blob stream, already closed: "+ee, ee);
+					}
 				}
 			}
-			if(e.errorCodes != null && e.errorCodes.isOneCodeOnly())
+			if(e.errorCodes != null && e.errorCodes.isOneCodeOnly()) {
 				e = new FetchException(e.errorCodes.getFirstCodeFetch());
-			if(e.mode == FetchExceptionMode.DATA_NOT_FOUND && super.successfulBlocks > 0)
+			}
+			if(e.mode == FetchExceptionMode.DATA_NOT_FOUND && super.successfulBlocks > 0) {
 				e = new FetchException(e, FetchExceptionMode.ALL_DATA_NOT_FOUND);
-			if(logMINOR) Logger.minor(this, "onFailure("+e+", "+state+") on "+this+" for "+uri, e);
+			}
+			if(logMINOR) {
+				Logger.minor(this, "onFailure("+e+", "+state+") on "+this+" for "+uri, e);
+			}
 			final FetchException e1 = e;
-			if(!alreadyFinished)
+			if(!alreadyFinished) {
 				clientCallback.onFailure(e1, ClientGetter.this);
+			}
 			return;
 		}
 	}
@@ -605,20 +676,28 @@ public class ClientGetter extends BaseClientGetter
 	 */
 	@Override
 	public void cancel(ClientContext context) {
-		if(logMINOR) Logger.minor(this, "Cancelling "+this, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Cancelling "+this, new Exception("debug"));
+		}
 		ClientGetState s;
 		synchronized(this) {
 			if(super.cancel()) {
-				if(logMINOR) Logger.minor(this, "Already cancelled "+this);
+				if(logMINOR) {
+					Logger.minor(this, "Already cancelled "+this);
+				}
 				return;
 			}
 			s = currentState;
 		}
 		if(s != null) {
-			if(logMINOR) Logger.minor(this, "Cancelling "+s+" for "+this+" instance "+super.toString());
+			if(logMINOR) {
+				Logger.minor(this, "Cancelling "+s+" for "+this+" instance "+super.toString());
+			}
 			s.cancel(context);
 		} else {
-			if(logMINOR) Logger.minor(this, "Nothing to cancel");
+			if(logMINOR) {
+				Logger.minor(this, "Nothing to cancel");
+			}
 		}
 	}
 
@@ -687,8 +766,9 @@ public class ClientGetter extends BaseClientGetter
 	 */
 	@Override
 	public void onBlockSetFinished(ClientGetState state, ClientContext context) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Set finished", new Exception("debug"));
+		}
 		blockSetFinalized(context);
 	}
 
@@ -703,14 +783,21 @@ public class ClientGetter extends BaseClientGetter
 		synchronized(this) {
 			if(currentState == oldState) {
 				currentState = newState;
-				if(logMINOR) Logger.minor(this, "Transition: "+oldState+" -> "+newState+" on "+this+" persistent = "+persistent()+" instance = "+super.toString(), new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Transition: "+oldState+" -> "+newState+" on "+this+" persistent = "+persistent()
+								 +" instance = "+super.toString(), new Exception("debug"));
+				}
 			} else {
-				if(logMINOR) Logger.minor(this, "Ignoring transition: "+oldState+" -> "+newState+" because current = "+currentState+" on "+this+" persistent = "+persistent(), new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Ignoring transition: "+oldState+" -> "+newState+" because current = "
+								 +currentState+" on "+this+" persistent = "+persistent(), new Exception("debug"));
+				}
 				return;
 			}
 		}
-		if(persistent())
+		if(persistent()) {
 			context.jobRunner.setCheckpointASAP();
+		}
 	}
 
 	/**
@@ -718,7 +805,9 @@ public class ClientGetter extends BaseClientGetter
 	 */
 	public boolean canRestart() {
 		if(currentState != null && !finished) {
-			if(logMINOR) Logger.minor(this, "Cannot restart because not finished for "+uri);
+			if(logMINOR) {
+				Logger.minor(this, "Cannot restart because not finished for "+uri);
+			}
 			return false;
 		}
 		return true;
@@ -733,7 +822,8 @@ public class ClientGetter extends BaseClientGetter
 	 * @return True if we successfully restarted, false if we can't restart.
 	 * @throws FetchException If something went wrong.
 	 */
-	public boolean restart(FreenetURI redirect, boolean filterData, ClientContext context) throws FetchException {
+	public boolean restart(FreenetURI redirect, boolean filterData,
+						   ClientContext context) throws FetchException {
 		ctx.filterData = filterData;
 		return start(true, redirect, context);
 	}
@@ -749,23 +839,31 @@ public class ClientGetter extends BaseClientGetter
 	 * Add a block to the binary blob.
 	 */
 	protected void addKeyToBinaryBlob(ClientKeyBlock block, ClientContext context) {
-		if(binaryBlobWriter == null) return;
+		if(binaryBlobWriter == null) {
+			return;
+		}
 		synchronized(this) {
 			if(finished) {
-				if(logMINOR) Logger.minor(this, "Add key to binary blob for "+this+" but already finished");
+				if(logMINOR) {
+					Logger.minor(this, "Add key to binary blob for "+this+" but already finished");
+				}
 				return;
 			}
 		}
-		if(logMINOR)
-			Logger.minor(this, "Adding key "+block.getClientKey().getURI()+" to "+this, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Adding key "+block.getClientKey().getURI()+" to "+this,
+						 new Exception("debug"));
+		}
 		try {
 			binaryBlobWriter.addKey(block, context);
 		} catch (IOException e) {
 			Logger.error(this, "Failed to write key to binary blob stream: "+e, e);
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to write key to binary blob stream: "+e), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to write key to binary blob stream: "+e), null, context);
 		} catch (BinaryBlobAlreadyClosedException e) {
 			Logger.error(this, "Failed to write key to binary blob stream (already closed??): "+e, e);
-			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Failed to write key to binary blob stream (already closed??): "+e), null, context);
+			onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Failed to write key to binary blob stream (already closed??): "+e), null, context);
 		}
 	}
 
@@ -777,14 +875,21 @@ public class ClientGetter extends BaseClientGetter
 	/** Called when we know the MIME type of the final data
 	 * @throws FetchException */
 	@Override
-	public void onExpectedMIME(ClientMetadata clientMetadata, ClientContext context) throws FetchException {
-		if(finalizedMetadata) return;
+	public void onExpectedMIME(ClientMetadata clientMetadata,
+							   ClientContext context) throws FetchException {
+		if(finalizedMetadata) {
+			return;
+		}
 		String mime = null;
-		if(!clientMetadata.isTrivial())
+		if(!clientMetadata.isTrivial()) {
 			mime = clientMetadata.getMIMEType();
-		if(ctx.overrideMIME != null)
+		}
+		if(ctx.overrideMIME != null) {
 			mime = ctx.overrideMIME;
-		if(mime == null || mime.isEmpty()) return;
+		}
+		if(mime == null || mime.isEmpty()) {
+			return;
+		}
 		synchronized(this) {
 			expectedMIME = mime;
 		}
@@ -793,8 +898,9 @@ public class ClientGetter extends BaseClientGetter
 			if(e != null) {
 				throw e.createFetchException(mime, expectedSize);
 			}
-			if(forceCompatibleExtension != null)
+			if(forceCompatibleExtension != null) {
 				checkCompatibleExtension(mime);
+			}
 		}
 		context.getJobRunner(persistent()).queueNormalOrDrop(new PersistentJob() {
 
@@ -815,16 +921,23 @@ public class ClientGetter extends BaseClientGetter
 		FilterMIMEType type = ContentFilter.getMIMEType(mimeType);
 		if(type == null)
 			// Not our problem, will be picked up elsewhere.
+		{
 			return;
-		if(!DefaultMIMETypes.isValidExt(mimeType, forceCompatibleExtension))
+		}
+		if(!DefaultMIMETypes.isValidExt(mimeType, forceCompatibleExtension)) {
 			throw new FetchException(FetchExceptionMode.MIME_INCOMPATIBLE_WITH_EXTENSION);
+		}
 	}
 
 	/** Called when we have some idea of the length of the final data */
 	@Override
 	public void onExpectedSize(final long size, ClientContext context) {
-		if(finalizedMetadata) return;
-		if(finalBlocksRequired != 0) return;
+		if(finalizedMetadata) {
+			return;
+		}
+		if(finalBlocksRequired != 0) {
+			return;
+		}
 		expectedSize = size;
 		context.getJobRunner(persistent()).queueNormalOrDrop(new PersistentJob() {
 
@@ -893,9 +1006,15 @@ public class ClientGetter extends BaseClientGetter
 	private int finalBlocksTotal;
 
 	@Override
-	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal, ClientContext context) {
-		if(finalBlocksRequired != 0 || finalBlocksTotal != 0) return;
-		if(logMINOR) Logger.minor(this, "New format metadata has top data: original size "+size+" (compressed "+compressed+") blocks "+blocksReq+" / "+blocksTotal);
+	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal,
+								  ClientContext context) {
+		if(finalBlocksRequired != 0 || finalBlocksTotal != 0) {
+			return;
+		}
+		if(logMINOR) {
+			Logger.minor(this, "New format metadata has top data: original size "+size+" (compressed "
+						 +compressed+") blocks "+blocksReq+" / "+blocksTotal);
+		}
 		onExpectedSize(size, context);
 		this.finalBlocksRequired = this.minSuccessBlocks + blocksReq;
 		this.finalBlocksTotal = this.totalBlocks + blocksTotal;
@@ -911,7 +1030,8 @@ public class ClientGetter extends BaseClientGetter
 
 			@Override
 			public boolean run(ClientContext context) {
-				ctx.eventProducer.produceEvent(new SplitfileCompatibilityModeEvent(min, max, customSplitfileKey, dontCompress, bottomLayer || definitiveAnyway), context);
+				ctx.eventProducer.produceEvent(new SplitfileCompatibilityModeEvent(min, max, customSplitfileKey,
+											   dontCompress, bottomLayer || definitiveAnyway), context);
 				return false;
 			}
 
@@ -922,14 +1042,17 @@ public class ClientGetter extends BaseClientGetter
 	public void onHashes(HashResult[] hashes, ClientContext context) {
 		synchronized(this) {
 			if(this.hashes != null) {
-				if(!HashResult.strictEquals(hashes, this.hashes))
+				if(!HashResult.strictEquals(hashes, this.hashes)) {
 					Logger.error(this, "Two sets of hashes?!");
+				}
 				return;
 			}
 			this.hashes = hashes;
 		}
 		HashResult[] clientHashes = hashes;
-		if(persistent()) clientHashes = HashResult.copy(hashes);
+		if(persistent()) {
+			clientHashes = HashResult.copy(hashes);
+		}
 		final HashResult[] h = clientHashes;
 		context.getJobRunner(persistent()).queueNormalOrDrop(new PersistentJob() {
 
@@ -945,7 +1068,9 @@ public class ClientGetter extends BaseClientGetter
 	@Override
 	public void enterCooldown(ClientGetState state, long wakeupTime, ClientContext context) {
 		synchronized(this) {
-			if(state != currentState) return;
+			if(state != currentState) {
+				return;
+			}
 		}
 		if(wakeupTime == Long.MAX_VALUE) {
 			// Ignore.
@@ -969,8 +1094,9 @@ public class ClientGetter extends BaseClientGetter
 	public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
 		if(clientCallback instanceof PersistentClientCallback) {
 			return getClientDetail((PersistentClientCallback)clientCallback, checker);
-		} else
+		} else {
 			return new byte[0];
+		}
 	}
 
 	/** Called for a persistent request after startup.
@@ -1006,7 +1132,8 @@ public class ClientGetter extends BaseClientGetter
 	 * @throws IOException
 	 */
 	public boolean writeTrivialProgress(DataOutputStream dos) throws IOException {
-		if(!(this.binaryBlobWriter == null && this.snoopBucket == null && this.snoopMeta == null && initialMetadata == null)) {
+		if(!(this.binaryBlobWriter == null && this.snoopBucket == null && this.snoopMeta == null
+				&& initialMetadata == null)) {
 			dos.writeBoolean(false);
 			return false;
 		}
@@ -1026,7 +1153,8 @@ public class ClientGetter extends BaseClientGetter
 		return ((SplitFileFetcher)state).writeTrivialProgress(dos);
 	}
 
-	public boolean resumeFromTrivialProgress(DataInputStream dis, ClientContext context) throws IOException {
+	public boolean resumeFromTrivialProgress(DataInputStream dis,
+			ClientContext context) throws IOException {
 		if(dis.readBoolean()) {
 			try {
 				currentState = new SplitFileFetcher(this, dis, context);
@@ -1042,7 +1170,9 @@ public class ClientGetter extends BaseClientGetter
 				Logger.error(this, "Failed to restore from splitfile, restarting: "+e, e);
 				return false;
 			}
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean resumedFetcher() {
@@ -1055,8 +1185,9 @@ public class ClientGetter extends BaseClientGetter
 		synchronized(this) {
 			state = currentState;
 		}
-		if(state != null)
+		if(state != null) {
 			state.onShutdown(context);
+		}
 	}
 
 	@Override
@@ -1068,8 +1199,12 @@ public class ClientGetter extends BaseClientGetter
 
 	@Override
 	public File getCompletionFile() {
-		if(returnBucket == null) return null;
-		if(!(returnBucket instanceof FileBucket)) return null;
+		if(returnBucket == null) {
+			return null;
+		}
+		if(!(returnBucket instanceof FileBucket)) {
+			return null;
+		}
 		// Just a plain FileBucket. Not a temporary, not delayed free, etc.
 		return ((FileBucket)returnBucket).getFile();
 	}

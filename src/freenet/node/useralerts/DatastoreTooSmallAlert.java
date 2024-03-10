@@ -71,7 +71,9 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.node) / (1024*1024*1024);
 		long minSize = availableSize / 5;
 		// Wizard never recommends sizes above 100 GiB, so claim a minimum of at most 50 GiB.
-		if (minSize > 50) minSize = 50;
+		if (minSize > 50) {
+			minSize = 50;
+		}
 
 		StringBuffer sb = new StringBuffer();
 		sb.append(l10n("description", "size", Long.toString(minSize)));
@@ -98,7 +100,9 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.node) / (1024*1024*1024);
 		long minSize = availableSize / 5;
 		// Wizard never recommends sizes above 100 GiB, so claim a minimum of at most 50 GiB.
-		if (minSize > 50) minSize = 50;
+		if (minSize > 50) {
+			minSize = 50;
+		}
 
 		HTMLNode alertNode = new HTMLNode("div");
 		alertNode.addChild("p", l10n("description", "size", Long.toString(minSize)));
@@ -135,7 +139,9 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.node) / (1024*1024*1024);
 		long minSize = availableSize / 10;
 		// Wizard never recommends sizes above 100 GiB, so never warn if above 25 GiB.
-		if (minSize > 25) minSize = 25;
+		if (minSize > 25) {
+			minSize = 25;
+		}
 
 		// Check if warning has already been dismissed on this Freenet version
 		int currentVersion = Version.buildNumber();

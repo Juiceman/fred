@@ -53,7 +53,8 @@ public class AEADStreamsTest {
 		checkSuccessfulRoundTripRandomSplits(32, random, input, new ArrayBucket(), new ArrayBucket());
 	}
 
-	public void checkSuccessfulRoundTrip(int keysize, Random random, Bucket input, Bucket output, Bucket decoded) throws IOException {
+	public void checkSuccessfulRoundTrip(int keysize, Random random, Bucket input, Bucket output,
+										 Bucket decoded) throws IOException {
 		byte[] key = new byte[keysize];
 		random.nextBytes(key);
 		OutputStream os = output.getOutputStream();
@@ -68,7 +69,8 @@ public class AEADStreamsTest {
 		assertTrue(BucketTools.equalBuckets(decoded, input));
 	}
 
-	public void checkFailedCorruptedRoundTrip(int keysize, Random random, Bucket input, Bucket output, Bucket decoded) throws IOException {
+	public void checkFailedCorruptedRoundTrip(int keysize, Random random, Bucket input, Bucket output,
+			Bucket decoded) throws IOException {
 		byte[] key = new byte[keysize];
 		random.nextBytes(key);
 		OutputStream os = output.getOutputStream();
@@ -90,7 +92,8 @@ public class AEADStreamsTest {
 		assertFalse(BucketTools.equalBuckets(decoded, input));
 	}
 
-	public void checkSuccessfulRoundTripRandomSplits(int keysize, Random random, Bucket input, Bucket output, Bucket decoded) throws IOException {
+	public void checkSuccessfulRoundTripRandomSplits(int keysize, Random random, Bucket input,
+			Bucket output, Bucket decoded) throws IOException {
 		byte[] key = new byte[keysize];
 		random.nextBytes(key);
 		OutputStream os = output.getOutputStream();
@@ -143,7 +146,8 @@ public class AEADStreamsTest {
 		random.nextBytes(key);
 		Bucket output = new ArrayBucket();
 		OutputStream os = output.getOutputStream();
-		AEADOutputStream cos = AEADOutputStream.innerCreateAES(new NoCloseProxyOutputStream(os), key, random);
+		AEADOutputStream cos = AEADOutputStream.innerCreateAES(new NoCloseProxyOutputStream(os), key,
+							   random);
 		BucketTools.copyTo(input, cos, -1);
 		cos.close();
 		// Now write garbage.

@@ -114,8 +114,9 @@ public class NullBasePeerNode implements BasePeerNode {
 
 	@Override
 	public void verified(SessionKey s) {
-		if (decryptedMessages == null)
-			throw new UnsupportedOperationException(); // Not expecting messages.
+		if (decryptedMessages == null) {
+			throw new UnsupportedOperationException();    // Not expecting messages.
+		}
 	}
 
 	@Override

@@ -19,7 +19,8 @@ import freenet.support.Logger;
 import freenet.support.Logger.LogLevel;
 import freenet.support.api.Bucket;
 
-public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue, PutCompletionCallback {
+public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue,
+	PutCompletionCallback {
 	private static final long serialVersionUID = -2884613086588264043L;
 
 	final int maxRunning;
@@ -40,7 +41,8 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 
 	static final RequestClient REQUEST_CLIENT = new RequestClientBuilder().build();
 
-	public SimpleHealingQueue(InsertContext context, short prio, int maxRunning, HealingDecisionSupplier healingDecisionSupplier) {
+	public SimpleHealingQueue(InsertContext context, short prio, int maxRunning,
+							  HealingDecisionSupplier healingDecisionSupplier) {
 		super(prio, REQUEST_CLIENT);
 		this.ctx = context;
 		this.healingDecisionSupplier = healingDecisionSupplier;
@@ -48,12 +50,15 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		this.maxRunning = maxRunning;
 	}
 
-	public boolean innerQueue(Bucket data, byte[] cryptoKey, byte cryptoAlgorithm, ClientContext context) {
+	public boolean innerQueue(Bucket data, byte[] cryptoKey, byte cryptoAlgorithm,
+							  ClientContext context) {
 		SingleBlockInserter sbi;
 		int ctr;
 		synchronized(this) {
 			ctr = counter++;
-			if(runningInserters.size() > maxRunning) return false;
+			if(runningInserters.size() > maxRunning) {
+				return false;
+			}
 			try {
 				sbi = new SingleBlockInserter(this, data, (short)-1,
 											  FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, this, false,
@@ -68,8 +73,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		}
 		try {
 			sbi.schedule(context);
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Started healing insert "+ctr+" for "+data);
+			}
 			return true;
 		} catch (Throwable e) {
 			Logger.error(this, "Caught trying to insert healing block: "+e, e);
@@ -88,8 +94,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 
 	@Override
 	public void queue(Bucket data, byte[] cryptoKey, byte cryptoAlgorithm, ClientContext context) {
-		if(!innerQueue(data, cryptoKey, cryptoAlgorithm, context))
+		if(!innerQueue(data, cryptoKey, cryptoAlgorithm, context)) {
 			data.free();
+		}
 	}
 
 	@Override
@@ -114,8 +121,10 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		synchronized(this) {
 			runningInserters.remove(data);
 		}
-		if(logMINOR)
-			Logger.minor(this, "Successfully inserted healing block: "+sbi.getURINoEncode()+" for "+data+" ("+sbi.token+ ')');
+		if(logMINOR) {
+			Logger.minor(this, "Successfully inserted healing block: "+sbi.getURINoEncode()+" for "+data+" ("
+						 +sbi.token+ ')');
+		}
 		data.free();
 	}
 
@@ -126,8 +135,10 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		synchronized(this) {
 			runningInserters.remove(data);
 		}
-		if(logMINOR)
-			Logger.minor(this, "Failed to insert healing block: "+sbi.getURINoEncode()+" : "+e+" for "+data+" ("+sbi.token+ ')', e);
+		if(logMINOR) {
+			Logger.minor(this, "Failed to insert healing block: "+sbi.getURINoEncode()+" : "+e+" for "+data+" ("
+						 +sbi.token+ ')', e);
+		}
 		data.free();
 	}
 
@@ -139,7 +150,8 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 	@Override
 	public void onTransition(ClientPutState oldState, ClientPutState newState, ClientContext context) {
 		// Should never happen
-		Logger.error(this, "impossible: onTransition on SimpleHealingQueue from "+oldState+" to "+newState, new Exception("debug"));
+		Logger.error(this, "impossible: onTransition on SimpleHealingQueue from "+oldState+" to "+newState,
+					 new Exception("debug"));
 	}
 
 	@Override

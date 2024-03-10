@@ -8,7 +8,8 @@ public class FCPClientRequestClient implements RequestClient {
 	public final boolean forever;
 	public final boolean realTimeFlag;
 
-	public FCPClientRequestClient(PersistentRequestClient fcpClient, boolean forever2, boolean realTime) {
+	public FCPClientRequestClient(PersistentRequestClient fcpClient, boolean forever2,
+								  boolean realTime) {
 		this.client = fcpClient;
 		this.forever = forever2;
 		this.realTimeFlag = realTime;

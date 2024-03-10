@@ -18,14 +18,16 @@ public class ChatForumsToadlet extends Toadlet implements LinkEnabledCallback {
 		this.plugins = plugins;
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodGET(URI uri, HTTPRequest req,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		PageNode page = ctx.getPageMaker().getPageNode(l10n("title"), ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 
 		contentNode.addChild(ctx.getAlertManager().createSummary());
 
-		HTMLNode contentBox = ctx.getPageMaker().getInfobox("infobox-information", l10n("title"), contentNode, "chat-list", true);
+		HTMLNode contentBox = ctx.getPageMaker().getInfobox("infobox-information", l10n("title"),
+							  contentNode, "chat-list", true);
 
 		NodeL10n.getBase().addL10nSubstitution(contentBox.addChild("p"), "ChatForumsToadlet.fsng",
 											   new String[] { "fsng" },

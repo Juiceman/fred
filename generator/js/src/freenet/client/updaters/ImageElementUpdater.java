@@ -53,7 +53,8 @@ public class ImageElementUpdater extends ReplacerUpdater {
 			if (nowCounted[1] != 0) {
 				Message newMsg = makeProgressMsg(nowCounted[0], nowCounted[1]);
 				if (lastMessage != null) {
-					MessageManager.get().replaceMessageAtPosition(MessageManager.get().getMessagePosition(lastMessage), newMsg);
+					MessageManager.get().replaceMessageAtPosition(MessageManager.get().getMessagePosition(lastMessage),
+							newMsg);
 				} else {
 					MessageManager.get().addMessage(newMsg);
 				}

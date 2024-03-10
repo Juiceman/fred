@@ -2,7 +2,8 @@ package freenet.support;
 
 import freenet.client.async.ClientRequestSelector;
 
-public class RandomGrabArrayWithObject<T> extends RandomGrabArray implements RemoveRandomWithObject<T> {
+public class RandomGrabArrayWithObject<T> extends RandomGrabArray implements
+	RemoveRandomWithObject<T> {
 
 	private T client;
 

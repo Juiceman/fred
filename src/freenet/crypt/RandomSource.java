@@ -66,7 +66,8 @@ public abstract class RandomSource extends Random {
 	 * @param bias The bias. Value by which we multiply the entropy before counting it.
 	 * Must be <= 1.0.
 	 */
-	public abstract int acceptEntropyBytes(EntropySource myPacketDataSource, byte[] buf, int offset, int length, double bias);
+	public abstract int acceptEntropyBytes(EntropySource myPacketDataSource, byte[] buf, int offset,
+										   int length, double bias);
 
 	/**
 	 * If entropy estimation is supported, this method will block

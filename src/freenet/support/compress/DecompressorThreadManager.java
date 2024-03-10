@@ -53,7 +53,8 @@ public class DecompressorThreadManager {
 	 * @param inputStream The stream that will be decompressed, if compressed
 	 * @param maxLen The maximum number of bytes to extract
 	 */
-	public DecompressorThreadManager(PipedInputStream inputStream, List<? extends Compressor> decompressors, long maxLen) throws IOException {
+	public DecompressorThreadManager(PipedInputStream inputStream,
+									 List<? extends Compressor> decompressors, long maxLen) throws IOException {
 		threads = new ArrayDeque<DecompressorThread>(decompressors.size());
 		this.maxLen = maxLen;
 		if(inputStream == null) {
@@ -64,7 +65,9 @@ public class DecompressorThreadManager {
 		input = inputStream;
 		while(!decompressors.isEmpty()) {
 			Compressor compressor = decompressors.remove(decompressors.size()-1);
-			if(logMINOR) Logger.minor(this, "Decompressing with "+compressor);
+			if(logMINOR) {
+				Logger.minor(this, "Decompressing with "+compressor);
+			}
 			DecompressorThread thread = new DecompressorThread(compressor, this, input, output, maxLen);
 			threads.add(thread);
 			input = new PipedInputStream(output);
@@ -77,7 +80,9 @@ public class DecompressorThreadManager {
 	 * @return An InputStream from which uncompressed data may be read from
 	 */
 	public synchronized PipedInputStream execute() throws Throwable {
-		if(error != null) throw error;
+		if(error != null) {
+			throw error;
+		}
 		if(threads.isEmpty()) {
 			onFinish();
 			return input;
@@ -85,12 +90,18 @@ public class DecompressorThreadManager {
 		try {
 			int count = 0;
 			while(!threads.isEmpty()) {
-				if(getError() != null) throw getError();
+				if(getError() != null) {
+					throw getError();
+				}
 				DecompressorThread threadRunnable = threads.remove();
-				if(threads.isEmpty()) threadRunnable.setLast();
+				if(threads.isEmpty()) {
+					threadRunnable.setLast();
+				}
 				Thread t = new Thread(threadRunnable, "DecompressorThread"+count);
 				t.start();
-				if(logMINOR) Logger.minor(this, "Started decompressor thread "+t);
+				if(logMINOR) {
+					Logger.minor(this, "Started decompressor thread "+t);
+				}
 				count++;
 			}
 			output.close();
@@ -130,13 +141,16 @@ public class DecompressorThreadManager {
 				//wait(0)
 				wait(MINUTES.toMillis(20));
 				long time = System.currentTimeMillis()-start;
-				if(time > MINUTES.toMillis(20))
+				if(time > MINUTES.toMillis(20)) {
 					Logger.error(this, "Still waiting for decompressor chain after "+TimeUtil.formatTime(time));
+				}
 			} catch(InterruptedException e) {
 				//Do nothing
 			}
 		}
-		if(error != null) throw error;
+		if(error != null) {
+			throw error;
+		}
 	}
 
 	/** Returns an exception which was thrown during decompression
@@ -166,7 +180,8 @@ public class DecompressorThreadManager {
 		/**Whether or not this thread should signal the manager that decompression has finished*/
 		boolean isLast = false;
 
-		public DecompressorThread(Compressor compressor, DecompressorThreadManager manager, InputStream input, PipedOutputStream output, long maxLen) {
+		public DecompressorThread(Compressor compressor, DecompressorThreadManager manager,
+								  InputStream input, PipedOutputStream output, long maxLen) {
 			this.compressor = compressor;
 			this.input = new BufferedInputStream(input);
 			this.output = new BufferedOutputStream(output);
@@ -177,7 +192,9 @@ public class DecompressorThreadManager {
 		/**Begins the decompression */
 		@Override
 		public void run() {
-			if(logMINOR) Logger.minor(this, "Decompressing...");
+			if(logMINOR) {
+				Logger.minor(this, "Decompressing...");
+			}
 			try {
 				if(manager.getError() == null) {
 					compressor.decompress(input, output, maxLen, maxLen * 4);
@@ -186,9 +203,13 @@ public class DecompressorThreadManager {
 					// Avoid relatively expensive repeated close on normal completion
 					input = null;
 					output = null;
-					if(isLast) manager.onFinish();
+					if(isLast) {
+						manager.onFinish();
+					}
 				}
-				if(logMINOR) Logger.minor(this, "Finished decompressing...");
+				if(logMINOR) {
+					Logger.minor(this, "Finished decompressing...");
+				}
 			} catch (Exception e) {
 				manager.onFailure(e);
 			} finally {

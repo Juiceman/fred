@@ -12,13 +12,15 @@ public class PeerTrustInputForAddPeerBoxNode extends HTMLNode {
 		this.addChild("b", l10n("DarknetConnectionsToadlet.peerTrustTitle"));
 		this.addChild("#", " ");
 		this.addChild("#", l10n("DarknetConnectionsToadlet.peerTrustIntroduction"));
-		for (DarknetPeerNode.FRIEND_TRUST trust : DarknetPeerNode.FRIEND_TRUST.valuesBackwards()) { // FIXME reverse order
+		for (DarknetPeerNode.FRIEND_TRUST trust :
+				DarknetPeerNode.FRIEND_TRUST.valuesBackwards()) { // FIXME reverse order
 			HTMLNode input = this.addChild("br")
 							 .addChild("input",
 									   new String[] { "type", "name", "value", "id" },
 									   new String[] { "radio", "trust", trust.name(), "trust" + trust.name() });
-			if (trust.isDefaultValue())
+			if (trust.isDefaultValue()) {
 				input.addAttribute("checked", "checked");
+			}
 			input.addChild("label",
 						   new String[] { "for" },
 						   new String[] { "trust" + trust.name() }

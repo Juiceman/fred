@@ -9,7 +9,9 @@ public final class MemoryLimitedChunk {
 	private long used;
 	MemoryLimitedChunk(MemoryLimitedJobRunner memoryLimitedJobRunner, long used) {
 		this.memoryLimitedJobRunner = memoryLimitedJobRunner;
-		if(used < 0) throw new IllegalArgumentException();
+		if(used < 0) {
+			throw new IllegalArgumentException();
+		}
 		this.used = used;
 	}
 
@@ -19,7 +21,9 @@ public final class MemoryLimitedChunk {
 	public long release() {
 		long released = 0;
 		synchronized(this) {
-			if(used == 0) return 0;
+			if(used == 0) {
+				return 0;
+			}
 			released = used;
 			used = 0;
 		}
@@ -32,7 +36,9 @@ public final class MemoryLimitedChunk {
 	public long release(long amount) {
 		boolean finishedThread = false;
 		synchronized(this) {
-			if(amount > used) throw new IllegalArgumentException("Only have "+used+" in use but asked to release "+amount);
+			if(amount > used) {
+				throw new IllegalArgumentException("Only have "+used+" in use but asked to release "+amount);
+			}
 			used -= amount;
 			finishedThread = (used == 0);
 		}

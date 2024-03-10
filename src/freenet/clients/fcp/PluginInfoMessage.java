@@ -43,8 +43,9 @@ public class PluginInfoMessage extends FCPMessage {
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
-		if(identifier != null) // is optional on these two only
+		if(identifier != null) { // is optional on these two only
 			sfs.putSingle("Identifier", identifier);
+		}
 		sfs.putSingle("PluginName", classname);
 		sfs.put("IsTalkable", isTalkable);
 		sfs.put("LongVersion", longVersion);
@@ -65,7 +66,8 @@ public class PluginInfoMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, NAME + " goes from server to client not the other way around", null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  NAME + " goes from server to client not the other way around", null, false);
 	}
 
 }

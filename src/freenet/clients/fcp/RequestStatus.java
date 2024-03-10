@@ -186,10 +186,11 @@ public abstract class RequestStatus implements Cloneable {
 	 */
 	public String getPreferredFilenameSafe() {
 		String ret = getPreferredFilename();
-		if(ret == null)
+		if(ret == null) {
 			return NodeL10n.getBase().getString("RequestStatus.unknownFilename");
-		else
+		} else {
 			return ret;
+		}
 	}
 
 	public RequestStatus clone() {

@@ -55,7 +55,8 @@ public class CipherManager {
 	 * Cache for digested keys
 	 */
 	@SuppressWarnings("serial")
-	private Map<ByteArrayWrapper, byte[]> digestRoutingKeyCache = new LinkedHashMap<ByteArrayWrapper, byte[]>() {
+	private Map<ByteArrayWrapper, byte[]> digestRoutingKeyCache = new
+	LinkedHashMap<ByteArrayWrapper, byte[]>() {
 		@Override
 		protected boolean removeEldestEntry(Map.Entry<ByteArrayWrapper, byte[]> eldest) {
 			return size() > 128;
@@ -72,8 +73,9 @@ public class CipherManager {
 		ByteArrayWrapper key = new ByteArrayWrapper(plainKey);
 		synchronized (digestRoutingKeyCache) {
 			byte[] dk = digestRoutingKeyCache.get(key);
-			if (dk != null)
+			if (dk != null) {
 				return dk;
+			}
 		}
 
 		MessageDigest digest = SHA256.getMessageDigest();
@@ -98,8 +100,9 @@ public class CipherManager {
 	 * Encrypt this entry
 	 */
 	void encrypt(SaltedHashFreenetStore<?>.Entry entry, Random random) {
-		if (entry.isEncrypted)
+		if (entry.isEncrypted) {
 			return;
+		}
 
 		entry.dataEncryptIV = new byte[16];
 		random.nextBytes(entry.dataEncryptIV);
@@ -124,10 +127,11 @@ public class CipherManager {
 
 		if (!entry.isEncrypted) {
 			// Already decrypted
-			if (Arrays.equals(entry.plainRoutingKey, routingKey))
+			if (Arrays.equals(entry.plainRoutingKey, routingKey)) {
 				return true;
-			else
+			} else {
 				return false;
+			}
 		}
 
 		if (entry.plainRoutingKey != null) {
@@ -137,8 +141,9 @@ public class CipherManager {
 			}
 		} else {
 			// we do not know the plain key, let's check the digest
-			if (!Arrays.equals(entry.digestedRoutingKey, getDigestedKey(routingKey)))
+			if (!Arrays.equals(entry.digestedRoutingKey, getDigestedKey(routingKey))) {
 				return false;
+			}
 		}
 
 		entry.plainRoutingKey = routingKey;

@@ -57,13 +57,17 @@ public class MultiReaderBucket implements Serializable {
 	/** Get a reader bucket */
 	public Bucket getReaderBucket() {
 		synchronized(this) {
-			if(closed) return null;
+			if(closed) {
+				return null;
+			}
 			Bucket d = new ReaderBucket();
-			if (readers == null)
+			if (readers == null) {
 				readers = new ArrayList<Bucket>(1);
+			}
 			readers.add(d);
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "getReaderBucket() returning "+d+" for "+this+" for "+bucket);
+			}
 			return d;
 		}
 	}
@@ -75,15 +79,22 @@ public class MultiReaderBucket implements Serializable {
 
 		@Override
 		public void free() {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "ReaderBucket "+this+" for "+MultiReaderBucket.this+" free()ing for "+bucket);
+			}
 			synchronized(MultiReaderBucket.this) {
-				if(freed) return;
+				if(freed) {
+					return;
+				}
 				freed = true;
 				ListUtils.removeBySwapLast(readers, this);
-				if(!readers.isEmpty()) return;
+				if(!readers.isEmpty()) {
+					return;
+				}
 				readers = null;
-				if(closed) return;
+				if(closed) {
+					return;
+				}
 				closed = true;
 			}
 			bucket.free();
@@ -120,7 +131,9 @@ public class MultiReaderBucket implements Serializable {
 			@Override
 			public final int read() throws IOException {
 				synchronized(MultiReaderBucket.this) {
-					if(freed || closed) throw new IOException("Already closed");
+					if(freed || closed) {
+						throw new IOException("Already closed");
+					}
 				}
 				return is.read();
 			}
@@ -128,7 +141,9 @@ public class MultiReaderBucket implements Serializable {
 			@Override
 			public final int read(byte[] data, int offset, int length) throws IOException {
 				synchronized(MultiReaderBucket.this) {
-					if(freed || closed) throw new IOException("Already closed");
+					if(freed || closed) {
+						throw new IOException("Already closed");
+					}
 				}
 				return is.read(data, offset, length);
 			}
@@ -136,7 +151,9 @@ public class MultiReaderBucket implements Serializable {
 			@Override
 			public final int read(byte[] data) throws IOException {
 				synchronized(MultiReaderBucket.this) {
-					if(freed || closed) throw new IOException("Already closed");
+					if(freed || closed) {
+						throw new IOException("Already closed");
+					}
 				}
 				return is.read(data);
 			}

@@ -37,8 +37,9 @@ public class URLDecoder {
 	 *
 	 **/
 	public static String decode(String s, boolean tolerant) throws URLEncodedFormatException {
-		if (s.length() == 0)
+		if (s.length() == 0) {
 			return "";
+		}
 		int len = s.length();
 		ByteArrayOutputStream decodedBytes = new ByteArrayOutputStream();
 		boolean hasDecodedSomething = false;
@@ -57,8 +58,9 @@ public class URLDecoder {
 				String hexval = new String(hexChars);
 				try {
 					long read = Fields.hexToLong(hexval);
-					if (read == 0)
+					if (read == 0) {
 						throw new URLEncodedFormatException("Can't encode" + " 00");
+					}
 					decodedBytes.write((int) read);
 					hasDecodedSomething = true;
 				} catch (NumberFormatException nfe) {

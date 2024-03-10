@@ -21,6 +21,7 @@ public interface USKFetcherCallback extends USKCallback {
 	 * @param l The edition number.
 	 * @param key The key. */
 	@Override
-	void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo);
+	void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec,
+						byte[] data, boolean newKnownGood, boolean newSlotToo);
 
 }

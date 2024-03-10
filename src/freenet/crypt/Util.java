@@ -87,8 +87,9 @@ public class Util {
 	public static BigInteger readMPI(InputStream in) throws IOException {
 		int b1 = in.read();
 		int b2 = in.read();
-		if ((b1 == -1) || (b2 == -1))
+		if ((b1 == -1) || (b2 == -1)) {
 			throw new EOFException();
+		}
 		byte[] data = new byte[(((b1 << 8) + b2) + 8) >> 3];
 		readFully(in, data, 0, data.length);
 		//(new DataInputStream(in)).readFully(data, 0, data.length);
@@ -123,8 +124,9 @@ public class Util {
 		byte[] rv = new byte[maxl];
 
 		int minl = Math.min(b1.length, b2.length);
-		for (int i = 0; i < minl; i++)
+		for (int i = 0; i < minl; i++) {
 			rv[i] = (byte) (b1[i] ^ b2[i]);
+		}
 		return rv;
 	}
 
@@ -184,8 +186,9 @@ public class Util {
 		}
 		if(to > from) {
 			assert(to - from < Integer.SIZE/Byte.SIZE);
-			for (int rnd = r.nextInt(); from < to; rnd >>= 8)
+			for (int rnd = r.nextInt(); from < to; rnd >>= 8) {
 				buf[from++] = (byte)rnd;
+			}
 		}
 	}
 
@@ -286,8 +289,9 @@ public class Util {
 				int ic = 0;
 				while (len > 0) {
 					ic++;
-					for (int i = 0; i < ic; i++)
+					for (int i = 0; i < ic; i++) {
 						ctx.update((byte) 0);
+					}
 					ctx.update(entropy, 0, entropy.length);
 					int bc;
 					if (len > ctx_length) {
@@ -373,8 +377,9 @@ public class Util {
 	 */
 	public static int log2(long n) {
 		int log2 = 0;
-		while ((log2 < 63) && (1L << log2 < n))
+		while ((log2 < 63) && (1L << log2 < n)) {
 			++log2;
+		}
 		return log2;
 	}
 
@@ -397,8 +402,9 @@ public class Util {
 	public static double keyDigestAsNormalizedDouble(byte[] digest) {
 		long asLong = Math.abs(Fields.bytesToLong(digest));
 		// Math.abs can actually return negative...
-		if(asLong == Long.MIN_VALUE)
+		if(asLong == Long.MIN_VALUE) {
 			asLong = Long.MAX_VALUE;
+		}
 		return ((double)asLong)/((double)Long.MAX_VALUE);
 	}
 }

@@ -46,7 +46,9 @@ public abstract class SendableRequest implements RandomGrabArrayItem, Serializab
 		this.persistent = persistent;
 		this.realTimeFlag = realTimeFlag;
 		int oid = super.hashCode();
-		if(oid == 0) oid = 1;
+		if(oid == 0) {
+			oid = 1;
+		}
 		this.hashCode = oid;
 	}
 
@@ -138,8 +140,9 @@ public abstract class SendableRequest implements RandomGrabArrayItem, Serializab
 			}
 		} else {
 			// Should this be a higher priority?
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Cannot unregister "+this+" : not registered", new Exception("debug"));
+			}
 		}
 	}
 
@@ -152,7 +155,8 @@ public abstract class SendableRequest implements RandomGrabArrayItem, Serializab
 	public abstract boolean isInsert();
 
 	/** Requeue after an internal error */
-	public abstract void internalError(Throwable t, RequestScheduler sched, ClientContext context, boolean persistent);
+	public abstract void internalError(Throwable t, RequestScheduler sched, ClientContext context,
+									   boolean persistent);
 
 	public boolean realTimeFlag() {
 		return realTimeFlag;
@@ -165,14 +169,18 @@ public abstract class SendableRequest implements RandomGrabArrayItem, Serializab
 	@Override
 	public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
 		RandomGrabArray parent = getParentGrabArray();
-		if(parent == null) return false;
+		if(parent == null) {
+			return false;
+		}
 		return parent.reduceWakeupTime(wakeupTime, context);
 	}
 
 	@Override
 	public void clearWakeupTime(ClientContext context) {
 		RandomGrabArray parent = getParentGrabArray();
-		if(parent == null) return;
+		if(parent == null) {
+			return;
+		}
 		parent.clearWakeupTime(context);
 	}
 

@@ -94,7 +94,9 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 
 	@Override
 	public File getFile() {
-		if(file != null) return file;
+		if(file != null) {
+			return file;
+		}
 		return generator.getFilename(filenameID);
 	}
 
@@ -120,7 +122,9 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 	public RandomAccessBucket createShadow() {
 		TempFileBucket ret = new TempFileBucket(filenameID, generator, false);
 		ret.setReadOnly();
-		if(!getFile().exists()) Logger.error(this, "File does not exist when creating shadow: "+getFile());
+		if(!getFile().exists()) {
+			Logger.error(this, "File does not exist when creating shadow: "+getFile());
+		}
 		return ret;
 	}
 
@@ -146,9 +150,13 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 
 	@Override
 	public final void onResume(ClientContext context) throws ResumeFailedException {
-		if(!persistent()) throw new UnsupportedOperationException();
+		if(!persistent()) {
+			throw new UnsupportedOperationException();
+		}
 		synchronized(this) {
-			if(resumed) return;
+			if(resumed) {
+				return;
+			}
 			resumed = true;
 		}
 		super.onResume(context);
@@ -158,8 +166,9 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 	private void checkExists(File file) throws ResumeFailedException {
 		// File must exist!
 		try {
-			if(!(file.createNewFile() || file.exists()))
+			if(!(file.createNewFile() || file.exists())) {
 				throw new ResumeFailedException("Tempfile "+file+" does not exist and cannot be created");
+			}
 		} catch (IOException e) {
 			throw new ResumeFailedException("Tempfile cannot be created");
 		}
@@ -194,9 +203,13 @@ public class TempFileBucket extends BaseFileBucket implements Bucket, Serializab
 	protected TempFileBucket(DataInputStream dis) throws IOException, StorageFormatException {
 		super(dis);
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		filenameID = dis.readLong();
-		if(filenameID == -1) throw new StorageFormatException("Bad filename ID");
+		if(filenameID == -1) {
+			throw new StorageFormatException("Bad filename ID");
+		}
 		readOnly = dis.readBoolean();
 		deleteOnFree = dis.readBoolean();
 		file = new File(dis.readUTF());

@@ -77,12 +77,14 @@ public class HTMLNodeTest {
 	@Test
 	public void testHTMLNode_StringStringStringString_WrongNodeName() {
 		try {
-			new HTMLNode(SAMPLE_WRONG_NODE_NAME, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE, SAMPLE_NODE_CONTENT);
+			new HTMLNode(SAMPLE_WRONG_NODE_NAME, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE,
+						 SAMPLE_NODE_CONTENT);
 			fail("Expected exception not thrown!");
 		} catch (IllegalArgumentException iae1) {
 		}
 		try {
-			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE, SAMPLE_NODE_CONTENT);
+			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE,
+						 SAMPLE_NODE_CONTENT);
 		} catch (IllegalArgumentException iae1) {
 			fail("Unexpected exception thrown!");
 		}
@@ -91,12 +93,14 @@ public class HTMLNodeTest {
 	@Test
 	public void testHTMLNode_StringStringStringString_WrongAttributeName() {
 		try {
-			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_WRONG_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE, SAMPLE_NODE_CONTENT);
+			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_WRONG_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE,
+						 SAMPLE_NODE_CONTENT);
 			fail("Expected exception not thrown!");
 		} catch (IllegalArgumentException iae1) {
 		}
 		try {
-			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE, SAMPLE_NODE_CONTENT);
+			new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY, SAMPLE_OKAY_ATTRIBUTE_NAME, SAMPLE_ATTRIBUTE_VALUE,
+						 SAMPLE_NODE_CONTENT);
 		} catch (IllegalArgumentException iae1) {
 			fail("Unexpected exception thrown!");
 		}
@@ -304,7 +308,8 @@ public class HTMLNodeTest {
 	 * @param attibutesNames the attributes names to check
 	 * @param attributesValues the attributes values to check
 	 */
-	private void testSingleChildAttributes(HTMLNode aHTMLNode,String[] attibutesNames, String[] attributesValues) {
+	private void testSingleChildAttributes(HTMLNode aHTMLNode,String[] attibutesNames,
+										   String[] attributesValues) {
 		List<HTMLNode> childrenList = aHTMLNode.children;
 		assertEquals(1,childrenList.size());
 		HTMLNode childHTMLNode = childrenList.get(0);
@@ -349,7 +354,8 @@ public class HTMLNodeTest {
 		HTMLNode methodHTMLNode = new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY);
 		assertNull(methodHTMLNode.getAttribute(SAMPLE_OKAY_ATTRIBUTE_NAME));
 
-		methodHTMLNode = new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY,SAMPLE_OKAY_ATTRIBUTE_NAME,SAMPLE_ATTRIBUTE_VALUE);
+		methodHTMLNode = new HTMLNode(SAMPLE_OKAY_NODE_NAME_NON_EMPTY,SAMPLE_OKAY_ATTRIBUTE_NAME,
+									  SAMPLE_ATTRIBUTE_VALUE);
 		assertEquals(SAMPLE_ATTRIBUTE_VALUE,methodHTMLNode.getAttribute(SAMPLE_OKAY_ATTRIBUTE_NAME));
 		methodHTMLNode = new HTMLNode("#",SAMPLE_OKAY_ATTRIBUTE_NAME,SAMPLE_ATTRIBUTE_VALUE);
 		assertEquals(SAMPLE_ATTRIBUTE_VALUE,methodHTMLNode.getAttribute(SAMPLE_OKAY_ATTRIBUTE_NAME));
@@ -535,8 +541,9 @@ public class HTMLNodeTest {
 	 */
 	private String readFirstLine(String aString) {
 		int newLineIndex = aString.indexOf('\n');
-		if ( newLineIndex == -1)
+		if ( newLineIndex == -1) {
 			return aString;
+		}
 		return aString.substring(0,newLineIndex);
 	}
 
@@ -668,14 +675,16 @@ public class HTMLNodeTest {
 	 * @param aAttributeValue the HTMLNode attribute value
 	 * @return the correct output expected by HTMLNode.generate() method
 	 */
-	private String generateNoContentNodeOutput(String aName, String aAttributeName, String aAttributeValue) {
+	private String generateNoContentNodeOutput(String aName, String aAttributeName,
+			String aAttributeValue) {
 		return ("<"+aName+" ").toLowerCase() +
 			   aAttributeName + "=" +
 			   "\""+aAttributeValue+"\""+
 			   " />";
 	}
 
-	private String generateFullNodeOutput(String aName, String aAttributeName, String aAttributeValue, String aContent) {
+	private String generateFullNodeOutput(String aName, String aAttributeName, String aAttributeValue,
+										  String aContent) {
 		return generateFullNodeOutput(aName, aAttributeName, aAttributeValue, aContent, false);
 	}
 
@@ -688,16 +697,20 @@ public class HTMLNodeTest {
 	 * @param aContent the HTMLNode content
 	 * @return the correct output expected by HTMLNode.generate() method
 	 */
-	private String generateFullNodeOutput(String aName, String aAttributeName, String aAttributeValue, String aContent, boolean indent) {
+	private String generateFullNodeOutput(String aName, String aAttributeName, String aAttributeValue,
+										  String aContent, boolean indent) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<"+aName.toLowerCase()+" ");
 		sb.append(aAttributeName + "=");
 		sb.append("\""+aAttributeValue+"\">");
 		String indenting = indent ? "\n\t" : "";
-		if(!aContent.equals(""))
+		if(!aContent.equals("")) {
 			sb.append(indenting + aContent);
+		}
 		sb.append(indenting + ("</"+aName+">").toLowerCase());
-		if(indent) sb.append(indenting);
+		if(indent) {
+			sb.append(indenting);
+		}
 		return sb.toString();
 	}
 

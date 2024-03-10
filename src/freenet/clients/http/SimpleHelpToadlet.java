@@ -25,24 +25,32 @@ public class SimpleHelpToadlet extends Toadlet {
 
 	final NodeClientCore core;
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
 
 
-		PageNode page = ctx.getPageMaker().getPageNode("Freenet " + NodeL10n.getBase().getString("FProxyToadlet.help"), ctx);
+		PageNode page = ctx.getPageMaker().getPageNode("Freenet " +
+						NodeL10n.getBase().getString("FProxyToadlet.help"), ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 
-		if(ctx.isAllowedFullAccess())
+		if(ctx.isAllowedFullAccess()) {
 			contentNode.addChild(ctx.getAlertManager().createSummary());
+		}
 
 		// Description infobox
-		HTMLNode helpScreenContent1 = ctx.getPageMaker().getInfobox("infobox-content", NodeL10n.getBase().getString("SimpleHelpToadlet.descriptionTitle"), contentNode, "freenet-description", true);
+		HTMLNode helpScreenContent1 = ctx.getPageMaker().getInfobox("infobox-content",
+									  NodeL10n.getBase().getString("SimpleHelpToadlet.descriptionTitle"), contentNode,
+									  "freenet-description", true);
 		helpScreenContent1.addChild("#", NodeL10n.getBase().getString("SimpleHelpToadlet.descriptionText"));
 
 		// Definitions infobox
-		HTMLNode helpScreenContent2 = ctx.getPageMaker().getInfobox("infobox-content", NodeL10n.getBase().getString("SimpleHelpToadlet.definitionsTitle"), contentNode, "freenet-definitions", true);
+		HTMLNode helpScreenContent2 = ctx.getPageMaker().getInfobox("infobox-content",
+									  NodeL10n.getBase().getString("SimpleHelpToadlet.definitionsTitle"), contentNode,
+									  "freenet-definitions", true);
 
-		HTMLNode table = helpScreenContent2.addChild("table", new String[] {"border", "style"}, new String[] {"0", "border: none"});
+		HTMLNode table = helpScreenContent2.addChild("table", new String[] {"border", "style"}, new
+						 String[] {"0", "border: none"});
 
 		HTMLNode row = table.addChild("tr");
 		row.addChild("td", "style", "border: none");
@@ -54,8 +62,11 @@ public class SimpleHelpToadlet extends Toadlet {
 		row.addChild("#", NodeL10n.getBase().getString("SimpleHelpToadlet.USK"));
 
 		// Port forwarding, etc.
-		HTMLNode helpScreenContent3 = ctx.getPageMaker().getInfobox("infobox-content", NodeL10n.getBase().getString("SimpleHelpToadlet.connectivityTitle"), contentNode, "freenet-connectivity", true);
-		helpScreenContent3.addChild("#", NodeL10n.getBase().getString("SimpleHelpToadlet.connectivityText"));
+		HTMLNode helpScreenContent3 = ctx.getPageMaker().getInfobox("infobox-content",
+									  NodeL10n.getBase().getString("SimpleHelpToadlet.connectivityTitle"), contentNode,
+									  "freenet-connectivity", true);
+		helpScreenContent3.addChild("#",
+									NodeL10n.getBase().getString("SimpleHelpToadlet.connectivityText"));
 
 
 		this.writeHTMLReply(ctx, 200, "OK", pageNode.generate());

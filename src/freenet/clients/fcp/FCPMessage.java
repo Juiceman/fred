@@ -73,89 +73,132 @@ public abstract class FCPMessage {
 	/**
 	 * Create a message from a SimpleFieldSet, and the message's name, if possible.
 	 */
-	public static FCPMessage create(String name, SimpleFieldSet fs, BucketFactory bfTemp, PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
-		if(name.equals(AddPeer.NAME))
+	public static FCPMessage create(String name, SimpleFieldSet fs, BucketFactory bfTemp,
+									PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
+		if(name.equals(AddPeer.NAME)) {
 			return new AddPeer(fs);
-		if(name.equals(ClientGetMessage.NAME))
+		}
+		if(name.equals(ClientGetMessage.NAME)) {
 			return new ClientGetMessage(fs);
-		if(name.equals(ClientHelloMessage.NAME))
+		}
+		if(name.equals(ClientHelloMessage.NAME)) {
 			return new ClientHelloMessage(fs);
-		if(name.equals(ClientPutComplexDirMessage.NAME))
+		}
+		if(name.equals(ClientPutComplexDirMessage.NAME)) {
 			return new ClientPutComplexDirMessage(fs, bfTemp, bfPersistent);
-		if(name.equals(ClientPutDiskDirMessage.NAME))
+		}
+		if(name.equals(ClientPutDiskDirMessage.NAME)) {
 			return new ClientPutDiskDirMessage(fs);
-		if(name.equals(ClientPutMessage.NAME))
+		}
+		if(name.equals(ClientPutMessage.NAME)) {
 			return new ClientPutMessage(fs);
-		if(name.equals(SendBookmarkMessage.NAME))
+		}
+		if(name.equals(SendBookmarkMessage.NAME)) {
 			return new SendBookmarkMessage(fs);
-		if(name.equals(SendURIMessage.NAME))
+		}
+		if(name.equals(SendURIMessage.NAME)) {
 			return new SendURIMessage(fs);
-		if(name.equals(SendTextMessage.NAME))
+		}
+		if(name.equals(SendTextMessage.NAME)) {
 			return new SendTextMessage(fs);
-		if(name.equals(DisconnectMessage.NAME))
+		}
+		if(name.equals(DisconnectMessage.NAME)) {
 			return new DisconnectMessage(fs);
-		if(name.equals(FCPPluginClientMessage.NAME))
+		}
+		if(name.equals(FCPPluginClientMessage.NAME)) {
 			return new FCPPluginClientMessage(fs);
-		if(name.equals(GenerateSSKMessage.NAME))
+		}
+		if(name.equals(GenerateSSKMessage.NAME)) {
 			return new GenerateSSKMessage(fs);
-		if(name.equals(GetConfig.NAME))
+		}
+		if(name.equals(GetConfig.NAME)) {
 			return new GetConfig(fs);
-		if(name.equals(GetNode.NAME))
+		}
+		if(name.equals(GetNode.NAME)) {
 			return new GetNode(fs);
-		if(name.equals(GetPluginInfo.NAME))
+		}
+		if(name.equals(GetPluginInfo.NAME)) {
 			return new GetPluginInfo(fs);
-		if(name.equals(GetRequestStatusMessage.NAME))
+		}
+		if(name.equals(GetRequestStatusMessage.NAME)) {
 			return new GetRequestStatusMessage(fs);
-		if(name.equals(ListPeerMessage.NAME))
+		}
+		if(name.equals(ListPeerMessage.NAME)) {
 			return new ListPeerMessage(fs);
-		if(name.equals(ListPeersMessage.NAME))
+		}
+		if(name.equals(ListPeersMessage.NAME)) {
 			return new ListPeersMessage(fs);
-		if(name.equals(ListPeerNotesMessage.NAME))
+		}
+		if(name.equals(ListPeerNotesMessage.NAME)) {
 			return new ListPeerNotesMessage(fs);
-		if(name.equals(ListPersistentRequestsMessage.NAME))
+		}
+		if(name.equals(ListPersistentRequestsMessage.NAME)) {
 			return new ListPersistentRequestsMessage(fs);
-		if(name.equals(LoadPlugin.NAME))
+		}
+		if(name.equals(LoadPlugin.NAME)) {
 			return new LoadPlugin(fs);
-		if(name.equals(ModifyConfig.NAME))
+		}
+		if(name.equals(ModifyConfig.NAME)) {
 			return new ModifyConfig(fs);
-		if(name.equals(ModifyPeer.NAME))
+		}
+		if(name.equals(ModifyPeer.NAME)) {
 			return new ModifyPeer(fs);
-		if(name.equals(ModifyPeerNote.NAME))
+		}
+		if(name.equals(ModifyPeerNote.NAME)) {
 			return new ModifyPeerNote(fs);
-		if(name.equals(ModifyPersistentRequest.NAME))
+		}
+		if(name.equals(ModifyPersistentRequest.NAME)) {
 			return new ModifyPersistentRequest(fs);
-		if(name.equals(ReloadPlugin.NAME))
+		}
+		if(name.equals(ReloadPlugin.NAME)) {
 			return new ReloadPlugin(fs);
-		if(name.equals(RemovePeer.NAME))
+		}
+		if(name.equals(RemovePeer.NAME)) {
 			return new RemovePeer(fs);
+		}
 		if(name.equals(RemovePersistentRequest.NAME)
-				|| name.equals(RemovePersistentRequest.ALT_NAME))
+				|| name.equals(RemovePersistentRequest.ALT_NAME)) {
 			return new RemovePersistentRequest(fs);
-		if(name.equals(RemovePlugin.NAME))
+		}
+		if(name.equals(RemovePlugin.NAME)) {
 			return new RemovePlugin(fs);
-		if(name.equals(ShutdownMessage.NAME))
+		}
+		if(name.equals(ShutdownMessage.NAME)) {
 			return new ShutdownMessage();
-		if(name.equals(WatchFeedsMessage.NAME))
+		}
+		if(name.equals(WatchFeedsMessage.NAME)) {
 			return new WatchFeedsMessage(fs);
-		if(name.equals(SubscribeUSKMessage.NAME))
+		}
+		if(name.equals(SubscribeUSKMessage.NAME)) {
 			return new SubscribeUSKMessage(fs);
-		if(name.equals(WatchFeedsMessage.NAME))
+		}
+		if(name.equals(WatchFeedsMessage.NAME)) {
 			return new WatchFeedsMessage(fs);
-		if(name.equals(UnsubscribeUSKMessage.NAME))
+		}
+		if(name.equals(UnsubscribeUSKMessage.NAME)) {
 			return new UnsubscribeUSKMessage(fs);
-		if(name.equals(TestDDARequestMessage.NAME))
+		}
+		if(name.equals(TestDDARequestMessage.NAME)) {
 			return new TestDDARequestMessage(fs);
-		if(name.equals(TestDDAResponseMessage.NAME))
+		}
+		if(name.equals(TestDDAResponseMessage.NAME)) {
 			return new TestDDAResponseMessage(fs);
-		if(name.equals(WatchGlobal.NAME))
+		}
+		if(name.equals(WatchGlobal.NAME)) {
 			return new WatchGlobal(fs);
-		if(name.equals(ProbeRequest.NAME)) return new ProbeRequest(fs);
-		if(name.equals(FilterMessage.NAME))
+		}
+		if(name.equals(ProbeRequest.NAME)) {
+			return new ProbeRequest(fs);
+		}
+		if(name.equals(FilterMessage.NAME)) {
 			return new FilterMessage(fs, bfTemp);
-		if(name.equals("Void"))
+		}
+		if(name.equals("Void")) {
 			return null;
+		}
 
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unknown message name "+name, null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "Unknown message name "+name, null, false);
 	}
 
 	/**
@@ -179,7 +222,8 @@ public abstract class FCPMessage {
 	 *         added)
 	 * @return The new FCP message
 	 */
-	public static FCPMessage withListRequestIdentifier(final FCPMessage fcpMessage, final String listRequestIdentifier) {
+	public static FCPMessage withListRequestIdentifier(final FCPMessage fcpMessage,
+			final String listRequestIdentifier) {
 		if ((listRequestIdentifier == null) || (fcpMessage == null)) {
 			return fcpMessage;
 		}

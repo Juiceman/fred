@@ -51,8 +51,9 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects = new Object[keysNumber][valuesNumber];
 		int methodValuesNumber = valuesNumber;
 		for (int i=0; i<sampleObjects.length; i++) {
-			if (isRandom)
+			if (isRandom) {
 				methodValuesNumber = 1+rnd.nextInt(valuesNumber);
+			}
 			sampleObjects[i][0] = i;
 			sampleObjects[i][1] = fillSampleValuesList(methodValuesNumber);
 		}
@@ -68,8 +69,9 @@ public class MultiValueTableTest {
 	 */
 	private List<Object> fillSampleValuesList(int valuesNumber) {
 		List<Object> sampleValues = new LinkedList<Object>();
-		for(int i=0; i<valuesNumber; i++)
+		for(int i=0; i<valuesNumber; i++) {
 			sampleValues.add(new Object());
+		}
 		return sampleValues;
 	}
 
@@ -80,7 +82,8 @@ public class MultiValueTableTest {
 	 * @param isRandom true if the maxValueNumber is an upper bound, false if it is the actual value
 	 * @return the sample MultiValueTable created
 	 */
-	private MultiValueTable<Object, Object> createSampleMultiValueTable(int keyNumber, int maxValueNumber, boolean isRandom) {
+	private MultiValueTable<Object, Object> createSampleMultiValueTable(int keyNumber,
+			int maxValueNumber, boolean isRandom) {
 		Object[][] sampleObjects = createSampleKeyMultiVal(keyNumber,maxValueNumber,isRandom);
 		return fillMultiValueTable(sampleObjects);
 	}
@@ -112,8 +115,9 @@ public class MultiValueTableTest {
 		Iterator<Object> itr;
 		for(int i=0; i<sampleKeyNumber; i++) {
 			itr = ((List<Object>)(sampleObjects[i][1])).iterator();
-			while( itr.hasNext())
+			while( itr.hasNext()) {
 				methodMVTable.put(sampleObjects[i][0], itr.next());
+			}
 		}
 		return methodMVTable;
 	}
@@ -141,8 +145,9 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			assertEquals(methodMVTable.get(sampleObjects[i][0]),((List<Object>)sampleObjects[i][1]).get(0));
+		}
 	}
 
 	/**
@@ -158,8 +163,9 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			assertTrue(methodMVTable.containsKey(sampleObjects[i][0]));
+		}
 		assertFalse(methodMVTable.containsKey(new Object()));
 	}
 
@@ -182,8 +188,9 @@ public class MultiValueTableTest {
 		for(int i=0; i<sampleObjects.length; i++) {
 			iter = ((List<Object>)(sampleObjects[i][1])).iterator();
 			assertFalse(methodMVTable.containsElement(sampleObjects[i][0],new Object()));
-			while(iter.hasNext())
+			while(iter.hasNext()) {
 				assertTrue(methodMVTable.containsElement(sampleObjects[i][0],iter.next()));
+			}
 		}
 	}
 
@@ -204,8 +211,9 @@ public class MultiValueTableTest {
 		for(int i=0; i<sampleObjects.length; i++) {
 			iter = ((List<Object>)(sampleObjects[i][1])).iterator();
 			methodEnumeration = methodMVTable.getAll(sampleObjects[i][0]);
-			while(iter.hasNext())
+			while(iter.hasNext()) {
 				assertEquals(methodEnumeration.nextElement(),iter.next());
+			}
 		}
 	}
 
@@ -220,8 +228,10 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
-			assertEquals(((List<Object>)(sampleObjects[i][1])).size(),methodMVTable.countAll(sampleObjects[i][0]));
+		for(int i=0; i<sampleObjects.length; i++) {
+			assertEquals(((List<Object>)(sampleObjects[i][1])).size(),
+						 methodMVTable.countAll(sampleObjects[i][0]));
+		}
 	}
 
 	/**
@@ -236,8 +246,9 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			assertEquals(methodMVTable.getSync(sampleObjects[i][0]),((List<Object>)sampleObjects[i][1]));
+		}
 	}
 
 	/**
@@ -252,8 +263,10 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
-			assertTrue(Arrays.equals(((List<Object>)(sampleObjects[i][1])).toArray(),methodMVTable.getArray(sampleObjects[i][0])));
+		for(int i=0; i<sampleObjects.length; i++) {
+			assertTrue(Arrays.equals(((List<Object>)(sampleObjects[i][1])).toArray(),
+									 methodMVTable.getArray(sampleObjects[i][0])));
+		}
 	}
 
 	/**
@@ -270,8 +283,9 @@ public class MultiValueTableTest {
 		Object[][] sampleObjects =
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			methodMVTable.remove(sampleObjects[i][0]);
+		}
 		assertTrue(methodMVTable.isEmpty());
 	}
 
@@ -287,8 +301,9 @@ public class MultiValueTableTest {
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		methodMVTable = fillMultiValueTable(sampleObjects);
 		assertFalse(methodMVTable.isEmpty());
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			methodMVTable.remove(sampleObjects[i][0]);
+		}
 		assertTrue(methodMVTable.isEmpty());
 	}
 
@@ -303,8 +318,9 @@ public class MultiValueTableTest {
 			createSampleKeyMultiVal(sampleKeyNumber,sampleMaxValueNumber,sampleIsRandom);
 		MultiValueTable<Object, Object> methodMVTable = fillMultiValueTable(sampleObjects);
 		methodMVTable.clear();
-		for(int i=0; i<sampleObjects.length; i++)
+		for(int i=0; i<sampleObjects.length; i++) {
 			assertFalse(methodMVTable.containsKey(sampleObjects[i][0]));
+		}
 		assertTrue(methodMVTable.isEmpty());
 	}
 
@@ -362,8 +378,9 @@ public class MultiValueTableTest {
 		MultiValueTable<Object, Object> methodMVTable = new MultiValueTable<Object, Object>();
 		String sampleValue = "sampleValue";
 		//putting the same value for different keys
-		for(int i=0; i<keysNumber; i++)
+		for(int i=0; i<keysNumber; i++) {
 			methodMVTable.put(new Object(),sampleValue);
+		}
 
 		assertEquals(enumerationSize(methodMVTable.elements()),1);
 		assertEquals(enumerationSize(methodMVTable.keys()),keysNumber);

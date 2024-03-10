@@ -35,9 +35,13 @@ public class VorbisPacketFilter implements CodecPacketFilter {
 			 */
 			magicHeader = new byte[1+magicNumber.length];
 			input.readFully(magicHeader);
-			if(magicHeader[0] != 1) return null;
+			if(magicHeader[0] != 1) {
+				return null;
+			}
 			for(int i=0; i < magicNumber.length; i++) {
-				if(magicHeader[i+1] != magicNumber[i]) return null;
+				if(magicHeader[i+1] != magicNumber[i]) {
+					return null;
+				}
 			}
 			//Assemble identification header
 			long vorbis_version = Integer.reverse(input.readInt());
@@ -49,11 +53,21 @@ public class VorbisPacketFilter implements CodecPacketFilter {
 			int blocksize = input.readUnsignedByte();
 			boolean framing_flag = input.readBoolean();
 
-			if(vorbis_version != 0) return null;
-			if(audio_channels == 0) return null;
-			if(audio_sample_rate == 0) return null;
-			if((blocksize & 0xf0 >>> 4) > (blocksize & 0x0f)) return null;
-			if(!framing_flag) return null;
+			if(vorbis_version != 0) {
+				return null;
+			}
+			if(audio_channels == 0) {
+				return null;
+			}
+			if(audio_sample_rate == 0) {
+				return null;
+			}
+			if((blocksize & 0xf0 >>> 4) > (blocksize & 0x0f)) {
+				return null;
+			}
+			if(!framing_flag) {
+				return null;
+			}
 			currentState = State.IDENTIFICATION_FOUND;
 			break;
 		case IDENTIFICATION_FOUND:
@@ -63,12 +77,18 @@ public class VorbisPacketFilter implements CodecPacketFilter {
 			 */
 			magicHeader = new byte[1+magicNumber.length];
 			input.readFully(magicHeader);
-			if(magicHeader[0] != 0x3) return null;
+			if(magicHeader[0] != 0x3) {
+				return null;
+			}
 			for(int i=0; i < magicNumber.length; i++) {
-				if(magicHeader[i+1] != magicNumber[i]) return null;
+				if(magicHeader[i+1] != magicNumber[i]) {
+					return null;
+				}
 			}
 			long vendor_length = Integer.reverseBytes(input.readInt());
-			if(logMINOR) Logger.minor(this, "Read a vendor length of "+vendor_length);
+			if(logMINOR) {
+				Logger.minor(this, "Read a vendor length of "+vendor_length);
+			}
 			byte[] vendor_string = new byte[(int)vendor_length];
 			input.readFully(vendor_string);
 			long user_comment_list_length = Integer.reverseBytes(input.readInt());
@@ -77,7 +97,9 @@ public class VorbisPacketFilter implements CodecPacketFilter {
 					input.skipBytes(1);
 				}
 			}
-			if(!input.readBoolean()) return null;
+			if(!input.readBoolean()) {
+				return null;
+			}
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
 			DataOutputStream output = new DataOutputStream(data);
 			output.write(magicHeader);

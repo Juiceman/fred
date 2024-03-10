@@ -112,20 +112,35 @@ public class ClientPut extends ClientPutBase {
 	 * @throws IOException
 	 * @throws InsertException
 	 */
-	public ClientPut(PersistentRequestClient globalClient, FreenetURI uri, String identifier, int verbosity,
+	public ClientPut(PersistentRequestClient globalClient, FreenetURI uri, String identifier,
+					 int verbosity,
 					 String charset, short priorityClass, Persistence persistence, String clientToken,
-					 boolean getCHKOnly, boolean dontCompress, int maxRetries, UploadFrom uploadFromType, File origFilename,
-					 String contentType, RandomAccessBucket data, FreenetURI redirectTarget, String targetFilename, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, InsertContext.CompatibilityMode compatMode, byte[] overrideSplitfileKey, boolean binaryBlob, NodeClientCore core) throws IdentifierCollisionException, NotAllowedException, MetadataUnresolvedException, IOException {
-		super(uri = checkEmptySSK(uri, targetFilename, core.clientContext), identifier, verbosity, charset, null, globalClient, priorityClass, persistence, null, true, getCHKOnly, dontCompress, maxRetries, earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock, extraInsertsSplitfileHeaderBlock, realTimeFlag, null, compatMode, false/*XXX ignoreUSKDatehints*/, core);
+					 boolean getCHKOnly, boolean dontCompress, int maxRetries, UploadFrom uploadFromType,
+					 File origFilename,
+					 String contentType, RandomAccessBucket data, FreenetURI redirectTarget, String targetFilename,
+					 boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable,
+					 int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag,
+					 InsertContext.CompatibilityMode compatMode, byte[] overrideSplitfileKey, boolean binaryBlob,
+					 NodeClientCore core) throws IdentifierCollisionException, NotAllowedException,
+		MetadataUnresolvedException, IOException {
+		super(uri = checkEmptySSK(uri, targetFilename, core.clientContext), identifier, verbosity, charset,
+			  null, globalClient, priorityClass, persistence, null, true, getCHKOnly, dontCompress, maxRetries,
+			  earlyEncode, canWriteClientCache, forkOnCacheable, false, extraInsertsSingleBlock,
+			  extraInsertsSplitfileHeaderBlock, realTimeFlag, null, compatMode, false/*XXX ignoreUSKDatehints*/,
+			  core);
 		if(uploadFromType == UploadFrom.DISK) {
-			if(!core.allowUploadFrom(origFilename))
+			if(!core.allowUploadFrom(origFilename)) {
 				throw new NotAllowedException();
-			if(!(origFilename.exists() && origFilename.canRead()))
+			}
+			if(!(origFilename.exists() && origFilename.canRead())) {
 				throw new FileNotFoundException();
+			}
 		}
 
 		this.binaryBlob = binaryBlob;
-		if(binaryBlob) contentType = null;
+		if(binaryBlob) {
+			contentType = null;
+		}
 		this.targetFilename = targetFilename;
 		this.uploadFrom = uploadFromType;
 		this.origFilename = origFilename;
@@ -135,14 +150,17 @@ public class ClientPut extends ClientPutBase {
 		RandomAccessBucket tempData = data;
 		ClientMetadata cm = new ClientMetadata(mimeType);
 		boolean isMetadata = false;
-		if(logMINOR) Logger.minor(this, "data = "+tempData+", uploadFrom = "+uploadFrom);
+		if(logMINOR) {
+			Logger.minor(this, "data = "+tempData+", uploadFrom = "+uploadFrom);
+		}
 		if(uploadFrom == UploadFrom.REDIRECT) {
 			this.targetURI = redirectTarget;
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI, cm);
 			tempData = m.toBucket(core.clientContext.getBucketFactory(isPersistentForever()));
 			isMetadata = true;
-		} else
+		} else {
 			targetURI = null;
+		}
 
 		this.data = tempData;
 		this.clientMetadata = cm;
@@ -150,20 +168,29 @@ public class ClientPut extends ClientPutBase {
 		putter = new ClientPutter(this, data, this.uri, cm,
 								  ctx, priorityClass,
 								  isMetadata,
-								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, core.clientContext, overrideSplitfileKey, -1);
+								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, core.clientContext,
+								  overrideSplitfileKey, -1);
 	}
 
-	public ClientPut(FCPConnectionHandler handler, ClientPutMessage message, FCPServer server) throws IdentifierCollisionException, MessageInvalidException, IOException {
-		super(checkEmptySSK(message.uri, message.targetFilename, server.core.clientContext), message.identifier, message.verbosity, null,
+	public ClientPut(FCPConnectionHandler handler, ClientPutMessage message,
+					 FCPServer server) throws IdentifierCollisionException, MessageInvalidException, IOException {
+		super(checkEmptySSK(message.uri, message.targetFilename, server.core.clientContext),
+			  message.identifier, message.verbosity, null,
 			  handler, message.priorityClass, message.persistence, message.clientToken,
-			  message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly, message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable, message.compressorDescriptor, message.extraInsertsSingleBlock, message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode, message.ignoreUSKDatehints, server);
+			  message.global, message.getCHKOnly, message.dontCompress, message.localRequestOnly,
+			  message.maxRetries, message.earlyEncode, message.canWriteClientCache, message.forkOnCacheable,
+			  message.compressorDescriptor, message.extraInsertsSingleBlock,
+			  message.extraInsertsSplitfileHeaderBlock, message.realTimeFlag, message.compatibilityMode,
+			  message.ignoreUSKDatehints, server);
 		String salt = null;
 		byte[] saltedHash = null;
 		binaryBlob = message.binaryBlob;
 
 		if(message.uploadFromType == UploadFrom.DISK) {
-			if(!handler.server.core.allowUploadFrom(message.origFilename))
-				throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to upload from "+message.origFilename, identifier, global);
+			if(!handler.server.core.allowUploadFrom(message.origFilename)) {
+				throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+												  "Not allowed to upload from "+message.origFilename, identifier, global);
+			}
 
 			if(message.fileHash != null) {
 				try {
@@ -173,11 +200,15 @@ public class ClientPut extends ClientPutBase {
 					try {
 						saltedHash = Base64.decode(message.fileHash);
 					} catch (IllegalBase64Exception e1) {
-						throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Can't base64 decode " + ClientPutBase.FILE_HASH, identifier, global);
+						throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+														  "Can't base64 decode " + ClientPutBase.FILE_HASH, identifier, global);
 					}
 				}
-			} else if(!handler.allowDDAFrom(message.origFilename, false))
-				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "Not allowed to upload from "+message.origFilename+". Have you done a testDDA previously ?", identifier, global);
+			} else if(!handler.allowDDAFrom(message.origFilename, false)) {
+				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED,
+												  "Not allowed to upload from "+message.origFilename+". Have you done a testDDA previously ?",
+												  identifier, global);
+			}
 		}
 
 		this.targetFilename = message.targetFilename;
@@ -187,7 +218,8 @@ public class ClientPut extends ClientPutBase {
 		String mimeType = message.contentType;
 		if(binaryBlob) {
 			if(mimeType != null && !mimeType.equals(BinaryBlob.MIME_TYPE)) {
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "No MIME type allowed when inserting a binary blob", identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+												  "No MIME type allowed when inserting a binary blob", identifier, global);
 			}
 		}
 		if(mimeType == null && origFilename != null) {
@@ -196,16 +228,21 @@ public class ClientPut extends ClientPutBase {
 		if ((mimeType == null) && (targetFilename != null)) {
 			mimeType = DefaultMIMETypes.guessMIMEType(targetFilename, true);
 		}
-		if(mimeType != null && mimeType.isEmpty()) mimeType = null;
+		if(mimeType != null && mimeType.isEmpty()) {
+			mimeType = null;
+		}
 		if(mimeType != null && !DefaultMIMETypes.isPlausibleMIMEType(mimeType)) {
-			throw new MessageInvalidException(ProtocolErrorMessage.BAD_MIME_TYPE, "Bad MIME type in Metadata.ContentType", identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.BAD_MIME_TYPE,
+											  "Bad MIME type in Metadata.ContentType", identifier, global);
 		}
 
 		clientToken = message.clientToken;
 		RandomAccessBucket tempData = message.getRandomAccessBucket();
 		ClientMetadata cm = new ClientMetadata(mimeType);
 		boolean isMetadata = false;
-		if(logMINOR) Logger.minor(this, "data = "+tempData+", uploadFrom = "+uploadFrom);
+		if(logMINOR) {
+			Logger.minor(this, "data = "+tempData+", uploadFrom = "+uploadFrom);
+		}
 		if(uploadFrom == UploadFrom.REDIRECT) {
 			this.targetURI = message.redirectTarget;
 			Metadata m = new Metadata(DocumentType.SIMPLE_REDIRECT, null, null, targetURI, cm);
@@ -218,11 +255,13 @@ public class ClientPut extends ClientPutBase {
 				clientMetadata = cm;
 				putter = null;
 				// This is *not* an InsertException since we don't register it: it's a protocol error.
-				throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR, "Impossible: metadata unresolved: "+e, identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR,
+												  "Impossible: metadata unresolved: "+e, identifier, global);
 			}
 			isMetadata = true;
-		} else
+		} else {
 			targetURI = null;
+		}
 		this.data = tempData;
 		this.clientMetadata = cm;
 
@@ -246,17 +285,25 @@ public class ClientPut extends ClientPutBase {
 			foundHash = md.digest();
 			SHA256.returnMessageDigest(md);
 
-			if(logMINOR) Logger.minor(this, "FileHash result : we found " + Base64.encode(foundHash) + " and were given " + Base64.encode(saltedHash) + '.');
+			if(logMINOR) {
+				Logger.minor(this, "FileHash result : we found " + Base64.encode(foundHash) + " and were given " +
+							 Base64.encode(saltedHash) + '.');
+			}
 
-			if(!Arrays.equals(saltedHash, foundHash))
-				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "The hash doesn't match! (salt used : \""+salt+"\")", identifier, global);
+			if(!Arrays.equals(saltedHash, foundHash)) {
+				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED,
+												  "The hash doesn't match! (salt used : \""+salt+"\")", identifier, global);
+			}
 		}
 
-		if(logMINOR) Logger.minor(this, "data = "+data+", uploadFrom = "+uploadFrom);
+		if(logMINOR) {
+			Logger.minor(this, "data = "+data+", uploadFrom = "+uploadFrom);
+		}
 		putter = new ClientPutter(this, data, this.uri, cm,
 								  ctx, priorityClass,
 								  isMetadata,
-								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, server.core.clientContext, message.overrideSplitfileCryptoKey, message.metadataThreshold);
+								  this.uri.getDocName() == null ? targetFilename : null, binaryBlob, server.core.clientContext,
+								  message.overrideSplitfileCryptoKey, message.metadataThreshold);
 	}
 
 	protected ClientPut() {
@@ -272,8 +319,9 @@ public class ClientPut extends ClientPutBase {
 
 	@Override
 	void register(boolean noTags) throws IdentifierCollisionException {
-		if(persistence != Persistence.CONNECTION)
+		if(persistence != Persistence.CONNECTION) {
 			client.register(this);
+		}
 		if(persistence != Persistence.CONNECTION && !noTags) {
 			FCPMessage msg = persistentTagMessage();
 			client.queueClientRequestMessage(msg, 0);
@@ -282,10 +330,13 @@ public class ClientPut extends ClientPutBase {
 
 	@Override
 	public void start(ClientContext context) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Starting "+this+" : "+identifier);
+		}
 		synchronized(this) {
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 		}
 		try {
 			putter.start(false, context);
@@ -321,7 +372,9 @@ public class ClientPut extends ClientPutBase {
 		synchronized(this) {
 			d = data;
 			data = null;
-			if(d == null) return;
+			if(d == null) {
+				return;
+			}
 			finishedSize = d.size();
 		}
 		d.free();
@@ -334,12 +387,16 @@ public class ClientPut extends ClientPutBase {
 
 	@Override
 	protected FCPMessage persistentTagMessage() {
-		if (putter == null)
+		if (putter == null) {
 			Logger.error(this, "putter == null", new Exception("error"));
+		}
 		// FIXME end
-		return new PersistentPut(identifier, publicURI, uri, verbosity, priorityClass, uploadFrom, targetURI,
+		return new PersistentPut(identifier, publicURI, uri, verbosity, priorityClass, uploadFrom,
+								 targetURI,
 								 persistence, origFilename, clientMetadata.getMIMEType(), client.isGlobalQueue,
-								 getDataSize(), clientToken, started, ctx.maxInsertRetries, targetFilename, binaryBlob, this.ctx.getCompatibilityMode(), this.ctx.dontCompress, this.ctx.compressorDescriptor, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null);
+								 getDataSize(), clientToken, started, ctx.maxInsertRetries, targetFilename, binaryBlob,
+								 this.ctx.getCompatibilityMode(), this.ctx.dontCompress, this.ctx.compressorDescriptor, isRealTime(),
+								 putter != null ? putter.getSplitfileCryptoKey() : null);
 	}
 
 	private boolean isRealTime() {
@@ -371,15 +428,16 @@ public class ClientPut extends ClientPutBase {
 	}
 
 	public File getOrigFilename() {
-		if(uploadFrom != UploadFrom.DISK)
+		if(uploadFrom != UploadFrom.DISK) {
 			return null;
+		}
 		return origFilename;
 	}
 
 	public long getDataSize() {
-		if(data == null)
+		if(data == null) {
 			return finishedSize;
-		else {
+		} else {
 			return data.size();
 		}
 	}
@@ -403,7 +461,9 @@ public class ClientPut extends ClientPutBase {
 
 	@Override
 	public boolean restart(ClientContext context, final boolean disableFilterData) {
-		if(!canRestart()) return false;
+		if(!canRestart()) {
+			return false;
+		}
 		setVarsRestart();
 		try {
 			if(client != null) {
@@ -461,12 +521,18 @@ public class ClientPut extends ClientPutBase {
 
 	/** Probably not meaningful for ClientPutDir's */
 	public COMPRESS_STATE isCompressing() {
-		if(ctx.dontCompress) return COMPRESS_STATE.WORKING;
+		if(ctx.dontCompress) {
+			return COMPRESS_STATE.WORKING;
+		}
 		synchronized(this) {
-			if(!compressed) return COMPRESS_STATE.WAITING; // An insert starts at compressing
+			if(!compressed) {
+				return COMPRESS_STATE.WAITING;    // An insert starts at compressing
+			}
 			// The progress message persists... so we need to know whether we have
 			// started compressing *SINCE RESTART*.
-			if(compressing) return COMPRESS_STATE.COMPRESSING;
+			if(compressing) {
+				return COMPRESS_STATE.COMPRESSING;
+			}
 			return COMPRESS_STATE.WORKING;
 		}
 	}
@@ -474,7 +540,9 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStartCompressing() {
 		synchronized(this) {
-			if(compressed) return;
+			if(compressed) {
+				return;
+			}
 			compressing = true;
 		}
 		if(client != null) {
@@ -488,7 +556,9 @@ public class ClientPut extends ClientPutBase {
 	@Override
 	protected void onStopCompressing() {
 		synchronized(this) {
-			if(compressed) return; // Race condition possible
+			if(compressed) {
+				return;    // Race condition possible
+			}
 			compressing = false;
 			compressed = true;
 		}
@@ -516,7 +586,9 @@ public class ClientPut extends ClientPutBase {
 			mimeType = clientMetadata.getMIMEType();
 		}
 		File fnam = getOrigFilename();
-		if(fnam != null) fnam = new File(fnam.getPath());
+		if(fnam != null) {
+			fnam = new File(fnam.getPath());
+		}
 
 		int total=0, min=0, fetched=0, fatal=0, failed=0;
 		// See ClientRequester.getLatestSuccess() for why this defaults to current time.
@@ -547,8 +619,9 @@ public class ClientPut extends ClientPutBase {
 
 	@Override
 	public void innerResume(ClientContext context) throws ResumeFailedException {
-		if(data != null)
+		if(data != null) {
 			data.onResume(context);
+		}
 	}
 
 	@Override

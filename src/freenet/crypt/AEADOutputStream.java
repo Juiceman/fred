@@ -78,12 +78,14 @@ public class AEADOutputStream extends FilterOutputStream {
 	static final int AES_BLOCK_SIZE = 16;
 	public static final int AES_OVERHEAD = AES_BLOCK_SIZE + MAC_SIZE_BYTES;
 
-	public static AEADOutputStream createAES(OutputStream os, byte[] key, SecureRandom random) throws IOException {
+	public static AEADOutputStream createAES(OutputStream os, byte[] key,
+			SecureRandom random) throws IOException {
 		return innerCreateAES(os, key, random);
 	}
 
 	/** For unit tests only */
-	static AEADOutputStream innerCreateAES(OutputStream os, byte[] key, Random random) throws IOException {
+	static AEADOutputStream innerCreateAES(OutputStream os, byte[] key,
+										   Random random) throws IOException {
 		AESEngine mainCipher = new AESEngine();
 		AESLightEngine hashCipher = new AESLightEngine();
 		byte[] nonce = new byte[mainCipher.getBlockSize()];

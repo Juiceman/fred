@@ -63,13 +63,17 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	// this should prevent to big containers
 	public static final long DEFAULT_CONTAINERSIZE_SPARE = 196*1024;
 
-	public DefaultManifestPutter(ClientPutCallback clientCallback, HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName, InsertContext ctx,
-								 boolean persistent, byte[] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
+	public DefaultManifestPutter(ClientPutCallback clientCallback,
+								 HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName,
+								 InsertContext ctx,
+								 boolean persistent, byte[] forceCryptoKey,
+								 ClientContext context) throws TooManyFilesInsertException {
 		// If the top level key is an SSK, all CHK blocks and particularly splitfiles below it should have
 		// randomised keys. This substantially improves security by making it impossible to identify blocks
 		// even if you know the content. In the user interface, we will offer the option of inserting as a
 		// random SSK to take advantage of this.
-		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx, ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
+		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx,
+			  ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
 	}
 
 	/**
@@ -78,9 +82,11 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	 * @see freenet.client.async.BaseManifestPutter#makePutHandlers(java.util.HashMap, String)
 	 */
 	@Override
-	protected void makePutHandlers(HashMap<String,Object> manifestElements, String defaultName) throws TooManyFilesInsertException {
+	protected void makePutHandlers(HashMap<String,Object> manifestElements,
+								   String defaultName) throws TooManyFilesInsertException {
 		verifyManifest(manifestElements);
-		makePutHandlers(getRootContainer(), manifestElements, defaultName, "", DEFAULT_MAX_CONTAINERSIZE, null);
+		makePutHandlers(getRootContainer(), manifestElements, defaultName, "", DEFAULT_MAX_CONTAINERSIZE,
+						null);
 	}
 
 	/**
@@ -113,32 +119,39 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	 * @throws TooManyFilesInsertException If there are a ridiculous number of files in a single directory
 	 * so we cannot complete the insert.
 	 */
-	private long makePutHandlers(ContainerBuilder containerBuilder, HashMap<String,Object> manifestElements, String defaultName, String prefix, long maxSize, String parentName) throws TooManyFilesInsertException {
+	private long makePutHandlers(ContainerBuilder containerBuilder,
+								 HashMap<String,Object> manifestElements, String defaultName, String prefix, long maxSize,
+								 String parentName) throws TooManyFilesInsertException {
 		//(HashMap<String, Object> md, PluginReplySender replysender, String identifier, long maxSize, boolean doInsert, String parentName) throws InsertException {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "STAT: handling "+((parentName==null)?"<root>?": parentName));
+		}
 		//if (doInsert && (parentName == null)) throw new IllegalStateException("Parent name cant be null for insert!");
 		//if (doInsert) containercounter += 1;
-		if (maxSize == DEFAULT_MAX_CONTAINERSIZE)
+		if (maxSize == DEFAULT_MAX_CONTAINERSIZE) {
 			maxSize = DEFAULT_MAX_CONTAINERSIZE - DEFAULT_CONTAINERSIZE_SPARE;
+		}
 
 		// first get the size (the whole one)
-		ContainerSize wholeSize = ContainerSizeEstimator.getSubTreeSize(manifestElements, DEFAULT_MAX_CONTAINERITEMSIZE, maxSize, Integer.MAX_VALUE);
+		ContainerSize wholeSize = ContainerSizeEstimator.getSubTreeSize(manifestElements,
+								  DEFAULT_MAX_CONTAINERITEMSIZE, maxSize, Integer.MAX_VALUE);
 
 		// step one
 		// have a look at all
 		if (wholeSize.getSizeTotalNoLimit() <= maxSize) {
 			// that was easy. the whole tree fits into current container (without externals!)
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "PackStat2: the whole tree (unlimited) fits into container (no externals)");
+			}
 			makeEveryThingUnlimitedPutHandlers(containerBuilder, manifestElements, defaultName, prefix);
 			return wholeSize.getSizeTotalNoLimit();
 		}
 
 		if (wholeSize.getSizeTotal() <= maxSize) {
 			// that was easy. the whole tree fits into current container (with externals)
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "PackStat2: the whole tree fits into container (with externals)");
+			}
 			makeEveryThingPutHandlers(containerBuilder, manifestElements, defaultName, prefix);
 			return wholeSize.getSizeTotal();
 		}
@@ -151,8 +164,10 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		// the files in dir fits into container?
 		if ((wholeSize.getSizeFiles() < maxSize) || (wholeSize.getSizeFilesNoLimit() < maxSize)) {
 			// the files in dir fits into container
-			if(logMINOR)
-				Logger.minor(this, "PackStat2: the files in dir fits into container with spare, so it need to grab stuff from sub's to fill container up");
+			if(logMINOR) {
+				Logger.minor(this,
+							 "PackStat2: the files in dir fits into container with spare, so it need to grab stuff from sub's to fill container up");
+			}
 			if (wholeSize.getSizeFilesNoLimit() < maxSize) {
 				for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 					String name = entry.getKey();
@@ -171,10 +186,12 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 					Object o = entry.getValue();
 					if (o instanceof ManifestElement) {
 						ManifestElement me = (ManifestElement)o;
-						if (me.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE)
-							containerBuilder.addExternal(name, me.getData(), me.getMimeTypeOverride(), name.equals(defaultName));
-						else
+						if (me.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE) {
+							containerBuilder.addExternal(name, me.getData(), me.getMimeTypeOverride(),
+														 name.equals(defaultName));
+						} else {
 							containerBuilder.addItem(name, prefix+name, me, name.equals(defaultName));
+						}
 					} else {
 						tmpSize += 512;
 					}
@@ -233,13 +250,18 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 
 		// (last) step three
 		// all subdirs fit into current container?
-		if ((wholeSize.getSizeSubTrees() + tmpSize + minUsageForFiles < maxSize) || (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize)) {
+		if ((wholeSize.getSizeSubTrees() + tmpSize + minUsageForFiles < maxSize)
+				|| (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize)) {
 			//all subdirs fit into current container, do it
 			// and add files up to limit
-			if(logMINOR)
-				Logger.minor(this, "PackStat2: the sub dirs fit into container with spare, so it need to grab files to fill container up");
+			if(logMINOR) {
+				Logger.minor(this,
+							 "PackStat2: the sub dirs fit into container with spare, so it need to grab files to fill container up");
+			}
 			if (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize) {
-				if(logMINOR) Logger.minor(this, " (unlimited)");
+				if(logMINOR) {
+					Logger.minor(this, " (unlimited)");
+				}
 				for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 					String name = entry.getKey();
 					Object o = entry.getValue();
@@ -254,7 +276,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 				}
 				tmpSize = wholeSize.getSizeSubTreesNoLimit();
 			} else {
-				if(logMINOR) Logger.minor(this, " (limited)");
+				if(logMINOR) {
+					Logger.minor(this, " (limited)");
+				}
 				for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 					String name = entry.getKey();
 					Object o = entry.getValue();
@@ -271,8 +295,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 		} else {
 			// sub dirs does not fit into container, make each its own
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "PackStat2: sub dirs does not fit into container, make each its own");
+			}
 			for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 				String name = entry.getKey();
 				Object o = entry.getValue();
@@ -306,13 +331,15 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		}
 		assert(minUsageForFiles == 0);
 
-		if(tmpSize > maxSize)
+		if(tmpSize > maxSize) {
 			throw new TooManyFilesInsertException();
+		}
 
 		// group files left into external archives ('CHK@.../name' redirects)
 		while (!itemsLeft.isEmpty()) {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "ItemsLeft checker: "+itemsLeft.size());
+			}
 
 			if (itemsLeft.size() == 1) {
 				// one item left, make it external
@@ -327,7 +354,8 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 
 			final long leftLimit = DEFAULT_MAX_CONTAINERSIZE - DEFAULT_CONTAINERSIZE_SPARE;
-			ContainerSize leftSize = ContainerSizeEstimator.getSubTreeSize(itemsLeft, DEFAULT_MAX_CONTAINERITEMSIZE, leftLimit, 0);
+			ContainerSize leftSize = ContainerSizeEstimator.getSubTreeSize(itemsLeft,
+									 DEFAULT_MAX_CONTAINERITEMSIZE, leftLimit, 0);
 
 			if ((leftSize.getSizeFiles() > 0) && (leftSize.getSizeFilesNoLimit() <= leftLimit)) {
 				// possible container items are left, and everything fits into single archive
@@ -343,7 +371,8 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 
 			// getSizeFiles() includes 512 bytes for each file over the size limit
-			if (((leftSize.getSizeFiles() - (512*itemsLeft.size())) == 0) && (leftSize.getSizeFilesNoLimit() > 0)) {
+			if (((leftSize.getSizeFiles() - (512*itemsLeft.size())) == 0)
+					&& (leftSize.getSizeFilesNoLimit() > 0)) {
 				// all items left are to big (or redirect), make all external
 				for(Map.Entry<String, Object> entry:itemsLeft.entrySet()) {
 					String lname = entry.getKey();
@@ -363,7 +392,8 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 				Map.Entry<String, Object> entry = iter.next();
 				String lname = entry.getKey();
 				ManifestElement me = (ManifestElement)entry.getValue();
-				if ((me.getSize() > -1) && (me.getSize() <= DEFAULT_MAX_CONTAINERITEMSIZE) && (me.getSize() < (DEFAULT_MAX_CONTAINERSIZE-archiveLimit))) {
+				if ((me.getSize() > -1) && (me.getSize() <= DEFAULT_MAX_CONTAINERITEMSIZE)
+						&& (me.getSize() < (DEFAULT_MAX_CONTAINERSIZE-archiveLimit))) {
 					containerBuilder.addArchiveItem(archive, lname, me, lname.equals(defaultName));
 					tmpSize += 512;
 					archiveLimit += ContainerSizeEstimator.tarItemSize(me.getSize());
@@ -375,7 +405,8 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	}
 
 	/** Pack everything into a single container. */
-	private void makeEveryThingUnlimitedPutHandlers(ContainerBuilder containerBuilder, HashMap<String,Object> manifestElements, String defaultName, String prefix) {
+	private void makeEveryThingUnlimitedPutHandlers(ContainerBuilder containerBuilder,
+			HashMap<String,Object> manifestElements, String defaultName, String prefix) {
 		for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 			String name = entry.getKey();
 			Object o = entry.getValue();
@@ -393,16 +424,19 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		}
 	}
 
-	private void makeEveryThingPutHandlers(ContainerBuilder containerBuilder, HashMap<String,Object> manifestElements, String defaultName, String prefix) {
+	private void makeEveryThingPutHandlers(ContainerBuilder containerBuilder,
+										   HashMap<String,Object> manifestElements, String defaultName, String prefix) {
 		for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 			String name = entry.getKey();
 			Object o = entry.getValue();
 			if(o instanceof ManifestElement) {
 				ManifestElement element = (ManifestElement) o;
-				if (element.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE)
-					containerBuilder.addExternal(name, element.getData(), element.getMimeTypeOverride(), name.equals(defaultName));
-				else
+				if (element.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE) {
+					containerBuilder.addExternal(name, element.getData(), element.getMimeTypeOverride(),
+												 name.equals(defaultName));
+				} else {
 					containerBuilder.addItem(name, prefix+name, element, name.equals(defaultName));
+				}
 				continue;
 			} else {
 				@SuppressWarnings("unchecked")

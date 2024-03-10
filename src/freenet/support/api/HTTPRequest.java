@@ -142,7 +142,8 @@ public interface HTTPRequest {
 	@Deprecated
 	public String getPartAsString(String name, int maxlength);
 
-	public String getPartAsStringThrowing(String name, int maxlength) throws NoSuchElementException, SizeLimitExceededException;
+	public String getPartAsStringThrowing(String name, int maxlength) throws NoSuchElementException,
+			   SizeLimitExceededException;
 
 	/**
 	 * Gets up to maxLength characters from the part, ignores any characters after the limit.
@@ -157,7 +158,8 @@ public interface HTTPRequest {
 	@Deprecated
 	public byte[] getPartAsBytes(String name, int maxlength);
 
-	public byte[] getPartAsBytesThrowing(String name, int maxlength) throws NoSuchElementException, SizeLimitExceededException;
+	public byte[] getPartAsBytesThrowing(String name, int maxlength) throws NoSuchElementException,
+			   SizeLimitExceededException;
 
 	/**
 	 * Gets up to maxLength bytes from the part, ignores any bytes after the limit.

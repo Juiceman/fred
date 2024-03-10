@@ -56,8 +56,9 @@ public class LRUMapTest {
 	private LRUMap<Object, Object> createSampleHashTable(int size) {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(size);
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		return methodLRUht;
 	}
 
@@ -70,8 +71,9 @@ public class LRUMapTest {
 	 * @return true if the key is present and returned value is the same as in the argument
 	 */
 	private boolean verifyKeyValPresence(LRUMap<Object, Object> aLRUht, Object aKey, Object aValue) {
-		if (aLRUht.containsKey(aKey))
+		if (aLRUht.containsKey(aKey)) {
 			return aLRUht.get(aKey).equals(aValue);
+		}
 		return false;
 	}
 
@@ -179,11 +181,13 @@ public class LRUMapTest {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(sampleElemsNumber);
 		//pushing objects
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		//getting keys
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			assertEquals(sampleObjects[i][0],methodLRUht.popKey());
+		}
 		//the HashTable must be empty
 		assertNull(methodLRUht.popKey());
 	}
@@ -200,11 +204,13 @@ public class LRUMapTest {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(sampleElemsNumber);
 		//pushing objects
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		//getting values
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			assertEquals(sampleObjects[i][1],methodLRUht.popValue());
+		}
 		//the HashTable must be empty
 		assertNull(methodLRUht.popKey());
 	}
@@ -230,8 +236,9 @@ public class LRUMapTest {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(sampleElemsNumber);
 		//pushing objects
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		//getting values
 		for (int i=0; i<sampleObjects.length; i++) {
 			assertEquals(sampleObjects[i][1],methodLRUht.peekValue());
@@ -278,8 +285,9 @@ public class LRUMapTest {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(sampleElemsNumber);
 		//pushing objects
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		//popping keys
 		for (int i=sampleObjects.length-1; i>=0; i--) {
 			assertTrue(methodLRUht.removeKey(sampleObjects[i][0]));
@@ -371,8 +379,9 @@ public class LRUMapTest {
 		LRUMap<Object, Object> methodLRUht = new LRUMap<Object, Object>();
 		Object[][] sampleObjects = createSampleKeyVal(sampleElemsNumber);
 		//pushing objects
-		for (int i=0; i<sampleObjects.length; i++)
+		for (int i=0; i<sampleObjects.length; i++) {
 			methodLRUht.push(sampleObjects[i][0],sampleObjects[i][1]);
+		}
 		Enumeration<Object> methodEnumeration = methodLRUht.keys();
 		int j=0;
 		while(methodEnumeration.hasMoreElements()) {
@@ -393,8 +402,9 @@ public class LRUMapTest {
 		assertTrue(methodLRUht.isEmpty());
 		methodLRUht = createSampleHashTable(sampleElemsNumber);
 		//popping keys
-		for (int i=0; i<sampleElemsNumber; i++)
+		for (int i=0; i<sampleElemsNumber; i++) {
 			methodLRUht.popKey();
+		}
 		assertTrue(methodLRUht.isEmpty());
 	}
 

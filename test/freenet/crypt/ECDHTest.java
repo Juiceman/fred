@@ -30,7 +30,8 @@ public class ECDHTest {
 	}
 
 	@Test
-	public void testGetAgreedSecret() throws InvalidKeyException, IllegalStateException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+	public void testGetAgreedSecret() throws InvalidKeyException, IllegalStateException,
+		NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 		byte[] aliceS = alice.getAgreedSecret(bob.getPublicKey());
 		byte[] bobS = bob.getAgreedSecret(alice.getPublicKey());
 		assertNotNull(aliceS);
@@ -52,7 +53,8 @@ public class ECDHTest {
 	}
 
 
-	public static void main(String[] args) throws InvalidKeyException, IllegalStateException, NoSuchAlgorithmException {
+	public static void main(String[] args) throws InvalidKeyException, IllegalStateException,
+		NoSuchAlgorithmException {
 		Security.addProvider(new BouncyCastleProvider());
 
 		ECDH alice = new ECDH(Curves.P256);

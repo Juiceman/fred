@@ -40,7 +40,9 @@ public class IncomingPacketFilterImpl implements IncomingPacketFilter {
 
 	@Override
 	public boolean isDisconnected(PeerContext context) {
-		if(context == null) return false;
+		if(context == null) {
+			return false;
+		}
 		return !context.isConnected();
 	}
 
@@ -48,7 +50,9 @@ public class IncomingPacketFilterImpl implements IncomingPacketFilter {
 	private static final AtomicLong failedDecodePackets = new AtomicLong();
 
 	public static long[] getDecodedPackets() {
-		if(!logMINOR) return null;
+		if(!logMINOR) {
+			return null;
+		}
 		long decoded = successfullyDecodedPackets.get();
 		long failed = failedDecodePackets.get();
 		return new long[] { decoded, decoded+failed };
@@ -56,13 +60,17 @@ public class IncomingPacketFilterImpl implements IncomingPacketFilter {
 
 	@Override
 	public DECODED process(byte[] buf, int offset, int length, Peer peer, long now) {
-		if(logMINOR) Logger.minor(this, "Packet length "+length+" from "+peer);
+		if(logMINOR) {
+			Logger.minor(this, "Packet length "+length+" from "+peer);
+		}
 		node.random.acceptTimerEntropy(fnpTimingSource, 0.25);
 		PeerNode opn = node.peers.getByPeer(peer, mangler);
 
 		if(opn != null) {
 			if(opn.handleReceivedPacket(buf, offset, length, now, peer)) {
-				if(logMINOR) successfullyDecodedPackets.incrementAndGet();
+				if(logMINOR) {
+					successfullyDecodedPackets.incrementAndGet();
+				}
 				return DECODED.DECODED;
 			}
 		} else {
@@ -70,18 +78,26 @@ public class IncomingPacketFilterImpl implements IncomingPacketFilter {
 		}
 		DECODED decoded = mangler.process(buf, offset, length, peer, opn, now);
 		if(decoded == DECODED.DECODED) {
-			if(logMINOR) successfullyDecodedPackets.incrementAndGet();
+			if(logMINOR) {
+				successfullyDecodedPackets.incrementAndGet();
+			}
 		} else if(decoded == DECODED.NOT_DECODED) {
 
 			for(PeerNode pn : crypto.getPeerNodes()) {
-				if(pn == opn) continue;
+				if(pn == opn) {
+					continue;
+				}
 				if(pn.handleReceivedPacket(buf, offset, length, now, peer)) {
-					if(logMINOR) successfullyDecodedPackets.incrementAndGet();
+					if(logMINOR) {
+						successfullyDecodedPackets.incrementAndGet();
+					}
 					return DECODED.DECODED;
 				}
 			}
 
-			if(logMINOR) failedDecodePackets.incrementAndGet();
+			if(logMINOR) {
+				failedDecodePackets.incrementAndGet();
+			}
 		}
 		return decoded;
 	}

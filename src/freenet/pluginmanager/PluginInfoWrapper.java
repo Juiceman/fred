@@ -48,7 +48,8 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	private volatile boolean stopping = false;
 	private volatile boolean unregistered = false;
 
-	public PluginInfoWrapper(Node node, FredPlugin plug, String filename, boolean isOfficial) throws IOException {
+	public PluginInfoWrapper(Node node, FredPlugin plug, String filename,
+							 boolean isOfficial) throws IOException {
 		this.plug = plug;
 		className = plug.getClass().toString();
 		this.filename = filename;
@@ -76,12 +77,14 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 		isBaseL10nPlugin = (plug instanceof FredPluginBaseL10n);
 		isConfigurablePlugin = (plug instanceof FredPluginConfigurable);
 		if(isConfigurablePlugin) {
-			config = FilePersistentConfig.constructFilePersistentConfig(new File(node.getCfgDir(), "plugin-"+getPluginClassName()+".ini"),
+			config = FilePersistentConfig.constructFilePersistentConfig(new File(node.getCfgDir(),
+					 "plugin-"+getPluginClassName()+".ini"),
 					 "config options for plugin: "+getPluginClassName());
 			subconfig = config.createSubConfig(getPluginClassName());
 			((FredPluginConfigurable)plug).setupConfig(subconfig);
 			config.finishedInit();
-			configToadlet = new ConfigToadlet(pr.getHLSimpleClient(), config, subconfig, node, node.clientCore, (FredPluginConfigurable)plug);
+			configToadlet = new ConfigToadlet(pr.getHLSimpleClient(), config, subconfig, node, node.clientCore,
+											  (FredPluginConfigurable)plug);
 		} else {
 			config = null;
 			subconfig = null;
@@ -91,8 +94,9 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	}
 
 	void setThread(Thread ps) {
-		if(thread != null)
+		if(thread != null) {
 			throw new IllegalStateException("Already set a thread");
+		}
 		thread = ps;
 		thread.setName(threadName);
 	}
@@ -127,14 +131,16 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	}
 
 	public synchronized boolean addPluginToadletSymlink(String linkfrom) {
-		if (toadletLinks.size() < 1)
+		if (toadletLinks.size() < 1) {
 			toadletLinks = new HashSet<String>();
+		}
 		return toadletLinks.add(linkfrom);
 	}
 
 	public synchronized boolean removePluginToadletSymlink(String linkfrom) {
-		if (toadletLinks.size() < 1)
+		if (toadletLinks.size() < 1) {
 			return false;
+		}
 		return toadletLinks.remove(linkfrom);
 	}
 
@@ -170,10 +176,12 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 				try {
 					thread.join(maxWaitTime);
 				} catch (InterruptedException e) {
-					Logger.normal(this, "stopPlugin interrupted while join()ed to terminating plugin thread - maybe one plugin stopping another???");
+					Logger.normal(this,
+								  "stopPlugin interrupted while join()ed to terminating plugin thread - maybe one plugin stopping another???");
 				}
 				if(thread.isAlive()) {
-					String error = "Waited for "+thread+" for "+plug+" to exit for "+maxWaitTime+"ms, and it is still alive!";
+					String error = "Waited for "+thread+" for "+plug+" to exit for "+maxWaitTime
+								   +"ms, and it is still alive!";
 					Logger.error(this, error);
 					System.err.println(error);
 					success = false;
@@ -212,7 +220,9 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	 */
 	void unregister(PluginManager manager, boolean reloading) {
 		synchronized(this) {
-			if(unregistered) return;
+			if(unregistered) {
+				return;
+			}
 			unregistered = true;
 		}
 		manager.unregisterPlugin(this, plug, reloading);
@@ -336,8 +346,10 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 
 	public String getLocalisedPluginName() {
 		String pluginName = getFilename();
-		if(isOfficialPlugin())
+		if(isOfficialPlugin()) {
 			return PluginManager.getOfficialPluginLocalisedName(pluginName);
-		else return pluginName;
+		} else {
+			return pluginName;
+		}
 	}
 }

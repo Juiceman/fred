@@ -28,7 +28,8 @@ public class PeerMessageQueueTest {
 		//The timeout for item should be within (start + 100) and (end + 100)
 		long urgentTime = pmq.getNextUrgentTime(Long.MAX_VALUE, System.currentTimeMillis());
 		if(!((urgentTime >= (start + 100)) && (urgentTime <= (end + 100)))) {
-			fail("Timeout not in expected range. Expected: " + (start + 100) + "->" + (end + 100) + ", actual: " + urgentTime);
+			fail("Timeout not in expected range. Expected: " + (start + 100) + "->" +
+				 (end + 100) + ", actual: " + urgentTime);
 		}
 	}
 
@@ -41,7 +42,8 @@ public class PeerMessageQueueTest {
 
 		//Constructor might take some time, so grab a range
 		long start = System.currentTimeMillis();
-		MessageItem itemUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false, false);
+		MessageItem itemUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false,
+				false);
 		long end = System.currentTimeMillis();
 
 		//Sleep for a little while to get a later timeout
@@ -51,7 +53,8 @@ public class PeerMessageQueueTest {
 
 		}
 
-		MessageItem itemNonUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false, false);
+		MessageItem itemNonUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false,
+				false);
 
 		//Queue the least urgent item first to get the wrong order
 		pmq.queueAndEstimateSize(itemNonUrgent, 1024);
@@ -61,7 +64,8 @@ public class PeerMessageQueueTest {
 		//and (end + 100)
 		long urgentTime = pmq.getNextUrgentTime(Long.MAX_VALUE, System.currentTimeMillis());
 		if(!((urgentTime >= (start + 100)) && (urgentTime <= (end + 100)))) {
-			fail("Timeout not in expected range. Expected: " + (start + 100) + "->" + (end + 100) + ", actual: " + urgentTime);
+			fail("Timeout not in expected range. Expected: " + (start + 100) + "->" +
+				 (end + 100) + ", actual: " + urgentTime);
 		}
 	}
 
@@ -69,7 +73,8 @@ public class PeerMessageQueueTest {
 	public void testGrabQueuedMessageItem() {
 		PeerMessageQueue pmq = new PeerMessageQueue();
 
-		MessageItem itemUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false, false);
+		MessageItem itemUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false,
+				false);
 
 		//Sleep for a little while to get a later timeout
 		try {
@@ -78,7 +83,8 @@ public class PeerMessageQueueTest {
 
 		}
 
-		MessageItem itemNonUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false, false);
+		MessageItem itemNonUrgent = new MessageItem(new byte[1024], null, false, null, (short) 0, false,
+				false);
 
 		//Queue the least urgent item first to get the wrong order
 		pmq.queueAndEstimateSize(itemNonUrgent, 1024);

@@ -29,17 +29,22 @@ public class CooldownBlockChooser extends SimpleBlockChooser {
 	@Override
 	public synchronized int chooseKey() {
 		now = System.currentTimeMillis();
-		if(overallCooldownTime > now) return -1;
+		if(overallCooldownTime > now) {
+			return -1;
+		}
 		overallCooldownTime = Long.MAX_VALUE; // Will find the earliest wake-up.
 		int ret = super.chooseKey();
-		if(ret != -1)
-			overallCooldownTime = 0; // Fetchable now, else waiting for cooldown.
+		if(ret != -1) {
+			overallCooldownTime = 0;    // Fetchable now, else waiting for cooldown.
+		}
 		return ret;
 	}
 
 	@Override
 	protected boolean checkValid(int blockNo) {
-		if(!super.checkValid(blockNo)) return false;
+		if(!super.checkValid(blockNo)) {
+			return false;
+		}
 		long wakeUp = blockCooldownTimes[blockNo];
 		if(now > wakeUp) {
 			blockCooldownTimes[blockNo] = 0;
@@ -54,10 +59,13 @@ public class CooldownBlockChooser extends SimpleBlockChooser {
 	@Override
 	protected synchronized int innerOnNonFatalFailure(int blockNo) {
 		int ret = super.innerOnNonFatalFailure(blockNo);
-		if(ret > maxRetries && maxRetries != -1) return ret;
+		if(ret > maxRetries && maxRetries != -1) {
+			return ret;
+		}
 		if(ret % cooldownTries == 0) {
 			blockCooldownTimes[blockNo] = System.currentTimeMillis() + cooldownTime;
-			overallCooldownTime = Math.min(blockCooldownTimes[blockNo], overallCooldownTime); // Must not be left at infinite!
+			overallCooldownTime = Math.min(blockCooldownTimes[blockNo],
+										   overallCooldownTime); // Must not be left at infinite!
 		} else {
 			// Fetchable.
 			blockCooldownTimes[blockNo] = 0;
@@ -82,7 +90,9 @@ public class CooldownBlockChooser extends SimpleBlockChooser {
 	}
 
 	public synchronized long getCooldownTime(int blockNumber) {
-		if(hasSucceeded(blockNumber)) return 0;
+		if(hasSucceeded(blockNumber)) {
+			return 0;
+		}
 		return blockCooldownTimes[blockNumber];
 	}
 

@@ -22,7 +22,8 @@ public class NAME_SELECTION implements Step {
 	@Override
 	public void getStep(HTTPRequest request, PageHelper helper) {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("step2Title"));
-		HTMLNode nnameInfoboxContent = helper.getInfobox("infobox-normal", WizardL10n.l10n("chooseNodeName"),
+		HTMLNode nnameInfoboxContent = helper.getInfobox("infobox-normal",
+									   WizardL10n.l10n("chooseNodeName"),
 									   contentNode, null, false);
 
 		nnameInfoboxContent.addChild("#", WizardL10n.l10n("chooseNodeNameLong"));

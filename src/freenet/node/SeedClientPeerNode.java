@@ -16,7 +16,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class SeedClientPeerNode extends PeerNode {
 
-	public SeedClientPeerNode(SimpleFieldSet fs, Node node2, NodeCrypto crypto) throws FSParseException, PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
+	public SeedClientPeerNode(SimpleFieldSet fs, Node node2, NodeCrypto crypto) throws FSParseException,
+		PeerParseException, ReferenceSignatureVerificationException, PeerTooOldException {
 		super(fs, node2, crypto, false);
 	}
 
@@ -47,12 +48,16 @@ public class SeedClientPeerNode extends PeerNode {
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == this) return true;
+		if(o == this) {
+			return true;
+		}
 		// Only equal to seednode of its own type.
 		// Different to an OpennetPeerNode with the same identity!
 		if(o instanceof SeedClientPeerNode) {
 			return super.equals(o);
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -117,13 +122,15 @@ public class SeedClientPeerNode extends PeerNode {
 			// Synchronize to avoid messy races.
 			synchronized(this) {
 				if(timeLastConnectionCompleted() > 0 &&
-						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60))
+						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60)) {
 					return true;
+				}
 			}
 		} else {
 			// Disconnect after an hour in any event.
-			if(System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1))
+			if(System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -157,8 +164,9 @@ public class SeedClientPeerNode extends PeerNode {
 	@Override
 	protected void onConnect() {
 		OpennetManager om = node.getOpennet();
-		if(om != null)
+		if(om != null) {
 			om.seedTracker.onConnectSeed(this);
+		}
 		super.onConnect();
 	}
 

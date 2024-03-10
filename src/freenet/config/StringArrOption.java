@@ -13,22 +13,26 @@ public class StringArrOption extends Option<String[]> {
 
 	public StringArrOption(SubConfig conf, String optionName, String[] defaultValue, int sortOrder,
 						   boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringArrCallback cb) {
-		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc, Option.DataType.STRING_ARRAY);
+		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc,
+			  Option.DataType.STRING_ARRAY);
 		this.defaultValue = (defaultValue==null)?new String[0]:defaultValue;
 		this.currentValue = (defaultValue==null)?new String[0]:defaultValue;
 	}
 
 	@Override
 	public String[] parseString(String val) throws InvalidConfigValueException {
-		if(val.length() == 0) return new String[0];
+		if(val.length() == 0) {
+			return new String[0];
+		}
 		String[] out = val.split(delimiter);
 
 		try {
 			for (int i = 0; i < out.length; i++) {
-				if (out[i].equals(":"))
+				if (out[i].equals(":")) {
 					out[i] = "";
-				else
+				} else {
 					out[i] = URLDecoder.decode(out[i], true /* FIXME false */);
+				}
 			}
 		} catch (URLEncodedFormatException e) {
 			throw new InvalidConfigValueException(l10n("parseError", "error", e.getLocalizedMessage()));
@@ -46,17 +50,21 @@ public class StringArrOption extends Option<String[]> {
 
 	@Override
 	public String toString(String[] arr) {
-		if (arr == null)
+		if (arr == null) {
 			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0 ; i < arr.length ; i++) {
 			String val = arr[i];
-			if(val.length() == 0)
+			if(val.length() == 0) {
 				sb.append(":").append(delimiter);
-			else
+			} else {
 				sb.append(URLEncoder.encode(arr[i],false)).append(delimiter);
+			}
 		}
-		if(sb.length() > 0) sb.setLength(sb.length()-1); // drop surplus delimiter
+		if(sb.length() > 0) {
+			sb.setLength(sb.length()-1);    // drop surplus delimiter
+		}
 		return sb.toString();
 	}
 

@@ -138,7 +138,8 @@ public class GIFFilterTest {
 	 * @param fileUnfiltered  the test file
 	 * @param fileExpected    the reference file
 	 */
-	private static void assertEqualAfterFilter(String fileUnfiltered, String fileExpected) throws IOException {
+	private static void assertEqualAfterFilter(String fileUnfiltered,
+			String fileExpected) throws IOException {
 		Bucket input = resourceToBucket(fileUnfiltered);
 		Bucket expected = resourceToBucket(fileExpected);
 		Bucket filtered = filterGIF(input);

@@ -256,8 +256,10 @@ public class RealNodePitchBlackMitigationTest extends RealNodeTest {
 				// Ignore
 			}
 			for (int i = 0; i < nodes.length; i++) {
-				System.err.println("Cycle " + cycleNumber + " node " + i + ": " + nodes[i].getLocation() + " degree: " + nodes[i].getPeerNodes().length + " locs: " + Arrays
-								   .stream(nodes[i].getPeerNodes()).map(PeerNode::getLocation).collect(Collectors.summarizingDouble(d -> d)));
+				System.err.println("Cycle " + cycleNumber + " node " + i + ": " + nodes[i].getLocation() +
+								   " degree: " + nodes[i].getPeerNodes().length + " locs: " + Arrays
+								   .stream(nodes[i].getPeerNodes()).map(PeerNode::getLocation).collect(Collectors.summarizingDouble(
+											   d -> d)));
 			}
 			int newSwaps = LocationManager.swaps;
 			int totalStarted = LocationManager.startedSwaps;
@@ -366,8 +368,9 @@ public class RealNodePitchBlackMitigationTest extends RealNodeTest {
 			}
 			System.err.println("Average path length for successful requests: "
 							   + ((double) totalHopsTaken) / successes);
-			if (pings > MAX_PINGS || pings > MIN_PINGS && avg.currentValue() > accuracy && ((double) successes / ((double) (failures
-					+ successes)) > accuracy)) {
+			if (pings > MAX_PINGS || pings > MIN_PINGS && avg.currentValue() > accuracy
+					&& ((double) successes / ((double) (failures
+											  + successes)) > accuracy)) {
 				System.err.println();
 				System.err.println("Reached " + (accuracy * 100) + "% accuracy.");
 				System.err.println();

@@ -29,12 +29,17 @@ public class ChosenBlockImpl extends ChosenBlock {
 	public final boolean persistent;
 
 	public ChosenBlockImpl(SendableRequest req, SendableRequestItem token, Key key, ClientKey ckey,
-						   boolean localRequestOnly, boolean ignoreStore, boolean canWriteClientCache, boolean forkOnCacheable, boolean realTimeFlag, RequestScheduler sched, boolean persistent) {
-		super(token, key, ckey, localRequestOnly, ignoreStore, canWriteClientCache, forkOnCacheable, realTimeFlag, sched);
+						   boolean localRequestOnly, boolean ignoreStore, boolean canWriteClientCache, boolean forkOnCacheable,
+						   boolean realTimeFlag, RequestScheduler sched, boolean persistent) {
+		super(token, key, ckey, localRequestOnly, ignoreStore, canWriteClientCache, forkOnCacheable,
+			  realTimeFlag, sched);
 		this.request = req;
 		this.sched = sched;
 		this.persistent = persistent;
-		if(logDEBUG) Logger.minor(this, "Created "+this+" for "+(persistent?"persistent":"transient")+" block "+token+" for key "+key, new Exception("debug"));
+		if(logDEBUG) {
+			Logger.minor(this, "Created "+this+" for "+(persistent?"persistent":"transient")+" block "+token
+						 +" for key "+key, new Exception("debug"));
+		}
 	}
 
 	@Override

@@ -23,7 +23,8 @@ class L10nExtension extends AbstractExtension {
 	static class L10nFunction implements Function {
 
 		@Override
-		public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
+		public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context,
+							  int lineNumber) {
 			Object key = args.get("0");
 			if (key == null) {
 				return "null";

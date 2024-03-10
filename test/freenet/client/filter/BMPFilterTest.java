@@ -124,7 +124,8 @@ public class BMPFilterTest {
 
 		//Filter should return the original
 		assertEquals("Input and output should be the same length", input.size(), output.size());
-		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input), BucketTools.toByteArray(output));
+		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input),
+						  BucketTools.toByteArray(output));
 	}
 
 	/**
@@ -137,7 +138,8 @@ public class BMPFilterTest {
 
 		//Filter should return the original
 		assertEquals("Input and output should be the same length", input.size(), output.size());
-		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input), BucketTools.toByteArray(output));
+		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input),
+						  BucketTools.toByteArray(output));
 	}
 
 	/**
@@ -150,7 +152,8 @@ public class BMPFilterTest {
 
 		//Filter should return the original
 		assertEquals("Input and output should be the same length", input.size(), output.size());
-		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input), BucketTools.toByteArray(output));
+		assertArrayEquals("Input and output are not identical", BucketTools.toByteArray(input),
+						  BucketTools.toByteArray(output));
 	}
 
 	private Bucket filterImage(Bucket input, Class<? extends Exception> expected) throws IOException {
@@ -169,7 +172,8 @@ public class BMPFilterTest {
 		return output;
 	}
 
-	private static void readFilter(BMPFilter objBMPFilter, InputStream inStream, OutputStream outStream) throws IOException {
+	private static void readFilter(BMPFilter objBMPFilter, InputStream inStream,
+								   OutputStream outStream) throws IOException {
 		objBMPFilter.readFilter(inStream, outStream, "", null, null, null);
 	}
 }

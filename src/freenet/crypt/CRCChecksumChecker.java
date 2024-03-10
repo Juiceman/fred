@@ -27,7 +27,9 @@ public class CRCChecksumChecker extends ChecksumChecker {
 
 	@Override
 	public boolean checkChecksum(byte[] data, int offset, int length, byte[] checksum) {
-		if(checksum.length != 4) throw new IllegalArgumentException();
+		if(checksum.length != 4) {
+			throw new IllegalArgumentException();
+		}
 		CRC32 crc = new CRC32();
 		crc.update(data, offset, length);
 		int computed = (int)crc.getValue();
@@ -59,7 +61,8 @@ public class CRCChecksumChecker extends ChecksumChecker {
 	}
 
 	@Override
-	public void copyAndStripChecksum(InputStream is, OutputStream destination, long length) throws IOException, ChecksumFailedException {
+	public void copyAndStripChecksum(InputStream is, OutputStream destination,
+									 long length) throws IOException, ChecksumFailedException {
 		// FIXME refactor via a base class for ChecksumOutputStream.
 		CRC32 crc = new CRC32();
 		long remaining = length;
@@ -67,25 +70,31 @@ public class CRCChecksumChecker extends ChecksumChecker {
 		int read = 0;
 		DataInputStream source = new DataInputStream(is);
 		while ((remaining == -1) || (remaining > 0)) {
-			read = source.read(buffer, 0, ((remaining > FileUtil.BUFFER_SIZE) || (remaining == -1)) ? FileUtil.BUFFER_SIZE : (int) remaining);
+			read = source.read(buffer, 0, ((remaining > FileUtil.BUFFER_SIZE)
+										   || (remaining == -1)) ? FileUtil.BUFFER_SIZE : (int) remaining);
 			if (read == -1) {
 				if (length == -1) {
 					return;
 				}
 				throw new EOFException("stream reached eof");
 			}
-			if(read == 0) throw new IOException("stream returning 0 bytes");
-			if(read != 0)
+			if(read == 0) {
+				throw new IOException("stream returning 0 bytes");
+			}
+			if(read != 0) {
 				crc.update(buffer, 0, read);
+			}
 			destination.write(buffer, 0, read);
-			if (remaining > 0)
+			if (remaining > 0) {
 				remaining -= read;
+			}
 		}
 		byte[] checksum = new byte[checksumLength()];
 		source.readFully(checksum);
 		byte[] myChecksum = Fields.intToBytes((int)crc.getValue());
-		if(!Arrays.equals(checksum, myChecksum))
+		if(!Arrays.equals(checksum, myChecksum)) {
 			throw new ChecksumFailedException();
+		}
 	}
 
 	@Override

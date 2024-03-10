@@ -93,7 +93,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * Otherwise, returns the first allowed directory.
 	 */
 	protected String defaultUploadDir() {
-		if ((core.getAllowedUploadDirs().length == 1 && core.getAllowedUploadDirs()[0].toString().equals("all"))
+		if ((core.getAllowedUploadDirs().length == 1
+				&& core.getAllowedUploadDirs()[0].toString().equals("all"))
 				|| core.getAllowedUploadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the home directory.
 			 * If none are allowed, any directory will result in an error anyway.
@@ -110,7 +111,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * Otherwise, returns the first allowed directory.
 	 */
 	protected String defaultDownloadDir() {
-		if ((core.getAllowedDownloadDirs().length == 1 && core.getAllowedDownloadDirs()[0].toString().equals("all"))
+		if ((core.getAllowedDownloadDirs().length == 1
+				&& core.getAllowedDownloadDirs()[0].toString().equals("all"))
 				|| core.getAllowedDownloadDirs().length == 0) {
 			/* If all directories are allowed, or none are, go for the default download directory.
 			 * If none are allowed, any directory will result in an error anyway.
@@ -127,7 +129,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @param absolutePath Path to set the filenameField() field to.
 	 * @param persistence Additional persistence fields to include.
 	 */
-	protected void createSelectDirectoryButton (HTMLNode node, String absolutePath, HTMLNode persistence) {
+	protected void createSelectDirectoryButton (HTMLNode node, String absolutePath,
+			HTMLNode persistence) {
 		node.addChild("input",
 					  new String[] {"type", "name", "value"},
 					  new String[] {"submit", selectDir, l10n("insert")});
@@ -159,7 +162,8 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @param path Path to set the "path" field to.
 	 * @param persistence Additional persistence fields to include.
 	 */
-	private void createChangeDirButton (HTMLNode node, String buttonText, String path, HTMLNode persistence) {
+	private void createChangeDirButton (HTMLNode node, String buttonText, String path,
+										HTMLNode persistence) {
 		node.addChild("input",
 					  new String[] {"type", "name", "value"},
 					  new String[] {"submit", changeDir, buttonText});
@@ -237,12 +241,14 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 */
 	public void handleMethodGET (URI uri, HTTPRequest request, final ToadletContext ctx)
 	throws ToadletContextClosedException, IOException, RedirectException {
-		renderPage(persistenceFields(readGET(request)), request.getParam("path"), ctx, selectedValue(request));
+		renderPage(persistenceFields(readGET(request)), request.getParam("path"), ctx,
+				   selectedValue(request));
 	}
 
 	public void handleMethodPOST (URI uri, HTTPRequest request, final ToadletContext ctx)
 	throws ToadletContextClosedException, IOException, RedirectException {
-		renderPage(persistenceFields(readPOST(request)), request.getPartAsStringFailsafe("path", MAX_POST_SIZE),
+		renderPage(persistenceFields(readPOST(request)), request.getPartAsStringFailsafe("path",
+				   MAX_POST_SIZE),
 				   ctx, selectedValue(request));
 	}
 
@@ -257,14 +263,18 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 	 * @throws IOException
 	 * @throws RedirectException
 	 */
-	private void renderPage (Hashtable<String, String> fieldPairs, String path, final ToadletContext ctx, String filename)
+	private void renderPage (Hashtable<String, String> fieldPairs, String path,
+							 final ToadletContext ctx, String filename)
 	throws ToadletContextClosedException, IOException, RedirectException {
 		HTMLNode persistenceFields = renderPersistenceFields(fieldPairs);
 
 		if (filename != null) {
 			File file = new File(filename);
-			if (file.isDirectory()) lastSuccessful = file.getAbsoluteFile();
-			else lastSuccessful = file.getParentFile().getAbsoluteFile();
+			if (file.isDirectory()) {
+				lastSuccessful = file.getAbsoluteFile();
+			} else {
+				lastSuccessful = file.getParentFile().getAbsoluteFile();
+			}
 
 			try {
 				throw new RedirectException(postTo());
@@ -299,12 +309,15 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 
 		HTMLNode pageNode;
 
-		if (currentPath != null && currentPath.exists() && currentPath.isDirectory() && currentPath.canRead()) {
+		if (currentPath != null && currentPath.exists() && currentPath.isDirectory()
+				&& currentPath.canRead()) {
 			PageNode page = pageMaker.getPageNode(l10n("listingTitle", "path",
 												  currentPath.getAbsolutePath()), ctx);
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
-			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
+			if (ctx.isAllowedFullAccess()) {
+				contentNode.addChild(ctx.getAlertManager().createSummary());
+			}
 
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path",
@@ -420,7 +433,9 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 			PageNode page = pageMaker.getPageNode(l10n("listingTitle", "path", attemptedPath), ctx);
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
-			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
+			if (ctx.isAllowedFullAccess()) {
+				contentNode.addChild(ctx.getAlertManager().createSummary());
+			}
 
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path", attemptedPath));

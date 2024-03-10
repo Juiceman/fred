@@ -28,8 +28,9 @@ public class PeerNote extends FCPMessage {
 		fs.putSingle("NodeIdentifier", nodeIdentifier);
 		fs.put("PeerNoteType", peerNoteType);
 		fs.putSingle("NoteText", Base64.encodeUTF8(noteText, true));
-		if(identifier != null)
+		if(identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 
@@ -41,7 +42,8 @@ public class PeerNote extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PeerNote goes from server to client not the other way around", identifier, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PeerNote goes from server to client not the other way around", identifier, false);
 	}
 
 }

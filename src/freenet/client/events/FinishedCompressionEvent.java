@@ -22,7 +22,8 @@ public class FinishedCompressionEvent implements ClientEvent {
 
 	@Override
 	public String getDescription() {
-		return "Compressed data: codec="+codec+", origSize="+originalSize+", compressedSize="+compressedSize;
+		return "Compressed data: codec="+codec+", origSize="+originalSize+", compressedSize="
+			   +compressedSize;
 	}
 
 	@Override

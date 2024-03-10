@@ -17,8 +17,11 @@ public class PubkeyStore extends StoreCallback<DSAPublicKey> {
 
 	@Override
 	public DSAPublicKey construct(byte[] data, byte[] headers, byte[] routingKey,
-								  byte[] fullKey, boolean canReadClientCache, boolean canReadSlashdotCache, BlockMetadata meta, DSAPublicKey ignored) throws KeyVerifyException {
-		if(data == null) throw new PubkeyVerifyException("Need data to construct pubkey");
+								  byte[] fullKey, boolean canReadClientCache, boolean canReadSlashdotCache, BlockMetadata meta,
+								  DSAPublicKey ignored) throws KeyVerifyException {
+		if(data == null) {
+			throw new PubkeyVerifyException("Need data to construct pubkey");
+		}
 		try {
 			return DSAPublicKey.create(data);
 		} catch (CryptFormatException e) {
@@ -26,7 +29,8 @@ public class PubkeyStore extends StoreCallback<DSAPublicKey> {
 		}
 	}
 
-	public DSAPublicKey fetch(byte[] hash, boolean dontPromote, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+	public DSAPublicKey fetch(byte[] hash, boolean dontPromote, boolean ignoreOldBlocks,
+							  BlockMetadata meta) throws IOException {
 		return store.fetch(hash, null, dontPromote, false, false, ignoreOldBlocks, meta);
 	}
 

@@ -17,7 +17,8 @@ public class PageHelper {
 	private final FirstTimeWizardToadlet.WIZARD_STEP step;
 	private PageNode pageNode;
 
-	public PageHelper(ToadletContext ctx, PersistFields persistFields, FirstTimeWizardToadlet.WIZARD_STEP step) {
+	public PageHelper(ToadletContext ctx, PersistFields persistFields,
+					  FirstTimeWizardToadlet.WIZARD_STEP step) {
 		this.toadletContext = ctx;
 		this.persistFields = persistFields;
 		this.step = step;
@@ -31,7 +32,8 @@ public class PageHelper {
 	 * @return Content HTMLNode to add content to
 	 */
 	public HTMLNode getPageContent(String title) {
-		pageNode = toadletContext.getPageMaker().getPageNode(title, toadletContext, new RenderParameters().renderNavigationLinks(false).renderStatus(false));
+		pageNode = toadletContext.getPageMaker().getPageNode(title, toadletContext,
+				   new RenderParameters().renderNavigationLinks(false).renderStatus(false));
 		return pageNode.content;
 	}
 
@@ -46,7 +48,8 @@ public class PageHelper {
 		return pageNode.outer;
 	}
 
-	public HTMLNode getInfobox(String category, String header, HTMLNode parent, String title, boolean isUnique) {
+	public HTMLNode getInfobox(String category, String header, HTMLNode parent, String title,
+							   boolean isUnique) {
 		return toadletContext.getPageMaker().getInfobox(category, header, parent, title, isUnique);
 	}
 
@@ -64,7 +67,8 @@ public class PageHelper {
 	 * @param includeOpennet whether the opennet field should be persisted. False on the OPENNET step.
 	 * @return form node to add buttons, inputs, and whatnot to.
 	 */
-	public HTMLNode addFormChild(HTMLNode parentNode, String target, String id, boolean includeOpennet) {
+	public HTMLNode addFormChild(HTMLNode parentNode, String target, String id,
+								 boolean includeOpennet) {
 		HTMLNode form = toadletContext.addFormChild(parentNode, target, id);
 		if (persistFields.isUsingPreset()) {
 			form.addChild("input",

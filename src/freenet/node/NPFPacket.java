@@ -44,7 +44,9 @@ class NPFPacket {
 
 	public static NPFPacket create(byte[] plaintext, BasePeerNode pn) {
 		NPFPacket packet = new NPFPacket();
-		if (pn == null) throw new IllegalArgumentException("Can't estimate an ack type of received packet");
+		if (pn == null) {
+			throw new IllegalArgumentException("Can't estimate an ack type of received packet");
+		}
 		int offset = 0;
 
 		if(plaintext.length < (offset + 5)) { //Sequence number + the number of acks
@@ -174,7 +176,8 @@ class NPFPacket {
 				if(firstFragment) {
 					messageLength = value;
 					if(messageLength == fragmentLength) {
-						Logger.warning(NPFPacket.class, "Received fragmented message, but fragment contains the entire message");
+						Logger.warning(NPFPacket.class,
+									   "Received fragmented message, but fragment contains the entire message");
 					}
 				} else {
 					fragmentOffset = value;
@@ -183,7 +186,9 @@ class NPFPacket {
 				messageLength = fragmentLength;
 			}
 			if((offset + fragmentLength) > plaintext.length) {
-				Logger.error(NPFPacket.class, "Fragment doesn't fit in the received packet: offset is "+offset+" fragment length is "+fragmentLength+" plaintext length is "+plaintext.length+" message length "+messageLength+" message ID "+messageID+(pn == null ? "" : (" from "+pn.shortToString())));
+				Logger.error(NPFPacket.class, "Fragment doesn't fit in the received packet: offset is "+offset
+							 +" fragment length is "+fragmentLength+" plaintext length is "+plaintext.length+" message length "
+							 +messageLength+" message ID "+messageID+(pn == null ? "" : (" from "+pn.shortToString())));
 				packet.error = true;
 				break;
 			}
@@ -203,8 +208,9 @@ class NPFPacket {
 			byte[] plaintext, int offset) {
 		int origOffset = offset;
 		while(true) {
-			if(plaintext[offset] != 0x1F)
-				return offset; // Padding
+			if(plaintext[offset] != 0x1F) {
+				return offset;    // Padding
+			}
 			// Else it might be some per-packet lossy messages
 			offset++;
 			if(offset >= plaintext.length) {
@@ -220,7 +226,9 @@ class NPFPacket {
 			byte[] fragment = Arrays.copyOfRange(plaintext, offset, offset + len);
 			packet.lossyMessages.add(fragment);
 			offset += len;
-			if(offset == plaintext.length) return offset;
+			if(offset == plaintext.length) {
+				return offset;
+			}
 		}
 	}
 
@@ -242,8 +250,9 @@ class NPFPacket {
 			for (int i = 0; acksIterator.hasNext(); i++) {
 				assert(nextAck - endRange >= 0);
 				if (i == 0 || (nextAck - endRange >= 254)) {
-					if(i != 0)
-						buf[offset++] = (byte) 0; // Mark a far offset
+					if(i != 0) {
+						buf[offset++] = (byte) 0;    // Mark a far offset
+					}
 					buf[offset] = (byte) (nextAck >>> 24);
 					buf[offset + 1] = (byte) (nextAck >>> 16);
 					buf[offset + 2] = (byte) (nextAck >>> 8);
@@ -256,7 +265,8 @@ class NPFPacket {
 
 				endRange = startRange = nextAck;
 
-				while(acksIterator.hasNext() &&  ((nextAck = acksIterator.next()) - endRange == 1) &&  (endRange - startRange < 254)) {
+				while(acksIterator.hasNext() &&  ((nextAck = acksIterator.next()) - endRange == 1)
+						&&  (endRange - startRange < 254)) {
 					endRange++;
 				}
 
@@ -287,9 +297,15 @@ class NPFPacket {
 		//Add fragments
 		int prevFragmentID = -1;
 		for(MessageFragment fragment : fragments) {
-			if(fragment.shortMessage) buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x80);
-			if(fragment.isFragmented) buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x40);
-			if(fragment.firstFragment) buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x20);
+			if(fragment.shortMessage) {
+				buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x80);
+			}
+			if(fragment.isFragmented) {
+				buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x40);
+			}
+			if(fragment.firstFragment) {
+				buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x20);
+			}
 
 			if(prevFragmentID == -1 || (fragment.messageID - prevFragmentID >= 4096)) {
 				buf[offset] = (byte) ((buf[offset] & 0xFF) | 0x10);
@@ -348,8 +364,9 @@ class NPFPacket {
 			Util.randomBytes(paddingGen, buf, offset, buf.length - offset);
 
 			byte b = (byte) (buf[offset] & 0x9F); //Make sure firstFragment and isFragmented isn't set
-			if(b == 0x1F)
-				b = (byte)0x9F; // Make sure it doesn't match the pattern for lossy messages
+			if(b == 0x1F) {
+				b = (byte)0x9F;    // Make sure it doesn't match the pattern for lossy messages
+			}
 			buf[offset] = b;
 		}
 
@@ -357,8 +374,12 @@ class NPFPacket {
 	}
 
 	public boolean addAck(int ack, int maxPacketSize) {
-		if(ack < 0) throw new IllegalArgumentException("Got negative ack: " + ack);
-		if(acks.contains(ack)) return true;
+		if(ack < 0) {
+			throw new IllegalArgumentException("Got negative ack: " + ack);
+		}
+		if(acks.contains(ack)) {
+			return true;
+		}
 
 		acks.add(ack);
 		int nearRangeCount = 0, farRangeCount = 0;
@@ -373,7 +394,8 @@ class NPFPacket {
 				nearRangeCount++;
 			}
 			endRange = startRange = nextAck;
-			while(acksIterator.hasNext() && ((nextAck = acksIterator.next()) - endRange == 1) && (endRange - startRange < 254)) {
+			while(acksIterator.hasNext() && ((nextAck = acksIterator.next()) - endRange == 1)
+					&& (endRange - startRange < 254)) {
 				endRange++;
 			}
 			// TODO: Add zero-cost dub-acks if any
@@ -390,7 +412,8 @@ class NPFPacket {
 			return false;
 		}
 		//              (start + offset) + (rangeCount-1)    *(1byte deltaFromPrevios + length) + farRangeCount*(flag + 4byte packetSequenceNumber + length)
-		int blockSize = 5                + (nearRangeCount-1)*2                                 + farRangeCount*6;
+		int blockSize = 5                + (nearRangeCount-1)*2                                 +
+						farRangeCount*6;
 		int finalLength = length + blockSize - ackBlockByteSize;
 		if(finalLength > maxPacketSize) {
 			acks.remove(ack);
@@ -425,15 +448,21 @@ class NPFPacket {
 	}
 
 	public int addLossyMessage(byte[] buf) {
-		if(buf.length > 255) throw new IllegalArgumentException();
+		if(buf.length > 255) {
+			throw new IllegalArgumentException();
+		}
 		lossyMessages.add(buf);
 		length += buf.length + 2;
 		return length;
 	}
 
 	public boolean addLossyMessage(byte[] buf, int maxPacketSize) {
-		if(length + buf.length + 2 > maxPacketSize) return false;
-		if(buf.length > 255) throw new IllegalArgumentException();
+		if(length + buf.length + 2 > maxPacketSize) {
+			return false;
+		}
+		if(buf.length > 255) {
+			throw new IllegalArgumentException();
+		}
 		lossyMessages.add(buf);
 		length += buf.length + 2;
 		return true;
@@ -477,14 +506,19 @@ class NPFPacket {
 
 	@Override
 	public String toString() {
-		return "Packet " + sequenceNumber + ": " + length + " bytes, " + acks.size() + " acks, " + fragments.size() + " fragments";
+		return "Packet " + sequenceNumber + ": " + length + " bytes, " + acks.size() + " acks, " +
+			   fragments.size() + " fragments";
 	}
 
 	private static class MessageFragmentComparator implements Comparator<MessageFragment> {
 		@Override
 		public int compare(MessageFragment frag1, MessageFragment frag2) {
-			if(frag1.messageID < frag2.messageID) return -1;
-			if(frag1.messageID == frag2.messageID) return 0;
+			if(frag1.messageID < frag2.messageID) {
+				return -1;
+			}
+			if(frag1.messageID == frag2.messageID) {
+				return 0;
+			}
 			return 1;
 		}
 	}
@@ -496,13 +530,19 @@ class NPFPacket {
 		for(MessageFragment frag: fragments) {
 			totalMessageData += frag.fragmentLength;
 			size++;
-			if(biggest < frag.messageLength) biggest = frag.messageLength;
+			if(biggest < frag.messageLength) {
+				biggest = frag.messageLength;
+			}
 		}
 		int overhead = totalPacketLength - totalMessageData;
-		if(logDEBUG) Logger.debug(this, "Total packet overhead: "+overhead+" for "+size+" messages total message length "+totalMessageData+" total packet length "+totalPacketLength+" biggest message "+biggest);
+		if(logDEBUG) {
+			Logger.debug(this, "Total packet overhead: "+overhead+" for "+size+" messages total message length "
+						 +totalMessageData+" total packet length "+totalPacketLength+" biggest message "+biggest);
+		}
 		for(MessageFragment frag: fragments) {
 			// frag.wrapper is always non-null on sending.
-			frag.wrapper.onSent(frag.fragmentOffset, frag.fragmentOffset + frag.fragmentLength - 1, overhead / size, pn);
+			frag.wrapper.onSent(frag.fragmentOffset, frag.fragmentOffset + frag.fragmentLength - 1,
+								overhead / size, pn);
 		}
 	}
 

@@ -75,7 +75,9 @@ public class JceLoader {
 				Logger.warning(NSSLoader.class, "Error with SunJCE. Unlimited policy file not installed.", e);
 			}
 			SunJCE = Security.getProvider("SunJCE");
-		} else SunJCE = null;
+		} else {
+			SunJCE = null;
+		}
 
 		SUN = checkUse("use.SUN") ? Security.getProvider("SUN") : null;
 	}
@@ -136,10 +138,11 @@ public class JceLoader {
 				Class<?> c = Class.forName("sun.security.pkcs11.SunPKCS11");
 				Constructor<?> constructor = c.getConstructor(String.class);
 				nssProvider = (Provider)constructor.newInstance(nssFile.getPath());
-				if (atfirst)
+				if (atfirst) {
 					Security.insertProviderAt(nssProvider, 1);
-				else
+				} else {
 					Security.addProvider(nssProvider);
+				}
 				Logger.debug(NSSLoader.class, "Loaded NSS provider " + nssProvider);
 			} else {
 				Logger.debug(NSSLoader.class, "Found NSS provider " + nssProvider);

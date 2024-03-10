@@ -35,21 +35,27 @@ public class PersistentRequestRoot {
 	}
 
 	public PersistentRequestRoot() {
-		globalForeverClient = new PersistentRequestClient("Global Queue", null, true, null, Persistence.FOREVER, this);
+		globalForeverClient = new PersistentRequestClient("Global Queue", null, true, null,
+				Persistence.FOREVER, this);
 		clients = new TreeMap<String, PersistentRequestClient>();
 	}
 
-	public PersistentRequestClient registerForeverClient(final String name, FCPConnectionHandler handler) {
-		if(logMINOR) Logger.minor(this, "Registering forever-client for "+name);
+	public PersistentRequestClient registerForeverClient(final String name,
+			FCPConnectionHandler handler) {
+		if(logMINOR) {
+			Logger.minor(this, "Registering forever-client for "+name);
+		}
 		PersistentRequestClient client;
 		synchronized(this) {
 			client = clients.get(name);
-			if(client == null)
+			if(client == null) {
 				client = new PersistentRequestClient(name, handler, false, null, Persistence.FOREVER, this);
+			}
 			clients.put(name, client);
 		}
-		if(handler != null)
+		if(handler != null) {
 			client.setConnection(handler);
+		}
 		return client;
 	}
 
@@ -59,10 +65,13 @@ public class PersistentRequestRoot {
 		PersistentRequestClient client;
 		synchronized(this) {
 			client = clients.get(name);
-			if(client == null) return null;
+			if(client == null) {
+				return null;
+			}
 		}
-		if(handler != null)
+		if(handler != null) {
 			client.setConnection(handler);
+		}
 		return client;
 	}
 
@@ -77,8 +86,9 @@ public class PersistentRequestRoot {
 	public ClientRequest[] getPersistentRequests() {
 		List<ClientRequest> requests = new ArrayList<ClientRequest>();
 		globalForeverClient.addPersistentRequests(requests, true);
-		for(PersistentRequestClient client : clients.values())
+		for(PersistentRequestClient client : clients.values()) {
 			client.addPersistentRequests(requests, true);
+		}
 		return requests.toArray(new ClientRequest[requests.size()]);
 	}
 
@@ -98,11 +108,14 @@ public class PersistentRequestRoot {
 
 	public synchronized boolean hasRequest(RequestIdentifier req) {
 		PersistentRequestClient client;
-		if(req.globalQueue)
+		if(req.globalQueue) {
 			client = globalForeverClient;
-		else
+		} else {
 			client = getForeverClient(req.clientName, null);
-		if(client == null) return false;
+		}
+		if(client == null) {
+			return false;
+		}
 		return client.getRequest(req.identifier) != null;
 	}
 

@@ -32,12 +32,14 @@ public class BootstrapSeedTest {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws InvalidThresholdException, NodeInitException, InterruptedException, IOException {
+	public static void main(String[] args) throws InvalidThresholdException, NodeInitException,
+		InterruptedException, IOException {
 		Node node = null;
 		try {
 			String ipOverride = null;
-			if(args.length > 0)
+			if(args.length > 0) {
 				ipOverride = args[0];
+			}
 			File dir = new File("bootstrap-test");
 			FileUtil.removeAll(dir);
 			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.ERROR, "", false);
@@ -53,7 +55,9 @@ public class BootstrapSeedTest {
 			fis.close();
 			// Create one node
 			Executor executor = new PooledExecutor();
-			node = NodeStarter.createTestNode(DARKNET_PORT, OPENNET_PORT, "bootstrap-test", false, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true, true, 12*1024, false, true, false, false, ipOverride);
+			node = NodeStarter.createTestNode(DARKNET_PORT, OPENNET_PORT, "bootstrap-test", false,
+											  Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true,
+											  true, 12*1024, false, true, false, false, ipOverride);
 			//NodeCrypto.DISABLE_GROUP_STRIP = true;
 			//Logger.setupStdoutLogging(LogLevel.MINOR, "freenet:NORMAL,freenet.node.NodeDispatcher:MINOR,freenet.node.FNPPacketMangler:MINOR");
 			Logger.getChain().setThreshold(LogLevel.ERROR); // kill logging
@@ -74,7 +78,8 @@ public class BootstrapSeedTest {
 				seconds++;
 				if(opennetConns >= targetPeers) {
 					long timeTaken = System.currentTimeMillis()-startTime;
-					System.out.println("Completed bootstrap ("+targetPeers+" peers) in "+timeTaken+"ms ("+TimeUtil.formatTime(timeTaken)+")");
+					System.out.println("Completed bootstrap ("+targetPeers+" peers) in "+timeTaken+"ms ("
+									   +TimeUtil.formatTime(timeTaken)+")");
 					node.park();
 					System.exit(0);
 				}
@@ -86,8 +91,9 @@ public class BootstrapSeedTest {
 			System.err.println("CAUGHT: "+t);
 			t.printStackTrace();
 			try {
-				if(node != null)
+				if(node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {}
 			System.exit(EXIT_THREW_SOMETHING);
 		}

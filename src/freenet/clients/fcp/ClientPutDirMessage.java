@@ -67,68 +67,81 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 		defaultName = fs.get("DefaultName");
 		String s = fs.get("CompatibilityMode");
 		InsertContext.CompatibilityMode cmode = null;
-		if(s == null)
+		if(s == null) {
 			cmode = InsertContext.CompatibilityMode.COMPAT_DEFAULT;
-		else {
+		} else {
 			try {
 				cmode = InsertContext.CompatibilityMode.valueOf(s);
 			} catch (IllegalArgumentException e) {
 				try {
 					cmode = InsertContext.CompatibilityMode.values()[Integer.parseInt(s)];
 				} catch (NumberFormatException e1) {
-					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid CompatibilityMode (not a name and not a number)", identifier, global);
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+													  "Invalid CompatibilityMode (not a name and not a number)", identifier, global);
 				} catch (ArrayIndexOutOfBoundsException e1) {
-					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid CompatibilityMode (not a valid number)", identifier, global);
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+													  "Invalid CompatibilityMode (not a valid number)", identifier, global);
 				}
 			}
 		}
 		compatibilityMode = cmode.intern();
 		s = fs.get("OverrideSplitfileCryptoKey");
-		if(s == null)
+		if(s == null) {
 			overrideSplitfileCryptoKey = null;
-		else
+		} else
 			try {
 				overrideSplitfileCryptoKey = HexUtil.hexToBytes(s);
 			} catch (NumberFormatException e1) {
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid splitfile crypto key (not hex)", identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+												  "Invalid splitfile crypto key (not hex)", identifier, global);
 			} catch (IndexOutOfBoundsException e1) {
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid splitfile crypto key (too short)", identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+												  "Invalid splitfile crypto key (too short)", identifier, global);
 			}
 		localRequestOnly = fs.getBoolean("LocalRequestOnly", false);
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier", null, global);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier", null,
+											  global);
+		}
 		try {
 			String u = fs.get("URI");
-			if(u == null)
-				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No URI", identifier, global);
+			if(u == null) {
+				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No URI", identifier,
+												  global);
+			}
 			FreenetURI uu = new FreenetURI(u);
 			// Client is allowed to put a slash at the end if it wants to, but this is discouraged.
 			String[] meta = uu.getAllMetaStrings();
-			if(meta != null && meta.length == 1 && meta[0].length() == 0)
+			if(meta != null && meta.length == 1 && meta[0].length() == 0) {
 				uu = uu.setMetaString(null);
+			}
 			uri = uu;
 		} catch (MalformedURLException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(), identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(),
+											  identifier, global);
 		}
 		String verbosityString = fs.get("Verbosity");
-		if(verbosityString == null)
+		if(verbosityString == null) {
 			verbosity = 0;
-		else {
+		} else {
 			try {
 				verbosity = Integer.parseInt(verbosityString, 10);
 			} catch (NumberFormatException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing Verbosity field: "+e.getMessage(), identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER,
+												  "Error parsing Verbosity field: "+e.getMessage(), identifier, global);
 			}
 		}
 		String maxRetriesString = fs.get("MaxRetries");
 		if(maxRetriesString == null)
 			// default to 0
+		{
 			maxRetries = 0;
-		else {
+		} else {
 			try {
 				maxRetries = Integer.parseInt(maxRetriesString, 10);
 			} catch (NumberFormatException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: "+e.getMessage(), identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER,
+												  "Error parsing MaxSize field: "+e.getMessage(), identifier, global);
 			}
 		}
 		getCHKOnly = fs.getBoolean("GetCHKOnly", false);
@@ -139,10 +152,14 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 		} else {
 			try {
 				priorityClass = Short.parseShort(priorityString);
-				if(!RequestStarter.isValidPriorityClass(priorityClass))
-					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid priority class "+priorityClass+" - range is "+RequestStarter.PAUSED_PRIORITY_CLASS+" to "+RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				if(!RequestStarter.isValidPriorityClass(priorityClass)) {
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+													  "Invalid priority class "+priorityClass+" - range is "+RequestStarter.PAUSED_PRIORITY_CLASS+" to "
+													  +RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				}
 			} catch (NumberFormatException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing PriorityClass field: "+e.getMessage(), identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER,
+												  "Error parsing PriorityClass field: "+e.getMessage(), identifier, global);
 			}
 		}
 		dontCompress = fs.getBoolean("DontCompress", false);
@@ -158,18 +175,23 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 			try {
 				ca = COMPRESSOR_TYPE.getCompressorsArrayNoDefault(codecs);
 			} catch (InvalidCompressionCodecException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier,
+												  global);
 			}
-			if (ca == null)
+			if (ca == null) {
 				codecs = null;
+			}
 		}
 		compressorDescriptor = codecs;
-		if(fs.get("ForkOnCacheable") != null)
+		if(fs.get("ForkOnCacheable") != null) {
 			forkOnCacheable = fs.getBoolean("ForkOnCacheable", false);
-		else
+		} else {
 			forkOnCacheable = Node.FORK_ON_CACHEABLE_DEFAULT;
-		extraInsertsSingleBlock = fs.getInt("ExtraInsertsSingleBlock", HighLevelSimpleClientImpl.EXTRA_INSERTS_SINGLE_BLOCK);
-		extraInsertsSplitfileHeaderBlock = fs.getInt("ExtraInsertsSplitfileHeaderBlock", HighLevelSimpleClientImpl.EXTRA_INSERTS_SPLITFILE_HEADER);
+		}
+		extraInsertsSingleBlock = fs.getInt("ExtraInsertsSingleBlock",
+											HighLevelSimpleClientImpl.EXTRA_INSERTS_SINGLE_BLOCK);
+		extraInsertsSplitfileHeaderBlock = fs.getInt("ExtraInsertsSplitfileHeaderBlock",
+										   HighLevelSimpleClientImpl.EXTRA_INSERTS_SPLITFILE_HEADER);
 		realTimeFlag = fs.getBoolean("RealTimeFlag", false);
 		ignoreUSKDatehints = fs.getBoolean("IgnoreUSKDatehints", false);
 	}
@@ -186,8 +208,9 @@ public abstract class ClientPutDirMessage extends BaseDataCarryingMessage {
 		sfs.put("PriorityClass", priorityClass);
 		sfs.putSingle("Persistence", persistence.toString().toLowerCase());
 		sfs.put("DontCompress", dontCompress);
-		if (compressorDescriptor != null)
+		if (compressorDescriptor != null) {
 			sfs.putSingle("Codecs", compressorDescriptor);
+		}
 		sfs.put("Global", global);
 		sfs.putSingle("DefaultName", defaultName);
 		return sfs;

@@ -45,7 +45,8 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 
 	@Override
 	public synchronized T fetch(byte[] routingKey, byte[] fullKey,
-								boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+								boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache,
+								boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
 		Block block = blocksByRoutingKey.get(key);
 		if(block == null) {
@@ -58,12 +59,15 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 		}
 		try {
 			T ret =
-				callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, canReadSlashdotCache, meta, null);
+				callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache,
+								   canReadSlashdotCache, meta, null);
 			hits++;
-			if(!dontPromote)
+			if(!dontPromote) {
 				blocksByRoutingKey.push(key, block);
-			if(meta != null && block.oldBlock)
+			}
+			if(meta != null && block.oldBlock) {
 				meta.setOldBlock();
+			}
 			return ret;
 		} catch (KeyVerifyException e) {
 			blocksByRoutingKey.removeKey(key);
@@ -93,7 +97,8 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 	}
 
 	@Override
-	public synchronized void put(T block, byte[] data, byte[] header, boolean overwrite, boolean isOldBlock) throws KeyCollisionException {
+	public synchronized void put(T block, byte[] data, byte[] header, boolean overwrite,
+								 boolean isOldBlock) throws KeyCollisionException {
 		byte[] routingkey = block.getRoutingKey();
 		byte[] fullKey = block.getFullKey();
 
@@ -107,31 +112,35 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 								 Arrays.equals(oldBlock.header, header) &&
 								 (storeFullKeys ? Arrays.equals(oldBlock.fullKey, fullKey) : true);
 				if(equals) {
-					if(!isOldBlock)
+					if(!isOldBlock) {
 						oldBlock.oldBlock = false;
+					}
 					return;
 				}
 				if(overwrite) {
 					oldBlock.data = data;
 					oldBlock.header = header;
-					if(storeFullKeys)
+					if(storeFullKeys) {
 						oldBlock.fullKey = fullKey;
+					}
 					oldBlock.oldBlock = isOldBlock;
 				} else {
 					throw new KeyCollisionException();
 				}
 				return;
 			} else {
-				if(!isOldBlock)
+				if(!isOldBlock) {
 					oldBlock.oldBlock = false;
+				}
 				return;
 			}
 		}
 		Block storeBlock = new Block();
 		storeBlock.data = data;
 		storeBlock.header = header;
-		if(storeFullKeys)
+		if(storeFullKeys) {
 			storeBlock.fullKey = fullKey;
+		}
 		storeBlock.oldBlock = isOldBlock;
 		blocksByRoutingKey.push(key, storeBlock);
 		while(blocksByRoutingKey.size() > maxKeys) {
@@ -178,7 +187,8 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 
 			T ret;
 			try {
-				ret = callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, false, null, null);
+				ret = callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache,
+										 false, null, null);
 			} catch (KeyVerifyException e) {
 				Logger.error(this, "Caught while migrating: "+e, e);
 				continue;

@@ -23,7 +23,8 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 	ARCHIVE_TYPE archiveType;
 	COMPRESSOR_TYPE compressorType;
 
-	ArchiveHandlerImpl(FreenetURI key, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE ctype, boolean forceRefetchArchive) {
+	ArchiveHandlerImpl(FreenetURI key, ARCHIVE_TYPE archiveType, COMPRESSOR_TYPE ctype,
+					   boolean forceRefetchArchive) {
 		this.key = key;
 		this.archiveType = archiveType;
 		this.compressorType = ctype;
@@ -36,13 +37,16 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 	throws ArchiveFailureException, ArchiveRestartException,
 		MetadataParseException, FetchException {
 
-		if(forceRefetchArchive) return null;
+		if(forceRefetchArchive) {
+			return null;
+		}
 
 		Bucket data;
 
 		// Fetch from cache
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Checking cache: "+key+ ' ' +internalName);
+		}
 		if((data = manager.getCached(key, internalName)) != null) {
 			return data;
 		}
@@ -64,7 +68,8 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 		ArchiveRestartException {
 		forceRefetchArchive = false; // now we don't need to force refetch any more
 		ArchiveStoreContext ctx = manager.makeContext(key, archiveType, compressorType, false);
-		manager.extractToCache(key, archiveType, compressorType, bucket, actx, ctx, element, callback, context);
+		manager.extractToCache(key, archiveType, compressorType, bucket, actx, ctx, element, callback,
+							   context);
 	}
 
 	@Override

@@ -29,7 +29,8 @@ public class PluginTalker {
 	protected WeakReference<FredPluginFCP> pluginRef;
 	protected String pluginName;
 
-	public PluginTalker(FredPluginTalker fpt, Node node2, String pluginname2, String clientSideIdentifier) throws PluginNotFoundException {
+	public PluginTalker(FredPluginTalker fpt, Node node2, String pluginname2,
+						String clientSideIdentifier) throws PluginNotFoundException {
 		node = node2;
 		pluginName = pluginname2;
 		pluginRef = findPlugin(pluginname2);
@@ -41,10 +42,12 @@ public class PluginTalker {
 		// As we have no network connection to pull an ID from, we assume a new client for each call of this constructor by computing a random clientIdentifier.
 		final String clientIdentifier = UUID.randomUUID().toString();
 
-		replysender = new PluginReplySenderDirect(node2, fpt, pluginname2, clientIdentifier, clientSideIdentifier);
+		replysender = new PluginReplySenderDirect(node2, fpt, pluginname2, clientIdentifier,
+				clientSideIdentifier);
 	}
 
-	public PluginTalker(Node node2, FCPConnectionHandler handler, String pluginname2, String clientSideIdentifier, boolean access2) throws PluginNotFoundException {
+	public PluginTalker(Node node2, FCPConnectionHandler handler, String pluginname2,
+						String clientSideIdentifier, boolean access2) throws PluginNotFoundException {
 		node = node2;
 		pluginName = pluginname2;
 		pluginRef = findPlugin(pluginname2);
@@ -53,10 +56,12 @@ public class PluginTalker {
 		// FCPConnectionHandler.connectionIdentifier is unique for each network connection of a client, which is exactly what the PluginReplySenderFCP() wants.
 		final String clientIdentifier = handler.connectionIdentifier;
 
-		replysender = new PluginReplySenderFCP(handler, pluginname2, clientIdentifier, clientSideIdentifier);
+		replysender = new PluginReplySenderFCP(handler, pluginname2, clientIdentifier,
+											   clientSideIdentifier);
 	}
 
-	protected WeakReference<FredPluginFCP> findPlugin(String pluginname2) throws PluginNotFoundException {
+	protected WeakReference<FredPluginFCP> findPlugin(String pluginname2) throws
+		PluginNotFoundException {
 		Logger.normal(this, "Searching fcp plugin: " + pluginname2);
 		FredPluginFCP plug = node.pluginManager.getFCPPlugin(pluginname2);
 		if (plug == null) {
@@ -93,7 +98,8 @@ public class PluginTalker {
 		} catch (VirtualMachineError vme) {
 			throw vme; // OOM is included here
 		} catch (Throwable t) {
-			Logger.error(this, "Cought error while execute fcp plugin handler for '"+pluginName+"', report it to the plugin author: " + t.getMessage(), t);
+			Logger.error(this, "Cought error while execute fcp plugin handler for '"+pluginName
+						 +"', report it to the plugin author: " + t.getMessage(), t);
 		}
 	}
 }

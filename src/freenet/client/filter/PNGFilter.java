@@ -83,7 +83,8 @@ public class PNGFilter implements ContentDataFilter {
 		output.flush();
 	}
 
-	public void readFilter(InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+	public void readFilter(InputStream input, OutputStream output, String charset,
+						   Map<String, String> otherParams,
 						   FilterCallback cb, boolean deleteText, boolean deleteTimestamp, boolean checkCRCs)
 	throws DataFilterException, IOException {
 		DataInputStream dis = null;
@@ -107,8 +108,9 @@ public class PNGFilter implements ContentDataFilter {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
 			output.write(pngHeader);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Writing the PNG header to the output bucket");
+			}
 
 			// Check the chunks :
 			// @see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.Summary-of-standard-chunks
@@ -133,10 +135,12 @@ public class PNGFilter implements ContentDataFilter {
 
 				int length = ((lengthBytes[0] & 0xff) << 24) + ((lengthBytes[1] & 0xff) << 16)
 							 + ((lengthBytes[2] & 0xff) << 8) + (lengthBytes[3] & 0xff);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "length " + length+ "(offset=0x"+Long.toHexString(offset)+") ");
-				if (dos != null)
+				}
+				if (dos != null) {
 					dos.write(lengthBytes);
+				}
 
 				// Type of the chunk : Should match [a-zA-Z]{4}
 				dis.readFully(lengthBytes);
@@ -154,10 +158,12 @@ public class PNGFilter implements ContentDataFilter {
 					}
 				}
 				chunkTypeString = sb.toString();
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "name " + chunkTypeString);
-				if (dos != null)
+				}
+				if (dos != null) {
 					dos.write(chunkTypeBytes);
+				}
 
 				// Content of the chunk
 				byte[] chunkData = new byte[length];
@@ -165,29 +171,36 @@ public class PNGFilter implements ContentDataFilter {
 					dis.readFully(chunkData, 0, length);
 					offset+=length;
 					if (logMINOR)
-						if (logDEBUG)
-							Logger.minor(this, "data (offset=0x"+Long.toHexString(offset)+") "+ (chunkData.length == 0 ? "null" : HexUtil.bytesToHex(chunkData)));
-						else
+						if (logDEBUG) {
+							Logger.minor(this, "data (offset=0x"+Long.toHexString(offset)+") "+ (chunkData.length == 0 ?
+										 "null" : HexUtil.bytesToHex(chunkData)));
+						} else {
 							Logger.minor(this, "data " + chunkData.length);
-					if (dos != null)
+						}
+					if (dos != null) {
 						dos.write(chunkData);
+					}
 				}
 
 				// CRC of the chunk
 				byte[] crcLengthBytes = new byte[4];
 				dis.readFully(crcLengthBytes);
 				offset+=4;
-				if(logMINOR) Logger.minor(this, "CRC offset=0x"+Long.toHexString(offset));
-				if (dos != null)
+				if(logMINOR) {
+					Logger.minor(this, "CRC offset=0x"+Long.toHexString(offset));
+				}
+				if (dos != null) {
 					dos.write(crcLengthBytes);
+				}
 
 				if (checkCRCs) {
 					long readCRC = (((crcLengthBytes[0] & 0xff) << 24) + ((crcLengthBytes[1] & 0xff) << 16)
 									+ ((crcLengthBytes[2] & 0xff) << 8) + (crcLengthBytes[3] & 0xff)) & 0x00000000ffffffffL;
 					CRC32 crc = new CRC32();
 					crc.update(chunkTypeBytes);
-					if(length > 0)
+					if(length > 0) {
 						crc.update(chunkData);
+					}
 					long computedCRC = crc.getValue();
 
 					if (readCRC != computedCRC) {
@@ -202,26 +215,34 @@ public class PNGFilter implements ContentDataFilter {
 				boolean validChunkType = false;
 
 				if (!skip && "IHDR".equals(chunkTypeString)) { // http://www.w3.org/TR/PNG/#11IHDR
-					if (hasSeenIHDR)
+					if (hasSeenIHDR) {
 						throwError("Duplicate IHDR", "Two IHDR chunks detected!!");
-					if(length != 13)
+					}
+					if(length != 13) {
 						throwError("IHDR length!= 13", "The length of the IHDR file is not 13");
-					long width = ((chunkData[0] & 0xff) << 24) + ((chunkData[1] & 0xff) << 16) + ((chunkData[2] & 0xff) << 8) + (chunkData[3] & 0xff);
-					long height = ((chunkData[4] & 0xff) << 24) + ((chunkData[5] & 0xff) << 16) + ((chunkData[6] & 0xff) << 8) + (chunkData[7] & 0xff);
-					if(width < 1 || height < 1)
+					}
+					long width = ((chunkData[0] & 0xff) << 24) + ((chunkData[1] & 0xff) << 16) + ((
+									 chunkData[2] & 0xff) << 8) + (chunkData[3] & 0xff);
+					long height = ((chunkData[4] & 0xff) << 24) + ((chunkData[5] & 0xff) << 16) + ((
+									  chunkData[6] & 0xff) << 8) + (chunkData[7] & 0xff);
+					if(width < 1 || height < 1) {
 						throwError("Width or Height is invalid", "Width or Height is invalid (<1)");
+					}
 					int bitDepth = chunkData[8];
 					int colourType = chunkData[9];
 					throwOnInvalidColour(bitDepth, colourType);
 					int compressionMethod = chunkData[10];
-					if(compressionMethod != 0)
+					if(compressionMethod != 0) {
 						throwError("Invalid CompressionMethod", "Invalid CompressionMethod! "+compressionMethod);
+					}
 					int filterMethod = chunkData[11];
-					if(filterMethod != 0)
+					if(filterMethod != 0) {
 						throwError("Invalid FilterMethod", "Invalid FilterMethod! "+filterMethod);
+					}
 					int interlaceMethod = chunkData[12];
-					if(interlaceMethod < 0 || interlaceMethod >1)
+					if(interlaceMethod < 0 || interlaceMethod >1) {
 						throwError("Invalid InterlaceMethod", "Invalid InterlaceMethod! "+interlaceMethod);
+					}
 
 					if(logMINOR)
 						Logger.minor(this, "Info from IHDR: width="+width+"px height="+height+"px bitDepth="+bitDepth+
@@ -231,19 +252,22 @@ public class PNGFilter implements ContentDataFilter {
 					validChunkType = true;
 				}
 
-				if (!hasSeenIHDR)
+				if (!hasSeenIHDR) {
 					throwError("No IHDR chunk!", "No IHDR chunk!");
+				}
 
 				if (!skip && "IEND".equals(chunkTypeString)) {
-					if (hasSeenIEND)
+					if (hasSeenIEND) {
 						throwError("Two IEND chunks detected!!", "Two IEND chunks detected!!");
+					}
 					hasSeenIEND = true;
 					validChunkType = true;
 				}
 
 				if (!skip && "PLTE".equalsIgnoreCase(chunkTypeString)) {
-					if (hasSeenIDAT)
+					if (hasSeenIDAT) {
 						throwError("PLTE must be before IDAT", "PLTE must be before IDAT");
+					}
 					validChunkType = true;
 				}
 
@@ -257,27 +281,31 @@ public class PNGFilter implements ContentDataFilter {
 
 				if (!validChunkType) {
 					for (int i = 0; i < HARMLESS_CHUNK_TYPES.length; i++) {
-						if (HARMLESS_CHUNK_TYPES[i].equals(chunkTypeString))
+						if (HARMLESS_CHUNK_TYPES[i].equals(chunkTypeString)) {
 							validChunkType = true;
+						}
 					}
 				}
 
 				if ("text".equalsIgnoreCase(chunkTypeString) || "itxt".equalsIgnoreCase(chunkTypeString)
 						|| "ztxt".equalsIgnoreCase(chunkTypeString)) {
-					if (deleteText)
+					if (deleteText) {
 						skip = true;
-					else
+					} else {
 						validChunkType = true;
+					}
 				} else if (deleteTimestamp && "time".equalsIgnoreCase(chunkTypeString)) {
-					if (deleteTimestamp)
+					if (deleteTimestamp) {
 						skip = true;
-					else
+					} else {
 						validChunkType = true;
+					}
 				}
 
 				if (!validChunkType) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Skipping unknown chunk type " + chunkTypeString);
+					}
 					skip = true;
 				}
 
@@ -292,17 +320,23 @@ public class PNGFilter implements ContentDataFilter {
 				lastChunkType = chunkTypeString;
 			}
 
-			if (!hasSeenIEND)
+			if (!hasSeenIEND) {
 				throwError("Missing IEND", "Missing IEND");
-			if (!hasSeenIHDR)
+			}
+			if (!hasSeenIHDR) {
 				throwError("Missing IHDR", "Missing IHDR");
+			}
 			return; // Strip everything after IEND.
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throwError("ArrayIndexOutOfBoundsException while filtering", "ArrayIndexOutOfBoundsException while filtering");
+			throwError("ArrayIndexOutOfBoundsException while filtering",
+					   "ArrayIndexOutOfBoundsException while filtering");
 		} catch (NegativeArraySizeException e) {
-			throwError("NegativeArraySizeException while filtering", "NegativeArraySizeException while filtering");
+			throwError("NegativeArraySizeException while filtering",
+					   "NegativeArraySizeException while filtering");
 		} catch (EOFException e) {
-			if(hasSeenIEND && hasSeenIHDR) return;
+			if(hasSeenIEND && hasSeenIHDR) {
+				return;
+			}
 			throwError("EOF Exception while filtering", "EOF Exception while filtering");
 		}
 	}
@@ -322,8 +356,9 @@ public class PNGFilter implements ContentDataFilter {
 				throwError("Invalid colourType/bitDepth combination!",
 						   "Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
 		case 8:
-			if(colourType == 0 || colourType ==2 || colourType ==3 || colourType ==4|| colourType ==6)
+			if(colourType == 0 || colourType ==2 || colourType ==3 || colourType ==4|| colourType ==6) {
 				break;
+			}
 		default:
 			throwError("Invalid colourType/bitDepth combination!",
 					   "Invalid colourType/bitDepth combination! ("+colourType+'|'+bitDepth+')');
@@ -360,10 +395,12 @@ public class PNGFilter implements ContentDataFilter {
 	private void throwError(String shortReason, String reason) throws DataFilterException {
 		// Throw an exception
 		String message = "Invalid PNG";
-		if (reason != null)
+		if (reason != null) {
 			message += ' ' + reason;
-		if (shortReason != null)
+		}
+		if (shortReason != null) {
 			message += " - " + shortReason;
+		}
 		DataFilterException e = new DataFilterException(shortReason, shortReason, message);
 		Logger.normal(this, "Throwing " + e.getMessage(), e);
 		throw e;

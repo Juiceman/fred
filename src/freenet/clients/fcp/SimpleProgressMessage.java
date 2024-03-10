@@ -44,8 +44,9 @@ public class SimpleProgressMessage extends FCPMessage {
 		fs.put("Succeeded",event.succeedBlocks);
 		fs.put("LastProgress", event.latestSuccess != null ? event.latestSuccess.getTime() : 0);
 		fs.put("FinalizedTotal", event.finalizedTotal);
-		if(event.minSuccessFetchBlocks != 0)
+		if(event.minSuccessFetchBlocks != 0) {
 			fs.put("MinSuccessFetchBlocks", event.minSuccessFetchBlocks);
+		}
 		fs.putSingle("Identifier", ident);
 		fs.put("Global", global);
 		return fs;
@@ -58,7 +59,8 @@ public class SimpleProgressMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "SimpleProgress goes from server to client not the other way around", ident, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "SimpleProgress goes from server to client not the other way around", ident, global);
 	}
 
 	public double getFraction() {

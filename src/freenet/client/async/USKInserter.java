@@ -29,7 +29,8 @@ import freenet.support.io.ResumeFailedException;
  * following slot. Thereafter, if we get a collision, increment our slot; if we get more than 5 consecutive
  * collisions, search for the latest slot again.
  */
-public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompletionCallback, Serializable {
+public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompletionCallback,
+	Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static volatile boolean logMINOR;
@@ -96,18 +97,24 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	 */
 	private void scheduleFetcher(ClientContext context) {
 		synchronized(this) {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "scheduling fetcher for "+pubUSK.getURI());
-			if(finished) return;
-			fetcher = context.uskManager.getFetcherForInsertDontSchedule(persistent ? pubUSK.copy() : pubUSK, parent.priorityClass, this, parent.getClient(), context, persistent, ctx.ignoreUSKDatehints);
-			if(logMINOR)
+			}
+			if(finished) {
+				return;
+			}
+			fetcher = context.uskManager.getFetcherForInsertDontSchedule(persistent ? pubUSK.copy() : pubUSK,
+					  parent.priorityClass, this, parent.getClient(), context, persistent, ctx.ignoreUSKDatehints);
+			if(logMINOR) {
 				Logger.minor(this, "scheduled: "+fetcher);
+			}
 		}
 		fetcher.schedule(context);
 	}
 
 	@Override
-	public void onFoundEdition(long l, USK key, ClientContext context, boolean lastContentWasMetadata, short codec, byte[] hisData, boolean newKnownGood, boolean newSlotToo) {
+	public void onFoundEdition(long l, USK key, ClientContext context, boolean lastContentWasMetadata,
+							   short codec, byte[] hisData, boolean newKnownGood, boolean newSlotToo) {
 		boolean alreadyInserted = false;
 		synchronized(this) {
 			edition = Math.max(l, edition);
@@ -145,13 +152,18 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 
 	private void insertSucceeded(ClientContext context, long edition) {
 		if(ctx.ignoreUSKDatehints) {
-			if(logMINOR) Logger.minor(this, "Inserted to edition "+edition);
+			if(logMINOR) {
+				Logger.minor(this, "Inserted to edition "+edition);
+			}
 			cb.onSuccess(this, context);
 			return;
 		}
-		if(logMINOR) Logger.minor(this, "Inserted to edition "+edition+" - inserting USK date hints...");
+		if(logMINOR) {
+			Logger.minor(this, "Inserted to edition "+edition+" - inserting USK date hints...");
+		}
 		USKDateHint hint = USKDateHint.now();
-		MultiPutCompletionCallback m = new MultiPutCompletionCallback(cb, parent, tokenObject, persistent, true);
+		MultiPutCompletionCallback m = new MultiPutCompletionCallback(cb, parent, tokenObject, persistent,
+				true);
 		byte[] hintData = hint.getData(edition).getBytes(StandardCharsets.UTF_8);
 		FreenetURI[] hintURIs = hint.getInsertURIs(privUSK);
 		boolean added = false;
@@ -160,7 +172,8 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 				Bucket bucket = BucketTools.makeImmutableBucket(context.getBucketFactory(persistent), hintData);
 				SingleBlockInserter sb =
 					new SingleBlockInserter(parent, bucket, (short) -1, uri,
-											ctx, realTimeFlag, m, false, sourceLength, token, true, true /* we don't use it */, null, context, persistent, true, extraInserts, cryptoAlgorithm, forceCryptoKey);
+											ctx, realTimeFlag, m, false, sourceLength, token, true, true /* we don't use it */, null, context,
+											persistent, true, extraInserts, cryptoAlgorithm, forceCryptoKey);
 				Logger.normal(this, "Inserting "+uri+" with "+sb+" for insert of "+pubUSK);
 				m.add(sb);
 				sb.schedule(context);
@@ -168,7 +181,8 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 			} catch (IOException e) {
 				Logger.error(this, "Unable to insert USK date hints due to disk I/O error: "+e, e);
 				if(!added) {
-					cb.onFailure(new InsertException(InsertExceptionMode.BUCKET_ERROR, e, pubUSK.getSSK(edition).getURI()), this, context);
+					cb.onFailure(new InsertException(InsertExceptionMode.BUCKET_ERROR, e,
+													 pubUSK.getSSK(edition).getURI()), this, context);
 					return;
 				} // Else try to insert the other hints.
 			} catch (InsertException e) {
@@ -186,12 +200,17 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	private void scheduleInsert(ClientContext context) {
 		long edNo = Math.max(edition, context.uskManager.lookupLatestSlot(pubUSK)+1);
 		synchronized(this) {
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 			edition = edNo;
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "scheduling insert for "+pubUSK.getURI()+ ' ' +edition);
-			sbi = new SingleBlockInserter(parent, data, compressionCodec, privUSK.getInsertableSSK(edition).getInsertURI(),
-										  ctx, realTimeFlag, this, isMetadata, sourceLength, token, false, true /* we don't use it */, tokenObject, context, persistent, false, extraInserts, cryptoAlgorithm, forceCryptoKey);
+			}
+			sbi = new SingleBlockInserter(parent, data, compressionCodec,
+										  privUSK.getInsertableSSK(edition).getInsertURI(),
+										  ctx, realTimeFlag, this, isMetadata, sourceLength, token, false, true /* we don't use it */,
+										  tokenObject, context, persistent, false, extraInserts, cryptoAlgorithm, forceCryptoKey);
 		}
 		try {
 			sbi.schedule(context);
@@ -216,11 +235,12 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 		sbi = null;
 		FreenetURI targetURI = pubUSK.getSSK(edition).getURI();
 		FreenetURI realURI = ((SingleBlockInserter)state).getURI(context);
-		if(!targetURI.equals(realURI))
+		if(!targetURI.equals(realURI)) {
 			Logger.error(this, "URI should be "+targetURI+" actually is "+realURI);
-		else {
-			if(logMINOR)
+		} else {
+			if(logMINOR) {
 				Logger.minor(this, "URI should be "+targetURI+" actually is "+realURI);
+			}
 			context.uskManager.updateKnownGood(pubUSK, edition, context);
 		}
 		if(freeData) {
@@ -240,10 +260,11 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 				// Try the next slot
 				edition++;
 				consecutiveCollisions++;
-				if(consecutiveCollisions > MAX_TRIED_SLOTS)
+				if(consecutiveCollisions > MAX_TRIED_SLOTS) {
 					scheduleFetcher(context);
-				else
+				} else {
 					scheduleInsert(context);
+				}
 			} else {
 				Bucket d = null;
 				synchronized(this) {
@@ -268,7 +289,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 
 	public USKInserter(BaseClientPutter parent, Bucket data, short compressionCodec, FreenetURI uri,
 					   InsertContext ctx, PutCompletionCallback cb, boolean isMetadata, int sourceLength, int token,
-					   boolean addToParent, Object tokenObject, ClientContext context, boolean freeData, boolean persistent, boolean realTimeFlag, int extraInserts, byte cryptoAlgorithm, byte[] forceCryptoKey) throws MalformedURLException {
+					   boolean addToParent, Object tokenObject, ClientContext context, boolean freeData,
+					   boolean persistent, boolean realTimeFlag, int extraInserts, byte cryptoAlgorithm,
+					   byte[] forceCryptoKey) throws MalformedURLException {
 		this.hashCode = super.hashCode();
 		this.tokenObject = tokenObject;
 		this.persistent = persistent;
@@ -326,7 +349,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	public void cancel(ClientContext context) {
 		USKFetcherTag tag;
 		synchronized(this) {
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 			finished = true;
 			tag = fetcher;
 			fetcher = null;
@@ -352,7 +377,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 
 	@Override
 	public void onFailure(ClientContext context) {
-		if(logMINOR) Logger.minor(this, "Fetcher failed to find the given edition or any later edition on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Fetcher failed to find the given edition or any later edition on "+this);
+		}
 		scheduleInsert(context);
 	}
 
@@ -360,7 +387,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 	public void onCancelled(ClientContext context) {
 		synchronized(this) {
 			fetcher = null;
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 		}
 		Logger.error(this, "Unexpected onCancelled()", new Exception("error"));
 		cancel(context);
@@ -418,12 +447,22 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 
 	@Override
 	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
-		if(resumed) return;
+		if(resumed) {
+			return;
+		}
 		resumed = true;
-		if(data != null) data.onResume(context);
-		if(cb != null && cb != parent) cb.onResume(context);
-		if(fetcher != null) fetcher.onResume(context);
-		if(sbi != null) sbi.onResume(context);
+		if(data != null) {
+			data.onResume(context);
+		}
+		if(cb != null && cb != parent) {
+			cb.onResume(context);
+		}
+		if(fetcher != null) {
+			fetcher.onResume(context);
+		}
+		if(sbi != null) {
+			sbi.onResume(context);
+		}
 	}
 
 	@Override
@@ -432,7 +471,9 @@ public class USKInserter implements ClientPutState, USKFetcherCallback, PutCompl
 		synchronized(this) {
 			sbi = this.sbi;
 		}
-		if(sbi != null) sbi.onShutdown(context);
+		if(sbi != null) {
+			sbi.onShutdown(context);
+		}
 	}
 
 }

@@ -31,10 +31,11 @@ public class DarknetPeerNodeStatus extends PeerNodeStatus {
 		this.trustLevel = peerNode.getTrustLevel();
 		this.ourVisibility = peerNode.getOurVisibility();
 		this.theirVisibility = peerNode.getTheirVisibility();
-		if(ourVisibility.isStricterThan(theirVisibility))
+		if(ourVisibility.isStricterThan(theirVisibility)) {
 			this.overallVisibility = ourVisibility;
-		else
+		} else {
 			this.overallVisibility = theirVisibility;
+		}
 	}
 
 	/**
@@ -89,8 +90,9 @@ public class DarknetPeerNodeStatus extends PeerNodeStatus {
 	}
 
 	public FRIEND_VISIBILITY getTheirVisibility() {
-		if(theirVisibility == null)
+		if(theirVisibility == null) {
 			return FRIEND_VISIBILITY.NO;
+		}
 		return theirVisibility;
 	}
 

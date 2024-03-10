@@ -55,7 +55,8 @@ public class SlashdotStoreTest {
 	}
 
 	@Test
-	public void testSimple() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException {
+	public void testSimple() throws IOException, CHKEncodeException, CHKVerifyException,
+		CHKDecodeException {
 		CHKStore store = new CHKStore();
 		new SlashdotStore<CHKBlock>(store, 10, 30*1000, 5*1000, new TrivialTicker(exec), tbf);
 
@@ -72,7 +73,8 @@ public class SlashdotStoreTest {
 	}
 
 	@Test
-	public void testDeletion() throws IOException, CHKEncodeException, CHKVerifyException, CHKDecodeException, InterruptedException {
+	public void testDeletion() throws IOException, CHKEncodeException, CHKVerifyException,
+		CHKDecodeException, InterruptedException {
 		CHKStore store = new CHKStore();
 		SpeedyTicker st = new SpeedyTicker();
 		SlashdotStore<CHKBlock> ss = new SlashdotStore<>(store, 10, 0, 100, st, tbf);
@@ -88,13 +90,16 @@ public class SlashdotStoreTest {
 		ClientCHK key = block.getClientKey();
 
 		CHKBlock verify = store.fetch(key.getNodeCHK(), false, false, null);
-		if(verify == null) return; // Expected outcome
+		if(verify == null) {
+			return;    // Expected outcome
+		}
 		String data = decodeBlock(verify, key);
 		System.err.println("Got data: "+data+" but should have been deleted!");
 		fail();
 	}
 
-	private String decodeBlock(CHKBlock verify, ClientCHK key) throws CHKVerifyException, CHKDecodeException, IOException {
+	private String decodeBlock(CHKBlock verify, ClientCHK key) throws CHKVerifyException,
+		CHKDecodeException, IOException {
 		ClientCHKBlock cb = new ClientCHKBlock(verify, key);
 		Bucket output = cb.decode(new ArrayBucketFactory(), 32768, false);
 		byte[] buf = BucketTools.toByteArray(output);
@@ -104,7 +109,8 @@ public class SlashdotStoreTest {
 	private ClientCHKBlock encodeBlock(String test) throws CHKEncodeException, IOException {
 		byte[] data = test.getBytes(StandardCharsets.UTF_8);
 		SimpleReadOnlyArrayBucket bucket = new SimpleReadOnlyArrayBucket(data);
-		return ClientCHKBlock.encode(bucket, false, false, (short)-1, bucket.size(), Compressor.DEFAULT_COMPRESSORDESCRIPTOR,
+		return ClientCHKBlock.encode(bucket, false, false, (short)-1, bucket.size(),
+									 Compressor.DEFAULT_COMPRESSORDESCRIPTOR,
 									 null, (byte)0);
 	}
 

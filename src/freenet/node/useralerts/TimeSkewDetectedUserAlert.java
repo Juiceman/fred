@@ -20,7 +20,8 @@ public class TimeSkewDetectedUserAlert extends AbstractUserAlert {
 	 *
 	 */
 	public TimeSkewDetectedUserAlert() {
-		super(false, null, null, null, null, UserAlert.CRITICAL_ERROR, false, NodeL10n.getBase().getString("UserAlert.hide"), false, null);
+		super(false, null, null, null, null, UserAlert.CRITICAL_ERROR, false,
+			  NodeL10n.getBase().getString("UserAlert.hide"), false, null);
 	}
 
 	@Override

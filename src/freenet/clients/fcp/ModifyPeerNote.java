@@ -38,11 +38,13 @@ public class ModifyPeerNote extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "ModifyPeerNote requires full access", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+											  "ModifyPeerNote requires full access", identifier, false);
 		}
 		String nodeIdentifier = fs.get("NodeIdentifier");
 		if( nodeIdentifier == null ) {
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NodeIdentifier field missing", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Error: NodeIdentifier field missing", identifier, false);
 		}
 		PeerNode pn = node.getPeerNode(nodeIdentifier);
 		if(pn == null) {
@@ -51,25 +53,29 @@ public class ModifyPeerNote extends FCPMessage {
 			return;
 		}
 		if(!(pn instanceof DarknetPeerNode)) {
-			throw new MessageInvalidException(ProtocolErrorMessage.DARKNET_ONLY, "ModifyPeerNote only available for darknet peers", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.DARKNET_ONLY,
+											  "ModifyPeerNote only available for darknet peers", identifier, false);
 		}
 		DarknetPeerNode dpn = (DarknetPeerNode) pn;
 		int peerNoteType;
 		try {
 			peerNoteType = fs.getInt("PeerNoteType");
 		} catch (FSParseException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Error parsing PeerNoteType field: "+e.getMessage(), identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+											  "Error parsing PeerNoteType field: "+e.getMessage(), identifier, false);
 		}
 		String encodedNoteText = fs.get("NoteText");
 		if( encodedNoteText == null ) {
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NoteText field missing", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Error: NoteText field missing", identifier, false);
 		}
 		String noteText;
 		// **FIXME** this should be generalized for multiple peer notes per peer, after PeerNode is similarly generalized
 		try {
 			noteText = Base64.decodeUTF8(encodedNoteText);
 		} catch (IllegalBase64Exception e) {
-			Logger.error(this, "Bad Base64 encoding when decoding a FCP-received private darknet comment SimpleFieldSet", e);
+			Logger.error(this,
+						 "Bad Base64 encoding when decoding a FCP-received private darknet comment SimpleFieldSet", e);
 			return;
 		}
 		if(peerNoteType == Node.PEER_NOTE_TYPE_PRIVATE_DARKNET_COMMENT) {

@@ -27,7 +27,8 @@ public interface USKCallback {
 	 * new highest known SSK slot. If newKnownGood is not set, there is always a new
 	 * highest known SSK slot.
 	 */
-	void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo);
+	void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec,
+						byte[] data, boolean newKnownGood, boolean newSlotToo);
 
 	/**
 	 * Priority at which the polling should run normally. See RequestScheduler for constants.

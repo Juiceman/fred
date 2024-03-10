@@ -36,7 +36,8 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 	private long							messageCounter;
 
 	/** This ConnectionManager manages the actual connection to the server if this is the leader */
-	private LongPollingConnectionManager	longPollingManager						= new LongPollingConnectionManager(this);
+	private LongPollingConnectionManager	longPollingManager						= new LongPollingConnectionManager(
+		this);
 
 	/** If this request received a notification, this UpdateManager will be notified */
 	private IUpdateManager					updateManager							= null;
@@ -54,7 +55,8 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 			@Override
 			public void run() {
 				// Checks if the leader keepalive cookie was updated not long ago
-				if ((Long.parseLong(Cookies.getCookie(LEADER_KEEPALIVE)) + sharedConnectionKeepaliveIntervalInMs * 3) < getTime()) {
+				if ((Long.parseLong(Cookies.getCookie(LEADER_KEEPALIVE)) + sharedConnectionKeepaliveIntervalInMs *
+						3) < getTime()) {
 					// If it isn't updated for a while, then getting the leadership
 					FreenetJs.log("Getting leadership lastKeepalive:" + Cookies.getCookie(LEADER_KEEPALIVE));
 					// Cancells the follower timers
@@ -102,7 +104,11 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 			throw new RuntimeException("You must set the UpdateManager before opening the connection!");
 		}
 		// If there is no leader yet or the keepalive was not updated for a while, then it will take the lead
-		if (Cookies.getCookie(LEADER_NAME) == null || Cookies.getCookie(LEADER_NAME).trim().compareTo("") == 0 || (Cookies.getCookie(LEADER_KEEPALIVE) == null || (Long.parseLong(Cookies.getCookie(LEADER_KEEPALIVE)) + sharedConnectionKeepaliveIntervalInMs * 3) < getTime())) {
+		if (Cookies.getCookie(LEADER_NAME) == null
+				|| Cookies.getCookie(LEADER_NAME).trim().compareTo("") == 0
+				|| (Cookies.getCookie(LEADER_KEEPALIVE) == null
+					|| (Long.parseLong(Cookies.getCookie(LEADER_KEEPALIVE)) + sharedConnectionKeepaliveIntervalInMs * 3)
+					< getTime())) {
 			startLeading();
 		} else {
 			// If there is a leader, then it starts the follower timers
@@ -152,8 +158,10 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 			FreenetJs.log("Updating");
 		} else {
 			// If not, then set a message and increase the counter, so other tabs will read it
-			FreenetJs.log("Setting cookie: name:" + MESSAGE_PREFIX + (messageCounter % MAX_MESSAGES) + " value:" + message);
-			Cookies.setCookie(MESSAGE_PREFIX + (messageCounter % MAX_MESSAGES), message, null, null, "/", false);
+			FreenetJs.log("Setting cookie: name:" + MESSAGE_PREFIX + (messageCounter % MAX_MESSAGES) + " value:"
+						  + message);
+			Cookies.setCookie(MESSAGE_PREFIX + (messageCounter % MAX_MESSAGES), message, null, null, "/",
+							  false);
 			++messageCounter;
 			FreenetJs.log("Setting message counter:" + messageCounter);
 			Cookies.setCookie(MESSAGE_COUNTER, "" + messageCounter, null, null, "/", false);
@@ -169,10 +177,12 @@ public class SharedConnectionManager implements IConnectionManager, IUpdateManag
 			// If there is no message counter set, then there are no messages
 			return;
 		}
-		FreenetJs.log("Message counter set, value:" + Cookies.getCookie(MESSAGE_COUNTER) + " internal message counter:" + messageCounter);
+		FreenetJs.log("Message counter set, value:" + Cookies.getCookie(MESSAGE_COUNTER) +
+					  " internal message counter:" + messageCounter);
 		// Cycle until all messages are processed
 		while (messageCounter < Long.parseLong(Cookies.getCookie(MESSAGE_COUNTER))) {
-			FreenetJs.log("Inside the loop: internal counter:" + messageCounter + " cookie counter:" + Cookies.getCookie(MESSAGE_COUNTER));
+			FreenetJs.log("Inside the loop: internal counter:" + messageCounter + " cookie counter:" +
+						  Cookies.getCookie(MESSAGE_COUNTER));
 			String message = Cookies.getCookie(MESSAGE_PREFIX + (messageCounter % MAX_MESSAGES));
 			FreenetJs.log("Got messsage:" + message);
 			String requestId = Base64.decode(message.substring(0, message.indexOf(UpdaterConstants.SEPARATOR)));

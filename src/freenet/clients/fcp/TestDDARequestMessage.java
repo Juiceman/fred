@@ -30,15 +30,22 @@ public class TestDDARequestMessage extends FCPMessage {
 	 */
 	public TestDDARequestMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get(DIRECTORY);
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Directory given!", null, false);
-		if(identifier.length() == 0)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "The specified Directory can't be empty!", null, false);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Directory given!", null,
+											  false);
+		}
+		if(identifier.length() == 0) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "The specified Directory can't be empty!", null, false);
+		}
 
 		wantRead = fs.getBoolean(WANT_READ, false);
 		wantWrite = fs.getBoolean(WANT_WRITE, false);
-		if((wantRead == false) && (wantWrite == false))
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Both "+ WANT_READ + " and " + WANT_WRITE + " are set to false: what's the point of sending a message?", identifier, false);
+		if((wantRead == false) && (wantWrite == false)) {
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+											  "Both "+ WANT_READ + " and " + WANT_WRITE +
+											  " are set to false: what's the point of sending a message?", identifier, false);
+		}
 	}
 
 	@Override
@@ -57,7 +64,8 @@ public class TestDDARequestMessage extends FCPMessage {
 		try {
 			job = handler.enqueueDDACheck(identifier, wantRead, wantWrite);
 		} catch (IllegalArgumentException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier,
+											  false);
 		}
 		TestDDAReplyMessage reply = new TestDDAReplyMessage(job);
 		handler.send(reply);

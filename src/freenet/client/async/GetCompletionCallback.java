@@ -17,7 +17,8 @@ import freenet.crypt.HashResult;
  */
 public interface GetCompletionCallback {
 
-	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, ClientGetState state, ClientContext context);
+	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata,
+						  List<? extends Compressor> decompressors, ClientGetState state, ClientContext context);
 
 	public void onFailure(FetchException e, ClientGetState state, ClientContext context);
 
@@ -64,7 +65,8 @@ public interface GetCompletionCallback {
 	 * @param blocksTotal The total number of blocks available.
 	 * @param context Utility object containing helpers, mostly not persistent, such as the Ticker, temporary storage factories etc.
 	 */
-	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal, ClientContext context);
+	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal,
+								  ClientContext context);
 
 	/**
 	 * Called when we know the settings for the splitfile.
@@ -79,7 +81,9 @@ public interface GetCompletionCallback {
 	 * where we store all the data in the top key.
 	 * @param context Utility object containing helpers, mostly not persistent, such as the Ticker, temporary storage factories etc.
 	 */
-	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max, byte[] customSplitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway, ClientContext context);
+	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max,
+			byte[] customSplitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway,
+			ClientContext context);
 
 	/**
 	 * Called when we know the HashResult of the final file. This will be checked when we actually

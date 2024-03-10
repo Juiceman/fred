@@ -44,7 +44,8 @@ public class USKFetcherWrapper extends BaseClientGetter {
 	}
 
 	@Override
-	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
+	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata,
+						  List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
 		// Ignore; we don't do anything with it because we are running in the background.
 	}
 
@@ -94,12 +95,15 @@ public class USKFetcherWrapper extends BaseClientGetter {
 	}
 
 	@Override
-	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal, ClientContext context) {
+	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal,
+								  ClientContext context) {
 		// Ignore
 	}
 
 	@Override
-	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max, byte[] splitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway, ClientContext context) {
+	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max,
+			byte[] splitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway,
+			ClientContext context) {
 		// Ignore
 	}
 

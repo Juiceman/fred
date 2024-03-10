@@ -113,10 +113,11 @@ public class Version {
 	 * data normally.
 	 */
 	public static int lastGoodBuild() {
-		if(System.currentTimeMillis() >= transitionTime)
+		if(System.currentTimeMillis() >= transitionTime) {
 			return newLastGoodBuild;
-		else
+		} else {
 			return oldLastGoodBuild;
+		}
 	}
 
 	/** The highest reported build of fred */
@@ -178,8 +179,9 @@ public class Version {
 		if (prot.equals(protocolVersion)
 // uncomment next line to accept stable, see also explainBadVersion() below
 //			|| prot.equals(stableProtocolVersion)
-		   )
+		   ) {
 			return true;
+		}
 		return false;
 	}
 
@@ -240,8 +242,9 @@ public class Version {
 				return false;
 			}
 		}
-		if(logDEBUG)
+		if(logDEBUG) {
 			Logger.minor(Version.class, "Accepting: " + version);
+		}
 		return true;
 	}
 
@@ -311,8 +314,9 @@ public class Version {
 				return false;
 			}
 		}
-		if(logDEBUG)
+		if(logDEBUG) {
 			Logger.minor(Version.class, "Accepting: " + version);
+		}
 		return true;
 	}
 
@@ -333,8 +337,9 @@ public class Version {
 			try {
 				int build = Integer.parseInt(v[3]);
 				int req = lastGoodBuild();
-				if (build < req)
+				if (build < req) {
 					return "Build older than last good build " + req;
+				}
 			} catch (NumberFormatException e) {
 				return "Build number not numeric.";
 			}
@@ -342,8 +347,9 @@ public class Version {
 		if (stableVersion(v)) {
 			try {
 				int build = Integer.parseInt(v[3]);
-				if (build < lastGoodStableBuild)
+				if (build < lastGoodStableBuild) {
 					return "Build older than last good stable build " + lastGoodStableBuild;
+				}
 			} catch (NumberFormatException e) {
 				return "Build number not numeric.";
 			}
@@ -369,7 +375,8 @@ public class Version {
 		try {
 			return Integer.parseInt(v[3]);
 		} catch (NumberFormatException e) {
-			throw (VersionParseException)new VersionParseException("Got NumberFormatException on "+v[3]+" : "+e+" for "+version).initCause(e);
+			throw (VersionParseException)new VersionParseException("Got NumberFormatException on "+v[3]+" : "+e
+					+" for "+version).initCause(e);
 		}
 	}
 
@@ -388,8 +395,9 @@ public class Version {
 	public static void seenVersion(String version) {
 		String[] v = Fields.commaList(version);
 
-		if ((v == null) || (v.length < 3))
-			return; // bad, but that will be discovered elsewhere
+		if ((v == null) || (v.length < 3)) {
+			return;    // bad, but that will be discovered elsewhere
+		}
 
 		if (sameVersion(v)) {
 

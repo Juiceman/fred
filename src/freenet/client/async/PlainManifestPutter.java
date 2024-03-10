@@ -29,19 +29,26 @@ public class PlainManifestPutter extends BaseManifestPutter {
 		Logger.registerClass(PlainManifestPutter.class);
 	}
 
-	public PlainManifestPutter(ClientPutCallback clientCallback, HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName, InsertContext ctx, boolean getCHKOnly,
-							   boolean earlyEncode, boolean persistent, byte [] forceCryptoKey, ClientContext context) throws TooManyFilesInsertException {
-		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx, ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
+	public PlainManifestPutter(ClientPutCallback clientCallback,
+							   HashMap<String, Object> manifestElements, short prioClass, FreenetURI target, String defaultName,
+							   InsertContext ctx, boolean getCHKOnly,
+							   boolean earlyEncode, boolean persistent, byte [] forceCryptoKey,
+							   ClientContext context) throws TooManyFilesInsertException {
+		super(clientCallback, manifestElements, prioClass, target, defaultName, ctx,
+			  ClientPutter.randomiseSplitfileKeys(target, ctx, persistent), forceCryptoKey, context);
 	}
 
 	@Override
 	protected void makePutHandlers(HashMap<String,Object> manifestElements, String defaultName) {
-		if(logDEBUG) Logger.debug(this, "Root map : "+manifestElements.size()+" elements");
+		if(logDEBUG) {
+			Logger.debug(this, "Root map : "+manifestElements.size()+" elements");
+		}
 		makePutHandlers(getRootBuilder(), manifestElements, defaultName);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void makePutHandlers(FreeFormBuilder builder, HashMap<String, Object> manifestElements, Object defaultName) {
+	private void makePutHandlers(FreeFormBuilder builder, HashMap<String, Object> manifestElements,
+								 Object defaultName) {
 		for(Map.Entry<String, Object> entry:manifestElements.entrySet()) {
 			String name = entry.getKey();
 			Object o = entry.getValue();
@@ -51,7 +58,9 @@ public class PlainManifestPutter extends BaseManifestPutter {
 				builder.makeSubDirCD(name);
 				makePutHandlers(builder, subMap, defaultName);
 				builder.popCurrentDir();
-				if(logDEBUG) Logger.debug(this, "Sub map for "+name+" : "+subMap.size()+" elements");
+				if(logDEBUG) {
+					Logger.debug(this, "Sub map for "+name+" : "+subMap.size()+" elements");
+				}
 			} else {
 				ManifestElement element = (ManifestElement) o;
 				builder.addElement(name, element, name.equals(defaultName));

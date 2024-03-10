@@ -43,18 +43,21 @@ public class FProxyFetchTracker implements Runnable {
 		this.rc = rc;
 	}
 
-	public FProxyFetchWaiter makeFetcher(FreenetURI key, long maxSize, FetchContext fctx, REFILTER_POLICY refilterPolicy) throws FetchException {
+	public FProxyFetchWaiter makeFetcher(FreenetURI key, long maxSize, FetchContext fctx,
+										 REFILTER_POLICY refilterPolicy) throws FetchException {
 		FProxyFetchInProgress progress;
 		/* LOCKING:
 		 * Call getWaiter() inside the fetchers lock, since we will purge old
 		 * fetchers inside that lock, hence avoid a race condition. FetchInProgress
 		 * lock is always taken last. */
 		synchronized(fetchers) {
-			FProxyFetchWaiter waiter=makeWaiterForFetchInProgress(key, maxSize, fctx != null ? fctx : this.fctx);
+			FProxyFetchWaiter waiter=makeWaiterForFetchInProgress(key, maxSize,
+									 fctx != null ? fctx : this.fctx);
 			if(waiter!=null) {
 				return waiter;
 			}
-			progress = new FProxyFetchInProgress(this, key, maxSize, fetchIdentifiers++, context, fctx != null ? fctx : this.fctx, rc, refilterPolicy);
+			progress = new FProxyFetchInProgress(this, key, maxSize, fetchIdentifiers++, context,
+												 fctx != null ? fctx : this.fctx, rc, refilterPolicy);
 			fetchers.put(key, progress);
 		}
 		try {
@@ -65,7 +68,9 @@ public class FProxyFetchTracker implements Runnable {
 			}
 			throw e;
 		}
-		if(logMINOR) Logger.minor(this, "Created new fetcher: "+progress, new Exception());
+		if(logMINOR) {
+			Logger.minor(this, "Created new fetcher: "+progress, new Exception());
+		}
 		return progress.getWaiter();
 		// FIXME promote a fetcher when it is re-used
 		// FIXME get rid of fetchers over some age
@@ -77,7 +82,8 @@ public class FProxyFetchTracker implements Runnable {
 		}
 	}
 
-	public FProxyFetchWaiter makeWaiterForFetchInProgress(FreenetURI key,long maxSize, FetchContext fctx) {
+	public FProxyFetchWaiter makeWaiterForFetchInProgress(FreenetURI key,long maxSize,
+			FetchContext fctx) {
 		FProxyFetchInProgress progress=getFetchInProgress(key, maxSize, fctx);
 		if(progress!=null) {
 			return progress.getWaiter();
@@ -98,11 +104,19 @@ public class FProxyFetchTracker implements Runnable {
 					FProxyFetchInProgress progress = (FProxyFetchInProgress) check[i];
 					if((progress.maxSize == maxSize && progress.notFinishedOrFatallyFinished())
 							|| progress.hasData()) {
-						if(logMINOR) Logger.minor(this, "Found "+progress);
-						if(fctx != null && !progress.fetchContextEquivalent(fctx)) continue;
-						if(logMINOR) Logger.minor(this, "Using "+progress);
+						if(logMINOR) {
+							Logger.minor(this, "Found "+progress);
+						}
+						if(fctx != null && !progress.fetchContextEquivalent(fctx)) {
+							continue;
+						}
+						if(logMINOR) {
+							Logger.minor(this, "Using "+progress);
+						}
 						return progress;
-					} else if(logMINOR) Logger.minor(this, "Skipping "+progress);
+					} else if(logMINOR) {
+						Logger.minor(this, "Skipping "+progress);
+					}
 				}
 			}
 		}
@@ -110,7 +124,9 @@ public class FProxyFetchTracker implements Runnable {
 	}
 
 	public void queueCancel(FProxyFetchInProgress progress) {
-		if(logMINOR) Logger.minor(this, "Queueing removal of old FProxyFetchInProgress's");
+		if(logMINOR) {
+			Logger.minor(this, "Queueing removal of old FProxyFetchInProgress's");
+		}
 		synchronized(this) {
 			if(queuedJob) {
 				requeue = true;
@@ -123,7 +139,9 @@ public class FProxyFetchTracker implements Runnable {
 
 	@Override
 	public void run() {
-		if(logMINOR) Logger.minor(this, "Removing old FProxyFetchInProgress's");
+		if(logMINOR) {
+			Logger.minor(this, "Removing old FProxyFetchInProgress's");
+		}
 		ArrayList<FProxyFetchInProgress> toRemove = null;
 		boolean needRequeue = false;
 		synchronized(fetchers) {
@@ -141,7 +159,9 @@ public class FProxyFetchTracker implements Runnable {
 				for(FProxyFetchInProgress f : fetchers.iterateAll(uri)) {
 					// FIXME remove on the fly, although cancel must wait
 					if(f.canCancel()) {
-						if(toRemove == null) toRemove = new ArrayList<FProxyFetchInProgress>();
+						if(toRemove == null) {
+							toRemove = new ArrayList<FProxyFetchInProgress>();
+						}
 						toRemove.add(f);
 					}
 				}
@@ -156,12 +176,14 @@ public class FProxyFetchTracker implements Runnable {
 		}
 		if(toRemove != null)
 			for(FProxyFetchInProgress r : toRemove) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Cancelling for "+r);
+				}
 				r.finishCancel();
 			}
-		if(needRequeue)
+		if(needRequeue) {
 			context.ticker.queueTimedJob(this, FProxyFetchInProgress.LIFETIME);
+		}
 	}
 
 	public int makeRandomElementID() {

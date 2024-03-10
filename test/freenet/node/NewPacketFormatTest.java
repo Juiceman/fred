@@ -34,10 +34,13 @@ public class NewPacketFormatTest {
 	public void testEmptyCreation() throws BlockedTooLongException {
 		NewPacketFormat npf = new NewPacketFormat(null, 0, 0);
 		PeerMessageQueue pmq = new PeerMessageQueue();
-		SessionKey s = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey s = new SessionKey(null, null, null, null, null, null, null, null,
+									  new NewPacketFormatKeyContext(0, 0), 1);
 
 		NPFPacket p = npf.createPacket(1400, pmq, s, false);
-		if(p != null) fail("Created packet from nothing");
+		if(p != null) {
+			fail("Created packet from nothing");
+		}
 	}
 
 	@Test
@@ -45,7 +48,8 @@ public class NewPacketFormatTest {
 		BasePeerNode pn = new NullBasePeerNode();
 		NewPacketFormat npf = new NewPacketFormat(pn, 0, 0);
 		PeerMessageQueue pmq = new PeerMessageQueue();
-		SessionKey s = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey s = new SessionKey(null, null, null, null, null, null, null, null,
+									  new NewPacketFormatKeyContext(0, 0), 1);
 
 		NPFPacket p = null;
 
@@ -70,11 +74,14 @@ public class NewPacketFormatTest {
 		NullBasePeerNode receiverNode = new NullBasePeerNode();
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
 		PeerMessageQueue receiverQueue = new PeerMessageQueue();
-		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+											  new NewPacketFormatKeyContext(0, 0), 1);
 		senderNode.currentKey = senderKey;
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0, false, false), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0,
+										 false, false), 1024);
 
 		NPFPacket fragment1 = sender.createPacket(512, senderQueue, senderKey, false);
 		assertEquals(1, fragment1.getFragments().size());
@@ -104,7 +111,9 @@ public class NewPacketFormatTest {
 		}
 
 		NPFPacket resend1 = sender.createPacket(512, senderQueue, senderKey, false);
-		if(resend1 == null) fail("No packet to resend");
+		if(resend1 == null) {
+			fail("No packet to resend");
+		}
 		assertEquals(0, receiver.handleDecryptedPacket(resend1, receiverKey).size());
 
 		//Make sure an ack is sent
@@ -122,10 +131,13 @@ public class NewPacketFormatTest {
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 		NullBasePeerNode receiverNode = new NullBasePeerNode();
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
-		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+											  new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0, false, false), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0,
+										 false, false), 1024);
 
 		NPFPacket fragment1 = sender.createPacket(512, senderQueue, senderKey, false);
 		assertEquals(1, fragment1.getFragments().size());
@@ -148,10 +160,13 @@ public class NewPacketFormatTest {
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 		NullBasePeerNode receiverNode = new NullBasePeerNode();
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
-		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+											  new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0, false, false), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[1024], null, false, null, (short) 0,
+										 false, false), 1024);
 
 		NPFPacket fragment1 = sender.createPacket(512, senderQueue, senderKey, false);
 		assertEquals(1, fragment1.getFragments().size());
@@ -172,10 +187,13 @@ public class NewPacketFormatTest {
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 		NullBasePeerNode receiverNode = new NullBasePeerNode();
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
-		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+											  new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false, false), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false,
+										 false), 1024);
 
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY*2);
 		NPFPacket packet1 = sender.createPacket(512, senderQueue, senderKey, false);
@@ -193,7 +211,8 @@ public class NewPacketFormatTest {
 	public void testLoadStatsSendWhenPeerWants() throws BlockedTooLongException, InterruptedException {
 		final Message loadMessage = DMT.createFNPVoid();
 		final MutableBoolean gotMessage = new MutableBoolean();
-		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+				new NewPacketFormatKeyContext(0, 0), 1);
 		NullBasePeerNode senderNode = new NullBasePeerNode() {
 
 			boolean shouldSend = true;
@@ -243,9 +262,11 @@ public class NewPacketFormatTest {
 
 		};
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false, false), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false,
+										 false), 1024);
 
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY*2);
 		NPFPacket packet1 = sender.createPacket(512, senderQueue, senderKey, false);
@@ -272,7 +293,8 @@ public class NewPacketFormatTest {
 	public void testLoadStatsLowLevel() throws BlockedTooLongException, InterruptedException {
 		final byte[] loadMessage =
 			new byte[] { (byte)0xFF, (byte)0xEE, (byte)0xDD, (byte)0xCC, (byte)0xBB, (byte)0xAA};
-		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		final SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+				new NewPacketFormatKeyContext(0, 0), 1);
 		NullBasePeerNode senderNode = new NullBasePeerNode() {
 
 			@Override
@@ -289,7 +311,8 @@ public class NewPacketFormatTest {
 		NewPacketFormat sender = new NewPacketFormat(senderNode, 0, 0);
 		PeerMessageQueue senderQueue = new PeerMessageQueue();
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false, true), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false,
+										 true), 1024);
 
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY*2);
 		NPFPacket packet1 = sender.createPacket(512, senderQueue, senderKey, false);
@@ -335,10 +358,13 @@ public class NewPacketFormatTest {
 
 		};
 		NewPacketFormat receiver = new NewPacketFormat(receiverNode, 0, 0);
-		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
-		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null, new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey senderKey = new SessionKey(null, null, null, null, null, null, null, null,
+											  new NewPacketFormatKeyContext(0, 0), 1);
+		SessionKey receiverKey = new SessionKey(null, null, null, null, null, null, null, null,
+												new NewPacketFormatKeyContext(0, 0), 1);
 
-		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false, true), 1024);
+		senderQueue.queueAndEstimateSize(new MessageItem(new byte[128], null, false, null, (short) 0, false,
+										 true), 1024);
 
 		Thread.sleep(PacketSender.MAX_COALESCING_DELAY*2);
 		NPFPacket packet1 = sender.createPacket(512, senderQueue, senderKey, false);
@@ -375,7 +401,8 @@ public class NewPacketFormatTest {
 									   0x00, 0x00, 0x00, 0x00
 								   });
 
-		SessionKey sessionKey = new SessionKey(null, null, null, incommingCipher, null, ivCipher, ivNonce, null, null, -1);
+		SessionKey sessionKey = new SessionKey(null, null, null, incommingCipher, null, ivCipher, ivNonce,
+											   null, null, -1);
 
 		byte[] encrypted = NewPacketFormat.encryptSequenceNumber(0, sessionKey);
 

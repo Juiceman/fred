@@ -25,11 +25,21 @@ public class TimeSortedHashtable<T extends Comparable<T>>  {
 
 		@Override
 		public int compareTo(Element<T> o) {
-			if(time > o.time) return 1;
-			if(time < o.time) return -1;
-			if (value == null && o.value == null) return 0;
-			if (value == null && o.value != null) return 1;
-			if (value != null && o.value == null) return -1;
+			if(time > o.time) {
+				return 1;
+			}
+			if(time < o.time) {
+				return -1;
+			}
+			if (value == null && o.value == null) {
+				return 0;
+			}
+			if (value == null && o.value != null) {
+				return 1;
+			}
+			if (value != null && o.value == null) {
+				return -1;
+			}
 			return value.compareTo(o.value);
 		}
 	}
@@ -47,8 +57,9 @@ public class TimeSortedHashtable<T extends Comparable<T>>  {
 	 */
 	public final synchronized void push(T value, long now) {
 		assert(elements.size() == valueToElement.size());
-		if (value == null)
+		if (value == null) {
 			throw new NullPointerException();
+		}
 
 		Element<T> e = valueToElement.get(value);
 
@@ -72,7 +83,9 @@ public class TimeSortedHashtable<T extends Comparable<T>>  {
 	public final synchronized boolean removeValue(T value) {
 		assert(elements.size() == valueToElement.size());
 		Element<T> e = valueToElement.remove(value);
-		if(e == null) return false;
+		if(e == null) {
+			return false;
+		}
 		elements.remove(e);
 		assert(elements.size() == valueToElement.size());
 		return true;
@@ -88,7 +101,9 @@ public class TimeSortedHashtable<T extends Comparable<T>>  {
 	 */
 	public final synchronized long getTime(T value) {
 		Element<T> e = valueToElement.remove(value);
-		if(e == null) return -1;
+		if(e == null) {
+			return -1;
+		}
 		return e.time;
 	}
 

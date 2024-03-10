@@ -75,7 +75,9 @@ public class ProgramDirectory {
 				dir = new File(val);
 				return;
 			}
-			if (dir.equals(new File(val))) return;
+			if (dir.equals(new File(val))) {
+				return;
+			}
 			// FIXME support it
 			// Don't need to translate the below as very few users will use it.
 			throw new InvalidConfigValueException("Moving program directory on the fly not supported at present");
@@ -94,11 +96,15 @@ public class ProgramDirectory {
 				dir = new File(val);
 				return;
 			}
-			if (dir.equals(new File(val))) return;
+			if (dir.equals(new File(val))) {
+				return;
+			}
 			File f = new File(val);
 			if(!((f.exists() && f.isDirectory()) || (f.mkdir())))
 				// Relatively commonly used, despite being advanced (i.e. not something we want to show to newbies). So translate it.
+			{
 				throw new InvalidConfigValueException(l10n(moveErrMsg));
+			}
 			dir = new File(val);
 		}
 

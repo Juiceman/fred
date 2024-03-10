@@ -138,7 +138,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	@Override
 	public void cancel(ClientContext context) {
 		synchronized(this) {
-			if(cancelled) return;
+			if(cancelled) {
+				return;
+			}
 			cancelled = true;
 		}
 		// Must call onFailure so get removeFrom()'ed
@@ -162,12 +164,16 @@ public class ContainerInserter implements ClientPutState, Serializable {
 
 
 	private void start(ClientContext context) {
-		if(logDEBUG) Logger.debug(this, "Atempt to start a container inserter", new Exception("debug"));
+		if(logDEBUG) {
+			Logger.debug(this, "Atempt to start a container inserter", new Exception("debug"));
+		}
 
 		makeMetadata(context);
 
 		synchronized(this) {
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 		}
 
 		InsertBlock block;
@@ -179,10 +185,13 @@ public class ContainerInserter implements ClientPutState, Serializable {
 							   createTarBucket(os) :
 							   createZipBucket(os));
 			os = null; // create*Bucket closes os
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Archive size is "+outputBucket.size());
+			}
 
-			if(logMINOR) Logger.minor(this, "We are using "+archiveType);
+			if(logMINOR) {
+				Logger.minor(this, "We are using "+archiveType);
+			}
 
 			// Now we have to insert the Archive we have generated.
 
@@ -203,9 +212,12 @@ public class ContainerInserter implements ClientPutState, Serializable {
 		}
 
 		// Treat it as a splitfile for purposes of determining reinsert count.
-		SingleFileInserter sfi = new SingleFileInserter(parent, cb, block, false, ctx, realTimeFlag, dc, reportMetadataOnly, token, archiveType, true, null, true, persistent, 0, 0, null, cryptoAlgorithm, forceCryptoKey, -1);
-		if(logMINOR)
+		SingleFileInserter sfi = new SingleFileInserter(parent, cb, block, false, ctx, realTimeFlag, dc,
+				reportMetadataOnly, token, archiveType, true, null, true, persistent, 0, 0, null, cryptoAlgorithm,
+				forceCryptoKey, -1);
+		if(logMINOR) {
 			Logger.minor(this, "Inserting container: "+sfi+" for "+this);
+		}
 		cb.onTransition(this, sfi, context);
 		try {
 			sfi.schedule(context);
@@ -242,7 +254,8 @@ public class ContainerInserter implements ClientPutState, Serializable {
 
 	}
 
-	private int resolve(MetadataUnresolvedException e, int x, FreenetURI key, String element2, ClientContext context) throws IOException {
+	private int resolve(MetadataUnresolvedException e, int x, FreenetURI key, String element2,
+						ClientContext context) throws IOException {
 		Metadata[] metas = e.mustResolve;
 		for(Metadata m: metas) {
 			try {
@@ -260,7 +273,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	private void fail(InsertException e, ClientContext context) {
 		// Cancel all, then call the callback
 		synchronized(this) {
-			if(finished) return;
+			if(finished) {
+				return;
+			}
 			finished = true;
 		}
 		cb.onFailure(e, this, context);
@@ -280,7 +295,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	** OutputStream os will be close()d if this method returns successfully.
 	*/
 	private String createTarBucket(OutputStream os) throws IOException {
-		if(logMINOR) Logger.minor(this, "Create a TAR Bucket");
+		if(logMINOR) {
+			Logger.minor(this, "Create a TAR Bucket");
+		}
 
 		TarArchiveOutputStream tarOS = new TarArchiveOutputStream(os);
 		try {
@@ -288,8 +305,10 @@ public class ContainerInserter implements ClientPutState, Serializable {
 			TarArchiveEntry ze;
 
 			for (ContainerElement ph : containerItems) {
-				if (logMINOR)
-					Logger.minor(this, "Putting into tar: " + ph + " data length " + ph.data.size() + " name " + ph.targetInArchive);
+				if (logMINOR) {
+					Logger.minor(this, "Putting into tar: " + ph + " data length " + ph.data.size() + " name " +
+								 ph.targetInArchive);
+				}
 				ze = new TarArchiveEntry(ph.targetInArchive);
 				ze.setModTime(0);
 				long size = ph.data.size();
@@ -306,7 +325,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	}
 
 	private String createZipBucket(OutputStream os) throws IOException {
-		if(logMINOR) Logger.minor(this, "Create a ZIP Bucket");
+		if(logMINOR) {
+			Logger.minor(this, "Create a ZIP Bucket");
+		}
 
 		ZipOutputStream zos = new ZipOutputStream(os);
 		try {
@@ -337,8 +358,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 				HashMap<String,Object> subMap = new HashMap<String,Object>();
 				//System.out.println("Decompose: "+name+" (SubDir)");
 				smc.addItem(name, makeManifest(hm, archivePrefix+name+ '/'));
-				if(logDEBUG)
+				if(logDEBUG) {
 					Logger.debug(this, "Sub map for "+name+" : "+subMap.size()+" elements from "+hm.size());
+				}
 			} else if (o instanceof Metadata) {
 				//already Metadata, take it as is
 				//System.out.println("Decompose: "+name+" (Metadata)");
@@ -347,10 +369,11 @@ public class ContainerInserter implements ClientPutState, Serializable {
 				ManifestElement element = (ManifestElement) o;
 				String mimeType = element.getMimeType();
 				ClientMetadata cm;
-				if(mimeType == null || mimeType.equals(DefaultMIMETypes.DEFAULT_MIME_TYPE))
+				if(mimeType == null || mimeType.equals(DefaultMIMETypes.DEFAULT_MIME_TYPE)) {
 					cm = null;
-				else
+				} else {
 					cm = new ClientMetadata(mimeType);
+				}
 				Metadata m;
 				if(element.targetURI != null) {
 					//System.out.println("Decompose: "+name+" (ManifestElement, Redirect)");
@@ -358,7 +381,8 @@ public class ContainerInserter implements ClientPutState, Serializable {
 				} else {
 					//System.out.println("Decompose: "+name+" (ManifestElement, Data)");
 					containerItems.add(new ContainerElement(element.getData(), archivePrefix+name));
-					m = new Metadata(DocumentType.ARCHIVE_INTERNAL_REDIRECT, null, null, archivePrefix+element.fullName, cm);
+					m = new Metadata(DocumentType.ARCHIVE_INTERNAL_REDIRECT, null, null, archivePrefix+element.fullName,
+									 cm);
 				}
 				smc.addItem(name, m);
 			}
@@ -371,15 +395,19 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	@Override
 	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 		synchronized(this) {
-			if(resumed) return;
+			if(resumed) {
+				return;
+			}
 			resumed = true;
 		}
-		if(cb != null && cb != parent)
+		if(cb != null && cb != parent) {
 			cb.onResume(context);
+		}
 		if(containerItems != null) {
 			for(ContainerElement e : containerItems) {
-				if(e.data != null)
+				if(e.data != null) {
 					e.data.onResume(context);
+				}
 			}
 		}
 		resumeMetadata(origMetadata, context);
@@ -387,7 +415,8 @@ public class ContainerInserter implements ClientPutState, Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void resumeMetadata(Map<String, Object> map, ClientContext context) throws ResumeFailedException {
+	public static void resumeMetadata(Map<String, Object> map,
+									  ClientContext context) throws ResumeFailedException {
 		Map<String, Object> manifestElements = map;
 		for (Object o : manifestElements.values()) {
 			if(o instanceof HashMap) {
@@ -402,7 +431,9 @@ public class ContainerInserter implements ClientPutState, Serializable {
 				handler.onResume(context);
 			} else if(o instanceof ManifestElement) {
 				((ManifestElement)o).onResume(context);
-			} else throw new IllegalArgumentException("Unknown manifest element: "+o);
+			} else {
+				throw new IllegalArgumentException("Unknown manifest element: "+o);
+			}
 		}
 	}
 

@@ -21,7 +21,8 @@ public class AllDataMessage extends DataCarryingMessage {
 	final long startupTime, completionTime;
 	final String mimeType;
 
-	public AllDataMessage(Bucket bucket, String identifier, boolean global, long startupTime, long completionTime, String mimeType) {
+	public AllDataMessage(Bucket bucket, String identifier, boolean global, long startupTime,
+						  long completionTime, String mimeType) {
 		this.bucket = bucket;
 		this.dataLength = bucket.size();
 		this.identifier = identifier;
@@ -54,7 +55,9 @@ public class AllDataMessage extends DataCarryingMessage {
 		fs.put("Global", global);
 		fs.put("StartupTime", startupTime);
 		fs.put("CompletionTime", completionTime);
-		if(mimeType!=null) fs.putSingle("Metadata.ContentType", mimeType);
+		if(mimeType!=null) {
+			fs.putSingle("Metadata.ContentType", mimeType);
+		}
 		return fs;
 	}
 
@@ -65,7 +68,8 @@ public class AllDataMessage extends DataCarryingMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "AllData goes from server to client not the other way around", identifier, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "AllData goes from server to client not the other way around", identifier, global);
 	}
 
 	@Override

@@ -15,7 +15,8 @@ public class NodeData extends FCPMessage {
 	final boolean withVolatile;
 	final String identifier;
 
-	public NodeData(Node node, boolean giveOpennetRef, boolean withPrivate, boolean withVolatile, String identifier) {
+	public NodeData(Node node, boolean giveOpennetRef, boolean withPrivate, boolean withVolatile,
+					String identifier) {
 		this.node = node;
 		this.giveOpennetRef = giveOpennetRef;
 		this.withPrivate = withPrivate;
@@ -45,8 +46,9 @@ public class NodeData extends FCPMessage {
 				fs.put("volatile", vol);
 			}
 		}
-		if(identifier != null)
+		if(identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 
@@ -58,7 +60,8 @@ public class NodeData extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "NodeData goes from server to client not the other way around", identifier, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "NodeData goes from server to client not the other way around", identifier, false);
 	}
 
 }

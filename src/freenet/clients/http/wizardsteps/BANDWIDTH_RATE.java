@@ -81,7 +81,8 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 			BandwidthLimit detected = detectBandwidthLimits(core.node.ipDetector.getBandwidthIndicator());
 
 			//Detected limits reasonable; add half of both as recommended option.
-			BandwidthLimit usable = new BandwidthLimit(detected.downBytes/2, detected.upBytes/2, "bandwidthDetected", true);
+			BandwidthLimit usable = new BandwidthLimit(detected.downBytes/2, detected.upBytes/2,
+					"bandwidthDetected", true);
 			addLimitRow(table, helper, usable, true, true);
 			addedDefault = true;
 		} catch (PluginNotFoundException | IllegalValueException e) {
@@ -184,7 +185,9 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 		try {
 			setBandwidthLimit(up, true);
 		} catch (InvalidConfigValueException e) {
-			if (!failedLimits.isEmpty()) failedLimits += ' ';
+			if (!failedLimits.isEmpty()) {
+				failedLimits += ' ';
+			}
 			failedLimits += e.getMessage();
 		}
 		return failedLimits;
@@ -197,16 +200,18 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 	 * @param limit Limit to display.
 	 * @param recommended Whether to mark the limit with (Recommended) next to the select button.
 	 */
-	private void addLimitRow(HTMLNode table, PageHelper helper, BandwidthLimit limit, boolean recommended, boolean useMaybeDefault) {
+	private void addLimitRow(HTMLNode table, PageHelper helper, BandwidthLimit limit,
+							 boolean recommended, boolean useMaybeDefault) {
 		HTMLNode row = table.addChild("tr");
 		row.addChild("td", WizardL10n.l10n(limit.descriptionKey));
 		String downColumn = SizeUtil.formatSize(limit.downBytes)+WizardL10n.l10n("bandwidthPerSecond");
 		if(limit.downBytes >= 32*1024) {
 			downColumn += " (= ";
-			if(limit.downBytes < 256*1024)
+			if(limit.downBytes < 256*1024) {
 				downColumn += new DecimalFormat("0.0").format(((double)((limit.downBytes*8)))/(1024*1024));
-			else
+			} else {
 				downColumn += ((limit.downBytes*8)/(1024*1024));
+			}
 			downColumn+="Mbps)";
 		}
 		row.addChild("td", downColumn);
@@ -218,8 +223,9 @@ public class BANDWIDTH_RATE extends BandwidthManipulator implements Step {
 			buttonCell.addChild("input",
 								new String[] { "type", "name", "value" },
 								new String[] { "radio", "bandwidth", limit.downBytes+"/"+limit.upBytes });
-		if(recommended || (useMaybeDefault && limit.maybeDefault))
+		if(recommended || (useMaybeDefault && limit.maybeDefault)) {
 			radio.addAttribute("checked", "checked");
+		}
 		if (recommended) {
 			buttonCell.addChild("#", WizardL10n.l10n("autodetectedSuggestedLimit"));
 		}

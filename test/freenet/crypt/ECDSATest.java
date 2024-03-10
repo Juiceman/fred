@@ -100,7 +100,8 @@ public class ECDSATest {
 		System.out.println(ecdsa2.getPublicKey());
 		System.out.println("Verify?  : "+ecdsa2.verify(sig, signedBytes));
 
-		System.out.println("Let's ensure that the signature always fits into "+ecdsa.curve.maxSigSize+" bytes.");
+		System.out.println("Let's ensure that the signature always fits into "+ecdsa.curve.maxSigSize
+						   +" bytes.");
 		int max = 0;
 		for(int i=0; i<10000; i++) {
 			max = Math.max(max, ecdsa.sign(signedBytes).length);

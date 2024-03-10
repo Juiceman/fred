@@ -14,7 +14,8 @@ class MessageFragment {
 	final byte[] fragmentData;
 	final MessageWrapper wrapper;
 
-	public MessageFragment(boolean shortMessage, boolean isFragmented, boolean firstFragment, int messageID,
+	public MessageFragment(boolean shortMessage, boolean isFragmented, boolean firstFragment,
+						   int messageID,
 						   int fragmentLength, int messageLength, int fragmentOffset, byte[] fragmentData,
 						   MessageWrapper wrapper) {
 		this.shortMessage = shortMessage;
@@ -38,6 +39,7 @@ class MessageFragment {
 
 	@Override
 	public String toString() {
-		return "Fragment from message " + messageID + ": offset " + fragmentOffset + ", data length " + fragmentData.length;
+		return "Fragment from message " + messageID + ": offset " + fragmentOffset + ", data length " +
+			   fragmentData.length;
 	}
 }

@@ -113,7 +113,8 @@ public class EncryptedRandomAccessBufferTest {
 		barat2.pwrite(types[0].headerLen-8, magic, 0, 8);
 		thrown.expect(IOException.class);
 		thrown.expectMessage("This is not an EncryptedRandomAccessBuffer!");
-		EncryptedRandomAccessBuffer erat2 = new EncryptedRandomAccessBuffer(types[0], barat2, secret, false);
+		EncryptedRandomAccessBuffer erat2 = new EncryptedRandomAccessBuffer(types[0], barat2, secret,
+				false);
 	}
 
 	@Test
@@ -265,12 +266,14 @@ public class EncryptedRandomAccessBufferTest {
 	}
 
 	@Test
-	public void testStoreTo() throws IOException, StorageFormatException, ResumeFailedException, GeneralSecurityException {
+	public void testStoreTo() throws IOException, StorageFormatException, ResumeFailedException,
+		GeneralSecurityException {
 		File tempFile = File.createTempFile("test-storeto", ".tmp", base);
 		byte[] buf = new byte[4096];
 		Random r = new Random(1267612);
 		r.nextBytes(buf);
-		FileRandomAccessBuffer rafw = new FileRandomAccessBuffer(tempFile, buf.length+types[0].headerLen, false);
+		FileRandomAccessBuffer rafw = new FileRandomAccessBuffer(tempFile, buf.length+types[0].headerLen,
+				false);
 		EncryptedRandomAccessBuffer eraf = new EncryptedRandomAccessBuffer(types[0], rafw, secret, true);
 		eraf.pwrite(0, buf, 0, buf.length);
 		byte[] tmp = new byte[buf.length];
@@ -286,7 +289,8 @@ public class EncryptedRandomAccessBufferTest {
 				null, r, null, null, null, null, null, null, null, null, null, null, null, null,
 				null, null, null, null);
 		context.setPersistentMasterSecret(secret);
-		EncryptedRandomAccessBuffer restored = (EncryptedRandomAccessBuffer) BucketTools.restoreRAFFrom(dis, context.persistentFG, context.persistentFileTracker, secret);
+		EncryptedRandomAccessBuffer restored = (EncryptedRandomAccessBuffer) BucketTools.restoreRAFFrom(dis,
+											   context.persistentFG, context.persistentFileTracker, secret);
 		assertEquals(buf.length, restored.size());
 		//assertEquals(rafw, restored);
 		tmp = new byte[buf.length];
@@ -297,12 +301,14 @@ public class EncryptedRandomAccessBufferTest {
 	}
 
 	@Test
-	public void testSerialize() throws IOException, StorageFormatException, ResumeFailedException, GeneralSecurityException, ClassNotFoundException {
+	public void testSerialize() throws IOException, StorageFormatException, ResumeFailedException,
+		GeneralSecurityException, ClassNotFoundException {
 		File tempFile = File.createTempFile("test-storeto", ".tmp", base);
 		byte[] buf = new byte[4096];
 		Random r = new Random(1267612);
 		r.nextBytes(buf);
-		FileRandomAccessBuffer rafw = new FileRandomAccessBuffer(tempFile, buf.length+types[0].headerLen, false);
+		FileRandomAccessBuffer rafw = new FileRandomAccessBuffer(tempFile, buf.length+types[0].headerLen,
+				false);
 		EncryptedRandomAccessBuffer eraf = new EncryptedRandomAccessBuffer(types[0], rafw, secret, true);
 		eraf.pwrite(0, buf, 0, buf.length);
 		byte[] tmp = new byte[buf.length];

@@ -36,8 +36,9 @@ public class URIPreEncoderTest {
 		char eachChar;
 		for (int i = 0; i < aString.length(); i++) {
 			eachChar = aString.charAt(i);
-			if (URIPreEncoder.allowedChars.indexOf(eachChar) < 0)
+			if (URIPreEncoder.allowedChars.indexOf(eachChar) < 0) {
 				return false;
+			}
 		}
 		return true;
 	}

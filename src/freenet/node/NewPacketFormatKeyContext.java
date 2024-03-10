@@ -68,7 +68,9 @@ public class NewPacketFormatKeyContext {
 		this.watchListOffset = theirFirstSeqNum;
 
 		this.highestReceivedSeqNum = theirFirstSeqNum - 1;
-		if(this.highestReceivedSeqNum == -1) this.highestReceivedSeqNum = Integer.MAX_VALUE;
+		if(this.highestReceivedSeqNum == -1) {
+			this.highestReceivedSeqNum = Integer.MAX_VALUE;
+		}
 	}
 
 	boolean canAllocateSeqNum() {
@@ -81,7 +83,9 @@ public class NewPacketFormatKeyContext {
 		synchronized(sequenceNumberLock) {
 			if(firstSeqNumUsed == -1) {
 				firstSeqNumUsed = nextSeqNum;
-				if(logMINOR) Logger.minor(this, "First seqnum used for " + this + " is " + firstSeqNumUsed);
+				if(logMINOR) {
+					Logger.minor(this, "First seqnum used for " + this + " is " + firstSeqNumUsed);
+				}
 			} else {
 				if(nextSeqNum == firstSeqNumUsed) {
 					Logger.error(this, "Blocked because we haven't rekeyed yet");
@@ -90,9 +94,13 @@ public class NewPacketFormatKeyContext {
 				}
 
 				if(firstSeqNumUsed > nextSeqNum) {
-					if(firstSeqNumUsed - nextSeqNum < REKEY_THRESHOLD) pn.startRekeying();
+					if(firstSeqNumUsed - nextSeqNum < REKEY_THRESHOLD) {
+						pn.startRekeying();
+					}
 				} else {
-					if((NewPacketFormat.NUM_SEQNUMS - nextSeqNum) + firstSeqNumUsed < REKEY_THRESHOLD) pn.startRekeying();
+					if((NewPacketFormat.NUM_SEQNUMS - nextSeqNum) + firstSeqNumUsed < REKEY_THRESHOLD) {
+						pn.startRekeying();
+					}
 				}
 			}
 			int seqNum = nextSeqNum++;
@@ -109,7 +117,9 @@ public class NewPacketFormatKeyContext {
 		int maxSize;
 		boolean validAck = false;
 		long ackReceived = System.currentTimeMillis();
-		if(logDEBUG) Logger.debug(this, "Acknowledging packet "+ack+" from "+pn);
+		if(logDEBUG) {
+			Logger.debug(this, "Acknowledging packet "+ack+" from "+pn);
+		}
 		SentPacket sent;
 		synchronized(sentPackets) {
 			sent = sentPackets.remove(ack);
@@ -119,27 +129,35 @@ public class NewPacketFormatKeyContext {
 			rtt = sent.acked(key);
 			validAck = true;
 		} else {
-			if(logDEBUG) Logger.debug(this, "Already acked or lost "+ack);
+			if(logDEBUG) {
+				Logger.debug(this, "Already acked or lost "+ack);
+			}
 			long packetSent = lostSentTimes.queryAndRemove(ack);
 			if(packetSent < 0) {
-				if(logDEBUG) Logger.debug(this, "No time for "+ack+" - maybe acked twice?");
+				if(logDEBUG) {
+					Logger.debug(this, "No time for "+ack+" - maybe acked twice?");
+				}
 				return;
 			}
 			rtt = ackReceived - packetSent;
 		}
 
-		if(pn == null)
+		if(pn == null) {
 			return;
+		}
 		int rt = (int) Math.min(rtt, Integer.MAX_VALUE);
 		pn.reportPing(rt);
-		if(validAck)
+		if(validAck) {
 			pn.receivedAck(ackReceived);
+		}
 		PacketThrottle throttle = pn.getThrottle();
-		if(throttle == null)
+		if(throttle == null) {
 			return;
+		}
 		throttle.setRoundTripTime(rt);
-		if(validAck)
+		if(validAck) {
 			throttle.notifyOfPacketAcknowledged(maxSize);
+		}
 	}
 
 	/** Queue an ack.
@@ -150,14 +168,18 @@ public class NewPacketFormatKeyContext {
 			if(!acks.containsKey(seqno)) {
 				acks.put(seqno, System.currentTimeMillis());
 				return acks.size();
-			} else return -1;
+			} else {
+				return -1;
+			}
 		}
 	}
 
 	public void sent(int sequenceNumber, int length) {
 		synchronized(sentPackets) {
 			SentPacket sentPacket = sentPackets.get(sequenceNumber);
-			if(sentPacket != null) sentPacket.sent(length);
+			if(sentPacket != null) {
+				sentPacket.sent(length);
+			}
 		}
 	}
 
@@ -191,13 +213,18 @@ public class NewPacketFormatKeyContext {
 				Map.Entry<Integer, Long> entry = it.next();
 				int ack = entry.getKey();
 				// All acks must be sent within 200ms.
-				if(logDEBUG) Logger.debug(this, "Trying to ack "+ack);
+				if(logDEBUG) {
+					Logger.debug(this, "Trying to ack "+ack);
+				}
 				if(!packet.addAck(ack, maxPacketSize)) {
-					if(logDEBUG) Logger.debug(this, "Can't add ack "+ack);
+					if(logDEBUG) {
+						Logger.debug(this, "Can't add ack "+ack);
+					}
 					break;
 				}
-				if(entry.getValue() + MAX_ACK_DELAY < now)
+				if(entry.getValue() + MAX_ACK_DELAY < now) {
 					mustSend = true;
+				}
 				if(moved == null) {
 					// FIXME some more memory efficient representation, since this will normally be very small?
 					moved = new HashMap<Integer, Long>();
@@ -207,8 +234,9 @@ public class NewPacketFormatKeyContext {
 				it.remove();
 			}
 		}
-		if(numAcks == 0)
+		if(numAcks == 0) {
 			return null;
+		}
 		return new AddedAcks(mustSend, moved);
 	}
 
@@ -286,8 +314,9 @@ public class NewPacketFormatKeyContext {
 				}
 			}
 		}
-		if(count > 0 && logMINOR)
+		if(count > 0 && logMINOR) {
 			Logger.minor(this, "" + count + " packets in flight with threshold " + maxDelay + "ms");
+		}
 		if(bigLostCount != 0 && pn != null) {
 			PacketThrottle throttle = pn.getThrottle();
 			if(throttle != null) {
@@ -302,7 +331,9 @@ public class NewPacketFormatKeyContext {
 		synchronized(acks) {
 			for(Long l : acks.values()) {
 				long timeout = l + MAX_ACK_DELAY;
-				if(ret > timeout) ret = timeout;
+				if(ret > timeout) {
+					ret = timeout;
+				}
 			}
 		}
 		return ret;

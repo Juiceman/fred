@@ -37,7 +37,8 @@ public class ExpectedHashes extends FCPMessage implements Serializable {
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		if(hashes == null) {
-			Logger.error(this, "Hashes == null, possibly persistence issue caused prior to build 1411 on "+this);
+			Logger.error(this, "Hashes == null, possibly persistence issue caused prior to build 1411 on "
+						 +this);
 			return null;
 		}
 		SimpleFieldSet fs = new SimpleFieldSet(false);

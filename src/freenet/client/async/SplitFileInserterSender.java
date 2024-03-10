@@ -34,7 +34,8 @@ public class SplitFileInserterSender extends SendableInsert {
 	final SplitFileInserterStorage storage;
 
 	public SplitFileInserterSender(SplitFileInserter parent, SplitFileInserterStorage storage) {
-		super(parent.persistent, parent.realTime); // Persistence should be from parent so that e.g. callbacks get run on the right jobRunner.
+		super(parent.persistent,
+			  parent.realTime); // Persistence should be from parent so that e.g. callbacks get run on the right jobRunner.
 		this.parent = parent;
 		this.storage = storage;
 	}
@@ -76,10 +77,14 @@ public class SplitFileInserterSender extends SendableInsert {
 		BlockInsert block = (BlockInsert) token;
 		// Should already be set. This is a sanity check.
 		try {
-			if(storage.hasFinished()) return;
+			if(storage.hasFinished()) {
+				return;
+			}
 			block.segment.setKey(block.blockNumber, (ClientCHK) key);
 		} catch (IOException e) {
-			if(storage.hasFinished()) return; // Race condition possible as this is a callback
+			if(storage.hasFinished()) {
+				return;    // Race condition possible as this is a callback
+			}
 			storage.failOnDiskError(e);
 		}
 	}
@@ -141,7 +146,8 @@ public class SplitFileInserterSender extends SendableInsert {
 						throw new LowLevelPutException(LowLevelPutException.COLLISION);
 					}
 				} else {
-					node.realPut(block, request.canWriteClientCache, request.forkOnCacheable, Node.PREFER_INSERT_DEFAULT, Node.IGNORE_LOW_BACKOFF_DEFAULT, request.realTimeFlag);
+					node.realPut(block, request.canWriteClientCache, request.forkOnCacheable,
+								 Node.PREFER_INSERT_DEFAULT, Node.IGNORE_LOW_BACKOFF_DEFAULT, request.realTimeFlag);
 				}
 				request.onInsertSuccess(key, context);
 				return true;
@@ -157,7 +163,8 @@ public class SplitFileInserterSender extends SendableInsert {
 							storage.failOnDiskError(e);
 						} finally {
 							// Must terminate the request anyway.
-							request.onFailure(new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Disk error", e), context);
+							request.onFailure(new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Disk error", e),
+											  context);
 						}
 						return true;
 					}
@@ -166,7 +173,8 @@ public class SplitFileInserterSender extends SendableInsert {
 			} catch (Throwable t) {
 				Logger.error(this, "Failed to send insert: "+t, t);
 				// We still need to terminate the insert.
-				request.onFailure(new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Failed: "+t, t), context);
+				request.onFailure(new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Failed: "+t, t),
+								  context);
 				return true;
 			}
 		}
@@ -206,7 +214,9 @@ public class SplitFileInserterSender extends SendableInsert {
 	}
 
 	public void schedule(ClientContext context) {
-		if(getParentGrabArray() != null) return; // If change priority will unregister first.
+		if(getParentGrabArray() != null) {
+			return;    // If change priority will unregister first.
+		}
 		context.getChkInsertScheduler(parent.realTime).registerInsert(this, persistent);
 	}
 

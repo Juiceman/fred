@@ -109,10 +109,11 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 							uri = thisURI;
 							insertTime = t2 - t1;
 						} else {
-							if(f != null)
+							if(f != null) {
 								failed = f;
-							else
+							} else {
 								f = new InsertException(InsertExceptionMode.INTERNAL_ERROR);
+							}
 						}
 
 						InsertBatch.this.notifyAll();
@@ -124,7 +125,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 
 		public synchronized void waitUntilFinished() {
 			while(true) {
-				if(runningInserts == 0) return;
+				if(runningInserts == 0) {
+					return;
+				}
 				try {
 					wait();
 				} catch (InterruptedException e) {
@@ -135,22 +138,25 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 
 		public synchronized FreenetURI[] getURIs() {
 			FreenetURI[] uris = new FreenetURI[inserts.size()];
-			for(int i=0; i<uris.length; i++)
+			for(int i=0; i<uris.length; i++) {
 				uris[i] = inserts.get(i).uri;
+			}
 			return uris;
 		}
 
 		public synchronized long[] getTimes() {
 			long[] times = new long[inserts.size()];
-			for(int i=0; i<times.length; i++)
+			for(int i=0; i<times.length; i++) {
 				times[i] = inserts.get(i).insertTime;
+			}
 			return times;
 		}
 
 		public InsertException[] getErrors() {
 			InsertException[] errors = new InsertException[inserts.size()];
-			for(int i=0; i<errors.length; i++)
+			for(int i=0; i<errors.length; i++) {
 				errors[i] = inserts.get(i).failed;
+			}
 			return errors;
 		}
 
@@ -206,7 +212,8 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 			fis.close();
 
 			// Create one node
-			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
+			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+											  Node.DEFAULT_MAX_HTL,
 											  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
 											  12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
@@ -265,7 +272,8 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 
 			long endInsertsTime = System.currentTimeMillis();
 
-			System.err.println("Succeeded inserts: "+successes+" of "+INSERTED_BLOCKS+" in "+(endInsertsTime-startInsertsTime)+"ms");
+			System.err.println("Succeeded inserts: "+successes+" of "+INSERTED_BLOCKS+" in "+
+							   (endInsertsTime-startInsertsTime)+"ms");
 
 			FetchContext fctx = client.getFetchContext();
 			fctx.maxNonSplitfileRetries = 0;
@@ -296,7 +304,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 			loopOverLines:
 			while((line = br.readLine()) != null) {
 
-				for(int i=0; i<mhkURIs.length; i++) mhkURIs[i] = null;
+				for(int i=0; i<mhkURIs.length; i++) {
+					mhkURIs[i] = null;
+				}
 				//System.out.println("LINE: "+line);
 				String[] split = line.split("!");
 				Date date = dateFormat.parse(split[0]);
@@ -310,14 +320,20 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 				calendar.getTime();
 				FreenetURI[] insertedURIs = new FreenetURI[INSERTED_BLOCKS];
 				int[] insertTimes = new int[INSERTED_BLOCKS];
-				if(split.length < 3) continue;
+				if(split.length < 3) {
+					continue;
+				}
 				int seedTime = Integer.parseInt(split[2]);
 				System.out.println("Seed time: "+seedTime);
-				if(split.length < 4) continue;
+				if(split.length < 4) {
+					continue;
+				}
 
 				int token = 3;
 
-				if(split.length < token + INSERTED_BLOCKS * 2) continue;
+				if(split.length < token + INSERTED_BLOCKS * 2) {
+					continue;
+				}
 
 				for(int i=0; i<INSERTED_BLOCKS; i++) {
 					try {
@@ -359,8 +375,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 								pulled++;
 							} catch (FetchException e) {
 								if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-										&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+										&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 									e.printStackTrace();
+								}
 								csvLine.add(FetchException.getShortMessage(e.getMode()));
 								System.err.println("FAILED PULL FOR BLOCK "+j+": "+e);
 							}
@@ -385,8 +402,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 					int totalSuccesses = 0;
 					int totalFetches = 0;
 					for(int i=0; i<INSERTED_BLOCKS; i++) {
-						if(split[token].isEmpty())
+						if(split[token].isEmpty()) {
 							continue;
+						}
 						int mhkFetchTime = -1;
 						totalFetches++;
 						try {
@@ -402,7 +420,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 					totalFetchesByDelta[delta] += totalFetches;
 					totalSuccessfulFetchesByDelta[delta] += totalSuccesses;
 					totalFetchTimeByDelta[delta] += totalFetchTime;
-					System.err.println("Succeeded: "+totalSuccesses+" of "+totalFetches+" average "+((double)totalFetchTime)/((double)totalSuccesses)+"ms for delta "+delta+" on "+dateFormat.format(date));
+					System.err.println("Succeeded: "+totalSuccesses+" of "+totalFetches+" average "+((
+										   double)totalFetchTime)/((double)totalSuccesses)+"ms for delta "+delta+" on "+dateFormat.format(
+										   date));
 				}
 			}
 
@@ -410,7 +430,10 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 			System.out.println();
 
 			for(int i=0; i<MAX_N+1; i++) {
-				System.out.println("DELTA: "+i+" days: Total fetches: "+totalFetchesByDelta[i]+" total successes "+totalSuccessfulFetchesByDelta[i]+" = "+((totalSuccessfulFetchesByDelta[i]*100.0)/totalFetchesByDelta[i])+"% in "+(totalFetchTimeByDelta[i]*1.0)/totalSuccessfulFetchesByDelta[i]+"ms");
+				System.out.println("DELTA: "+i+" days: Total fetches: "+totalFetchesByDelta[i]+" total successes "
+								   +totalSuccessfulFetchesByDelta[i]+" = "+((
+											   totalSuccessfulFetchesByDelta[i]*100.0)/totalFetchesByDelta[i])+"% in "+
+								   (totalFetchTimeByDelta[i]*1.0)/totalSuccessfulFetchesByDelta[i]+"ms");
 			}
 
 			fis.close();
@@ -421,13 +444,15 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable tt) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable tt) {
 			}
 			Closer.close(fis);

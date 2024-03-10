@@ -32,8 +32,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	protected HashResult(HashType hashType, byte[] bs, boolean testing) {
 		this.type = hashType;
 		this.result = bs;
-		if(!testing)
+		if(!testing) {
 			assert(bs.length == type.hashLength);
+		}
 	}
 
 	protected HashResult() {
@@ -44,7 +45,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	public static HashResult[] readHashes(DataInputStream dis) throws IOException {
 		int bitmask = dis.readInt();
-		if(bitmask == 0) return null;
+		if(bitmask == 0) {
+			return null;
+		}
 		int count = 0;
 		for(HashType h : HashType_values) {
 			if((bitmask & h.bitmask) == h.bitmask) {
@@ -68,19 +71,25 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	public static void write(HashResult[] hashes, DataOutputStream dos) throws IOException {
-		if(hashes == null) hashes = new HashResult[0];
+		if(hashes == null) {
+			hashes = new HashResult[0];
+		}
 		int bitmask = 0;
-		for(HashResult hash : hashes)
+		for(HashResult hash : hashes) {
 			bitmask |= hash.type.bitmask;
+		}
 		dos.writeInt(bitmask);
 		Arrays.sort(hashes);
 		HashType prev = null;
 		for(HashResult h : hashes) {
-			if(prev == h.type || (prev != null && prev.bitmask == h.type.bitmask)) throw new IllegalArgumentException("Multiple hashes of the same type!");
+			if(prev == h.type || (prev != null && prev.bitmask == h.type.bitmask)) {
+				throw new IllegalArgumentException("Multiple hashes of the same type!");
+			}
 			prev = h.type;
 		}
-		for(HashResult h : hashes)
+		for(HashResult h : hashes) {
 			h.writeTo(dos);
+		}
 	}
 
 	public void writeTo(OutputStream dos) throws IOException {
@@ -90,28 +99,35 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	@Override
 	public int compareTo(HashResult h) {
-		if(type.bitmask == h.type.bitmask) return 0;
-		if(type.bitmask > h.type.bitmask) return 1;
+		if(type.bitmask == h.type.bitmask) {
+			return 0;
+		}
+		if(type.bitmask > h.type.bitmask) {
+			return 1;
+		}
 		/* else if(type.bitmask < h.type.bitmask) */ return -1;
 	}
 
 	public static long makeBitmask(HashResult[] hashes) {
 		long l = 0;
-		for(HashResult hash : hashes)
+		for(HashResult hash : hashes) {
 			l |= hash.type.bitmask;
+		}
 		return l;
 	}
 
 	public static boolean strictEquals(HashResult[] results, HashResult[] hashes) {
 		if(results.length != hashes.length) {
-			Logger.error(HashResult.class, "Hashes not equal: "+results.length+" hashes vs "+hashes.length+" hashes");
+			Logger.error(HashResult.class,
+						 "Hashes not equal: "+results.length+" hashes vs "+hashes.length+" hashes");
 			return false;
 		}
 		for(int i=0; i<results.length; i++) {
 			if(results[i].type != hashes[i].type) {
 				// FIXME Db4o kludge
 				if(HashType.valueOf(results[i].type.name()) != HashType.valueOf(hashes[i].type.name())) {
-					Logger.error(HashResult.class, "Hashes not the same type: "+results[i].type.name()+" vs "+hashes[i].type.name());
+					Logger.error(HashResult.class,
+								 "Hashes not the same type: "+results[i].type.name()+" vs "+hashes[i].type.name());
 					return false;
 				}
 			}
@@ -125,20 +141,24 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	public static boolean contains(HashResult[] hashes, HashType type) {
 		for(HashResult res : hashes)
-			if(res.type == type || type.name().equals(res.type.name()))
+			if(res.type == type || type.name().equals(res.type.name())) {
 				return true;
+			}
 		return false;
 	}
 
 	public static byte[] get(HashResult[] hashes, HashType type) {
 		for(HashResult res : hashes)
-			if(res.type == type || type.name().equals(res.type.name()))
+			if(res.type == type || type.name().equals(res.type.name())) {
 				return res.result;
+			}
 		return null;
 	}
 
 	public static HashResult[] copy(HashResult[] hashes) {
-		if(hashes == null) return null;
+		if(hashes == null) {
+			return null;
+		}
 		HashResult[] out = new HashResult[hashes.length];
 		for(int i=0; i<hashes.length; i++) {
 			out[i] = hashes[i].clone();

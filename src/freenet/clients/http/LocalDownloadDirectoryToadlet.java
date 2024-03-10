@@ -10,7 +10,8 @@ import java.util.Hashtable;
 
 public class LocalDownloadDirectoryToadlet extends LocalDirectoryToadlet {
 
-	LocalDownloadDirectoryToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient, String post) {
+	LocalDownloadDirectoryToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient,
+								   String post) {
 		super(core, highLevelSimpleClient, post);
 	}
 
@@ -57,7 +58,9 @@ public class LocalDownloadDirectoryToadlet extends LocalDirectoryToadlet {
 			fieldPairs.put("return-type", "disk");
 		}
 
-		if (set.containsKey("filterData")) fieldPairs.put("filterData", set.get("filterData"));
+		if (set.containsKey("filterData")) {
+			fieldPairs.put("filterData", set.get("filterData"));
+		}
 		return fieldPairs;
 	}
 }

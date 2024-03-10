@@ -33,7 +33,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 
 		@Override
 		public boolean equals(Object o) {
-			if(!(o instanceof Job)) return false;
+			if(!(o instanceof Job)) {
+				return false;
+			}
 			// Ignore the name, we are only interested in the job, needed for noDupes.
 			return ((Job)o).job == job;
 		}
@@ -55,7 +57,8 @@ public class PrioritizedTicker implements Ticker, Runnable {
 		this.executor = executor;
 		timedJobsByTime = new TreeMap<Long, Object>();
 		timedJobsQueued = new HashMap<Job, Long>();
-		myThread = new NativeThread(this, "Ticker thread for " + portNumber, NativeThread.MAX_PRIORITY, false);
+		myThread = new NativeThread(this, "Ticker thread for " + portNumber, NativeThread.MAX_PRIORITY,
+									false);
 		myThread.setDaemon(true);
 	}
 
@@ -67,7 +70,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 
 	@Override
 	public void run() {
-		if(logMINOR) Logger.minor(this, "In Ticker.run()");
+		if(logMINOR) {
+			Logger.minor(this, "In Ticker.run()");
+		}
 		freenet.support.Logger.OSThread.logPID(this);
 		while(true) {
 			try {
@@ -91,8 +96,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 			while(!timedJobsByTime.isEmpty()) {
 				Long tRun = timedJobsByTime.firstKey();
 				if(tRun.longValue() <= now) {
-					if(jobsToRun == null)
+					if(jobsToRun == null) {
 						jobsToRun = new ArrayList<Job>();
+					}
 					Object o = timedJobsByTime.remove(tRun);
 					if(o instanceof Job[]) {
 						for(Job r: (Job[]) o) {
@@ -113,8 +119,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 
 		if(jobsToRun != null)
 			for(Job r : jobsToRun) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Running " + r);
+				}
 				if(r.job instanceof FastRunnable)
 					// Run in-line
 
@@ -145,8 +152,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	}
 
 	protected void sleep(long sleepTime) throws InterruptedException {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Sleeping for " + sleepTime);
+		}
 		synchronized(this) {
 			wait(sleepTime);
 		}
@@ -174,10 +182,13 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	 * have one queued within the given period.
 	 */
 	@Override
-	public void queueTimedJob(Runnable runner, String name, long offset, boolean runOnTickerAnyway, boolean noDupes) {
+	public void queueTimedJob(Runnable runner, String name, long offset, boolean runOnTickerAnyway,
+							  boolean noDupes) {
 		// Run directly *if* that won't cause any priority problems.
 		long now = System.currentTimeMillis();
-		if(offset < 0) offset = 0;
+		if(offset < 0) {
+			offset = 0;
+		}
 		queueTimedJobInner(runner, name, now+offset, offset, runOnTickerAnyway, noDupes);
 	}
 
@@ -198,9 +209,13 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	 * System.currentTimeMillis()). */
 	private void queueTimedJobInner(Runnable runner, String name, long runJobAt, long offset,
 									boolean runOnTickerAnyway, boolean noDupes) {
-		if(noDupes) runOnTickerAnyway = true;
+		if(noDupes) {
+			runOnTickerAnyway = true;
+		}
 		if(offset <= 0 && !runOnTickerAnyway) {
-			if(logMINOR) Logger.minor(this, "Running directly: "+runner);
+			if(logMINOR) {
+				Logger.minor(this, "Running directly: "+runner);
+			}
 			executor.execute(runner, name);
 			return;
 		}
@@ -219,9 +234,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 				}
 			}
 			Object o = timedJobsByTime.get(runJobAt);
-			if(o == null)
+			if(o == null) {
 				timedJobsByTime.put(runJobAt, job);
-			else if(o instanceof Job)
+			} else if(o instanceof Job)
 				timedJobsByTime.put(runJobAt, new Job[] {(Job) o, job});
 			else if(o instanceof Job[]) {
 				Job[] r = (Job[]) o;
@@ -306,8 +321,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 				if (x == 1) {
 					timedJobsByTime.put(t, newJobs[0]);
 				} else {
-					if(x != newJobs.length)
+					if(x != newJobs.length) {
 						newJobs = Arrays.copyOf(newJobs, x);
+					}
 					timedJobsByTime.put(t, newJobs);
 					assert(x == jobs.length-1);
 				}

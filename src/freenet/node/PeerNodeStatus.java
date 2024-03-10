@@ -420,7 +420,10 @@ public class PeerNodeStatus {
 
 	@Override
 	public String toString() {
-		return statusName + ' ' + peerAddress + ':' + peerPort + ' ' + location + ' ' + version + " RT backoff: " + routingBackoffLengthRT + " (" + (Math.max(routingBackedOffUntilRT - System.currentTimeMillis(), 0)) + " ) bulk backoff: " + routingBackoffLengthBulk + " (" + (Math.max(routingBackedOffUntilBulk - System.currentTimeMillis(), 0)) + ')';
+		return statusName + ' ' + peerAddress + ':' + peerPort + ' ' + location + ' ' + version +
+			   " RT backoff: " + routingBackoffLengthRT + " (" + (Math.max(routingBackedOffUntilRT -
+					   System.currentTimeMillis(), 0)) + " ) bulk backoff: " + routingBackoffLengthBulk + " (" + (Math.max(
+								   routingBackedOffUntilBulk - System.currentTimeMillis(), 0)) + ')';
 	}
 
 	@Override

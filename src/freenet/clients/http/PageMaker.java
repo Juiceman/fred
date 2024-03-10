@@ -145,8 +145,10 @@ public final class PageMaker {
 		private final List<String> navigationLinkTextsNonFull = new ArrayList<String>();
 		private final Map<String, String> navigationLinkTitles = new HashMap<String, String>();
 		private final Map<String, String> navigationLinks = new HashMap<String, String>();
-		private final Map<String, LinkEnabledCallback>  navigationLinkCallbacks = new HashMap<String, LinkEnabledCallback>();
-		private final Map<String, FredPluginL10n> navigationLinkL10n = new HashMap<String, FredPluginL10n>();
+		private final Map<String, LinkEnabledCallback>  navigationLinkCallbacks = new
+		HashMap<String, LinkEnabledCallback>();
+		private final Map<String, FredPluginL10n> navigationLinkL10n = new
+		HashMap<String, FredPluginL10n>();
 
 		public SubMenu(String link, String name, String title, FredPluginL10n plugin) {
 			this.navigationLinkText = name;
@@ -155,16 +157,20 @@ public final class PageMaker {
 			this.plugin = plugin;
 		}
 
-		public void addNavigationLink(String path, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n) {
+		public void addNavigationLink(String path, String name, String title, boolean fullOnly,
+									  LinkEnabledCallback cb, FredPluginL10n l10n) {
 			navigationLinkTexts.add(name);
-			if(!fullOnly)
+			if(!fullOnly) {
 				navigationLinkTextsNonFull.add(name);
+			}
 			navigationLinkTitles.put(name, title);
 			navigationLinks.put(name, path);
-			if(cb != null)
+			if(cb != null) {
 				navigationLinkCallbacks.put(name, cb);
-			if (l10n != null)
+			}
+			if (l10n != null) {
 				navigationLinkL10n.put(name, l10n);
+			}
 		}
 
 		/** Remove a link from this sub-menu. */
@@ -173,7 +179,8 @@ public final class PageMaker {
 			navigationLinkTextsNonFull.remove(name);
 			navigationLinkTitles.remove(name);
 			navigationLinks.remove(name);
-			navigationLinkL10n.remove(name); //Should this be here? If so, why not remove from navigationLinkCallbacks too
+			navigationLinkL10n.remove(
+				name); //Should this be here? If so, why not remove from navigationLinkCallbacks too
 		}
 
 	}
@@ -192,14 +199,16 @@ public final class PageMaker {
 			this.theme = THEME.getDefault();
 		} else {
 			URL themeurl = getClass().getResource("staticfiles/themes/" + theme2.code + "/theme.css");
-			if (themeurl == null)
+			if (themeurl == null) {
 				this.theme = THEME.getDefault();
-			else
+			} else {
 				this.theme = theme2;
+			}
 		}
 	}
 
-	public synchronized void addNavigationCategory(String link, String name, String title, FredPluginL10n plugin) {
+	public synchronized void addNavigationCategory(String link, String name, String title,
+			FredPluginL10n plugin) {
 		SubMenu menu = new SubMenu(link, name, title, plugin);
 		subMenus.put(name, menu);
 		menuList.add(menu);
@@ -209,7 +218,8 @@ public final class PageMaker {
 	 * Add a navigation category to the menu at a given offset.
 	 * @param menuOffset The position of the link in FProxy's menu. 0 = left.
 	 */
-	public synchronized void addNavigationCategory(String link, String name, String title, FredPluginL10n plugin, int menuOffset) {
+	public synchronized void addNavigationCategory(String link, String name, String title,
+			FredPluginL10n plugin, int menuOffset) {
 		SubMenu menu = new SubMenu(link, name, title, plugin);
 		subMenus.put(name, menu);
 		menuList.add(menuOffset, menu);
@@ -225,10 +235,12 @@ public final class PageMaker {
 		menuList.remove(menu);
 	}
 
-	public synchronized void addNavigationLink(String menutext, String path, String name, String title, boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n) {
+	public synchronized void addNavigationLink(String menutext, String path, String name, String title,
+			boolean fullOnly, LinkEnabledCallback cb, FredPluginL10n l10n) {
 		SubMenu menu = subMenus.get(menutext);
-		if(menu == null)
+		if(menu == null) {
 			throw new NullPointerException("there is no menu named "+menutext);
+		}
 		menu.addNavigationLink(path, name, title, fullOnly, cb, l10n);
 	}
 
@@ -237,8 +249,9 @@ public final class PageMaker {
 	public synchronized void removeNavigationLink(String menutext, String name) {
 		SubMenu menu = subMenus.get(menutext);
 		// The menu may have already been removed.
-		if(menu != null)
+		if(menu != null) {
 			menu.removeNavigationLink(name);
+		}
 	}
 
 	public HTMLNode createBackLink(ToadletContext toadletContext, String name) {
@@ -246,7 +259,8 @@ public final class PageMaker {
 		if (referer != null) {
 			return new HTMLNode("a", new String[] { "href", "title" }, new String[] { referer, name }, name);
 		}
-		return new HTMLNode("a", new String[] { "href", "title" }, new String[] { "javascript:back()", name }, name);
+		return new HTMLNode("a", new String[] { "href", "title" }, new String[] { "javascript:back()", name },
+							name);
 	}
 
 	/**
@@ -300,8 +314,11 @@ public final class PageMaker {
 	 *             instead
 	 */
 	@Deprecated
-	public PageNode getPageNode(String title, boolean renderNavigationLinks, boolean renderStatus, ToadletContext ctx) {
-		return getPageNode(title, ctx, new RenderParameters().renderNavigationLinks(renderNavigationLinks).renderStatus(renderStatus).renderModeSwitch(true));
+	public PageNode getPageNode(String title, boolean renderNavigationLinks, boolean renderStatus,
+								ToadletContext ctx) {
+		return getPageNode(title, ctx,
+						   new RenderParameters().renderNavigationLinks(renderNavigationLinks).renderStatus(
+							   renderStatus).renderModeSwitch(true));
 	}
 
 	/**
@@ -320,15 +337,16 @@ public final class PageMaker {
 	public PageNode getPageNode(String title, ToadletContext ctx, RenderParameters renderParameters) {
 		boolean fullAccess = ctx == null ? false : ctx.isAllowedFullAccess();
 		HTMLNode pageNode = new HTMLNode.HTMLDoctype("html", "-//W3C//DTD XHTML 1.1//EN");
-		HTMLNode htmlNode = pageNode.addChild("html", "xml:lang", NodeL10n.getBase().getSelectedLanguage().isoCode);
+		HTMLNode htmlNode = pageNode.addChild("html", "xml:lang",
+											  NodeL10n.getBase().getSelectedLanguage().isoCode);
 		HTMLNode headNode = htmlNode.addChild("head");
 		headNode.addChild("meta", new String[] { "http-equiv", "content" }, new String[] { "Content-Type", "text/html; charset=utf-8" });
 		headNode.addChild("title", title + " - Freenet");
 		//To make something only rendered when javascript is on, then add the jsonly class to it
 		headNode.addChild("noscript").addChild("style"," .jsonly {display:none;}");
-		if(override != null)
+		if(override != null) {
 			headNode.addChild(getOverrideContent());
-		else
+		} else
 			headNode.addChild("link", new String[] { "rel", "href", "type", "title" }, new String[] { "stylesheet", "/static/themes/" + theme.code + "/theme.css", "text/css", theme.code });
 
 		boolean sendAllThemes =  ctx != null && ctx.getContainer().sendAllThemes();
@@ -350,10 +368,12 @@ public final class PageMaker {
 		}
 
 		boolean webPushingEnabled =
-			ctx != null && ctx.getContainer().isFProxyJavascriptEnabled() && ctx.getContainer().isFProxyWebPushingEnabled();
+			ctx != null && ctx.getContainer().isFProxyJavascriptEnabled()
+			&& ctx.getContainer().isFProxyWebPushingEnabled();
 
 		// Add the generated javascript, if it and pushing is enabled
-		if (webPushingEnabled) headNode.addChild("script", new String[] { "type", "language", "src" }, new String[] {
+		if (webPushingEnabled) headNode.addChild("script", new String[] { "type", "language", "src" }, new
+					String[] {
 						"text/javascript", "javascript", "/static/freenetjs/freenetjs.nocache.js"
 					});
 
@@ -361,10 +381,13 @@ public final class PageMaker {
 		if (ctx != null) {
 			t = ctx.activeToadlet();
 			t = t.showAsToadlet(ctx);
-		} else
+		} else {
 			t = null;
+		}
 		String activePath = "";
-		if(t != null) activePath = t.path();
+		if(t != null) {
+			activePath = t.path();
+		}
 		HTMLNode bodyNode = htmlNode.addChild("body",
 											  new String[] { "class", "id" },
 											  new String[] { "fproxy-page", filterCSSIdentifier("page-"+activePath) });
@@ -374,14 +397,16 @@ public final class PageMaker {
 
 		// Add the client-side localization only when pushing is enabled
 		if (webPushingEnabled) {
-			bodyNode.addChild("script", new String[] { "type", "language" }, new String[] { "text/javascript", "javascript" }).addChild("%", PushingTagReplacerCallback.getClientSideLocalizationScript());
+			bodyNode.addChild("script", new String[] { "type", "language" }, new String[] { "text/javascript", "javascript" }).addChild("%",
+					PushingTagReplacerCallback.getClientSideLocalizationScript());
 		}
 
 		HTMLNode pageDiv = bodyNode.addChild("div", "id", "page");
 		HTMLNode topBarDiv = pageDiv.addChild("div", "id", "topbar");
 
 		if (renderParameters.isRenderStatus() && fullAccess) {
-			final HTMLNode statusBarDiv = pageDiv.addChild("div", "id", "statusbar-container").addChild("div", "id", "statusbar");
+			final HTMLNode statusBarDiv = pageDiv.addChild("div", "id", "statusbar-container").addChild("div",
+										  "id", "statusbar");
 
 			if (node != null && node.clientCore != null) {
 				final HTMLNode alerts = ctx.getAlertManager().createSummary(true);
@@ -392,7 +417,8 @@ public final class PageMaker {
 			}
 
 
-			statusBarDiv.addChild("div", "id", "statusbar-language").addChild("a", "href", "/config/node#l10n", NodeL10n.getBase().getSelectedLanguage().fullName);
+			statusBarDiv.addChild("div", "id", "statusbar-language").addChild("a", "href", "/config/node#l10n",
+					NodeL10n.getBase().getSelectedLanguage().fullName);
 
 			if (node.clientCore != null && ctx != null && renderParameters.isRenderModeSwitch()) {
 				boolean isAdvancedMode = ctx.isAdvancedModeEnabled();
@@ -406,32 +432,45 @@ public final class PageMaker {
 				statusBarDiv.addChild("div", "class", "separator", "\u00a0");
 				final HTMLNode switchMode = statusBarDiv.addChild("div", "id", "statusbar-switchmode");
 				switchMode.addAttribute("class", isAdvancedMode ? "simple" : "advanced");
-				switchMode.addChild("a", "href", "?" + HTTPRequestImpl.createQueryString(parameters, false), isAdvancedMode ? NodeL10n.getBase().getString("StatusBar.switchToSimpleMode") : NodeL10n.getBase().getString("StatusBar.switchToAdvancedMode"));
+				switchMode.addChild("a", "href", "?" + HTTPRequestImpl.createQueryString(parameters, false),
+									isAdvancedMode ? NodeL10n.getBase().getString("StatusBar.switchToSimpleMode") :
+									NodeL10n.getBase().getString("StatusBar.switchToAdvancedMode"));
 			}
 
 			if (node != null && node.clientCore != null) {
 				statusBarDiv.addChild("div", "class", "separator", "\u00a0");
-				final HTMLNode secLevels = statusBarDiv.addChild("div", "id", "statusbar-seclevels", NodeL10n.getBase().getString("SecurityLevels.statusBarPrefix"));
+				final HTMLNode secLevels = statusBarDiv.addChild("div", "id", "statusbar-seclevels",
+										   NodeL10n.getBase().getString("SecurityLevels.statusBarPrefix"));
 
-				final HTMLNode network = secLevels.addChild("a", "href", "/seclevels/", SecurityLevels.localisedName(node.securityLevels.getNetworkThreatLevel()) + "\u00a0");
-				network.addAttribute("title", NodeL10n.getBase().getString("SecurityLevels.networkThreatLevelShort"));
+				final HTMLNode network = secLevels.addChild("a", "href", "/seclevels/",
+										 SecurityLevels.localisedName(node.securityLevels.getNetworkThreatLevel()) + "\u00a0");
+				network.addAttribute("title",
+									 NodeL10n.getBase().getString("SecurityLevels.networkThreatLevelShort"));
 				network.addAttribute("class", node.securityLevels.getNetworkThreatLevel().toString().toLowerCase());
 
-				final HTMLNode physical = secLevels.addChild("a", "href", "/seclevels/", SecurityLevels.localisedName(node.securityLevels.getPhysicalThreatLevel()));
-				physical.addAttribute("title", NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevelShort"));
-				physical.addAttribute("class", node.securityLevels.getPhysicalThreatLevel().toString().toLowerCase());
+				final HTMLNode physical = secLevels.addChild("a", "href", "/seclevels/",
+										  SecurityLevels.localisedName(node.securityLevels.getPhysicalThreatLevel()));
+				physical.addAttribute("title",
+									  NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevelShort"));
+				physical.addAttribute("class",
+									  node.securityLevels.getPhysicalThreatLevel().toString().toLowerCase());
 
 				statusBarDiv.addChild("div", "class", "separator", "\u00a0");
 
 				final int connectedPeers = node.peers.countConnectedPeers();
 				int darknetTotal = 0;
 				for(DarknetPeerNode n : node.peers.getDarknetPeers()) {
-					if(n == null) continue;
-					if(n.isDisabled()) continue;
+					if(n == null) {
+						continue;
+					}
+					if(n.isDisabled()) {
+						continue;
+					}
 					darknetTotal++;
 				}
 				final int connectedDarknetPeers = node.peers.countConnectedDarknetPeers();
-				final int totalPeers = (node.getOpennet() == null) ? (darknetTotal > 0 ? darknetTotal : Integer.MAX_VALUE) : node.getOpennet().getNumberOfConnectedPeersToAimIncludingDarknet();
+				final int totalPeers = (node.getOpennet() == null) ? (darknetTotal > 0 ? darknetTotal :
+									   Integer.MAX_VALUE) : node.getOpennet().getNumberOfConnectedPeersToAimIncludingDarknet();
 				final double connectedRatio = ((double)connectedPeers) / (double)totalPeers;
 				final String additionalClass;
 
@@ -467,7 +506,8 @@ public final class PageMaker {
 				progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_finalized", NodeL10n.getBase().getString("StatusBar.connectedPeers", new String[]{"X", "Y"},
 									 new String[]{Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.countConnectedOpennetPeers())})
 																							},
-									 Integer.toString(connectedPeers) + ((totalPeers != Integer.MAX_VALUE) ? " / " + Integer.toString(totalPeers) : ""));
+									 Integer.toString(connectedPeers) + ((totalPeers != Integer.MAX_VALUE) ? " / " + Integer.toString(
+												 totalPeers) : ""));
 			}
 		}
 
@@ -482,9 +522,12 @@ public final class PageMaker {
 					HTMLNode subnavlist = new HTMLNode("ul");
 					boolean isSelected = false;
 					boolean nonEmpty = false;
-					for (String navigationLink :  fullAccess ? menu.navigationLinkTexts : menu.navigationLinkTextsNonFull) {
+					for (String navigationLink :  fullAccess ? menu.navigationLinkTexts :
+							menu.navigationLinkTextsNonFull) {
 						LinkEnabledCallback cb = menu.navigationLinkCallbacks.get(navigationLink);
-						if(cb != null && !cb.isEnabled(ctx)) continue;
+						if(cb != null && !cb.isEnabled(ctx)) {
+							continue;
+						}
 						nonEmpty = true;
 						String navigationTitle = menu.navigationLinkTitles.get(navigationLink);
 						String navigationPath = menu.navigationLinks.get(navigationLink);
@@ -497,7 +540,9 @@ public final class PageMaker {
 						}
 
 						FredPluginL10n l10n = menu.navigationLinkL10n.get(navigationLink);
-						if(l10n == null) l10n = menu.plugin;
+						if(l10n == null) {
+							l10n = menu.plugin;
+						}
 						if(l10n != null) {
 							// From a plugin. Include the plugin name in the id.
 							sublistItem.addAttribute("id", getPluginL10nCSSIdentifier(l10n, navigationTitle));
@@ -522,13 +567,19 @@ public final class PageMaker {
 							// Not from a plugin. Add the localization key as id.
 							sublistItem.addAttribute("id", filterCSSIdentifier(navigationTitle));
 
-							if(navigationTitle != null) navigationTitle = NodeL10n.getBase().getString(navigationTitle);
-							if(navigationLink != null) navigationLink = NodeL10n.getBase().getString(navigationLink);
+							if(navigationTitle != null) {
+								navigationTitle = NodeL10n.getBase().getString(navigationTitle);
+							}
+							if(navigationLink != null) {
+								navigationLink = NodeL10n.getBase().getString(navigationLink);
+							}
 						}
 						if(navigationTitle != null)
-							sublistItem.addChild("a", new String[] { "href", "title" }, new String[] { navigationPath, navigationTitle }, navigationLink);
-						else
+							sublistItem.addChild("a", new String[] { "href", "title" }, new String[] { navigationPath, navigationTitle },
+												 navigationLink);
+						else {
 							sublistItem.addChild("a", "href", navigationPath, navigationLink);
+						}
 					}
 					if(nonEmpty) {
 						HTMLNode listItem;
@@ -571,7 +622,8 @@ public final class PageMaker {
 							}
 						}
 
-						listItem.addChild("a", new String[] { "href", "title" }, new String[] { menu.defaultNavigationLink, menuItemTitle }, text);
+						listItem.addChild("a", new String[] { "href", "title" }, new String[] { menu.defaultNavigationLink, menuItemTitle },
+										  text);
 						listItem.addChild(subnavlist);
 						navbarUl.addChild(listItem);
 					}
@@ -582,9 +634,12 @@ public final class PageMaker {
 				HTMLNode div = new HTMLNode("div", "id", "selected-subnavbar");
 				HTMLNode subnavlist = div.addChild("ul", "id", "selected-subnavbar-list");
 				boolean nonEmpty = false;
-				for (String navigationLink :  fullAccess ? selected.navigationLinkTexts : selected.navigationLinkTextsNonFull) {
+				for (String navigationLink :  fullAccess ? selected.navigationLinkTexts :
+						selected.navigationLinkTextsNonFull) {
 					LinkEnabledCallback cb = selected.navigationLinkCallbacks.get(navigationLink);
-					if(cb != null && !cb.isEnabled(ctx)) continue;
+					if(cb != null && !cb.isEnabled(ctx)) {
+						continue;
+					}
 					nonEmpty = true;
 					String navigationTitle = selected.navigationLinkTitles.get(navigationLink);
 					String navigationPath = selected.navigationLinks.get(navigationLink);
@@ -596,21 +651,34 @@ public final class PageMaker {
 					}
 
 					FredPluginL10n l10n = selected.navigationLinkL10n.get(navigationLink);
-					if (l10n == null) l10n = selected.plugin;
+					if (l10n == null) {
+						l10n = selected.plugin;
+					}
 					if(l10n != null) {
-						if(navigationTitle != null) navigationTitle = l10n.getString(navigationTitle);
-						if(navigationLink != null) navigationLink = l10n.getString(navigationLink);
+						if(navigationTitle != null) {
+							navigationTitle = l10n.getString(navigationTitle);
+						}
+						if(navigationLink != null) {
+							navigationLink = l10n.getString(navigationLink);
+						}
 					} else {
-						if(navigationTitle != null) navigationTitle = NodeL10n.getBase().getString(navigationTitle);
-						if(navigationLink != null) navigationLink = NodeL10n.getBase().getString(navigationLink);
+						if(navigationTitle != null) {
+							navigationTitle = NodeL10n.getBase().getString(navigationTitle);
+						}
+						if(navigationLink != null) {
+							navigationLink = NodeL10n.getBase().getString(navigationLink);
+						}
 					}
 					if(navigationTitle != null)
-						sublistItem.addChild("a", new String[] { "href", "title" }, new String[] { navigationPath, navigationTitle }, navigationLink);
-					else
+						sublistItem.addChild("a", new String[] { "href", "title" }, new String[] { navigationPath, navigationTitle },
+											 navigationLink);
+					else {
 						sublistItem.addChild("a", "href", navigationPath, navigationLink);
+					}
 				}
-				if(nonEmpty)
+				if(nonEmpty) {
 					pageDiv.addChild(div);
+				}
 			}
 		}
 		HTMLNode contentDiv = pageDiv.addChild("div", "id", "content");
@@ -641,7 +709,9 @@ public final class PageMaker {
 	 * @link http://stackoverflow.com/questions/448981/
 	 */
 	public static String filterCSSIdentifier(String input) {
-		while (input.length() < 2) input = input.concat("_");
+		while (input.length() < 2) {
+			input = input.concat("_");
+		}
 
 		return input.replaceFirst("^-[^_a-zA-Z]", "-_").replaceAll("[^-_a-zA-Z0-9]", "_");
 	}
@@ -671,22 +741,29 @@ public final class PageMaker {
 	}
 
 	public InfoboxNode getInfobox(String header, String title, boolean isUnique) {
-		if (header == null) throw new NullPointerException();
+		if (header == null) {
+			throw new NullPointerException();
+		}
 		return getInfobox(new HTMLNode("#", header), title, isUnique);
 	}
 
 	public InfoboxNode getInfobox(HTMLNode header, String title, boolean isUnique) {
-		if (header == null) throw new NullPointerException();
+		if (header == null) {
+			throw new NullPointerException();
+		}
 		return getInfobox(null, header, title, isUnique);
 	}
 
 	public InfoboxNode getInfobox(String category, String header, String title, boolean isUnique) {
-		if (header == null) throw new NullPointerException();
+		if (header == null) {
+			throw new NullPointerException();
+		}
 		return getInfobox(category, new HTMLNode("#", header), title, isUnique);
 	}
 
 	/** Create an infobox, attach it to the given parent, and return the content node. */
-	public HTMLNode getInfobox(String category, String header, HTMLNode parent, String title, boolean isUnique) {
+	public HTMLNode getInfobox(String category, String header, HTMLNode parent, String title,
+							   boolean isUnique) {
 		InfoboxNode node = getInfobox(category, header, title, isUnique);
 		parent.addChild(node.outer);
 		return node.content;
@@ -702,7 +779,9 @@ public final class PageMaker {
 	 * @return The infobox
 	 */
 	public InfoboxNode getInfobox(String category, HTMLNode header, String title, boolean isUnique) {
-		if (header == null) throw new NullPointerException();
+		if (header == null) {
+			throw new NullPointerException();
+		}
 
 		StringBuffer classes = new StringBuffer("infobox");
 		if(category != null) {
@@ -738,10 +817,11 @@ public final class PageMaker {
 
 		if(req.isParameterSet(MODE_SWITCH_PARAMETER)) {
 			mode = req.getIntParam(MODE_SWITCH_PARAMETER, mode);
-			if(mode == MODE_ADVANCED)
+			if(mode == MODE_ADVANCED) {
 				container.setAdvancedMode(true);
-			else
+			} else {
 				container.setAdvancedMode(false);
+			}
 		}
 
 		return mode;
@@ -785,7 +865,8 @@ public final class PageMaker {
 		 * @param renderModeSwitch
 		 *            {@code true} to include the mode switch in the status bar
 		 */
-		private RenderParameters(boolean renderNavigationLinks, boolean renderStatus, boolean renderModeSwitch) {
+		private RenderParameters(boolean renderNavigationLinks, boolean renderStatus,
+								 boolean renderModeSwitch) {
 			this.renderNavigationLinks = renderNavigationLinks;
 			this.renderStatus = renderStatus;
 			this.renderModeSwitch = renderModeSwitch;

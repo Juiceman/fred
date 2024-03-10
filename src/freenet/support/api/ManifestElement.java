@@ -37,7 +37,8 @@ public class ManifestElement implements Serializable {
 	public final FreenetURI targetURI;
 
 	/** Construct a ManifestElement for a file. */
-	public ManifestElement(String name2, String fullName2, RandomAccessBucket data2, String mimeOverride2, long size) {
+	public ManifestElement(String name2, String fullName2, RandomAccessBucket data2,
+						   String mimeOverride2, long size) {
 		this.name = name2;
 		this.fullName = fullName2;
 		this.data = data2;
@@ -105,9 +106,13 @@ public class ManifestElement implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if(this == o) return true;
+		if(this == o) {
+			return true;
+		}
 		if(o instanceof ManifestElement) {
-			if(((ManifestElement)o).name.equals(name)) return true;
+			if(((ManifestElement)o).name.equals(name)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -130,8 +135,9 @@ public class ManifestElement implements Serializable {
 	 */
 	public String getMimeType() {
 		String mimeType = mimeOverride;
-		if((mimeOverride == null) && (name != null))
+		if((mimeOverride == null) && (name != null)) {
 			mimeType = DefaultMIMETypes.guessMIMEType(name, true);
+		}
 		return mimeType;
 	}
 
@@ -148,7 +154,9 @@ public class ManifestElement implements Serializable {
 	}
 
 	public void onResume(ClientContext context) throws ResumeFailedException {
-		if(data != null) data.onResume(context);
+		if(data != null) {
+			data.onResume(context);
+		}
 	}
 
 }

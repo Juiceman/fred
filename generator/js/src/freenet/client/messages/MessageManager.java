@@ -178,7 +178,8 @@ public class MessageManager {
 					public void onMouseDown(MouseDownEvent event) {
 						// Only send a request if the message is originated from the server
 						if (m.getAnchor() != null) {
-							FreenetRequest.sendRequest(UpdaterConstants.dismissAlertPath, new QueryParameter("anchor", m.getAnchor()), new RequestCallback() {
+							FreenetRequest.sendRequest(UpdaterConstants.dismissAlertPath, new QueryParameter("anchor",
+							m.getAnchor()), new RequestCallback() {
 								@Override
 								public void onResponseReceived(Request request, Response response) {
 									// When a response is got, the server is already removed the message. We can remove it too safely
@@ -216,7 +217,8 @@ public class MessageManager {
 				}
 			}
 			// Redraw the messages from the XML
-			for (int i = 0; i < RootPanel.get("alerts").getElement().getElementsByTagName("alert").getLength(); i++) {
+			for (int i = 0; i < RootPanel.get("alerts").getElement().getElementsByTagName("alert").getLength();
+					i++) {
 				Element alert = RootPanel.get("alerts").getElement().getElementsByTagName("alert").getItem(i);
 				String anchor = alert.getElementsByTagName("anchor").getItem(0).getInnerText();
 				Priority priority = null;
@@ -235,7 +237,8 @@ public class MessageManager {
 					break;
 				}
 				String title = alert.getElementsByTagName("alertTitle").getItem(0).getInnerText();
-				addMessage(new Message(title, priority, anchor, Boolean.parseBoolean(alert.getElementsByTagName("canDismiss").getItem(0).getInnerText())));
+				addMessage(new Message(title, priority, anchor,
+									   Boolean.parseBoolean(alert.getElementsByTagName("canDismiss").getItem(0).getInnerText())));
 			}
 		}
 	}

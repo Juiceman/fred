@@ -51,13 +51,15 @@ public class ECDH {
 			PrivateKey pk = key.getPrivate();
 			byte [] pubkey = pub.getEncoded();
 			byte [] pkey = pk.getEncoded();
-			if(pubkey.length > modulusSize || pubkey.length == 0)
+			if(pubkey.length > modulusSize || pubkey.length == 0) {
 				throw new Error("Unexpected pubkey length: "+pubkey.length+"!="+modulusSize);
+			}
 			PublicKey pub2 = kf.generatePublic(
 				new X509EncodedKeySpec(pubkey)
 			);
-			if(!Arrays.equals(pub2.getEncoded(), pubkey))
+			if(!Arrays.equals(pub2.getEncoded(), pubkey)) {
 				throw new Error("Pubkey encoding mismatch");
+			}
 			PrivateKey pk2 = kf.generatePrivate(
 				new PKCS8EncodedKeySpec(pkey)
 			);
@@ -93,7 +95,8 @@ public class ECDH {
 					key = selftest(kg, kf, modulusSize);
 				} catch(Throwable e) {
 					/* we don't care why we fail, just fallback */
-					Logger.warning(this, "default KeyPairGenerator provider ("+(kg != null ? kg.getProvider() : null)+") is broken, falling back to BouncyCastle", e);
+					Logger.warning(this, "default KeyPairGenerator provider ("+(kg != null ? kg.getProvider() : null)
+								   +") is broken, falling back to BouncyCastle", e);
 					kg = KeyPairGenerator.getInstance("EC", JceLoader.BouncyCastle);
 					kf = KeyFactory.getInstance("EC", JceLoader.BouncyCastle);
 					kg.initialize(this.spec);
@@ -105,7 +108,8 @@ public class ECDH {
 					selftest_genSecret(key, ka);
 				} catch(Throwable e) {
 					/* we don't care why we fail, just fallback */
-					Logger.warning(this, "default KeyAgreement provider ("+(ka != null ? ka.getProvider() : null)+") is broken or incompatible with KeyPairGenerator, falling back to BouncyCastle", e);
+					Logger.warning(this, "default KeyAgreement provider ("+(ka != null ? ka.getProvider() : null)
+								   +") is broken or incompatible with KeyPairGenerator, falling back to BouncyCastle", e);
 					kg = KeyPairGenerator.getInstance("EC", JceLoader.BouncyCastle);
 					kf = KeyFactory.getInstance("EC", JceLoader.BouncyCastle);
 					kg.initialize(this.spec);
@@ -137,7 +141,9 @@ public class ECDH {
 		}
 
 		private synchronized KeyPairGenerator getKeyPairGenerator() {
-			if(keygenCached != null) return keygenCached;
+			if(keygenCached != null) {
+				return keygenCached;
+			}
 			KeyPairGenerator kg = null;
 			try {
 				kg = KeyPairGenerator.getInstance("EC", kgProvider);
@@ -247,7 +253,8 @@ public class ECDH {
 		if(ret.length == curve.modulusSize) {
 			return ret;
 		} else if(ret.length > curve.modulusSize) {
-			throw new IllegalStateException("Encoded public key too long: should be "+curve.modulusSize+" bytes but is "+ret.length);
+			throw new IllegalStateException("Encoded public key too long: should be "+curve.modulusSize
+											+" bytes but is "+ret.length);
 		} else {
 			Logger.warning(this, "Padding public key from "+ret.length+" to "+curve.modulusSize+" bytes");
 			byte[] out = new byte[curve.modulusSize];

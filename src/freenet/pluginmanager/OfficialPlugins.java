@@ -21,7 +21,8 @@ import freenet.node.updater.PluginJarUpdater;
  */
 public class OfficialPlugins {
 
-	private final Map<String, OfficialPluginDescription> officialPlugins = new HashMap<String, OfficialPluginDescription>();
+	private final Map<String, OfficialPluginDescription> officialPlugins = new
+	HashMap<String, OfficialPluginDescription>();
 
 	public OfficialPlugins() {
 		try {
@@ -247,10 +248,12 @@ public class OfficialPlugins {
 		}
 
 		private void addCurrentPluginDescription() {
-			if(recommendedVersion == 0 && minimumVersion > 0)
+			if(recommendedVersion == 0 && minimumVersion > 0) {
 				recommendedVersion = minimumVersion;
-			if(minimumVersion == 0 && recommendedVersion > 0)
+			}
+			if(minimumVersion == 0 && recommendedVersion > 0) {
 				minimumVersion = recommendedVersion;
+			}
 			officialPlugins.put(name, createOfficialPluginDescription());
 		}
 

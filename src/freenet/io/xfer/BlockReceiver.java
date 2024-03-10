@@ -161,7 +161,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	 * be reused by the other side; senders want to complete late, so they don't
 	 * end up reusing the slot before the handler has completed (=true).
 	 */
-	public BlockReceiver(MessageCore usm, PeerContext sender, long uid, PartiallyReceivedBlock prb, ByteCounter ctr, Ticker ticker, boolean doTooLong, boolean realTime, BlockReceiverTimeoutHandler timeoutHandler, boolean completeAfterAckedAllReceived) {
+	public BlockReceiver(MessageCore usm, PeerContext sender, long uid, PartiallyReceivedBlock prb,
+						 ByteCounter ctr, Ticker ticker, boolean doTooLong, boolean realTime,
+						 BlockReceiverTimeoutHandler timeoutHandler, boolean completeAfterAckedAllReceived) {
 		BlockReceiverTimeoutHandler nullTimeoutHandler = new BlockReceiverTimeoutHandler() {
 
 			@Override
@@ -191,7 +193,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 	private void sendAborted(int reason, String desc) throws NotConnectedException {
 		synchronized(this) {
-			if(sentAborted) return;
+			if(sentAborted) {
+				return;
+			}
 			sentAborted = true;
 		}
 		_usm.send(_sender, DMT.createSendAborted(_uid, reason, desc), _ctr);
@@ -220,12 +224,14 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 		@Override
 		public void onMatched(Message m1) {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Received "+m1);
+			}
 			if ((m1 != null) && m1.getSpec().equals(DMT.sendAborted)) {
 				String desc=m1.getString(DMT.DESCRIPTION);
-				if (desc.indexOf("Upstream")<0)
+				if (desc.indexOf("Upstream")<0) {
 					desc="Upstream transmit error: "+desc;
+				}
 				_prb.abort(m1.getInt(DMT.REASON), desc, false);
 				synchronized(BlockReceiver.this) {
 					senderAborted = true;
@@ -242,7 +248,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				int missing = 0;
 				try {
 					synchronized(BlockReceiver.this) {
-						if(completed) return;
+						if(completed) {
+							return;
+						}
 					}
 					if(CHECK_DUPES && _prb.isReceived(packetNo)) {
 						// Transmitter sent the same packet twice?!?!?
@@ -254,7 +262,8 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 						if(logMINOR) {
 							synchronized(BlockReceiver.this) {
 								long interval = System.currentTimeMillis() - timeStartedWaiting;
-								Logger.minor(this, "Packet interval: "+interval+" = "+TimeUtil.formatTime(interval, 2, true)+" from "+_sender);
+								Logger.minor(this, "Packet interval: "+interval+" = "+TimeUtil.formatTime(interval, 2,
+											 true)+" from "+_sender);
 							}
 						}
 						// Check that we have what the sender thinks we have
@@ -263,8 +272,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 								missing++;
 							}
 						}
-						if(logMINOR && missing != 0)
+						if(logMINOR && missing != 0) {
 							Logger.minor(this, "Packets which the sender says it has sent but we have not received: "+missing);
+						}
 					}
 				} catch (AbortedException e) {
 					// We didn't cause it?!
@@ -274,10 +284,14 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				}
 			} else if (m1 != null && m1.getSpec().equals(DMT.allSent)) {
 				synchronized(BlockReceiver.this) {
-					if(completed) return;
+					if(completed) {
+						return;
+					}
 					if(gotAllSent)
 						// Multiple allSent's don't extend the timeouts.
+					{
 						truncateTimeout = true;
+					}
 					gotAllSent = true;
 				}
 			}
@@ -301,7 +315,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 						maybeResetDiscardFilter();
 					} catch (NotConnectedException e1) {
 						// Ignore, we've got it.
-						if(logMINOR) Logger.minor(this, "Got data but can't send allReceived to "+_sender+" as is disconnected");
+						if(logMINOR) {
+							Logger.minor(this, "Got data but can't send allReceived to "+_sender+" as is disconnected");
+						}
 					}
 					long endTime = System.currentTimeMillis();
 					long transferTime = (endTime - startTime);
@@ -337,10 +353,14 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		@Override
 		public void onTimeout() {
 			synchronized(this) {
-				if(completed) return;
+				if(completed) {
+					return;
+				}
 			}
 			try {
-				if(_prb.allReceived()) return;
+				if(_prb.allReceived()) {
+					return;
+				}
 				_prb.abort(RetrievalException.SENDER_DIED, "Sender unresponsive to resend requests", false);
 				complete(RetrievalException.SENDER_DIED,
 						 "Sender unresponsive to resend requests");
@@ -350,14 +370,17 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 				// and will tell us. So wait for a timeout.
 				// It is important for load management that the two sides agree on the number of transfers happening.
 				// Therefore we need to not complete until the other side has acknowledged that the transfer has been cancelled.
-				MessageFilter mfSendAborted = MessageFilter.create().setTimeout(ACK_TRANSFER_FAILED_TIMEOUT).setType(DMT.sendAborted).setField(DMT.UID, _uid).setSource(_sender);
+				MessageFilter mfSendAborted = MessageFilter.create().setTimeout(
+												  ACK_TRANSFER_FAILED_TIMEOUT).setType(DMT.sendAborted).setField(DMT.UID, _uid).setSource(_sender);
 				try {
 					_usm.addAsyncFilter(mfSendAborted, new SlowAsyncMessageFilterCallback() {
 
 						@Override
 						public void onMatched(Message m) {
 							// Ok.
-							if(logMINOR) Logger.minor(this, "Transfer cancel acknowledged");
+							if(logMINOR) {
+								Logger.minor(this, "Transfer cancel acknowledged");
+							}
 						}
 
 						@Override
@@ -402,12 +425,14 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 
 		@Override
 		public void onDisconnect(PeerContext ctx) {
-			complete(RetrievalException.SENDER_DISCONNECTED, RetrievalException.getErrString(RetrievalException.SENDER_DISCONNECTED));
+			complete(RetrievalException.SENDER_DISCONNECTED,
+					 RetrievalException.getErrString(RetrievalException.SENDER_DISCONNECTED));
 		}
 
 		@Override
 		public void onRestarted(PeerContext ctx) {
-			complete(RetrievalException.SENDER_DISCONNECTED, RetrievalException.getErrString(RetrievalException.SENDER_DISCONNECTED));
+			complete(RetrievalException.SENDER_DISCONNECTED,
+					 RetrievalException.getErrString(RetrievalException.SENDER_DISCONNECTED));
 		}
 
 		@Override
@@ -422,13 +447,17 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	private void complete(int reason, String description) {
 		synchronized(this) {
 			if(completed) {
-				if(logMINOR) Logger.minor(this, "Already completed");
+				if(logMINOR) {
+					Logger.minor(this, "Already completed");
+				}
 				return;
 			}
 			completed = true;
 		}
-		if(logMINOR)
-			Logger.minor(this, "Transfer failed: ("+(_realTime?"realtime":"bulk")+") "+reason+" : "+description+" on "+_uid+" from "+_sender);
+		if(logMINOR) {
+			Logger.minor(this, "Transfer failed: ("+(_realTime?"realtime":"bulk")+") "+reason+" : "+description
+						 +" on "+_uid+" from "+_sender);
+		}
 		_prb.removeListener(myListener);
 		byte[] block = _prb.abort(reason, description, false);
 		if(block == null) {
@@ -445,7 +474,8 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 			}
 			callback.blockReceiveFailed(new RetrievalException(reason, description));
 		} else {
-			Logger.error(this, "Succeeded in complete("+reason+","+description+") on "+this, new Exception("error"));
+			Logger.error(this, "Succeeded in complete("+reason+","+description+") on "+this,
+						 new Exception("error"));
 			callback.blockReceived(block);
 		}
 		decRunningBlockReceives();
@@ -454,7 +484,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	private void complete(byte[] ret) {
 		synchronized(this) {
 			if(completed) {
-				if(logMINOR) Logger.minor(this, "Already completed");
+				if(logMINOR) {
+					Logger.minor(this, "Already completed");
+				}
 				return;
 			}
 			completed = true;
@@ -481,9 +513,12 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	}
 
 	private MessageFilter relevantMessages(long timeout) {
-		MessageFilter mfPacketTransmit = MessageFilter.create().setTimeout(timeout).setType(DMT.packetTransmit).setField(DMT.UID, _uid).setSource(_sender);
-		MessageFilter mfAllSent = MessageFilter.create().setTimeout(timeout).setType(DMT.allSent).setField(DMT.UID, _uid).setSource(_sender);
-		MessageFilter mfSendAborted = MessageFilter.create().setTimeout(timeout).setType(DMT.sendAborted).setField(DMT.UID, _uid).setSource(_sender);
+		MessageFilter mfPacketTransmit = MessageFilter.create().setTimeout(timeout).setType(
+											 DMT.packetTransmit).setField(DMT.UID, _uid).setSource(_sender);
+		MessageFilter mfAllSent = MessageFilter.create().setTimeout(timeout).setType(DMT.allSent).setField(
+									  DMT.UID, _uid).setSource(_sender);
+		MessageFilter mfSendAborted = MessageFilter.create().setTimeout(timeout).setType(
+										  DMT.sendAborted).setField(DMT.UID, _uid).setSource(_sender);
 		return mfSendAborted.or(mfAllSent.or(mfPacketTransmit));
 	}
 
@@ -522,8 +557,10 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 		try {
 			waitNotification(false);
 		} catch (DisconnectedException e) {
-			RetrievalException retrievalException = new RetrievalException(RetrievalException.SENDER_DISCONNECTED);
-			_prb.abort(retrievalException.getReason(), retrievalException.toString(), true /* kind of, it shouldn't count towards the stats anyway */);
+			RetrievalException retrievalException = new RetrievalException(
+				RetrievalException.SENDER_DISCONNECTED);
+			_prb.abort(retrievalException.getReason(), retrievalException.toString(),
+					   true /* kind of, it shouldn't count towards the stats anyway */);
 			callback.blockReceiveFailed(retrievalException);
 			decRunningBlockReceives();
 		} catch(RuntimeException e) {
@@ -556,8 +593,9 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	 */
 	@Override
 	public void onMatched(Message m) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "discarding message post-receive: "+m);
+		}
 		maybeResetDiscardFilter();
 	}
 
@@ -588,18 +626,26 @@ public class BlockReceiver implements AsyncMessageFilterCallback {
 	static int runningBlockReceives = 0;
 
 	private void incRunningBlockReceives() {
-		if(logMINOR) Logger.minor(this, "Starting block receive "+_uid);
+		if(logMINOR) {
+			Logger.minor(this, "Starting block receive "+_uid);
+		}
 		synchronized(BlockReceiver.class) {
 			runningBlockReceives++;
-			if(logMINOR) Logger.minor(BlockTransmitter.class, "Started a block receive, running: "+runningBlockReceives);
+			if(logMINOR) {
+				Logger.minor(BlockTransmitter.class, "Started a block receive, running: "+runningBlockReceives);
+			}
 		}
 	}
 
 	private void decRunningBlockReceives() {
-		if(logMINOR) Logger.minor(this, "Stopping block receive "+_uid);
+		if(logMINOR) {
+			Logger.minor(this, "Stopping block receive "+_uid);
+		}
 		synchronized(BlockReceiver.class) {
 			runningBlockReceives--;
-			if(logMINOR) Logger.minor(BlockTransmitter.class, "Finished a block receive, running: "+runningBlockReceives);
+			if(logMINOR) {
+				Logger.minor(BlockTransmitter.class, "Finished a block receive, running: "+runningBlockReceives);
+			}
 		}
 	}
 

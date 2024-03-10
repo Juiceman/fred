@@ -25,7 +25,8 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 	 * may not be. FIXME split up into two classes? */
 	protected Bucket bucket;
 
-	RandomAccessBucket createBucket(BucketFactory bf, long length, FCPServer server) throws IOException, PersistenceDisabledException {
+	RandomAccessBucket createBucket(BucketFactory bf, long length, FCPServer server) throws IOException,
+		PersistenceDisabledException {
 		return bf.makeBucket(length);
 	}
 
@@ -39,9 +40,12 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 	}
 
 	@Override
-	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException {
+	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException,
+		MessageInvalidException {
 		long len = dataLength();
-		if(len < 0) return;
+		if(len < 0) {
+			return;
+		}
 		if(len == 0) {
 			bucket = new NullBucket();
 			return;
@@ -52,11 +56,13 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 		} catch (IOException e) {
 			Logger.error(this, "Bucket error: "+e, e);
 			FileUtil.copy(is, new NullOutputStream(), len);
-			throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR, e.toString(), getIdentifier(), isGlobal());
+			throw new MessageInvalidException(ProtocolErrorMessage.INTERNAL_ERROR, e.toString(),
+											  getIdentifier(), isGlobal());
 		} catch (PersistenceDisabledException e) {
 			Logger.error(this, "Bucket error: "+e, e);
 			FileUtil.copy(is, new NullOutputStream(), len);
-			throw new MessageInvalidException(ProtocolErrorMessage.PERSISTENCE_DISABLED, null, getIdentifier(), isGlobal());
+			throw new MessageInvalidException(ProtocolErrorMessage.PERSISTENCE_DISABLED, null, getIdentifier(),
+											  isGlobal());
 		}
 		BucketTools.copyFrom(tempBucket, is, len);
 		this.bucket = tempBucket;
@@ -65,8 +71,12 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 	@Override
 	protected void writeData(OutputStream os) throws IOException {
 		long len = dataLength();
-		if(len > 0) BucketTools.copyTo(bucket, os, len);
-		if(freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
+		if(len > 0) {
+			BucketTools.copyTo(bucket, os, len);
+		}
+		if(freeOnSent) {
+			bucket.free();    // Always transient so no removeFrom() needed.
+		}
 	}
 
 	@Override

@@ -19,7 +19,8 @@ public abstract class BinaryBlob {
 		binaryBlobStream.writeLong(BinaryBlob.BINARY_BLOB_MAGIC);
 		binaryBlobStream.writeShort(BinaryBlob.BINARY_BLOB_OVERALL_VERSION);
 	}
-	public static void writeKey(DataOutputStream binaryBlobStream, KeyBlock block, Key key) throws IOException {
+	public static void writeKey(DataOutputStream binaryBlobStream, KeyBlock block,
+								Key key) throws IOException {
 		byte[] keyData = key.getKeyBytes();
 		byte[] headers = block.getRawHeaders();
 		byte[] data = block.getRawData();
@@ -34,15 +35,17 @@ public abstract class BinaryBlob {
 		binaryBlobStream.write(keyData);
 		binaryBlobStream.write(headers);
 		binaryBlobStream.write(data);
-		if(pubkey != null)
+		if(pubkey != null) {
 			binaryBlobStream.write(pubkey);
+		}
 	}
 	static final short BLOB_BLOCK = 1;
 	static final short BLOB_BLOCK_VERSION = 0;
 	static final short BLOB_END = 2;
 	static final short BLOB_END_VERSION = 0;
 	public static final String MIME_TYPE = "application/x-freenet-binary-blob";
-	static void writeBlobHeader(DataOutputStream binaryBlobStream, short type, short version, int length) throws IOException {
+	static void writeBlobHeader(DataOutputStream binaryBlobStream, short type, short version,
+								int length) throws IOException {
 		binaryBlobStream.writeInt(length);
 		binaryBlobStream.writeShort(type);
 		binaryBlobStream.writeShort(version);
@@ -51,13 +54,16 @@ public abstract class BinaryBlob {
 		writeBlobHeader(binaryBlobStream, BinaryBlob.BLOB_END, BinaryBlob.BLOB_END_VERSION, 0);
 	}
 
-	public static void readBinaryBlob(DataInputStream dis, BlockSet blocks, boolean tolerant) throws IOException, BinaryBlobFormatException {
+	public static void readBinaryBlob(DataInputStream dis, BlockSet blocks,
+									  boolean tolerant) throws IOException, BinaryBlobFormatException {
 		long magic = dis.readLong();
-		if(magic != BinaryBlob.BINARY_BLOB_MAGIC)
+		if(magic != BinaryBlob.BINARY_BLOB_MAGIC) {
 			throw new BinaryBlobFormatException("Bad magic");
+		}
 		short version = dis.readShort();
-		if(version != BinaryBlob.BINARY_BLOB_OVERALL_VERSION)
+		if(version != BinaryBlob.BINARY_BLOB_OVERALL_VERSION) {
 			throw new BinaryBlobFormatException("Unknown overall version");
+		}
 
 		while(true) {
 			long blobLength;
@@ -77,17 +83,22 @@ public abstract class BinaryBlob {
 			} else if(blobType == BinaryBlob.BLOB_BLOCK) {
 				if(blobVer != BinaryBlob.BLOB_BLOCK_VERSION)
 					// Even if tolerant, if we can't read a blob there probably isn't much we can do.
+				{
 					throw new BinaryBlobFormatException("Unknown block blob version");
-				if(blobLength < 9)
+				}
+				if(blobLength < 9) {
 					throw new BinaryBlobFormatException("Block blob too short");
+				}
 				short keyType = dis.readShort();
 				int keyLen = dis.readUnsignedByte();
 				int headersLen = dis.readUnsignedShort();
 				int dataLen = dis.readUnsignedShort();
 				int pubkeyLen = dis.readUnsignedShort();
 				int total = 9 + keyLen + headersLen + dataLen + pubkeyLen;
-				if(blobLength != total)
-					throw new BinaryBlobFormatException("Binary blob not same length as data: blobLength="+blobLength+" total="+total);
+				if(blobLength != total) {
+					throw new BinaryBlobFormatException("Binary blob not same length as data: blobLength="+blobLength
+														+" total="+total);
+				}
 				byte[] keyBytes = new byte[keyLen];
 				byte[] headersBytes = new byte[headersLen];
 				byte[] dataBytes = new byte[dataLen];

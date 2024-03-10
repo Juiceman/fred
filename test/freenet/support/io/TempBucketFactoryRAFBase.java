@@ -75,14 +75,17 @@ public abstract class TempBucketFactoryRAFBase extends RandomAccessBufferTestBas
 	@Test
 	public void testArrayMigration() throws IOException {
 		Random r = new Random(21162506);
-		for(int size : TEST_LIST_NOT_MIGRATED)
+		for(int size : TEST_LIST_NOT_MIGRATED) {
 			innerTestArrayMigration(size, r);
+		}
 	}
 
 	/** Create an array, fill it with random numbers, write it sequentially to the
 	 * RandomAccessBuffer, then read randomly and compare. */
 	protected void innerTestArrayMigration(int len, Random r) throws IOException {
-		if(len == 0) return;
+		if(len == 0) {
+			return;
+		}
 		byte[] buf = new byte[len];
 		r.nextBytes(buf);
 		RandomAccessBuffer raf = construct(len);
@@ -333,9 +336,9 @@ public abstract class TempBucketFactoryRAFBase extends RandomAccessBufferTestBas
 	}
 
 	private File getFile(TempBucket bucket) {
-		if(!this.enableCrypto())
+		if(!this.enableCrypto()) {
 			return ((TempFileBucket)(((TempBucket) bucket).getUnderlying())).getFile();
-		else {
+		} else {
 			EncryptedRandomAccessBucket erab = (EncryptedRandomAccessBucket) bucket.getUnderlying();
 			RandomAccessBucket b = erab.getUnderlying();
 			if(b instanceof PaddedRandomAccessBucket) {
@@ -369,16 +372,18 @@ public abstract class TempBucketFactoryRAFBase extends RandomAccessBufferTestBas
 		assertFalse(bucket.isRAMBucket());
 		File f = getFile(bucket);
 		assertTrue(f.exists());
-		if(enableCrypto())
+		if(enableCrypto()) {
 			assertEquals(f.length(), 8192);
-		else
+		} else {
 			assertEquals(f.length(), 4095);
+		}
 		TempRandomAccessBuffer raf = (TempRandomAccessBuffer) bucket.toRandomAccessBuffer();
 		assertTrue(f.exists());
-		if(enableCrypto())
+		if(enableCrypto()) {
 			assertEquals(f.length(), 8192);
-		else
+		} else {
 			assertEquals(f.length(), 4095);
+		}
 		assertEquals(len, raf.size());
 		checkArrayInner(buf, raf, len, r);
 		assertEquals(factory.getRamUsed(), 0);
@@ -424,15 +429,17 @@ public abstract class TempBucketFactoryRAFBase extends RandomAccessBufferTestBas
 		raf.free();
 	}
 
-	private void checkArrayInner(byte[] buf, RandomAccessBuffer raf, int len, Random r) throws IOException {
+	private void checkArrayInner(byte[] buf, RandomAccessBuffer raf, int len,
+								 Random r) throws IOException {
 		for(int i=0; i<100; i++) {
 			int end = len == 1 ? 1 : r.nextInt(len)+1;
 			int start = r.nextInt(end);
 			checkArraySectionEqualsReadData(buf, raf, start, end, true);
 		}
 		checkArraySectionEqualsReadData(buf, raf, 0, len, true);
-		if(len > 1)
+		if(len > 1) {
 			checkArraySectionEqualsReadData(buf, raf, 1, len-1, true);
+		}
 	}
 
 }

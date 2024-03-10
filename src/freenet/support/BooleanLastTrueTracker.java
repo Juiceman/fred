@@ -22,16 +22,22 @@ public class BooleanLastTrueTracker {
 	}
 
 	public synchronized boolean set(boolean value, long now) {
-		if(value == isTrue) return value;
-		if(!isTrue)
+		if(value == isTrue) {
+			return value;
+		}
+		if(!isTrue) {
 			timeLastTrue = now;
+		}
 		isTrue = value;
 		return !value;
 	}
 
 	public synchronized long getTimeLastTrue(long now) {
-		if(isTrue) return now;
-		else return timeLastTrue;
+		if(isTrue) {
+			return now;
+		} else {
+			return timeLastTrue;
+		}
 	}
 
 }

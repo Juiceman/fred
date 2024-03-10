@@ -35,11 +35,13 @@ import freenet.support.Executor;
  */
 public class SSLNetworkInterface extends NetworkInterface {
 
-	public static NetworkInterface create(int port, String bindTo, String allowedHosts, Executor executor, boolean ignoreUnbindableIP6) throws IOException {
+	public static NetworkInterface create(int port, String bindTo, String allowedHosts,
+										  Executor executor, boolean ignoreUnbindableIP6) throws IOException {
 		NetworkInterface iface = new SSLNetworkInterface(port, allowedHosts, executor);
 		String[] failedBind = iface.setBindTo(bindTo, ignoreUnbindableIP6);
 		if(failedBind != null) {
-			System.err.println("Could not bind to some of the interfaces specified for port "+port+" : "+Arrays.toString(failedBind));
+			System.err.println("Could not bind to some of the interfaces specified for port "+port+" : "
+							   +Arrays.toString(failedBind));
 		}
 		return iface;
 	}

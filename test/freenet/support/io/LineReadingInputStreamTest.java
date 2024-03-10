@@ -63,7 +63,8 @@ public class LineReadingInputStreamTest {
 		// Same test shouldn't throw
 		is = new ByteArrayInputStream(LENGTH_CHECKING_LINE.getBytes());
 		instance = new LineReadingInputStream(is);
-		assertEquals(LENGTH_CHECKING_LINE.substring(0, LENGTH_CHECKING_LINE_LF), instance.readLineWithoutMarking(LENGTH_CHECKING_LINE_LF, BUFFER_SIZE, true));
+		assertEquals(LENGTH_CHECKING_LINE.substring(0, LENGTH_CHECKING_LINE_LF),
+					 instance.readLineWithoutMarking(LENGTH_CHECKING_LINE_LF, BUFFER_SIZE, true));
 
 		// is it handling nulls properly? @see #2501
 		is = new ByteArrayInputStream(NULL_LINE.getBytes());
@@ -105,7 +106,8 @@ public class LineReadingInputStreamTest {
 		// Same test shouldn't throw
 		is = new ByteArrayInputStream(LENGTH_CHECKING_LINE.getBytes());
 		instance = new LineReadingInputStream(is);
-		assertEquals(LENGTH_CHECKING_LINE.substring(0, LENGTH_CHECKING_LINE_LF), instance.readLine(LENGTH_CHECKING_LINE_LF, BUFFER_SIZE, true));
+		assertEquals(LENGTH_CHECKING_LINE.substring(0, LENGTH_CHECKING_LINE_LF),
+					 instance.readLine(LENGTH_CHECKING_LINE_LF, BUFFER_SIZE, true));
 
 		// is it handling nulls properly? @see #2501
 		is = new ByteArrayInputStream(NULL_LINE.getBytes());

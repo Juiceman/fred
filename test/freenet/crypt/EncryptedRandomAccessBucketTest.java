@@ -77,7 +77,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 			byte[] buf = new byte[readBytes];
 			readBytes = is.read(buf);
 			assertTrue(readBytes > 0);
-			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved, moved+readBytes)));
+			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved,
+									 moved+readBytes)));
 			moved += readBytes;
 		}
 		is.close();
@@ -104,7 +105,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 			byte[] buf = new byte[readBytes];
 			readBytes = is.read(buf);
 			assertTrue(readBytes > 0);
-			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved, moved+readBytes)));
+			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved,
+									 moved+readBytes)));
 			moved += readBytes;
 		}
 		is.close();
@@ -131,7 +133,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 			byte[] buf = new byte[readBytes];
 			readBytes = is.read(buf);
 			assertTrue(readBytes > 0);
-			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved, moved+readBytes)));
+			assertTrue(Arrays.equals(Arrays.copyOfRange(buf, 0, readBytes), Arrays.copyOfRange(data, moved,
+									 moved+readBytes)));
 			moved += readBytes;
 		}
 		LockableRandomAccessBuffer raf = bucket.toRandomAccessBuffer();
@@ -158,7 +161,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 	}
 
 	@Test
-	public void testStoreTo() throws IOException, StorageFormatException, ResumeFailedException, GeneralSecurityException {
+	public void testStoreTo() throws IOException, StorageFormatException, ResumeFailedException,
+		GeneralSecurityException {
 		File tempFile = File.createTempFile("test-storeto", ".tmp", base);
 		byte[] buf = new byte[4096];
 		Random r = new Random(1267612);
@@ -182,7 +186,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 				null, r, null, null, null, null, null, null, null, null, null, null, null, null,
 				null, null, null, null);
 		context.setPersistentMasterSecret(secret);
-		EncryptedRandomAccessBucket restored = (EncryptedRandomAccessBucket) BucketTools.restoreFrom(dis, context.persistentFG, context.persistentFileTracker, secret);
+		EncryptedRandomAccessBucket restored = (EncryptedRandomAccessBucket) BucketTools.restoreFrom(dis,
+											   context.persistentFG, context.persistentFileTracker, secret);
 		assertEquals(buf.length, restored.size());
 		assertEquals(erab, restored);
 		tmp = new byte[buf.length];
@@ -194,7 +199,8 @@ public class EncryptedRandomAccessBucketTest extends BucketTestBase {
 	}
 
 	@Test
-	public void testSerialize() throws IOException, StorageFormatException, ResumeFailedException, GeneralSecurityException, ClassNotFoundException {
+	public void testSerialize() throws IOException, StorageFormatException, ResumeFailedException,
+		GeneralSecurityException, ClassNotFoundException {
 		File tempFile = File.createTempFile("test-storeto", ".tmp", base);
 		byte[] buf = new byte[4096];
 		Random r = new Random(1267612);

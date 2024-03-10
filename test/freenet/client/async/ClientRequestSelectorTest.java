@@ -78,11 +78,13 @@ public class ClientRequestSelectorTest {
 		bigRAFFactory = new PooledFileRandomAccessBufferFactory(fg, r);
 		smallBucketFactory = new ArrayBucketFactory();
 		bigBucketFactory = new TempBucketFactory(executor, fg, 0, 0, r, false, 0, null);
-		baseContext = HighLevelSimpleClientImpl.makeDefaultInsertContext(bigBucketFactory, new SimpleEventProducer());
+		baseContext = HighLevelSimpleClientImpl.makeDefaultInsertContext(bigBucketFactory,
+					  new SimpleEventProducer());
 		cryptoKey = new byte[32];
 		r.nextBytes(cryptoKey);
 		checker = new CRCChecksumChecker();
-		memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 20, executor, NativeThread.JAVA_PRIORITY_RANGE);
+		memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 20, executor,
+				NativeThread.JAVA_PRIORITY_RANGE);
 		jobRunner = new DummyJobRunner(executor, null);
 	}
 
@@ -109,8 +111,9 @@ public class ClientRequestSelectorTest {
 		}
 
 		private void checkFailed() throws InsertException {
-			if (failed != null)
+			if (failed != null) {
 				throw failed;
+			}
 		}
 
 		public synchronized void waitForFinishedEncode() throws InsertException {

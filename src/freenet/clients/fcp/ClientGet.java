@@ -59,7 +59,8 @@ import freenet.support.io.StorageFormatException;
  * A simple client fetch. This can of course fetch arbitrarily large
  * files, including splitfiles, redirects, etc.
  */
-public class ClientGet extends ClientRequest implements ClientGetCallback, ClientEventListener, PersistentClientCallback {
+public class ClientGet extends ClientRequest implements ClientGetCallback, ClientEventListener,
+	PersistentClientCallback {
 
 	private static final long serialVersionUID = 1L;
 	/** Fetch context. Never passed in: always created new by the ClientGet. Therefore, we
@@ -127,14 +128,18 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		final short code;
 
 		ReturnType(short code) {
-			if(returnTypeByCode.containsKey(code)) throw new Error("Duplicate");
+			if(returnTypeByCode.containsKey(code)) {
+				throw new Error("Duplicate");
+			}
 			returnTypeByCode.put(code, this);
 			this.code = code;
 		}
 
 		public static ReturnType getByCode(short x) {
 			ReturnType u = returnTypeByCode.get(x);
-			if(u == null) throw new IllegalArgumentException();
+			if(u == null) {
+				throw new IllegalArgumentException();
+			}
 			return u;
 		}
 
@@ -146,10 +151,14 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	 * @throws NotAllowedException
 	 * @throws IOException
 	 */
-	public ClientGet(PersistentRequestClient globalClient, FreenetURI uri, boolean dsOnly, boolean ignoreDS,
+	public ClientGet(PersistentRequestClient globalClient, FreenetURI uri, boolean dsOnly,
+					 boolean ignoreDS,
 					 boolean filterData, int maxSplitfileRetries, int maxNonSplitfileRetries,
-					 long maxOutputLength, ReturnType returnType, boolean persistRebootOnly, String identifier, int verbosity,
-					 short prioClass, File returnFilename, String charset, boolean writeToClientCache, boolean realTimeFlag, boolean binaryBlob, NodeClientCore core) throws IdentifierCollisionException, NotAllowedException, IOException {
+					 long maxOutputLength, ReturnType returnType, boolean persistRebootOnly, String identifier,
+					 int verbosity,
+					 short prioClass, File returnFilename, String charset, boolean writeToClientCache,
+					 boolean realTimeFlag, boolean binaryBlob, NodeClientCore core) throws IdentifierCollisionException,
+		NotAllowedException, IOException {
 		super(uri, identifier, verbosity, charset, null, globalClient,
 			  prioClass,
 			  (persistRebootOnly ? Persistence.REBOOT : Persistence.FOREVER), realTimeFlag, null, true);
@@ -172,8 +181,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		String extensionCheck = null;
 		if(returnType == ReturnType.DISK) {
 			this.targetFile = returnFilename;
-			if(!(core.allowDownloadTo(returnFilename)))
+			if(!(core.allowDownloadTo(returnFilename))) {
 				throw new NotAllowedException();
+			}
 			if(targetFile.exists()) {
 				if(targetFile.length() == 0) {
 					// FIXME get rid
@@ -182,8 +192,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 					targetFile.delete();
 					Logger.error(this, "Target file already exists but is zero length, deleting...");
 				}
-				if(targetFile.exists())
+				if(targetFile.exists()) {
 					throw new IOException("Target filename exists already: "+targetFile);
+				}
 			}
 			ret = new FileBucket(returnFilename, false, true, false, false);
 			if(filterData) {
@@ -191,8 +202,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 				int idx = name.lastIndexOf('.');
 				if(idx != -1) {
 					idx++;
-					if(idx != name.length())
+					if(idx != name.length()) {
 						extensionCheck = name.substring(idx);
+					}
 				}
 			}
 		} else if(returnType == ReturnType.NONE) {
@@ -210,7 +222,8 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	public ClientGet(FCPConnectionHandler handler, ClientGetMessage message,
 					 NodeClientCore core) throws IdentifierCollisionException, MessageInvalidException {
 		super(message.uri, message.identifier, message.verbosity, message.charset, handler,
-			  message.priorityClass, message.persistence, message.realTimeFlag, message.clientToken, message.global);
+			  message.priorityClass, message.persistence, message.realTimeFlag, message.clientToken,
+			  message.global);
 		// Create a Fetcher directly in order to get more fine-grained control,
 		// since the client may override a few context elements.
 		fctx = core.clientContext.getDefaultPersistentFetchContext();
@@ -231,8 +244,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 		if(message.allowedMIMETypes != null) {
 			fctx.allowedMIMETypes = new HashSet<String>();
-			for(String mime : message.allowedMIMETypes)
+			for(String mime : message.allowedMIMETypes) {
 				fctx.allowedMIMETypes.add(mime);
+			}
 		}
 
 		this.returnType = message.returnType;
@@ -241,18 +255,23 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		String extensionCheck = null;
 		if(returnType == ReturnType.DISK) {
 			this.targetFile = message.diskFile;
-			if(!core.allowDownloadTo(targetFile))
-				throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to download to "+targetFile, identifier, global);
-			else if(!(handler.allowDDAFrom(targetFile, true)))
-				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED, "Not allowed to download to " + targetFile + ". You might need to do a " + TestDDARequestMessage.NAME + " first.", identifier, global);
+			if(!core.allowDownloadTo(targetFile)) {
+				throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+												  "Not allowed to download to "+targetFile, identifier, global);
+			} else if(!(handler.allowDDAFrom(targetFile, true))) {
+				throw new MessageInvalidException(ProtocolErrorMessage.DIRECT_DISK_ACCESS_DENIED,
+												  "Not allowed to download to " + targetFile + ". You might need to do a " +
+												  TestDDARequestMessage.NAME + " first.", identifier, global);
+			}
 			ret = new FileBucket(targetFile, false, true, false, false);
 			if(fctx.filterData) {
 				String name = targetFile.getName();
 				int idx = name.lastIndexOf('.');
 				if(idx != -1) {
 					idx++;
-					if(idx != name.length())
+					if(idx != name.length()) {
 						extensionCheck = name.substring(idx);
+					}
 				}
 			}
 		} else if(returnType == ReturnType.NONE) {
@@ -280,12 +299,14 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	private ClientGetter makeGetter(NodeClientCore core, Bucket ret) throws IOException {
 		if (binaryBlob && ret == null) {
-			ret = core.clientContext.getBucketFactory(persistence == Persistence.FOREVER).makeBucket(fctx.maxOutputLength);
+			ret = core.clientContext.getBucketFactory(persistence == Persistence.FOREVER).makeBucket(
+					  fctx.maxOutputLength);
 		}
 
 		return new ClientGetter(this,
 								uri, fctx, priorityClass,
-								binaryBlob ? new NullBucket() : ret, binaryBlob ? new BinaryBlobWriter(ret) : null, false, initialMetadata, extensionCheck);
+								binaryBlob ? new NullBucket() : ret, binaryBlob ? new BinaryBlobWriter(ret) : null, false,
+								initialMetadata, extensionCheck);
 	}
 
 	protected ClientGet() {
@@ -305,10 +326,12 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	 */
 	@Override
 	void register(boolean noTags) throws IdentifierCollisionException {
-		if(client != null)
+		if(client != null) {
 			assert(this.persistence == client.persistence);
-		if(persistence != Persistence.CONNECTION)
+		}
+		if(persistence != Persistence.CONNECTION) {
 			client.register(this);
+		}
 		if(persistence != Persistence.CONNECTION && !noTags) {
 			FCPMessage msg = persistentTagMessage();
 			client.queueClientRequestMessage(msg, 0);
@@ -319,7 +342,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	public void start(ClientContext context) {
 		try {
 			synchronized(this) {
-				if(finished) return;
+				if(finished) {
+					return;
+				}
 			}
 			getter.start(context);
 			if(persistence != Persistence.CONNECTION && !finished) {
@@ -350,8 +375,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public void onLostConnection(ClientContext context) {
-		if(persistence == Persistence.CONNECTION)
+		if(persistence == Persistence.CONNECTION) {
 			cancel(context);
+		}
 		// Otherwise ignore
 	}
 
@@ -365,10 +391,11 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 				return; // We might be called twice; ignore it if so.
 			}
 			started = true;
-			if(!binaryBlob)
+			if(!binaryBlob) {
 				this.foundDataMimeType = result.getMimeType();
-			else
+			} else {
 				this.foundDataMimeType = BinaryBlob.MIME_TYPE;
+			}
 
 			// completionTime is set here rather than in finish() for two reasons:
 			// 1. It must be set inside the lock.
@@ -378,17 +405,20 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 			this.foundDataLength = data.size();
 			this.succeeded = true;
 			finished = true;
-			if(returnType == ReturnType.DIRECT)
+			if(returnType == ReturnType.DIRECT) {
 				returnBucketDirect = data;
+			}
 		}
 		trySendDataFoundOrGetFailed(null, null);
 		trySendAllDataMessage(null, null);
 		finish();
-		if(client != null)
+		if(client != null) {
 			client.notifySuccess(this);
+		}
 	}
 
-	public void setSuccessForMigration(ClientContext context, long completionTime, Bucket data) throws ResumeFailedException {
+	public void setSuccessForMigration(ClientContext context, long completionTime,
+									   Bucket data) throws ResumeFailedException {
 		synchronized(this) {
 			succeeded = true;
 			started = true;
@@ -397,17 +427,20 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 			if(returnType == ReturnType.NONE) {
 				// OK.
 			} else if(returnType == ReturnType.DISK) {
-				if(!(targetFile.exists() && targetFile.length() == foundDataLength))
+				if(!(targetFile.exists() && targetFile.length() == foundDataLength)) {
 					throw new ResumeFailedException("Success but target file doesn't exist or isn't valid");
+				}
 			} else if(returnType == ReturnType.DIRECT) {
 				returnBucketDirect = data;
-				if(returnBucketDirect.size() != foundDataLength)
+				if(returnBucketDirect.size() != foundDataLength) {
 					throw new ResumeFailedException("Success but temporary data bucket doesn't exist or isn't valid");
+				}
 			}
 		}
 	}
 
-	private void trySendDataFoundOrGetFailed(FCPConnectionOutputHandler handler, String listRequestIdentifier) {
+	private void trySendDataFoundOrGetFailed(FCPConnectionOutputHandler handler,
+			String listRequestIdentifier) {
 		FCPMessage msg;
 
 		// Don't need to lock. succeeded is only ever set, never unset.
@@ -415,64 +448,82 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		if(succeeded) {
 			// FIXME: Duplicate of AllDataMessage
 			// FIXME: CompletionTime is set on finish() : we need to give it current time here
-			msg = new DataFoundMessage(foundDataLength, foundDataMimeType, identifier, global, startupTime, completionTime != 0 ? completionTime : System.currentTimeMillis());
+			msg = new DataFoundMessage(foundDataLength, foundDataMimeType, identifier, global, startupTime,
+									   completionTime != 0 ? completionTime : System.currentTimeMillis());
 		} else {
 			msg = getFailedMessage;
 		}
 
-		if(handler == null && persistence == Persistence.CONNECTION)
+		if(handler == null && persistence == Persistence.CONNECTION) {
 			handler = origHandler.outputHandler;
-		if(handler != null)
+		}
+		if(handler != null) {
 			handler.queue(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier));
-		else
-			client.queueClientRequestMessage(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier), 0);
+		} else {
+			client.queueClientRequestMessage(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier),
+											 0);
+		}
 	}
 
 	private synchronized AllDataMessage getAllDataMessage() {
-		if(returnType != ReturnType.DIRECT)
+		if(returnType != ReturnType.DIRECT) {
 			return null;
+		}
 		AllDataMessage msg = new AllDataMessage(returnBucketDirect, identifier, global, startupTime,
 												completionTime, foundDataMimeType);
-		if(persistence == Persistence.CONNECTION)
+		if(persistence == Persistence.CONNECTION) {
 			msg.setFreeOnSent();
+		}
 		return msg;
 	}
 
-	private void trySendAllDataMessage(FCPConnectionOutputHandler handler, String listRequestIdentifier) {
+	private void trySendAllDataMessage(FCPConnectionOutputHandler handler,
+									   String listRequestIdentifier) {
 		if(persistence == Persistence.CONNECTION) {
-			if(handler == null)
+			if(handler == null) {
 				handler = origHandler.outputHandler;
+			}
 		}
 		if(handler != null) {
-			FCPMessage allData = FCPMessage.withListRequestIdentifier(getAllDataMessage(), listRequestIdentifier);
-			if(allData != null)
+			FCPMessage allData = FCPMessage.withListRequestIdentifier(getAllDataMessage(),
+								 listRequestIdentifier);
+			if(allData != null) {
 				handler.queue(allData);
+			}
 		}
 	}
 
-	private void queueProgressMessageInner(FCPMessage msg, FCPConnectionOutputHandler handler, int verbosityMask) {
-		if(persistence == Persistence.CONNECTION && handler == null)
+	private void queueProgressMessageInner(FCPMessage msg, FCPConnectionOutputHandler handler,
+										   int verbosityMask) {
+		if(persistence == Persistence.CONNECTION && handler == null) {
 			handler = origHandler.outputHandler;
-		if(handler != null)
+		}
+		if(handler != null) {
 			handler.queue(msg);
-		else
+		} else {
 			client.queueClientRequestMessage(msg, verbosityMask);
+		}
 	}
 
 	@Override
-	public void sendPendingMessages(FCPConnectionOutputHandler handler, String listRequestIdentifier, boolean includeData, boolean onlyData) {
+	public void sendPendingMessages(FCPConnectionOutputHandler handler, String listRequestIdentifier,
+									boolean includeData, boolean onlyData) {
 		if(!onlyData) {
 			FCPMessage msg = persistentTagMessage();
 			handler.queue(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier));
 			if(progressPending != null) {
 				handler.queue(FCPMessage.withListRequestIdentifier(progressPending, listRequestIdentifier));
 			}
-			if(sentToNetwork)
-				handler.queue(FCPMessage.withListRequestIdentifier(new SendingToNetworkMessage(identifier, global), listRequestIdentifier));
-			if(finished)
+			if(sentToNetwork) {
+				handler.queue(FCPMessage.withListRequestIdentifier(new SendingToNetworkMessage(identifier, global),
+							  listRequestIdentifier));
+			}
+			if(finished) {
 				trySendDataFoundOrGetFailed(handler, listRequestIdentifier);
+			}
 		} else if(returnType != ReturnType.DIRECT) {
-			ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.WRONG_RETURN_TYPE, false, "No AllData", identifier, global);
+			ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.WRONG_RETURN_TYPE, false,
+					"No AllData", identifier, global);
 			handler.queue(msg);
 			return;
 		}
@@ -488,10 +539,12 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		synchronized(this) {
 			cmsg = new CompatibilityMode(identifier, global, compatMode);
 			expectedHashes = this.expectedHashes;
-			if(foundDataMimeType != null)
+			if(foundDataMimeType != null) {
 				mimeMsg = new ExpectedMIME(identifier, global, foundDataMimeType);
-			if(foundDataLength > 0)
+			}
+			if(foundDataLength > 0) {
 				lengthMsg = new ExpectedDataLength(identifier, global, foundDataLength);
+			}
 		}
 		handler.queue(FCPMessage.withListRequestIdentifier(cmsg, listRequestIdentifier));
 
@@ -508,7 +561,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	}
 
 	private FCPMessage persistentTagMessage() {
-		return new PersistentGet(identifier, uri, verbosity, priorityClass, returnType, persistence, targetFile, clientToken, client.isGlobalQueue, started, fctx.maxNonSplitfileRetries, binaryBlob, fctx.maxOutputLength, isRealTime());
+		return new PersistentGet(identifier, uri, verbosity, priorityClass, returnType, persistence,
+								 targetFile, clientToken, client.isGlobalQueue, started, fctx.maxNonSplitfileRetries, binaryBlob,
+								 fctx.maxOutputLength, isRealTime());
 	}
 
 	// FIXME code duplication: ClientGet ClientPut ClientPutDir
@@ -525,27 +580,33 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public void onFailure(FetchException e, ClientGetter state) {
-		if(finished) return;
+		if(finished) {
+			return;
+		}
 		synchronized(this) {
-			if(e.expectedSize != 0)
+			if(e.expectedSize != 0) {
 				this.foundDataLength = e.expectedSize;
-			if(e.getExpectedMimeType() != null)
+			}
+			if(e.getExpectedMimeType() != null) {
 				this.foundDataMimeType = e.getExpectedMimeType();
+			}
 			succeeded = false;
 			getFailedMessage = new GetFailedMessage(e, identifier, global);
 			finished = true;
 			started = true;
 			completionTime = System.currentTimeMillis();
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Caught "+e, e);
+		}
 		trySendDataFoundOrGetFailed(null, null);
 		// We do not want the data to be removed on failure, because the request
 		// may be restarted, and the bucket persists on the getter, even if we get rid of it here.
 		//freeData(container);
 		finish();
-		if(client != null)
+		if(client != null) {
 			client.notifyFailure(this);
+		}
 	}
 
 	@Override
@@ -573,7 +634,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public void receive(ClientEvent ce, ClientContext context) {
-		if(logMINOR) Logger.minor(this, "Receiving "+ce+" on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Receiving "+ce+" on "+this);
+		}
 		final FCPMessage progress;
 		final int verbosityMask;
 		if(ce instanceof SplitfileProgressEvent) {
@@ -588,15 +651,17 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 					cache.updateStatus(identifier, (progressPending).getEvent());
 				}
 			}
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 		} else if(ce instanceof SendingToNetworkEvent) {
 			verbosityMask = ClientGet.VERBOSITY_SENT_TO_NETWORK;
 			synchronized(this) {
 				sentToNetwork = true;
 			}
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 			progress = new SendingToNetworkMessage(identifier, global);
 		} else if(ce instanceof SplitfileCompatibilityModeEvent) {
 			handleCompatibilityMode((SplitfileCompatibilityModeEvent)ce, context);
@@ -612,8 +677,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 				}
 			}
 			verbosityMask = ClientGet.VERBOSITY_EXPECTED_HASHES;
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 		} else if(ce instanceof ExpectedMIMEEvent) {
 			ExpectedMIMEEvent event = (ExpectedMIMEEvent)ce;
 			synchronized(this) {
@@ -627,8 +693,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 			}
 			verbosityMask = VERBOSITY_EXPECTED_TYPE;
 			progress = new ExpectedMIME(identifier, global, event.expectedMIMEType);
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 		} else if(ce instanceof ExpectedFileSizeEvent) {
 			ExpectedFileSizeEvent event = (ExpectedFileSizeEvent)ce;
 			synchronized(this) {
@@ -641,13 +708,15 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 				}
 			}
 			verbosityMask = VERBOSITY_EXPECTED_SIZE;
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 			progress = new ExpectedDataLength(identifier, global, event.expectedSize);
 		} else if(ce instanceof EnterFiniteCooldownEvent) {
 			verbosityMask = VERBOSITY_ENTER_FINITE_COOLDOWN;
-			if((verbosity & verbosityMask) == 0)
+			if((verbosity & verbosityMask) == 0) {
 				return;
+			}
 			EnterFiniteCooldownEvent event = (EnterFiniteCooldownEvent)ce;
 			progress = new EnterFiniteCooldown(identifier, global, event.wakeupTime);
 		} else {
@@ -657,7 +726,8 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		queueProgressMessageInner(progress, null, verbosityMask);
 	}
 
-	private void handleCompatibilityMode(final SplitfileCompatibilityModeEvent ce, ClientContext context) {
+	private void handleCompatibilityMode(final SplitfileCompatibilityModeEvent ce,
+										 ClientContext context) {
 		if(persistence == Persistence.FOREVER && context.jobRunner.hasLoaded()) {
 			try {
 				context.jobRunner.queue(new PersistentJob() {
@@ -677,16 +747,21 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		}
 	}
 
-	private void innerHandleCompatibilityMode(SplitfileCompatibilityModeEvent ce, ClientContext context) {
-		compatMode.merge(ce.minCompatibilityMode, ce.maxCompatibilityMode, ce.splitfileCryptoKey, ce.dontCompress, ce.bottomLayer);
+	private void innerHandleCompatibilityMode(SplitfileCompatibilityModeEvent ce,
+			ClientContext context) {
+		compatMode.merge(ce.minCompatibilityMode, ce.maxCompatibilityMode, ce.splitfileCryptoKey,
+						 ce.dontCompress, ce.bottomLayer);
 		if(client != null) {
 			RequestStatusCache cache = client.getRequestStatusCache();
 			if(cache != null) {
-				cache.updateDetectedCompatModes(identifier, compatMode.getModes(), compatMode.getCryptoKey(), compatMode.dontCompress());
+				cache.updateDetectedCompatModes(identifier, compatMode.getModes(), compatMode.getCryptoKey(),
+												compatMode.dontCompress());
 			}
 		}
-		if((verbosity & VERBOSITY_COMPATIBILITY_MODE) != 0)
-			queueProgressMessageInner(new CompatibilityMode(identifier, global, compatMode), null, VERBOSITY_COMPATIBILITY_MODE);
+		if((verbosity & VERBOSITY_COMPATIBILITY_MODE) != 0) {
+			queueProgressMessageInner(new CompatibilityMode(identifier, global, compatMode), null,
+									  VERBOSITY_COMPATIBILITY_MODE);
+		}
 	}
 
 	@Override
@@ -705,8 +780,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		if(data != null) {
 			data.free();
 		}
-		if(initialMetadata != null)
+		if(initialMetadata != null) {
 			initialMetadata.free();
+		}
 	}
 
 	@Override
@@ -727,14 +803,16 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	}
 
 	public long getDataSize() {
-		if(foundDataLength > 0)
+		if(foundDataLength > 0) {
 			return foundDataLength;
+		}
 		return -1;
 	}
 
 	public String getMIMEType() {
-		if(foundDataMimeType != null)
+		if(foundDataMimeType != null) {
 			return foundDataMimeType;
+		}
 		return null;
 	}
 
@@ -746,48 +824,54 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	public double getSuccessFraction() {
 		if(progressPending != null) {
 			return progressPending.getFraction();
-		} else
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public double getTotalBlocks() {
 		if(progressPending != null) {
 			return progressPending.getTotalBlocks();
-		} else
+		} else {
 			return 1;
+		}
 	}
 
 	@Override
 	public double getMinBlocks() {
 		if(progressPending != null) {
 			return progressPending.getMinBlocks();
-		} else
+		} else {
 			return 1;
+		}
 	}
 
 	@Override
 	public double getFailedBlocks() {
 		if(progressPending != null) {
 			return progressPending.getFailedBlocks();
-		} else
+		} else {
 			return 0;
+		}
 	}
 
 	@Override
 	public double getFatalyFailedBlocks() {
 		if(progressPending != null) {
 			return progressPending.getFatalyFailedBlocks();
-		} else
+		} else {
 			return 0;
+		}
 	}
 
 	@Override
 	public double getFetchedBlocks() {
 		if(progressPending != null) {
 			return progressPending.getFetchedBlocks();
-		} else
+		} else {
 			return 0;
+		}
 	}
 
 	public InsertContext.CompatibilityMode[] getCompatibilityMode() {
@@ -804,31 +888,39 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public String getFailureReason(boolean longDescription) {
-		if(getFailedMessage == null)
+		if(getFailedMessage == null) {
 			return null;
+		}
 		String s = getFailedMessage.getShortFailedMessage();
-		if(longDescription && getFailedMessage.extraDescription != null)
+		if(longDescription && getFailedMessage.extraDescription != null) {
 			s += ": "+getFailedMessage.extraDescription;
+		}
 		return s;
 	}
 
 	GetFailedMessage getFailureMessage() {
-		if(getFailedMessage == null) return null;
+		if(getFailedMessage == null) {
+			return null;
+		}
 		return getFailedMessage;
 	}
 
 	public FetchExceptionMode getFailureReasonCode() {
-		if(getFailedMessage == null)
+		if(getFailedMessage == null) {
 			return null;
+		}
 		return getFailedMessage.code;
 
 	}
 
 	@Override
 	public boolean isTotalFinalized() {
-		if(finished && succeeded) return true;
-		if(progressPending == null) return false;
-		else {
+		if(finished && succeeded) {
+			return true;
+		}
+		if(progressPending == null) {
+			return false;
+		} else {
 			return progressPending.isTotalFinalized();
 		}
 	}
@@ -870,7 +962,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public boolean restart(ClientContext context, final boolean disableFilterData) {
-		if(!canRestart()) return false;
+		if(!canRestart()) {
+			return false;
+		}
 		FreenetURI redirect = null;
 		synchronized(this) {
 			finished = false;
@@ -879,15 +973,17 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 					redirect =
 						getFailedMessage.redirectURI;
 				}
-			} else if(getFailedMessage != null)
+			} else if(getFailedMessage != null) {
 				redirect = getFailedMessage.redirectURI;
+			}
 			this.getFailedMessage = null;
 			this.progressPending = null;
 			compatMode = new CompatibilityAnalyser();
 			expectedHashes = null;
 			started = false;
-			if(disableFilterData)
+			if(disableFilterData) {
 				fctx.filterData = false;
+			}
 		}
 		if(client != null) {
 			RequestStatusCache cache = client.getRequestStatusCache();
@@ -944,7 +1040,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 			failed = (int) progressPending.getFailedBlocks();
 			latestFailure = progressPending.getLatestFailure();
 		}
-		if(finished && succeeded) totalFinalized = true;
+		if(finished && succeeded) {
+			totalFinalized = true;
+		}
 		FetchExceptionMode failureCode = null;
 		String failureReasonShort = null;
 		String failureReasonLong = null;
@@ -956,13 +1054,15 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		String mimeType = foundDataMimeType;
 		long dataSize = foundDataLength;
 		File target = getDestFilename();
-		if(target != null)
+		if(target != null) {
 			target = new File(target.getPath());
+		}
 
 		Bucket shadow = (finished && succeeded) ? getBucket() : null;
 		if(shadow != null) {
 			if(dataSize != shadow.size()) {
-				Logger.error(this, "Size of downloaded data has changed: "+dataSize+" -> "+shadow.size()+" on "+shadow);
+				Logger.error(this, "Size of downloaded data has changed: "+dataSize+" -> "+shadow.size()+" on "
+							 +shadow);
 				shadow = null;
 			} else {
 				shadow = shadow.createShadow();
@@ -987,7 +1087,9 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	public void getClientDetail(DataOutputStream dos, ChecksumChecker checker) throws IOException {
-		if(persistence != Persistence.FOREVER) return;
+		if(persistence != Persistence.FOREVER) {
+			return;
+		}
 		super.getClientDetail(dos, checker);
 		dos.writeLong(CLIENT_DETAIL_MAGIC);
 		dos.writeInt(CLIENT_DETAIL_VERSION);
@@ -1058,20 +1160,24 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 	}
 
 	public static ClientRequest restartFrom(DataInputStream dis, RequestIdentifier reqID,
-											ClientContext context, ChecksumChecker checker) throws StorageFormatException, IOException, ResumeFailedException {
+											ClientContext context, ChecksumChecker checker) throws StorageFormatException, IOException,
+		ResumeFailedException {
 		return new ClientGet(dis, reqID, context, checker);
 	}
 
-	private ClientGet(DataInputStream dis, RequestIdentifier reqID, ClientContext context, ChecksumChecker checker)
+	private ClientGet(DataInputStream dis, RequestIdentifier reqID, ClientContext context,
+					  ChecksumChecker checker)
 	throws IOException, StorageFormatException, ResumeFailedException {
 		super(dis, reqID, context);
 		ClientGetter getter = null;
 		long magic = dis.readLong();
-		if(magic != CLIENT_DETAIL_MAGIC)
+		if(magic != CLIENT_DETAIL_MAGIC) {
 			throw new StorageFormatException("Bad magic for request");
+		}
 		int version = dis.readInt();
-		if(version != CLIENT_DETAIL_VERSION)
+		if(version != CLIENT_DETAIL_VERSION) {
 			throw new StorageFormatException("Bad version "+version);
+		}
 		String s = dis.readUTF();
 		try {
 			uri = new FreenetURI(s);
@@ -1109,12 +1215,14 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 		}
 		this.fctx = fctx;
 		fctx.eventProducer.addEventListener(this);
-		if(dis.readBoolean())
-			extensionCheck = dis.readUTF();
-		else
-			extensionCheck = null;
 		if(dis.readBoolean()) {
-			initialMetadata = BucketTools.restoreFrom(dis, context.persistentFG, context.persistentFileTracker, context.getPersistentMasterSecret());
+			extensionCheck = dis.readUTF();
+		} else {
+			extensionCheck = null;
+		}
+		if(dis.readBoolean()) {
+			initialMetadata = BucketTools.restoreFrom(dis, context.persistentFG, context.persistentFileTracker,
+							  context.getPersistentMasterSecret());
 			// No way to recover if we don't have the initialMetadata.
 		} else {
 			initialMetadata = null;
@@ -1128,9 +1236,11 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 						DataInputStream innerDIS =
 							new DataInputStream(checker.checksumReaderWithLength(dis, context.tempBucketFactory, 65536));
 						try {
-							returnBucketDirect = BucketTools.restoreFrom(innerDIS, context.persistentFG, context.persistentFileTracker, context.getPersistentMasterSecret());
+							returnBucketDirect = BucketTools.restoreFrom(innerDIS, context.persistentFG,
+												 context.persistentFileTracker, context.getPersistentMasterSecret());
 						} catch (IOException e) {
-							Logger.error(this, "Failed to restore completed download-to-temp-space request, restarting instead");
+							Logger.error(this,
+										 "Failed to restore completed download-to-temp-space request, restarting instead");
 							returnBucketDirect = null;
 							succeeded = false;
 							finished = false;
@@ -1138,12 +1248,14 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 							innerDIS.close();
 						}
 					} catch (ChecksumFailedException e) {
-						Logger.error(this, "Failed to restore completed download-to-temp-space request, restarting instead");
+						Logger.error(this,
+									 "Failed to restore completed download-to-temp-space request, restarting instead");
 						returnBucketDirect = null;
 						succeeded = false;
 						finished = false;
 					} catch (StorageFormatException e) {
-						Logger.error(this, "Failed to restore completed download-to-temp-space request, restarting instead");
+						Logger.error(this,
+									 "Failed to restore completed download-to-temp-space request, restarting instead");
 						returnBucketDirect = null;
 						succeeded = false;
 						finished = false;
@@ -1187,18 +1299,23 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 				Logger.error(this, "Unable to restore splitfile, restarting (checksum failed)");
 			}
 		}
-		if(compatMode == null)
+		if(compatMode == null) {
 			compatMode = new CompatibilityAnalyser();
-		if(getter == null) getter = makeGetter(makeBucket(false));
+		}
+		if(getter == null) {
+			getter = makeGetter(makeBucket(false));
+		}
 		this.getter = getter;
 	}
 
-	private void readTransientProgressFields(DataInputStream dis) throws IOException, StorageFormatException {
+	private void readTransientProgressFields(DataInputStream dis) throws IOException,
+		StorageFormatException {
 		foundDataLength = dis.readLong();
-		if(dis.readBoolean())
+		if(dis.readBoolean()) {
 			foundDataMimeType = dis.readUTF();
-		else
+		} else {
 			foundDataMimeType = null;
+		}
 		compatMode = new CompatibilityAnalyser(dis);
 		HashResult[] hashes = HashResult.readHashes(dis);
 		if(hashes == null || hashes.length == 0) {
@@ -1222,13 +1339,19 @@ public class ClientGet extends ClientRequest implements ClientGetCallback, Clien
 
 	@Override
 	protected void innerResume(ClientContext context) throws ResumeFailedException {
-		if(returnBucketDirect != null) returnBucketDirect.onResume(context);
-		if(initialMetadata != null) initialMetadata.onResume(context);
+		if(returnBucketDirect != null) {
+			returnBucketDirect.onResume(context);
+		}
+		if(initialMetadata != null) {
+			initialMetadata.onResume(context);
+		}
 		// We might already have these if we've just restored.
-		if(foundDataLength <= 0)
+		if(foundDataLength <= 0) {
 			this.foundDataLength = getter.expectedSize();
-		if(foundDataMimeType == null)
+		}
+		if(foundDataMimeType == null) {
 			this.foundDataMimeType = getter.expectedMIME();
+		}
 	}
 
 	@Override

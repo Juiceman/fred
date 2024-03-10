@@ -22,9 +22,11 @@ import java.nio.charset.StandardCharsets;
 public class Base64 {
 	static final Charset UTF8 = StandardCharsets.UTF_8;
 
-	private static char[] base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~-".toCharArray();
+	private static char[] base64Alphabet =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~-".toCharArray();
 
-	private static char[] base64StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	private static char[] base64StandardAlphabet =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 
 	/**
 	 * A reverse lookup table to convert base64 letters back into the
@@ -115,10 +117,12 @@ public class Base64 {
 		int o = 0;
 		for (int i = 0; i < in.length;) {
 			int val = (in[i++] & 0xFF) << 16;
-			if (i < in.length)
+			if (i < in.length) {
 				val |= (in[i++] & 0xFF) << 8;
-			if (i < in.length)
+			}
+			if (i < in.length) {
 				val |= (in[i++] & 0xFF);
+			}
 			out[o++] = alphabet[(val>>18) & 0x3F];
 			out[o++] = alphabet[(val>>12) & 0x3F];
 			out[o++] = alphabet[(val>>6) & 0x3F];
@@ -135,8 +139,9 @@ public class Base64 {
 		}
 		// Pad with '=' signs up to a multiple of four if requested.
 		if (equalsPad)
-			while (outLen < out.length)
+			while (outLen < out.length) {
 				out[outLen++] = '=';
+			}
 		return new String(out, 0, outLen);
 	}
 
@@ -177,8 +182,9 @@ public class Base64 {
 			int inLength = in.length;
 
 			// Strip trailing equals signs.
-			while ((inLength > 0) && (in[inLength-1] == '='))
+			while ((inLength > 0) && (in[inLength-1] == '=')) {
 				inLength--;
+			}
 
 			int blocks = inLength/4;
 			int remainder = inLength & 3;
@@ -208,8 +214,9 @@ public class Base64 {
 				int in3 = reverseAlphabet[in[i+2]];
 				int in4 = reverseAlphabet[in[i+3]];
 				int orValue = in1|in2|in3|in4;
-				if ((orValue & 0x80) != 0)
+				if ((orValue & 0x80) != 0) {
 					throw new IllegalBase64Exception("illegal Base64 character");
+				}
 				int outVal = (in1 << 18) | (in2 << 12) | (in3 << 6) | in4;
 				out[o] = (byte) (outVal>>16);
 				out[o+1] = (byte) (outVal>>8);
@@ -241,8 +248,9 @@ public class Base64 {
 				// Keep compiler happy
 				orValue = 0;
 			}
-			if ((orValue & 0x80) != 0)
+			if ((orValue & 0x80) != 0) {
 				throw new IllegalBase64Exception("illegal Base64 character");
+			}
 			return out;
 		}
 		// Illegal characters can cause an ArrayIndexOutOfBoundsException when

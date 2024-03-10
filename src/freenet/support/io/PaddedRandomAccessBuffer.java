@@ -27,15 +27,17 @@ public class PaddedRandomAccessBuffer implements LockableRandomAccessBuffer, Ser
 
 	@Override
 	public void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
-		if(fileOffset + length > realSize)
+		if(fileOffset + length > realSize) {
 			throw new IOException("Length limit exceeded");
+		}
 		raf.pread(fileOffset, buf, bufOffset, length);
 	}
 
 	@Override
 	public void pwrite(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
-		if(fileOffset + length > realSize)
+		if(fileOffset + length > realSize) {
 			throw new IOException("Length limit exceeded");
+		}
 		raf.pwrite(fileOffset, buf, bufOffset, length);
 	}
 
@@ -69,12 +71,16 @@ public class PaddedRandomAccessBuffer implements LockableRandomAccessBuffer, Ser
 	}
 
 	public PaddedRandomAccessBuffer(DataInputStream dis, FilenameGenerator fg,
-									PersistentFileTracker persistentFileTracker, MasterSecret masterSecret) throws ResumeFailedException, IOException, StorageFormatException {
+									PersistentFileTracker persistentFileTracker,
+									MasterSecret masterSecret) throws ResumeFailedException, IOException, StorageFormatException {
 		realSize = dis.readLong();
-		if(realSize < 0) throw new StorageFormatException("Negative length");
+		if(realSize < 0) {
+			throw new StorageFormatException("Negative length");
+		}
 		raf = BucketTools.restoreRAFFrom(dis, fg, persistentFileTracker, masterSecret);
-		if(realSize > raf.size())
+		if(realSize > raf.size()) {
 			throw new ResumeFailedException("Padded file is smaller than expected length");
+		}
 	}
 
 	@Override

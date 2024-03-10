@@ -43,7 +43,8 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 		}
 
 		// Explain this step's operation.
-		HTMLNode infoBox = helper.getInfobox("infobox-normal", WizardL10n.l10n("bandwidthLimitMonthlyTitle"),
+		HTMLNode infoBox = helper.getInfobox("infobox-normal",
+											 WizardL10n.l10n("bandwidthLimitMonthlyTitle"),
 											 contentNode, null, false);
 		NodeL10n.getBase().addL10nSubstitution(infoBox, "FirstTimeWizardToadlet.bandwidthLimitMonthly",
 											   new String[] { "bold", "coreSettings" }, new HTMLNode[] { HTMLNode.STRONG,
@@ -99,7 +100,8 @@ public class BANDWIDTH_MONTHLY extends BandwidthManipulator implements Step {
 		// capTo is specified as floating point GB.
 		String capTo = request.getPartAsStringFailsafe("capTo", 4096);
 		// Target for an error page.
-		StringBuilder target = new StringBuilder(FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH_MONTHLY.name()).append("&parseTarget=");
+		StringBuilder target = new StringBuilder(
+			FirstTimeWizardToadlet.WIZARD_STEP.BANDWIDTH_MONTHLY.name()).append("&parseTarget=");
 		try {
 			GBPerMonth = Double.valueOf(capTo);
 			bytesPerMonth = Math.round(GBPerMonth * DatastoreUtil.oneGiB);

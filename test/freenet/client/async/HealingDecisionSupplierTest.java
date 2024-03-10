@@ -11,7 +11,8 @@ public class HealingDecisionSupplierTest {
 
 	@Test
 	public void healingAlwaysTriggersForDarknet() {
-		for (double randomValue : Arrays.asList(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.00000001)) {
+		for (double randomValue : Arrays.asList(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1,
+												0.00000001)) {
 			assertHeals(
 				getHealingDecisionSupplier(0.1, false, randomValue),
 				0.5,
@@ -21,7 +22,8 @@ public class HealingDecisionSupplierTest {
 
 	@Test
 	public void healingAlwaysAcceptsAKeyAtTheNodeLocation() {
-		for (double randomValue : Arrays.asList(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.00000001)) {
+		for (double randomValue : Arrays.asList(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1,
+												0.00000001)) {
 			assertHeals(
 				getHealingDecisionSupplier(0.1, true, randomValue),
 				0.1,
@@ -169,7 +171,8 @@ public class HealingDecisionSupplierTest {
 		}
 	}
 
-	private static HealingDecisionSupplier getHealingDecisionSupplier(double nodeLocation, boolean isOpennet, double randomValue) {
+	private static HealingDecisionSupplier getHealingDecisionSupplier(double nodeLocation,
+			boolean isOpennet, double randomValue) {
 		HealingDecisionSupplier healingDecisionSupplier = new HealingDecisionSupplier(
 			() -> nodeLocation,
 			() -> isOpennet,

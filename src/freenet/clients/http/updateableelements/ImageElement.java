@@ -48,11 +48,13 @@ public class ImageElement extends BaseUpdateableElement {
 
 	private boolean					wasError		= false;
 
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx, boolean pushed) {
+	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,
+			long maxSize,ToadletContext ctx, boolean pushed) {
 		return createImageElement(tracker,key,maxSize,ctx,-1,-1, null, pushed);
 	}
 
-	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,long maxSize,ToadletContext ctx,int width,int height, String name, boolean pushed) {
+	public static ImageElement createImageElement(FProxyFetchTracker tracker,FreenetURI key,
+			long maxSize,ToadletContext ctx,int width,int height, String name, boolean pushed) {
 		Map<String,String> attributes=new HashMap<String, String>();
 		attributes.put("src", key.toString());
 		if(width!=-1) {
@@ -68,7 +70,8 @@ public class ImageElement extends BaseUpdateableElement {
 		return new ImageElement(tracker,key,maxSize,ctx,new ParsedTag("img", attributes), pushed);
 	}
 
-	public ImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx, ParsedTag originalImg, boolean pushed) {
+	public ImageElement(FProxyFetchTracker tracker, FreenetURI key, long maxSize, ToadletContext ctx,
+						ParsedTag originalImg, boolean pushed) {
 		super("span", ctx);
 		randomNumber = tracker.makeRandomElementID();
 		long now = System.currentTimeMillis();
@@ -80,24 +83,33 @@ public class ImageElement extends BaseUpdateableElement {
 		this.key = this.origKey = key;
 		this.maxSize = maxSize;
 		init(pushed);
-		if(!pushed) return;
+		if(!pushed) {
+			return;
+		}
 		// Creates and registers the FetchListener
-		fetchListener = new NotifierFetchListener(((SimpleToadletServer) ctx.getContainer()).pushDataManager, this);
+		fetchListener = new NotifierFetchListener(((SimpleToadletServer)
+				ctx.getContainer()).pushDataManager, this);
 		((SimpleToadletServer) ctx.getContainer()).getTicker().queueTimedJob(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					FProxyFetchWaiter waiter = ImageElement.this.tracker.makeFetcher(ImageElement.this.key, ImageElement.this.maxSize, null, REFILTER_POLICY.RE_FILTER);
-					ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize, null).addListener(fetchListener);
-					ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize, null).close(waiter);
+					FProxyFetchWaiter waiter = ImageElement.this.tracker.makeFetcher(ImageElement.this.key,
+											   ImageElement.this.maxSize, null, REFILTER_POLICY.RE_FILTER);
+					ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize,
+							null).addListener(fetchListener);
+					ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize,
+							null).close(waiter);
 				} catch (FetchException fe) {
 					if (fe.newURI != null) {
 						try {
 							ImageElement.this.key = fe.newURI;
-							FProxyFetchWaiter waiter = ImageElement.this.tracker.makeFetcher(ImageElement.this.key, ImageElement.this.maxSize, null, REFILTER_POLICY.RE_FILTER);
-							ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize, null).addListener(fetchListener);
-							ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize, null).close(waiter);
+							FProxyFetchWaiter waiter = ImageElement.this.tracker.makeFetcher(ImageElement.this.key,
+													   ImageElement.this.maxSize, null, REFILTER_POLICY.RE_FILTER);
+							ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize,
+									null).addListener(fetchListener);
+							ImageElement.this.tracker.getFetchInProgress(ImageElement.this.key, ImageElement.this.maxSize,
+									null).close(waiter);
 						} catch (FetchException fe2) {
 							wasError = true;
 						}
@@ -108,7 +120,8 @@ public class ImageElement extends BaseUpdateableElement {
 		}, 0);
 
 		if (logMINOR) {
-			Logger.minor(this, "ImageElement creating finished in:" + (System.currentTimeMillis() - now) + " ms");
+			Logger.minor(this, "ImageElement creating finished in:" + (System.currentTimeMillis() - now) +
+						 " ms");
 		}
 	}
 
@@ -147,7 +160,8 @@ public class ImageElement extends BaseUpdateableElement {
 	@Override
 	public void updateState(boolean initial) {
 		if (logMINOR) {
-			Logger.minor(this, "Updating ImageElement for url:" + key + (origKey == key ? (" originally " + origKey) : ""));
+			Logger.minor(this, "Updating ImageElement for url:" + key + (origKey == key ? (" originally " +
+						 origKey) : ""));
 		}
 		children.clear();
 		HTMLNode whenJsEnabled = new HTMLNode("span", "class", "jsonly ImageElement");
@@ -229,12 +243,14 @@ public class ImageElement extends BaseUpdateableElement {
 			attributeNames.add(att.getKey());
 			attributeValues.add(att.getValue());
 		}
-		return new HTMLNode(pt.element, attributeNames.toArray(new String[] {}), attributeValues.toArray(new String[] {}));
+		return new HTMLNode(pt.element, attributeNames.toArray(new String[] {}),
+							attributeValues.toArray(new String[] {}));
 	}
 
 	@Override
 	public String toString() {
-		return "ImageElement[key:" + key + ",maxSize:" + maxSize + ",originalImg:" + originalImg + ",updaterId:" + getUpdaterId(null) + "]";
+		return "ImageElement[key:" + key + ",maxSize:" + maxSize + ",originalImg:" + originalImg +
+			   ",updaterId:" + getUpdaterId(null) + "]";
 	}
 
 }

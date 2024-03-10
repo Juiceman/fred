@@ -30,16 +30,18 @@ public class MessageItem {
 	final boolean sendLoadBulk;
 	private long deadline;
 
-	public MessageItem(Message msg2, AsyncMessageCallback[] cb2, ByteCounter ctr, short overridePriority) {
+	public MessageItem(Message msg2, AsyncMessageCallback[] cb2, ByteCounter ctr,
+					   short overridePriority) {
 		this.msg = msg2;
 		this.cb = cb2;
 		formatted = false;
 		this.ctrCallback = ctr;
 		this.submitted = System.currentTimeMillis();
-		if(overridePriority > 0)
+		if(overridePriority > 0) {
 			priority = overridePriority;
-		else
+		} else {
 			priority = msg2.getPriority();
+		}
 		this.sendLoadRT = msg2.needsLoadRT();
 		this.sendLoadBulk = msg2.needsLoadBulk();
 		buf = msg.encodeToPacket();
@@ -56,13 +58,15 @@ public class MessageItem {
 		this(msg2, cb2, ctr, (short)-1);
 	}
 
-	public MessageItem(byte[] data, AsyncMessageCallback[] cb2, boolean formatted, ByteCounter ctr, short priority, boolean sendLoadRT, boolean sendLoadBulk) {
+	public MessageItem(byte[] data, AsyncMessageCallback[] cb2, boolean formatted, ByteCounter ctr,
+					   short priority, boolean sendLoadRT, boolean sendLoadBulk) {
 		this.cb = cb2;
 		this.msg = null;
 		this.buf = data;
 		this.formatted = formatted;
-		if(formatted && buf == null)
+		if(formatted && buf == null) {
 			throw new NullPointerException();
+		}
 		this.ctrCallback = ctr;
 		this.submitted = System.currentTimeMillis();
 		this.priority = priority;
@@ -130,14 +134,18 @@ public class MessageItem {
 	}
 
 	public synchronized long getID() {
-		if(hasCachedID) return cachedID;
+		if(hasCachedID) {
+			return cachedID;
+		}
 		cachedID = generateID();
 		hasCachedID = true;
 		return cachedID;
 	}
 
 	private long generateID() {
-		if(msg == null) return -1;
+		if(msg == null) {
+			return -1;
+		}
 		Object o = msg.getObject(DMT.UID);
 		if(o == null || !(o instanceof Long)) {
 			return -1;

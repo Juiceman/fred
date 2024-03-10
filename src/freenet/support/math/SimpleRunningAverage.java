@@ -36,7 +36,9 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 		curLen = 0;
 		totalReports = 0;
 		total = 0;
-		for(int i=0; i<refs.length; i++) refs[i] = 0.0;
+		for(int i=0; i<refs.length; i++) {
+			refs[i] = 0.0;
+		}
 	}
 
 	/**
@@ -69,7 +71,9 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	 */
 	@Override
 	public synchronized double currentValue() {
-		if(curLen == 0) return initValue;
+		if(curLen == 0) {
+			return initValue;
+		}
 		return total/curLen;
 	}
 
@@ -90,12 +94,14 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	@Override
 	public synchronized void report(double d) {
 		totalReports++;
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "report(" + d + ") on " + this);
-		if (curLen < refs.length)
+		}
+		if (curLen < refs.length) {
 			curLen++;
-		else
+		} else {
 			total -= popValue();
+		}
 		pushValue(d);
 		total += d;
 	}
@@ -107,7 +113,9 @@ public final class SimpleRunningAverage implements RunningAverage, Cloneable {
 	protected synchronized void pushValue(double value) {
 		refs[nextSlotPtr] = value;
 		nextSlotPtr++;
-		if(nextSlotPtr >= refs.length) nextSlotPtr = 0;
+		if(nextSlotPtr >= refs.length) {
+			nextSlotPtr = 0;
+		}
 	}
 
 	/**

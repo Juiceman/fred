@@ -43,7 +43,9 @@ public class Message {
 	public boolean equals(Object obj) {
 		if (obj instanceof Message) {
 			Message message = (Message) obj;
-			return msg.compareTo(message.msg) == 0 && priority == message.priority && ((anchor == null && message.anchor == null) || anchor != null && message.anchor != null && anchor.compareTo(message.anchor) == 0);
+			return msg.compareTo(message.msg) == 0 && priority == message.priority && ((anchor == null
+					&& message.anchor == null) || anchor != null && message.anchor != null
+					&& anchor.compareTo(message.anchor) == 0);
 		} else {
 			return false;
 		}

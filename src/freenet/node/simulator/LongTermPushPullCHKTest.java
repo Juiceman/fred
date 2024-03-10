@@ -83,7 +83,8 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 			fis.close();
 
 			// Create one node
-			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
+			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+											  Node.DEFAULT_MAX_HTL,
 											  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
 											  12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
@@ -112,7 +113,9 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 					InsertBlock block = new InsertBlock(data, new ClientMetadata(), FreenetURI.EMPTY_CHK_URI);
 					t1 = System.currentTimeMillis();
 					FreenetURI uri = client.insert(block, false, null);
-					if(i == 0) todaysInsert = uri;
+					if(i == 0) {
+						todaysInsert = uri;
+					}
 					t2 = System.currentTimeMillis();
 
 					System.out.println("PUSH-TIME-" + i + ":" + (t2 - t1)+" for "+uri);
@@ -157,8 +160,9 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 
 				FreenetURI uri = null;
 
-				if(i == 0) uri = todaysInsert;
-				else {
+				if(i == 0) {
+					uri = todaysInsert;
+				} else {
 					uri = getHistoricURI(uid, i, targetDate);
 				}
 
@@ -178,8 +182,9 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 						e.printStackTrace();
+					}
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
 			}
@@ -188,13 +193,15 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable t1) {
 			}
 
@@ -204,7 +211,8 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 		}
 	}
 
-	private static FreenetURI getHistoricURI(String uid, int i, Calendar targetDate) throws IOException {
+	private static FreenetURI getHistoricURI(String uid, int i,
+			Calendar targetDate) throws IOException {
 		// Quick and dirty, since we only have 1...8 it's not worth caching it.
 		File file = new File(uid + ".csv");
 		FileInputStream fis = new FileInputStream(file);
@@ -215,10 +223,16 @@ public class LongTermPushPullCHKTest extends LongTermTest {
 			String dateString = dateFormat.format(targetDate.getTime());
 			while((line = br.readLine()) != null) {
 				String[] split = line.split("!");
-				if(split.length == 0) continue;
-				if(!dateString.equals(split[0])) continue;
+				if(split.length == 0) {
+					continue;
+				}
+				if(!dateString.equals(split[0])) {
+					continue;
+				}
 				int fieldnum = 3 + i * 2;
-				if(line.length() >= fieldnum) continue; // Possible ran twice???
+				if(line.length() >= fieldnum) {
+					continue;    // Possible ran twice???
+				}
 				return new FreenetURI(split[fieldnum]);
 			}
 			return null;

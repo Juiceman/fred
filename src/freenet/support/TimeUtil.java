@@ -49,8 +49,9 @@ public class TimeUtil {
 	 */
 	public static String formatTime(long timeInterval, int maxTerms, boolean withSecondFractions) {
 
-		if (maxTerms > 6 )
+		if (maxTerms > 6 ) {
 			throw new IllegalArgumentException();
+		}
 
 		StringBuilder sb = new StringBuilder(64);
 		long l = timeInterval;
@@ -145,7 +146,9 @@ public class TimeUtil {
 
 		long millis = 0;
 		for (String term : terms) {
-			if (term.length() == 0) continue;
+			if (term.length() == 0) {
+				continue;
+			}
 
 			char measure = term.charAt(term.length() - 1);
 			switch(measure) {
@@ -203,8 +206,10 @@ public class TimeUtil {
 	public static Date setTimeToZero(final Date date) {
 		// We need to cut off the hour/minutes/seconds
 		final GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-		calendar.setTimeInMillis(date.getTime()); // We must not use setTime(date) in case the date is not UTC.
-		calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		calendar.setTimeInMillis(
+			date.getTime()); // We must not use setTime(date) in case the date is not UTC.
+		calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+					 calendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		return calendar.getTime();
 	}

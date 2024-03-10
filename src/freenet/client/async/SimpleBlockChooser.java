@@ -44,9 +44,15 @@ public class SimpleBlockChooser {
 		int minRetryCount = Integer.MAX_VALUE;
 		for(int i=0; i<max; i++) {
 			int retry = retries[i];
-			if(retry > maxRetries && maxRetries != -1) continue;
-			if(retry > minRetryCount) continue;
-			if(!checkValid(i)) continue;
+			if(retry > maxRetries && maxRetries != -1) {
+				continue;
+			}
+			if(retry > minRetryCount) {
+				continue;
+			}
+			if(!checkValid(i)) {
+				continue;
+			}
 			if(retry < minRetryCount) {
 				count = 0;
 				candidates[count++] = i;
@@ -67,7 +73,9 @@ public class SimpleBlockChooser {
 	}
 
 	private boolean isFatalRetries(int retries) {
-		if(maxRetries == -1) return false;
+		if(maxRetries == -1) {
+			return false;
+		}
 		return retries > maxRetries;
 	}
 
@@ -82,11 +90,15 @@ public class SimpleBlockChooser {
 	/** Notify when a block has succeeded. */
 	public boolean onSuccess(int blockNo) {
 		synchronized(this) {
-			if(completed[blockNo]) return false;
+			if(completed[blockNo]) {
+				return false;
+			}
 			completed[blockNo] = true;
 			completedCount++;
 			if(completedCount < blocks) {
-				if(logMINOR) Logger.minor(this, "Completed blocks: "+completedCount+"/"+blocks);
+				if(logMINOR) {
+					Logger.minor(this, "Completed blocks: "+completedCount+"/"+blocks);
+				}
 				return true;
 			}
 		}
@@ -99,7 +111,9 @@ public class SimpleBlockChooser {
 	 * @param blockNo
 	 */
 	public synchronized void onUnSuccess(int blockNo) {
-		if(!completed[blockNo]) return;
+		if(!completed[blockNo]) {
+			return;
+		}
 		completed[blockNo] = false;
 		completedCount--;
 	}
@@ -129,10 +143,11 @@ public class SimpleBlockChooser {
 	 */
 	public synchronized void replaceSuccesses(boolean[] used) {
 		for(int i=0; i<blocks; i++) {
-			if(used[i] && !completed[i])
+			if(used[i] && !completed[i]) {
 				onSuccess(i);
-			else if(!used[i] && completed[i])
+			} else if(!used[i] && completed[i]) {
 				onUnSuccess(i);
+			}
 		}
 	}
 
@@ -157,15 +172,21 @@ public class SimpleBlockChooser {
 	 * persistence for the actual list of blocks fetched, as in SplitFileFetcherSegment.
 	 * @throws IOException */
 	public void writeRetries(DataOutputStream dos) throws IOException {
-		if(maxRetries == -1) return;
-		for(int retry : retries)
+		if(maxRetries == -1) {
+			return;
+		}
+		for(int retry : retries) {
 			dos.writeInt(retry);
+		}
 	}
 
 	public void readRetries(DataInputStream dis) throws IOException {
-		if(maxRetries == -1) return;
-		for(int i=0; i<blocks; i++)
+		if(maxRetries == -1) {
+			return;
+		}
+		for(int i=0; i<blocks; i++) {
 			retries[i] = dis.readInt();
+		}
 	}
 
 	static final int VERSION = 1;
@@ -174,28 +195,41 @@ public class SimpleBlockChooser {
 	 * @throws IOException */
 	public void write(DataOutputStream dos) throws IOException {
 		dos.writeInt(VERSION);
-		for(boolean b : completed)
+		for(boolean b : completed) {
 			dos.writeBoolean(b);
+		}
 		dos.writeInt(maxRetries);
 		writeRetries(dos);
 	}
 
 	public void read(DataInputStream dis) throws StorageFormatException, IOException {
-		if(dis.readInt() != VERSION) throw new StorageFormatException("Bad version in block chooser");
+		if(dis.readInt() != VERSION) {
+			throw new StorageFormatException("Bad version in block chooser");
+		}
 		for(int i=0; i<completed.length; i++) {
 			completed[i] = dis.readBoolean();
-			if(completed[i]) completedCount++;
+			if(completed[i]) {
+				completedCount++;
+			}
 		}
-		if(dis.readInt() != maxRetries) throw new StorageFormatException("Max retries has changed");
+		if(dis.readInt() != maxRetries) {
+			throw new StorageFormatException("Max retries has changed");
+		}
 		readRetries(dis);
 	}
 
 	public synchronized int countFailedBlocks() {
-		if(maxRetries == -1) return 0;
+		if(maxRetries == -1) {
+			return 0;
+		}
 		int total = 0;
 		for(int i=0; i<retries.length; i++) {
-			if(completed[i]) continue;
-			if(retries[i] > maxRetries) total++;
+			if(completed[i]) {
+				continue;
+			}
+			if(retries[i] > maxRetries) {
+				total++;
+			}
 		}
 		return total;
 	}
@@ -207,9 +241,15 @@ public class SimpleBlockChooser {
 	public synchronized int countFetchable() {
 		int x = 0;
 		for(int i=0; i<blocks; i++) {
-			if(retries[x] >= maxRetries) continue;
-			if(!checkValid(x)) continue;
-			if(!completed[x]) x++;
+			if(retries[x] >= maxRetries) {
+				continue;
+			}
+			if(!checkValid(x)) {
+				continue;
+			}
+			if(!completed[x]) {
+				x++;
+			}
 		}
 		return x;
 	}

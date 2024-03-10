@@ -41,7 +41,8 @@ import freenet.support.Logger.LogLevel;
 public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 
 	private final HashSet<Key> keys;
-	private final ArrayList<Key> keysList; // O(1) remove random element the way we use it, see chooseKey().
+	private final ArrayList<Key>
+	keysList; // O(1) remove random element the way we use it, see chooseKey().
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
@@ -58,7 +59,8 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	private final short priorityClass;
 	private final boolean isSSK;
 
-	OfferedKeysList(NodeClientCore core, RandomSource random, short priorityClass, boolean isSSK, boolean realTimeFlag) {
+	OfferedKeysList(NodeClientCore core, RandomSource random, short priorityClass, boolean isSSK,
+					boolean realTimeFlag) {
 		super(false, realTimeFlag);
 		this.keys = new HashSet<Key>();
 		this.keysList = new ArrayList<Key>();
@@ -72,7 +74,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		assert(keysList.size() == keys.size());
 		if(keys.remove(key)) {
 			ListUtils.removeBySwapLast(keysList, key);
-			if(logMINOR) Logger.minor(this, "Found "+key+" , removing it "+" for "+this+" size now "+keysList.size());
+			if(logMINOR) {
+				Logger.minor(this, "Found "+key+" , removing it "+" for "+this+" size now "+keysList.size());
+			}
 		}
 		assert(keysList.size() == keys.size());
 	}
@@ -109,12 +113,15 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	}
 
 	@Override
-	public synchronized SendableRequestItem chooseKey(KeysFetchingLocally fetching, ClientContext context) {
+	public synchronized SendableRequestItem chooseKey(KeysFetchingLocally fetching,
+			ClientContext context) {
 		assert(keysList.size() == keys.size());
 		if(keys.size() == 1) {
 			// Shortcut the common case
 			Key k = keysList.get(0);
-			if(fetching.hasKey(k, null)) return null;
+			if(fetching.hasKey(k, null)) {
+				return null;
+			}
 			// Ignore RecentlyFailed because an offered key overrides it.
 			keys.remove(k);
 			keysList.remove(0);
@@ -123,11 +130,15 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		}
 		for(int i=0; i<10; i++) {
 			// Pick a random key
-			if(keysList.isEmpty()) return null;
+			if(keysList.isEmpty()) {
+				return null;
+			}
 			int ptr = random.nextInt(keysList.size());
 			// Avoid shuffling penalty by swapping the chosen element with the end.
 			Key k = keysList.get(ptr);
-			if(fetching.hasKey(k, null)) continue;
+			if(fetching.hasKey(k, null)) {
+				continue;
+			}
 			// Ignore RecentlyFailed because an offered key overrides it.
 			ListUtils.removeBySwapLast(keysList, ptr);
 			keys.remove(k);
@@ -154,7 +165,8 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 	}
 
 	@Override
-	public void internalError(Throwable t, RequestScheduler sched, ClientContext context, boolean persistent) {
+	public void internalError(Throwable t, RequestScheduler sched, ClientContext context,
+							  boolean persistent) {
 		Logger.error(this, "Internal error: "+t, t);
 	}
 
@@ -163,7 +175,8 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		return new SendableRequestSender() {
 
 			@Override
-			public boolean send(NodeClientCore core, final RequestScheduler sched, ClientContext context, ChosenBlock req) {
+			public boolean send(NodeClientCore core, final RequestScheduler sched, ClientContext context,
+								ChosenBlock req) {
 				final Key key = ((MySendableRequestItem) req.token).key;
 				// Have to cache it in order to propagate it; FIXME
 				// Don't let a node force us to start a real request for a specific key.
@@ -209,7 +222,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		assert(keysList.size() == keys.size());
 		if(keys.add(key)) {
 			keysList.add(key);
-			if(logMINOR) Logger.minor(this, "Queued key "+key+" on "+this);
+			if(logMINOR) {
+				Logger.minor(this, "Queued key "+key+" on "+this);
+			}
 		}
 		assert(keysList.size() == keys.size());
 	}
@@ -231,10 +246,11 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if(isSSK)
+		if(isSSK) {
 			return context.getSskFetchScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkFetchScheduler(realTimeFlag);
+		}
 	}
 
 	@Override

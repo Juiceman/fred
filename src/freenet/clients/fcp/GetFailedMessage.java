@@ -45,8 +45,9 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	}
 
 	public GetFailedMessage(FetchException e, String identifier, boolean global) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Creating get failed from "+e+" for "+identifier, e);
+		}
 		this.tracker = e.errorCodes;
 		this.code = e.mode;
 		this.extraDescription = e.extraMessage;
@@ -68,7 +69,9 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	 */
 	public GetFailedMessage(SimpleFieldSet fs, boolean useVerboseFields) throws MalformedURLException {
 		identifier = fs.get("Identifier");
-		if(identifier == null) throw new NullPointerException();
+		if(identifier == null) {
+			throw new NullPointerException();
+		}
 		code = FetchExceptionMode.getByCode(Integer.parseInt(fs.get("Code")));
 
 		if(useVerboseFields) {
@@ -89,13 +92,15 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 		String s = fs.get("ExpectedDataLength");
 		if(s != null) {
 			expectedDataLength = Long.parseLong(s);
-		} else
+		} else {
 			expectedDataLength = -1;
+		}
 		s = fs.get("RedirectURI");
-		if(s != null)
+		if(s != null) {
 			this.redirectURI = new FreenetURI(s);
-		else
+		} else {
 			this.redirectURI = null;
+		}
 		this.global = fs.getBoolean("Global", false);
 	}
 
@@ -127,28 +132,35 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	public SimpleFieldSet getFieldSet(boolean verbose) {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.put("Code", code.code);
-		if(verbose)
+		if(verbose) {
 			sfs.putSingle("CodeDescription", getFailedMessage());
-		if(extraDescription != null)
+		}
+		if(extraDescription != null) {
 			sfs.putSingle("ExtraDescription", extraDescription);
-		if(verbose)
+		}
+		if(verbose) {
 			sfs.put("Fatal", isFatal);
+		}
 		if(tracker != null) {
 			sfs.tput("Errors", tracker.toFieldSet(verbose));
 		}
-		if(verbose)
+		if(verbose) {
 			sfs.putSingle("ShortCodeDescription", getShortFailedMessage());
+		}
 		sfs.putSingle("Identifier", identifier);
 		sfs.put("Global", global);
 		if(expectedDataLength > -1) {
 			sfs.put("ExpectedDataLength", expectedDataLength);
 		}
-		if(expectedMimeType != null)
+		if(expectedMimeType != null) {
 			sfs.putSingle("ExpectedMetadata.ContentType", expectedMimeType);
-		if(finalizedExpected)
+		}
+		if(finalizedExpected) {
 			sfs.putSingle("FinalizedExpected", "true");
-		if(redirectURI != null)
+		}
+		if(redirectURI != null) {
 			sfs.putSingle("RedirectURI", redirectURI.toString(false, false));
+		}
 		return sfs;
 	}
 
@@ -159,7 +171,8 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "GetFailed goes from server to client not the other way around", identifier, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "GetFailed goes from server to client not the other way around", identifier, global);
 	}
 
 	public String getFailedMessage() {
@@ -171,10 +184,11 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	}
 
 	public String getLongFailedMessage() {
-		if(extraDescription != null)
+		if(extraDescription != null) {
 			return getFailedMessage() + ": " + extraDescription;
-		else
+		} else {
 			return getFailedMessage();
+		}
 	}
 
 	static final int VERSION = 1;
@@ -191,7 +205,9 @@ public class GetFailedMessage extends FCPMessage implements Serializable {
 	public GetFailedMessage(DataInputStream dis, RequestIdentifier reqID,
 							long expectedSize, String expectedType) throws StorageFormatException, IOException {
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version in GetFailedMessage");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version in GetFailedMessage");
+		}
 		int x = dis.readInt();
 		try {
 			code = FetchExceptionMode.getByCode(x);

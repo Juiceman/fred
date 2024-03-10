@@ -9,9 +9,11 @@ public class ReplacerUpdater implements IUpdater {
 
 	@Override
 	public void updated(String elementId, String content) {
-		FreenetJs.log("Replacing element id:" + elementId + " with content:" + content + " element:" + RootPanel.get(elementId));
+		FreenetJs.log("Replacing element id:" + elementId + " with content:" + content + " element:" +
+					  RootPanel.get(elementId));
 		if (RootPanel.get(elementId) != null) {
-			FreenetJs.log("element.getElement():" + RootPanel.get(elementId).getElement() + " current innerHTML:" + RootPanel.get(elementId).getElement().getInnerHTML());
+			FreenetJs.log("element.getElement():" + RootPanel.get(elementId).getElement() +
+						  " current innerHTML:" + RootPanel.get(elementId).getElement().getInnerHTML());
 		}
 		try {
 			// Finds the element and replaces it's content with the new one

@@ -15,12 +15,17 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 	private final byte[] buf;
 	private int hashCode;
 
-	public static final Comparator<ByteArrayWrapper> FAST_COMPARATOR = new Comparator<ByteArrayWrapper>() {
+	public static final Comparator<ByteArrayWrapper> FAST_COMPARATOR = new
+	Comparator<ByteArrayWrapper>() {
 
 		@Override
 		public int compare(ByteArrayWrapper o1, ByteArrayWrapper o2) {
-			if(o1.hashCode > o2.hashCode) return 1;
-			if(o1.hashCode < o2.hashCode) return -1;
+			if(o1.hashCode > o2.hashCode) {
+				return 1;
+			}
+			if(o1.hashCode < o2.hashCode) {
+				return -1;
+			}
 			return o1.compareTo(o2);
 		}
 
@@ -35,7 +40,9 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 	public boolean equals(Object o) {
 		if(o instanceof ByteArrayWrapper) {
 			ByteArrayWrapper b = (ByteArrayWrapper) o;
-			if(b.buf == buf) return true;
+			if(b.buf == buf) {
+				return true;
+			}
 			return Arrays.equals(b.buf, buf);
 		}
 		return false;
@@ -53,7 +60,9 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper> {
 
 	@Override
 	public int compareTo(ByteArrayWrapper arg) {
-		if(this == arg) return 0;
+		if(this == arg) {
+			return 0;
+		}
 		return Fields.compareBytes(buf, arg.buf);
 	}
 }

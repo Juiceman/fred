@@ -27,8 +27,9 @@ public class TempFileBucketTest extends BucketTestBase {
 	@Override
 	protected void freeBucket(Bucket bucket) throws IOException {
 		File file = ((BaseFileBucket) bucket).getFile();
-		if (bucket.size() != 0)
+		if (bucket.size() != 0) {
 			assertTrue("TempFile not exist", file.exists());
+		}
 		bucket.free();
 		assertFalse("TempFile not deleted", file.exists());
 	}

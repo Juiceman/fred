@@ -78,7 +78,8 @@ public class LongTermPushPullTest extends LongTermTest {
 		}
 		String uid = args[0];
 
-		if(args.length == 2 && (args[1].equalsIgnoreCase("--dump") || args[1].equalsIgnoreCase("-dump") || args[1].equalsIgnoreCase("dump"))) {
+		if(args.length == 2 && (args[1].equalsIgnoreCase("--dump") || args[1].equalsIgnoreCase("-dump")
+								|| args[1].equalsIgnoreCase("dump"))) {
 			try {
 				dumpStats(uid);
 			} catch (IOException e) {
@@ -120,7 +121,8 @@ public class LongTermPushPullTest extends LongTermTest {
 			fis.close();
 
 			// Create one node
-			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
+			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+											  Node.DEFAULT_MAX_HTL,
 											  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
 											  12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
@@ -196,7 +198,8 @@ public class LongTermPushPullTest extends LongTermTest {
 				Calendar targetDate = (Calendar) today.clone();
 				targetDate.add(Calendar.DAY_OF_MONTH, -((1 << i) - 1));
 
-				FreenetURI uri = new FreenetURI("KSK@" + uid + "-" + dateFormat.format(targetDate.getTime()) + "-" + i);
+				FreenetURI uri = new FreenetURI("KSK@" + uid + "-" + dateFormat.format(
+													targetDate.getTime()) + "-" + i);
 				System.out.println("PULLING " + uri);
 
 				try {
@@ -208,8 +211,9 @@ public class LongTermPushPullTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 						e.printStackTrace();
+					}
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
 			}
@@ -218,13 +222,15 @@ public class LongTermPushPullTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable t1) {
 			}
 
@@ -253,7 +259,9 @@ public class LongTermPushPullTest extends LongTermTest {
 				long now = calendar.getTimeInMillis();
 				long prev = prevDate.getTimeInMillis();
 				long dist = DAYS.convert(now - prev, MILLISECONDS);
-				if(dist != 1) System.out.println(""+dist+" days since last report");
+				if(dist != 1) {
+					System.out.println(""+dist+" days since last report");
+				}
 			}
 			prevDate = calendar;
 			int version = Integer.parseInt(split[1]);
@@ -325,10 +333,11 @@ public class LongTermPushPullTest extends LongTermTest {
 					if(element.pullTimes[i] == 0) {
 						String failureMode = element.pullFailures[i];
 						Integer count = failureModes.get(failureMode);
-						if(count == null)
+						if(count == null) {
 							failureModes.put(failureMode, 1);
-						else
+						} else {
 							failureModes.put(failureMode, count+1);
+						}
 						failures++;
 					} else {
 						successes++;
@@ -337,14 +346,18 @@ public class LongTermPushPullTest extends LongTermTest {
 				}
 			}
 			System.out.println("Successes: "+successes);
-			if(successes != 0) System.out.println("Average success time "+(successTime / successes));
+			if(successes != 0) {
+				System.out.println("Average success time "+(successTime / successes));
+			}
 			System.out.println("Failures: "+failures);
-			for(Map.Entry<String,Integer> entry : failureModes.entrySet())
+			for(Map.Entry<String,Integer> entry : failureModes.entrySet()) {
 				System.out.println(entry.getKey()+" : "+entry.getValue());
+			}
 			System.out.println("No match: "+noMatch);
 			System.out.println("Insert failure: "+insertFailure);
 			double psuccess = (successes*1.0 / (1.0*(successes + failures)));
-			System.out.println("Success rate for "+delta+" days: "+psuccess+" ("+(successes+failures)+" samples)");
+			System.out.println("Success rate for "+delta+" days: "+psuccess+" ("+(successes+failures)
+							   +" samples)");
 			if(delta != 0) {
 				double halfLifeEstimate = -1*Math.log(2)/(Math.log(psuccess)/delta);
 				System.out.println("Half-life estimate: "+halfLifeEstimate+" days");
@@ -372,7 +385,8 @@ public class LongTermPushPullTest extends LongTermTest {
 			this.pullTimes = null;
 			this.pullFailures = null;
 		}
-		public DumpElement(GregorianCalendar date, int version, int[] pushTimes, String[] pushFailures, int[] pullTimes, String[] pullFailures) {
+		public DumpElement(GregorianCalendar date, int version, int[] pushTimes, String[] pushFailures,
+						   int[] pullTimes, String[] pullFailures) {
 			this.date = date;
 			this.version = version;
 			this.seedTime = -1;

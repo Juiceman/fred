@@ -24,7 +24,8 @@ public interface Ticker {
 	 * simultaneously! You must ensure adequate locking. Worse, if the job takes an unexpectedly
 	 * long time, you could end up with many copies of the job running simultaneously.
 	 */
-	public abstract void queueTimedJob(Runnable job, String name, long offset, boolean runOnTickerAnyway, boolean noDupes);
+	public abstract void queueTimedJob(Runnable job, String name, long offset,
+									   boolean runOnTickerAnyway, boolean noDupes);
 
 	/** Get the underlying Executor. */
 	public abstract Executor getExecutor();

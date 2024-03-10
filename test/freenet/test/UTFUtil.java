@@ -44,12 +44,14 @@ public final class UTFUtil {
 			int characterValue = (Character.MIN_VALUE + i);
 
 			// The low and high surrogates are no valid unicode characters.
-			if(characterValue >= Character.MIN_LOW_SURROGATE && characterValue <= Character.MAX_LOW_SURROGATE)
+			if(characterValue >= Character.MIN_LOW_SURROGATE && characterValue <= Character.MAX_LOW_SURROGATE) {
 				ALL_CHARACTERS[i]  = ' ';
-			else if(characterValue >= Character.MIN_HIGH_SURROGATE && characterValue <= Character.MAX_HIGH_SURROGATE)
+			} else if(characterValue >= Character.MIN_HIGH_SURROGATE
+					  && characterValue <= Character.MAX_HIGH_SURROGATE) {
 				ALL_CHARACTERS[i]  = ' ';
-			else
+			} else {
 				ALL_CHARACTERS[i] = (char)characterValue;
+			}
 		}
 	}
 

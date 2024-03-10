@@ -21,7 +21,8 @@ public class ClientKSK extends InsertableClientSSK {
 	private static final long serialVersionUID = 1L;
 	final String keyword;
 
-	private ClientKSK(String keyword, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey, byte[] keywordHash) throws MalformedURLException {
+	private ClientKSK(String keyword, byte[] pubKeyHash, DSAPublicKey pubKey, DSAPrivateKey privKey,
+					  byte[] keywordHash) throws MalformedURLException {
 		super(keyword, pubKeyHash, pubKey, privKey, keywordHash, Key.ALGO_AES_PCFB_256_SHA256);
 		this.keyword = keyword;
 	}
@@ -37,8 +38,9 @@ public class ClientKSK extends InsertableClientSSK {
 	}
 
 	public static InsertableClientSSK create(FreenetURI uri) {
-		if(!uri.getKeyType().equals("KSK"))
+		if(!uri.getKeyType().equals("KSK")) {
 			throw new IllegalArgumentException();
+		}
 		return create(uri.getDocName());
 	}
 

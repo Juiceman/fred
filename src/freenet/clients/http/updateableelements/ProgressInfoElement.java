@@ -25,7 +25,8 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 	/** It displays more info on advanced mode */
 	private boolean					isAdvancedMode;
 
-	public ProgressInfoElement(FProxyFetchTracker tracker, FreenetURI key, FetchContext fctx, long maxSize, boolean isAdvancedMode, ToadletContext ctx, boolean pushed) {
+	public ProgressInfoElement(FProxyFetchTracker tracker, FreenetURI key, FetchContext fctx,
+							   long maxSize, boolean isAdvancedMode, ToadletContext ctx, boolean pushed) {
 		super("span", ctx);
 		this.tracker = tracker;
 		this.key = key;
@@ -33,8 +34,11 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 		this.maxSize = maxSize;
 		this.isAdvancedMode = isAdvancedMode;
 		init(pushed);
-		if(!pushed) return;
-		fetchListener = new NotifierFetchListener(((SimpleToadletServer) ctx.getContainer()).pushDataManager, this);
+		if(!pushed) {
+			return;
+		}
+		fetchListener = new NotifierFetchListener(((SimpleToadletServer)
+				ctx.getContainer()).pushDataManager, this);
 		tracker.getFetchInProgress(key, maxSize, fctx).addListener(fetchListener);
 	}
 
@@ -51,8 +55,12 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 
 		addChild("#", FProxyToadlet.l10n("filenameLabel")+ " ");
 		addChild("a", "href", "/"+key.toString(false, false), key.getPreferredFilename());
-		if(fr.mimeType != null) addChild("br", FProxyToadlet.l10n("contentTypeLabel")+" "+fr.mimeType);
-		if(fr.size > 0) addChild("br", "Size: "+SizeUtil.formatSize(fr.size));
+		if(fr.mimeType != null) {
+			addChild("br", FProxyToadlet.l10n("contentTypeLabel")+" "+fr.mimeType);
+		}
+		if(fr.size > 0) {
+			addChild("br", "Size: "+SizeUtil.formatSize(fr.size));
+		}
 		if(isAdvancedMode) {
 			addChild("br", FProxyToadlet.l10n("blocksDetail",
 											  new String[] { "fetched", "required", "total", "failed", "fatallyfailed" },
@@ -72,12 +80,14 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 			lastRefreshNode.addChild(new SecondCounterNode(0, true, FProxyToadlet.l10n("lastRefresh")));
 			addChild(lastRefreshNode);
 		}
-		if(fr.goneToNetwork)
+		if(fr.goneToNetwork) {
 			addChild("p", FProxyToadlet.l10n("progressDownloading"));
-		else
+		} else {
 			addChild("p", FProxyToadlet.l10n("progressCheckingStore"));
-		if(!fr.finalizedBlocks)
+		}
+		if(!fr.finalizedBlocks) {
 			addChild("p", FProxyToadlet.l10n("progressNotFinalized"));
+		}
 
 		if (waiter != null) {
 			tracker.getFetchInProgress(key, maxSize, fctx).close(waiter);
@@ -111,7 +121,8 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 
 	@Override
 	public String toString() {
-		return "ProgressInfoElement[key:" + key + ",maxSize:" + maxSize + ",updaterId:" + getUpdaterId(null) + "]";
+		return "ProgressInfoElement[key:" + key + ",maxSize:" + maxSize + ",updaterId:" + getUpdaterId(
+				   null) + "]";
 	}
 
 }

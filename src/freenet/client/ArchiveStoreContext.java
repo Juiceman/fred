@@ -80,7 +80,9 @@ class ArchiveStoreContext {
 				// removeCachedItem() will call removeItem(), so don't remove it here.
 				item = myItems.peek();
 			}
-			if(item == null) break;
+			if(item == null) {
+				break;
+			}
 			manager.removeCachedItem(item);
 		}
 	}
@@ -98,8 +100,9 @@ class ArchiveStoreContext {
 	void removeItem(ArchiveStoreItem item) {
 		synchronized(myItems) {
 			if (!myItems.remove(item)) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Not removing: "+item+" for "+this+" - already removed");
+				}
 				return; // only removed once
 			}
 		}

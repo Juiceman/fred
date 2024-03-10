@@ -23,15 +23,18 @@ public class USKDateHint {
 		private static final Type[] values = values();
 
 		public boolean alwaysMorePreciseThan(Type type) {
-			if(this.equals(type)) return false;
+			if(this.equals(type)) {
+				return false;
+			}
 			if(this.equals(DAY)) { // Day beats everything.
 				return true;
 			} else if(this.equals(MONTH)) { // Month and week don't beat each other as they sometimes overlap.
 				return type.equals(YEAR);
 			} else if(this.equals(WEEK)) {
 				return type.equals(YEAR);
-			} else // if(this.equals(YEAR)) - everything beats year
+			} else { // if(this.equals(YEAR)) - everything beats year
 				return false;
+			}
 		}
 	}
 
@@ -48,7 +51,9 @@ public class USKDateHint {
 	public String get(Type t) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(cal.get(Calendar.YEAR));
-		if(t == Type.YEAR) return sb.toString();
+		if(t == Type.YEAR) {
+			return sb.toString();
+		}
 		if(t == Type.WEEK) {
 			sb.append("-WEEK-");
 			sb.append(cal.get(Calendar.WEEK_OF_YEAR));
@@ -56,7 +61,9 @@ public class USKDateHint {
 		}
 		sb.append("-");
 		sb.append(cal.get(Calendar.MONTH));
-		if(t == Type.MONTH) return sb.toString();
+		if(t == Type.MONTH) {
+			return sb.toString();
+		}
 		sb.append("-");
 		sb.append(cal.get(Calendar.DAY_OF_MONTH));
 		return sb.toString();
@@ -73,8 +80,9 @@ public class USKDateHint {
 	public FreenetURI[] getInsertURIs(InsertableUSK key) {
 		FreenetURI[] uris = new FreenetURI[Type.values.length];
 		int x = 0;
-		for(Type t : Type.values)
+		for(Type t : Type.values) {
 			uris[x++] = key.getInsertableSSK(key.siteName+PREFIX+get(t)).getInsertURI();
+		}
 		return uris;
 	}
 
@@ -82,8 +90,9 @@ public class USKDateHint {
 	public ClientSSK[] getRequestURIs(USK key) {
 		ClientSSK[] uris = new ClientSSK[Type.values.length];
 		int x = 0;
-		for(Type t : Type.values)
+		for(Type t : Type.values) {
 			uris[x++] = key.getSSK(key.siteName+PREFIX+get(t));
+		}
 		return uris;
 	}
 

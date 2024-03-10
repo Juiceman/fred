@@ -48,7 +48,8 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	private final FetchContext dependencyCtx;
 	private final ClientContext clientContext;
 
-	MainJarUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max, String blobFilenamePrefix) {
+	MainJarUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max,
+				   String blobFilenamePrefix) {
 		super(manager, URI, current, min, max, blobFilenamePrefix);
 		dependencyCtx = core.makeClient((short) 0, true, false).getFetchContext();
 		dependencyCtx.allowSplitfiles = true;
@@ -109,7 +110,8 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	}
 
 	/** Glue code. */
-	private class DependencyJarFetcher implements JarFetcher, ClientGetCallback, RequestClient, ClientEventListener {
+	private class DependencyJarFetcher implements JarFetcher, ClientGetCallback, RequestClient,
+		ClientEventListener {
 
 		private final File filename;
 		private final ClientGetter getter;
@@ -123,16 +125,20 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		private UOMDependencyFetcher uomFetcher;
 		private final boolean executable;
 
-		DependencyJarFetcher(File filename, FreenetURI chk, long expectedLength, byte[] expectedHash, JarFetcherCallback cb, boolean essential, boolean executable) throws FetchException {
+		DependencyJarFetcher(File filename, FreenetURI chk, long expectedLength, byte[] expectedHash,
+							 JarFetcherCallback cb, boolean essential, boolean executable) throws FetchException {
 			FetchContext myCtx = new FetchContext(dependencyCtx, FetchContext.IDENTICAL_MASK);
 			File parent = filename.getParentFile();
-			if(parent == null) parent = new File(".");
+			if(parent == null) {
+				parent = new File(".");
+			}
 			try {
 				tempFile = File.createTempFile(filename.getName(), NodeUpdateManager.TEMP_FILE_SUFFIX, parent);
 			} catch (InsufficientDiskSpaceException e) {
 				throw new FetchException(FetchExceptionMode.NOT_ENOUGH_DISK_SPACE);
 			} catch (IOException e) {
-				throw new FetchException(FetchExceptionMode.BUCKET_ERROR, "Cannot create temp file for "+filename+" in "+parent+" - disk full? permissions problem?");
+				throw new FetchException(FetchExceptionMode.BUCKET_ERROR,
+										 "Cannot create temp file for "+filename+" in "+parent+" - disk full? permissions problem?");
 			}
 			getter = new ClientGetter(this,
 									  chk, myCtx, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
@@ -158,7 +164,9 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 				@Override
 				public void run() {
 					getter.cancel(clientContext);
-					if(f != null) f.cancel();
+					if(f != null) {
+						f.cancel();
+					}
 				}
 
 			});
@@ -185,36 +193,50 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			}
 			if(!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
 				Logger.error(this, "Unable to download dependency "+filename+" : not the expected size or hash!");
-				System.err.println("Download of "+filename+" for update failed because temp file appears to be corrupted!");
-				if(cb != null)
-					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()+" "));
+				System.err.println("Download of "+filename
+								   +" for update failed because temp file appears to be corrupted!");
+				if(cb != null) {
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+													"Downloaded jar from Freenet but failed consistency check: "+tempFile+" length "+tempFile.length()
+													+" "));
+				}
 				tempFile.delete();
 				return;
 			}
 			if(!FileUtil.renameTo(tempFile, filename)) {
 				Logger.error(this, "Unable to rename temp file "+tempFile+" to "+filename);
-				System.err.println("Download of "+filename+" for update failed because cannot rename from "+tempFile);
-				if(cb != null)
-					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file "+tempFile+" to "+filename));
+				System.err.println("Download of "+filename+" for update failed because cannot rename from "
+								   +tempFile);
+				if(cb != null) {
+					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR,
+													"Unable to rename temp file "+tempFile+" to "+filename));
+				}
 				tempFile.delete();
 				return;
 			}
-			if(cb != null) cb.onSuccess();
+			if(cb != null) {
+				cb.onSuccess();
+			}
 		}
 
 		@Override
 		public void onFailure(FetchException e, ClientGetter state) {
 			tempFile.delete();
 			synchronized(this) {
-				if(fetched) return;
+				if(fetched) {
+					return;
+				}
 			}
-			if(cb != null) cb.onFailure(e);
+			if(cb != null) {
+				cb.onFailure(e);
+			}
 		}
 
 		@Override
 		public synchronized void receive(ClientEvent ce, ClientContext context) {
-			if(ce instanceof SplitfileProgressEvent)
+			if(ce instanceof SplitfileProgressEvent) {
 				lastProgress = (SplitfileProgressEvent) ce;
+			}
 		}
 
 		private void start() throws FetchException {
@@ -225,31 +247,43 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			HTMLNode row = new HTMLNode("tr");
 			row.addChild("td").addChild("p", filename.toString());
 
-			if(uomFetcher != null)
+			if(uomFetcher != null) {
 				row.addChild("td").addChild("#", l10n("fetchingFromUOM"));
-			else if(lastProgress == null)
-				row.addChild(QueueToadlet.createProgressCell(false, true, COMPRESS_STATE.WORKING, 0, 0, 0, 0, 0, false, false));
-			else
+			} else if(lastProgress == null) {
+				row.addChild(QueueToadlet.createProgressCell(false, true, COMPRESS_STATE.WORKING, 0, 0, 0, 0, 0,
+							 false, false));
+			} else
 				row.addChild(QueueToadlet.createProgressCell(false,
-							 true, COMPRESS_STATE.WORKING, lastProgress.succeedBlocks, lastProgress.failedBlocks, lastProgress.fatallyFailedBlocks, lastProgress.minSuccessfulBlocks, lastProgress.totalBlocks, lastProgress.finalizedTotal, false));
+							 true, COMPRESS_STATE.WORKING, lastProgress.succeedBlocks, lastProgress.failedBlocks,
+							 lastProgress.fatallyFailedBlocks, lastProgress.minSuccessfulBlocks, lastProgress.totalBlocks,
+							 lastProgress.finalizedTotal, false));
 			return row;
 		}
 
 		public void fetchFromUOM() {
 			synchronized(this) {
-				if(fetched) return;
-				if(!essential) return;
+				if(fetched) {
+					return;
+				}
+				if(!essential) {
+					return;
+				}
 			}
-			UOMDependencyFetcher f = manager.uom.fetchDependency(expectedHash, expectedLength, filename, executable,
+			UOMDependencyFetcher f = manager.uom.fetchDependency(expectedHash, expectedLength, filename,
+									 executable,
 			new UOMDependencyFetcherCallback() {
 
 				@Override
 				public void onSuccess() {
 					synchronized(DependencyJarFetcher.this) {
-						if(fetched) return;
+						if(fetched) {
+							return;
+						}
 						fetched = true;
 					}
-					if(cb != null) cb.onSuccess();
+					if(cb != null) {
+						cb.onSuccess();
+					}
 				}
 
 			});
@@ -276,22 +310,29 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 
 	@Override
 	public JarFetcher fetch(FreenetURI uri, File downloadTo,
-							long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException {
-		if(essential)
+							long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential,
+							boolean executable) throws FetchException {
+		if(essential) {
 			System.out.println("Fetching "+downloadTo+" needed for new Freenet update "+build);
-		else if(build != 0) // build 0 means it's a preload or a multi-file update.
+		} else if(build != 0) { // build 0 means it's a preload or a multi-file update.
 			System.out.println("Preloading "+downloadTo+" needed for new Freenet update "+build);
-		if(logMINOR) Logger.minor(this, "Fetching "+uri+" to "+downloadTo+" for next update");
-		DependencyJarFetcher fetcher = new DependencyJarFetcher(downloadTo, uri, expectedLength, expectedHash, cb, essential, executable);
+		}
+		if(logMINOR) {
+			Logger.minor(this, "Fetching "+uri+" to "+downloadTo+" for next update");
+		}
+		DependencyJarFetcher fetcher = new DependencyJarFetcher(downloadTo, uri, expectedLength,
+				expectedHash, cb, essential, executable);
 		synchronized(fetchers) {
 			fetchers.add(fetcher);
-			if(essential)
+			if(essential) {
 				essentialFetchers.add(fetcher);
+			}
 		}
 		fetcher.start();
 		if(manager.uom.fetchingUOM()) {
-			if(essential)
+			if(essential) {
 				fetcher.fetchFromUOM();
+			}
 		}
 		return fetcher;
 	}
@@ -301,8 +342,9 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		synchronized(fetchers) {
 			f = fetchers.toArray(new DependencyJarFetcher[fetchers.size()]);
 		}
-		for(DependencyJarFetcher fetcher : f)
+		for(DependencyJarFetcher fetcher : f) {
 			fetcher.fetchFromUOM();
+		}
 	}
 
 	public void renderProperties(HTMLNode alertNode) {
@@ -355,12 +397,14 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	}
 
 	@Override
-	public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer atomicDeployer) {
+	public void multiFileReplaceReadyToDeploy(final MainJarDependenciesChecker.AtomicDeployer
+			atomicDeployer) {
 		if(this.manager.isAutoUpdateAllowed()) {
 			atomicDeployer.deployMultiFileUpdateOffThread();
 		} else {
 			final long now = System.currentTimeMillis();
-			System.err.println("Not deploying multi-file update for "+atomicDeployer.name+" because auto-update is not enabled.");
+			System.err.println("Not deploying multi-file update for "+atomicDeployer.name
+							   +" because auto-update is not enabled.");
 			node.clientCore.alerts.register(new UserAlert() {
 
 				private String l10n(String key) {

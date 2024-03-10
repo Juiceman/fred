@@ -18,8 +18,9 @@ public class ListUtils {
 	 */
 	public static <E> boolean removeBySwapLast(List<E> a, Object o) {
 		int idx = a.indexOf(o);
-		if (idx == -1)
+		if (idx == -1) {
 			return false;
+		}
 		removeBySwapLast(a, idx);
 		return true;
 	}
@@ -40,10 +41,13 @@ public class ListUtils {
 	 */
 	public static <E> E removeBySwapLast(List<E> a, int idx) {
 		int size = a.size();
-		if (idx < 0 || idx >= size) throw new IndexOutOfBoundsException(idx+" out of range [0;"+size+")");
+		if (idx < 0 || idx >= size) {
+			throw new IndexOutOfBoundsException(idx+" out of range [0;"+size+")");
+		}
 		E moved = a.remove(size-1);
-		if (idx != size-1)
+		if (idx != size-1) {
 			a.set(idx, moved);
+		}
 		return moved;
 	}
 
@@ -68,7 +72,9 @@ public class ListUtils {
 	 */
 	public static <E> RandomRemoveResult<E> removeRandomBySwapLast(Random random, List<E> a) {
 		int size = a.size();
-		if (size == 0) return null;
+		if (size == 0) {
+			return null;
+		}
 		if (size == 1) {
 			// short-circuit, avoid expensive random call
 			E removed = a.remove(0);
@@ -90,7 +96,9 @@ public class ListUtils {
 	 */
 	public static <E> E removeRandomBySwapLastSimple(Random random, List<E> a) {
 		int size = a.size();
-		if (size == 0) return null;
+		if (size == 0) {
+			return null;
+		}
 		if (size == 1) {
 			// short-circuit, avoid expensive random call
 			return a.remove(0);

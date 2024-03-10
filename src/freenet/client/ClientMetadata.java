@@ -33,29 +33,34 @@ public class ClientMetadata implements Cloneable, Serializable {
 
 	private ClientMetadata(DataInputStream dis) throws MetadataParseException, IOException {
 		int magic = dis.readInt();
-		if(magic != MAGIC)
+		if(magic != MAGIC) {
 			throw new MetadataParseException("Bad magic value in ClientMetadata");
+		}
 		short version = dis.readShort();
-		if(version != VERSION)
+		if(version != VERSION) {
 			throw new MetadataParseException("Unrecognised version "+version+" in ClientMetadata");
+		}
 		boolean hasMIMEType = dis.readBoolean();
-		if(hasMIMEType)
+		if(hasMIMEType) {
 			mimeType = dis.readUTF();
-		else
+		} else {
 			mimeType = null;
+		}
 	}
 
 	/** Factory method to keep the API cleaner, avoid ambiguity; this won't be used as often as
 	 * the String constructor. */
-	public static ClientMetadata construct(DataInputStream dis) throws MetadataParseException, IOException {
+	public static ClientMetadata construct(DataInputStream dis) throws MetadataParseException,
+		IOException {
 		return new ClientMetadata(dis);
 	}
 
 	/** Get the document MIME type. Will always be a valid MIME type, unless there
 	 * has been an error; if it is unknown, will return application/octet-stream. */
 	public String getMIMEType() {
-		if((mimeType == null) || (mimeType.length() == 0))
+		if((mimeType == null) || (mimeType.length() == 0)) {
 			return DefaultMIMETypes.DEFAULT_MIME_TYPE;
+		}
 		return mimeType;
 	}
 
@@ -64,8 +69,9 @@ public class ClientMetadata implements Cloneable, Serializable {
 	 * existing information.
 	 */
 	public void mergeNoOverwrite(ClientMetadata clientMetadata) {
-		if((mimeType == null) || mimeType.isEmpty())
+		if((mimeType == null) || mimeType.isEmpty()) {
 			mimeType = clientMetadata.mimeType;
+		}
 	}
 
 	/** Is there no MIME type? */
@@ -96,7 +102,9 @@ public class ClientMetadata implements Cloneable, Serializable {
 	 * the RFCs defining the MIME type for details). */
 	public String getMIMETypeNoParams() {
 		String s = mimeType;
-		if(s == null) return null;
+		if(s == null) {
+			return null;
+		}
 		int i = s.indexOf(';');
 		if(i > -1) {
 			s = s.substring(i);
@@ -107,9 +115,9 @@ public class ClientMetadata implements Cloneable, Serializable {
 	public void writeTo(DataOutputStream dos) throws IOException {
 		dos.writeInt(MAGIC);
 		dos.writeShort(VERSION);
-		if(mimeType == null)
+		if(mimeType == null) {
 			dos.writeBoolean(false);
-		else {
+		} else {
 			dos.writeBoolean(true);
 			dos.writeUTF(mimeType);
 		}

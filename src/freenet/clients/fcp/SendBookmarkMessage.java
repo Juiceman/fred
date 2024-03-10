@@ -53,9 +53,11 @@ public class SendBookmarkMessage extends SendPeerMessage {
 		try {
 			if(dataLength() > 0) {
 				byte[] description = BucketTools.toByteArray(bucket);
-				return pn.sendBookmarkFeed(uri, name, new String(description, StandardCharsets.UTF_8), hasAnAnActiveLink);
-			} else
+				return pn.sendBookmarkFeed(uri, name, new String(description, StandardCharsets.UTF_8),
+										   hasAnAnActiveLink);
+			} else {
 				return pn.sendBookmarkFeed(uri, name, null, hasAnAnActiveLink);
+			}
 		} catch (IOException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "", null, false);
 		}

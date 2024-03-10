@@ -16,7 +16,8 @@ public class FilterResultMessage extends DataCarryingMessage {
 	private final boolean unsafeContentType;
 	private final long dataLength;
 
-	public FilterResultMessage(String identifier, String charset, String mimeType, boolean unsafeContentType, Bucket bucket) {
+	public FilterResultMessage(String identifier, String charset, String mimeType,
+							   boolean unsafeContentType, Bucket bucket) {
 		this.identifier = identifier;
 		this.charset = charset;
 		this.mimeType = mimeType;
@@ -62,7 +63,8 @@ public class FilterResultMessage extends DataCarryingMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, NAME + " goes from server to client not the other way around", null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  NAME + " goes from server to client not the other way around", null, false);
 	}
 
 }

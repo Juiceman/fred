@@ -17,7 +17,9 @@ public class BookmarkCategory extends Bookmark {
 
 	public BookmarkCategory(SimpleFieldSet sfs) throws FSParseException {
 		String aName = sfs.get("Name");
-		if(aName == null) throw new FSParseException("No Name!");
+		if(aName == null) {
+			throw new FSParseException("No Name!");
+		}
 		setName(aName);
 	}
 

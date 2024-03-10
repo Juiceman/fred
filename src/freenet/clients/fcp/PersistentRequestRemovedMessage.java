@@ -34,7 +34,8 @@ public class PersistentRequestRemovedMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentRequestRemoved goes from server to client not the other way around", ident, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PersistentRequestRemoved goes from server to client not the other way around", ident, global);
 	}
 
 }

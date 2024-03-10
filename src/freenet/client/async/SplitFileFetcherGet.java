@@ -35,7 +35,9 @@ public class SplitFileFetcherGet extends SendableGet implements HasKeyListener {
 	@Override
 	public ClientKey getKey(SendableRequestItem token) {
 		SplitFileFetcherStorageKey key = (SplitFileFetcherStorage.SplitFileFetcherStorageKey) token;
-		if(key.get != storage) throw new IllegalArgumentException();
+		if(key.get != storage) {
+			throw new IllegalArgumentException();
+		}
 		return storage.getKey(key);
 	}
 
@@ -57,11 +59,15 @@ public class SplitFileFetcherGet extends SendableGet implements HasKeyListener {
 			// If the error is definitely-fatal it means there is either a serious local problem
 			// or the inserted data was corrupt. So we fail the entire splitfile immediately.
 			// We don't track which blocks have fatally failed.
-			if(logMINOR) Logger.minor(this, "Fatal failure: "+fe+" for "+token);
+			if(logMINOR) {
+				Logger.minor(this, "Fatal failure: "+fe+" for "+token);
+			}
 			parent.fail(fe);
 		} else {
 			SplitFileFetcherStorage.SplitFileFetcherStorageKey key = (SplitFileFetcherStorageKey) token;
-			if(key.get != storage) throw new IllegalArgumentException();
+			if(key.get != storage) {
+				throw new IllegalArgumentException();
+			}
 			storage.onFailure(key, fe);
 		}
 	}
@@ -69,7 +75,9 @@ public class SplitFileFetcherGet extends SendableGet implements HasKeyListener {
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
 		long wakeTime = storage.getCooldownWakeupTime(now);
-		if(wakeTime == 0) return 0;
+		if(wakeTime == 0) {
+			return 0;
+		}
 		return wakeTime;
 	}
 
@@ -81,7 +89,9 @@ public class SplitFileFetcherGet extends SendableGet implements HasKeyListener {
 
 	@Override
 	public boolean preRegister(ClientContext context, boolean toNetwork) {
-		if(!toNetwork) return false;
+		if(!toNetwork) {
+			return false;
+		}
 		// Notify clients of all the work we've done checking the datastore.
 		if(parent.localRequestOnly()) {
 			storage.finishedCheckingDatastoreOnLocalRequest(context);

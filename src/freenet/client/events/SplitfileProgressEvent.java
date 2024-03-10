@@ -51,8 +51,11 @@ public class SplitfileProgressEvent implements ClientEvent {
 		this.minSuccessfulBlocks = minSuccessfulBlocks;
 		this.finalizedTotal = finalizedTotal;
 		this.minSuccessFetchBlocks = minSuccessFetchBlocks;
-		if(logMINOR)
-			Logger.minor(this, "Created SplitfileProgressEvent: total="+totalBlocks+" succeed="+succeedBlocks+" failed="+failedBlocks+" fatally="+fatallyFailedBlocks+" min success="+minSuccessfulBlocks+" finalized="+finalizedTotal);
+		if(logMINOR) {
+			Logger.minor(this, "Created SplitfileProgressEvent: total="+totalBlocks+" succeed="+succeedBlocks
+						 +" failed="+failedBlocks+" fatally="+fatallyFailedBlocks+" min success="+minSuccessfulBlocks
+						 +" finalized="+finalizedTotal);
+		}
 	}
 
 	protected SplitfileProgressEvent() {
@@ -73,15 +76,20 @@ public class SplitfileProgressEvent implements ClientEvent {
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Completed ");
-		if((minSuccessfulBlocks == 0) && (succeedBlocks == 0))
+		if((minSuccessfulBlocks == 0) && (succeedBlocks == 0)) {
 			minSuccessfulBlocks = 1;
+		}
 		if(minSuccessfulBlocks == 0) {
 			if(LogLevel.MINOR.matchesThreshold(Logger.globalGetThresholdNew()))
-				Logger.error(this, "minSuccessfulBlocks=0, succeedBlocks="+succeedBlocks+", totalBlocks="+totalBlocks+
-							 ", failedBlocks="+failedBlocks+", fatallyFailedBlocks="+fatallyFailedBlocks+", finalizedTotal="+finalizedTotal, new Exception("debug"));
+				Logger.error(this, "minSuccessfulBlocks=0, succeedBlocks="+succeedBlocks+", totalBlocks="
+							 +totalBlocks+
+							 ", failedBlocks="+failedBlocks+", fatallyFailedBlocks="+fatallyFailedBlocks+", finalizedTotal="
+							 +finalizedTotal, new Exception("debug"));
 			else
-				Logger.error(this, "minSuccessfulBlocks=0, succeedBlocks="+succeedBlocks+", totalBlocks="+totalBlocks+
-							 ", failedBlocks="+failedBlocks+", fatallyFailedBlocks="+fatallyFailedBlocks+", finalizedTotal="+finalizedTotal);
+				Logger.error(this, "minSuccessfulBlocks=0, succeedBlocks="+succeedBlocks+", totalBlocks="
+							 +totalBlocks+
+							 ", failedBlocks="+failedBlocks+", fatallyFailedBlocks="+fatallyFailedBlocks+", finalizedTotal="
+							 +finalizedTotal);
 		} else {
 			sb.append((100*(succeedBlocks)/minSuccessfulBlocks));
 			sb.append('%');

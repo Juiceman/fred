@@ -8,7 +8,8 @@ import freenet.support.api.StringCallback;
 public class StringOption extends Option<String> {
 	public StringOption(SubConfig conf, String optionName, String defaultValue, int sortOrder,
 						boolean expert, boolean forceWrite, String shortDesc, String longDesc, StringCallback cb) {
-		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc, Option.DataType.STRING);
+		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc,
+			  Option.DataType.STRING);
 		this.defaultValue = defaultValue;
 		this.currentValue = defaultValue;
 	}

@@ -115,10 +115,14 @@ public class LocationTest {
 		assertEquals(DIST_12, Location.distanceAllowInvalid(VALID_2, VALID_1), EPSILON);
 
 		// Corner case.
-		assertEquals(0.5, Location.distanceAllowInvalid(VALID_1, Location.normalize(VALID_1 + 0.5)), EPSILON);
-		assertEquals(0.5, Location.distanceAllowInvalid(VALID_1, Location.normalize(VALID_1 - 0.5)), EPSILON);
-		assertEquals(0.5, Location.distanceAllowInvalid(VALID_2, Location.normalize(VALID_2 + 0.5)), EPSILON);
-		assertEquals(0.5, Location.distanceAllowInvalid(VALID_2, Location.normalize(VALID_2 - 0.5)), EPSILON);
+		assertEquals(0.5, Location.distanceAllowInvalid(VALID_1, Location.normalize(VALID_1 + 0.5)),
+					 EPSILON);
+		assertEquals(0.5, Location.distanceAllowInvalid(VALID_1, Location.normalize(VALID_1 - 0.5)),
+					 EPSILON);
+		assertEquals(0.5, Location.distanceAllowInvalid(VALID_2, Location.normalize(VALID_2 + 0.5)),
+					 EPSILON);
+		assertEquals(0.5, Location.distanceAllowInvalid(VALID_2, Location.normalize(VALID_2 - 0.5)),
+					 EPSILON);
 
 		// Identity.
 		assertEquals(0.0, Location.distanceAllowInvalid(VALID_1, VALID_1), EPSILON);

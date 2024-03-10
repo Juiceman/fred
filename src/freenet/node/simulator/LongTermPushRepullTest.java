@@ -75,7 +75,8 @@ public class LongTermPushRepullTest extends LongTermTest {
 			fis.close();
 
 			// Create one node
-			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
+			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+											  Node.DEFAULT_MAX_HTL,
 											  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
 											  12 * 1024, true, true, false, false, null);
 			Logger.getChain().setThreshold(LogLevel.ERROR);
@@ -154,8 +155,9 @@ public class LongTermPushRepullTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 						e.printStackTrace();
+					}
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
 			}
@@ -164,13 +166,15 @@ public class LongTermPushRepullTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable t1) {
 			}
 

@@ -124,7 +124,9 @@ public class BaseL10n {
 				}
 				if(currentLanguage.aliases != null) {
 					for(String s : currentLanguage.aliases)
-						if(whatever.equalsIgnoreCase(s)) return currentLanguage;
+						if(whatever.equalsIgnoreCase(s)) {
+							return currentLanguage;
+						}
 				}
 			}
 			return null;
@@ -137,8 +139,9 @@ public class BaseL10n {
 				// We will return the full names sorted alphabetically. To ensure that the user
 				// notices the special "UNLISTED" language code, we add it to the end of the list
 				// after sorting, so now we skip it.
-				if(allValues[i] != UNLISTED)
+				if(allValues[i] != UNLISTED) {
 					result.add(allValues[i].fullName);
+				}
 			}
 
 			Collections.sort(result);
@@ -236,7 +239,8 @@ public class BaseL10n {
 		this(l10nFilesBasePath, l10nFilesMask, l10nOverrideFilesMask, LANGUAGE.getDefault());
 	}
 
-	public BaseL10n(String l10nFilesBasePath, String l10nFilesMask, String l10nOverrideFilesMask, final LANGUAGE lang) {
+	public BaseL10n(String l10nFilesBasePath, String l10nFilesMask, String l10nOverrideFilesMask,
+					final LANGUAGE lang) {
 		this(l10nFilesBasePath, l10nFilesMask, l10nOverrideFilesMask, lang, getClassLoaderFallback());
 	}
 
@@ -250,7 +254,8 @@ public class BaseL10n {
 	 * @param lang Language to use.
 	 * @param cl ClassLoader to use.
 	 */
-	public BaseL10n(String l10nFilesBasePath, String l10nFilesMask, String l10nOverrideFilesMask, final LANGUAGE lang, final ClassLoader cl) {
+	public BaseL10n(String l10nFilesBasePath, String l10nFilesMask, String l10nOverrideFilesMask,
+					final LANGUAGE lang, final ClassLoader cl) {
 		if (!l10nFilesBasePath.endsWith("/")) {
 			l10nFilesBasePath += "/";
 		}
@@ -301,7 +306,8 @@ public class BaseL10n {
 
 		this.currentTranslation = this.loadTranslation(lang);
 		if (this.currentTranslation == null) {
-			Logger.error(this, "The translation file for " + lang + " is invalid. The node will load an empty template.");
+			Logger.error(this, "The translation file for " + lang +
+						 " is invalid. The node will load an empty template.");
 			this.currentTranslation = null;
 		}
 	}
@@ -346,7 +352,8 @@ public class BaseL10n {
 				System.err.println("Could not get resource : " + this.getL10nFileName(lang));
 			}
 		} catch (Exception e) {
-			System.err.println("Error while loading the l10n file from " + this.getL10nFileName(lang) + " :" + e.getMessage());
+			System.err.println("Error while loading the l10n file from " + this.getL10nFileName(
+								   lang) + " :" + e.getMessage());
 			e.printStackTrace();
 			result = null;
 		} finally {
@@ -362,8 +369,9 @@ public class BaseL10n {
 	private synchronized void loadFallback() {
 		if (this.fallbackTranslation == null) {
 			this.fallbackTranslation = loadTranslation(LANGUAGE.getDefault());
-			if(fallbackTranslation == null)
+			if(fallbackTranslation == null) {
 				fallbackTranslation = new SimpleFieldSet(true);
+			}
 		}
 	}
 
@@ -402,7 +410,8 @@ public class BaseL10n {
 
 		// If there is no need to keep it in the override, remove it...
 		// unless the original/default is the same as the translation
-		if (value.isEmpty() || (currentTranslation != null && value.equals(this.currentTranslation.get(key)))) {
+		if (value.isEmpty() || (currentTranslation != null
+								&& value.equals(this.currentTranslation.get(key)))) {
 			this.translationOverride.removeValue(key);
 		} else {
 			value = value.replaceAll("(\r|\n|\t)+", "");
@@ -514,7 +523,9 @@ public class BaseL10n {
 		}
 
 		if (result == null) {
-			Logger.normal(this.getClass(), "The translation for " + key + " hasn't been found (" + this.getSelectedLanguage() + ")! please tell the maintainer.");
+			Logger.normal(this.getClass(),
+						  "The translation for " + key + " hasn't been found (" + this.getSelectedLanguage() +
+						  ")! please tell the maintainer.");
 		}
 		return result;
 	}
@@ -558,17 +569,21 @@ public class BaseL10n {
 	public HTMLNode getHTMLNode(String key, String[] patterns, String[] values) {
 		String value = this.getString(key, true);
 		if (value != null) {
-			if(patterns != null)
+			if(patterns != null) {
 				return new HTMLNode("#", getString(key, patterns, values));
-			else
+			} else {
 				return new HTMLNode("#", value);
+			}
 		}
 		HTMLNode translationField = new HTMLNode("span", "class", "translate_it");
-		if(patterns != null)
+		if(patterns != null) {
 			translationField.addChild("#", getDefaultString(key, patterns, values));
-		else
+		} else {
 			translationField.addChild("#", getDefaultString(key));
-		translationField.addChild("a", "href", TranslationToadlet.TOADLET_URL + "?translate=" + key).addChild("small", " (translate it in your native language!)");
+		}
+		translationField.addChild("a", "href",
+								  TranslationToadlet.TOADLET_URL + "?translate=" + key).addChild("small",
+										  " (translate it in your native language!)");
 
 		return translationField;
 	}
@@ -774,8 +789,9 @@ public class BaseL10n {
 		int x;
 		while(!value.isEmpty() && (x = value.indexOf("${")) != -1) {
 			String before = value.substring(0, x);
-			if(before.length() > 0)
+			if(before.length() > 0) {
 				node.addChild("#", before);
+			}
 			value = value.substring(x);
 			int y = value.indexOf('}');
 			if(y == -1) {
@@ -817,8 +833,9 @@ public class BaseL10n {
 				value = rest;
 			}
 		}
-		if(!value.isEmpty())
+		if(!value.isEmpty()) {
 			node.addChild("#", value);
+		}
 	}
 
 	public String[] getAllNamesWithPrefix(String prefix) {

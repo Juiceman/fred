@@ -15,17 +15,19 @@ public abstract class StoreAccessStats {
 	}
 
 	public long successfulReads() {
-		if (readRequests() > 0)
+		if (readRequests() > 0) {
 			return hits();
-		else
+		} else {
 			return 0;
+		}
 	}
 
 	public double successRate() throws StatsNotAvailableException {
-		if (readRequests() > 0)
+		if (readRequests() > 0) {
 			return (100.0 * hits() / readRequests());
-		else
+		} else {
 			throw new StatsNotAvailableException();
+		}
 	}
 
 	public double accessRate(long nodeUptimeSeconds) {

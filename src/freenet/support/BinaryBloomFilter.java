@@ -38,8 +38,9 @@ public class BinaryBloomFilter extends BloomFilter {
 	 */
 	protected BinaryBloomFilter(File file, int length, int k) throws IOException {
 		super(length, k);
-		if (!file.exists() || file.length() != length / 8)
+		if (!file.exists() || file.length() != length / 8) {
 			needRebuild = true;
+		}
 
 		RandomAccessFile raf = new RandomAccessFile(file, "rw");
 		FileChannel channel = null;

@@ -53,7 +53,8 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 	/** Total number of bytes of attached data */
 	private final long attachedBytes;
 
-	public ClientPutComplexDirMessage(SimpleFieldSet fs, BucketFactory bfTemp, PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
+	public ClientPutComplexDirMessage(SimpleFieldSet fs, BucketFactory bfTemp,
+									  PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
 		// Parse the standard ClientPutDir headers - URI, etc.
 		super(fs);
 
@@ -62,19 +63,28 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 		long totalBytes = 0;
 		// Now parse the meat
 		SimpleFieldSet files = fs.subset("Files");
-		if(files == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing Files section", identifier, global);
+		if(files == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing Files section",
+											  identifier, global);
+		}
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		for(int i=0;; i++) {
 			SimpleFieldSet subset = files.subset(Integer.toString(i));
-			if(subset == null) break;
-			DirPutFile f = DirPutFile.create(subset, identifier, global, (persistence == Persistence.FOREVER) ? bfPersistent : bfTemp);
+			if(subset == null) {
+				break;
+			}
+			DirPutFile f = DirPutFile.create(subset, identifier, global,
+											 (persistence == Persistence.FOREVER) ? bfPersistent : bfTemp);
 			addFile(f);
-			if(logMINOR) Logger.minor(this, "Adding "+f);
+			if(logMINOR) {
+				Logger.minor(this, "Adding "+f);
+			}
 			if(f instanceof DirectDirPutFile) {
 				totalBytes += ((DirectDirPutFile)f).bytesToRead();
 				filesToRead.addLast(f);
-				if(logMINOR) Logger.minor(this, "totalBytes now "+totalBytes);
+				if(logMINOR) {
+					Logger.minor(this, "totalBytes now "+totalBytes);
+				}
 			}
 		}
 		attachedBytes = totalBytes;
@@ -89,7 +99,8 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addFile(HashMap<String, Object> byName, String name, DirPutFile f) throws MessageInvalidException {
+	private void addFile(HashMap<String, Object> byName, String name,
+						 DirPutFile f) throws MessageInvalidException {
 		int idx = name.indexOf('/');
 		if(idx == -1) {
 			byName.put(name, f);
@@ -102,7 +113,8 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 					addFile((HashMap<String, Object>) o, after, f);
 					return;
 				} else {
-					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Cannot be both a file and a directory: "+before, identifier, global);
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+													  "Cannot be both a file and a directory: "+before, identifier, global);
 				}
 			} else {
 				o = new HashMap<Object, Object>();
@@ -129,7 +141,8 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 	}
 
 	@Override
-	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException {
+	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException,
+		MessageInvalidException {
 		for(DirPutFile f: filesToRead) {
 			((DirectDirPutFile)f).read(is);
 		}
@@ -170,8 +183,10 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 				convertFilesByNameToManifestElements(h, manifests, node);
 			} else {
 				DirPutFile f = (DirPutFile) val;
-				if(f instanceof DiskDirPutFile && !node.clientCore.allowUploadFrom(((DiskDirPutFile)f).getFile()))
-					throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to upload "+((DiskDirPutFile) f).getFile(), identifier, global);
+				if(f instanceof DiskDirPutFile && !node.clientCore.allowUploadFrom(((DiskDirPutFile)f).getFile())) {
+					throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+													  "Not allowed to upload "+((DiskDirPutFile) f).getFile(), identifier, global);
+				}
 				ManifestElement e = f.getElement();
 				manifestElements.put(tempName, e);
 			}

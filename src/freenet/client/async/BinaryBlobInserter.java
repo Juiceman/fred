@@ -36,7 +36,8 @@ public class BinaryBlobInserter implements ClientPutState {
 	final InsertContext ctx;
 	final boolean realTimeFlag;
 
-	BinaryBlobInserter(Bucket blob, ClientPutter parent, RequestClient clientContext, boolean tolerant, short prioClass, InsertContext ctx, ClientContext context)
+	BinaryBlobInserter(Bucket blob, ClientPutter parent, RequestClient clientContext, boolean tolerant,
+					   short prioClass, InsertContext ctx, ClientContext context)
 	throws IOException, BinaryBlobFormatException {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		this.ctx = ctx;
@@ -71,18 +72,21 @@ public class BinaryBlobInserter implements ClientPutState {
 	}
 
 	private ClientRequestScheduler getScheduler(KeyBlock block, ClientContext context) {
-		if(block instanceof CHKBlock)
+		if(block instanceof CHKBlock) {
 			return context.getChkInsertScheduler(realTimeFlag);
-		else if(block instanceof SSKBlock)
+		} else if(block instanceof SSKBlock) {
 			return context.getSskInsertScheduler(realTimeFlag);
-		else throw new IllegalArgumentException("Unknown block type "+block.getClass()+" : "+block);
+		} else {
+			throw new IllegalArgumentException("Unknown block type "+block.getClass()+" : "+block);
+		}
 	}
 
 	@Override
 	public void cancel(ClientContext context) {
 		for(MySendableInsert inserter: inserters) {
-			if(inserter != null)
+			if(inserter != null) {
 				inserter.cancel(context);
+			}
 		}
 		parent.onFailure(new InsertException(InsertExceptionMode.CANCELLED), this, context);
 	}
@@ -111,7 +115,8 @@ public class BinaryBlobInserter implements ClientPutState {
 		private int consecutiveRNFs;
 		private int retries;
 
-		public MySendableInsert(int i, KeyBlock block, short prioClass, ClientRequestScheduler scheduler, RequestClient client) {
+		public MySendableInsert(int i, KeyBlock block, short prioClass, ClientRequestScheduler scheduler,
+								RequestClient client) {
 			super(block, prioClass, client, scheduler);
 			this.blockNum = i;
 		}
@@ -119,7 +124,9 @@ public class BinaryBlobInserter implements ClientPutState {
 		@Override
 		public void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context) {
 			synchronized(this) {
-				if(inserters[blockNum] == null) return;
+				if(inserters[blockNum] == null) {
+					return;
+				}
 				inserters[blockNum] = null;
 				completedBlocks++;
 				succeededBlocks++;
@@ -133,7 +140,9 @@ public class BinaryBlobInserter implements ClientPutState {
 		@Override
 		public void onFailure(LowLevelPutException e, SendableRequestItem keyNum, ClientContext context) {
 			synchronized(BinaryBlobInserter.this) {
-				if(inserters[blockNum] == null) return;
+				if(inserters[blockNum] == null) {
+					return;
+				}
 			}
 			if(parent.isCancelled()) {
 				fail(new InsertException(InsertExceptionMode.CANCELLED), true, context);
@@ -162,15 +171,22 @@ public class BinaryBlobInserter implements ClientPutState {
 			}
 			if(e.code == LowLevelPutException.ROUTE_NOT_FOUND) {
 				consecutiveRNFs++;
-				if(logMINOR) Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" / "+consecutiveRNFsCountAsSuccess);
+				if(logMINOR) {
+					Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" / "+consecutiveRNFsCountAsSuccess);
+				}
 				if(consecutiveRNFs == consecutiveRNFsCountAsSuccess) {
-					if(logMINOR) Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" - counting as success");
+					if(logMINOR) {
+						Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" - counting as success");
+					}
 					onSuccess(keyNum, null, context);
 					return;
 				}
-			} else
+			} else {
 				consecutiveRNFs = 0;
-			if(logMINOR) Logger.minor(this, "Failed: "+e);
+			}
+			if(logMINOR) {
+				Logger.minor(this, "Failed: "+e);
+			}
 			retries++;
 			if((retries > maxRetries) && (maxRetries != -1)) {
 				fail(InsertException.construct(errors), false, context);
@@ -183,15 +199,20 @@ public class BinaryBlobInserter implements ClientPutState {
 
 		private void fail(InsertException e, boolean fatal, ClientContext context) {
 			synchronized(BinaryBlobInserter.this) {
-				if(inserters[blockNum] == null) return;
+				if(inserters[blockNum] == null) {
+					return;
+				}
 				inserters[blockNum] = null;
 				completedBlocks++;
-				if(fatal) BinaryBlobInserter.this.fatal = true;
+				if(fatal) {
+					BinaryBlobInserter.this.fatal = true;
+				}
 			}
-			if(fatal)
+			if(fatal) {
 				parent.fatallyFailedBlock(context);
-			else
+			} else {
 				parent.failedBlock(context);
+			}
 			maybeFinish(context);
 		}
 
@@ -201,23 +222,28 @@ public class BinaryBlobInserter implements ClientPutState {
 		boolean success;
 		boolean wasFatal;
 		synchronized(this) {
-			if(completedBlocks != inserters.length)
+			if(completedBlocks != inserters.length) {
 				return;
+			}
 			success = completedBlocks == succeededBlocks;
 			wasFatal = fatal;
 		}
 		if(success) {
 			parent.onSuccess(this, context);
-		} else if(wasFatal)
-			parent.onFailure(new InsertException(InsertExceptionMode.FATAL_ERRORS_IN_BLOCKS, errors, null), this, context);
-		else
-			parent.onFailure(new InsertException(InsertExceptionMode.TOO_MANY_RETRIES_IN_BLOCKS, errors, null), this, context);
+		} else if(wasFatal) {
+			parent.onFailure(new InsertException(InsertExceptionMode.FATAL_ERRORS_IN_BLOCKS, errors, null),
+							 this, context);
+		} else {
+			parent.onFailure(new InsertException(InsertExceptionMode.TOO_MANY_RETRIES_IN_BLOCKS, errors, null),
+							 this, context);
+		}
 	}
 
 	@Override
 	public void onResume(ClientContext context) throws InsertException {
 		// TODO binary blob inserter isn't persistent yet, right?
-		throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Persistence not supported yet", null);
+		throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Persistence not supported yet",
+								  null);
 	}
 
 	@Override

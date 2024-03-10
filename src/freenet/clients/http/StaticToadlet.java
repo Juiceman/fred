@@ -28,7 +28,8 @@ public class StaticToadlet extends Toadlet {
 	public static final String OVERRIDE = "override/";
 	public static final String OVERRIDE_URL = ROOT_URL + OVERRIDE;
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		String path = uri.getPath();
 
 		if (!path.startsWith(ROOT_URL)) {
@@ -75,7 +76,8 @@ public class StaticToadlet extends Toadlet {
 			}
 			try {
 				FileBucket fb = new FileBucket(from, true, false, false, false);
-				ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false), fb.size(), new Date(System.currentTimeMillis() - 1000)); // Already expired, we want it to reload it.
+				ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false), fb.size(),
+										   new Date(System.currentTimeMillis() - 1000)); // Already expired, we want it to reload it.
 				ctx.writeData(fb);
 				return;
 			} catch (IOException e) {
@@ -96,7 +98,9 @@ public class StaticToadlet extends Toadlet {
 			byte[] cbuf = new byte[4096];
 			while(true) {
 				int r = strm.read(cbuf);
-				if(r == -1) break;
+				if(r == -1) {
+					break;
+				}
 				os.write(cbuf, 0, r);
 			}
 		} finally {
@@ -107,7 +111,8 @@ public class StaticToadlet extends Toadlet {
 		URL url = getClass().getResource(ROOT_PATH+path);
 		Date mTime = getUrlMTime(url);
 
-		ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false), data.size(), mTime);
+		ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false),
+								   data.size(), mTime);
 
 		ctx.writeData(data);
 	}

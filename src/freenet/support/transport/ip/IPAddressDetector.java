@@ -147,10 +147,12 @@ public class IPAddressDetector implements Runnable {
 					//telling the NodeIPDetector object about the MTU only if MTU != 0
 					// MTU = 0 means error in retrieving it
 					//FIXME: We should(n't) report MTU for local IPs
-					if (ifaceMTU > 0)
+					if (ifaceMTU > 0) {
 						detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
+					}
 
-					if ((addr instanceof Inet6Address) && !(addr.isLinkLocalAddress() || IPUtil.isSiteLocalAddress(addr))) {
+					if ((addr instanceof Inet6Address) && !(addr.isLinkLocalAddress()
+															|| IPUtil.isSiteLocalAddress(addr))) {
 						try {
 							// strip scope_id from global addresses
 							addr = InetAddress.getByAddress(addr.getAddress());
@@ -186,9 +188,15 @@ public class IPAddressDetector implements Runnable {
 
 	private boolean addressListChanged(InetAddress[] oldList,
 									   InetAddress[] newList) {
-		if(oldList == null) return newList != null;
-		if(oldList == newList) return false;
-		if(oldList.length != newList.length) return true;
+		if(oldList == null) {
+			return newList != null;
+		}
+		if(oldList == newList) {
+			return false;
+		}
+		if(oldList.length != newList.length) {
+			return true;
+		}
 		InetAddress[] a = Arrays.copyOf(oldList, oldList.length);
 		InetAddress[] b = Arrays.copyOf(newList, newList.length);
 		Arrays.sort(a, InetAddressComparator.COMPARATOR);
@@ -268,8 +276,9 @@ public class IPAddressDetector implements Runnable {
 					} else {
 						// Ignore ISATAP addresses
 						// @see http://archives.freenetproject.org/message/20071129.220955.ac2a2a36.en.html
-						if(!AddressIdentifier.isAnISATAPIPv6Address(i.toString()))
+						if(!AddressIdentifier.isAnISATAPIPv6Address(i.toString())) {
 							output.add(i);
+						}
 					}
 				}
 			}

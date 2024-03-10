@@ -37,7 +37,8 @@ public class MasterKeys {
 
 	final static long FLAG_ENCRYPT_DATABASE = 2;
 
-	public MasterKeys(byte[] clientCacheKey, byte[] databaseKey, byte[] tempfilesMasterSecret, long flags) {
+	public MasterKeys(byte[] clientCacheKey, byte[] databaseKey, byte[] tempfilesMasterSecret,
+					  long flags) {
 		this.clientCacheMasterKey = clientCacheKey;
 		this.databaseKey = databaseKey;
 		this.flags = flags;
@@ -73,15 +74,20 @@ public class MasterKeys {
 	 * FIXME make this configurable. FIXME Have a look at real password to key functions. */
 	static int ITERATE_TIME = 1000;
 
-	public static MasterKeys read(File masterKeysFile, Random hardRandom, String password) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public static MasterKeys read(File masterKeysFile, Random hardRandom,
+								  String password) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
 		System.err.println("Trying to read master keys file...");
 		if(masterKeysFile != null && masterKeysFile.exists()) {
 			// Try to read the keys
 			FileInputStream fis = null;
 			// FIXME move declarations of sensitive data out and clear() in finally {}
 			long len = masterKeysFile.length();
-			if(len > 1024) throw new MasterKeysFileSizeException(true);
-			if(len < (32 + 32 + 8 + 32)) throw new MasterKeysFileSizeException(false);
+			if(len > 1024) {
+				throw new MasterKeysFileSizeException(true);
+			}
+			if(len < (32 + 32 + 8 + 32)) {
+				throw new MasterKeysFileSizeException(false);
+			}
 			int length = (int) len;
 			try {
 				fis = new FileInputStream(masterKeysFile);
@@ -92,9 +98,13 @@ public class MasterKeys {
 					ret.changePassword(masterKeysFile, password, hardRandom);
 					return ret;
 				}
-				if(dis.readInt() != VERSION) throw new IOException("Bad version for master.keys");
+				if(dis.readInt() != VERSION) {
+					throw new IOException("Bad version for master.keys");
+				}
 				long iterations = dis.readLong();
-				if(iterations < 0 || iterations > MAX_ITERATIONS) throw new IOException("Bad iterations "+iterations+" for master.keys");
+				if(iterations < 0 || iterations > MAX_ITERATIONS) {
+					throw new IOException("Bad iterations "+iterations+" for master.keys");
+				}
 
 				byte[] salt = new byte[32];
 				dis.readFully(salt);
@@ -248,11 +258,14 @@ public class MasterKeys {
 	}
 
 	public static void clear(byte[] buf) {
-		if(buf == null) return; // Valid no-op, simplifies code
+		if(buf == null) {
+			return;    // Valid no-op, simplifies code
+		}
 		Arrays.fill(buf, (byte)0x00);
 	}
 
-	public void changePassword(File masterKeysFile, String newPassword, Random hardRandom) throws IOException {
+	public void changePassword(File masterKeysFile, String newPassword,
+							   Random hardRandom) throws IOException {
 		System.err.println("Writing new master.keys file");
 		write(masterKeysFile, newPassword, hardRandom);
 	}

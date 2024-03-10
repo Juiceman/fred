@@ -25,12 +25,16 @@ public class DummyJobRunner implements PersistentJobRunner {
 
 	@Override
 	public void queue(final PersistentJob job, final int priority) {
-		if(logMINOR) Logger.minor(this, "Running job off thread: "+job);
+		if(logMINOR) {
+			Logger.minor(this, "Running job off thread: "+job);
+		}
 		executor.execute(new PrioRunnable() {
 
 			@Override
 			public void run() {
-				if(logMINOR) Logger.minor(this, "Starting job "+job);
+				if(logMINOR) {
+					Logger.minor(this, "Starting job "+job);
+				}
 				job.run(context);
 			}
 

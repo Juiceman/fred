@@ -42,8 +42,9 @@ public class HTMLEncoderDecoderTest {
 	 */
 	@Test
 	public void testDecodeSingleEntities() {
-		for (int i =0; i<UTFUtil.HTML_ENTITIES_UTF.length; i++)
+		for (int i =0; i<UTFUtil.HTML_ENTITIES_UTF.length; i++) {
 			assertEquals(HTMLDecoder.decode(UTFUtil.HTML_ENTITIES_UTF[i][1]),UTFUtil.HTML_ENTITIES_UTF[i][0]);
+		}
 	}
 
 	/**
@@ -92,8 +93,9 @@ public class HTMLEncoderDecoderTest {
 	@Test
 	public void testCompactRepeated() {
 		StringBuilder strBuffer[] = new StringBuilder[6];
-		for (int i = 0; i < strBuffer.length; i++)
+		for (int i = 0; i < strBuffer.length; i++) {
 			strBuffer[i] = new StringBuilder();
+		}
 
 		for (int i=0; i<100; i++) {
 			//adding different "whitespaces"

@@ -47,11 +47,17 @@ public class BookmarkItem extends Bookmark {
 	public BookmarkItem(SimpleFieldSet sfs, BookmarkManager bm, UserAlertManager uam)
 	throws FSParseException, MalformedURLException {
 		this.name = sfs.get("Name");
-		if(name == null || name.isEmpty()) name = l10n("unnamedBookmark");
+		if(name == null || name.isEmpty()) {
+			name = l10n("unnamedBookmark");
+		}
 		this.desc = sfs.get("Description");
-		if(desc == null) desc = "";
+		if(desc == null) {
+			desc = "";
+		}
 		this.shortDescription = sfs.get("ShortDescription");
-		if(shortDescription == null) shortDescription = "";
+		if(shortDescription == null) {
+			shortDescription = "";
+		}
 		this.hasAnActivelink = sfs.getBoolean("hasAnActivelink");
 		// "Updated" was added in 2016-08-19, so we must assume it doesn't exist in previously saved
 		// bookmark databases and provide a default to prevent getBoolean() from throwing.
@@ -161,8 +167,9 @@ public class BookmarkItem extends Bookmark {
 	 * You usually only need to call this function after having loaded a bookmark from disk using
 	 * {@link #BookmarkItem(SimpleFieldSet, BookmarkManager, UserAlertManager)}. */
 	synchronized void registerUserAlert() {
-		if (key.isUSK() && updated)
+		if (key.isUSK() && updated) {
 			alerts.register(alert);
+		}
 	}
 
 	public UserAlert getUserAlert() {
@@ -177,13 +184,15 @@ public class BookmarkItem extends Bookmark {
 		return key;
 	}
 
-	public synchronized void update(FreenetURI uri, boolean hasAnActivelink, String description, String shortDescription) {
+	public synchronized void update(FreenetURI uri, boolean hasAnActivelink, String description,
+									String shortDescription) {
 		this.key = uri;
 		this.desc = description;
 		this.shortDescription = shortDescription;
 		this.hasAnActivelink = hasAnActivelink;
-		if(!key.isUSK())
+		if(!key.isUSK()) {
 			disableBookmark();
+		}
 	}
 
 	public synchronized String getKeyType() {
@@ -197,13 +206,16 @@ public class BookmarkItem extends Bookmark {
 
 	@Override
 	public String toString() {
-		return this.name + "###" + (this.desc != null ? this.desc : "") + "###" + this.hasAnActivelink + "###" + this.key.toString();
+		return this.name + "###" + (this.desc != null ? this.desc : "") + "###" + this.hasAnActivelink +
+			   "###" + this.key.toString();
 	}
 
 	/** @return True if we updated the edition */
 	public synchronized boolean setEdition(long ed, NodeClientCore node) {
 		if (key.getSuggestedEdition() >= ed) {
-			if(logMINOR) Logger.minor(this, "Edition "+ed+" is too old, not updating "+key);
+			if(logMINOR) {
+				Logger.minor(this, "Edition "+ed+" is too old, not updating "+key);
+			}
 			return false;
 		}
 		key = key.setSuggestedEdition(ed);
@@ -249,10 +261,12 @@ public class BookmarkItem extends Bookmark {
 			if (b.hasAnActivelink != hasAnActivelink) {
 				return false;
 			}
-			if (b.desc.equals(desc))
+			if (b.desc.equals(desc)) {
 				return true;
-			if (b.desc == null || desc == null)
+			}
+			if (b.desc == null || desc == null) {
 				return false;
+			}
 			if(!b.desc.equals(desc)) {
 				return false;
 			}
@@ -275,16 +289,24 @@ public class BookmarkItem extends Bookmark {
 	}
 
 	public String getDescription() {
-		if(desc == null) return "";
-		if(desc.toLowerCase().startsWith("l10n:"))
-			return NodeL10n.getBase().getString("Bookmarks.Defaults.Description."+desc.substring("l10n:".length()));
+		if(desc == null) {
+			return "";
+		}
+		if(desc.toLowerCase().startsWith("l10n:")) {
+			return NodeL10n.getBase().getString("Bookmarks.Defaults.Description."
+												+desc.substring("l10n:".length()));
+		}
 		return desc;
 	}
 
 	public String getShortDescription() {
-		if(shortDescription == null) return "";
-		if(shortDescription.toLowerCase().startsWith("l10n:"))
-			return NodeL10n.getBase().getString("Bookmarks.Defaults.ShortDescription."+shortDescription.substring("l10n:".length()));
+		if(shortDescription == null) {
+			return "";
+		}
+		if(shortDescription.toLowerCase().startsWith("l10n:")) {
+			return NodeL10n.getBase().getString("Bookmarks.Defaults.ShortDescription."
+												+shortDescription.substring("l10n:".length()));
+		}
 		return shortDescription;
 	}
 

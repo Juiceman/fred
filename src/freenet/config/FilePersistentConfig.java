@@ -50,7 +50,8 @@ public class FilePersistentConfig extends PersistentConfig {
 		return constructFilePersistentConfig(f, null);
 	}
 
-	public static FilePersistentConfig constructFilePersistentConfig(File f, String header) throws IOException {
+	public static FilePersistentConfig constructFilePersistentConfig(File f,
+			String header) throws IOException {
 		File filename = f;
 		File tempFilename = new File(f.getPath()+".tmp");
 		return new FilePersistentConfig(load(filename, tempFilename), filename, tempFilename, header);
@@ -72,7 +73,8 @@ public class FilePersistentConfig extends PersistentConfig {
 				try {
 					return initialLoad(filename);
 				} catch (FileNotFoundException e) {
-					System.err.println("Cannot open config file "+filename+" : "+e+" - checking for temp file "+tempFilename);
+					System.err.println("Cannot open config file "+filename+" : "+e+" - checking for temp file "
+									   +tempFilename);
 				} catch (EOFException e) {
 					System.err.println("Empty config file "+filename+" (end of file)");
 				}
@@ -102,7 +104,8 @@ public class FilePersistentConfig extends PersistentConfig {
 		this(origFS, fnam, temp, null);
 	}
 
-	protected FilePersistentConfig(SimpleFieldSet origFS, File fnam, File temp, String header) throws IOException {
+	protected FilePersistentConfig(SimpleFieldSet origFS, File fnam, File temp,
+								   String header) throws IOException {
 		super(origFS);
 		this.filename = fnam;
 		this.tempFilename = temp;
@@ -112,7 +115,9 @@ public class FilePersistentConfig extends PersistentConfig {
 	/** Load the config file into a SimpleFieldSet.
 	 * @throws IOException */
 	private static SimpleFieldSet initialLoad(File toRead) throws IOException {
-		if(toRead == null) return null;
+		if(toRead == null) {
+			return null;
+		}
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		LineReadingInputStream lis = null;
@@ -121,7 +126,8 @@ public class FilePersistentConfig extends PersistentConfig {
 			bis = new BufferedInputStream(fis);
 			lis = new LineReadingInputStream(bis);
 			// Config file is UTF-8 too!
-			return new SimpleFieldSet(lis, 1024*1024, 128, true, true, true); // FIXME? advanced users may edit the config file, hence true?
+			return new SimpleFieldSet(lis, 1024*1024, 128, true, true,
+									  true); // FIXME? advanced users may edit the config file, hence true?
 		} finally {
 			Closer.close(lis);
 			Closer.close(bis);
@@ -154,12 +160,14 @@ public class FilePersistentConfig extends PersistentConfig {
 
 	/** Don't call without taking storeSync first */
 	protected final void innerStore() throws IOException {
-		if(!finishedInit)
+		if(!finishedInit) {
 			throw new IllegalStateException("SHOULD NOT HAPPEN!!");
+		}
 
 		SimpleFieldSet fs = exportFieldSet();
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "fs = " + fs);
+		}
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(tempFilename);

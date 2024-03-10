@@ -92,13 +92,15 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 		byte subtype = raf.readByte();
 		if(type == NodeCHK.BASE_TYPE) {
 			return NodeCHK.readCHK(raf, subtype);
-		} else if(type == NodeSSK.BASE_TYPE)
+		} else if(type == NodeSSK.BASE_TYPE) {
 			return NodeSSK.readSSK(raf, subtype);
+		}
 
 		throw new IOException("Unrecognized format: "+type);
 	}
 
-	public static KeyBlock createBlock(short keyType, byte[] keyBytes, byte[] headersBytes, byte[] dataBytes, byte[] pubkeyBytes) throws KeyVerifyException {
+	public static KeyBlock createBlock(short keyType, byte[] keyBytes, byte[] headersBytes,
+									   byte[] dataBytes, byte[] pubkeyBytes) throws KeyVerifyException {
 		byte type = (byte)(keyType >> 8);
 		byte subtype = (byte)(keyType & 0xFF);
 		if(type == NodeCHK.BASE_TYPE) {
@@ -126,9 +128,13 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 	 * make chosen-key attacks harder.
 	 */
 	public synchronized double toNormalizedDouble() {
-		if(cachedNormalizedDouble > 0) return cachedNormalizedDouble;
+		if(cachedNormalizedDouble > 0) {
+			return cachedNormalizedDouble;
+		}
 		MessageDigest md = SHA256.getMessageDigest();
-		if(routingKey == null) throw new NullPointerException();
+		if(routingKey == null) {
+			throw new NullPointerException();
+		}
 		md.update(routingKey);
 		int TYPE = getType();
 		md.update((byte)(TYPE >> 8));
@@ -159,33 +165,45 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == null || !(o instanceof Key)) return false;
+		if(o == null || !(o instanceof Key)) {
+			return false;
+		}
 		return Arrays.equals(routingKey, ((Key)o).routingKey);
 	}
 
-	static Bucket decompress(boolean isCompressed, byte[] input, int inputLength, BucketFactory bf, long maxLength, short compressionAlgorithm, boolean shortLength) throws CHKDecodeException, IOException {
-		if(maxLength < 0)
+	static Bucket decompress(boolean isCompressed, byte[] input, int inputLength, BucketFactory bf,
+							 long maxLength, short compressionAlgorithm, boolean shortLength) throws CHKDecodeException,
+		IOException {
+		if(maxLength < 0) {
 			throw new IllegalArgumentException("maxlength="+maxLength);
-		if(input.length < inputLength)
+		}
+		if(input.length < inputLength) {
 			throw new IndexOutOfBoundsException(""+input.length+"<"+inputLength);
+		}
 		if(isCompressed) {
-			if(logMINOR)
-				Logger.minor(Key.class, "Decompressing "+inputLength+" bytes in decode with codec "+compressionAlgorithm);
+			if(logMINOR) {
+				Logger.minor(Key.class, "Decompressing "+inputLength+" bytes in decode with codec "
+							 +compressionAlgorithm);
+			}
 			final int inputOffset = (shortLength ? 2 : 4);
-			if(inputLength < inputOffset + 1) throw new CHKDecodeException("No bytes to decompress");
+			if(inputLength < inputOffset + 1) {
+				throw new CHKDecodeException("No bytes to decompress");
+			}
 			// Decompress
 			// First get the length
 			int len;
-			if(shortLength)
+			if(shortLength) {
 				len = ((input[0] & 0xff) << 8) + (input[1] & 0xff);
-			else
+			} else
 				len = ((((((input[0] & 0xff) << 8) + (input[1] & 0xff)) << 8) + (input[2] & 0xff)) << 8) +
 					  (input[3] & 0xff);
-			if(len > maxLength)
+			if(len > maxLength) {
 				throw new TooBigException("Invalid precompressed size: "+len + " maxlength="+maxLength);
+			}
 			COMPRESSOR_TYPE decompressor = COMPRESSOR_TYPE.getCompressorByMetadataID(compressionAlgorithm);
-			if (decompressor==null)
+			if (decompressor==null) {
 				throw new CHKDecodeException("Unknown compression algorithm: "+compressionAlgorithm);
+			}
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
 			Bucket inputBucket = new SimpleReadOnlyArrayBucket(input, inputOffset, inputLength-inputOffset);
@@ -239,16 +257,19 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 		long MAX_LENGTH_BEFORE_COMPRESSION,
 		int MAX_COMPRESSED_DATA_LENGTH,
 		boolean shortLength,
-		String compressordescriptor) throws KeyEncodeException, IOException, InvalidCompressionCodecException {
+		String compressordescriptor) throws KeyEncodeException, IOException,
+		InvalidCompressionCodecException {
 		byte[] finalData = null;
 		short compressionAlgorithm = -1;
 		int maxCompressedDataLength = MAX_COMPRESSED_DATA_LENGTH;
-		if(shortLength)
+		if(shortLength) {
 			maxCompressedDataLength -= 2;
-		else
+		} else {
 			maxCompressedDataLength -= 4;
-		if(sourceData.size() > MAX_LENGTH_BEFORE_COMPRESSION)
+		}
+		if(sourceData.size() > MAX_LENGTH_BEFORE_COMPRESSION) {
 			throw new KeyEncodeException("Too big");
+		}
 		if((!dontCompress) || (alreadyCompressedCodec >= 0)) {
 			byte[] cbuf = null;
 			if(alreadyCompressedCodec >= 0) {
@@ -257,8 +278,9 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 				}
 				compressionAlgorithm = alreadyCompressedCodec;
 				cbuf = BucketTools.toByteArray(sourceData);
-				if(sourceLength > MAX_LENGTH_BEFORE_COMPRESSION)
+				if(sourceLength > MAX_LENGTH_BEFORE_COMPRESSION) {
 					throw new TooBigException("Too big");
+				}
 			} else {
 				if (sourceData.size() > maxCompressedDataLength) {
 					// Determine the best algorithm
@@ -305,7 +327,8 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 		if(finalData == null) {
 			// Not compressed or not compressible; no size bytes to be added.
 			if(sourceData.size() > MAX_COMPRESSED_DATA_LENGTH) {
-				throw new CHKEncodeException("Too big: "+sourceData.size()+" should be "+MAX_COMPRESSED_DATA_LENGTH);
+				throw new CHKEncodeException("Too big: "+sourceData.size()+" should be "
+											 +MAX_COMPRESSED_DATA_LENGTH);
 			}
 			finalData = BucketTools.toByteArray(sourceData);
 		}
@@ -322,11 +345,13 @@ public abstract class Key implements WritableToDataOutputStream, Comparable<Key>
 		return routingKey;
 	}
 
-	public static ClientKeyBlock createKeyBlock(ClientKey key, KeyBlock block) throws KeyVerifyException {
-		if(key instanceof ClientSSK)
+	public static ClientKeyBlock createKeyBlock(ClientKey key,
+			KeyBlock block) throws KeyVerifyException {
+		if(key instanceof ClientSSK) {
 			return ClientSSKBlock.construct((SSKBlock)block, (ClientSSK)key);
-		else //if(key instanceof ClientCHK
+		} else { //if(key instanceof ClientCHK
 			return new ClientCHKBlock((CHKBlock)block, (ClientCHK)key);
+		}
 	}
 
 	/** Get the full key, including any crypto type bytes, everything needed to construct a Key object */

@@ -29,7 +29,8 @@ import freenet.support.ShortBuffer;
 
 public class MessageType {
 
-	public static final String VERSION = "$Id: MessageType.java,v 1.6 2005/08/25 17:28:19 amphibian Exp $";
+	public static final String VERSION =
+		"$Id: MessageType.java,v 1.6 2005/08/25 17:28:19 amphibian Exp $";
 
 	private static HashMap<Integer, MessageType> _specs = new HashMap<Integer, MessageType>();
 
@@ -89,8 +90,12 @@ public class MessageType {
 											" in the message type \"" + getName() + "\".");
 		}
 		Class<?> valueClass = fieldValue.getClass();
-		if(defClass == valueClass) return true;
-		if(defClass.isAssignableFrom(valueClass)) return true;
+		if(defClass == valueClass) {
+			return true;
+		}
+		if(defClass.isAssignableFrom(valueClass)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -116,8 +121,9 @@ public class MessageType {
 	public static MessageType getSpec(Integer specID, boolean dontLog) {
 		MessageType id = _specs.get(specID);
 		if (id == null) {
-			if(!dontLog)
+			if(!dontLog) {
 				Logger.error(MessageType.class, "Unrecognised message type received (" + specID + ')');
+			}
 		}
 		return id;
 	}

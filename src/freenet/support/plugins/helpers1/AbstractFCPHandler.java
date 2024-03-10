@@ -44,7 +44,8 @@ public abstract class AbstractFCPHandler {
 		this.pluginContext = pluginContext2;
 	}
 
-	public final void handle(PluginReplySender replysender, SimpleFieldSet params, Bucket data, int accesstype) throws PluginNotFoundException {
+	public final void handle(PluginReplySender replysender, SimpleFieldSet params, Bucket data,
+							 int accesstype) throws PluginNotFoundException {
 
 		if (logDEBUG) {
 			Logger.debug(this, "Got Message: " + params.toOrderedString());
@@ -56,8 +57,9 @@ public abstract class AbstractFCPHandler {
 		if ("Ping".equals(command)) {
 			SimpleFieldSet sfs = new SimpleFieldSet(true);
 			sfs.put("Pong", System.currentTimeMillis());
-			if (identifier != null)
+			if (identifier != null) {
 				sfs.putSingle("Identifier", identifier);
+			}
 			replysender.send(sfs);
 			return;
 		}
@@ -84,7 +86,8 @@ public abstract class AbstractFCPHandler {
 								   String identifier, SimpleFieldSet params, Bucket data,
 								   int accesstype) throws FCPException, PluginNotFoundException;
 
-	public static void sendErrorWithTrace(PluginReplySender replysender, String identifier, Exception error) throws PluginNotFoundException {
+	public static void sendErrorWithTrace(PluginReplySender replysender, String identifier,
+										  Exception error) throws PluginNotFoundException {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		error.printStackTrace(pw);
@@ -93,15 +96,18 @@ public abstract class AbstractFCPHandler {
 		sendError(replysender, FCPException.INTERNAL_ERROR, identifier, error.getLocalizedMessage());
 	}
 
-	public static void sendError(PluginReplySender replysender, String identifier, FCPException error) throws PluginNotFoundException {
+	public static void sendError(PluginReplySender replysender, String identifier,
+								 FCPException error) throws PluginNotFoundException {
 		sendError(replysender, error.code, identifier, error.getLocalizedMessage());
 	}
 
-	public static void sendError(PluginReplySender replysender, int code, String identifier, String description) throws PluginNotFoundException {
+	public static void sendError(PluginReplySender replysender, int code, String identifier,
+								 String description) throws PluginNotFoundException {
 		sendError(replysender, code, identifier, description, null);
 	}
 
-	public static void sendError(PluginReplySender replysender, int code, String identifier, String description, byte[] data) throws PluginNotFoundException {
+	public static void sendError(PluginReplySender replysender, int code, String identifier,
+								 String description, byte[] data) throws PluginNotFoundException {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putOverwrite("Status", "Error");
 		sfs.put("Code", code);
@@ -110,11 +116,13 @@ public abstract class AbstractFCPHandler {
 		replysender.send(sfs, data);
 	}
 
-	public static void sendNOP(PluginReplySender replysender, String identifier) throws PluginNotFoundException {
+	public static void sendNOP(PluginReplySender replysender,
+							   String identifier) throws PluginNotFoundException {
 		sendError(replysender, -1, identifier, "Not implemented", null);
 	}
 
-	public static void sendSuccess(PluginReplySender replysender, String identifier, String description) throws PluginNotFoundException {
+	public static void sendSuccess(PluginReplySender replysender, String identifier,
+								   String description) throws PluginNotFoundException {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putOverwrite("Status", "Success");
 		sfs.put("Code", 0);
@@ -123,7 +131,8 @@ public abstract class AbstractFCPHandler {
 		replysender.send(sfs);
 	}
 
-	public static void sendProgress(PluginReplySender replysender,  String identifier, String description) throws PluginNotFoundException {
+	public static void sendProgress(PluginReplySender replysender,  String identifier,
+									String description) throws PluginNotFoundException {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putSingle("Status", "Progress");
 		sfs.putSingle("Identifier", identifier);

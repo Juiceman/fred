@@ -30,7 +30,8 @@ public interface ToadletContext {
 	 * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
 	 * as a whole.
 	 */
-	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length) throws ToadletContextClosedException, IOException;
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType,
+						  long length) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * Write reply headers for generated content (web interface pages) and redirects etc.
@@ -42,7 +43,8 @@ public interface ToadletContext {
 	 * @param forceDisableJavascript Disable javascript even if it is enabled for the web interface
 	 * as a whole.
 	 */
-	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException;
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType,
+						  long length, boolean forceDisableJavascript) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * @deprecated
@@ -50,7 +52,8 @@ public interface ToadletContext {
 	 * Callers should use either sendReplyHeaders() or sendReplyHeadersStatic()!
 	 */
 	@Deprecated
-	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException;
+	void sendReplyHeaders(int code, String desc, MultiValueTable<String,String> mvt, String mimeType,
+						  long length, Date mTime) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * Write reply headers with a customised modification time for static content.
@@ -61,7 +64,8 @@ public interface ToadletContext {
 	 * @param length The length of the reply.
 	 * @param mTime The modification time of the data being sent.
 	 */
-	void sendReplyHeadersStatic(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException;
+	void sendReplyHeadersStatic(int code, String desc, MultiValueTable<String,String> mvt,
+								String mimeType, long length, Date mTime) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * Write reply headers for content downloaded from Freenet. Progress bars etc are not content
@@ -74,12 +78,14 @@ public interface ToadletContext {
 	 * @param mimeType The MIME type of the reply.
 	 * @param length The length of the reply.
 	 */
-	void sendReplyHeadersFProxy(int code, String desc, MultiValueTable<String,String> mvt, String mimeType, long length) throws ToadletContextClosedException, IOException;
+	void sendReplyHeadersFProxy(int code, String desc, MultiValueTable<String,String> mvt,
+								String mimeType, long length) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * Write data. Note you must send reply headers first.
 	 */
-	void writeData(byte[] data, int offset, int length) throws ToadletContextClosedException, IOException;
+	void writeData(byte[] data, int offset, int length) throws ToadletContextClosedException,
+			 IOException;
 
 	/**
 	 * Force a disconnection after handling this request. Used only when a throwable was thrown and we don't know
@@ -130,7 +136,8 @@ public interface ToadletContext {
 	 *
 	 * @return Whether the request contains a valid form password
 	 */
-	boolean checkFormPassword(HTTPRequest request, String redirectTo) throws ToadletContextClosedException, IOException;
+	boolean checkFormPassword(HTTPRequest request,
+							  String redirectTo) throws ToadletContextClosedException, IOException;
 
 	/**
 	 * Check a request for the form password, and send an error to the client if the password is

@@ -44,7 +44,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	private final int hashCode;
 	private final boolean realTimeFlag;
 
-	private USKFetcherTag(USK origUSK, USKFetcherCallback callback, boolean persistent, boolean realTime, FetchContext ctx, boolean keepLastData, long token, boolean hasOwnFetchContext, boolean checkStoreOnly) {
+	private USKFetcherTag(USK origUSK, USKFetcherCallback callback, boolean persistent,
+						  boolean realTime, FetchContext ctx, boolean keepLastData, long token, boolean hasOwnFetchContext,
+						  boolean checkStoreOnly) {
 		this.callback = callback;
 		this.origUSK = origUSK;
 		this.edition = origUSK.suggestedEdition;
@@ -59,7 +61,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 		priority = pollingPriorityNormal;
 		this.checkStoreOnly = checkStoreOnly;
 		this.hashCode = super.hashCode();
-		if(logMINOR) Logger.minor(this, "Created tag for "+origUSK+" and "+callback+" : "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Created tag for "+origUSK+" and "+callback+" : "+this);
+		}
 	}
 
 	@Override
@@ -79,41 +83,54 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	 * @param token
 	 * @return
 	 */
-	public static USKFetcherTag create(USK usk, USKFetcherCallback callback, boolean persistent, boolean realTime,
+	public static USKFetcherTag create(USK usk, USKFetcherCallback callback, boolean persistent,
+									   boolean realTime,
 									   FetchContext ctx, boolean keepLast, int token, boolean hasOwnFetchContext, boolean checkStoreOnly) {
-		USKFetcherTag tag = new USKFetcherTag(usk, callback, persistent, realTime, ctx, keepLast, token, hasOwnFetchContext, checkStoreOnly);
+		USKFetcherTag tag = new USKFetcherTag(usk, callback, persistent, realTime, ctx, keepLast, token,
+											  hasOwnFetchContext, checkStoreOnly);
 		return tag;
 	}
 
 	synchronized void updatedEdition(long ed) {
-		if(edition < ed) edition = ed;
+		if(edition < ed) {
+			edition = ed;
+		}
 	}
 
 	public void start(USKManager manager, ClientContext context) {
 		USK usk = origUSK;
-		if(usk.suggestedEdition < edition)
+		if(usk.suggestedEdition < edition) {
 			usk = usk.copy(edition);
-		else if(persistent) // Copy it to avoid deactivation issues
+		} else if(persistent) { // Copy it to avoid deactivation issues
 			usk = usk.copy();
-		fetcher = manager.getFetcher(usk, ctx, new USKFetcherWrapper(usk, priority, realTimeFlag ? USKManager.rcRT : USKManager.rcBulk), keepLastData, checkStoreOnly);
+		}
+		fetcher = manager.getFetcher(usk, ctx, new USKFetcherWrapper(usk, priority,
+									 realTimeFlag ? USKManager.rcRT : USKManager.rcBulk), keepLastData, checkStoreOnly);
 		fetcher.addCallback(this);
 		fetcher.schedule(context); // non-persistent
-		if(logMINOR) Logger.minor(this, "Starting "+fetcher+" for "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Starting "+fetcher+" for "+this);
+		}
 	}
 
 	@Override
 	public void cancel(ClientContext context) {
 		USKFetcher f = fetcher;
-		if(f != null) fetcher.cancel(context);
+		if(f != null) {
+			fetcher.cancel(context);
+		}
 		synchronized(this) {
 			if(finished) {
-				if(logMINOR) Logger.minor(this, "Already cancelled "+this);
+				if(logMINOR) {
+					Logger.minor(this, "Already cancelled "+this);
+				}
 				return;
 			}
 			finished = true;
 		}
-		if(f != null)
+		if(f != null) {
 			Logger.error(this, "cancel() for "+fetcher+" did not set finished on "+this+" ???");
+		}
 	}
 
 	@Override
@@ -128,7 +145,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 	@Override
 	public void onCancelled(ClientContext context) {
-		if(logMINOR) Logger.minor(this, "Cancelled on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Cancelled on "+this);
+		}
 		synchronized(this) {
 			finished = true;
 		}
@@ -140,8 +159,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 					@Override
 					public boolean run(ClientContext context) {
-						if(callback instanceof USKFetcherTagCallback)
+						if(callback instanceof USKFetcherTagCallback) {
 							((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+						}
 						callback.onCancelled(context);
 						return false;
 					}
@@ -151,15 +171,18 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 				// Impossible.
 			}
 		} else {
-			if(callback instanceof USKFetcherTagCallback)
+			if(callback instanceof USKFetcherTagCallback) {
 				((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+			}
 			callback.onCancelled(context);
 		}
 	}
 
 	@Override
 	public void onFailure(ClientContext context) {
-		if(logMINOR) Logger.minor(this, "Failed on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Failed on "+this);
+		}
 		synchronized(this) {
 			if(finished) {
 				Logger.error(this, "onFailure called after finish on "+this, new Exception("error"));
@@ -173,8 +196,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 					@Override
 					public boolean run(ClientContext context) {
-						if(callback instanceof USKFetcherTagCallback)
+						if(callback instanceof USKFetcherTagCallback) {
 							((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+						}
 						callback.onFailure(context);
 						return true;
 					}
@@ -184,8 +208,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 				// Impossible.
 			}
 		} else {
-			if(callback instanceof USKFetcherTagCallback)
+			if(callback instanceof USKFetcherTagCallback) {
 				((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+			}
 			callback.onFailure(context);
 		}
 	}
@@ -201,11 +226,17 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 	}
 
 	@Override
-	public void onFoundEdition(final long l, final USK key, ClientContext context, final boolean metadata, final short codec, final byte[] data, final boolean newKnownGood, final boolean newSlotToo) {
-		if(logMINOR) Logger.minor(this, "Found edition "+l+" on "+this);
+	public void onFoundEdition(final long l, final USK key, ClientContext context,
+							   final boolean metadata, final short codec, final byte[] data, final boolean newKnownGood,
+							   final boolean newSlotToo) {
+		if(logMINOR) {
+			Logger.minor(this, "Found edition "+l+" on "+this);
+		}
 		synchronized(this) {
 			if(fetcher == null) {
-				Logger.error(this, "onFoundEdition but fetcher is null - isn't onFoundEdition() terminal for USKFetcherCallback's??", new Exception("debug"));
+				Logger.error(this,
+							 "onFoundEdition but fetcher is null - isn't onFoundEdition() terminal for USKFetcherCallback's??",
+							 new Exception("debug"));
 			}
 			if(finished) {
 				Logger.error(this, "onFoundEdition called after finish on "+this, new Exception("error"));
@@ -220,8 +251,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 					@Override
 					public boolean run(ClientContext context) {
-						if(callback instanceof USKFetcherTagCallback)
+						if(callback instanceof USKFetcherTagCallback) {
 							((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+						}
 						callback.onFoundEdition(l, key, context, metadata, codec, data, newKnownGood, newSlotToo);
 						return false;
 					}
@@ -231,8 +263,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 				// Impossible.
 			}
 		} else {
-			if(callback instanceof USKFetcherTagCallback)
+			if(callback instanceof USKFetcherTagCallback) {
 				((USKFetcherTagCallback)callback).setTag(USKFetcherTag.this, context);
+			}
 			callback.onFoundEdition(l, key, context, metadata, codec, data, newKnownGood, newSlotToo);
 		}
 	}
@@ -257,7 +290,9 @@ class USKFetcherTag implements ClientGetState, USKFetcherCallback, Serializable 
 
 	@Override
 	public void onResume(ClientContext context) {
-		if(finished) return;
+		if(finished) {
+			return;
+		}
 		start(context.uskManager, context);
 	}
 

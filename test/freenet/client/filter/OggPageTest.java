@@ -15,7 +15,8 @@ public class OggPageTest {
 	public void testStripNonsenseInterruption() throws IOException {
 		ByteArrayOutputStream actualDataStream = new ByteArrayOutputStream();
 		ByteArrayOutputStream expectedDataStream = new ByteArrayOutputStream();
-		try (DataInputStream input = resourceToDataInputStream("./ogg/nonsensical_interruption_filtered.ogg")) {
+		try (DataInputStream input =
+						resourceToDataInputStream("./ogg/nonsensical_interruption_filtered.ogg")) {
 			readPages(expectedDataStream, input);
 		}
 		try (DataInputStream input = resourceToDataInputStream("./ogg/nonsensical_interruption.ogg")) {
@@ -24,7 +25,8 @@ public class OggPageTest {
 		assertArrayEquals(expectedDataStream.toByteArray(), actualDataStream.toByteArray());
 	}
 
-	private static void readPages(ByteArrayOutputStream output, DataInputStream input) throws IOException {
+	private static void readPages(ByteArrayOutputStream output,
+								  DataInputStream input) throws IOException {
 		OggPage page = OggPage.readPage(input);
 		if (page.headerValid()) {
 			output.write(page.toArray());

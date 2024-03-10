@@ -65,7 +65,8 @@ public class FreenetRequest {
 	 *            - The callback that is registered to the request
 	 * @return The sent request
 	 */
-	public static Request sendRequest(String path, QueryParameter[] parameters, RequestCallback callback) {
+	public static Request sendRequest(String path, QueryParameter[] parameters,
+									  RequestCallback callback) {
 		// FreenetJs.log("AJAX:path="+path+" queryParams:"+Arrays.asList(parameters));
 		// A timestamp needs to be sent, because IE caches ajax
 		if (parameters == null) {

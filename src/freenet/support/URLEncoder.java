@@ -12,7 +12,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class URLEncoder {
 	// Moved here from FProxy by amphibian
-	final static String safeURLCharacters = "*-_./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+	final static String safeURLCharacters =
+		"*-_./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
 
 	public static String getSafeURLCharacters() {
 		return safeURLCharacters;
@@ -45,10 +46,11 @@ public class URLEncoder {
 			} else {
 				for (byte b: String.valueOf(c).getBytes(StandardCharsets.UTF_8)) {
 					int x = b & 0xFF;
-					if (x < 16)
+					if (x < 16) {
 						enc.append("%0");
-					else
+					} else {
 						enc.append('%');
+					}
 					enc.append(Integer.toHexString(x));
 				}
 			}

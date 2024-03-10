@@ -66,7 +66,8 @@ public class JarClassLoaderTest {
 	 * @param zipOutputStream The ZIP output stream
 	 * @throws IOException if an I/O error occurs
 	 */
-	private static void createServiceLoaderEntryFor(Class<? extends TestInterface> implementationClass, ZipOutputStream zipOutputStream) throws IOException {
+	private static void createServiceLoaderEntryFor(Class<? extends TestInterface> implementationClass,
+			ZipOutputStream zipOutputStream) throws IOException {
 		ZipEntry serviceFileEntry = new ZipEntry("META-INF/services/" + TestInterface.class.getName());
 		zipOutputStream.putNextEntry(serviceFileEntry);
 		zipOutputStream.write((implementationClass.getName() + "\n").getBytes(UTF_8));

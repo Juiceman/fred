@@ -38,14 +38,18 @@ public class TypeTest {
 		}
 
 		for (byte code = Byte.MIN_VALUE; code <= Byte.MAX_VALUE; code++) {
-			if (validCodes.contains(code)) continue;
+			if (validCodes.contains(code)) {
+				continue;
+			}
 
 			if (!Type.isValid(code)) {
 				//Expected.
 			} else {
 				assertTrue("isValid() returned true for invalid code " + code + ".", false);
 			}
-			if (code == Byte.MAX_VALUE) return;
+			if (code == Byte.MAX_VALUE) {
+				return;
+			}
 		}
 	}
 

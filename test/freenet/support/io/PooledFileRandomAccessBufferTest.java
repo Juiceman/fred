@@ -46,8 +46,9 @@ public class PooledFileRandomAccessBufferTest extends RandomAccessBufferTestBase
 	/** Simplest test for pooling. TODO Add more. */
 	@Test
 	public void testSimplePooling() throws IOException {
-		for(int sz : TEST_LIST)
+		for(int sz : TEST_LIST) {
 			innerTestSimplePooling(sz);
+		}
 	}
 
 	private void innerTestSimplePooling(int sz) throws IOException {
@@ -267,8 +268,9 @@ public class PooledFileRandomAccessBufferTest extends RandomAccessBufferTestBase
 		lock.unlock();
 		// Wait for it to proceed.
 		synchronized(s) {
-			while(!(s.hasLocked || s.hasFinished))
+			while(!(s.hasLocked || s.hasFinished)) {
 				s.wait();
+			}
 			assertTrue(s.hasLocked);
 		}
 		assertFalse(a.isOpen());

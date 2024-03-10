@@ -30,7 +30,8 @@ public abstract class BandwidthManipulator {
 	 * @throws freenet.config.InvalidConfigValueException If the value is negative, a number cannot be parsed from it, or the value is too low to be usable.
 	 * @see freenet.node.Node#minimumBandwidth
 	 */
-	protected void setBandwidthLimit (String limit, boolean setOutputLimit) throws InvalidConfigValueException {
+	protected void setBandwidthLimit (String limit,
+									  boolean setOutputLimit) throws InvalidConfigValueException {
 		String limitType = setOutputLimit ? "outputBandwidthLimit" : "inputBandwidthLimit";
 		try {
 			config.get("node").set(limitType, limit);
@@ -54,7 +55,8 @@ public abstract class BandwidthManipulator {
 	 * @return infobox node with the message added.
 	 */
 	protected HTMLNode parseErrorBox(HTMLNode parent, PageHelper helper, String message) {
-		HTMLNode infoBox = helper.getInfobox("infobox-warning", WizardL10n.l10n("bandwidthErrorSettingTitle"),
+		HTMLNode infoBox = helper.getInfobox("infobox-warning",
+											 WizardL10n.l10n("bandwidthErrorSettingTitle"),
 											 parent, null, false);
 
 		infoBox.addChild("p", message);
@@ -64,7 +66,8 @@ public abstract class BandwidthManipulator {
 
 	protected BandwidthLimit getCurrentBandwidthLimitsOrNull() {
 		if (!config.get("node").getOption("outputBandwidthLimit").isDefault()) {
-			return new BandwidthLimit(core.node.getInputBandwidthLimit(), core.node.getOutputBandwidthLimit(), "bandwidthCurrent", false);
+			return new BandwidthLimit(core.node.getInputBandwidthLimit(), core.node.getOutputBandwidthLimit(),
+									  "bandwidthCurrent", false);
 		}
 		return null;
 	}
@@ -83,7 +86,8 @@ public abstract class BandwidthManipulator {
 
 		int downstreamBits = bwIndicator.getDownstreamMaxBitRate();
 		int upstreamBits = bwIndicator.getUpstramMaxBitRate();
-		Logger.normal(bwIndicator, "bandwidthIndicator reports downstream " + downstreamBits + " bits/s and upstream " + upstreamBits + " bits/s.");
+		Logger.normal(bwIndicator, "bandwidthIndicator reports downstream " + downstreamBits +
+					  " bits/s and upstream " + upstreamBits + " bits/s.");
 
 		if (downstreamBits < 0 || upstreamBits < 0) {
 			throw new IllegalValueException("Reported unavailable.");
@@ -93,11 +97,13 @@ public abstract class BandwidthManipulator {
 		final int KiB = 8192;
 
 		if (downstreamBits < 8 * KiB) {
-			throw new IllegalValueException("Detected downstream of " + downstreamBits + " bits/s is nonsensically slow, ignoring.");
+			throw new IllegalValueException("Detected downstream of " + downstreamBits +
+											" bits/s is nonsensically slow, ignoring.");
 		}
 
 		if (upstreamBits < KiB) {
-			throw new IllegalValueException("Detected upstream of " + upstreamBits + " bits/s is nonsensically slow, ignoring.");
+			throw new IllegalValueException("Detected upstream of " + upstreamBits +
+											" bits/s is nonsensically slow, ignoring.");
 		}
 
 		int downstreamBytes = downstreamBits / 8;

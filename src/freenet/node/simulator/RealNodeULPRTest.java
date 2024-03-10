@@ -73,7 +73,8 @@ public class RealNodeULPRTest extends RealNodeTest {
 	//static final short MAX_HTL = 10;
 	static final int NUMBER_OF_TESTS = 100;
 	static final boolean ENABLE_SWAPPING = true;
-	static final boolean ENABLE_ULPRS = true; // This is the point of the test, but it's probably a good idea to be able to do a comparison if we want to
+	static final boolean ENABLE_ULPRS =
+		true; // This is the point of the test, but it's probably a good idea to be able to do a comparison if we want to
 	static final boolean ENABLE_PER_NODE_FAILURE_TABLES = true;
 	static final boolean ENABLE_FOAF = true;
 	static final boolean REAL_TIME_FLAG = false;
@@ -84,7 +85,10 @@ public class RealNodeULPRTest extends RealNodeTest {
 	public static final int DARKNET_PORT_BASE = RealNodePingTest.DARKNET_PORT_END;
 	public static final int DARKNET_PORT_END = DARKNET_PORT_BASE + NUMBER_OF_NODES;
 
-	public static void main(String[] args) throws FSParseException, PeerParseException, CHKEncodeException, InvalidThresholdException, NodeInitException, ReferenceSignatureVerificationException, KeyCollisionException, SSKEncodeException, IOException, InterruptedException, SSKVerifyException, InvalidCompressionCodecException, PeerTooOldException {
+	public static void main(String[] args) throws FSParseException, PeerParseException,
+			   CHKEncodeException, InvalidThresholdException, NodeInitException,
+			   ReferenceSignatureVerificationException, KeyCollisionException, SSKEncodeException, IOException,
+		InterruptedException, SSKVerifyException, InvalidCompressionCodecException, PeerTooOldException {
 		System.err.println("ULPR test");
 		System.err.println();
 		String testName = "realNodeULPRTest";
@@ -101,7 +105,9 @@ public class RealNodeULPRTest extends RealNodeTest {
 		//NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL" /*,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR" "freenet.store:minor,freenet.node.LocationManager:debug,freenet.node.FNPPacketManager:normal,freenet.io.comm.MessageCore:debug"*/);
 		// Uncomment as appropriate.
 		// For testing high-level stuff (requests/ULPRs/FT bugs)
-		NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR,freenet.node.PeerNode:MINOR,freenet.node.DarknetPeerNode:MINOR,freenet.io.xfer.PacketThrottle:MINOR,freenet.node.PeerManager:MINOR,freenet.client.async:MINOR", true);
+		NodeStarter.globalTestInit(testName, false, LogLevel.ERROR,
+								   "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.NodeDispatcher:NORMAL,freenet.node.FailureTable:MINOR,freenet.node.Node:MINOR,freenet.node.Request:MINOR,freenet.io.comm.MessageCore:MINOR,freenet.node.PeerNode:MINOR,freenet.node.DarknetPeerNode:MINOR,freenet.io.xfer.PacketThrottle:MINOR,freenet.node.PeerManager:MINOR,freenet.client.async:MINOR",
+								   true);
 		// For testing low-level stuff (connection bugs)
 		//NodeStarter.globalTestInit(testName, false, LogLevel.ERROR, "freenet.node.Location:normal,freenet.node.simulator.RealNodeRoutingTest:normal,freenet.node.Node:MINOR,freenet.io.comm.MessageCore:MINOR,freenet.node.PeerNode:MINOR,freenet.node.DarknetPeerNode:MINOR,freenet.node.FNP:MINOR,freenet.io.xfer.PacketThrottle:MINOR,freenet.node.PeerManager:MINOR", true);
 		Node[] nodes = new Node[NUMBER_OF_NODES];
@@ -109,12 +115,15 @@ public class RealNodeULPRTest extends RealNodeTest {
 		Executor executor = new PooledExecutor();
 		for(int i=0; i<NUMBER_OF_NODES; i++) {
 			nodes[i] =
-				NodeStarter.createTestNode(DARKNET_PORT_BASE+i, 0, testName, true, MAX_HTL, 20 /* 5% */, random, executor, 500*NUMBER_OF_NODES, 1024*1024, true, ENABLE_SWAPPING, false, ENABLE_ULPRS, ENABLE_PER_NODE_FAILURE_TABLES, true, true, 0, ENABLE_FOAF, false, true, false, null);
+				NodeStarter.createTestNode(DARKNET_PORT_BASE+i, 0, testName, true, MAX_HTL, 20 /* 5% */, random,
+										   executor, 500*NUMBER_OF_NODES, 1024*1024, true, ENABLE_SWAPPING, false, ENABLE_ULPRS,
+										   ENABLE_PER_NODE_FAILURE_TABLES, true, true, 0, ENABLE_FOAF, false, true, false, null);
 			Logger.normal(RealNodeRoutingTest.class, "Created node "+i);
 		}
 		SimpleFieldSet refs[] = new SimpleFieldSet[NUMBER_OF_NODES];
-		for(int i=0; i<NUMBER_OF_NODES; i++)
+		for(int i=0; i<NUMBER_OF_NODES; i++) {
 			refs[i] = nodes[i].exportDarknetPublicFieldSet();
+		}
 		Logger.normal(RealNodeRoutingTest.class, "Created "+NUMBER_OF_NODES+" nodes");
 		// Now link them up
 		// Connect the set
@@ -127,8 +136,9 @@ public class RealNodeULPRTest extends RealNodeTest {
 		Logger.normal(RealNodeRoutingTest.class, "Connected nodes");
 		// Now add some random links
 		for(int i=0; i<NUMBER_OF_NODES*5; i++) {
-			if(i % NUMBER_OF_NODES == 0)
+			if(i % NUMBER_OF_NODES == 0) {
 				Logger.normal(RealNodeRoutingTest.class, String.valueOf(i));
+			}
 			int length = (int)Math.pow(NUMBER_OF_NODES, random.nextDouble());
 			int nodeA = random.nextInt(NUMBER_OF_NODES);
 			int nodeB = (nodeA+length)%NUMBER_OF_NODES;
@@ -141,8 +151,9 @@ public class RealNodeULPRTest extends RealNodeTest {
 
 		Logger.normal(RealNodeRoutingTest.class, "Added random links");
 
-		for(Node node: nodes)
+		for(Node node: nodes) {
 			node.start(false);
+		}
 
 		int successfulTests = 0;
 
@@ -171,9 +182,11 @@ public class RealNodeULPRTest extends RealNodeTest {
 				insertKey = InsertableClientSSK.create(testKey);
 				fetchKey = ClientKSK.create(testKey);
 
-				block = ((InsertableClientSSK)insertKey).encode(new ArrayBucket(buf), false, false, (short)-1, buf.length, random, COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
+				block = ((InsertableClientSSK)insertKey).encode(new ArrayBucket(buf), false, false, (short)-1,
+						buf.length, random, COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
 			} else {
-				block = ClientCHKBlock.encode(buf, false, false, (short)-1, buf.length, COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
+				block = ClientCHKBlock.encode(buf, false, false, (short)-1, buf.length,
+											  COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
 				insertKey = fetchKey = block.getClientKey();
 				testKey = insertKey.getURI();
 			}
@@ -182,7 +195,8 @@ public class RealNodeULPRTest extends RealNodeTest {
 			System.err.println();
 			System.err.println("Created random test key "+testKey+" = "+nodeKey);
 			System.err.println();
-			Logger.error(RealNodeULPRTest.class, "Starting ULPR test #"+successfulTests+": "+testKey+" = "+fetchKey+" = "+nodeKey);
+			Logger.error(RealNodeULPRTest.class,
+						 "Starting ULPR test #"+successfulTests+": "+testKey+" = "+fetchKey+" = "+nodeKey);
 
 			waitForAllConnected(nodes);
 
@@ -243,13 +257,18 @@ public class RealNodeULPRTest extends RealNodeTest {
 			StringBuilder sb = new StringBuilder(3*nodes.length+1);
 			boolean first = true;
 			for(int i=0; i<visited.length; i++) {
-				if(!visited[i]) continue;
+				if(!visited[i]) {
+					continue;
+				}
 				visitedCount++;
-				if(!first) sb.append(' ');
+				if(!first) {
+					sb.append(' ');
+				}
 				first = false;
 				sb.append(i);
 			}
-			System.err.println("Nodes which were asked for the key by another node: "+visitedCount+" : "+sb.toString());
+			System.err.println("Nodes which were asked for the key by another node: "+visitedCount+" : "
+							   +sb.toString());
 
 			// Store the key to ONE node.
 
@@ -264,11 +283,14 @@ public class RealNodeULPRTest extends RealNodeTest {
 				Thread.sleep(1000);
 				int count = 0;
 				for(Node node: nodes) {
-					if(node.hasKey(fetchKey.getNodeKey(false), true, true))
+					if(node.hasKey(fetchKey.getNodeKey(false), true, true)) {
 						count++;
+					}
 				}
-				System.err.println("T="+x+" : "+count+'/'+nodes.length+" have the data on test "+successfulTests+".");
-				Logger.normal(RealNodeULPRTest.class, "T="+x+" : "+count+'/'+nodes.length+" have the data on test "+successfulTests+".");
+				System.err.println("T="+x+" : "+count+'/'+nodes.length+" have the data on test "+successfulTests
+								   +".");
+				Logger.normal(RealNodeULPRTest.class,
+							  "T="+x+" : "+count+'/'+nodes.length+" have the data on test "+successfulTests+".");
 				if(x > 300) {
 					System.err.println();
 					System.err.println("TEST FAILED");
@@ -295,7 +317,8 @@ public class RealNodeULPRTest extends RealNodeTest {
 			}
 
 		}
-		System.err.println("Overall average propagation time: "+(totalPropagationTime / successfulTests)+"ms");
+		System.err.println("Overall average propagation time: "+(totalPropagationTime / successfulTests)
+						   +"ms");
 		System.exit(0);
 	}
 

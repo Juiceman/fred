@@ -109,11 +109,13 @@ public class SHA256 {
 	 * Must be SHA-256 !
 	 */
 	public static void returnMessageDigest(MessageDigest md256) {
-		if(md256 == null)
+		if(md256 == null) {
 			return;
+		}
 		String algo = md256.getAlgorithm();
-		if(!(algo.equals("SHA-256") || algo.equals("SHA256")))
+		if(!(algo.equals("SHA-256") || algo.equals("SHA256"))) {
 			throw new IllegalArgumentException("Should be SHA-256 but is " + algo);
+		}
 		md256.reset();
 		digests.add(new SoftReference<>(md256));
 	}

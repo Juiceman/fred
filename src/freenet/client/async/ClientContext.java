@@ -93,14 +93,19 @@ public class ClientContext {
 	private transient final Config config;
 
 	public ClientContext(long bootID, ClientLayerPersister jobRunner, Executor mainExecutor,
-						 ArchiveManager archiveManager, PersistentTempBucketFactory ptbf, TempBucketFactory tbf, PersistentFileTracker tracker,
+						 ArchiveManager archiveManager, PersistentTempBucketFactory ptbf, TempBucketFactory tbf,
+						 PersistentFileTracker tracker,
 						 HealingQueue hq, USKManager uskManager, RandomSource strongRandom, Random fastWeakRandom,
-						 Ticker ticker, MemoryLimitedJobRunner memoryLimitedJobRunner, FilenameGenerator fg, FilenameGenerator persistentFG,
-						 LockableRandomAccessBufferFactory rafFactory, LockableRandomAccessBufferFactory persistentRAFFactory,
+						 Ticker ticker, MemoryLimitedJobRunner memoryLimitedJobRunner, FilenameGenerator fg,
+						 FilenameGenerator persistentFG,
+						 LockableRandomAccessBufferFactory rafFactory,
+						 LockableRandomAccessBufferFactory persistentRAFFactory,
 						 FileRandomAccessBufferFactory fileRAFTransient, FileRandomAccessBufferFactory fileRAFPersistent,
-						 RealCompressor rc, DatastoreChecker checker, PersistentRequestRoot persistentRoot, MasterSecret cryptoSecretTransient,
+						 RealCompressor rc, DatastoreChecker checker, PersistentRequestRoot persistentRoot,
+						 MasterSecret cryptoSecretTransient,
 						 LinkFilterExceptionProvider linkFilterExceptionProvider,
-						 FetchContext defaultPersistentFetchContext, InsertContext defaultPersistentInsertContext, Config config) {
+						 FetchContext defaultPersistentFetchContext, InsertContext defaultPersistentInsertContext,
+						 Config config) {
 		this.bootID = bootID;
 		this.jobRunner = jobRunner;
 		this.mainExecutor = mainExecutor;
@@ -177,7 +182,8 @@ public class ClientContext {
 	 * @throws DatabaseDisabledException If the insert is persistent and the database is disabled (e.g.
 	 * because it is encrypted and the user hasn't entered the password yet).
 	 */
-	public void start(final ClientPutter inserter) throws InsertException, PersistenceDisabledException {
+	public void start(final ClientPutter inserter) throws InsertException,
+		PersistenceDisabledException {
 		if(inserter.persistent()) {
 			jobRunner.queue(new PersistentJob() {
 
@@ -231,7 +237,8 @@ public class ClientContext {
 	 * @throws InsertException If the insert is transient and failed to start.
 	 * @throws DatabaseDisabledException If the insert is persistent and the database is disabled.
 	 */
-	public void start(final BaseManifestPutter inserter) throws InsertException, PersistenceDisabledException {
+	public void start(final BaseManifestPutter inserter) throws InsertException,
+		PersistenceDisabledException {
 		if(inserter.persistent()) {
 			jobRunner.queue(new PersistentJob() {
 
@@ -258,10 +265,11 @@ public class ClientContext {
 	 * which will be deleted once the node is restarted.
 	 */
 	public BucketFactory getBucketFactory(boolean persistent) {
-		if(persistent)
+		if(persistent) {
 			return persistentBucketFactory;
-		else
+		} else {
 			return tempBucketFactory;
+		}
 	}
 
 	/**
@@ -269,7 +277,9 @@ public class ClientContext {
 	 * @param ssk If true, get the SSK request scheduler. If false, get the CHK request scheduler.
 	 */
 	public RequestScheduler getFetchScheduler(boolean ssk, boolean realTime) {
-		if(ssk) return realTime ? sskFetchSchedulerRT : sskFetchSchedulerBulk;
+		if(ssk) {
+			return realTime ? sskFetchSchedulerRT : sskFetchSchedulerBulk;
+		}
 		return realTime ? chkFetchSchedulerRT : chkFetchSchedulerBulk;
 	}
 

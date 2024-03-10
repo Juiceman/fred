@@ -14,7 +14,8 @@ public class TestUtil {
 			int seedConns = node.peers.getConnectedSeedServerPeersVector(null).size();
 			int opennetPeers = node.peers.countValidPeers();
 			int opennetConns = node.peers.countConnectedOpennetPeers();
-			System.err.println("" + seconds + " : seeds: " + seeds + ", connected: " + seedConns + " opennet: peers: "
+			System.err.println("" + seconds + " : seeds: " + seeds + ", connected: " + seedConns +
+							   " opennet: peers: "
 							   + opennetPeers + ", connected: " + opennetConns);
 			seconds++;
 			if (opennetConns >= targetPeers) {
@@ -22,8 +23,9 @@ public class TestUtil {
 				break;
 			}
 		}
-		if (!success)
+		if (!success) {
 			System.err.println("Failed to reach target peers count " + targetPeers + " in 10 minutes.");
+		}
 		return success;
 	}
 }

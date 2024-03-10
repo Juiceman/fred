@@ -30,20 +30,23 @@ import freenet.support.io.InsufficientDiskSpaceException;
  * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
-public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements ClientGetState, Serializable {
+public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements ClientGetState,
+	Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	SimpleSingleFileFetcher(ClientKey key, int maxRetries, FetchContext ctx, ClientRequester parent,
-							GetCompletionCallback rcb, boolean isEssential, boolean dontAdd, long l, ClientContext context, boolean deleteFetchContext, boolean realTimeFlag) {
+							GetCompletionCallback rcb, boolean isEssential, boolean dontAdd, long l, ClientContext context,
+							boolean deleteFetchContext, boolean realTimeFlag) {
 		super(key, maxRetries, ctx, parent, deleteFetchContext, realTimeFlag);
 		this.rcb = rcb;
 		this.token = l;
 		if(!dontAdd) {
-			if(isEssential)
+			if(isEssential) {
 				parent.addMustSucceedBlocks(1);
-			else
+			} else {
 				parent.addBlock();
+			}
 			parent.notifyClients(context);
 		}
 	}
@@ -63,21 +66,28 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 
 	// Translate it, then call the real onFailure
 	@Override
-	public void onFailure(LowLevelGetException e, SendableRequestItem reqTokenIgnored, ClientContext context) {
+	public void onFailure(LowLevelGetException e, SendableRequestItem reqTokenIgnored,
+						  ClientContext context) {
 		onFailure(translateException(e), false, context);
 	}
 
 	// Real onFailure
 	protected void onFailure(FetchException e, boolean forceFatal, ClientContext context) {
-		if(logMINOR) Logger.minor(this, "onFailure( "+e+" , "+forceFatal+")", e);
+		if(logMINOR) {
+			Logger.minor(this, "onFailure( "+e+" , "+forceFatal+")", e);
+		}
 		if(parent.isCancelled() || cancelled) {
-			if(logMINOR) Logger.minor(this, "Failing: cancelled");
+			if(logMINOR) {
+				Logger.minor(this, "Failing: cancelled");
+			}
 			e = new FetchException(FetchExceptionMode.CANCELLED);
 			forceFatal = true;
 		}
 		if(!(e.isFatal() || forceFatal) ) {
 			if(retry(context)) {
-				if(logMINOR) Logger.minor(this, "Retrying");
+				if(logMINOR) {
+					Logger.minor(this, "Retrying");
+				}
 				return;
 			}
 		}
@@ -86,10 +96,11 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 		synchronized(this) {
 			finished = true;
 		}
-		if(e.isFatal() || forceFatal)
+		if(e.isFatal() || forceFatal) {
 			parent.fatallyFailedBlock(context);
-		else
+		} else {
 			parent.failedBlock(context);
+		}
 		rcb.onFailure(e, this, context);
 	}
 
@@ -100,20 +111,26 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 			onFailure(new FetchException(FetchExceptionMode.CANCELLED), false, context);
 			return;
 		}
-		rcb.onSuccess(new SingleFileStreamGenerator(data.asBucket(), persistent), data.getMetadata(), null, this, context);
+		rcb.onSuccess(new SingleFileStreamGenerator(data.asBucket(), persistent), data.getMetadata(), null,
+					  this, context);
 	}
 
 	@Override
-	public void onSuccess(ClientKeyBlock block, boolean fromStore, Object reqTokenIgnored, ClientContext context) {
-		if(parent instanceof ClientGetter)
+	public void onSuccess(ClientKeyBlock block, boolean fromStore, Object reqTokenIgnored,
+						  ClientContext context) {
+		if(parent instanceof ClientGetter) {
 			((ClientGetter)parent).addKeyToBinaryBlob(block, context);
+		}
 		Bucket data = extract(block, context);
-		if(data == null) return; // failed
+		if(data == null) {
+			return;    // failed
+		}
 		context.uskManager.checkUSK(key.getURI(), fromStore, block.isMetadata());
 		if(!block.isMetadata()) {
 			onSuccess(new FetchResult(new ClientMetadata(null), data), context);
 		} else {
-			onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, "Metadata where expected data"), false, context);
+			onFailure(new FetchException(FetchExceptionMode.INVALID_METADATA, "Metadata where expected data"),
+					  false, context);
 		}
 	}
 
@@ -123,11 +140,14 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 	protected Bucket extract(ClientKeyBlock block, ClientContext context) {
 		Bucket data;
 		try {
-			data = block.decode(context.getBucketFactory(parent.persistent()), (int)(Math.min(ctx.maxOutputLength, Integer.MAX_VALUE)), false);
+			data = block.decode(context.getBucketFactory(parent.persistent()),
+								(int)(Math.min(ctx.maxOutputLength, Integer.MAX_VALUE)), false);
 		} catch (KeyDecodeException e1) {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Decode failure: "+e1, e1);
-			onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR, e1.getMessage()), false, context);
+			}
+			onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR, e1.getMessage()), false,
+					  context);
 			return null;
 		} catch (TooBigException e) {
 			onFailure(new FetchException(FetchExceptionMode.TOO_BIG, e), false, context);
@@ -162,7 +182,9 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 
 	@Override
 	protected void onBlockDecodeError(SendableRequestItem token, ClientContext context) {
-		onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR, "Could not decode block with the URI given, probably invalid as inserted, possible the URI is wrong"), true, context);
+		onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR,
+									 "Could not decode block with the URI given, probably invalid as inserted, possible the URI is wrong"),
+				  true, context);
 	}
 
 	@Override

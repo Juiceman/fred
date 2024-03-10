@@ -72,24 +72,30 @@ public class SingleOffsetReplacingOutputStreamTest {
 		filterOutputStreamWithOffsetAndReplacementWritingHalfBuffers(16384, 4, 65535);
 	}
 
-	private void filterOutputStreamWithOffsetAndReplacementWritingSingleBytes(int blockSize, int numberOfBlocks, int replacementOffset) throws IOException {
-		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, (buffer, length, repetitions, outputStream) -> {
+	private void filterOutputStreamWithOffsetAndReplacementWritingSingleBytes(int blockSize,
+			int numberOfBlocks, int replacementOffset) throws IOException {
+		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, (buffer,
+		length, repetitions, outputStream) -> {
 			for (int index = 0; index < length * repetitions; index++) {
 				outputStream.write(buffer[index % length]);
 			}
 		});
 	}
 
-	private void filterOutputStreamWithOffsetAndReplacementWritingByteArrays(int blockSize, int numberOfBlocks, int replacementOffset) throws IOException {
-		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, (buffer, length, repetitions, outputStream) -> {
+	private void filterOutputStreamWithOffsetAndReplacementWritingByteArrays(int blockSize,
+			int numberOfBlocks, int replacementOffset) throws IOException {
+		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, (buffer,
+		length, repetitions, outputStream) -> {
 			for (int blockIndex = 0; blockIndex < repetitions; blockIndex++) {
 				outputStream.write(buffer, 0, length);
 			}
 		});
 	}
 
-	private void filterOutputStreamWithOffsetAndReplacementWritingHalfBuffers(int blockSize, int numberOfBlocks, int replacementOffset) throws IOException {
-		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, ((buffer, length, repetitions, outputStream) -> {
+	private void filterOutputStreamWithOffsetAndReplacementWritingHalfBuffers(int blockSize,
+			int numberOfBlocks, int replacementOffset) throws IOException {
+		filterOutputStreamWithOffsetAndReplacement(blockSize, numberOfBlocks, replacementOffset, ((buffer,
+		length, repetitions, outputStream) -> {
 			for (int blockIndex = 0; blockIndex < repetitions; blockIndex++) {
 				outputStream.write(buffer, 0, length / 2);
 				outputStream.write(buffer, length / 2, length - (length / 2));
@@ -97,21 +103,29 @@ public class SingleOffsetReplacingOutputStreamTest {
 		}));
 	}
 
-	private void filterOutputStreamWithOffsetAndReplacement(int blockSize, int numberOfBlocks, int replacementOffset, BufferToOutputStreamCopierStrategy bufferToOutputStreamCopierStrategy) throws IOException {
+	private void filterOutputStreamWithOffsetAndReplacement(int blockSize, int numberOfBlocks,
+			int replacementOffset, BufferToOutputStreamCopierStrategy bufferToOutputStreamCopierStrategy) throws
+		IOException {
 		byte[] bufferToWrite = new byte[blockSize];
 		new Random().nextBytes(bufferToWrite);
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		SingleOffsetReplacingOutputStream outputStream = new SingleOffsetReplacingOutputStream(byteArrayOutputStream, replacementOffset, (byte) (bufferToWrite[replacementOffset % blockSize] ^ 0xff));
-		bufferToOutputStreamCopierStrategy.copyBufferToOutput(bufferToWrite, blockSize, numberOfBlocks, outputStream);
+		SingleOffsetReplacingOutputStream outputStream = new SingleOffsetReplacingOutputStream(
+			byteArrayOutputStream, replacementOffset,
+			(byte) (bufferToWrite[replacementOffset % blockSize] ^ 0xff));
+		bufferToOutputStreamCopierStrategy.copyBufferToOutput(bufferToWrite, blockSize, numberOfBlocks,
+				outputStream);
 		byte[] writtenBuffer = byteArrayOutputStream.toByteArray();
 		for (int offset = 0; offset < blockSize * numberOfBlocks; offset++) {
-			assertThat("offset " + offset, writtenBuffer[offset], equalTo((byte) (bufferToWrite[offset % blockSize] ^ ((offset == replacementOffset) ? 0xff : 0x00))));
+			assertThat("offset " + offset, writtenBuffer[offset],
+					   equalTo((byte) (bufferToWrite[offset % blockSize] ^ ((offset == replacementOffset) ? 0xff :
+									   0x00))));
 		}
 	}
 
 	@FunctionalInterface
 	private interface BufferToOutputStreamCopierStrategy {
-		void copyBufferToOutput(byte[] buffer, int length, int repetitions, OutputStream outputStream) throws IOException;
+		void copyBufferToOutput(byte[] buffer, int length, int repetitions,
+								OutputStream outputStream) throws IOException;
 	}
 
 }

@@ -25,7 +25,8 @@ public class WebInterface {
 		_pageMaker = context.pageMaker;
 	}
 
-	public void addNavigationCategory(String uri, String category, String title, FredPluginL10n plugin) {
+	public void addNavigationCategory(String uri, String category, String title,
+									  FredPluginL10n plugin) {
 		_pageMaker.addNavigationCategory(uri, category, title, plugin);
 		_categories.add(category);
 	}

@@ -32,15 +32,19 @@ public abstract class ChecksumChecker {
 	 * @param bf Used to allocate temporary storage.
 	 * @throws IOException
 	 */
-	public PrependLengthOutputStream checksumWriterWithLength(final OutputStream dos, BucketFactory bf) throws IOException {
+	public PrependLengthOutputStream checksumWriterWithLength(final OutputStream dos,
+			BucketFactory bf) throws IOException {
 		return PrependLengthOutputStream.create(checksumWriter(dos, 8), bf, 0, true);
 	}
 
 	public abstract byte[] appendChecksum(byte[] data);
 
 	/** Verify a checksum or throw */
-	public void verifyChecksum(byte[] data, int offset, int length, byte[] checksum) throws ChecksumFailedException {
-		if(!checkChecksum(data, offset, length, checksum)) throw new ChecksumFailedException();
+	public void verifyChecksum(byte[] data, int offset, int length,
+							   byte[] checksum) throws ChecksumFailedException {
+		if(!checkChecksum(data, offset, length, checksum)) {
+			throw new ChecksumFailedException();
+		}
 	}
 
 	/** Verify a checksum or report.
@@ -62,11 +66,13 @@ public abstract class ChecksumChecker {
 	/** Copy bytes from one stream to another, verifying and stripping the final checksum.
 	 * @throws IOException
 	 * @throws ChecksumFailedException */
-	public abstract void copyAndStripChecksum(InputStream is, OutputStream os, long length) throws IOException, ChecksumFailedException;
+	public abstract void copyAndStripChecksum(InputStream is, OutputStream os,
+			long length) throws IOException, ChecksumFailedException;
 
 	/** Read from disk and verify the checksum that follows the data. If it throws, the buffer will
 	 * be zero'ed out. */
-	public abstract void readAndChecksum(DataInput is, byte[] buf, int offset, int length) throws IOException, ChecksumFailedException;
+	public abstract void readAndChecksum(DataInput is, byte[] buf, int offset,
+										 int length) throws IOException, ChecksumFailedException;
 
 	public InputStream checksumReaderWithLength(InputStream dis, BucketFactory bf, long maxLength)
 	throws IOException, ChecksumFailedException {
@@ -83,7 +89,8 @@ public abstract class ChecksumChecker {
 		return ReadBucketAndFreeInputStream.create(bucket);
 	}
 
-	public void writeAndChecksum(OutputStream os, byte[] buf, int offset, int length) throws IOException {
+	public void writeAndChecksum(OutputStream os, byte[] buf, int offset,
+								 int length) throws IOException {
 		os.write(buf, offset, length);
 		os.write(generateChecksum(buf, offset, length));
 	}
@@ -102,10 +109,11 @@ public abstract class ChecksumChecker {
 	 * @throws IllegalArgumentException If there is no ChecksumChecker for that ID.
 	 */
 	public static ChecksumChecker create(int checksumID) {
-		if(checksumID == CHECKSUM_CRC)
+		if(checksumID == CHECKSUM_CRC) {
 			return new CRCChecksumChecker();
-		else
+		} else {
 			throw new IllegalArgumentException("Bad checksum ID");
+		}
 	}
 
 }

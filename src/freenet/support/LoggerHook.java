@@ -26,7 +26,8 @@ public abstract class LoggerHook extends Logger {
 	}
 
 	public DetailedThreshold[] detailedThresholds = new DetailedThreshold[0];
-	private CopyOnWriteArrayList<LogThresholdCallback> thresholdsCallbacks = new CopyOnWriteArrayList<LogThresholdCallback>();
+	private CopyOnWriteArrayList<LogThresholdCallback> thresholdsCallbacks = new
+	CopyOnWriteArrayList<LogThresholdCallback>();
 
 	/**
 	 * Log a message
@@ -60,7 +61,9 @@ public abstract class LoggerHook extends Logger {
 	 **/
 	@Override
 	public void log(Object source, String message, LogLevel priority) {
-		if (!instanceShouldLog(priority,source)) return;
+		if (!instanceShouldLog(priority,source)) {
+			return;
+		}
 		log(source, source == null ? null : source.getClass(),
 			message, null, priority);
 	}
@@ -77,7 +80,9 @@ public abstract class LoggerHook extends Logger {
 	@Override
 	public void log(Object o, String message, Throwable e,
 					LogLevel priority) {
-		if (!instanceShouldLog(priority,o)) return;
+		if (!instanceShouldLog(priority,o)) {
+			return;
+		}
 		log(o, o == null ? null : o.getClass(), message, e, priority);
 	}
 
@@ -90,15 +95,18 @@ public abstract class LoggerHook extends Logger {
 	 */
 	@Override
 	public void log(Class<?> c, String message, LogLevel priority) {
-		if (!instanceShouldLog(priority,c)) return;
+		if (!instanceShouldLog(priority,c)) {
+			return;
+		}
 		log(null, c, message, null, priority);
 	}
 
 
 	@Override
 	public void log(Class<?> c, String message, Throwable e, LogLevel priority) {
-		if (!instanceShouldLog(priority, c))
+		if (!instanceShouldLog(priority, c)) {
 			return;
+		}
 		log(null, c, message, e, priority);
 	}
 
@@ -118,7 +126,9 @@ public abstract class LoggerHook extends Logger {
 	}
 
 	private LogLevel parseThreshold(String threshold) throws InvalidThresholdException {
-		if(threshold == null) throw new InvalidThresholdException(threshold);
+		if(threshold == null) {
+			throw new InvalidThresholdException(threshold);
+		}
 		try {
 			return LogLevel.valueOf(threshold.toUpperCase());
 		} catch (IllegalArgumentException e) {
@@ -133,19 +143,23 @@ public abstract class LoggerHook extends Logger {
 
 	@Override
 	public void setDetailedThresholds(String details) throws InvalidThresholdException {
-		if (details == null)
+		if (details == null) {
 			return;
+		}
 		StringTokenizer st = new StringTokenizer(details, ",", false);
 		ArrayList<DetailedThreshold> stuff = new ArrayList<DetailedThreshold>();
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
-			if (token.length() == 0)
+			if (token.length() == 0) {
 				continue;
+			}
 			int x = token.indexOf(':');
-			if (x < 0)
+			if (x < 0) {
 				continue;
-			if (x == token.length() - 1)
+			}
+			if (x == token.length() - 1) {
 				continue;
+			}
 			String section = token.substring(0, x);
 			String value = token.substring(x + 1, token.length());
 			stuff.add(new DetailedThreshold(section, parseThreshold(value.toUpperCase())));
@@ -163,8 +177,9 @@ public abstract class LoggerHook extends Logger {
 		synchronized(this) {
 			thresh = detailedThresholds;
 		}
-		if (thresh.length == 0)
+		if (thresh.length == 0) {
 			return "";
+		}
 		StringBuilder sb = new StringBuilder();
 		for(DetailedThreshold t: thresh) {
 			sb.append(t.section);
@@ -197,8 +212,9 @@ public abstract class LoggerHook extends Logger {
 		if ((c != null) && (thresholds.length > 0)) {
 			String cname = c.getName();
 			for(DetailedThreshold dt : thresholds) {
-				if(cname.startsWith(dt.section))
+				if(cname.startsWith(dt.section)) {
 					thresh = dt.dThreshold;
+				}
 			}
 		}
 		return priority.matchesThreshold(thresh);
@@ -223,8 +239,9 @@ public abstract class LoggerHook extends Logger {
 	}
 
 	private void notifyLogThresholdCallbacks() {
-		for(LogThresholdCallback ltc : thresholdsCallbacks)
+		for(LogThresholdCallback ltc : thresholdsCallbacks) {
 			ltc.shouldUpdate();
+		}
 	}
 
 }

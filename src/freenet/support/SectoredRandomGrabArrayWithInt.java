@@ -7,7 +7,8 @@ public class SectoredRandomGrabArrayWithInt<T, C extends RemoveRandomWithObject<
 
 	private final int number;
 
-	public SectoredRandomGrabArrayWithInt(int number, RemoveRandomParent parent, ClientRequestSelector root) {
+	public SectoredRandomGrabArrayWithInt(int number, RemoveRandomParent parent,
+										  ClientRequestSelector root) {
 		super(parent, root);
 		this.number = number;
 	}

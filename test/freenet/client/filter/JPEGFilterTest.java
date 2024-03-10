@@ -24,7 +24,8 @@ public class JPEGFilterTest {
 		byte[] jpegFile = createValidJpegFileWithThumbnail();
 		InputStream inputStream = new ByteArrayInputStream(jpegFile);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		jpegFilter.readFilter(inputStream, outputStream, "UTF-8", new HashMap<>(), null, new NullFilterCallback());
+		jpegFilter.readFilter(inputStream, outputStream, "UTF-8", new HashMap<>(), null,
+							  new NullFilterCallback());
 		byte[] filteredJpegFile = outputStream.toByteArray();
 		assertArrayEquals(jpegFile, filteredJpegFile);
 	}

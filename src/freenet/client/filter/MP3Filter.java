@@ -178,13 +178,15 @@ public class MP3Filter implements ContentDataFilter {
 					in.readFully(frame);
 					out.writeInt(frameHeader);
 					// FIXME CRCs may or may not work. I have not been able to find an mp3 file with CRCs but without free bitrate.
-					if (hasCRC)
+					if (hasCRC) {
 						out.writeShort(crc);
+					}
 					out.write(frame);
 					totalFrames++;
 					foundFrames++;
-					if (countLostSyncBytes != 0)
+					if (countLostSyncBytes != 0) {
 						Logger.normal(this, "Lost sync for "+countLostSyncBytes+" bytes");
+					}
 					countLostSyncBytes = 0;
 					frameHeader = in.readInt();
 				} else if (!foundStream && (frameHeader & 0xffffff00) == 0x49443300) {
@@ -211,9 +213,12 @@ public class MP3Filter implements ContentDataFilter {
 					frameHeader = in.readInt();
 					foundStream = (frameHeader & 0xffe00000) == 0xffe00000;
 				} else {
-					if(foundFrames != 0)
+					if(foundFrames != 0) {
 						Logger.normal(this, "Series of frames: "+foundFrames);
-					if(foundFrames > maxFoundFrames) maxFoundFrames = foundFrames;
+					}
+					if(foundFrames > maxFoundFrames) {
+						maxFoundFrames = foundFrames;
+					}
 					foundFrames = 0;
 					frameHeader = frameHeader << 8;
 					frameHeader |= (in.readUnsignedByte());
@@ -226,15 +231,21 @@ public class MP3Filter implements ContentDataFilter {
 
 			}
 		} catch (EOFException e) {
-			if(foundFrames != 0)
+			if(foundFrames != 0) {
 				Logger.normal(this, "Series of frames: "+foundFrames);
-			if(countLostSyncBytes != 0)
+			}
+			if(countLostSyncBytes != 0) {
 				Logger.normal(this, "Lost sync for "+countLostSyncBytes+" bytes");
+			}
 			if(totalFrames == 0 || maxFoundFrames < 10) {
-				if(countFreeBitrate > 100)
-					throw new DataFilterException(l10n("freeBitrateNotSupported"), l10n("freeBitrateNotSupported"), l10n("freeBitrateNotSupportedExplanation"));
-				if(totalFrames == 0)
-					throw new DataFilterException(l10n("bogusMP3NoFrames"), l10n("bogusMP3NoFrames"), l10n("bogusMP3NoFramesExplanation"));
+				if(countFreeBitrate > 100) {
+					throw new DataFilterException(l10n("freeBitrateNotSupported"), l10n("freeBitrateNotSupported"),
+												  l10n("freeBitrateNotSupportedExplanation"));
+				}
+				if(totalFrames == 0) {
+					throw new DataFilterException(l10n("bogusMP3NoFrames"), l10n("bogusMP3NoFrames"),
+												  l10n("bogusMP3NoFramesExplanation"));
+				}
 			}
 
 			out.flush();

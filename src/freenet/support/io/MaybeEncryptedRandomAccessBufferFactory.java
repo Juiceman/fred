@@ -12,7 +12,8 @@ import freenet.support.api.LockableRandomAccessBufferFactory;
 /** Wraps another LockableRandomAccessBufferFactory to enable encryption if currently turned on. */
 public class MaybeEncryptedRandomAccessBufferFactory implements LockableRandomAccessBufferFactory {
 
-	public MaybeEncryptedRandomAccessBufferFactory(LockableRandomAccessBufferFactory factory, boolean encrypt) {
+	public MaybeEncryptedRandomAccessBufferFactory(LockableRandomAccessBufferFactory factory,
+			boolean encrypt) {
 		this.factory = factory;
 		this.reallyEncrypt = encrypt;
 	}
@@ -35,14 +36,18 @@ public class MaybeEncryptedRandomAccessBufferFactory implements LockableRandomAc
 			if(reallyEncrypt && this.secret != null) {
 				secret = this.secret;
 				realSize += TempBucketFactory.CRYPT_TYPE.headerLen;
-				paddedSize = PaddedEphemerallyEncryptedBucket.paddedLength(realSize, PaddedEphemerallyEncryptedBucket.MIN_PADDED_SIZE);
-				if(logMINOR) Logger.minor(this, "Encrypting and padding "+size+" to "+paddedSize);
+				paddedSize = PaddedEphemerallyEncryptedBucket.paddedLength(realSize,
+							 PaddedEphemerallyEncryptedBucket.MIN_PADDED_SIZE);
+				if(logMINOR) {
+					Logger.minor(this, "Encrypting and padding "+size+" to "+paddedSize);
+				}
 			}
 		}
 		LockableRandomAccessBuffer raf = factory.makeRAF(paddedSize);
 		if(secret != null) {
-			if(realSize != paddedSize)
+			if(realSize != paddedSize) {
 				raf = new PaddedRandomAccessBuffer(raf, realSize);
+			}
 			try {
 				raf = new EncryptedRandomAccessBuffer(TempBucketFactory.CRYPT_TYPE, raf, secret, true);
 			} catch (GeneralSecurityException e) {
@@ -63,7 +68,9 @@ public class MaybeEncryptedRandomAccessBufferFactory implements LockableRandomAc
 			// FIXME do the encryption in memory? Test it ...
 			LockableRandomAccessBuffer ret = makeRAF(size);
 			ret.pwrite(0, initialContents, offset, size);
-			if(readOnly) ret = new ReadOnlyRandomAccessBuffer(ret);
+			if(readOnly) {
+				ret = new ReadOnlyRandomAccessBuffer(ret);
+			}
 			return ret;
 		} else {
 			return factory.makeRAF(initialContents, offset, size, readOnly);
@@ -80,8 +87,9 @@ public class MaybeEncryptedRandomAccessBufferFactory implements LockableRandomAc
 		synchronized(this) {
 			reallyEncrypt = value;
 		}
-		if(factory instanceof PooledFileRandomAccessBufferFactory)
+		if(factory instanceof PooledFileRandomAccessBufferFactory) {
 			((PooledFileRandomAccessBufferFactory)factory).enableCrypto(value);
+		}
 	}
 
 }

@@ -20,8 +20,9 @@ public class UnknownNodeIdentifierMessage extends FCPMessage {
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putSingle("NodeIdentifier", nodeIdentifier);
-		if(identifier != null)
+		if(identifier != null) {
 			sfs.putSingle("Identifier", identifier);
+		}
 		return sfs;
 	}
 
@@ -33,7 +34,8 @@ public class UnknownNodeIdentifierMessage extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "UnknownNodeIdentifier goes from server to client not the other way around", nodeIdentifier, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "UnknownNodeIdentifier goes from server to client not the other way around", nodeIdentifier, false);
 	}
 
 }

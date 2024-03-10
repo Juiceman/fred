@@ -58,8 +58,10 @@ public class IOStatisticCollector {
 			synchronized(this) {
 				totalbytesout += (outbytes>0)?outbytes:0;
 				totalbytesin += (inbytes>0)?inbytes:0;
-				if(logDEBUG)
-					Logger.debug(IOStatisticCollector.class, "Add("+addr+":"+port+ ',' +inbytes+ ',' +outbytes+" -> "+totalbytesin+" : "+totalbytesout);
+				if(logDEBUG) {
+					Logger.debug(IOStatisticCollector.class,
+								 "Add("+addr+":"+port+ ',' +inbytes+ ',' +outbytes+" -> "+totalbytesin+" : "+totalbytesout);
+				}
 			}
 		}
 	}
@@ -146,11 +148,14 @@ public class IOStatisticCollector {
 		if ((now - lastrotate) >= STATISTICS_DURATION) {
 			lastrotate = now;
 			Object[] keys = targets.keySet().toArray();
-			if(keys == null) return; // Why aren't we iterating there ?
+			if(keys == null) {
+				return;    // Why aren't we iterating there ?
+			}
 			for(int i = 0 ; i < keys.length ; i++) {
 				Object key = keys[i];
-				if (targets.get(key).rotate() == false)
+				if (targets.get(key).rotate() == false) {
 					targets.remove(key);
+				}
 			}
 			// FIXME: debugging
 			//_dumpInfo();

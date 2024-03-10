@@ -56,7 +56,9 @@ public abstract class AbstractUserAlert implements UserAlert {
 		creationTime = System.currentTimeMillis();
 	}
 
-	protected AbstractUserAlert(boolean userCanDismiss, String title, String text, String shortText, HTMLNode htmlText, short priorityClass, boolean valid, String dismissButtonText, boolean shouldUnregisterOnDismiss, Object userIdentifier) {
+	protected AbstractUserAlert(boolean userCanDismiss, String title, String text, String shortText,
+								HTMLNode htmlText, short priorityClass, boolean valid, String dismissButtonText,
+								boolean shouldUnregisterOnDismiss, Object userIdentifier) {
 		this.userCanDismiss = userCanDismiss;
 		this.title = title;
 		this.text = text;

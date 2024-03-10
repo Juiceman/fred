@@ -178,8 +178,9 @@ final class FCPPluginConnectionTracker extends NativeThread {
 		connectionsByIDLock.readLock().lock();
 		try {
 			ConnectionWeakReference ref = connectionsByID.get(connectionID);
-			if(ref != null)
+			if(ref != null) {
 				return ref;
+			}
 		} finally {
 			connectionsByIDLock.readLock().unlock();
 		}

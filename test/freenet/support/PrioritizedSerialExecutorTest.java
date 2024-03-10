@@ -62,8 +62,9 @@ public class PrioritizedSerialExecutorTest {
 
 		synchronized (job) {
 			exec.execute(job, j);
-			if (waitForStart)
+			if (waitForStart) {
 				job.wait(5000);
+			}
 		}
 	}
 
@@ -71,8 +72,9 @@ public class PrioritizedSerialExecutorTest {
 		int completed = 0;
 		while (completed < count) {
 			String s = completingJob.poll(5, TimeUnit.SECONDS);
-			if (s == null)
+			if (s == null) {
 				fail("Hang?");
+			}
 
 			completed++;
 			completedJobs.add(s);

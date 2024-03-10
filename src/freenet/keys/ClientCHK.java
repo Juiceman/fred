@@ -85,19 +85,24 @@ public class ClientCHK extends ClientKey implements Serializable {
 		this.controlDocument = isControlDocument;
 		this.cryptoAlgorithm = algo;
 		this.compressionAlgorithm = compressionAlgorithm;
-		if(routingKey == null) throw new NullPointerException();
+		if(routingKey == null) {
+			throw new NullPointerException();
+		}
 		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(encKey) ^ compressionAlgorithm;
 	}
 
 	public ClientCHK(byte[] routingKey, byte[] encKey, byte[] extra) throws MalformedURLException {
 		this.routingKey = routingKey;
 		this.cryptoKey = encKey;
-		if((extra == null) || (extra.length < 5))
+		if((extra == null) || (extra.length < 5)) {
 			throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
+		}
 		// byte 0 is reserved, for now
 		cryptoAlgorithm = extra[1];
-		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
+		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256
+				|| cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256)) {
 			throw new MalformedURLException("Invalid crypto algorithm");
+		}
 		controlDocument = (extra[2] & 0x02) != 0;
 		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
 		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
@@ -107,17 +112,21 @@ public class ClientCHK extends ClientKey implements Serializable {
 	 * Create from a URI.
 	 */
 	public ClientCHK(FreenetURI uri) throws MalformedURLException {
-		if(!uri.getKeyType().equals("CHK"))
+		if(!uri.getKeyType().equals("CHK")) {
 			throw new MalformedURLException("Not CHK");
+		}
 		routingKey = uri.getRoutingKey();
 		cryptoKey = uri.getCryptoKey();
 		byte[] extra = uri.getExtra();
-		if((extra == null) || (extra.length < 5))
+		if((extra == null) || (extra.length < 5)) {
 			throw new MalformedURLException("No extra bytes in CHK - maybe a 0.5 key?");
+		}
 		// byte 0 is reserved, for now
 		cryptoAlgorithm = extra[1];
-		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
+		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256
+				|| cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256)) {
 			throw new MalformedURLException("Invalid crypto algorithm");
+		}
 		controlDocument = (extra[2] & 0x02) != 0;
 		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
 		hashCode = Fields.hashCode(routingKey) ^ Fields.hashCode(cryptoKey) ^ compressionAlgorithm;
@@ -133,8 +142,10 @@ public class ClientCHK extends ClientKey implements Serializable {
 		dis.readFully(extra);
 		// byte 0 is reserved, for now
 		cryptoAlgorithm = extra[1];
-		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256 || cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256))
+		if(!(cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256
+				|| cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256)) {
 			throw new MalformedURLException("Invalid crypto algorithm");
+		}
 		compressionAlgorithm = (short)(((extra[3] & 0xff) << 8) + (extra[4] & 0xff));
 		controlDocument = (extra[2] & 0x02) != 0;
 		routingKey = new byte[NodeCHK.KEY_LENGTH];
@@ -170,7 +181,8 @@ public class ClientCHK extends ClientKey implements Serializable {
 		return getExtra(cryptoAlgorithm, compressionAlgorithm, controlDocument);
 	}
 
-	public static byte[] getExtra(byte cryptoAlgorithm, short compressionAlgorithm, boolean controlDocument) {
+	public static byte[] getExtra(byte cryptoAlgorithm, short compressionAlgorithm,
+								  boolean controlDocument) {
 		byte[] extra = new byte[EXTRA_LENGTH];
 		extra[0] = (byte) (cryptoAlgorithm >> 8);
 		extra[1] = cryptoAlgorithm;
@@ -179,7 +191,9 @@ public class ClientCHK extends ClientKey implements Serializable {
 		extra[4] = (byte) compressionAlgorithm;
 		byte[] last = lastExtra;
 		// No synchronization required IMHO
-		if(Arrays.equals(last, extra)) return last;
+		if(Arrays.equals(last, extra)) {
+			return last;
+		}
 		assert(extra.length == EXTRA_LENGTH);
 		lastExtra = extra;
 		return extra;
@@ -191,8 +205,10 @@ public class ClientCHK extends ClientKey implements Serializable {
 
 	static HashSet<ByteArrayWrapper> standardExtras = new HashSet<ByteArrayWrapper>();
 	static {
-		for(byte cryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256; cryptoAlgorithm <= Key.ALGO_AES_CTR_256_SHA256; cryptoAlgorithm++) {
-			for(short compressionAlgorithm = -1; compressionAlgorithm <= (short)(COMPRESSOR_TYPE.countCompressors()); compressionAlgorithm++) {
+		for(byte cryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256;
+				cryptoAlgorithm <= Key.ALGO_AES_CTR_256_SHA256; cryptoAlgorithm++) {
+			for(short compressionAlgorithm = -1;
+					compressionAlgorithm <= (short)(COMPRESSOR_TYPE.countCompressors()); compressionAlgorithm++) {
 				standardExtras.add(new ByteArrayWrapper(getExtra(cryptoAlgorithm, compressionAlgorithm, true)));
 				standardExtras.add(new ByteArrayWrapper(getExtra(cryptoAlgorithm, compressionAlgorithm, false)));
 			}
@@ -201,7 +217,9 @@ public class ClientCHK extends ClientKey implements Serializable {
 
 	public static byte[] internExtra(byte[] extra) {
 		for(ByteArrayWrapper baw : standardExtras) {
-			if(Arrays.equals(baw.get(), extra)) return baw.get();
+			if(Arrays.equals(baw.get(), extra)) {
+				return baw.get();
+			}
 		}
 		return extra;
 	}
@@ -222,8 +240,9 @@ public class ClientCHK extends ClientKey implements Serializable {
 		// This costs us more or less nothing: we have to keep the routingKey anyway.
 		// Therefore, keeping a NodeCHK as well is a net saving, since it's frequently
 		// asked for. (A SoftReference would cost more).
-		if(nodeKey == null)
+		if(nodeKey == null) {
 			nodeKey = new NodeCHK(routingKey, cryptoAlgorithm);
+		}
 		return nodeKey;
 	}
 
@@ -264,13 +283,25 @@ public class ClientCHK extends ClientKey implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof ClientCHK)) return false;
+		if(!(o instanceof ClientCHK)) {
+			return false;
+		}
 		ClientCHK key = (ClientCHK) o;
-		if(controlDocument != key.controlDocument) return false;
-		if(cryptoAlgorithm != key.cryptoAlgorithm) return false;
-		if(compressionAlgorithm != key.compressionAlgorithm) return false;
-		if(!Arrays.equals(routingKey, key.routingKey)) return false;
-		if(!Arrays.equals(cryptoKey, key.cryptoKey)) return false;
+		if(controlDocument != key.controlDocument) {
+			return false;
+		}
+		if(cryptoAlgorithm != key.cryptoAlgorithm) {
+			return false;
+		}
+		if(compressionAlgorithm != key.compressionAlgorithm) {
+			return false;
+		}
+		if(!Arrays.equals(routingKey, key.routingKey)) {
+			return false;
+		}
+		if(!Arrays.equals(cryptoKey, key.cryptoKey)) {
+			return false;
+		}
 		return true;
 	}
 

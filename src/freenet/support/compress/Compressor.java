@@ -45,15 +45,17 @@ public interface Compressor {
 
 		public static COMPRESSOR_TYPE getCompressorByMetadataID(short id) {
 			for(COMPRESSOR_TYPE current : values)
-				if(current.metadataID == id)
+				if(current.metadataID == id) {
 					return current;
+				}
 			return null;
 		}
 
 		public static COMPRESSOR_TYPE getCompressorByName(String name) {
 			for(COMPRESSOR_TYPE current : values)
-				if(current.name.equals(name))
+				if(current.name.equals(name)) {
 					return current;
+				}
 			return null;
 		}
 
@@ -74,10 +76,11 @@ public interface Compressor {
 		public static void getCompressorDescriptor(StringBuilder sb) {
 			boolean isfirst = true;
 			for(COMPRESSOR_TYPE current : values) {
-				if (isfirst)
+				if (isfirst) {
 					isfirst = false;
-				else
+				} else {
 					sb.append(", ");
+				}
 				sb.append(current.name);
 				sb.append('(');
 				sb.append(current.metadataID);
@@ -113,10 +116,12 @@ public interface Compressor {
 		}
 
 		public static COMPRESSOR_TYPE[] getCompressorsArrayNoDefault(String compressordescriptor) throws InvalidCompressionCodecException {
-			if (compressordescriptor == null)
+			if (compressordescriptor == null) {
 				return null;
-			if (compressordescriptor.trim().length() == 0)
+			}
+			if (compressordescriptor.trim().length() == 0) {
 				return null;
+			}
 			String[] codecs = compressordescriptor.split(",");
 			ArrayList<COMPRESSOR_TYPE> result = new ArrayList<COMPRESSOR_TYPE>(codecs.length);
 			for (String codec : codecs) {
@@ -237,7 +242,8 @@ public interface Compressor {
 	 * @throws IOException
 	 * @throws CompressionOutputSizeException
 	 */
-	long decompress(InputStream input, OutputStream output, long maxLength, long maxEstimateSizeLength) throws IOException, CompressionOutputSizeException;
+	long decompress(InputStream input, OutputStream output, long maxLength,
+					long maxEstimateSizeLength) throws IOException, CompressionOutputSizeException;
 
 	/** Decompress in RAM only.
 	 * @param dbuf Input buffer.

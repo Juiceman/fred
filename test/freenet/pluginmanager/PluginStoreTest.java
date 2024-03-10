@@ -48,7 +48,9 @@ public class PluginStoreTest {
 		}
 		for(int i=0; i<20; i++) {
 			boolean[] list = new boolean[r.nextInt(10)];
-			for(int j=0; j<list.length; j++) list[j] = r.nextBoolean();
+			for(int j=0; j<list.length; j++) {
+				list[j] = r.nextBoolean();
+			}
 			store.booleansArrays.put(randomKey(r), list);
 		}
 		for(int i=0; i<20; i++) {
@@ -56,7 +58,9 @@ public class PluginStoreTest {
 		}
 		for(int i=0; i<20; i++) {
 			int[] list = new int[r.nextInt(10)];
-			for(int j=0; j<list.length; j++) list[j] = r.nextInt();
+			for(int j=0; j<list.length; j++) {
+				list[j] = r.nextInt();
+			}
 			store.integersArrays.put(randomKey(r), list);
 		}
 		for(int i=0; i<20; i++) {
@@ -64,7 +68,9 @@ public class PluginStoreTest {
 		}
 		for(int i=0; i<20; i++) {
 			long[] list = new long[r.nextInt(10)];
-			for(int j=0; j<list.length; j++) list[j] = r.nextLong();
+			for(int j=0; j<list.length; j++) {
+				list[j] = r.nextLong();
+			}
 			store.longsArrays.put(randomKey(r), list);
 		}
 		for(int i=0; i<20; i++) {
@@ -72,7 +78,9 @@ public class PluginStoreTest {
 		}
 		for(int i=0; i<20; i++) {
 			short[] list = new short[r.nextInt(10)];
-			for(int j=0; j<list.length; j++) list[j] = (short)r.nextInt();
+			for(int j=0; j<list.length; j++) {
+				list[j] = (short)r.nextInt();
+			}
 			store.shortsArrays.put(randomKey(r), list);
 		}
 		for(int i=0; i<20; i++) {
@@ -88,7 +96,9 @@ public class PluginStoreTest {
 		}
 		for(int i=0; i<20; i++) {
 			String[] list = new String[r.nextInt(10)];
-			for(int j=0; j<list.length; j++) list[j] = randomKey(r);
+			for(int j=0; j<list.length; j++) {
+				list[j] = randomKey(r);
+			}
 			store.stringsArrays.put(randomKey(r), list);
 		}
 	}
@@ -104,11 +114,11 @@ public class PluginStoreTest {
 
 	private char randomChar(Random r) {
 		int mode = r.nextInt(3);
-		if(mode == 0)
+		if(mode == 0) {
 			return (char)(32 + r.nextInt(95));
-		else if(mode == 1)
+		} else if(mode == 1) {
 			return invalidCharsForSFS.charAt(r.nextInt(invalidCharsForSFS.length()));
-		else {
+		} else {
 			while(true) {
 				char ch = (char) (128+r.nextInt(0xF000-128));
 				if(Character.isDefined(ch) && (!Character.isHighSurrogate(ch)) &&

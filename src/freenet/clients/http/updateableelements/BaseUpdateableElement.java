@@ -14,11 +14,13 @@ public abstract class BaseUpdateableElement extends HTMLNode {
 		this(name, new String[] {}, new String[] {}, ctx);
 	}
 
-	public BaseUpdateableElement(String name, String attributeName, String attributeValue, ToadletContext ctx) {
+	public BaseUpdateableElement(String name, String attributeName, String attributeValue,
+								 ToadletContext ctx) {
 		this(name, new String[] { attributeName }, new String[] { attributeValue }, ctx);
 	}
 
-	public BaseUpdateableElement(String name, String[] attributeNames, String[] attributeValues, ToadletContext ctx) {
+	public BaseUpdateableElement(String name, String[] attributeNames, String[] attributeValues,
+								 ToadletContext ctx) {
 		super(name, attributeNames, attributeValues);
 		this.ctx = ctx;
 	}
@@ -30,8 +32,10 @@ public abstract class BaseUpdateableElement extends HTMLNode {
 		// Updates the state, so the resulting page will have the actual state and content
 		updateState(true);
 		// Notifies the manager that the element has been rendered
-		if(pushed)
-			((SimpleToadletServer) ctx.getContainer()).pushDataManager.elementRendered(ctx.getUniqueId(), this);
+		if(pushed) {
+			((SimpleToadletServer) ctx.getContainer()).pushDataManager.elementRendered(ctx.getUniqueId(),
+					this);
+		}
 	}
 
 	/**

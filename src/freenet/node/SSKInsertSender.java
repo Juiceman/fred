@@ -30,7 +30,8 @@ import freenet.support.io.NativeThread;
  *   wait for a long data-transfer timeout.
  * - SSKs have pubkeys, which don't always need to be sent.
  */
-public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInsertSender, ByteCounter {
+public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInsertSender,
+	ByteCounter {
 
 	// Constants
 	static final long ACCEPTED_TIMEOUT = SECONDS.toMillis(10);
@@ -79,7 +80,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	/** Could not get off the node at all! */
 	static final int ROUTE_REALLY_NOT_FOUND = 6;
 
-	SSKInsertSender(SSKBlock block, long uid, InsertTag tag, short htl, PeerNode source, Node node, boolean fromStore, boolean canWriteClientCache, boolean forkOnCacheable, boolean preferInsert, boolean ignoreLowBackoff, boolean realTimeFlag) {
+	SSKInsertSender(SSKBlock block, long uid, InsertTag tag, short htl, PeerNode source, Node node,
+					boolean fromStore, boolean canWriteClientCache, boolean forkOnCacheable, boolean preferInsert,
+					boolean ignoreLowBackoff, boolean realTimeFlag) {
 		super(block.getKey(), realTimeFlag, source, node, htl, uid);
 		this.fromStore = fromStore;
 		this.origUID = uid;
@@ -88,8 +91,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 		data = block.getRawData();
 		headers = block.getRawHeaders();
 		pubKey = myKey.getPubKey();
-		if(pubKey == null)
+		if(pubKey == null) {
 			throw new IllegalArgumentException("Must have pubkey to insert data!!");
+		}
 		// pubKey.fingerprint() is not the same as hash(pubKey.asBytes())). FIXME it should be!
 		byte[] pubKeyAsBytes = pubKey.asBytes();
 		pubKeyHash = SHA256.digest(pubKeyAsBytes);
@@ -102,7 +106,8 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	}
 
 	void start() {
-		node.executor.execute(this, "SSKInsertSender for UID "+uid+" on "+node.getDarknetPortNumber()+" at "+System.currentTimeMillis());
+		node.executor.execute(this, "SSKInsertSender for UID "+uid+" on "+node.getDarknetPortNumber()+" at "
+							  +System.currentTimeMillis());
 	}
 
 	@Override
@@ -113,15 +118,20 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			routeRequests();
 		} catch (Throwable t) {
 			Logger.error(this, "Caught "+t, t);
-			if(status == NOT_FINISHED)
+			if(status == NOT_FINISHED) {
 				finish(INTERNAL_ERROR, null);
+			}
 		} finally {
-			if(logMINOR) Logger.minor(this, "Finishing "+this);
-			if(status == NOT_FINISHED)
+			if(logMINOR) {
+				Logger.minor(this, "Finishing "+this);
+			}
+			if(status == NOT_FINISHED) {
 				finish(INTERNAL_ERROR, null);
+			}
 			origTag.finishedSender();
-			if(forkedRequestTag != null)
+			if(forkedRequestTag != null) {
 				forkedRequestTag.finishedSender();
+			}
 		}
 	}
 
@@ -150,20 +160,27 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 				// because we would end up caching data too close to the originator.
 				// So allow 5 failures and then RNF.
 				if(highHTLFailureCount++ >= MAX_HIGH_HTL_FAILURES) {
-					if(logMINOR) Logger.minor(this, "Too many failures at non-cacheable HTL");
+					if(logMINOR) {
+						Logger.minor(this, "Too many failures at non-cacheable HTL");
+					}
 					finish(ROUTE_NOT_FOUND, null);
 					return;
 				}
-				if(logMINOR) Logger.minor(this, "Allowing failure "+highHTLFailureCount+" htl is still "+htl);
+				if(logMINOR) {
+					Logger.minor(this, "Allowing failure "+highHTLFailureCount+" htl is still "+htl);
+				}
 			} else {
 				htl = node.decrementHTL(hasForwarded ? next : source, htl);
-				if(logMINOR) Logger.minor(this, "Decremented HTL to "+htl);
+				if(logMINOR) {
+					Logger.minor(this, "Decremented HTL to "+htl);
+				}
 			}
 			starting = false;
 			if(htl <= 0) {
 				// Send an InsertReply back
-				if(!hasForwarded)
+				if(!hasForwarded) {
 					origTag.setNotRoutedOnwards();
+				}
 				finish(SUCCESS, null);
 				return;
 			}
@@ -173,7 +190,8 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 				return;
 			}
 
-			if( node.canWriteDatastoreInsert(htl) && (!canWriteStorePrev) && forkOnCacheable && forkedRequestTag == null) {
+			if( node.canWriteDatastoreInsert(htl) && (!canWriteStorePrev) && forkOnCacheable
+					&& forkedRequestTag == null) {
 				// FORK! We are now cacheable, and it is quite possible that we have already gone over the ideal sink nodes,
 				// in which case if we don't fork we will miss them, and greatly reduce the insert's reachability.
 				// So we fork: Create a new UID so we can go over the previous hops again if they happen to be good places to store the data.
@@ -193,19 +211,24 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			}
 
 			// Route it
-			next = node.peers.closerPeer(forkedRequestTag == null ? source : null, nodesRoutedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
-										 null, htl, ignoreLowBackoff ? Node.LOW_BACKOFF : 0, source == null, realTimeFlag, newLoadManagement);
+			next = node.peers.closerPeer(forkedRequestTag == null ? source : null, nodesRoutedTo, target, true,
+										 node.isAdvancedModeEnabled(), -1, null,
+										 null, htl, ignoreLowBackoff ? Node.LOW_BACKOFF : 0, source == null, realTimeFlag,
+										 newLoadManagement);
 
 			if(next == null) {
 				// Backtrack
-				if(!hasForwarded)
+				if(!hasForwarded) {
 					origTag.setNotRoutedOnwards();
+				}
 				finish(ROUTE_NOT_FOUND, null);
 				return;
 			}
 
 			InsertTag thisTag = forkedRequestTag;
-			if(forkedRequestTag == null) thisTag = origTag;
+			if(forkedRequestTag == null) {
+				thisTag = origTag;
+			}
 
 			innerRouteRequests(next, thisTag);
 			return;
@@ -237,19 +260,28 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 		 * - FNPDataInsertRejected - the insert was invalid
 		 */
 
-		MessageFilter mfInsertReply = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(searchTimeout).setType(DMT.FNPInsertReply);
-		MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(searchTimeout).setType(DMT.FNPRejectedOverload);
-		MessageFilter mfRouteNotFound = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(searchTimeout).setType(DMT.FNPRouteNotFound);
-		MessageFilter mfDataInsertRejected = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(searchTimeout).setType(DMT.FNPDataInsertRejected);
-		MessageFilter mfSSKDataFoundHeaders = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(searchTimeout).setType(DMT.FNPSSKDataFoundHeaders);
+		MessageFilter mfInsertReply = MessageFilter.create().setSource(next).setField(DMT.UID,
+									  uid).setTimeout(searchTimeout).setType(DMT.FNPInsertReply);
+		MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID,
+										   uid).setTimeout(searchTimeout).setType(DMT.FNPRejectedOverload);
+		MessageFilter mfRouteNotFound = MessageFilter.create().setSource(next).setField(DMT.UID,
+										uid).setTimeout(searchTimeout).setType(DMT.FNPRouteNotFound);
+		MessageFilter mfDataInsertRejected = MessageFilter.create().setSource(next).setField(DMT.UID,
+											 uid).setTimeout(searchTimeout).setType(DMT.FNPDataInsertRejected);
+		MessageFilter mfSSKDataFoundHeaders = MessageFilter.create().setSource(next).setField(DMT.UID,
+											  uid).setTimeout(searchTimeout).setType(DMT.FNPSSKDataFoundHeaders);
 
-		return mfRouteNotFound.or(mfInsertReply.or(mfRejectedOverload.or(mfDataInsertRejected.or(mfSSKDataFoundHeaders))));
+		return mfRouteNotFound.or(mfInsertReply.or(mfRejectedOverload.or(mfDataInsertRejected.or(
+									  mfSSKDataFoundHeaders))));
 	}
 
 	private DO handleMessage(Message msg, PeerNode next, InsertTag thisTag) {
 		if (msg.getSpec() == DMT.FNPRejectedOverload) {
-			if(handleRejectedOverload(msg, next, thisTag)) return DO.NEXT_PEER;
-			else return DO.WAIT;
+			if(handleRejectedOverload(msg, next, thisTag)) {
+				return DO.NEXT_PEER;
+			} else {
+				return DO.WAIT;
+			}
 		}
 
 		if (msg.getSpec() == DMT.FNPRouteNotFound) {
@@ -312,36 +344,53 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 						next.noLongerRoutingTo(tag, false);
 					} else {
 						assert(m.getSpec() == DMT.FNPSSKAccepted);
-						if(logMINOR)
-							Logger.minor(this, "Accepted after timeout on "+SSKInsertSender.this+" - will not send DataInsert, waiting for RejectedTimeout");
-						if(logMINOR) Logger.minor(this, "Forked timed out insert but not going to send DataInsert on "+SSKInsertSender.this+" to "+next);
+						if(logMINOR) {
+							Logger.minor(this, "Accepted after timeout on "+SSKInsertSender.this
+										 +" - will not send DataInsert, waiting for RejectedTimeout");
+						}
+						if(logMINOR) {
+							Logger.minor(this, "Forked timed out insert but not going to send DataInsert on "
+										 +SSKInsertSender.this+" to "+next);
+						}
 						// We are not going to send the DataInsert.
 						// We have moved on, and we don't want inserts to fork unnecessarily.
 						// However, we need to send a DataInsertRejected, or two-stage timeout will happen.
 						try {
-							next.sendAsync(DMT.createFNPDataInsertRejected(uid, DMT.DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED), new AsyncMessageCallback() {
+							next.sendAsync(DMT.createFNPDataInsertRejected(uid,
+							DMT.DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED), new AsyncMessageCallback() {
 
 								@Override
 								public void sent() {
 									// Ignore.
-									if(logDEBUG) Logger.debug(this, "DataInsertRejected sent after accepted timeout on "+SSKInsertSender.this);
+									if(logDEBUG) {
+										Logger.debug(this, "DataInsertRejected sent after accepted timeout on "+SSKInsertSender.this);
+									}
 								}
 
 								@Override
 								public void acknowledged() {
-									if(logDEBUG) Logger.debug(this, "DataInsertRejected acknowledged after accepted timeout on "+SSKInsertSender.this);
+									if(logDEBUG) {
+										Logger.debug(this, "DataInsertRejected acknowledged after accepted timeout on "
+													 +SSKInsertSender.this);
+									}
 									next.noLongerRoutingTo(tag, false);
 								}
 
 								@Override
 								public void disconnected() {
-									if(logDEBUG) Logger.debug(this, "DataInsertRejected peer disconnected after accepted timeout on "+SSKInsertSender.this);
+									if(logDEBUG) {
+										Logger.debug(this, "DataInsertRejected peer disconnected after accepted timeout on "
+													 +SSKInsertSender.this);
+									}
 									next.noLongerRoutingTo(tag, false);
 								}
 
 								@Override
 								public void fatalError() {
-									if(logDEBUG) Logger.debug(this, "DataInsertRejected fatal error after accepted timeout on "+SSKInsertSender.this);
+									if(logDEBUG) {
+										Logger.debug(this, "DataInsertRejected fatal error after accepted timeout on "
+													 +SSKInsertSender.this);
+									}
 									next.noLongerRoutingTo(tag, false);
 								}
 
@@ -402,11 +451,16 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	}
 
 	private void handleRouteNotFound(Message msg, PeerNode next, InsertTag thisTag) {
-		if(logMINOR) Logger.minor(this, "Rejected: RNF");
+		if(logMINOR) {
+			Logger.minor(this, "Rejected: RNF");
+		}
 		short newHtl = msg.getShort(DMT.HTL);
-		if(newHtl < 0) newHtl = 0;
-		if (htl > newHtl)
+		if(newHtl < 0) {
+			newHtl = 0;
+		}
+		if (htl > newHtl) {
 			htl = newHtl;
+		}
 		next.successNotOverload(realTimeFlag);
 		next.noLongerRoutingTo(thisTag, false);
 	}
@@ -414,7 +468,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	private void handleDataInsertRejected(Message msg, PeerNode next, InsertTag thisTag) {
 		next.successNotOverload(realTimeFlag);
 		short reason = msg.getShort(DMT.DATA_INSERT_REJECTED_REASON);
-		if(logMINOR) Logger.minor(this, "DataInsertRejected: " + reason);
+		if(logMINOR) {
+			Logger.minor(this, "DataInsertRejected: " + reason);
+		}
 		if (reason == DMT.DATA_INSERT_REJECTED_VERIFY_FAILED) {
 			if (fromStore) {
 				// That's odd...
@@ -455,13 +511,15 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 
 		headers = ((ShortBuffer) msg.getObject(DMT.BLOCK_HEADERS)).getData();
 		// Wait for the data
-		MessageFilter mfData = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(SSKInsertHandler.DATA_INSERT_TIMEOUT).setType(DMT.FNPSSKDataFoundData);
+		MessageFilter mfData = MessageFilter.create().setSource(next).setField(DMT.UID,
+							   uid).setTimeout(SSKInsertHandler.DATA_INSERT_TIMEOUT).setType(DMT.FNPSSKDataFoundData);
 		Message dataMessage;
 		try {
 			dataMessage = node.usm.waitFor(mfData, this);
 		} catch (DisconnectedException e) {
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Disconnected: "+next+" getting datareply for "+this);
+			}
 			next.noLongerRoutingTo(thisTag, false);
 			return DO.NEXT_PEER;
 		}
@@ -501,9 +559,12 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 		 * followed by an Accepted. So we must loop here.
 		 */
 
-		MessageFilter mfAccepted = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(acceptedTimeout).setType(DMT.FNPSSKAccepted);
-		MessageFilter mfRejectedLoop = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(acceptedTimeout).setType(DMT.FNPRejectedLoop);
-		MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(acceptedTimeout).setType(DMT.FNPRejectedOverload);
+		MessageFilter mfAccepted = MessageFilter.create().setSource(next).setField(DMT.UID,
+								   uid).setTimeout(acceptedTimeout).setType(DMT.FNPSSKAccepted);
+		MessageFilter mfRejectedLoop = MessageFilter.create().setSource(next).setField(DMT.UID,
+									   uid).setTimeout(acceptedTimeout).setType(DMT.FNPRejectedLoop);
+		MessageFilter mfRejectedOverload = MessageFilter.create().setSource(next).setField(DMT.UID,
+										   uid).setTimeout(acceptedTimeout).setType(DMT.FNPRejectedOverload);
 		return mfAccepted.or(mfRejectedLoop.or(mfRejectedOverload));
 	}
 
@@ -518,25 +579,36 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	 */
 	@Override
 	protected synchronized void forwardRejectedOverload() {
-		if(hasForwardedRejectedOverload) return;
+		if(hasForwardedRejectedOverload) {
+			return;
+		}
 		hasForwardedRejectedOverload = true;
 		notifyAll();
 	}
 
 	private void finish(int code, PeerNode next) {
-		if(logMINOR) Logger.minor(this, "Finished: "+getStatusString(code)+" on "+this+" from "+(next == null ? "(null)" : next.shortToString()), new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Finished: "+getStatusString(code)+" on "+this+" from "+
+						 (next == null ? "(null)" : next.shortToString()), new Exception("debug"));
+		}
 
 		if(next != null) {
-			if(origTag != null) next.noLongerRoutingTo(origTag, false);
-			if(forkedRequestTag != null) next.noLongerRoutingTo(forkedRequestTag, false);
+			if(origTag != null) {
+				next.noLongerRoutingTo(origTag, false);
+			}
+			if(forkedRequestTag != null) {
+				next.noLongerRoutingTo(forkedRequestTag, false);
+			}
 		}
 
 		synchronized(this) {
-			if(status != NOT_FINISHED && status != TIMED_OUT)
+			if(status != NOT_FINISHED && status != TIMED_OUT) {
 				throw new IllegalStateException("finish() called with "+code+" when was already "+status);
+			}
 
-			if((code == ROUTE_NOT_FOUND) && !hasForwarded)
+			if((code == ROUTE_NOT_FOUND) && !hasForwarded) {
 				code = ROUTE_REALLY_NOT_FOUND;
+			}
 
 			if(status != TIMED_OUT) {
 				status = code;
@@ -544,10 +616,13 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			}
 		}
 
-		if(code == SUCCESS && next != null)
+		if(code == SUCCESS && next != null) {
 			next.onSuccess(true, true);
+		}
 
-		if(logMINOR) Logger.minor(this, "Set status code: "+getStatusString());
+		if(logMINOR) {
+			Logger.minor(this, "Set status code: "+getStatusString());
+		}
 		// Nothing to wait for, no downstream transfers, just exit.
 	}
 
@@ -570,20 +645,27 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	 * @return The current status as a string
 	 */
 	public static String getStatusString(int status) {
-		if(status == SUCCESS)
+		if(status == SUCCESS) {
 			return "SUCCESS";
-		if(status == ROUTE_NOT_FOUND)
+		}
+		if(status == ROUTE_NOT_FOUND) {
 			return "ROUTE NOT FOUND";
-		if(status == NOT_FINISHED)
+		}
+		if(status == NOT_FINISHED) {
 			return "NOT FINISHED";
-		if(status == INTERNAL_ERROR)
+		}
+		if(status == INTERNAL_ERROR) {
 			return "INTERNAL ERROR";
-		if(status == TIMED_OUT)
+		}
+		if(status == TIMED_OUT) {
 			return "TIMED OUT";
-		if(status == GENERATED_REJECTED_OVERLOAD)
+		}
+		if(status == GENERATED_REJECTED_OVERLOAD) {
 			return "GENERATED REJECTED OVERLOAD";
-		if(status == ROUTE_REALLY_NOT_FOUND)
+		}
+		if(status == ROUTE_REALLY_NOT_FOUND) {
 			return "ROUTE REALLY NOT FOUND";
+		}
 		return "UNKNOWN STATUS CODE: "+status;
 	}
 
@@ -700,10 +782,13 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 	@Override
 	protected void timedOutWhileWaiting(double load) {
 		htl -= (short)Math.max(0, hopsForFatalTimeoutWaitingForPeer());
-		if(htl < 0) htl = 0;
+		if(htl < 0) {
+			htl = 0;
+		}
 		// Backtrack, i.e. RNF.
-		if(!hasForwarded)
+		if(!hasForwarded) {
 			origTag.setNotRoutedOnwards();
+		}
 		finish(ROUTE_NOT_FOUND, null);
 	}
 
@@ -713,15 +798,21 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 		if(msg.getSpec() == DMT.FNPSSKAccepted) {
 			needPubKey = msg.getBoolean(DMT.NEED_PUB_KEY);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	protected void onAccepted(PeerNode next) {
-		if(logMINOR) Logger.minor(this, "Got Accepted on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Got Accepted on "+this);
+		}
 
 		InsertTag thisTag = forkedRequestTag;
-		if(forkedRequestTag == null) thisTag = origTag;
+		if(forkedRequestTag == null) {
+			thisTag = origTag;
+		}
 
 		// Send the headers and data
 
@@ -733,7 +824,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			next.sendSync(dataMsg, this, realTimeFlag);
 			sentPayload(data.length);
 		} catch (NotConnectedException e1) {
-			if(logMINOR) Logger.minor(this, "Not connected to "+next);
+			if(logMINOR) {
+				Logger.minor(this, "Not connected to "+next);
+			}
 			next.noLongerRoutingTo(thisTag, false);
 			routeRequests();
 			return;
@@ -751,7 +844,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			try {
 				next.sendSync(pkMsg, this, realTimeFlag);
 			} catch (NotConnectedException e) {
-				if(logMINOR) Logger.minor(this, "Node disconnected while sending pubkey: "+next);
+				if(logMINOR) {
+					Logger.minor(this, "Node disconnected while sending pubkey: "+next);
+				}
 				next.noLongerRoutingTo(thisTag, false);
 				routeRequests();
 				return;
@@ -765,13 +860,16 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 			// Wait for the SSKPubKeyAccepted
 
 			// FIXME doubled the timeout because handling it properly would involve forking.
-			MessageFilter mf1 = MessageFilter.create().setSource(next).setField(DMT.UID, uid).setTimeout(ACCEPTED_TIMEOUT*2).setType(DMT.FNPSSKPubKeyAccepted);
+			MessageFilter mf1 = MessageFilter.create().setSource(next).setField(DMT.UID,
+								uid).setTimeout(ACCEPTED_TIMEOUT*2).setType(DMT.FNPSSKPubKeyAccepted);
 
 			Message newAck;
 			try {
 				newAck = node.usm.waitFor(mf1, this);
 			} catch (DisconnectedException e) {
-				if(logMINOR) Logger.minor(this, "Disconnected from "+next);
+				if(logMINOR) {
+					Logger.minor(this, "Disconnected from "+next);
+				}
 				next.noLongerRoutingTo(thisTag, false);
 				routeRequests();
 				return;
@@ -830,9 +928,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 
 					DO action = handleMessage(msg, next, thisTag);
 
-					if(action == DO.FINISHED)
+					if(action == DO.FINISHED) {
 						return;
-					else if(action == DO.NEXT_PEER) {
+					} else if(action == DO.NEXT_PEER) {
 						next.noLongerRoutingTo(thisTag, false);
 						return; // Don't try others
 					}
@@ -843,10 +941,11 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 
 			DO action = handleMessage(msg, next, thisTag);
 
-			if(action == DO.FINISHED)
+			if(action == DO.FINISHED) {
 				return;
-			else if(action == DO.NEXT_PEER)
+			} else if(action == DO.NEXT_PEER) {
 				break;
+			}
 			// else if(action == DO.WAIT) continue;
 		}
 		routeRequests();
@@ -859,7 +958,9 @@ public class SSKInsertSender extends BaseSender implements PrioRunnable, AnyInse
 
 	@Override
 	protected PeerNode sourceForRouting() {
-		if(forkedRequestTag != null) return null;
+		if(forkedRequestTag != null) {
+			return null;
+		}
 		return source;
 	}
 

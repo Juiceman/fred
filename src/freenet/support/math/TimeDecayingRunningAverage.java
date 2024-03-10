@@ -138,16 +138,23 @@ public final class TimeDecayingRunningAverage implements RunningAverage, Cloneab
 	 * @param callback
 	 * @throws IOException
 	 */
-	public TimeDecayingRunningAverage(double defaultValue, double halfLife, double min, double max, DataInputStream dis, TimeSkewDetectorCallback callback) throws IOException {
+	public TimeDecayingRunningAverage(double defaultValue, double halfLife, double min, double max,
+									  DataInputStream dis, TimeSkewDetectorCallback callback) throws IOException {
 		int m = dis.readInt();
-		if(m != MAGIC) throw new IOException("Invalid magic "+m);
+		if(m != MAGIC) {
+			throw new IOException("Invalid magic "+m);
+		}
 		int v = dis.readInt();
-		if(v != 1) throw new IOException("Invalid version "+v);
+		if(v != 1) {
+			throw new IOException("Invalid version "+v);
+		}
 		curValue = dis.readDouble();
-		if(Double.isInfinite(curValue) || Double.isNaN(curValue))
+		if(Double.isInfinite(curValue) || Double.isNaN(curValue)) {
 			throw new IOException("Invalid weightedTotal: "+curValue);
-		if((curValue < min) || (curValue > max))
+		}
+		if((curValue < min) || (curValue > max)) {
 			throw new IOException("Out of range: curValue = "+curValue);
+		}
 		started = dis.readBoolean();
 		long priorExperienceTime = dis.readLong();
 		this.halfLife = halfLife;
@@ -212,24 +219,29 @@ public final class TimeDecayingRunningAverage implements RunningAverage, Cloneab
 			if(!started) {
 				curValue = d;
 				started = true;
-				if(logDEBUG)
+				if(logDEBUG) {
 					Logger.debug(this, "Reported "+d+" on "+this+" when just started");
+				}
 			} else if(lastReportTime != -1) { // might be just serialized in
 				long thisInterval =
 					now - lastReportTime;
 				long uptime = now - createdTime;
 				if(thisInterval < 0) {
-					Logger.error(this, "Clock (reporting) went back in time, ignoring report: "+now+" was "+lastReportTime+" (back "+(-thisInterval)+"ms)");
+					Logger.error(this, "Clock (reporting) went back in time, ignoring report: "+now+" was "
+								 +lastReportTime+" (back "+(-thisInterval)+"ms)");
 					lastReportTime = now;
-					if(timeSkewCallback != null)
+					if(timeSkewCallback != null) {
 						timeSkewCallback.setTimeSkewDetectedUserAlert();
+					}
 					return;
 				}
 				double thisHalfLife = halfLife;
 				if(uptime < 0) {
-					Logger.error(this, "Clock (uptime) went back in time, ignoring report: "+now+" was "+createdTime+" (back "+(-uptime)+"ms)");
-					if(timeSkewCallback != null)
+					Logger.error(this, "Clock (uptime) went back in time, ignoring report: "+now+" was "+createdTime
+								 +" (back "+(-uptime)+"ms)");
+					if(timeSkewCallback != null) {
 						timeSkewCallback.setTimeSkewDetectedUserAlert();
+					}
 					return;
 					// Disable sensitivity hack.
 					// Excessive sensitivity at start isn't necessarily a good thing.
@@ -240,11 +252,14 @@ public final class TimeDecayingRunningAverage implements RunningAverage, Cloneab
 					//if(oneFourthOfUptime < thisHalfLife) thisHalfLife = oneFourthOfUptime;
 				}
 
-				if(thisHalfLife == 0) thisHalfLife = 1;
+				if(thisHalfLife == 0) {
+					thisHalfLife = 1;
+				}
 				double changeFactor =
 					Math.pow(0.5, (thisInterval) / thisHalfLife);
 				double oldCurValue = curValue;
-				curValue = curValue * changeFactor /* close to 1.0 if short interval, close to 0.0 if long interval */
+				curValue = curValue *
+						   changeFactor /* close to 1.0 if short interval, close to 0.0 if long interval */
 						   + (1.0 - changeFactor) * d;
 				// FIXME remove when stop getting reports of wierd output values
 				if(curValue < minReport || curValue > maxReport) {

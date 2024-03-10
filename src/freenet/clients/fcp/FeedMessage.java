@@ -17,7 +17,8 @@ public class FeedMessage extends MultipleDataCarryingMessage {
 	private final short priorityClass;
 	private final long updatedTime;
 
-	public FeedMessage(String header, String shortText, String text, short priorityClass, long updatedTime) {
+	public FeedMessage(String header, String shortText, String text, short priorityClass,
+					   long updatedTime) {
 		this.header = header;
 		this.shortText = shortText;
 		this.priorityClass = priorityClass;

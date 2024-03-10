@@ -46,10 +46,12 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 		StringBuilder l10nBuilder = new StringBuilder("var l10n={\n");
 		boolean isNamePresentAtLeastOnce=false;
 		for (String key : NodeL10n.getBase().getAllNamesWithPrefix("fproxy.push")) {
-			l10nBuilder.append(key.substring("fproxy.push".length() + 1) + ": \"" + HTMLEncoder.encode(NodeL10n.getBase().getString(key)) + "\",\n");
+			l10nBuilder.append(key.substring("fproxy.push".length() + 1) + ": \"" + HTMLEncoder.encode(
+								   NodeL10n.getBase().getString(key)) + "\",\n");
 			isNamePresentAtLeastOnce=true;
 		}
-		String l10n = isNamePresentAtLeastOnce?l10nBuilder.substring(0, l10nBuilder.length() - 2):l10nBuilder.toString();
+		String l10n = isNamePresentAtLeastOnce?l10nBuilder.substring(0,
+					  l10nBuilder.length() - 2):l10nBuilder.toString();
 		l10n = l10n.concat("\n};");
 		return l10n;
 	}
@@ -57,7 +59,8 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 	@Override
 	public String processTag(ParsedTag pt, URIProcessor uriProcessor) {
 		// If javascript or pushing is disabled, then it won't need pushing
-		if (ctx.getContainer().isFProxyJavascriptEnabled() && ctx.getContainer().isFProxyWebPushingEnabled()) {
+		if (ctx.getContainer().isFProxyJavascriptEnabled()
+				&& ctx.getContainer().isFProxyWebPushingEnabled()) {
 			if (pt.element.toLowerCase().compareTo("img") == 0) {
 				// Img's needs to be replaced with pushed ImageElement's
 				for (String attr: pt.unparsedAttrs) {
@@ -86,7 +89,10 @@ public class PushingTagReplacerCallback implements TagReplacerCallback {
 				}
 			} else if (pt.element.toLowerCase().compareTo("body") == 0 && pt.startSlash==true) {
 				// After the <body>, we need to insert the requestId and the l10n script
-				return "".concat(/*new XmlAlertElement(ctx).generate()*/"".concat("<input id=\"requestId\" type=\"hidden\" value=\"" + ctx.getUniqueId() + "\" name=\"requestId\"/>")).concat("<script type=\"text/javascript\" language=\"javascript\">".concat(getClientSideLocalizationScript()).concat("</script>")).concat("</body>");
+				return "".concat(/*new XmlAlertElement(ctx).generate()*/"".concat("<input id=\"requestId\" type=\"hidden\" value=\""
+						+ ctx.getUniqueId() +
+						"\" name=\"requestId\"/>")).concat("<script type=\"text/javascript\" language=\"javascript\">".concat(
+									getClientSideLocalizationScript()).concat("</script>")).concat("</body>");
 			} else if (pt.element.toLowerCase().compareTo("head") == 0) {
 				// After the <head>, we need to add GWT support
 				return "<head><script type=\"text/javascript\" language=\"javascript\" src=\"/static/freenetjs/freenetjs.nocache.js\"></script><noscript><style> .jsonly {display:none;}</style></noscript><link href=\"/static/reset.css\" rel=\"stylesheet\" type=\"text/css\" />";

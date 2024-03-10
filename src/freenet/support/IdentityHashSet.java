@@ -18,7 +18,9 @@ public class IdentityHashSet<T> implements Set<T> {
 	public boolean addAll(Collection<? extends T> c) {
 		boolean changed = false;
 		for(T item : c)
-			if(!add(item)) changed = true;
+			if(!add(item)) {
+				changed = true;
+			}
 		return changed;
 	}
 
@@ -56,7 +58,9 @@ public class IdentityHashSet<T> implements Set<T> {
 	public boolean removeAll(Collection<?> c) {
 		boolean changed = false;
 		for(Object o : c) {
-			if(remove(o)) changed = true;
+			if(remove(o)) {
+				changed = true;
+			}
 		}
 		return changed;
 	}

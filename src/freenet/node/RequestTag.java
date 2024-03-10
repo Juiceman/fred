@@ -40,7 +40,8 @@ public class RequestTag extends UIDTag {
 	/** Set if transferring */
 	private NodeCHK key;
 
-	public RequestTag(boolean isSSK, START start, PeerNode source, boolean realTimeFlag, long uid, Node node) {
+	public RequestTag(boolean isSSK, START start, PeerNode source, boolean realTimeFlag, long uid,
+					  Node node) {
 		super(source, realTimeFlag, uid, node);
 		this.start = start;
 		this.isSSK = isSSK;
@@ -49,9 +50,13 @@ public class RequestTag extends UIDTag {
 	public void setRequestSenderFinished(int status) {
 		boolean noRecordUnlock;
 		synchronized(this) {
-			if(status == RequestSender.NOT_FINISHED) throw new IllegalArgumentException();
+			if(status == RequestSender.NOT_FINISHED) {
+				throw new IllegalArgumentException();
+			}
 			requestSenderFinishedCode = status;
-			if(!mustUnlock()) return;
+			if(!mustUnlock()) {
+				return;
+			}
 			noRecordUnlock = this.noRecordUnlock;
 		}
 		innerUnlock(noRecordUnlock);
@@ -59,15 +64,20 @@ public class RequestTag extends UIDTag {
 
 	public synchronized void setSender(RequestSender rs, boolean coalesced) {
 		// If it's because of transfer coalescing, we won't get anything from the RequestSender, so we should not wait for it.
-		if(!coalesced)
+		if(!coalesced) {
 			sent = true;
+		}
 		sender = new WeakReference<RequestSender>(rs);
 	}
 
 	@Override
 	protected synchronized boolean mustUnlock() {
-		if(sent && requestSenderFinishedCode == RequestSender.NOT_FINISHED) return false;
-		if(waitingForOpennet != null && waitingForOpennet.get() != null) return false;
+		if(sent && requestSenderFinishedCode == RequestSender.NOT_FINISHED) {
+			return false;
+		}
+		if(waitingForOpennet != null && waitingForOpennet.get() != null) {
+			return false;
+		}
 		return super.mustUnlock();
 	}
 
@@ -89,8 +99,9 @@ public class RequestTag extends UIDTag {
 			senderTransferring = false;
 		}
 		super.innerUnlock(noRecordUnlock);
-		if(handlerFinished)
+		if(handlerFinished) {
 			tracker.removeTransferringRequestHandler(uid);
+		}
 		if(senderFinished) {
 			assert(k != null);
 			assert(s != null);
@@ -134,14 +145,17 @@ public class RequestTag extends UIDTag {
 				sb.append(s.getStatusString());
 			}
 		}
-		if(sent)
+		if(sent) {
 			sb.append(" sent");
+		}
 		sb.append(" finishedCode=").append(requestSenderFinishedCode);
 		sb.append(" rejected=").append(rejected);
-		if(handlerThrew != null)
+		if(handlerThrew != null) {
 			sb.append(" thrown=").append(handlerThrew);
-		if(handlerDisconnected)
+		}
+		if(handlerDisconnected) {
 			sb.append(" handlerDisconnected=true");
+		}
 		if(waitingForOpennet != null) {
 			PeerNode pn = waitingForOpennet.get();
 			sb.append(" waitingForOpennet=");
@@ -149,10 +163,11 @@ public class RequestTag extends UIDTag {
 		}
 		sb.append(" : ");
 		sb.append(super.toString());
-		if(handlerThrew != null)
+		if(handlerThrew != null) {
 			Logger.error(this, sb.toString(), handlerThrew);
-		else
+		} else {
 			Logger.error(this, sb.toString());
+		}
 	}
 
 	public synchronized void handlerDisconnected() {
@@ -162,16 +177,24 @@ public class RequestTag extends UIDTag {
 	@Override
 	public synchronized int expectedTransfersIn(boolean ignoreLocalVsRemote,
 			int outwardTransfersPerInsert, boolean forAccept) {
-		if(!accepted) return 0;
+		if(!accepted) {
+			return 0;
+		}
 		return notRoutedOnwards ? 0 : 1;
 	}
 
 	@Override
 	public synchronized int expectedTransfersOut(boolean ignoreLocalVsRemote,
 			int outwardTransfersPerInsert, boolean forAccept) {
-		if(!accepted) return 0;
-		if(completedDownstreamTransfers) return 0;
-		if(forAccept && (sourceRestarted || unlockedHandler)) return 0;
+		if(!accepted) {
+			return 0;
+		}
+		if(completedDownstreamTransfers) {
+			return 0;
+		}
+		if(forAccept && (sourceRestarted || unlockedHandler)) {
+			return 0;
+		}
 		return ((!isLocal()) || ignoreLocalVsRemote) ? 1 : 0;
 	}
 
@@ -197,8 +220,10 @@ public class RequestTag extends UIDTag {
 	}
 
 	public synchronized void waitingForOpennet(PeerNode next) {
-		if(waitingForOpennet != null)
-			Logger.error(this, "Have already waited for opennet: "+waitingForOpennet.get()+" on "+this, new Exception("error"));
+		if(waitingForOpennet != null) {
+			Logger.error(this, "Have already waited for opennet: "+waitingForOpennet.get()+" on "+this,
+						 new Exception("error"));
+		}
 		this.waitingForOpennet = next.myRef;
 	}
 
@@ -206,7 +231,9 @@ public class RequestTag extends UIDTag {
 		boolean noRecordUnlock;
 		synchronized(this) {
 			if(waitingForOpennet == null) {
-				if(logMINOR) Logger.minor(this, "Not waiting for opennet!");
+				if(logMINOR) {
+					Logger.minor(this, "Not waiting for opennet!");
+				}
 				return;
 			}
 			PeerNode got = waitingForOpennet.get();
@@ -214,7 +241,9 @@ public class RequestTag extends UIDTag {
 				Logger.error(this, "Finished waiting for opennet on "+next+" but was waiting for "+got);
 			}
 			waitingForOpennet = null;
-			if(!mustUnlock()) return;
+			if(!mustUnlock()) {
+				return;
+			}
 			noRecordUnlock = this.noRecordUnlock;
 		}
 		innerUnlock(noRecordUnlock);
@@ -222,14 +251,17 @@ public class RequestTag extends UIDTag {
 
 	@Override
 	public synchronized boolean currentlyRoutingTo(PeerNode peer) {
-		if(waitingForOpennet != null && waitingForOpennet == peer.myRef)
+		if(waitingForOpennet != null && waitingForOpennet == peer.myRef) {
 			return true;
+		}
 		return super.currentlyRoutingTo(peer);
 	}
 
 	public void handlerTransferBegins() {
 		synchronized(this) {
-			if(handlerTransferring) return;
+			if(handlerTransferring) {
+				return;
+			}
 			handlerTransferring = true;
 		}
 		tracker.addTransferringRequestHandler(uid);
@@ -237,10 +269,13 @@ public class RequestTag extends UIDTag {
 
 	public void senderTransferBegins(NodeCHK k, RequestSender requestSender) {
 		synchronized(this) {
-			if(senderTransferring) return;
+			if(senderTransferring) {
+				return;
+			}
 			senderTransferring = true;
-			if(this.sender == null || this.sender.get() != requestSender)
+			if(this.sender == null || this.sender.get() != requestSender) {
 				throw new IllegalStateException("Set RequestSender first!");
+			}
 			this.key = k;
 		}
 		tracker.addTransferringSender(k, requestSender);
@@ -250,7 +285,9 @@ public class RequestTag extends UIDTag {
 		synchronized(this) {
 			if(!senderTransferring)
 				// Already unlocked. This is okay.
+			{
 				return;
+			}
 			senderTransferring = false;
 			assert(this.sender != null && this.sender.get() == requestSender);
 			assert(this.key != null && this.key.equals(key));

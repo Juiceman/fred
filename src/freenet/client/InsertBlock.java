@@ -23,13 +23,16 @@ public class InsertBlock implements Serializable {
 	public ClientMetadata clientMetadata;
 
 	public InsertBlock(RandomAccessBucket data, ClientMetadata metadata, FreenetURI desiredURI) {
-		if(data == null) throw new NullPointerException();
+		if(data == null) {
+			throw new NullPointerException();
+		}
 		this.data = data;
 		this.isFreed = false;
-		if(metadata == null)
+		if(metadata == null) {
 			clientMetadata = new ClientMetadata();
-		else
+		} else {
 			clientMetadata = metadata;
+		}
 		this.desiredURI = desiredURI;
 	}
 
@@ -39,9 +42,13 @@ public class InsertBlock implements Serializable {
 
 	public void free() {
 		synchronized (this) {
-			if(isFreed) return;
+			if(isFreed) {
+				return;
+			}
 			isFreed = true;
-			if(data == null) return;
+			if(data == null) {
+				return;
+			}
 		}
 		data.free();
 	}

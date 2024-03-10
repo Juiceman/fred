@@ -46,7 +46,8 @@ public class TestDDACompleteMessage extends FCPMessage {
 		boolean isWriteAllowed = false;
 
 		if(checkJob.readFilename != null) {
-			isReadAllowed = (readContentFromClient != null) &&  (checkJob.readContent.equals(readContentFromClient));
+			isReadAllowed = (readContentFromClient != null)
+							&&  (checkJob.readContent.equals(readContentFromClient));
 			// cleanup in any case : we created it!... let's hope the client will do the same on its side.
 			checkJob.readFilename.delete();
 			sfs.putSingle(READ_ALLOWED, String.valueOf(isReadAllowed));
@@ -59,7 +60,8 @@ public class TestDDACompleteMessage extends FCPMessage {
 					String existingContent = FileUtil.readUTF(maybeWrittenFile).toString().trim();
 					isWriteAllowed = checkJob.writeContent.equals(existingContent);
 				} catch (IOException e) {
-					Logger.error(this, "Caught an IOE trying to read the file (" + maybeWrittenFile + ")! " + e.getMessage());
+					Logger.error(this, "Caught an IOE trying to read the file (" + maybeWrittenFile + ")! " +
+								 e.getMessage());
 				}
 			}
 			sfs.putSingle(WRITE_ALLOWED, String.valueOf(isWriteAllowed));
@@ -78,6 +80,7 @@ public class TestDDACompleteMessage extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, name + " goes from server to client not the other way around", name, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  name + " goes from server to client not the other way around", name, false);
 	}
 }

@@ -37,7 +37,9 @@ public class PluginJarUpdater extends NodeUpdater {
 	 */
 	boolean onNoRevocation() {
 		synchronized(this) {
-			if(!readyToDeploy) return false;
+			if(!readyToDeploy) {
+				return false;
+			}
 			if(deployOnNoRevocation) {
 				// Lets go ...
 			} else if(deployOnNextNoRevocation) {
@@ -45,8 +47,9 @@ public class PluginJarUpdater extends NodeUpdater {
 				deployOnNextNoRevocation = false;
 				System.out.println("Deploying "+pluginName+" after next revocation check");
 				return true;
-			} else
+			} else {
 				return false;
+			}
 		}
 		// Deploy it!
 		if (!pluginManager.isPluginLoaded(pluginName)) {
@@ -76,7 +79,8 @@ public class PluginJarUpdater extends NodeUpdater {
 		return false;
 	}
 
-	PluginJarUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max, String blobFilenamePrefix, String pluginName, PluginManager pm, boolean autoDeployOnRestart) {
+	PluginJarUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max,
+					 String blobFilenamePrefix, String pluginName, PluginManager pm, boolean autoDeployOnRestart) {
 		super(manager, URI, current, min, max, blobFilenamePrefix);
 		this.pluginName = pluginName;
 		this.pluginManager = pm;
@@ -118,16 +122,20 @@ public class PluginJarUpdater extends NodeUpdater {
 		Bucket oldResult = null;
 		synchronized(this) {
 			if(requiredNodeVersion > Version.buildNumber()) {
-				System.err.println("Found version "+fetchedVersion+" of "+pluginName+" but needs node version "+requiredNodeVersion);
+				System.err.println("Found version "+fetchedVersion+" of "+pluginName+" but needs node version "
+								   +requiredNodeVersion);
 				// FIXME deploy it with the main jar
 				tempBlobFile.delete();
 				return;
 			}
-			if(this.result != null)
+			if(this.result != null) {
 				oldResult = this.result.asBucket();
+			}
 			this.result = result;
 		}
-		if(oldResult != null) oldResult.free();
+		if(oldResult != null) {
+			oldResult.free();
+		}
 
 		PluginInfoWrapper loaded = pluginManager.getPluginInfo(pluginName);
 
@@ -149,9 +157,13 @@ public class PluginJarUpdater extends NodeUpdater {
 		UserAlert toRegister = null;
 		synchronized(this) {
 			readyToDeploy = true;
-			if(alert != null) return;
+			if(alert != null) {
+				return;
+			}
 
-			toRegister = alert = new AbstractUserAlert(true, l10n("pluginUpdatedTitle", "name", pluginName), l10n("pluginUpdatedText", "name", pluginName), l10n("pluginUpdatedShortText", "name", pluginName), null, UserAlert.ERROR, true, NodeL10n.getBase().getString("UserAlert.hide"), true, this) {
+			toRegister = alert = new AbstractUserAlert(true, l10n("pluginUpdatedTitle", "name", pluginName),
+					l10n("pluginUpdatedText", "name", pluginName), l10n("pluginUpdatedShortText", "name", pluginName),
+			null, UserAlert.ERROR, true, NodeL10n.getBase().getString("UserAlert.hide"), true, this) {
 
 				@Override
 				public void onDismiss() {
@@ -184,8 +196,9 @@ public class PluginJarUpdater extends NodeUpdater {
 				}
 			};
 		}
-		if(toRegister != null)
+		if(toRegister != null) {
 			node.clientCore.alerts.register(toRegister);
+		}
 	}
 
 	private String l10n(String key) {
@@ -231,8 +244,9 @@ public class PluginJarUpdater extends NodeUpdater {
 			a = alert;
 			alert = null;
 		}
-		if(a != null)
+		if(a != null) {
 			node.clientCore.alerts.unregister(a);
+		}
 	}
 
 	@Override
@@ -243,8 +257,9 @@ public class PluginJarUpdater extends NodeUpdater {
 			a = alert;
 			alert = null;
 		}
-		if(a != null)
+		if(a != null) {
 			node.clientCore.alerts.unregister(a);
+		}
 	}
 
 	public synchronized void arm(boolean wasRunning) {

@@ -21,8 +21,9 @@ public class NullRandomAccessBuffer implements LockableRandomAccessBuffer {
 
 	@Override
 	public void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
-		for(int i=0; i<length; i++)
+		for(int i=0; i<length; i++) {
 			buf[bufOffset+i] = 0;
+		}
 	}
 
 	@Override

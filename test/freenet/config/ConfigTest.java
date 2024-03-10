@@ -46,10 +46,12 @@ public class ConfigTest {
 	public void testRegister() {
 		/* test if we can register */
 		StringBuilder sb = new StringBuilder();
-		for(int i=0; i< UTFUtil.PRINTABLE_ASCII.length; i++)
+		for(int i=0; i< UTFUtil.PRINTABLE_ASCII.length; i++) {
 			sb.append(UTFUtil.PRINTABLE_ASCII[i]);
-		for(int i=0; i< UTFUtil.STRESSED_UTF.length; i++)
+		}
+		for(int i=0; i< UTFUtil.STRESSED_UTF.length; i++) {
 			sb.append(UTFUtil.STRESSED_UTF[i]);
+		}
 		assertNotNull(conf.createSubConfig(sb.toString()));
 
 		/* test if it prevents multiple registrations */

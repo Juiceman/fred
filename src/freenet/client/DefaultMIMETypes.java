@@ -46,7 +46,9 @@ public class DefaultMIMETypes {
 	protected static synchronized void addMIMEType(short number, String type) {
 		if(mimeTypesByNumber.size() > number) {
 			String s = mimeTypesByNumber.get(number);
-			if(s != null) throw new IllegalArgumentException("Already used: "+number);
+			if(s != null) {
+				throw new IllegalArgumentException("Already used: "+number);
+			}
 		} else {
 			mimeTypesByNumber.add(number, null);
 		}
@@ -63,7 +65,8 @@ public class DefaultMIMETypes {
 	 * @param extensions An array of common extensions for files of this type. Must be
 	 * unique for the type.
 	 */
-	protected static synchronized void addMIMEType(short number, String type, String[] extensions, String outExtension) {
+	protected static synchronized void addMIMEType(short number, String type, String[] extensions,
+			String outExtension) {
 		addMIMEType(number, type);
 		Short t = Short.valueOf(number);
 		if(extensions != null) {
@@ -72,18 +75,21 @@ public class DefaultMIMETypes {
 				Short s = mimeTypesByExtension.get(ext);
 				if(s != null) {
 					// No big deal
-					Logger.normal(DefaultMIMETypes.class, "Extension "+ext+" assigned to "+byNumber(s.shortValue())+" in preference to "+number+ ':' +type);
+					Logger.normal(DefaultMIMETypes.class,
+								  "Extension "+ext+" assigned to "+byNumber(s.shortValue())+" in preference to "+number+ ':' +type);
 				} else {
 					// If only one, make it primary
-					if((outExtension == null) && (extensions.length == 1))
+					if((outExtension == null) && (extensions.length == 1)) {
 						primaryExtensionByMimeNumber.put(t, ext);
+					}
 					mimeTypesByExtension.put(ext, t);
 				}
 			}
 			allExtensionsByMimeNumber.put(t, extensions);
 		}
-		if(outExtension != null)
+		if(outExtension != null) {
 			primaryExtensionByMimeNumber.put(t, outExtension);
+		}
 
 	}
 
@@ -100,7 +106,8 @@ public class DefaultMIMETypes {
 	 * Add a MIME type, with extensions separated by spaces. This is more or less
 	 * the format in /etc/mime-types.
 	 */
-	protected static synchronized void addMIMEType(short number, String type, String extensions, String outExtension) {
+	protected static synchronized void addMIMEType(short number, String type, String extensions,
+			String outExtension) {
 		addMIMEType(number, type, extensions.split(" "), outExtension);
 	}
 
@@ -108,8 +115,9 @@ public class DefaultMIMETypes {
 	 * Get a known MIME type by number.
 	 */
 	public synchronized static String byNumber(short x) {
-		if((x > mimeTypesByNumber.size()) || (x < 0))
+		if((x > mimeTypesByNumber.size()) || (x < 0)) {
 			return null;
+		}
 		return mimeTypesByNumber.get(x);
 	}
 
@@ -119,8 +127,11 @@ public class DefaultMIMETypes {
 	 */
 	public synchronized static short byName(String s) {
 		Short x = mimeTypesByName.get(s);
-		if(x != null) return x.shortValue();
-		else return -1;
+		if(x != null) {
+			return x.shortValue();
+		} else {
+			return -1;
+		}
 	}
 
 	/* From toad's /etc/mime.types
@@ -761,29 +772,40 @@ public class DefaultMIMETypes {
 	 * Otherwise if we don't recognize the extension we return DEFAULT_MIME_TYPE. */
 	public synchronized static String guessMIMEType(String arg, boolean noDefault) {
 		int x = arg.lastIndexOf('.');
-		if((x == -1) || (x == arg.length()-1))
+		if((x == -1) || (x == arg.length()-1)) {
 			return noDefault ? null : DEFAULT_MIME_TYPE;
+		}
 		String ext = arg.substring(x+1).toLowerCase();
 		Short mimeIndexOb = mimeTypesByExtension.get(ext);
 		if(mimeIndexOb != null) {
 			return mimeTypesByNumber.get(mimeIndexOb.intValue());
-		} else return noDefault ? null : DEFAULT_MIME_TYPE;
+		} else {
+			return noDefault ? null : DEFAULT_MIME_TYPE;
+		}
 	}
 
 	public synchronized static String getExtension(String type) {
 		short typeNumber = byName(type);
-		if(typeNumber < 0) return null;
+		if(typeNumber < 0) {
+			return null;
+		}
 		return primaryExtensionByMimeNumber.get(typeNumber);
 	}
 
 	public synchronized static boolean isValidExt(String expectedMimeType, String oldExt) {
 		short typeNumber = byName(expectedMimeType);
-		if(typeNumber < 0) return false;
+		if(typeNumber < 0) {
+			return false;
+		}
 
 		String[] extensions = allExtensionsByMimeNumber.get(typeNumber);
-		if(extensions == null) return false;
+		if(extensions == null) {
+			return false;
+		}
 		for(String extension: extensions)
-			if(oldExt.equalsIgnoreCase(extension)) return true;
+			if(oldExt.equalsIgnoreCase(extension)) {
+				return true;
+			}
 		return false;
 	}
 
@@ -796,10 +818,13 @@ public class DefaultMIMETypes {
 	private static final String PARAM = "(?>;\\s*"+CHARS+"="+"(("+CHARS+")|(\".*\")))";
 	private static Pattern MIME_TYPE = Pattern.compile(TOP_LEVEL+"/"+CHARS+"\\s*"+PARAM+"*");
 
-	private static Pattern INFOCALYPSE_DIRTY_HACK = Pattern.compile("application/mercurial-bundle;[0-9]{1,6}");
+	private static Pattern INFOCALYPSE_DIRTY_HACK =
+		Pattern.compile("application/mercurial-bundle;[0-9]{1,6}");
 
 	public static boolean isPlausibleMIMEType(String mimeType) {
-		if(MIME_TYPE.matcher(mimeType).matches()) return true;
+		if(MIME_TYPE.matcher(mimeType).matches()) {
+			return true;
+		}
 		// FIXME dirty hack for backwards compatibility with old Infocalypse repo's
 		return INFOCALYPSE_DIRTY_HACK.matcher(mimeType).matches();
 	}
@@ -812,16 +837,18 @@ public class DefaultMIMETypes {
 	public static String forceExtension(String s, String expectedMimeType) {
 		int dotIdx = s.lastIndexOf('.');
 		String ext = getExtension(expectedMimeType);
-		if(ext == null)
+		if(ext == null) {
 			ext = "bin";
+		}
 		if((dotIdx == -1) && (expectedMimeType != null)) {
 			s += '.' + ext;
 			return s;
 		}
 		if(dotIdx != -1) {
 			String oldExt = s.substring(dotIdx+1);
-			if(DefaultMIMETypes.isValidExt(expectedMimeType, oldExt))
+			if(DefaultMIMETypes.isValidExt(expectedMimeType, oldExt)) {
 				return s;
+			}
 			return s + '.' + ext;
 		}
 		return s + '.' + ext;

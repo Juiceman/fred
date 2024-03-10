@@ -40,8 +40,11 @@ public class NodeAndClientLayerBlobTest extends NodeAndClientLayerTestBase {
 	private static final File dir = new File("test-fetch-pull-blob-single-node");
 
 	@Test
-	public void testFetchPullBlobSingleNode() throws InvalidThresholdException, NodeInitException, InsertException, FetchException, IOException, BinaryBlobFormatException {
-		if(!TestProperty.EXTENSIVE) return;
+	public void testFetchPullBlobSingleNode() throws InvalidThresholdException, NodeInitException,
+		InsertException, FetchException, IOException, BinaryBlobFormatException {
+		if(!TestProperty.EXTENSIVE) {
+			return;
+		}
 		DummyRandomSource random = new DummyRandomSource(25312);
 		final Executor executor = new PooledExecutor();
 		FileUtil.removeAll(dir);

@@ -33,14 +33,17 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	static class FDTracker implements Serializable {
 		private int maxOpenFDs;
 		private int totalOpenFDs = 0;
-		private final LinkedHashSet<PooledFileRandomAccessBuffer> closables = new LinkedHashSet<PooledFileRandomAccessBuffer>();
+		private final LinkedHashSet<PooledFileRandomAccessBuffer> closables = new
+		LinkedHashSet<PooledFileRandomAccessBuffer>();
 		FDTracker(int maxOpenFDs) {
 			this.maxOpenFDs = maxOpenFDs;
 		}
 
 		/** Set the size of the fd pool */
 		synchronized void setMaxFDs(int max) {
-			if(max <= 0) throw new IllegalArgumentException();
+			if(max <= 0) {
+				throw new IllegalArgumentException();
+			}
 			maxOpenFDs = max;
 		}
 
@@ -81,12 +84,14 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	 * @param persistentTempID The tempfile ID, or -1.
 	 * @throws IOException
 	 */
-	public PooledFileRandomAccessBuffer(File file, boolean readOnly, long forceLength, Random seedRandom, long persistentTempID, boolean deleteOnFree) throws IOException {
+	public PooledFileRandomAccessBuffer(File file, boolean readOnly, long forceLength,
+										Random seedRandom, long persistentTempID, boolean deleteOnFree) throws IOException {
 		this(file, readOnly, forceLength, seedRandom, persistentTempID, deleteOnFree, DEFAULT_FDTRACKER);
 	}
 
 	// For unit testing
-	PooledFileRandomAccessBuffer(File file, boolean readOnly, long forceLength, Random seedRandom, long persistentTempID, boolean deleteOnFree, FDTracker fds) throws IOException {
+	PooledFileRandomAccessBuffer(File file, boolean readOnly, long forceLength, Random seedRandom,
+								 long persistentTempID, boolean deleteOnFree, FDTracker fds) throws IOException {
 		this.file = file;
 		this.readOnly = readOnly;
 		this.persistentTempID = persistentTempID;
@@ -99,12 +104,15 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 		try {
 			long currentLength = raf.length();
 			if(forceLength >= 0 && forceLength != currentLength) {
-				if(readOnly) throw new IOException("Read only but wrong length");
+				if(readOnly) {
+					throw new IOException("Read only but wrong length");
+				}
 				// Preallocate space. We want predictable disk usage, not minimal disk usage, especially for downloads.
 				try (WrapperKeepalive wrapperKeepalive = new WrapperKeepalive()) {
 					wrapperKeepalive.start();
 					// freenet-mobile-changed: Passing file descriptor to avoid using reflection
-					Fallocate.forChannel(raf.getChannel(), raf.getFD(), forceLength).fromOffset(currentLength).execute();
+					Fallocate.forChannel(raf.getChannel(), raf.getFD(),
+										 forceLength).fromOffset(currentLength).execute();
 				}
 				raf.setLength(forceLength);
 				currentLength = forceLength;
@@ -121,7 +129,8 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	}
 
 	public PooledFileRandomAccessBuffer(File file, String mode, byte[] initialContents,
-										int offset, int size, long persistentTempID, boolean deleteOnFree, boolean readOnly) throws IOException {
+										int offset, int size, long persistentTempID, boolean deleteOnFree,
+										boolean readOnly) throws IOException {
 		this.file = file;
 		this.readOnly = readOnly;
 		this.length = size;
@@ -165,7 +174,9 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 
 	@Override
 	public void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
-		if(fileOffset < 0) throw new IllegalArgumentException();
+		if(fileOffset < 0) {
+			throw new IllegalArgumentException();
+		}
 		RAFLock lock = lockOpen();
 		try {
 			// FIXME Use NIO! This is absurd!
@@ -180,12 +191,17 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 
 	@Override
 	public void pwrite(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
-		if(fileOffset < 0) throw new IllegalArgumentException();
-		if(readOnly) throw new IOException("Read only");
+		if(fileOffset < 0) {
+			throw new IllegalArgumentException();
+		}
+		if(readOnly) {
+			throw new IOException("Read only");
+		}
 		RAFLock lock = lockOpen();
 		try {
-			if(fileOffset + length > this.length)
+			if(fileOffset + length > this.length) {
 				throw new IOException("Length limit exceeded");
+			}
 			// FIXME Use NIO (which has proper pwrite, with concurrency)! This is absurd!
 			synchronized(this) {
 				raf.seek(fileOffset);
@@ -198,10 +214,13 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 
 	@Override
 	public void close() {
-		if(logMINOR) Logger.minor(this, "Closing "+this, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Closing "+this, new Exception("debug"));
+		}
 		synchronized(fds) {
-			if(lockLevel != 0)
+			if(lockLevel != 0) {
 				throw new IllegalStateException("Must unlock first!");
+			}
 			closed = true;
 			// Essential to avoid memory leak!
 			// Potentially slow but only happens on close(). Plus the size of closables is bounded anyway by the fd limit.
@@ -227,7 +246,9 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 		synchronized(fds) {
 			while(true) {
 				fds.closables.remove(this);
-				if(closed) throw new IOException("Already closed "+this);
+				if(closed) {
+					throw new IOException("Already closed "+this);
+				}
 				if(raf != null) {
 					lockLevel++; // Already open, may or may not be already locked.
 					return lock;
@@ -267,8 +288,12 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	/** Exposed for tests only. Used internally. Must be unlocked. */
 	protected void closeRAF() {
 		synchronized(fds) {
-			if(lockLevel != 0) throw new IllegalStateException();
-			if(raf == null) return;
+			if(lockLevel != 0) {
+				throw new IllegalStateException();
+			}
+			if(raf == null) {
+				return;
+			}
 			try {
 				raf.close();
 			} catch (IOException e) {
@@ -282,7 +307,9 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	private void unlock() {
 		synchronized(fds) {
 			lockLevel--;
-			if(lockLevel > 0) return;
+			if(lockLevel > 0) {
+				return;
+			}
 			fds.closables.add(this);
 			fds.notify();
 		}
@@ -295,7 +322,9 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 	@Override
 	public void free() {
 		close();
-		if(!deleteOnFree) return;
+		if(!deleteOnFree) {
+			return;
+		}
 		if(secureDelete) {
 			try {
 				FileUtil.secureDelete(file);
@@ -322,10 +351,15 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 
 	@Override
 	public void onResume(ClientContext context) throws ResumeFailedException {
-		if(!file.exists()) throw new ResumeFailedException("File does not exist: "+file);
-		if(length > file.length()) throw new ResumeFailedException("Bad length");
-		if(persistentTempID != -1)
+		if(!file.exists()) {
+			throw new ResumeFailedException("File does not exist: "+file);
+		}
+		if(length > file.length()) {
+			throw new ResumeFailedException("Bad length");
+		}
+		if(persistentTempID != -1) {
 			context.persistentFileTracker.register(file);
+		}
 	}
 
 	public String toString() {
@@ -344,29 +378,36 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 		dos.writeLong(length);
 		dos.writeLong(persistentTempID);
 		dos.writeBoolean(deleteOnFree);
-		if(deleteOnFree)
+		if(deleteOnFree) {
 			dos.writeBoolean(secureDelete);
+		}
 	}
 
 	/** Caller has already checked magic
 	 * @throws StorageFormatException
 	 * @throws IOException
 	 * @throws ResumeFailedException */
-	PooledFileRandomAccessBuffer(DataInputStream dis, FilenameGenerator fg, PersistentFileTracker persistentFileTracker)
+	PooledFileRandomAccessBuffer(DataInputStream dis, FilenameGenerator fg,
+								 PersistentFileTracker persistentFileTracker)
 	throws StorageFormatException, IOException, ResumeFailedException {
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		File f = new File(dis.readUTF());
 		readOnly = dis.readBoolean();
 		length = dis.readLong();
 		persistentTempID = dis.readLong();
 		deleteOnFree = dis.readBoolean();
-		if(deleteOnFree)
+		if(deleteOnFree) {
 			secureDelete = dis.readBoolean();
-		else
+		} else {
 			secureDelete = false;
+		}
 		fds = DEFAULT_FDTRACKER;
-		if(length < 0) throw new StorageFormatException("Bad length");
+		if(length < 0) {
+			throw new StorageFormatException("Bad length");
+		}
 		if(persistentTempID != -1) {
 			// File must exist!
 			if(!f.exists()) {
@@ -379,12 +420,14 @@ public class PooledFileRandomAccessBuffer implements LockableRandomAccessBuffer,
 				}
 			}
 			file = fg.maybeMove(f, persistentTempID);
-			if(!f.exists())
+			if(!f.exists()) {
 				throw new ResumeFailedException("Persistent tempfile lost "+f);
+			}
 		} else {
 			file = f;
-			if(!f.exists())
+			if(!f.exists()) {
 				throw new ResumeFailedException("Lost file "+f);
+			}
 		}
 	}
 

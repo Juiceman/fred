@@ -44,7 +44,8 @@ public class FCPMessageTest {
 
 	@Test
 	public void messageIsNotWrappedIfListRequestIdentifierIsNull() {
-		assertThat(FCPMessage.withListRequestIdentifier(originalMessage, null), sameInstance(originalMessage));
+		assertThat(FCPMessage.withListRequestIdentifier(originalMessage, null),
+				   sameInstance(originalMessage));
 	}
 
 	@Test

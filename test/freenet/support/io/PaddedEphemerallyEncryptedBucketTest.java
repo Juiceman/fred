@@ -17,7 +17,8 @@ public class PaddedEphemerallyEncryptedBucketTest extends BucketTestBase {
 	@Override
 	protected Bucket makeBucket(long size) throws IOException {
 		FilenameGenerator filenameGenerator = new FilenameGenerator(weakPRNG, false, null, "junit");
-		TempFileBucket fileBucket = new TempFileBucket(filenameGenerator.makeRandomFilename(), filenameGenerator);
+		TempFileBucket fileBucket = new TempFileBucket(filenameGenerator.makeRandomFilename(),
+				filenameGenerator);
 		return new PaddedEphemerallyEncryptedBucket(fileBucket, 1024, strongPRNG, weakPRNG);
 	}
 

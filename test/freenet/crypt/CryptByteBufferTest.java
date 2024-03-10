@@ -82,7 +82,9 @@ public class CryptByteBufferTest {
 			CryptByteBuffer crypt1;
 			CryptByteBuffer crypt2;
 
-			if(!type.isStreamCipher) continue;
+			if(!type.isStreamCipher) {
+				continue;
+			}
 
 			if(ivs[i] == null) {
 				crypt1 = new CryptByteBuffer(type, keys[i]);
@@ -115,7 +117,9 @@ public class CryptByteBufferTest {
 			CryptByteBuffer crypt1;
 			CryptByteBuffer crypt2;
 
-			if(!type.isStreamCipher) continue;
+			if(!type.isStreamCipher) {
+				continue;
+			}
 
 			if(ivs[i] == null) {
 				crypt1 = new CryptByteBuffer(type, keys[i]);

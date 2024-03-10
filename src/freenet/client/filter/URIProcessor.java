@@ -6,7 +6,8 @@ import java.net.URISyntaxException;
 public interface URIProcessor {
 
 	/** Processes an URI. If it is unsafe, then return null */
-	public String processURI(String u, String overrideType, boolean noRelative, boolean inline) throws CommentException;
+	public String processURI(String u, String overrideType, boolean noRelative,
+							 boolean inline) throws CommentException;
 
 	/**
 	 * Makes an URI absolute

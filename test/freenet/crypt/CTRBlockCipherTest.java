@@ -27,8 +27,9 @@ public class CTRBlockCipherTest {
 	public static final boolean TEST_JCA = Rijndael.AesCtrProvider != null;
 
 	static {
-		if(!TEST_JCA)
+		if(!TEST_JCA) {
 			System.out.println("JCA is crippled, not doing tests requiring JCA");
+		}
 	}
 
 	private MersenneTwister mt = new MersenneTwister(1634);
@@ -247,8 +248,12 @@ public class CTRBlockCipherTest {
 	}
 
 	@Test
-	public void testRandomJCA() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-		if(!TEST_JCA) return;
+	public void testRandomJCA() throws NoSuchAlgorithmException, NoSuchPaddingException,
+		InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
+		BadPaddingException {
+		if(!TEST_JCA) {
+			return;
+		}
 		for(int i=0; i<1024; i++) {
 			byte[] plaintext = new byte[mt.nextInt(4096)+1];
 			byte[] key = new byte[32];
@@ -268,7 +273,9 @@ public class CTRBlockCipherTest {
 	}
 
 	@Test
-	public void testRandom() throws UnsupportedCipherException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+	public void testRandom() throws UnsupportedCipherException, NoSuchAlgorithmException,
+		NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
+		IllegalBlockSizeException, BadPaddingException {
 		for(int i=0; i<1024; i++) {
 			byte[] plaintext = new byte[mt.nextInt(4096)+1];
 			byte[] key = new byte[32];

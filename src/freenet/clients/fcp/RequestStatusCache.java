@@ -43,10 +43,15 @@ public class RequestStatusCache {
 	synchronized void addDownload(DownloadRequestStatus status) {
 		RequestStatus old =
 			requestsByIdentifier.put(status.getIdentifier(), status);
-		if(logMINOR) Logger.minor(this, "Starting download "+status.getIdentifier());
-		if(old == status) return;
-		if(old != null)
+		if(logMINOR) {
+			Logger.minor(this, "Starting download "+status.getIdentifier());
+		}
+		if(old == status) {
+			return;
+		}
+		if(old != null) {
 			downloads.remove(old);
+		}
 		downloads.add(status);
 		downloadsByURI.put(status.getURI(), status);
 	}
@@ -54,30 +59,43 @@ public class RequestStatusCache {
 	synchronized void addUpload(UploadRequestStatus status) {
 		RequestStatus old =
 			requestsByIdentifier.put(status.getIdentifier(), status);
-		if(old == status) return;
-		if(logMINOR) Logger.minor(this, "Starting upload "+status.getIdentifier());
-		if(old != null)
+		if(old == status) {
+			return;
+		}
+		if(logMINOR) {
+			Logger.minor(this, "Starting upload "+status.getIdentifier());
+		}
+		if(old != null) {
 			uploads.remove(old);
+		}
 		uploads.add(status);
 		FreenetURI uri = status.getURI();
-		if(uri != null)
+		if(uri != null) {
 			uploadsByFinalURI.put(uri, status);
+		}
 	}
 
 	synchronized void finishedDownload(String identifier, boolean success, long dataSize,
-									   String mimeType, FetchExceptionMode failureCode, String failureReasonLong, String failureReasonShort, Bucket dataShadow, boolean filtered) {
+									   String mimeType, FetchExceptionMode failureCode, String failureReasonLong,
+									   String failureReasonShort, Bucket dataShadow, boolean filtered) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.setFinished(success, dataSize, mimeType, failureCode, failureReasonLong,
 						   failureReasonShort, dataShadow, filtered);
 	}
 
 	synchronized void gotFinalURI(String identifier, FreenetURI finalURI) {
 		UploadRequestStatus status = (UploadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		if(status.getFinalURI() == null)
 			// No final URI set yet, put into the index.
+		{
 			uploadsByFinalURI.put(finalURI, status);
+		}
 		status.setFinalURI(finalURI);
 	}
 
@@ -85,29 +103,40 @@ public class RequestStatusCache {
 									 FreenetURI finalURI, InsertExceptionMode failureCode, String failureReasonShort,
 									 String failureReasonLong) {
 		UploadRequestStatus status = (UploadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		if(status.getFinalURI() == null && finalURI != null)
 			// No final URI set yet, put into the index.
+		{
 			uploadsByFinalURI.put(finalURI, status);
+		}
 		status.setFinished(success, finalURI, failureCode, failureReasonShort, failureReasonLong);
 	}
 
 	synchronized void updateStatus(String identifier, SplitfileProgressEvent event) {
 		RequestStatus status = requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.updateStatus(event);
 	}
 
-	synchronized void updateDetectedCompatModes(String identifier, InsertContext.CompatibilityMode[] compatModes, byte[] splitfileKey, boolean dontCompress) {
+	synchronized void updateDetectedCompatModes(String identifier,
+			InsertContext.CompatibilityMode[] compatModes, byte[] splitfileKey, boolean dontCompress) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.updateDetectedCompatModes(compatModes, dontCompress);
 		status.updateDetectedSplitfileKey(splitfileKey);
 	}
 
 	synchronized void removeByIdentifier(String identifier) {
 		RequestStatus status = requestsByIdentifier.remove(identifier);
-		if(status == null) return;
+		if(status == null) {
+			return;
+		}
 		if(status instanceof DownloadRequestStatus) {
 			downloads.remove(status);
 			FreenetURI uri = status.getURI();
@@ -116,8 +145,9 @@ public class RequestStatusCache {
 		} else if(status instanceof UploadRequestStatus) {
 			uploads.remove(status);
 			FreenetURI uri = ((UploadRequestStatus) status).getFinalURI();
-			if(uri != null)
+			if(uri != null) {
 				uploadsByFinalURI.removeElement(uri, status);
+			}
 		}
 	}
 
@@ -132,32 +162,41 @@ public class RequestStatusCache {
 	public void updateCompressionStatus(String identifier,
 										COMPRESS_STATE compressing) {
 		UploadFileRequestStatus status = (UploadFileRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.updateCompressionStatus(compressing);
 	}
 
 	public synchronized void addTo(List<RequestStatus> status) {
 		// FIXME is it better to just synchronize on the RequestStatusCache when
 		// rendering the downloads page, and when updating? Ugly though ...
-		for(RequestStatus req : requestsByIdentifier.values())
+		for(RequestStatus req : requestsByIdentifier.values()) {
 			status.add(req.clone());
+		}
 	}
 
 	public synchronized void updateExpectedMIME(String identifier, String foundDataMimeType) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.updateExpectedMIME(foundDataMimeType);
 	}
 
 	public synchronized void updateExpectedDataLength(String identifier, long expectedDataLength) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.updateExpectedDataLength(expectedDataLength);
 	}
 
 	public void setPriority(String identifier, short newPriorityClass) {
 		RequestStatus status = requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.setPriority(newPriorityClass);
 	}
 
@@ -166,14 +205,19 @@ public class RequestStatusCache {
 	 * at that point since it's possible the success/failure callback might happen first). */
 	public synchronized void updateStarted(String identifier, boolean started) {
 		RequestStatus status = requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 
 		if(!started)
 			// Caller should call with false first, so we only need to unset finished when setting started=false.
+		{
 			status.restart(false);
-		else
+		} else
 			// Already restarted, just set started = true.
+		{
 			status.setStarted(started);
+		}
 	}
 
 	/** Restart a download. Caller should call ,false first, at which point we setStarted,
@@ -182,7 +226,9 @@ public class RequestStatusCache {
 	 * @param redirect If non-null, the request followed a redirect. */
 	public synchronized void updateStarted(String identifier, FreenetURI redirect) {
 		DownloadRequestStatus status = (DownloadRequestStatus) requestsByIdentifier.get(identifier);
-		if(status == null) return; // Can happen during cancel etc.
+		if(status == null) {
+			return;    // Can happen during cancel etc.
+		}
 		status.restart(false);
 		if(redirect != null) {
 			downloadsByURI.remove(status.getURI());
@@ -193,16 +239,27 @@ public class RequestStatusCache {
 
 	public synchronized CacheFetchResult getShadowBucket(FreenetURI key, boolean noFilter) {
 		Object[] downloads = downloadsByURI.getArray(key);
-		if(downloads == null) return null;
+		if(downloads == null) {
+			return null;
+		}
 		for(Object o : downloads) {
 			DownloadRequestStatus download = (DownloadRequestStatus) o;
 			Bucket data = download.getDataShadow();
-			if(data == null) continue;
-			if(data.size() == 0) continue;
-			if(noFilter && download.filterData) continue;
+			if(data == null) {
+				continue;
+			}
+			if(data.size() == 0) {
+				continue;
+			}
+			if(noFilter && download.filterData) {
+				continue;
+			}
 			// FIXME it probably *is* worth the effort to allow this when it is overridden on the fetcher, since the user changed the type???
-			if(download.overriddenDataType) continue;
-			return new CacheFetchResult(new ClientMetadata(download.getMIMEType()), new NoFreeBucket(data), download.filterData);
+			if(download.overriddenDataType) {
+				continue;
+			}
+			return new CacheFetchResult(new ClientMetadata(download.getMIMEType()), new NoFreeBucket(data),
+										download.filterData);
 		}
 		return null;
 	}

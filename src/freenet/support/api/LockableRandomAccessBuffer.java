@@ -29,8 +29,9 @@ public interface LockableRandomAccessBuffer extends RandomAccessBuffer {
 
 		public final void unlock() {
 			synchronized(this) {
-				if(!locked)
+				if(!locked) {
 					throw new IllegalStateException("Already unlocked");
+				}
 				locked = false;
 			}
 			innerUnlock();

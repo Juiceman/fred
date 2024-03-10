@@ -33,11 +33,13 @@ public class RemovePeer extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, NAME + " requires full access", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+											  NAME + " requires full access", identifier, false);
 		}
 		String nodeIdentifier = fs.get("NodeIdentifier");
 		if( nodeIdentifier == null ) {
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NodeIdentifier field missing", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Error: NodeIdentifier field missing", identifier, false);
 		}
 		PeerNode pn = node.getPeerNode(nodeIdentifier);
 		if(pn == null) {

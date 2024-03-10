@@ -178,7 +178,8 @@ public class TheoraPacketFilter implements CodecPacketFilter {
 	}
 
 	// The header packets begin with the header type and the magic number. Validate both.
-	private void verifyTypeAndHeader(String headerName, BitInputStream input, int expectedHeaderType) throws IOException {
+	private void verifyTypeAndHeader(String headerName, BitInputStream input,
+									 int expectedHeaderType) throws IOException {
 		try {
 			checkHeaderField(headerName, "type", input, 8, v -> v == expectedHeaderType);
 		} catch (UnknownContentTypeException e) {
@@ -189,7 +190,8 @@ public class TheoraPacketFilter implements CodecPacketFilter {
 		input.readFully(magicHeader);
 		if (!Arrays.equals(magicNumber, magicHeader)) {
 			throw new UnknownContentTypeException(
-				"Packet magicHeader: " + Arrays.toString(magicHeader) + "; expected: " + Arrays.toString(magicNumber));
+				"Packet magicHeader: " + Arrays.toString(magicHeader) + "; expected: " + Arrays.toString(
+					magicNumber));
 		}
 	}
 
@@ -220,7 +222,8 @@ public class TheoraPacketFilter implements CodecPacketFilter {
 		return 32 - Integer.numberOfLeadingZeros(a);
 	}
 
-	private int[] readHuffmanTable(int HBITSLength, int[] HTS, BitInputStream input) throws IOException {
+	private int[] readHuffmanTable(int HBITSLength, int[] HTS,
+								   BitInputStream input) throws IOException {
 		if (HBITSLength > 32) {
 			throw new UnknownContentTypeException("HBITS.length = " + HBITSLength +
 												  "; HBITS is longer than 32 bits in length - The stream is undecodable.");

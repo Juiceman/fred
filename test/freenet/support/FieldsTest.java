@@ -431,8 +431,9 @@ public class FieldsTest {
 		final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 		final String NONDIGITS = "./\\_=+:"+ALPHABET+ALPHABET.toUpperCase();
 		StringBuffer sb = new StringBuffer(count);
-		for(int i=0; i<count; i++)
+		for(int i=0; i<count; i++) {
 			sb.append(NONDIGITS.charAt(r.nextInt(NONDIGITS.length())));
+		}
 		return sb.toString();
 	}
 

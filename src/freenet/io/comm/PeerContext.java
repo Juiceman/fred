@@ -33,7 +33,8 @@ public interface PeerContext {
 
 	/** Send a message to the node
 	 * @return */
-	public MessageItem sendAsync(Message msg, AsyncMessageCallback cb, ByteCounter ctr) throws NotConnectedException;
+	public MessageItem sendAsync(Message msg, AsyncMessageCallback cb,
+								 ByteCounter ctr) throws NotConnectedException;
 
 	/** Get the current boot ID. This is a random number that changes every time the node starts up. */
 	public long getBootID();

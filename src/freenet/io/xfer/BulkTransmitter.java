@@ -75,7 +75,8 @@ public class BulkTransmitter {
 		});
 	}
 
-	public BulkTransmitter(PartiallyReceivedBulk prb, PeerContext peer, long uid, boolean noWait, ByteCounter ctr, boolean realTime) throws DisconnectedException {
+	public BulkTransmitter(PartiallyReceivedBulk prb, PeerContext peer, long uid, boolean noWait,
+						   ByteCounter ctr, boolean realTime) throws DisconnectedException {
 		this(prb, peer, uid, noWait, ctr, realTime, null);
 	}
 
@@ -87,7 +88,8 @@ public class BulkTransmitter {
 	 * @param noWait If true, don't wait for an FNPBulkReceivedAll, return as soon as we've sent everything.
 	 * @throws DisconnectedException If the peer we are trying to send to becomes disconnected.
 	 */
-	public BulkTransmitter(PartiallyReceivedBulk prb, PeerContext peer, long uid, boolean noWait, ByteCounter ctr, boolean realTime, AllSentCallback cb) throws DisconnectedException {
+	public BulkTransmitter(PartiallyReceivedBulk prb, PeerContext peer, long uid, boolean noWait,
+						   ByteCounter ctr, boolean realTime, AllSentCallback cb) throws DisconnectedException {
 		this.prb = prb;
 		this.peer = peer;
 		this.uid = uid;
@@ -95,7 +97,9 @@ public class BulkTransmitter {
 		this.ctr = ctr;
 		this.realTime = realTime;
 		this.allSentCallback = cb;
-		if(ctr == null) throw new NullPointerException();
+		if(ctr == null) {
+			throw new NullPointerException();
+		}
 		peerBootID = peer.getBootID();
 		// Need to sync on prb while doing both operations, to avoid race condition.
 		// Specifically, we must not get calls to blockReceived() until blocksNotSentButPresent
@@ -107,7 +111,8 @@ public class BulkTransmitter {
 			prb.add(this);
 		}
 		try {
-			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(DMT.FNPBulkReceiveAborted).setField(DMT.UID, uid),
+			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(
+									   DMT.FNPBulkReceiveAborted).setField(DMT.UID, uid),
 			new AsyncMessageFilterCallback() {
 				@Override
 				public void onMatched(Message m) {
@@ -116,9 +121,13 @@ public class BulkTransmitter {
 				@Override
 				public boolean shouldTimeout() {
 					synchronized(BulkTransmitter.this) {
-						if(cancelled || finished) return true;
+						if(cancelled || finished) {
+							return true;
+						}
 					}
-					if(BulkTransmitter.this.prb.isAborted()) return true;
+					if(BulkTransmitter.this.prb.isAborted()) {
+						return true;
+					}
 					return false;
 				}
 				@Override
@@ -134,7 +143,8 @@ public class BulkTransmitter {
 					// Ignore
 				}
 			}, ctr);
-			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(DMT.FNPBulkReceivedAll).setField(DMT.UID, uid),
+			prb.usm.addAsyncFilter(MessageFilter.create().setNoTimeout().setSource(peer).setType(
+									   DMT.FNPBulkReceivedAll).setField(DMT.UID, uid),
 			new AsyncMessageFilterCallback() {
 				@Override
 				public void onMatched(Message m) {
@@ -145,10 +155,16 @@ public class BulkTransmitter {
 				@Override
 				public boolean shouldTimeout() {
 					synchronized(BulkTransmitter.this) {
-						if (cancelled) return true;
-						if (finished)  return (System.currentTimeMillis()-finishTime > FINAL_ACK_TIMEOUT);
+						if (cancelled) {
+							return true;
+						}
+						if (finished) {
+							return (System.currentTimeMillis()-finishTime > FINAL_ACK_TIMEOUT);
+						}
 					}
-					if(BulkTransmitter.this.prb.isAborted()) return true;
+					if(BulkTransmitter.this.prb.isAborted()) {
+						return true;
+					}
 					return false;
 				}
 				@Override
@@ -192,7 +208,9 @@ public class BulkTransmitter {
 
 	private void sendAbortedMessage() {
 		synchronized(this) {
-			if(sentCancel) return;
+			if(sentCancel) {
+				return;
+			}
 			sentCancel = true;
 		}
 		try {
@@ -203,11 +221,14 @@ public class BulkTransmitter {
 	}
 
 	public void cancel(String reason) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Cancelling "+this);
+		}
 		sendAbortedMessage();
 		synchronized(this) {
-			if(cancelled || finished) return;
+			if(cancelled || finished) {
+				return;
+			}
 			cancelled = true;
 			cancelReason = reason;
 			notifyAll();
@@ -225,7 +246,9 @@ public class BulkTransmitter {
 	 * we believe them (even if we haven't sent everything; maybe they had a partial). */
 	public void completed() {
 		synchronized(this) {
-			if(cancelled || finished) return;
+			if(cancelled || finished) {
+				return;
+			}
 			finished = true;
 			finishTime = System.currentTimeMillis();
 			notifyAll();
@@ -235,7 +258,9 @@ public class BulkTransmitter {
 			transfersCompleted++;
 			transfersSucceeded++;
 		}
-		if(logMINOR) Logger.minor(this, "Completed transfer successfully "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Completed transfer successfully "+this);
+		}
 	}
 
 	/**
@@ -245,16 +270,20 @@ public class BulkTransmitter {
 	 */
 	public boolean send() throws DisconnectedException {
 		long lastSentPacket = System.currentTimeMillis();
-		outer:	while(true) {
+		outer:
+		while(true) {
 			int max = Math.min(Integer.MAX_VALUE, prb.blocks);
 			max = Math.min(max, peer.getThrottleWindowSize());
 			// FIXME Need to introduce the global limiter of [code]max[/code] for memory management instead of hard-code for each, no?
 			max = Math.min(max, 100);
-			if(max < 1) max = 1;
+			if(max < 1) {
+				max = 1;
+			}
 
 			if(prb.isAborted()) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Aborted "+this);
+				}
 				return false;
 			}
 			int blockNo;
@@ -264,13 +293,18 @@ public class BulkTransmitter {
 					notifyAll();
 				}
 				prb.remove(BulkTransmitter.this);
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Failed to send "+uid+": peer restarted: "+peer);
+				}
 				throw new DisconnectedException();
 			}
 			synchronized(this) {
-				if(finished) return true;
-				if(cancelled) return false;
+				if(finished) {
+					return true;
+				}
+				if(cancelled) {
+					return false;
+				}
 				blockNo = blocksNotSentButPresent.firstOne();
 			}
 			if(blockNo < 0) {
@@ -286,16 +320,21 @@ public class BulkTransmitter {
 							cancel("Packet send failed");
 							return false;
 						}
-						if(logMINOR)
+						if(logMINOR) {
 							Logger.minor(this, "Waiting for packets: remaining: "+inFlightPackets);
-						if(inFlightPackets == 0) break;
+						}
+						if(inFlightPackets == 0) {
+							break;
+						}
 						try {
 							wait();
 							if(failedPacket) {
 								cancel("Packet send failed");
 								return false;
 							}
-							if(inFlightPackets == 0) break;
+							if(inFlightPackets == 0) {
+								break;
+							}
 							continue outer; // Might be a packet...
 						} catch (InterruptedException e) {
 							// Ignore
@@ -321,15 +360,18 @@ public class BulkTransmitter {
 			// Send a packet
 			byte[] buf = prb.getBlockData(blockNo);
 			if(buf == null) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Block "+blockNo+" is null, presumably the send is cancelled: "+this);
+				}
 				// Already cancelled, quit
 				return false;
 			}
 
 			// Congestion control and bandwidth limiting
 			try {
-				if(logMINOR) Logger.minor(this, "Sending packet "+blockNo);
+				if(logMINOR) {
+					Logger.minor(this, "Sending packet "+blockNo);
+				}
 				Message msg = DMT.createFNPBulkPacketSend(uid, blockNo, buf, realTime);
 				UnsentPacketTag tag = new UnsentPacketTag();
 				peer.sendAsync(msg, tag, ctr);
@@ -347,8 +389,9 @@ public class BulkTransmitter {
 				lastSentPacket = System.currentTimeMillis();
 			} catch (NotConnectedException e) {
 				cancel("Disconnected");
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Cancelled: not connected "+this);
+				}
 				throw new DisconnectedException();
 			}
 		}
@@ -361,12 +404,16 @@ public class BulkTransmitter {
 			synchronized(this) {
 				allQueued = true;
 				if(unsentPackets == 0 && !calledAllSent) {
-					if(logMINOR) Logger.minor(this, "Calling all sent callback on "+this);
+					if(logMINOR) {
+						Logger.minor(this, "Calling all sent callback on "+this);
+					}
 					callAllSent = true;
 					calledAllSent = true;
 					anyFailed = failedPacket;
 				} else if(!calledAllSent) {
-					if(logMINOR) Logger.minor(this, "Still waiting for "+unsentPackets);
+					if(logMINOR) {
+						Logger.minor(this, "Still waiting for "+unsentPackets);
+					}
 				}
 			}
 			if(callAllSent) {
@@ -415,21 +462,28 @@ public class BulkTransmitter {
 
 		private void complete(boolean failed) {
 			synchronized(this) {
-				if(finished) return;
+				if(finished) {
+					return;
+				}
 				finished = true;
 				notifyAll();
 			}
-			if(!failed)
+			if(!failed) {
 				ctr.sentPayload(prb.blockSize);
+			}
 			synchronized(BulkTransmitter.this) {
 				if(failed) {
 					failedPacket = true;
 					BulkTransmitter.this.notifyAll();
-					if(logMINOR) Logger.minor(this, "Packet failed for "+BulkTransmitter.this);
+					if(logMINOR) {
+						Logger.minor(this, "Packet failed for "+BulkTransmitter.this);
+					}
 				} else {
 					inFlightPackets--;
 					BulkTransmitter.this.notifyAll();
-					if(logMINOR) Logger.minor(this, "Packet sent "+BulkTransmitter.this+" remaining in flight: "+inFlightPackets);
+					if(logMINOR) {
+						Logger.minor(this, "Packet sent "+BulkTransmitter.this+" remaining in flight: "+inFlightPackets);
+					}
 				}
 			}
 			sent(true);
@@ -451,23 +505,37 @@ public class BulkTransmitter {
 		}
 
 		public void sent(boolean ignoreFinished) {
-			if(allSentCallback == null) return;
+			if(allSentCallback == null) {
+				return;
+			}
 			synchronized(this) {
-				if(finished && !ignoreFinished) return;
-				if(sent) return;
+				if(finished && !ignoreFinished) {
+					return;
+				}
+				if(sent) {
+					return;
+				}
 				sent = true;
 				notifyAll();
 			}
 			final boolean anyFailed;
 			synchronized(BulkTransmitter.this) {
 				unsentPackets--;
-				if(unsentPackets > 0) return;
-				if(!allQueued) return;
-				if(calledAllSent) return;
+				if(unsentPackets > 0) {
+					return;
+				}
+				if(!allQueued) {
+					return;
+				}
+				if(calledAllSent) {
+					return;
+				}
 				calledAllSent = true;
 				anyFailed = failedPacket;
 			}
-			if(logMINOR) Logger.minor(this, "Calling all sent callback on "+this);
+			if(logMINOR) {
+				Logger.minor(this, "Calling all sent callback on "+this);
+			}
 			callAllSentCallbackInner(anyFailed);
 		}
 

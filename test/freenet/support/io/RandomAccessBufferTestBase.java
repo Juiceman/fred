@@ -20,7 +20,9 @@ public abstract class RandomAccessBufferTestBase {
 	protected RandomAccessBufferTestBase(int[] allSmallTests) {
 		sizeList = allSmallTests;
 		fullSizeList = new long[sizeList.length];
-		for(int i=0; i<sizeList.length; i++) fullSizeList[i] = sizeList[i];
+		for(int i=0; i<sizeList.length; i++) {
+			fullSizeList[i] = sizeList[i];
+		}
 	}
 
 	protected RandomAccessBufferTestBase(int[] smallTests, long[] bigTests) {
@@ -43,8 +45,9 @@ public abstract class RandomAccessBufferTestBase {
 	 * size. */
 	@Test
 	public void testSize() throws IOException {
-		for(long size : fullSizeList)
+		for(long size : fullSizeList) {
 			innerTestSize(size);
+		}
 	}
 
 	private static final int BUFFER_SIZE = 65536;
@@ -88,11 +91,17 @@ public abstract class RandomAccessBufferTestBase {
 			int maxRead = (int)Math.min(BUFFER_SIZE, sz - x);
 			int toRead = maxRead == 1 ? 1 : r.nextInt(maxRead-1)+1;
 			byte[] buf = new byte[toRead];
-			for(int i=0; i<buf.length; i++) buf[i] = f.getByte(i+x);
+			for(int i=0; i<buf.length; i++) {
+				buf[i] = f.getByte(i+x);
+			}
 			raf.pwrite(x, buf, 0, toRead);
-			for(int i=0; i<buf.length; i++) buf[i] = (byte)~buf[i];
+			for(int i=0; i<buf.length; i++) {
+				buf[i] = (byte)~buf[i];
+			}
 			raf.pread(x, buf, 0, toRead);
-			for(int i=0; i<buf.length; i++) assertEquals(buf[i], f.getByte(i+x));
+			for(int i=0; i<buf.length; i++) {
+				assertEquals(buf[i], f.getByte(i+x));
+			}
 			x += toRead;
 		}
 		// Read
@@ -101,7 +110,9 @@ public abstract class RandomAccessBufferTestBase {
 			int toRead = r.nextInt(maxRead-1)+1;
 			byte[] buf = new byte[toRead];
 			raf.pread(x, buf, 0, toRead);
-			for(int i=0; i<buf.length; i++) assertEquals(buf[i], f.getByte(i+x));
+			for(int i=0; i<buf.length; i++) {
+				assertEquals(buf[i], f.getByte(i+x));
+			}
 			x += toRead;
 		}
 		x = 0;
@@ -136,9 +147,9 @@ public abstract class RandomAccessBufferTestBase {
 		long startAt = sz - choppedBytes;
 		byte[] buf = new byte[choppedBytes];
 		if(sz != 0 && choppedBytes < sz) {
-			if(startAt >= 0)
-				readWriteMustSucceed(raf, startAt, buf, 0, buf.length); // Read, write up to the end work.
-			else
+			if(startAt >= 0) {
+				readWriteMustSucceed(raf, startAt, buf, 0, buf.length);    // Read, write up to the end work.
+			} else
 				try {
 					readWriteMustSucceed(raf, startAt, buf, 0, buf.length); // Read, write up to the end work.
 					fail("Should fail to read at negative index");
@@ -146,9 +157,9 @@ public abstract class RandomAccessBufferTestBase {
 					// Ok.
 				}
 		}
-		if(startAt+1 >= 0)
-			readWriteMustFail(raf, startAt+1, buf, 0, buf.length); // Read, write over the end fail.
-		else
+		if(startAt+1 >= 0) {
+			readWriteMustFail(raf, startAt+1, buf, 0, buf.length);    // Read, write over the end fail.
+		} else
 			try {
 				readWriteMustSucceed(raf, startAt+1, buf, 0, buf.length); // Read, write up to the end work.
 				fail("Should fail to read at negative index");
@@ -163,13 +174,17 @@ public abstract class RandomAccessBufferTestBase {
 		raf.free();
 	}
 
-	private void readWriteMustSucceed(RandomAccessBuffer raf, long startAt, byte[] buf, int offset, int length) throws IOException {
+	private void readWriteMustSucceed(RandomAccessBuffer raf, long startAt, byte[] buf, int offset,
+									  int length) throws IOException {
 		raf.pread(startAt, buf, 0, buf.length); // Should work
 		raf.pwrite(startAt, buf, 0, buf.length); // Should work
 	}
 
-	private void readWriteMustFail(RandomAccessBuffer raf, long startAt, byte[] buf, int offset, int length) throws IOException {
-		if(length == 0) return; // NOP.
+	private void readWriteMustFail(RandomAccessBuffer raf, long startAt, byte[] buf, int offset,
+								   int length) throws IOException {
+		if(length == 0) {
+			return;    // NOP.
+		}
 		try {
 			raf.pread(startAt, buf, 0, buf.length); // Should work
 			fail("Must throw!");
@@ -188,8 +203,9 @@ public abstract class RandomAccessBufferTestBase {
 	public void testClose() throws IOException {
 		// Try to cover any thresholds for e.g. moving to disk.
 		// Implementations should add their own tests according to known thresholds (white box).
-		for(long size : fullSizeList)
+		for(long size : fullSizeList) {
 			innerTestClose(size);
+		}
 	}
 
 	/** Test that after closing a RandomAccessBuffer we cannot read from it or write to it */
@@ -204,14 +220,17 @@ public abstract class RandomAccessBufferTestBase {
 	@Test
 	public void testArray() throws IOException {
 		Random r = new Random(21162506);
-		for(int size : sizeList)
+		for(int size : sizeList) {
 			innerTestArray(size, r, false);
+		}
 	}
 
 	/** Create an array, fill it with random numbers, write it sequentially to the
 	 * RandomAccessBuffer, then read randomly and compare. */
 	protected void innerTestArray(int len, Random r, boolean readOnly) throws IOException {
-		if(len == 0) return;
+		if(len == 0) {
+			return;
+		}
 		byte[] buf = new byte[len];
 		r.nextBytes(buf);
 		RandomAccessBuffer raf = construct(len);
@@ -222,27 +241,35 @@ public abstract class RandomAccessBufferTestBase {
 			checkArraySectionEqualsReadData(buf, raf, start, end, readOnly);
 		}
 		checkArraySectionEqualsReadData(buf, raf, 0, len, readOnly);
-		if(len > 1)
+		if(len > 1) {
 			checkArraySectionEqualsReadData(buf, raf, 1, len-1, readOnly);
+		}
 		raf.close();
 		raf.free();
 	}
 
 	/** Check that the array section equals the read data, then write it and repeat the check. */
-	public static void checkArraySectionEqualsReadData(byte[] buf, RandomAccessBuffer raf, int start, int end, boolean readOnly) throws IOException {
+	public static void checkArraySectionEqualsReadData(byte[] buf, RandomAccessBuffer raf, int start,
+			int end, boolean readOnly) throws IOException {
 		int len = end - start;
-		if(len == 0) return;
+		if(len == 0) {
+			return;
+		}
 		byte[] tmp = new byte[len];
 		raf.pread(start, tmp, 0, len);
-		for(int i=0; i<len; i++)
+		for(int i=0; i<len; i++) {
 			assertEquals(tmp[i], buf[start+i]);
+		}
 		if(!readOnly) {
 			raf.pwrite(start, buf, start, len);
 		}
-		for(int i=0; i<len; i++) tmp[i] = 0;
+		for(int i=0; i<len; i++) {
+			tmp[i] = 0;
+		}
 		raf.pread(start, tmp, 0, len);
-		for(int i=0; i<len; i++)
+		for(int i=0; i<len; i++) {
 			assertEquals(tmp[i], buf[start+i]);
+		}
 	}
 
 }

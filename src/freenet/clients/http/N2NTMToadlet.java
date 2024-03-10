@@ -41,8 +41,9 @@ public class N2NTMToadlet extends Toadlet {
 	throws ToadletContextClosedException, IOException,
 		RedirectException {
 
-		if(!ctx.checkFullAccess(this))
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		if (request.isParameterSet("peernode_hashcode")) {
 			PageNode page = ctx.getPageMaker().getPageNode(l10n("sendMessage"), ctx);
@@ -102,7 +103,9 @@ public class N2NTMToadlet extends Toadlet {
 	 */
 	private static long maxSize() {
 		long memory = NodeStarter.getMemoryLimitBytes();
-		if(memory == Long.MAX_VALUE || memory <= 0) return 1024*1024;
+		if(memory == Long.MAX_VALUE || memory <= 0) {
+			return 1024*1024;
+		}
 		long maxMem = Math.round(0.05*memory);
 		long limit = Math.max(maxMem, 1024*1024);
 		return limit;
@@ -126,8 +129,9 @@ public class N2NTMToadlet extends Toadlet {
 	throws ToadletContextClosedException, IOException,
 		RedirectException {
 
-		if(!ctx.checkFullAccess(this))
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		//Browse button clicked. Redirect.
 		if(request.isPartSet("n2nm-browse")) {
@@ -139,7 +143,8 @@ public class N2NTMToadlet extends Toadlet {
 			return;
 		}
 
-		if (request.isPartSet("n2nm-upload") || request.isPartSet(LocalFileBrowserToadlet.selectFile) || request.isPartSet("send")) {
+		if (request.isPartSet("n2nm-upload") || request.isPartSet(LocalFileBrowserToadlet.selectFile)
+				|| request.isPartSet("send")) {
 			File filename = null;
 			String message = request.getPartAsStringFailsafe("message", 1024 * 1024);
 			message = message.trim();
@@ -307,7 +312,8 @@ public class N2NTMToadlet extends Toadlet {
 				messageForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "n2nm-browse", NodeL10n.getBase().getString("QueueToadlet.insertFileBrowseButton") + "..." });
 				messageForm.addChild("br");
 			}
-			messageForm.addChild("#", NodeL10n.getBase().getString("N2NTMToadlet.sizeWarning", "limit", SizeUtil.formatSize(maxSize(), true)));
+			messageForm.addChild("#", NodeL10n.getBase().getString("N2NTMToadlet.sizeWarning", "limit",
+								 SizeUtil.formatSize(maxSize(), true)));
 			messageForm.addChild("br");
 			messageForm.addChild("#", NodeL10n.getBase().getString("QueueToadlet.insertFileLabel") + ": ");
 			messageForm.addChild("input", new String[] {"type", "name", "value" }, new String[] { "file", "n2nm-upload", "" });

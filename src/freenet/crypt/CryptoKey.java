@@ -41,10 +41,12 @@ public abstract class CryptoKey implements CryptoElement, Serializable {
 			return (CryptoKey) m.invoke(null, dis);
 		} catch (Exception e) {
 			e.printStackTrace();
-			if (e instanceof CryptFormatException)
+			if (e instanceof CryptFormatException) {
 				throw (CryptFormatException) e;
-			if (e instanceof IOException)
+			}
+			if (e instanceof IOException) {
 				throw (IOException) e;
+			}
 			Logger.error(CryptoKey.class, "Unknown exception while reading CryptoKey", e);
 			return null;
 		}

@@ -40,7 +40,8 @@ public abstract class Option<T> {
 	/** Data type : used to make it possible to make user inputs more friendly in FCP apps */
 	final DataType dataType;
 
-	Option(SubConfig config, String name, ConfigCallback<T> cb, int sortOrder, boolean expert, boolean forceWrite,
+	Option(SubConfig config, String name, ConfigCallback<T> cb, int sortOrder, boolean expert,
+		   boolean forceWrite,
 		   String shortDesc, String longDesc, DataType dataType) {
 		this.config = config;
 		this.name = name;
@@ -57,7 +58,8 @@ public abstract class Option<T> {
 	 * Set this option's current value to a string. Will call the callback. Does not care whether
 	 * the value of the option has changed.
 	 */
-	public final void setValue(String val) throws InvalidConfigValueException, NodeNeedRestartException {
+	public final void setValue(String val) throws InvalidConfigValueException,
+		NodeNeedRestartException {
 		T x = parseString(val);
 		set(x);
 	}
@@ -159,10 +161,11 @@ public abstract class Option<T> {
 	 * it is the value set at startup (possibly the default).
 	 */
 	public final T getValue() {
-		if (config.hasFinishedInitialization())
+		if (config.hasFinishedInitialization()) {
 			return currentValue = cb.get();
-		else
+		} else {
 			return currentValue;
+		}
 	}
 
 	/**
@@ -212,8 +215,9 @@ public abstract class Option<T> {
 	/** Get the localised short description as an HTMLNode, possibly with translation link */
 	public HTMLNode getShortDescNode(FredPluginConfigurable plugin) {
 		return (plugin == null) ? NodeL10n.getBase()
-			   .getHTMLNode(getShortDesc(), new String[] { "default" }, new String[] { getDefault() }) : new HTMLNode("#",
-					   plugin.getString(getShortDesc()));
+			   .getHTMLNode(getShortDesc(), new String[] { "default" }, new String[] { getDefault() }) : new
+			   HTMLNode("#",
+						plugin.getString(getShortDesc()));
 	}
 
 	public HTMLNode getShortDescNode() {
@@ -223,8 +227,9 @@ public abstract class Option<T> {
 	/** Get the localised long description as an HTMLNode, possibly with translation link */
 	public HTMLNode getLongDescNode(FredPluginConfigurable plugin) {
 		return (plugin == null) ? NodeL10n.getBase()
-			   .getHTMLNode(getLongDesc(), new String[] { "default" }, new String[] { getDefault() }) : new HTMLNode("#",
-					   plugin.getString(getLongDesc()));
+			   .getHTMLNode(getLongDesc(), new String[] { "default" }, new String[] { getDefault() }) : new
+			   HTMLNode("#",
+						plugin.getString(getLongDesc()));
 	}
 
 	public HTMLNode getLongDescNode() {

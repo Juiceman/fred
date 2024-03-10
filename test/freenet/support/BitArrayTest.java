@@ -38,8 +38,9 @@ public class BitArrayTest {
 	private BitArray createAllEqualsBitArray(int arraySize, boolean value) {
 		BitArray methodBitArray = new BitArray(arraySize);
 		//setting all bits true
-		for (int i=0; i<methodBitArray.getSize(); i++)
+		for (int i=0; i<methodBitArray.getSize(); i++) {
 			methodBitArray.setBit(i,value);
+		}
 		return methodBitArray;
 	}
 
@@ -51,8 +52,9 @@ public class BitArrayTest {
 	 */
 	private String createAllOneString(int stringSize, String toRepeat) {
 		StringBuilder methodStringBuilder = new StringBuilder();
-		for (int i=0; i<stringSize; i++)
+		for (int i=0; i<stringSize; i++) {
 			methodStringBuilder.append(toRepeat);
+		}
 		return methodStringBuilder.toString();
 	}
 
@@ -66,8 +68,9 @@ public class BitArrayTest {
 	@Test
 	public void testBitArray_int() {
 		BitArray methodBitArray = new BitArray(sampleBitsNumber);
-		for(int i=0; i<sampleBitsNumber; i++)
+		for(int i=0; i<sampleBitsNumber; i++) {
 			assertFalse(methodBitArray.bitAt(i));
+		}
 		assertEquals(methodBitArray.getSize(),sampleBitsNumber);
 	}
 
@@ -119,14 +122,17 @@ public class BitArrayTest {
 	public void testSetAndGetBit() {
 		BitArray methodBitArray = new BitArray(sampleBitsNumber);
 		//setting true even bits
-		for (int i=0; i<methodBitArray.getSize(); i=i+2)
+		for (int i=0; i<methodBitArray.getSize(); i=i+2) {
 			methodBitArray.setBit(i,true);
+		}
 		//checking even bits
-		for (int i=0; i<methodBitArray.getSize(); i=i+2)
+		for (int i=0; i<methodBitArray.getSize(); i=i+2) {
 			assertTrue(methodBitArray.bitAt(i));
+		}
 		//checking odd bits
-		for (int i=1; i<methodBitArray.getSize(); i=i+2)
+		for (int i=1; i<methodBitArray.getSize(); i=i+2) {
 			assertFalse(methodBitArray.bitAt(i));
+		}
 	}
 
 	/**
@@ -215,10 +221,12 @@ public class BitArrayTest {
 		array.setAllOnes();
 		array.setSize(9);
 		array.setSize(16);
-		for(int i=9; i<16; i++)
+		for(int i=9; i<16; i++) {
 			assert(!array.bitAt(i));
-		for(int i=0; i<9; i++)
+		}
+		for(int i=0; i<9; i++) {
 			assert(array.bitAt(i));
+		}
 	}
 
 }

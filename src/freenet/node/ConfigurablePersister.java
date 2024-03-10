@@ -12,9 +12,11 @@ import freenet.support.api.StringCallback;
 public class ConfigurablePersister extends Persister {
 
 	public ConfigurablePersister(Persistable t, SubConfig nodeConfig, String optionName,
-								 String defaultFilename, int sortOrder, boolean expert, boolean forceWrite, String shortDesc, String longDesc, Ticker ps, File baseDir) throws NodeInitException {
+								 String defaultFilename, int sortOrder, boolean expert, boolean forceWrite, String shortDesc,
+								 String longDesc, Ticker ps, File baseDir) throws NodeInitException {
 		super(t, ps);
-		nodeConfig.register(optionName, new File(baseDir, defaultFilename).toString(), sortOrder, expert, forceWrite, shortDesc, longDesc, new StringCallback() {
+		nodeConfig.register(optionName, new File(baseDir, defaultFilename).toString(), sortOrder, expert,
+		forceWrite, shortDesc, longDesc, new StringCallback() {
 
 			@Override
 			public String get() {
@@ -40,13 +42,16 @@ public class ConfigurablePersister extends Persister {
 		File tmp = new File(f.toString()+".tmp");
 		while(true) {
 			if(f.exists()) {
-				if(!(f.canRead() && f.canWrite()))
+				if(!(f.canRead() && f.canWrite())) {
 					throw new InvalidConfigValueException(l10n("existsCannotReadWrite")+" : "+tmp);
+				}
 				break;
 			} else {
 				try {
 					if(!f.createNewFile()) {
-						if(f.exists()) continue;
+						if(f.exists()) {
+							continue;
+						}
 						throw new InvalidConfigValueException(l10n("doesNotExistCannotCreate")+" : "+tmp);
 					}
 				} catch (IOException e) {
@@ -56,8 +61,9 @@ public class ConfigurablePersister extends Persister {
 		}
 		while(true) {
 			if(tmp.exists()) {
-				if(!(tmp.canRead() && tmp.canWrite()))
+				if(!(tmp.canRead() && tmp.canWrite())) {
 					throw new InvalidConfigValueException(l10n("existsCannotReadWrite")+" : "+tmp);
+				}
 				break;
 			} else {
 				try {

@@ -19,7 +19,8 @@ public class URIPreEncoder {
 
 	// We deliberately include '%' because we don't want to interfere with stuff which is already encoded.
 	// add "#" here too, this allow anchors
-	public final static String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-!.~'()*,;:$&+=?/@%#";
+	public final static String allowedChars =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-!.~'()*,;:$&+=?/@%#";
 
 	public static String encode(String s) {
 		StringBuilder output = new StringBuilder(s.length()*2);
@@ -32,8 +33,9 @@ public class URIPreEncoder {
 				for(byte u: tmp.getBytes(StandardCharsets.UTF_8)) {
 					int x = u & 0xff;
 					output.append('%');
-					if(x < 16)
+					if(x < 16) {
 						output.append('0');
+					}
 					output.append(Integer.toHexString(x));
 				}
 			}

@@ -2,11 +2,14 @@ package freenet.support;
 
 import freenet.client.async.ClientRequestSelector;
 
-public class SectoredRandomGrabArrayWithObject<MyType,ChildType,GrabType extends RemoveRandomWithObject<ChildType>> extends SectoredRandomGrabArray<ChildType,GrabType> implements RemoveRandomWithObject<MyType> {
+public class
+	SectoredRandomGrabArrayWithObject<MyType,ChildType,GrabType extends RemoveRandomWithObject<ChildType>>
+	extends SectoredRandomGrabArray<ChildType,GrabType> implements RemoveRandomWithObject<MyType> {
 
 	private MyType object;
 
-	public SectoredRandomGrabArrayWithObject(MyType object, RemoveRandomParent parent, ClientRequestSelector root) {
+	public SectoredRandomGrabArrayWithObject(MyType object, RemoveRandomParent parent,
+			ClientRequestSelector root) {
 		super(parent, root);
 		this.object = object;
 	}

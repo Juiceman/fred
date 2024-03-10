@@ -43,16 +43,19 @@ public class DiskSpaceUserAlert implements UserAlert {
 		long shortTermLimit = core.getMinDiskFreeShortTerm();
 		long longTermLimit = core.getMinDiskFreeLongTerm();
 		File tempDir = core.tempFilenameGenerator.getDir();
-		if(tempDir.getUsableSpace() < shortTermLimit)
-			return Status.TRANSIENT; // Takes precedence.
+		if(tempDir.getUsableSpace() < shortTermLimit) {
+			return Status.TRANSIENT;    // Takes precedence.
+		}
 		FilenameGenerator fg = core.persistentFilenameGenerator;
 		if(fg != null) {
 			File persistentTempDir = fg.getDir();
 			long space = persistentTempDir.getUsableSpace();
-			if(space < shortTermLimit)
+			if(space < shortTermLimit) {
 				return Status.PERSISTENT_COMPLETION;
-			if(space < longTermLimit)
+			}
+			if(space < longTermLimit) {
 				return Status.PERSISTENT;
+			}
 		}
 		return Status.OK;
 	}
@@ -105,7 +108,9 @@ public class DiskSpaceUserAlert implements UserAlert {
 
 	private synchronized Status getStatus() {
 		long now = System.currentTimeMillis();
-		if(!(this.status == null || now - lastCheckedStatus > UPDATE_TIME)) return status;
+		if(!(this.status == null || now - lastCheckedStatus > UPDATE_TIME)) {
+			return status;
+		}
 		try {
 			status = evaluate();
 			lastCheckedStatus = now;

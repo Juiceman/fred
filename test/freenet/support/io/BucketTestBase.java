@@ -98,8 +98,9 @@ public abstract class BucketTestBase {
 
 			// Read byte
 			is = bucket.getInputStream();
-			for (byte b : DATA1)
+			for (byte b : DATA1) {
 				assertEquals("SimpleRead-2", b, (byte) is.read());
+			}
 
 			// EOF
 			assertEquals("SimpleRead-EOF0", -1, is.read(new byte[4]));
@@ -117,8 +118,9 @@ public abstract class BucketTestBase {
 	// Write twice -- should overwrite, not append
 	@Test
 	public void testReuse() throws IOException {
-		if (!canOverwrite)
+		if (!canOverwrite) {
 			return;
+		}
 
 		Bucket bucket = makeBucket(Math.max(DATA1.length, DATA2.length));
 		try {
@@ -182,8 +184,9 @@ public abstract class BucketTestBase {
 	protected static byte[] DATA_LONG;
 	static {
 		DATA_LONG = new byte[32768 + 1]; // 32K + 1
-		for (int i = 0; i < DATA_LONG.length; i++)
+		for (int i = 0; i < DATA_LONG.length; i++) {
 			DATA_LONG[i] = (byte) i;
+		}
 	}
 
 	@Test
@@ -193,8 +196,9 @@ public abstract class BucketTestBase {
 		try {
 			// Write
 			OutputStream os = bucket.getOutputStream();
-			for (int i = 0; i < 16; i++)
+			for (int i = 0; i < 16; i++) {
 				os.write(DATA_LONG);
+			}
 			os.close();
 
 			// Read byte[]

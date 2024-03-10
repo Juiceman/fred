@@ -55,7 +55,8 @@ public class TempBucketTest {
 
 		@Test
 		public void testRamLimitCreate() throws IOException {
-			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 128, weakPRNG, false, MIN_DISK_SPACE, secret);
+			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 128, weakPRNG, false, MIN_DISK_SPACE,
+					secret);
 
 			int maxRamBucket = 128 / 16;
 
@@ -82,14 +83,16 @@ public class TempBucketTest {
 				assertTrue(b[0].isRAMBucket());
 				assertTrue(b[maxRamBucket].isRAMBucket());
 			} finally {
-				for (Bucket bb : b)
+				for (Bucket bb : b) {
 					bb.free();
+				}
 			}
 		}
 
 		@Test
 		public void testWriteExcessConversionFactor() throws IOException {
-			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 128, weakPRNG, false, MIN_DISK_SPACE, secret);
+			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 128, weakPRNG, false, MIN_DISK_SPACE,
+					secret);
 
 			TempBucket b = (TempBucket) tbf.makeBucket(16);
 			try {
@@ -111,7 +114,8 @@ public class TempBucketTest {
 
 		@Test
 		public void testWriteExcessLimit() throws IOException {
-			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 17, weakPRNG, false, MIN_DISK_SPACE, secret);
+			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 16, 17, weakPRNG, false, MIN_DISK_SPACE,
+					secret);
 
 			TempBucket b = (TempBucket) tbf.makeBucket(16);
 			try {
@@ -132,7 +136,8 @@ public class TempBucketTest {
 		// This CAN happen due to memory pressure.
 		@Test
 		public void testConversionWhileReading() throws IOException {
-			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 1024, 65536, weakPRNG, false, MIN_DISK_SPACE, secret);
+			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 1024, 65536, weakPRNG, false,
+					MIN_DISK_SPACE, secret);
 
 			TempBucket bucket = (TempBucket) tbf.makeBucket(64);
 			OutputStream os = bucket.getOutputStreamUnbuffered();
@@ -141,8 +146,9 @@ public class TempBucketTest {
 			bucket.migrateToDisk();
 			byte[] readTo = new byte[16];
 			assertTrue(is.read(readTo, 0, 16) == 16);
-			for(int i=0; i<readTo.length; i++)
+			for(int i=0; i<readTo.length; i++) {
 				assertTrue(readTo[i] == 0);
+			}
 			is.close();
 			os.close();
 		}
@@ -150,7 +156,8 @@ public class TempBucketTest {
 		// Do a bigger read, verify contents.
 		@Test
 		public void testBigConversionWhileReading() throws IOException {
-			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 4096, 65536, weakPRNG, false, MIN_DISK_SPACE, secret);
+			TempBucketFactory tbf = new TempBucketFactory(exec, fg, 4096, 65536, weakPRNG, false,
+					MIN_DISK_SPACE, secret);
 
 			TempBucket bucket = (TempBucket) tbf.makeBucket(2048);
 			OutputStream os = bucket.getOutputStreamUnbuffered();
@@ -161,8 +168,9 @@ public class TempBucketTest {
 			bucket.migrateToDisk();
 			byte[] readTo = new byte[2048];
 			new DataInputStream(is).readFully(readTo);
-			for(int i=0; i<readTo.length; i++)
+			for(int i=0; i<readTo.length; i++) {
 				assertTrue(readTo[i] == data[i]);
+			}
 			is.close();
 			os.close();
 		}
@@ -178,9 +186,11 @@ public class TempBucketTest {
 
 		private TempBucketFactory tbf;
 
-		public RealTempBucketTest_(int maxRamSize, int maxTotalRamSize, boolean encrypted) throws IOException {
+		public RealTempBucketTest_(int maxRamSize, int maxTotalRamSize,
+								   boolean encrypted) throws IOException {
 			fg = new FilenameGenerator(weakPRNG, false, null, "junit");
-			tbf = new TempBucketFactory(exec, fg, maxRamSize, maxTotalRamSize, weakPRNG, encrypted, MIN_DISK_SPACE, secret);
+			tbf = new TempBucketFactory(exec, fg, maxRamSize, maxTotalRamSize, weakPRNG, encrypted,
+										MIN_DISK_SPACE, secret);
 
 			canOverwrite = false;
 		}

@@ -28,11 +28,16 @@ import freenet.support.api.Bucket;
  */
 public class PersistentRequestClient {
 
-	public PersistentRequestClient(String name2, FCPConnectionHandler handler, boolean isGlobalQueue, RequestCompletionCallback cb, Persistence persistence, PersistentRequestRoot root) {
+	public PersistentRequestClient(String name2, FCPConnectionHandler handler, boolean isGlobalQueue,
+								   RequestCompletionCallback cb, Persistence persistence, PersistentRequestRoot root) {
 		this.name = name2;
-		if(name == null) throw new NullPointerException();
+		if(name == null) {
+			throw new NullPointerException();
+		}
 		this.currentConnection = handler;
-		final boolean forever = (persistence == Persistence.FOREVER);
+		final boolean forever {
+				= (persistence == Persistence.FOREVER);
+		}
 		runningPersistentRequests = new ArrayList<ClientRequest>();
 		completedUnackedRequests = new ArrayList<ClientRequest>();
 		clientRequestsByIdentifier = new HashMap<String, ClientRequest>();
@@ -43,16 +48,20 @@ public class PersistentRequestClient {
 		lowLevelClient = new FCPClientRequestClient(this, forever, false);
 		lowLevelClientRT = new FCPClientRequestClient(this, forever, true);
 		completionCallbacks = new ArrayList<RequestCompletionCallback>();
-		if(cb != null) completionCallbacks.add(cb);
+		if(cb != null) {
+			completionCallbacks.add(cb);
+		}
 		if(persistence == Persistence.FOREVER) {
 			assert(root != null);
 			this.root = root;
-		} else
+		} else {
 			this.root = null;
-		if(isGlobalQueue)
+		}
+		if(isGlobalQueue) {
 			statusCache = new RequestStatusCache();
-		else
+		} else {
 			statusCache = null;
+		}
 	}
 
 	/** The persistent root object, null if persistence is PERSIST_REBOOT */
@@ -103,8 +112,9 @@ public class PersistentRequestClient {
 
 	public synchronized void onLostConnection(FCPConnectionHandler handler) {
 		handler.freeDDAJobs();
-		if(currentConnection == handler)
+		if(currentConnection == handler) {
 			currentConnection = null;
+		}
 	}
 
 	/**
@@ -112,8 +122,9 @@ public class PersistentRequestClient {
 	 * acked yet, so it should be moved to the unacked-completed-requests set.
 	 */
 	public void finishedClientRequest(ClientRequest get) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Finished client request", new Exception("debug"));
+		}
 		assert(get.persistence == persistence);
 		synchronized(this) {
 			if(runningPersistentRequests.remove(get)) {
@@ -133,8 +144,12 @@ public class PersistentRequestClient {
 					longFailMessage = msg.getLongFailedMessage();
 				}
 				Bucket shadow = ((ClientGet) get).getBucket();
-				if(shadow != null) shadow = shadow.createShadow();
-				statusCache.finishedDownload(get.identifier, get.hasSucceeded(), ((ClientGet) get).getDataSize(), ((ClientGet) get).getMIMEType(), failureCode, longFailMessage, shortFailMessage, shadow, download.filterData());
+				if(shadow != null) {
+					shadow = shadow.createShadow();
+				}
+				statusCache.finishedDownload(get.identifier, get.hasSucceeded(), ((ClientGet) get).getDataSize(),
+											 ((ClientGet) get).getMIMEType(), failureCode, longFailMessage, shortFailMessage, shadow,
+											 download.filterData());
 			} else if(get instanceof ClientPutBase) {
 				ClientPutBase upload = (ClientPutBase)get;
 				PutFailedMessage msg = upload.getFailureMessage();
@@ -146,12 +161,16 @@ public class PersistentRequestClient {
 					shortFailMessage = msg.getShortFailedMessage();
 					longFailMessage = msg.getLongFailedMessage();
 				}
-				statusCache.finishedUpload(upload.getIdentifier(), upload.hasSucceeded(), upload.getGeneratedURI(), failureCode, shortFailMessage, longFailMessage);
-			} else assert(false);
+				statusCache.finishedUpload(upload.getIdentifier(), upload.hasSucceeded(), upload.getGeneratedURI(),
+										   failureCode, shortFailMessage, longFailMessage);
+			} else {
+				assert(false);
+			}
 		}
 	}
 
-	public void queuePendingMessagesOnConnectionRestartAsync(FCPConnectionOutputHandler outputHandler, ClientContext context) {
+	public void queuePendingMessagesOnConnectionRestartAsync(FCPConnectionOutputHandler outputHandler,
+			ClientContext context) {
 		if(persistence == Persistence.FOREVER) {
 			PersistentListJob job = new PersistentListJob(this, outputHandler, context, null) {
 
@@ -183,7 +202,8 @@ public class PersistentRequestClient {
 	 * requests, to be immediately sent. This happens automatically on startup and hopefully
 	 * will encourage clients to acknowledge persistent requests!
 	 */
-	public int queuePendingMessagesOnConnectionRestart(FCPConnectionOutputHandler outputHandler, String listRequestIdentifier, int offset, int max) {
+	public int queuePendingMessagesOnConnectionRestart(FCPConnectionOutputHandler outputHandler,
+			String listRequestIdentifier, int offset, int max) {
 		Object[] reqs;
 		synchronized(this) {
 			reqs = completedUnackedRequests.toArray();
@@ -199,7 +219,8 @@ public class PersistentRequestClient {
 	/**
 	 * Queue any and all pending messages from running requests. Happens on demand.
 	 */
-	public int queuePendingMessagesFromRunningRequests(FCPConnectionOutputHandler outputHandler, String listRequestIdentifier, int offset, int max) {
+	public int queuePendingMessagesFromRunningRequests(FCPConnectionOutputHandler outputHandler,
+			String listRequestIdentifier, int offset, int max) {
 		Object[] reqs;
 		synchronized(this) {
 			reqs = runningPersistentRequests.toArray();
@@ -214,13 +235,15 @@ public class PersistentRequestClient {
 
 	public void register(ClientRequest cg) throws IdentifierCollisionException {
 		assert(cg.persistence == persistence);
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Registering "+cg.getIdentifier());
+		}
 		synchronized(this) {
 			String ident = cg.getIdentifier();
 			ClientRequest old = clientRequestsByIdentifier.get(ident);
-			if((old != null) && (old != cg))
+			if((old != null) && (old != cg)) {
 				throw new IdentifierCollisionException();
+			}
 			if(cg.hasFinished()) {
 				completedUnackedRequests.add(cg);
 			} else {
@@ -237,11 +260,15 @@ public class PersistentRequestClient {
 		}
 	}
 
-	public boolean removeByIdentifier(String identifier, boolean kill, FCPServer server, ClientContext context) {
+	public boolean removeByIdentifier(String identifier, boolean kill, FCPServer server,
+									  ClientContext context) {
 		ClientRequest req;
-		if(logMINOR) Logger.minor(this, "removeByIdentifier("+identifier+ ',' +kill+ ')');
-		if(statusCache != null)
+		if(logMINOR) {
+			Logger.minor(this, "removeByIdentifier("+identifier+ ',' +kill+ ')');
+		}
+		if(statusCache != null) {
 			statusCache.removeByIdentifier(identifier);
+		}
 		synchronized(this) {
 			req = clientRequestsByIdentifier.get(identifier);
 //			if(container != null && req != null)
@@ -251,7 +278,8 @@ public class PersistentRequestClient {
 					if(r.getIdentifier().equals(identifier)) {
 						req = r;
 						completedUnackedRequests.remove(r);
-						Logger.error(this, "Found completed unacked request "+r+" for identifier "+r.getIdentifier()+" but not in clientRequestsByIdentifier!!");
+						Logger.error(this, "Found completed unacked request "+r+" for identifier "+r.getIdentifier()
+									 +" but not in clientRequestsByIdentifier!!");
 						break;
 					}
 				}
@@ -260,32 +288,40 @@ public class PersistentRequestClient {
 						if(r.getIdentifier().equals(identifier)) {
 							req = r;
 							runningPersistentRequests.remove(r);
-							Logger.error(this, "Found running request "+r+" for identifier "+r.getIdentifier()+" but not in clientRequestsByIdentifier!!");
+							Logger.error(this, "Found running request "+r+" for identifier "+r.getIdentifier()
+										 +" but not in clientRequestsByIdentifier!!");
 							break;
 						}
 					}
 				}
-				if(req == null) return false;
+				if(req == null) {
+					return false;
+				}
 			} else if(!((runningPersistentRequests.remove(req)) || completedUnackedRequests.remove(req))) {
-				Logger.error(this, "Removing "+identifier+": in clientRequestsByIdentifier but not in running/completed maps!");
+				Logger.error(this, "Removing "+identifier
+							 +": in clientRequestsByIdentifier but not in running/completed maps!");
 
 				return false;
 			}
 			clientRequestsByIdentifier.remove(identifier);
 		}
 		if(kill) {
-			if(logMINOR) Logger.minor(this, "Killing request "+req);
+			if(logMINOR) {
+				Logger.minor(this, "Killing request "+req);
+			}
 			req.cancel(context);
 		}
 		req.requestWasRemoved(context);
 		RequestCompletionCallback[] callbacks = null;
 		synchronized(this) {
-			if(completionCallbacks != null)
+			if(completionCallbacks != null) {
 				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+			}
 		}
 		if(callbacks != null) {
-			for(RequestCompletionCallback cb : callbacks)
+			for(RequestCompletionCallback cb : callbacks) {
 				cb.onRemove(req);
+			}
 		}
 		return true;
 	}
@@ -298,11 +334,13 @@ public class PersistentRequestClient {
 		synchronized(this) {
 			for(ClientRequest req: runningPersistentRequests) {
 				if(req == null) {
-					Logger.error(this, "Request is null on runningPersistentRequests for "+this+" - database corruption??");
+					Logger.error(this, "Request is null on runningPersistentRequests for "+this
+								 +" - database corruption??");
 					continue;
 				}
-				if((req.isPersistentForever()) || !onlyForever)
+				if((req.isPersistentForever()) || !onlyForever) {
 					v.add(req);
+				}
 			}
 			v.addAll(completedUnackedRequests);
 		}
@@ -341,7 +379,9 @@ public class PersistentRequestClient {
 			Logger.error(this, "Set watch global on global queue!: "+this, new Exception("debug"));
 			return false;
 		}
-		if(server.globalForeverClient == null) return false;
+		if(server.globalForeverClient == null) {
+			return false;
+		}
 		if(watchGlobal && !enabled) {
 			server.globalRebootClient.unwatch(this);
 			server.globalForeverClient.unwatch(this);
@@ -351,10 +391,13 @@ public class PersistentRequestClient {
 			server.globalForeverClient.watch(this);
 			FCPConnectionHandler connHandler = getConnection();
 			if(connHandler != null) {
-				if(persistence == Persistence.REBOOT)
-					server.globalRebootClient.queuePendingMessagesOnConnectionRestartAsync(connHandler.outputHandler, server.core.clientContext);
-				else
-					server.globalForeverClient.queuePendingMessagesOnConnectionRestartAsync(connHandler.outputHandler, server.core.clientContext);
+				if(persistence == Persistence.REBOOT) {
+					server.globalRebootClient.queuePendingMessagesOnConnectionRestartAsync(connHandler.outputHandler,
+							server.core.clientContext);
+				} else {
+					server.globalForeverClient.queuePendingMessagesOnConnectionRestartAsync(connHandler.outputHandler,
+							server.core.clientContext);
+				}
 			}
 			watchGlobal = true;
 		}
@@ -368,8 +411,9 @@ public class PersistentRequestClient {
 	}
 
 	public void queueClientRequestMessage(FCPMessage msg, int verbosityLevel, boolean useGlobalMask) {
-		if(useGlobalMask && (verbosityLevel & watchGlobalVerbosityMask) != verbosityLevel)
+		if(useGlobalMask && (verbosityLevel & watchGlobalVerbosityMask) != verbosityLevel) {
 			return;
+		}
 		FCPConnectionHandler conn = getConnection();
 		if(conn != null) {
 			conn.send(msg);
@@ -377,32 +421,41 @@ public class PersistentRequestClient {
 		PersistentRequestClient[] clients;
 		if(isGlobalQueue) {
 			synchronized(clientsWatchingLock) {
-				if(clientsWatching != null)
+				if(clientsWatching != null) {
 					clients = clientsWatching.toArray(new PersistentRequestClient[clientsWatching.size()]);
-				else
+				} else {
 					clients = null;
+				}
 			}
 			if(clients != null)
 				for(PersistentRequestClient client: clients) {
-					if(client.persistence != persistence) continue;
+					if(client.persistence != persistence) {
+						continue;
+					}
 					client.queueClientRequestMessage(msg, verbosityLevel, true);
 				}
 		}
 	}
 
 	private void unwatch(PersistentRequestClient client) {
-		if(!isGlobalQueue) return;
+		if(!isGlobalQueue) {
+			return;
+		}
 		synchronized(clientsWatchingLock) {
-			if(clientsWatching != null)
+			if(clientsWatching != null) {
 				clientsWatching.remove(client);
+			}
 		}
 	}
 
 	private void watch(PersistentRequestClient client) {
-		if(!isGlobalQueue) return;
+		if(!isGlobalQueue) {
+			return;
+		}
 		synchronized(clientsWatchingLock) {
-			if(clientsWatching == null)
+			if(clientsWatching == null) {
 				clientsWatching = new LinkedList<PersistentRequestClient>();
+			}
 			clientsWatching.add(client);
 		}
 	}
@@ -424,12 +477,14 @@ public class PersistentRequestClient {
 		assert(req.persistence == persistence);
 		RequestCompletionCallback[] callbacks = null;
 		synchronized(this) {
-			if(completionCallbacks != null)
+			if(completionCallbacks != null) {
 				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+			}
 		}
 		if(callbacks != null) {
-			for(RequestCompletionCallback cb : callbacks)
+			for(RequestCompletionCallback cb : callbacks) {
 				cb.notifySuccess(req);
+			}
 		}
 	}
 
@@ -441,28 +496,36 @@ public class PersistentRequestClient {
 		assert(req.persistence == persistence);
 		RequestCompletionCallback[] callbacks = null;
 		synchronized(this) {
-			if(completionCallbacks != null)
+			if(completionCallbacks != null) {
 				callbacks = completionCallbacks.toArray(new RequestCompletionCallback[completionCallbacks.size()]);
+			}
 		}
 		if(callbacks != null) {
-			for(RequestCompletionCallback cb : callbacks)
+			for(RequestCompletionCallback cb : callbacks) {
 				cb.notifyFailure(req);
+			}
 		}
 	}
 
 	public synchronized void addRequestCompletionCallback(RequestCompletionCallback cb) {
-		if(completionCallbacks == null) completionCallbacks = new ArrayList<RequestCompletionCallback>(); // it is transient so it might be null
+		if(completionCallbacks == null) {
+			completionCallbacks = new
+			ArrayList<RequestCompletionCallback>();    // it is transient so it might be null
+		}
 		completionCallbacks.add(cb);
 	}
 
 	public synchronized void removeRequestCompletionCallback(RequestCompletionCallback cb) {
-		if(completionCallbacks!=null) completionCallbacks.remove(cb);
+		if(completionCallbacks!=null) {
+			completionCallbacks.remove(cb);
+		}
 	}
 
 	public void removeAll(ClientContext context) {
 		HashSet<ClientRequest> toKill = new HashSet<ClientRequest>();
-		if(statusCache != null)
+		if(statusCache != null) {
 			statusCache.clear();
+		}
 		synchronized(this) {
 			for(ClientRequest req: runningPersistentRequests) {
 				toKill.add(req);
@@ -485,7 +548,9 @@ public class PersistentRequestClient {
 		// FIXME consider supporting inserts too.
 		for(int i=0; i<completedUnackedRequests.size(); i++) {
 			ClientRequest req = completedUnackedRequests.get(i);
-			if(!(req instanceof ClientGet)) continue;
+			if(!(req instanceof ClientGet)) {
+				continue;
+			}
 			ClientGet getter = (ClientGet) req;
 			if(getter.getURI().equals(key)) {
 				return getter;
@@ -508,33 +573,38 @@ public class PersistentRequestClient {
 			ArrayList<RequestStatus> statuses = new ArrayList<RequestStatus>();
 			addPersistentRequestStatus(statuses, true);
 			for(RequestStatus status : statuses) {
-				if(status instanceof DownloadRequestStatus)
+				if(status instanceof DownloadRequestStatus) {
 					cache.addDownload((DownloadRequestStatus)status);
-				else
+				} else {
 					cache.addUpload((UploadRequestStatus)status);
+				}
 			}
 		}
 	}
 
 	public RequestClient lowLevelClient(boolean realTime) {
-		if(realTime)
+		if(realTime) {
 			return lowLevelClientRT;
-		else
+		} else {
 			return lowLevelClient;
+		}
 	}
 
 	public void addPersistentRequesters(List<ClientRequester> requesters) {
-		for(ClientRequest req : runningPersistentRequests)
+		for(ClientRequest req : runningPersistentRequests) {
 			requesters.add(req.getClientRequest());
-		for(ClientRequest req : completedUnackedRequests)
+		}
+		for(ClientRequest req : completedUnackedRequests) {
 			requesters.add(req.getClientRequest());
+		}
 	}
 
 	public void resume(ClientRequest clientRequest) {
-		if(clientRequest.hasFinished())
+		if(clientRequest.hasFinished()) {
 			completedUnackedRequests.add(clientRequest);
-		else
+		} else {
 			runningPersistentRequests.add(clientRequest);
+		}
 		String identifier = clientRequest.identifier;
 		if(clientRequestsByIdentifier.get(identifier) != null) {
 			if(clientRequest != clientRequestsByIdentifier.get(identifier))

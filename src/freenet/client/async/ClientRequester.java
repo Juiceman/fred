@@ -38,7 +38,8 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		Logger.registerClass(ClientRequester.class);
 	}
 
-	public abstract void onTransition(ClientGetState oldState, ClientGetState newState, ClientContext context);
+	public abstract void onTransition(ClientGetState oldState, ClientGetState newState,
+									  ClientContext context);
 
 	// FIXME move the priority classes from RequestStarter here
 	/** Priority class of the request or insert. */
@@ -68,12 +69,15 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		this.priorityClass = priorityClass;
 		this.client = requestClient;
 		this.realTimeFlag = client.realTimeFlag();
-		if(client == null)
+		if(client == null) {
 			throw new NullPointerException();
-		hashCode = super.hashCode(); // the old object id will do fine, as long as we ensure it doesn't change!
+		}
+		hashCode =
+			super.hashCode(); // the old object id will do fine, as long as we ensure it doesn't change!
 		synchronized(allRequesters) {
-			if(!persistent())
+			if(!persistent()) {
 				allRequesters.put(this, dumbValue);
+			}
 		}
 		creationTime = System.currentTimeMillis();
 	}
@@ -192,11 +196,14 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	 */
 	public void blockSetFinalized(ClientContext context) {
 		synchronized(this) {
-			if(blockSetFinalized) return;
+			if(blockSetFinalized) {
+				return;
+			}
 			blockSetFinalized = true;
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Finalized set of blocks for "+this, new Exception("debug"));
+		}
 		notifyClients(context);
 	}
 
@@ -209,13 +216,17 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		}
 
 		if (wasFinalized) {
-			if (LogLevel.MINOR.matchesThreshold(Logger.globalGetThresholdNew()))
+			if (LogLevel.MINOR.matchesThreshold(Logger.globalGetThresholdNew())) {
 				Logger.error(this, "addBlock() but set finalized! on " + this, new Exception("error"));
-			else
+			} else {
 				Logger.error(this, "addBlock() but set finalized! on " + this);
+			}
 		}
 
-		if(logMINOR) Logger.minor(this, "addBlock(): total="+totalBlocks+" successful="+successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		if(logMINOR) {
+			Logger.minor(this, "addBlock(): total="+totalBlocks+" successful="+successfulBlocks+" failed="
+						 +failedBlocks+" required="+minSuccessBlocks);
+		}
 	}
 
 	/** Add several blocks to our estimate of the total. Don't notify clients. */
@@ -227,29 +238,43 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		}
 
 		if (wasFinalized) {
-			if (LogLevel.MINOR.matchesThreshold(Logger.globalGetThresholdNew()))
+			if (LogLevel.MINOR.matchesThreshold(Logger.globalGetThresholdNew())) {
 				Logger.error(this, "addBlocks() but set finalized! on "+this, new Exception("error"));
-			else
+			} else {
 				Logger.error(this, "addBlocks() but set finalized! on "+this);
+			}
 		}
 
-		if(logMINOR) Logger.minor(this, "addBlocks("+num+"): total="+totalBlocks+" successful="+successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		if(logMINOR) {
+			Logger.minor(this, "addBlocks("+num+"): total="+totalBlocks+" successful="+successfulBlocks
+						 +" failed="+failedBlocks+" required="+minSuccessBlocks);
+		}
 	}
 
 	/** We completed a block. Count it and notify clients unless dontNotify. */
 	public void completedBlock(boolean dontNotify, ClientContext context) {
-		if(logMINOR)
-			Logger.minor(this, "Completed block ("+dontNotify+ "): total="+totalBlocks+" success="+successfulBlocks+" failed="+failedBlocks+" fatally="+fatallyFailedBlocks+" finalised="+blockSetFinalized+" required="+minSuccessBlocks+" on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Completed block ("+dontNotify+ "): total="+totalBlocks+" success="
+						 +successfulBlocks+" failed="+failedBlocks+" fatally="+fatallyFailedBlocks+" finalised="
+						 +blockSetFinalized+" required="+minSuccessBlocks+" on "+this);
+		}
 		synchronized(this) {
-			if(cancelled) return;
+			if(cancelled) {
+				return;
+			}
 			successfulBlocks++;
 			latestSuccess = new Date();
 		}
-		if(dontNotify) return;
+		if(dontNotify) {
+			return;
+		}
 		notifyClients(context);
 	}
 
-	transient static final UserAlert brokenClientAlert = new SimpleUserAlert(true, "Some broken downloads/uploads were cancelled. Please restart them.", "Some downloads/uploads were broken due to a bug (some time before 1287) causing unrecoverable database corruption. They have been cancelled. Please restart them from the Downloads or Uploads page.", "Some downloads/uploads were broken due to a pre-1287 bug, please restart them.", UserAlert.ERROR);
+	transient static final UserAlert brokenClientAlert = new SimpleUserAlert(true,
+			"Some broken downloads/uploads were cancelled. Please restart them.",
+			"Some downloads/uploads were broken due to a bug (some time before 1287) causing unrecoverable database corruption. They have been cancelled. Please restart them from the Downloads or Uploads page.",
+			"Some downloads/uploads were broken due to a pre-1287 bug, please restart them.", UserAlert.ERROR);
 
 	/** A block failed. Count it and notify our clients. */
 	public void failedBlock(boolean dontNotify, ClientContext context) {
@@ -257,8 +282,9 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 			failedBlocks++;
 			latestFailure = new Date();
 		}
-		if(!dontNotify)
+		if(!dontNotify) {
 			notifyClients(context);
+		}
 	}
 
 	/** A block failed. Count it and notify our clients. */
@@ -279,14 +305,20 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	public synchronized void addMustSucceedBlocks(int blocks) {
 		totalBlocks += blocks;
 		minSuccessBlocks += blocks;
-		if(logMINOR) Logger.minor(this, "addMustSucceedBlocks("+blocks+"): total="+totalBlocks+" successful="+successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		if(logMINOR) {
+			Logger.minor(this, "addMustSucceedBlocks("+blocks+"): total="+totalBlocks+" successful="
+						 +successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		}
 	}
 
 	/** Insertors should override this. The method is duplicated rather than calling addMustSucceedBlocks to avoid confusing consequences when addMustSucceedBlocks does other things. */
 	public synchronized void addRedundantBlocksInsert(int blocks) {
 		totalBlocks += blocks;
 		minSuccessBlocks += blocks;
-		if(logMINOR) Logger.minor(this, "addMustSucceedBlocks("+blocks+"): total="+totalBlocks+" successful="+successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		if(logMINOR) {
+			Logger.minor(this, "addMustSucceedBlocks("+blocks+"): total="+totalBlocks+" successful="
+						 +successfulBlocks+" failed="+failedBlocks+" required="+minSuccessBlocks);
+		}
 	}
 
 	/** Notify clients by calling innerNotifyClients off-thread. */
@@ -313,7 +345,9 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	 */
 	public void toNetwork(ClientContext context) {
 		synchronized(this) {
-			if(sentToNetwork) return;
+			if(sentToNetwork) {
+				return;
+			}
 			sentToNetwork = true;
 		}
 		innerToNetwork(context);
@@ -352,7 +386,9 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 			oldPrio = priorityClass;
 			this.priorityClass = newPriorityClass;
 		}
-		if(logMINOR) Logger.minor(this, "Changing priority class of "+this+" from "+oldPrio+" to "+newPriorityClass);
+		if(logMINOR) {
+			Logger.minor(this, "Changing priority class of "+this+" from "+oldPrio+" to "+newPriorityClass);
+		}
 		ctx.getChkFetchScheduler(realTimeFlag).reregisterAll(this, oldPrio);
 		ctx.getChkInsertScheduler(realTimeFlag).reregisterAll(this, oldPrio);
 		ctx.getSskFetchScheduler(realTimeFlag).reregisterAll(this, oldPrio);
@@ -368,7 +404,8 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		return client.persistent();
 	}
 
-	private static WeakHashMap<ClientRequester,Object> allRequesters = new WeakHashMap<ClientRequester,Object>();
+	private static WeakHashMap<ClientRequester,Object> allRequesters = new
+	WeakHashMap<ClientRequester,Object>();
 	private static Object dumbValue = new Object();
 	public final long creationTime;
 
@@ -388,7 +425,8 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		return new byte[0];
 	}
 
-	protected static byte[] getClientDetail(PersistentClientCallback callback, ChecksumChecker checker) throws IOException {
+	protected static byte[] getClientDetail(PersistentClientCallback callback,
+											ChecksumChecker checker) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		callback.getClientDetail(dos, checker);
@@ -402,7 +440,9 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 	 * @throws ResumeFailedException */
 	public final void onResume(ClientContext context) throws ResumeFailedException {
 		synchronized(this) {
-			if(resumed) return;
+			if(resumed) {
+				return;
+			}
 			resumed = true;
 		}
 		innerOnResume(context);
@@ -415,8 +455,9 @@ public abstract class ClientRequester implements Serializable, ClientRequestSche
 		ClientBaseCallback cb = getCallback();
 		client = cb.getRequestClient();
 		assert(client.persistent());
-		if(sentToNetwork)
+		if(sentToNetwork) {
 			innerToNetwork(context);
+		}
 	}
 
 	protected abstract ClientBaseCallback getCallback();

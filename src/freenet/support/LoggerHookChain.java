@@ -62,12 +62,18 @@ public class LoggerHookChain extends LoggerHook {
 	 */
 	public synchronized void removeHook(LoggerHook lh) {
 		final int hooksLength = hooks.length;
-		if(hooksLength == 0) return;
+		if(hooksLength == 0) {
+			return;
+		}
 		LoggerHook[] newHooks = new LoggerHook[hooksLength-1];
 		int x=0;
 		for(int i=0; i<hooksLength; i++) {
-			if(hooks[i] == lh) continue;
-			if(x == newHooks.length) return; // nothing matched
+			if(hooks[i] == lh) {
+				continue;
+			}
+			if(x == newHooks.length) {
+				return;    // nothing matched
+			}
 			newHooks[x++] = hooks[i];
 		}
 		if(x == newHooks.length) {

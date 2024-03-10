@@ -40,7 +40,8 @@ import freenet.node.NewPacketFormat;
  */
 public class Serializer {
 
-	public static final String VERSION = "$Id: Serializer.java,v 1.5 2005/09/15 18:16:04 amphibian Exp $";
+	public static final String VERSION =
+		"$Id: Serializer.java,v 1.5 2005/09/15 18:16:04 amphibian Exp $";
 	/**
 	 * Maximum bit array size in bits.
 	 */
@@ -51,7 +52,8 @@ public class Serializer {
 	//Max packet format size - 4 to account for starting size integer.
 	public static final int MAX_ARRAY_LENGTH = NewPacketFormat.MAX_MESSAGE_SIZE - 4;
 
-	public static List<Object> readListFromDataInputStream(Class<?> elementType, DataInput dis) throws IOException {
+	public static List<Object> readListFromDataInputStream(Class<?> elementType,
+			DataInput dis) throws IOException {
 		LinkedList<Object> ret = new LinkedList<Object>();
 		int length = dis.readInt();
 		for (int x = 0; x < length; x++) {
@@ -124,7 +126,9 @@ public class Serializer {
 		} else if (type.equals(double[].class)) {
 			// & 0xFF for unsigned byte. Can be up to 255, no negatives.
 			double[] array = new double[dis.readByte() & 0xFF];
-			for (int i = 0; i < array.length; i++) array[i] = dis.readDouble();
+			for (int i = 0; i < array.length; i++) {
+				array[i] = dis.readDouble();
+			}
 			return array;
 		} else if (type.equals(float[].class)) {
 			final short length = dis.readShort();
@@ -132,7 +136,9 @@ public class Serializer {
 				throw new IOException("Invalid flat array length: " + length);
 			}
 			float[] array = new float[length];
-			for (int i = 0; i < array.length; i++) array[i] = dis.readFloat();
+			for (int i = 0; i < array.length; i++) {
+				array[i] = dis.readFloat();
+			}
 			return array;
 		} else {
 			throw new RuntimeException("Unrecognised field type: " + type);
@@ -175,14 +181,19 @@ public class Serializer {
 			// writeByte() takes the eight lower-order bits - length capped to 255.
 			final double[] array = (double[])object;
 			if (array.length > 255) {
-				throw new IllegalArgumentException("Cannot serialize an array of more than 255 doubles; attempted to " +
+				throw new IllegalArgumentException("Cannot serialize an array of more than 255 doubles; attempted to "
+												   +
 												   "serialize " + array.length + ".");
 			}
 			dos.writeByte(array.length);
-			for (double element : array) dos.writeDouble(element);
+			for (double element : array) {
+				dos.writeDouble(element);
+			}
 		} else if (type.equals(float[].class)) {
 			dos.writeShort(((float[])object).length);
-			for (float element : (float[])object) dos.writeFloat(element);
+			for (float element : (float[])object) {
+				dos.writeFloat(element);
+			}
 		} else {
 			throw new RuntimeException("Unrecognised field type: " + type);
 		}

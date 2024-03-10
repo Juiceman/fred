@@ -41,7 +41,8 @@ public class FreenetJs implements EntryPoint {
 			@Override
 			public void onWindowClosing(ClosingEvent event) {
 				isPushingCancelledExpected = true;
-				FreenetRequest.sendRequest(UpdaterConstants.leavingPath, new QueryParameter("requestId", requestId));
+				FreenetRequest.sendRequest(UpdaterConstants.leavingPath, new QueryParameter("requestId",
+										   requestId));
 				cm.closeConnection();
 			}
 		});
@@ -68,7 +69,8 @@ public class FreenetJs implements EntryPoint {
 			if (isDebug) {
 				// Write the log back to the server
 				try {
-					FreenetRequest.sendRequest(UpdaterConstants.logWritebackPath, new QueryParameter("msg",requestId+":"+(logCounter++)+":"+urlEncode(msg)));
+					FreenetRequest.sendRequest(UpdaterConstants.logWritebackPath, new QueryParameter("msg",
+											   requestId+":"+(logCounter++)+":"+urlEncode(msg)));
 				} catch(Exception e) {
 
 				}
@@ -110,7 +112,9 @@ public class FreenetJs implements EntryPoint {
 				sb.append("%3a");
 			} else if(c == ';') {
 				sb.append("%3b");
-			} else sb.append(c);
+			} else {
+				sb.append(c);
+			}
 		}
 		return sb.toString();
 	}

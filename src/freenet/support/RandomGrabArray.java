@@ -64,7 +64,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 
 	public void add(RandomGrabArrayItem req, ClientContext context) {
 		if(context != null && req.getWakeupTime(context, System.currentTimeMillis()) < 0) {
-			if(logMINOR) Logger.minor(this, "Is finished already: "+req);
+			if(logMINOR) {
+				Logger.minor(this, "Is finished already: "+req);
+			}
 			return;
 		}
 		req.setParentGrabArray(this); // will store() self
@@ -83,19 +85,26 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 					blocks[0].reqs = Arrays.copyOf(blocks[0].reqs, Math.min(BLOCK_SIZE, blocks[0].reqs.length*2));
 				}
 				blocks[0].reqs[index++] = req;
-				if(logMINOR) Logger.minor(this, "Added "+req+" before index "+index);
+				if(logMINOR) {
+					Logger.minor(this, "Added "+req+" before index "+index);
+				}
 				return;
 			}
 			int targetBlock = index / BLOCK_SIZE;
 			for(int i=0; i<blocks.length; i++) {
 				Block block = blocks[i];
 				if(i != (blocks.length - 1) && block.reqs.length != BLOCK_SIZE) {
-					Logger.error(this, "Block "+i+" of "+blocks.length+" is wrong size: "+block.reqs.length+" should be "+BLOCK_SIZE);
+					Logger.error(this, "Block "+i+" of "+blocks.length+" is wrong size: "+block.reqs.length
+								 +" should be "+BLOCK_SIZE);
 				}
 				for(int j=0; j<block.reqs.length; j++) {
-					if(x >= index) break;
+					if(x >= index) {
+						break;
+					}
 					if(block.reqs[j] == req) {
-						if(logMINOR) Logger.minor(this, "Already contains "+req+" : "+this+" size now "+index);
+						if(logMINOR) {
+							Logger.minor(this, "Already contains "+req+" : "+this+" size now "+index);
+						}
 						return;
 					}
 					if(block.reqs[j] == null) {
@@ -105,8 +114,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 				}
 			}
 			if(blocks.length <= targetBlock) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Adding blocks on "+this);
+				}
 				Block[] newBlocks = Arrays.copyOf(blocks, targetBlock+1);
 				for(int i=blocks.length; i<newBlocks.length; i++) {
 					newBlocks[i] = new Block();
@@ -116,7 +126,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 			}
 			Block target = blocks[targetBlock];
 			target.reqs[index++ % BLOCK_SIZE] = req;
-			if(logMINOR) Logger.minor(this, "Added: "+req+" to "+this+" size now "+index);
+			if(logMINOR) {
+				Logger.minor(this, "Added: "+req+" to "+this+" size now "+index);
+			}
 		}
 	}
 
@@ -124,21 +136,29 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	static final int MAX_EXCLUDED = 10;
 
 	@Override
-	public RemoveRandomReturn removeRandom(RandomGrabArrayItemExclusionList excluding, ClientContext context, long now) {
-		if(logMINOR) Logger.minor(this, "removeRandom() on "+this+" index="+index);
+	public RemoveRandomReturn removeRandom(RandomGrabArrayItemExclusionList excluding,
+										   ClientContext context, long now) {
+		if(logMINOR) {
+			Logger.minor(this, "removeRandom() on "+this+" index="+index);
+		}
 		synchronized(root) {
 			if(index == 0) {
-				if(logMINOR) Logger.minor(this, "All null on "+this);
+				if(logMINOR) {
+					Logger.minor(this, "All null on "+this);
+				}
 				return null;
 			}
 			if(index < MAX_EXCLUDED) {
 				return removeRandomExhaustiveSearch(excluding, context, now);
 			}
 			RandomGrabArrayItem ret = removeRandomLimited(excluding, context, now);
-			if(ret != null)
+			if(ret != null) {
 				return new RemoveRandomReturn(ret);
+			}
 			if(index == 0) {
-				if(logMINOR) Logger.minor(this, "All null on "+this);
+				if(logMINOR) {
+					Logger.minor(this, "All null on "+this);
+				}
 				return null;
 			}
 			return removeRandomExhaustiveSearch(excluding, context, now);
@@ -169,14 +189,17 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 			oret = ret;
 			long itemWakeTime = ret.getWakeupTime(context, now);
 			if(itemWakeTime == -1) {
-				if(logMINOR) Logger.minor(this, "Not returning because cancelled: "+ret);
+				if(logMINOR) {
+					Logger.minor(this, "Not returning because cancelled: "+ret);
+				}
 				ret = null;
 				// Will be removed in the do{} loop
 				// Tell it that it's been removed first.
 				oret.setParentGrabArray(null);
 			}
-			if(itemWakeTime == 0)
+			if(itemWakeTime == 0) {
 				itemWakeTime = excluding.exclude(ret, context, now);
+			}
 			if(ret != null && itemWakeTime > 0) {
 				excluded++;
 				if(excluded > MAX_EXCLUDED) {
@@ -185,7 +208,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 				continue;
 			}
 			if(ret != null) {
-				if(logMINOR) Logger.minor(this, "Returning (cannot remove): "+ret+" of "+index);
+				if(logMINOR) {
+					Logger.minor(this, "Returning (cannot remove): "+ret+" of "+index);
+				}
 				return ret;
 			}
 			// Remove an element.
@@ -202,8 +227,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 			} else if(blocks.length > 1 &&
 					  (newBlockCount = (((index + (BLOCK_SIZE/2)) / BLOCK_SIZE) + 1)) <
 					  blocks.length) {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Shrinking blocks on "+this);
+				}
 				blocks = Arrays.copyOf(blocks, newBlockCount);
 			}
 			return ret;
@@ -213,8 +239,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	private RemoveRandomReturn removeRandomExhaustiveSearch(
 		RandomGrabArrayItemExclusionList excluding,
 		ClientContext context, long now) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Doing exhaustive search and compaction on "+this);
+		}
 		long wakeupTime = Long.MAX_VALUE;
 		RandomGrabArrayItem ret = null;
 		int random = -1;
@@ -242,7 +269,10 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 				}
 				item = reqsReading[offset];
 				if(item == null) {
-					if(logMINOR) Logger.minor(this, "Found null item at offset "+offset+" i="+i+" block = "+blockNumReading+" on "+this);
+					if(logMINOR) {
+						Logger.minor(this, "Found null item at offset "+offset+" i="+i+" block = "+blockNumReading+" on "
+									 +this);
+					}
 					continue;
 				}
 				boolean excludeItem = false;
@@ -303,23 +333,33 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 			// or 2) we are on the first round anyway.
 			if(chosenItem != null) {
 				ret = chosenItem;
-				if(logMINOR) Logger.minor(this, "Chosen random item "+ret+" out of "+valid+" total "+index);
+				if(logMINOR) {
+					Logger.minor(this, "Chosen random item "+ret+" out of "+valid+" total "+index);
+				}
 				return new RemoveRandomReturn(ret);
 			}
 			if(valid == 0 && exclude == 0) {
-				if(logMINOR) Logger.minor(this, "No valid or excluded items total "+index);
+				if(logMINOR) {
+					Logger.minor(this, "No valid or excluded items total "+index);
+				}
 				return null; // Caller should remove the whole RGA
 			} else if(valid == 0) {
-				if(logMINOR) Logger.minor(this, "No valid items, "+exclude+" excluded items total "+index);
+				if(logMINOR) {
+					Logger.minor(this, "No valid items, "+exclude+" excluded items total "+index);
+				}
 				setWakeupTime(wakeupTime, context);
 				return new RemoveRandomReturn(wakeupTime);
 			} else if(valid == 1) {
 				ret = validItem;
-				if(logMINOR) Logger.minor(this, "No valid or excluded items apart from "+ret+" total "+index);
+				if(logMINOR) {
+					Logger.minor(this, "No valid or excluded items apart from "+ret+" total "+index);
+				}
 				return new RemoveRandomReturn(ret);
 			} else {
 				random = context.fastWeakRandom.nextInt(valid);
-				if(logMINOR) Logger.minor(this, "Looping to choose valid item "+random+" of "+valid+" (excluded "+exclude+")");
+				if(logMINOR) {
+					Logger.minor(this, "Looping to choose valid item "+random+" of "+valid+" (excluded "+exclude+")");
+				}
 				// Loop
 			}
 		}
@@ -346,8 +386,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	}
 
 	public void remove(RandomGrabArrayItem it, ClientContext context) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Removing "+it+" from "+this);
+		}
 
 		boolean matched = false;
 		boolean empty = false;
@@ -362,13 +403,17 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 						break;
 					}
 				}
-				if(index == 0) empty = true;
+				if(index == 0) {
+					empty = true;
+				}
 			} else {
 				int x = 0;
 				for(int i=0; i<blocks.length; i++) {
 					Block block = blocks[i];
 					for(int j=0; j<block.reqs.length; j++) {
-						if(x >= index) break;
+						if(x >= index) {
+							break;
+						}
 						x++;
 						if(block.reqs[j] == it) {
 							int pullFrom = --index;
@@ -387,17 +432,23 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 						}
 					}
 				}
-				if(index == 0) empty = true;
+				if(index == 0) {
+					empty = true;
+				}
 			}
 		}
 		// Caller will typically clear it before calling for synchronization reasons.
 		RandomGrabArray oldArray = it.getParentGrabArray();
-		if(oldArray == this)
+		if(oldArray == this) {
 			it.setParentGrabArray(null);
-		else if(oldArray != null)
-			Logger.error(this, "Removing item "+it+" from "+this+" but RGA is "+it.getParentGrabArray(), new Exception("debug"));
+		} else if(oldArray != null) {
+			Logger.error(this, "Removing item "+it+" from "+this+" but RGA is "+it.getParentGrabArray(),
+						 new Exception("debug"));
+		}
 		if(!matched) {
-			if(logMINOR) Logger.minor(this, "Not found: "+it+" on "+this);
+			if(logMINOR) {
+				Logger.minor(this, "Not found: "+it+" on "+this);
+			}
 			return;
 		}
 		if(empty && parent != null) {
@@ -425,7 +476,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 				for(int i=0; i<blocks.length; i++) {
 					Block block = blocks[i];
 					for(int j=0; j<block.reqs.length; j++) {
-						if(x >= index) break;
+						if(x >= index) {
+							break;
+						}
 						x++;
 						if(block.reqs[i] == item) {
 							return true;
@@ -459,7 +512,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 		for(Block block: blocks) {
 			for(int j=0; j<block.reqs.length; j++) {
 				RandomGrabArrayItem item = block.reqs[j];
-				if(item == null) continue;
+				if(item == null) {
+					continue;
+				}
 				item.setParentGrabArray(null);
 				existingGrabber.add(item, null);
 				block.reqs[j] = null;
@@ -485,7 +540,9 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
 		synchronized(root) {
-			if(wakeupTime < now) wakeupTime = 0;
+			if(wakeupTime < now) {
+				wakeupTime = 0;
+			}
 			return wakeupTime;
 		}
 	}
@@ -498,11 +555,15 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 	 * @param context
 	 */
 	private void setWakeupTime(long wakeupTime, ClientContext context) {
-		if(logMINOR) Logger.minor(this, "setCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "setCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		}
 		synchronized(root) {
 			if(this.wakeupTime > wakeupTime) {
 				this.wakeupTime = wakeupTime; // Set before calling parent.
-				if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
+				if(parent != null) {
+					parent.reduceWakeupTime(wakeupTime, context);
+				}
 			} else {
 				this.wakeupTime = wakeupTime;
 			}
@@ -511,11 +572,15 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 
 	@Override
 	public boolean reduceWakeupTime(long wakeupTime, ClientContext context) {
-		if(logMINOR) Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "reduceCooldownTime("+(wakeupTime-System.currentTimeMillis())+") on "+this);
+		}
 		synchronized(root) {
 			if(this.wakeupTime > wakeupTime) {
 				this.wakeupTime = wakeupTime;
-				if(parent != null) parent.reduceWakeupTime(wakeupTime, context);
+				if(parent != null) {
+					parent.reduceWakeupTime(wakeupTime, context);
+				}
 				return true;
 			}
 			return false;
@@ -524,10 +589,14 @@ public class RandomGrabArray implements RemoveRandom, RequestSelectionTreeNode {
 
 	@Override
 	public void clearWakeupTime(ClientContext context) {
-		if(logMINOR) Logger.minor(this, "clearCooldownTime() on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "clearCooldownTime() on "+this);
+		}
 		synchronized(root) {
 			wakeupTime = 0;
-			if(parent != null) parent.clearWakeupTime(context);
+			if(parent != null) {
+				parent.clearWakeupTime(context);
+			}
 		}
 	}
 

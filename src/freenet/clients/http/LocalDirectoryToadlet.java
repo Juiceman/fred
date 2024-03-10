@@ -9,7 +9,8 @@ public abstract class LocalDirectoryToadlet extends LocalFileBrowserToadlet {
 	protected final String postTo;
 	protected static final String basePath = "/directory-browser";
 
-	public LocalDirectoryToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient, String postTo) {
+	public LocalDirectoryToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient,
+								  String postTo) {
 		super(core, highLevelSimpleClient);
 		this.postTo = postTo;
 	}

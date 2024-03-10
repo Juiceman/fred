@@ -51,7 +51,8 @@ public interface SplitFileFetcherStorageCallback {
 	 * @param definitiveAnyway Whether this report is definitive even though it's not from the bottom layer. This is true of recent splitfiles,
 	 * where we store all the data in the top key.
 	 */
-	void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max, byte[] customSplitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway);
+	void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max,
+									  byte[] customSplitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway);
 
 	/** Queue a block to be healed. LOCKING: Called on the decode thread, so should avoid taking
 	 * any dangerous locks and not be too slow. */

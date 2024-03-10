@@ -36,7 +36,9 @@ public abstract class SendableGet extends BaseSendableGet {
 	@Override
 	public Key getNodeKey(SendableRequestItem token) {
 		ClientKey key = getKey(token);
-		if(key == null) return null;
+		if(key == null) {
+			return null;
+		}
 		return key.getNodeKey(true);
 	}
 
@@ -51,7 +53,8 @@ public abstract class SendableGet extends BaseSendableGet {
 	public abstract FetchContext getContext();
 
 	/** Called when/if the low-level request fails. */
-	public abstract void onFailure(LowLevelGetException e, SendableRequestItem token, ClientContext context);
+	public abstract void onFailure(LowLevelGetException e, SendableRequestItem token,
+								   ClientContext context);
 
 	// Implementation
 
@@ -69,10 +72,11 @@ public abstract class SendableGet extends BaseSendableGet {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if(isSSK())
+		if(isSSK()) {
 			return context.getSskFetchScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkFetchScheduler(realTimeFlag);
+		}
 	}
 
 	/**
@@ -87,9 +91,11 @@ public abstract class SendableGet extends BaseSendableGet {
 	 * An internal error occurred, effecting this SendableGet, independantly of any ChosenBlock's.
 	 */
 	@Override
-	public void internalError(final Throwable t, final RequestScheduler sched, ClientContext context, boolean persistent) {
+	public void internalError(final Throwable t, final RequestScheduler sched, ClientContext context,
+							  boolean persistent) {
 		Logger.error(this, "Internal error on "+this+" : "+t, t);
-		sched.callFailure(this, new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR, t.getMessage(), t), NativeThread.MAX_PRIORITY, persistent);
+		sched.callFailure(this, new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR,
+						  t.getMessage(), t), NativeThread.MAX_PRIORITY, persistent);
 	}
 
 	@Override
@@ -100,7 +106,8 @@ public abstract class SendableGet extends BaseSendableGet {
 	@Override
 	public void unregister(ClientContext context, short oldPrio) {
 		super.unregister(context, oldPrio);
-		context.checker.removeRequest(this, persistent, context, oldPrio == -1 ? getPriorityClass() : oldPrio);
+		context.checker.removeRequest(this, persistent, context,
+									  oldPrio == -1 ? getPriorityClass() : oldPrio);
 	}
 
 	public static FetchException translateException(LowLevelGetException e) {

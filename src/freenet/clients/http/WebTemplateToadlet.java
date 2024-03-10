@@ -32,7 +32,8 @@ abstract class WebTemplateToadlet extends Toadlet {
 		PebbleUtils.addChild(parent, templateName, model, "");
 	}
 
-	void addChild(HTMLNode parent, String templateName, Map<String, Object> model, String l10nPrefix) throws IOException {
+	void addChild(HTMLNode parent, String templateName, Map<String, Object> model,
+				  String l10nPrefix) throws IOException {
 		PebbleUtils.addChild(parent, templateName, model, l10nPrefix);
 	}
 

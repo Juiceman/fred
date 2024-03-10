@@ -82,8 +82,10 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 			try {
 				this.f = new RandomAccessFile(file, "r");
 				f.seek(startAt);
-				if(f.length() < (startAt + length))
-					throw new ReadOnlyFileSliceBucketException("File truncated? Length " + f.length() + " but start at " + startAt + " for " + length + " bytes");
+				if(f.length() < (startAt + length)) {
+					throw new ReadOnlyFileSliceBucketException("File truncated? Length " + f.length() + " but start at "
+							+ startAt + " for " + length + " bytes");
+				}
 				ptr = 0;
 			} catch(FileNotFoundException e) {
 				throw new ReadOnlyFileSliceBucketException(e);
@@ -92,18 +94,21 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 
 		@Override
 		public int read() throws IOException {
-			if(ptr >= length)
+			if(ptr >= length) {
 				return -1;
+			}
 			int x = f.read();
-			if(x != -1)
+			if(x != -1) {
 				ptr++;
+			}
 			return x;
 		}
 
 		@Override
 		public int read(byte[] buf, int offset, int len) throws IOException {
-			if(ptr >= length)
+			if(ptr >= length) {
 				return -1;
+			}
 			len = (int) Math.min(len, length - ptr);
 			int x = f.read(buf, offset, len);
 			ptr += x;
@@ -165,14 +170,24 @@ public class ReadOnlyFileSliceBucket implements Bucket, Serializable {
 
 	protected ReadOnlyFileSliceBucket(DataInputStream dis) throws StorageFormatException, IOException {
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		file = new File(dis.readUTF());
 		startAt = dis.readLong();
-		if(startAt < 0) throw new StorageFormatException("Bad start at");
+		if(startAt < 0) {
+			throw new StorageFormatException("Bad start at");
+		}
 		length = dis.readLong();
-		if(length < 0) throw new StorageFormatException("Bad length");
-		if(!file.exists()) throw new StorageFormatException("File does not exist any more");
-		if(file.length() < startAt+length) throw new StorageFormatException("Slice does not fit in file");
+		if(length < 0) {
+			throw new StorageFormatException("Bad length");
+		}
+		if(!file.exists()) {
+			throw new StorageFormatException("File does not exist any more");
+		}
+		if(file.length() < startAt+length) {
+			throw new StorageFormatException("Slice does not fit in file");
+		}
 	}
 
 }

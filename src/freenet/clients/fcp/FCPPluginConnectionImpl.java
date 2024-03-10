@@ -586,8 +586,9 @@ final class FCPPluginConnectionImpl implements FCPPluginConnection {
 		// sendSynchronous().
 		// If there was no sendSynchronous() thread, it returns false, and we must continue to
 		// handle case 1.
-		if(dispatchMessageLocallyToSendSynchronousThreadIfExisting(direction, message))
+		if(dispatchMessageLocallyToSendSynchronousThreadIfExisting(direction, message)) {
 			return;
+		}
 
 		// We now know that the message handler is not attached by network, and that it is not a
 		// sendSynchronous() thread. So the only thing it can be is a FredPluginFCPMessageHandler,
@@ -637,8 +638,9 @@ final class FCPPluginConnectionImpl implements FCPPluginConnection {
 		: "Trying to send a message over the network to the client. "
 		+ "So the network connection to it should not be null.";
 
-		if (clientConnection.isClosed())
+		if (clientConnection.isClosed()) {
 			throw new IOException("Connection to client closed for " + this);
+		}
 
 		clientConnection.send(new FCPPluginServerMessage(serverPluginName, message));
 	}

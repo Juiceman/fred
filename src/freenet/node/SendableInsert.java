@@ -29,12 +29,15 @@ public abstract class SendableInsert extends SendableRequest {
 	public abstract void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context);
 
 	/** Called when we don't! */
-	public abstract void onFailure(LowLevelPutException e, SendableRequestItem keyNum, ClientContext context);
+	public abstract void onFailure(LowLevelPutException e, SendableRequestItem keyNum,
+								   ClientContext context);
 
 	@Override
-	public void internalError(Throwable t, RequestScheduler sched, ClientContext context, boolean persistent) {
+	public void internalError(Throwable t, RequestScheduler sched, ClientContext context,
+							  boolean persistent) {
 		Logger.error(this, "Internal error on "+this+" : "+t, t);
-		sched.callFailure(this, new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, t.getMessage(), t), NativeThread.MAX_PRIORITY, persistent);
+		sched.callFailure(this, new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR,
+						  t.getMessage(), t), NativeThread.MAX_PRIORITY, persistent);
 	}
 
 	@Override
@@ -44,10 +47,11 @@ public abstract class SendableInsert extends SendableRequest {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if(isSSK())
+		if(isSSK()) {
 			return context.getSskInsertScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkInsertScheduler(realTimeFlag);
+		}
 	}
 
 	public abstract boolean canWriteClientCache();
@@ -63,7 +67,9 @@ public abstract class SendableInsert extends SendableRequest {
 
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
-		if(isEmpty()) return -1;
+		if(isEmpty()) {
+			return -1;
+		}
 		return 0;
 	}
 
@@ -71,12 +77,15 @@ public abstract class SendableInsert extends SendableRequest {
 
 	public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 		synchronized(this) {
-			if(resumed) return;
+			if(resumed) {
+				return;
+			}
 			resumed = true;
 		}
 		innerOnResume(context);
 	}
 
-	protected abstract void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException;
+	protected abstract void innerOnResume(ClientContext context) throws InsertException,
+				  ResumeFailedException;
 
 }

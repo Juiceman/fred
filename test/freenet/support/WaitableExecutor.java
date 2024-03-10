@@ -21,7 +21,9 @@ public class WaitableExecutor implements Executor {
 			} finally {
 				synchronized(WaitableExecutor.this) {
 					count--;
-					if(count == 0) WaitableExecutor.this.notifyAll();
+					if(count == 0) {
+						WaitableExecutor.this.notifyAll();
+					}
 				}
 			}
 		}

@@ -28,7 +28,8 @@ public interface FreenetStore<T extends StorableBlock> extends Closeable {
 	 * pubkey for an SSK.
 	 * @throws IOException If a disk I/O error occurs.
 	 */
-	T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException;
+	T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote, boolean canReadClientCache,
+			boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException;
 
 	/**
 	 * Store a block.

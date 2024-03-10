@@ -9,7 +9,8 @@ import freenet.support.api.BooleanCallback;
 public class BooleanOption extends Option<Boolean> {
 	public BooleanOption(SubConfig conf, String optionName, boolean defaultValue, int sortOrder,
 						 boolean expert, boolean forceWrite, String shortDesc, String longDesc, BooleanCallback cb) {
-		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc, Option.DataType.BOOLEAN);
+		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc,
+			  Option.DataType.BOOLEAN);
 		this.defaultValue = defaultValue;
 		this.currentValue = defaultValue;
 	}
@@ -20,8 +21,10 @@ public class BooleanOption extends Option<Boolean> {
 			return true;
 		} else if(val.equalsIgnoreCase("false") || val.equalsIgnoreCase("no")) {
 			return false;
-		} else
-			throw new OptionFormatException(NodeL10n.getBase().getString("BooleanOption.parseError", "val", val));
+		} else {
+			throw new OptionFormatException(NodeL10n.getBase().getString("BooleanOption.parseError", "val",
+											val));
+		}
 	}
 
 	@Override

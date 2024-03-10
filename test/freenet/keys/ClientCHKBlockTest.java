@@ -88,9 +88,11 @@ public class ClientCHKBlockTest {
 			assertTrue(Arrays.equals(otherEncodedBlock.getBlock().headers, encodedBlock.getBlock().headers));
 		}
 		// Verify it.
-		CHKBlock block = CHKBlock.construct(encodedBlock.getBlock().data, encodedBlock.getBlock().headers, cryptoAlgorithm);
+		CHKBlock block = CHKBlock.construct(encodedBlock.getBlock().data, encodedBlock.getBlock().headers,
+											cryptoAlgorithm);
 		ClientCHKBlock checkBlock = new ClientCHKBlock(block, key);
-		ArrayBucket checkData = (ArrayBucket) checkBlock.decode(new ArrayBucketFactory(), data.length, false);
+		ArrayBucket checkData = (ArrayBucket) checkBlock.decode(new ArrayBucketFactory(), data.length,
+								false);
 		assert(Arrays.equals(checkData.toByteArray(), data));
 		if(newAlgo) {
 			checkData = (ArrayBucket) checkBlock.decode(new ArrayBucketFactory(), data.length, false, true);

@@ -66,12 +66,16 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 		Executor executor = new PooledExecutor();
 		for(int i = 0; i < NUMBER_OF_NODES; i++) {
 			System.err.println("Creating node " + i);
-			nodes[i] = NodeStarter.createTestNode(DARKNET_PORT_BASE + i, 0, dir, true, MAX_HTL, 0 /* no dropped packets */, random, executor, 500 * NUMBER_OF_NODES, 256*1024, true, ENABLE_SWAPPING, false, false, false, ENABLE_SWAP_QUEUEING, true, OUTPUT_BANDWIDTH_LIMIT, ENABLE_FOAF, false, true, false, null, i == 0);
+			nodes[i] = NodeStarter.createTestNode(DARKNET_PORT_BASE + i, 0, dir, true, MAX_HTL,
+												  0 /* no dropped packets */, random, executor, 500 * NUMBER_OF_NODES, 256*1024, true,
+												  ENABLE_SWAPPING, false, false, false, ENABLE_SWAP_QUEUEING, true, OUTPUT_BANDWIDTH_LIMIT,
+												  ENABLE_FOAF, false, true, false, null, i == 0);
 			Logger.normal(RealNodeProbeTest.class, "Created node " + i);
 		}
 		Logger.normal(RealNodeProbeTest.class, "Created " + NUMBER_OF_NODES + " nodes");
 		// Now link them up
-		makeKleinbergNetwork(nodes, START_WITH_IDEAL_LOCATIONS, DEGREE, FORCE_NEIGHBOUR_CONNECTIONS, random);
+		makeKleinbergNetwork(nodes, START_WITH_IDEAL_LOCATIONS, DEGREE, FORCE_NEIGHBOUR_CONNECTIONS,
+							 random);
 
 		Logger.normal(RealNodeProbeTest.class, "Added random links");
 
@@ -96,7 +100,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 				try {
 					waitForAllConnected(nodes);
 					int status = tester.insertRequestTest();
-					if(status == -1) continue;
+					if(status == -1) {
+						continue;
+					}
 					System.out.println("Insert test completed with status "+status);
 					break;
 				} catch (Throwable t) {
@@ -110,7 +116,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			@Override
 			public void onError(Error error, Byte code, boolean local) {
 				System.out.print("Probe error: " + error.name());
-				if (local) System.out.print(" (local)");
+				if (local) {
+					System.out.print(" (local)");
+				}
 				System.out.println(code == null ? "" : " (" + code + ")");
 			}
 
@@ -132,13 +140,16 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 
 			@Override
 			public void onIdentifier(long identifier, byte uptimePercentage) {
-				System.out.println("Probe got identifier " + identifier + " with uptime percentage " + uptimePercentage + ".");
+				System.out.println("Probe got identifier " + identifier + " with uptime percentage " +
+								   uptimePercentage + ".");
 			}
 
 			@Override
 			public void onLinkLengths(float[] linkLengths) {
 				System.out.print("Probe got link lengths: { ");
-				for (Float length : linkLengths) System.out.print(length + " ");
+				for (Float length : linkLengths) {
+					System.out.print(length + " ");
+				}
 				System.out.println("}.");
 			}
 
@@ -191,10 +202,11 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 		byte htl = Probe.MAX_HTL;
 		BufferedReader r;
 		Console console = System.console();
-		if(console != null)
+		if(console != null) {
 			r = new BufferedReader(console.reader());
-		else
-			r = new BufferedReader(new InputStreamReader(System.in)); // Use the system locale here.
+		} else {
+			r = new BufferedReader(new InputStreamReader(System.in));    // Use the system locale here.
+		}
 		while (true) {
 			System.err.println("Sending probes from node " + index + " with HTL " + htl + ".");
 			System.err.println("0) BANDWIDTH");
@@ -228,7 +240,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 						System.err.print(option + ": ");
 						nodeConfig.set(option, Boolean.valueOf(r.readLine()));
 					}
-				} else nodes[index].startProbe(htl, random.nextLong(), types[selection], print);
+				} else {
+					nodes[index].startProbe(htl, random.nextLong(), types[selection], print);
+				}
 			} catch (Exception e) {
 				//If a non-number is entered or one outside the bounds.
 				System.out.print(e.toString());

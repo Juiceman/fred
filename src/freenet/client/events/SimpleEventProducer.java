@@ -30,16 +30,18 @@ public class SimpleEventProducer implements ClientEventProducer, Serializable {
 	/** Create a new SimpleEventProducer with the given listeners. */
 	public SimpleEventProducer(ClientEventListener[] cela) {
 		this();
-		for (int i = 0; i < cela.length; i++)
+		for (int i = 0; i < cela.length; i++) {
 			addEventListener(cela[i]);
+		}
 	}
 
 	@Override
 	public synchronized void addEventListener(ClientEventListener cel) {
-		if (cel != null)
+		if (cel != null) {
 			listeners.add(cel);
-		else
+		} else {
 			throw new IllegalArgumentException("Adding a null listener!");
+		}
 	}
 
 	@Override
@@ -83,8 +85,9 @@ public class SimpleEventProducer implements ClientEventProducer, Serializable {
 
 	/** Adds all listeners in the given array. */
 	public synchronized void addEventListeners(ClientEventListener[] cela) {
-		for (int i = 0; i < cela.length; i++)
+		for (int i = 0; i < cela.length; i++) {
 			addEventListener(cela[i]);
+		}
 	}
 
 }

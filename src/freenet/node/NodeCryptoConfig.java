@@ -54,7 +54,8 @@ public class NodeCryptoConfig {
 	/** If false we won't make any effort do disguise the length of packets */
 	private boolean paddDataPackets;
 
-	NodeCryptoConfig(SubConfig config, int sortOrder, boolean isOpennet, SecurityLevels securityLevels) throws NodeInitException {
+	NodeCryptoConfig(SubConfig config, int sortOrder, boolean isOpennet,
+					 SecurityLevels securityLevels) throws NodeInitException {
 		config.register("listenPort", -1 /* means random */, sortOrder++, true, true,
 						isOpennet ? "Node.opennetPort" : "Node.port",
 						isOpennet ? "Node.opennetPortLong" : "Node.portLong",
@@ -62,8 +63,9 @@ public class NodeCryptoConfig {
 			@Override
 			public Integer get() {
 				synchronized(NodeCryptoConfig.class) {
-					if(crypto != null)
+					if(crypto != null) {
 						portNumber = crypto.portNumber;
+					}
 					return portNumber;
 				}
 			}
@@ -76,11 +78,14 @@ public class NodeCryptoConfig {
 
 
 				synchronized(NodeCryptoConfig.class) {
-					if(portNumber == val) return;
+					if(portNumber == val) {
+						return;
+					}
 					// FIXME implement on the fly listenPort changing
 					// Note that this sort of thing should be the exception rather than the rule!!!!
-					if(crypto != null)
+					if(crypto != null) {
 						throw new InvalidConfigValueException("Switching listenPort on the fly not yet supported");
+					}
 					portNumber = val;
 				}
 			}
@@ -100,16 +105,19 @@ public class NodeCryptoConfig {
 			portNumber = -1;
 		}
 
-		config.register("bindTo", "0.0.0.0", sortOrder++, true, true, "Node.bindTo", "Node.bindToLong", new NodeBindtoCallback());
+		config.register("bindTo", "0.0.0.0", sortOrder++, true, true, "Node.bindTo", "Node.bindToLong",
+						new NodeBindtoCallback());
 
 		try {
 			bindTo = new FreenetInetAddress(config.getString("bindTo"), false);
 
 		} catch (UnknownHostException e) {
-			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_BIND_USM, "Invalid bindTo: "+config.getString("bindTo"));
+			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_BIND_USM,
+										"Invalid bindTo: "+config.getString("bindTo"));
 		}
 
-		config.register("testingDropPacketsEvery", 0, sortOrder++, true, false, "Node.dropPacketEvery", "Node.dropPacketEveryLong",
+		config.register("testingDropPacketsEvery", 0, sortOrder++, true, false, "Node.dropPacketEvery",
+						"Node.dropPacketEveryLong",
 		new IntCallback() {
 
 			@Override
@@ -121,11 +129,17 @@ public class NodeCryptoConfig {
 
 			@Override
 			public void set(Integer val) throws InvalidConfigValueException {
-				if(val < 0) throw new InvalidConfigValueException("testingDropPacketsEvery must not be negative");
+				if(val < 0) {
+					throw new InvalidConfigValueException("testingDropPacketsEvery must not be negative");
+				}
 				synchronized(NodeCryptoConfig.this) {
-					if(val == dropProbability) return;
+					if(val == dropProbability) {
+						return;
+					}
 					dropProbability = val;
-					if(crypto == null) return;
+					if(crypto == null) {
+						return;
+					}
 				}
 				crypto.onSetDropProbability(val);
 			}
@@ -163,16 +177,19 @@ public class NodeCryptoConfig {
 					// Might be useful for nodes on the same NAT etc, so turn it off for LOW. Otherwise is sensible.
 					// It's always off on darknet, since we can reasonably expect to know our peers, even if we are paranoid
 					// about them!
-					if(newLevel == NETWORK_THREAT_LEVEL.LOW)
+					if(newLevel == NETWORK_THREAT_LEVEL.LOW) {
 						oneConnectionPerAddress = false;
-					if(oldLevel == NETWORK_THREAT_LEVEL.LOW)
+					}
+					if(oldLevel == NETWORK_THREAT_LEVEL.LOW) {
 						oneConnectionPerAddress = true;
+					}
 				}
 
 			});
 		}
 
-		config.register("alwaysAllowLocalAddresses", !isOpennet, sortOrder++, true, false, "Node.alwaysAllowLocalAddresses", "Node.alwaysAllowLocalAddressesLong",
+		config.register("alwaysAllowLocalAddresses", !isOpennet, sortOrder++, true, false,
+						"Node.alwaysAllowLocalAddresses", "Node.alwaysAllowLocalAddressesLong",
 		new BooleanCallback() {
 
 			@Override
@@ -191,7 +208,8 @@ public class NodeCryptoConfig {
 		});
 		alwaysAllowLocalAddresses = config.getBoolean("alwaysAllowLocalAddresses");
 
-		config.register("assumeNATed", true, sortOrder++, true, true, "Node.assumeNATed", "Node.assumeNATedLong", new BooleanCallback() {
+		config.register("assumeNATed", true, sortOrder++, true, true, "Node.assumeNATed",
+		"Node.assumeNATedLong", new BooleanCallback() {
 
 			@Override
 			public Boolean get() {
@@ -207,7 +225,8 @@ public class NodeCryptoConfig {
 
 		// Include local IPs in noderef file
 
-		config.register("includeLocalAddressesInNoderefs", !isOpennet, sortOrder++, true, false, "NodeIPDectector.inclLocalAddress", "NodeIPDectector.inclLocalAddressLong", new BooleanCallback() {
+		config.register("includeLocalAddressesInNoderefs", !isOpennet, sortOrder++, true, false,
+		"NodeIPDectector.inclLocalAddress", "NodeIPDectector.inclLocalAddressLong", new BooleanCallback() {
 
 			@Override
 			public Boolean get() {
@@ -224,7 +243,8 @@ public class NodeCryptoConfig {
 
 		// enable/disable Padding of outgoing packets (won't affect auth-packets)
 
-		config.register("paddDataPackets", true, sortOrder++, true, false, "Node.paddDataPackets", "Node.paddDataPacketsLong", new BooleanCallback() {
+		config.register("paddDataPackets", true, sortOrder++, true, false, "Node.paddDataPackets",
+		"Node.paddDataPacketsLong", new BooleanCallback() {
 
 			@Override
 			public Boolean get() {
@@ -233,8 +253,9 @@ public class NodeCryptoConfig {
 
 			@Override
 			public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-				if (val.equals(get()))
+				if (val.equals(get())) {
 					return;
+				}
 				paddDataPackets = val;
 			}
 		});
@@ -246,12 +267,16 @@ public class NodeCryptoConfig {
 	public static final int OPTION_COUNT = 3;
 
 	synchronized void starting(NodeCrypto crypto2) {
-		if(crypto != null) throw new IllegalStateException("Replacing existing NodeCrypto "+crypto+" with "+crypto2);
+		if(crypto != null) {
+			throw new IllegalStateException("Replacing existing NodeCrypto "+crypto+" with "+crypto2);
+		}
 		crypto = crypto2;
 	}
 
 	synchronized void started(NodeCrypto crypto2) {
-		if(crypto != null) throw new IllegalStateException("Replacing existing NodeCrypto "+crypto+" with "+crypto2);
+		if(crypto != null) {
+			throw new IllegalStateException("Replacing existing NodeCrypto "+crypto+" with "+crypto2);
+		}
 	}
 
 	synchronized void maybeStarted(NodeCrypto crypto2) {
@@ -275,7 +300,9 @@ public class NodeCryptoConfig {
 
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
-			if(val.equals(get())) return;
+			if(val.equals(get())) {
+				return;
+			}
 			// FIXME why not? Can't we use freenet.io.NetworkInterface like everywhere else, just adapt it for UDP?
 			throw new InvalidConfigValueException("Cannot be updated on the fly");
 		}

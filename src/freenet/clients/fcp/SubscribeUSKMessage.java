@@ -37,23 +37,29 @@ public class SubscribeUSKMessage extends FCPMessage {
 
 	public SubscribeUSKMessage(SimpleFieldSet fs) throws MessageInvalidException {
 		this.identifier = fs.get("Identifier");
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier!", null, false);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier!", null,
+											  false);
+		}
 		String suri = fs.get("URI");
-		if(suri == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Expected a URI on SubscribeUSK", identifier, false);
+		if(suri == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Expected a URI on SubscribeUSK", identifier, false);
+		}
 		FreenetURI uri;
 		try {
 			uri = new FreenetURI(suri);
 			key = USK.create(uri);
 		} catch (MalformedURLException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Could not parse URI: "+e, identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Could not parse URI: "+e,
+											  identifier, false);
 		}
 		this.dontPoll = fs.getBoolean("DontPoll", false);
-		if(!dontPoll)
+		if(!dontPoll) {
 			this.sparsePoll = fs.getBoolean("SparsePoll", false);
-		else
+		} else {
 			sparsePoll = false;
+		}
 		prio = fs.getShort("PriorityClass", RequestStarter.BULK_SPLITFILE_PRIORITY_CLASS);
 		prioProgress = fs.getShort("PriorityClassProgress", (short)Math.max(0, prio-1));
 		realTimeFlag = fs.getBoolean("RealTimeFlag", false);

@@ -37,22 +37,25 @@ public class LockManager {
 	 * then one lock at a time (or deadlock may occur).
 	 */
 	Condition lockEntry(long offset) {
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "try locking " + offset, new Exception());
+		}
 
 		Condition condition;
 		try {
 			entryLock.lock();
 			try {
 				do {
-					if (shutdown)
+					if (shutdown) {
 						return null;
+					}
 
 					Condition lockCond = lockMap.get(offset);
-					if (lockCond != null)
-						lockCond.await(10, TimeUnit.SECONDS); // 10s for checking shutdown
-					else
+					if (lockCond != null) {
+						lockCond.await(10, TimeUnit.SECONDS);    // 10s for checking shutdown
+					} else {
 						break;
+					}
 				} while (true);
 				condition = entryLock.newCondition();
 				lockMap.put(offset, condition);
@@ -64,8 +67,9 @@ public class LockManager {
 			return null;
 		}
 
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "locked " + offset, new Exception());
+		}
 		return condition;
 	}
 
@@ -73,8 +77,9 @@ public class LockManager {
 	 * Unlock the entry
 	 */
 	void unlockEntry(long offset, Condition condition) {
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "unlocking " + offset, new Exception("debug"));
+		}
 
 		entryLock.lock();
 		try {

@@ -56,7 +56,8 @@ public class LongPollingConnectionManager implements IConnectionManager {
 				// When run, send a request
 				sendRequest();
 			}
-		} .schedule(Math.max(Math.min((int) Math.pow(2, (numOfFailedRequests++)), 10000),50)); // Waits more if requests failing, but a max at 10sec
+		} .schedule(Math.max(Math.min((int) Math.pow(2, (numOfFailedRequests++)), 10000),
+							 50)); // Waits more if requests failing, but a max at 10sec
 		FreenetJs.log("Next request scheduled");
 	}
 
@@ -64,10 +65,12 @@ public class LongPollingConnectionManager implements IConnectionManager {
 	private void sendRequest() {
 		// Only send if running
 		if (running == true) {
-			sentRequest = FreenetRequest.sendRequest(UpdaterConstants.notificationPath, new QueryParameter("requestId", FreenetJs.requestId), new RequestCallback() {
+			sentRequest = FreenetRequest.sendRequest(UpdaterConstants.notificationPath,
+			new QueryParameter("requestId", FreenetJs.requestId), new RequestCallback() {
 				@Override
 				public void onResponseReceived(Request request, Response response) {
-					FreenetJs.log("AJAX response:success:" + (response.getText().startsWith(UpdaterConstants.SUCCESS) ? "true" : "false"));
+					FreenetJs.log("AJAX response:success:" + (response.getText().startsWith(
+									  UpdaterConstants.SUCCESS) ? "true" : "false"));
 					if (response.getText().startsWith(UpdaterConstants.SUCCESS)) {
 						// If success, then notify the UpdateManager
 						numOfFailedRequests = 0;

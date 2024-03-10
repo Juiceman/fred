@@ -29,24 +29,31 @@ public class PooledFileRandomAccessBufferFactory implements LockableRandomAccess
 		File file = fg.getFilename(id);
 		LockableRandomAccessBuffer ret = null;
 		try {
-			ret = new PooledFileRandomAccessBuffer(file, false, size, enableCrypto ? seedRandom : null, id, true);
+			ret = new PooledFileRandomAccessBuffer(file, false, size, enableCrypto ? seedRandom : null, id,
+												   true);
 			return ret;
 		} finally {
-			if(ret == null) file.delete();
+			if(ret == null) {
+				file.delete();
+			}
 		}
 	}
 
 	@Override
-	public LockableRandomAccessBuffer makeRAF(byte[] initialContents, int offset, int size, boolean readOnly)
+	public LockableRandomAccessBuffer makeRAF(byte[] initialContents, int offset, int size,
+			boolean readOnly)
 	throws IOException {
 		long id = fg.makeRandomFilename();
 		File file = fg.getFilename(id);
 		LockableRandomAccessBuffer ret = null;
 		try {
-			ret = new PooledFileRandomAccessBuffer(file, "rw", initialContents, offset, size, id, true, readOnly);
+			ret = new PooledFileRandomAccessBuffer(file, "rw", initialContents, offset, size, id, true,
+												   readOnly);
 			return ret;
 		} finally {
-			if(ret == null) file.delete();
+			if(ret == null) {
+				file.delete();
+			}
 		}
 	}
 

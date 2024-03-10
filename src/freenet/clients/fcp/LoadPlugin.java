@@ -32,22 +32,29 @@ public class LoadPlugin extends FCPMessage {
 
 	public LoadPlugin(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain an Identifier field", null, false);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Must contain an Identifier field", null, false);
+		}
 		pluginURL = fs.get("PluginURL");
-		if(pluginURL == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain a PluginURL field", identifier, false);
+		if(pluginURL == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD,
+											  "Must contain a PluginURL field", identifier, false);
+		}
 		String type = fs.get("URLType");
-		if ((type != null) && (type.trim().length() > 0))
+		if ((type != null) && (type.trim().length() > 0)) {
 			urlType = type.trim();
-		else
+		} else {
 			urlType = null;
+		}
 		if (urlType != null) {
 			if (!(TYPENAME_FILE.equalsIgnoreCase(urlType) ||
 					TYPENAME_FREENET.equalsIgnoreCase(urlType) ||
 					TYPENAME_OFFICIAL.equalsIgnoreCase(urlType) ||
-					TYPENAME_URL.equalsIgnoreCase(urlType)))
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unknown URL type: '"+urlType+"'", identifier, false);
+					TYPENAME_URL.equalsIgnoreCase(urlType))) {
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+												  "Unknown URL type: '"+urlType+"'", identifier, false);
+			}
 		}
 		store = fs.getBoolean("Store", false);
 	}
@@ -63,13 +70,16 @@ public class LoadPlugin extends FCPMessage {
 	}
 
 	@Override
-	public void run(final FCPConnectionHandler handler, final Node node) throws MessageInvalidException {
+	public void run(final FCPConnectionHandler handler,
+					final Node node) throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "LoadPlugin requires full access", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+											  "LoadPlugin requires full access", identifier, false);
 		}
 
 		if(!node.pluginManager.isEnabled()) {
-			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.PLUGINS_DISABLED, false, "Plugins disabled", identifier, false));
+			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.PLUGINS_DISABLED, false,
+												  "Plugins disabled", identifier, false));
 			return;
 		}
 
@@ -99,7 +109,9 @@ public class LoadPlugin extends FCPMessage {
 						}
 					}
 					if (type == null) {
-						handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INVALID_FIELD, false, "Was not able to guess the URL type from URL, check the URL or add a 'URLType' field", identifier, false));
+						handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INVALID_FIELD, false,
+															  "Was not able to guess the URL type from URL, check the URL or add a 'URLType' field", identifier,
+															  false));
 						return;
 					}
 				} else {
@@ -116,11 +128,13 @@ public class LoadPlugin extends FCPMessage {
 					pi = node.pluginManager.startPluginURL(pluginURL, store);
 				} else {
 					Logger.error(this, "This should really not happen!", new Exception("FIXME"));
-					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INTERNAL_ERROR, false, "This should really not happen! See logs for details.", identifier, false));
+					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INTERNAL_ERROR, false,
+														  "This should really not happen! See logs for details.", identifier, false));
 					return;
 				}
 				if (pi == null) {
-					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '"+ pluginURL + "' does not exist or is not a FCP plugin", identifier, false));
+					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false,
+														  "Plugin '"+ pluginURL + "' does not exist or is not a FCP plugin", identifier, false));
 				} else {
 					handler.send(new PluginInfoMessage(pi, identifier, true));
 				}

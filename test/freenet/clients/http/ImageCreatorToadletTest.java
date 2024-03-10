@@ -14,7 +14,8 @@ public class ImageCreatorToadletTest {
 	@Test
 	public void specifyMaximumFontSizeThatFitsInImageTest() {
 		String text = "Test";
-		Graphics2D g2 = new BufferedImage(ImageCreatorToadlet.DEFAULT_WIDTH, ImageCreatorToadlet.DEFAULT_HEIGHT,
+		Graphics2D g2 = new BufferedImage(ImageCreatorToadlet.DEFAULT_WIDTH,
+										  ImageCreatorToadlet.DEFAULT_HEIGHT,
 										  BufferedImage.TYPE_INT_RGB).createGraphics();
 		FontRenderContext fc = g2.getFontRenderContext();
 		ImageCreatorToadlet imageCreatorToadlet = new ImageCreatorToadlet(null);

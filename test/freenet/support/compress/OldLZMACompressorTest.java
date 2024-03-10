@@ -218,7 +218,8 @@ public class OldLZMACompressorTest {
 
 		int writtenBytes = 0;
 
-		writtenBytes = Compressor.COMPRESSOR_TYPE.LZMA.decompress(compressedData, 0, compressedData.length, outUncompressedData);
+		writtenBytes = Compressor.COMPRESSOR_TYPE.LZMA.decompress(compressedData, 0, compressedData.length,
+					   outUncompressedData);
 
 		assertEquals(writtenBytes, originalUncompressedData.length);
 		assertEquals(originalUncompressedData.length, outUncompressedData.length);
@@ -265,7 +266,8 @@ public class OldLZMACompressorTest {
 		try {
 			decompressorInput = inBucket.getInputStream();
 			decompressorOutput = outBucket.getOutputStream();
-			Compressor.COMPRESSOR_TYPE.LZMA.decompress(decompressorInput, decompressorOutput, 4096 + 10, 4096 + 20);
+			Compressor.COMPRESSOR_TYPE.LZMA.decompress(decompressorInput, decompressorOutput, 4096 + 10,
+					4096 + 20);
 			decompressorInput.close();
 			decompressorOutput.close();
 		} catch (CompressionOutputSizeException e) {
@@ -286,7 +288,8 @@ public class OldLZMACompressorTest {
 		BucketFactory factory = new ArrayBucketFactory();
 		Bucket outBucket = null;
 
-		outBucket = Compressor.COMPRESSOR_TYPE.LZMA.compress(inBucket, factory, uncompressedData.length, uncompressedData.length * 2 + 64);
+		outBucket = Compressor.COMPRESSOR_TYPE.LZMA.compress(inBucket, factory, uncompressedData.length,
+					uncompressedData.length * 2 + 64);
 
 		InputStream in = null;
 		in = outBucket.getInputStream();

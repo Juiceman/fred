@@ -18,7 +18,8 @@ public class M3UFilterTest {
 	};
 
 	private static final String SCHEME_HOST_PORT = "http://localhost:8888";
-	private static final String BASE_KEY = "USK@0I8gctpUE32CM0iQhXaYpCMvtPPGfT4pjXm01oid5Zc,3dAcn4fX2LyxO6uCnWFTx-2HKZ89uruurcKwLSCxbZ4,AQACAAE/FakeM3UHostingFreesite/23/";
+	private static final String BASE_KEY =
+		"USK@0I8gctpUE32CM0iQhXaYpCMvtPPGfT4pjXm01oid5Zc,3dAcn4fX2LyxO6uCnWFTx-2HKZ89uruurcKwLSCxbZ4,AQACAAE/FakeM3UHostingFreesite/23/";
 	private static final String BASE_URI = '/' + BASE_KEY;
 
 	@Test
@@ -40,7 +41,8 @@ public class M3UFilterTest {
 				String result = ibprocessed.toString();
 
 				assertEquals(
-					original + " should be filtered as " + correct + " but was filtered as\n" + result + "\ninstead of the correct\n" + bucketToString(ibc),
+					original + " should be filtered as " + correct + " but was filtered as\n" + result +
+					"\ninstead of the correct\n" + bucketToString(ibc),
 					bucketToString(ibc),
 					result
 				);

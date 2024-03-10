@@ -74,7 +74,8 @@ public class ProxyFreenetStore<T extends StorableBlock> implements FreenetStore<
 	public T fetch(byte[] routingKey, byte[] fullKey, boolean dontPromote,
 				   boolean canReadClientCache, boolean canReadSlashdotCache,
 				   boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
-		return backDatastore.fetch(routingKey, fullKey, dontPromote, canReadClientCache, canReadSlashdotCache, ignoreOldBlocks, meta);
+		return backDatastore.fetch(routingKey, fullKey, dontPromote, canReadClientCache,
+								   canReadSlashdotCache, ignoreOldBlocks, meta);
 	}
 
 	@Override

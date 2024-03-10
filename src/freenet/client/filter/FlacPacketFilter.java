@@ -28,16 +28,21 @@ public class FlacPacketFilter  implements CodecPacketFilter {
 	HashResult md5sum;
 
 	public CodecPacket parse(CodecPacket packet) throws IOException {
-		if(!streamValid) return null;
+		if(!streamValid) {
+			return null;
+		}
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		DataInputStream input = new DataInputStream(new ByteArrayInputStream(packet.toArray()));
 		switch(currentState) {
 		case UNINITIALIZED:
-			if(!(packet instanceof FlacMetadataBlock) && ((FlacMetadataBlock) packet).getMetadataBlockType() != BlockType.STREAMINFO) {
+			if(!(packet instanceof FlacMetadataBlock)
+					&& ((FlacMetadataBlock) packet).getMetadataBlockType() != BlockType.STREAMINFO) {
 				streamValid = false;
 				return null;
 			}
-			if(((FlacMetadataBlock)packet).isLastMetadataBlock()) currentState = State.METADATA_FOUND;
+			if(((FlacMetadataBlock)packet).isLastMetadataBlock()) {
+				currentState = State.METADATA_FOUND;
+			}
 			minimumBlockSize = input.readUnsignedShort();
 			maximumBlockSize = input.readUnsignedShort();
 			minimumFrameSize = (input.readUnsignedShort() << 8) | input.readUnsignedByte();
@@ -53,7 +58,9 @@ public class FlacPacketFilter  implements CodecPacketFilter {
 			currentState = State.STREAMINFO_FOUND;
 			break;
 		case STREAMINFO_FOUND:
-			if(((FlacMetadataBlock)packet).isLastMetadataBlock()) currentState = State.METADATA_FOUND;
+			if(((FlacMetadataBlock)packet).isLastMetadataBlock()) {
+				currentState = State.METADATA_FOUND;
+			}
 			byte[] payload;
 			FlacMetadataBlockHeader header;
 			switch(((FlacMetadataBlock)packet).getMetadataBlockType()) {
@@ -80,7 +87,9 @@ public class FlacPacketFilter  implements CodecPacketFilter {
 				break;
 			}
 		}
-		if(packet instanceof FlacMetadataBlock && logMINOR) Logger.minor(this, "Returning packet of type"+((FlacMetadataBlock)packet).getMetadataBlockType());
+		if(packet instanceof FlacMetadataBlock && logMINOR) {
+			Logger.minor(this, "Returning packet of type"+((FlacMetadataBlock)packet).getMetadataBlockType());
+		}
 		return packet;
 	}
 }

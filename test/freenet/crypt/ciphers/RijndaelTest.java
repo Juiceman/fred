@@ -36,9 +36,12 @@ public class RijndaelTest {
 	private final byte[] KEY128_1 = HexUtil.hexToBytes("deadbeefcafebabe0123456789abcdef");
 	private final byte[] CIPHER128_1 = HexUtil.hexToBytes("8c5b8c04805c0e07dd62b381730d5d10");
 
-	private final byte[] PLAINTXT192_1 = HexUtil.hexToBytes("0123456789abcdef1123456789abcdef2123456789abcdef");
-	private final byte[] KEY192_1 = HexUtil.hexToBytes("deadbeefcafebabe0123456789abcdefcafebabedeadbeef");
-	private final byte[] CIPHER192_1 = HexUtil.hexToBytes("7fae974786a9741d96693654bc7a8aff09b3f116840ffced");
+	private final byte[] PLAINTXT192_1 =
+		HexUtil.hexToBytes("0123456789abcdef1123456789abcdef2123456789abcdef");
+	private final byte[] KEY192_1 =
+		HexUtil.hexToBytes("deadbeefcafebabe0123456789abcdefcafebabedeadbeef");
+	private final byte[] CIPHER192_1 =
+		HexUtil.hexToBytes("7fae974786a9741d96693654bc7a8aff09b3f116840ffced");
 
 	private final byte[] PLAINTXT256_1 = HexUtil
 										 .hexToBytes("0123456789abcdef1123456789abcdef2123456789abcdef3123456789abcdef");
@@ -1715,8 +1718,11 @@ public class RijndaelTest {
 	}
 
 	@Test
-	public void testStandardTestVKJCA() throws UnsupportedCipherException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-		if(!CTRBlockCipherTest.TEST_JCA) return;
+	public void testStandardTestVKJCA() throws UnsupportedCipherException, InvalidKeyException,
+		NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+		if(!CTRBlockCipherTest.TEST_JCA) {
+			return;
+		}
 		// KEYSIZE=128
 		for (int i = 0; i < TEST_VK128.length; i++) {
 			SecretKeySpec k =
@@ -1772,7 +1778,8 @@ public class RijndaelTest {
 		}
 	}
 
-	private byte[] TEST_VK_PTx256 = HexUtil.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
+	private byte[] TEST_VK_PTx256 =
+		HexUtil.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000");
 	/* This test vector for Rijndael(256,256) was generated with generic implementation */
 	private final static byte[][][] TEST_VK256x256 = { //
 		/* I=1 */
@@ -3084,19 +3091,26 @@ public class RijndaelTest {
 	final int[] GLADMAN_TEST_NUMBERS = new int[] { 44, 46, 48, 84, 86, 88 };
 
 	@Test
-	public void testGladmanTestVectors() throws UnsupportedCipherException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+	public void testGladmanTestVectors() throws UnsupportedCipherException, IOException,
+			   InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException,
+		BadPaddingException {
 		checkGladmanTestVectors("t");
 		checkGladmanTestVectors("k");
 	}
 
-	private void checkGladmanTestVectors(String type) throws UnsupportedCipherException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	private void checkGladmanTestVectors(String type) throws UnsupportedCipherException, IOException,
+		NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+		BadPaddingException {
 		for(int testNumber : GLADMAN_TEST_NUMBERS) {
 			InputStream is = null;
 			try {
-				is = getClass().getResourceAsStream("/freenet/crypt/ciphers/rijndael-gladman-test-data/ecbn"+type+testNumber+".txt");
+				is = getClass().getResourceAsStream("/freenet/crypt/ciphers/rijndael-gladman-test-data/ecbn"+type
+													+testNumber+".txt");
 				InputStreamReader isr = new InputStreamReader(is, StandardCharsets.ISO_8859_1);
 				BufferedReader br = new BufferedReader(isr);
-				for(int i=0; i<7; i++) br.readLine(); // Skip header
+				for(int i=0; i<7; i++) {
+					br.readLine();    // Skip header
+				}
 				String line = br.readLine();
 				int blockSize = Integer.parseInt(line.substring("BLOCKSIZE=".length()));
 				line = br.readLine();
@@ -3110,7 +3124,9 @@ public class RijndaelTest {
 				int test; // Ignored.
 				while(true) {
 					line = br.readLine();
-					if(line == null) break; // End of file.
+					if(line == null) {
+						break;    // End of file.
+					}
 					String prefix = line.substring(0, 6);
 					if(prefix.equals("TEST= ")) {
 						test = Integer.parseInt(line.substring(6));
@@ -3160,11 +3176,13 @@ public class RijndaelTest {
 								}
 							}
 							// Clear
-							if(type.equals("t"))
+							if(type.equals("t")) {
 								plaintext = null;
+							}
 							ciphertext = null;
-							if(type.equals("k"))
+							if(type.equals("k")) {
 								key = null;
+							}
 						}
 					}
 				}

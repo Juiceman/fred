@@ -28,8 +28,9 @@ public class PeerLocation {
 	public void setPeerLocations(String[] peerLocationsString) {
 		if(peerLocationsString != null) {
 			double[] peerLocations = new double[peerLocationsString.length];
-			for(int i = 0; i < peerLocationsString.length; i++)
+			for(int i = 0; i < peerLocationsString.length; i++) {
 				peerLocations[i] = Location.getLocation(peerLocationsString[i]);
+			}
 			updateLocation(currentLocation, peerLocations);
 		}
 	}
@@ -55,7 +56,9 @@ public class PeerLocation {
 	}
 
 	public synchronized int getDegree() {
-		if (currentPeersLocation == null) return 0;
+		if (currentPeersLocation == null) {
+			return 0;
+		}
 		return currentPeersLocation.length;
 	}
 
@@ -70,7 +73,8 @@ public class PeerLocation {
 		for (int i = 0; i < newLocs.length; i++) {
 			final double loc = newLocs[i];
 			if (!Location.isValid(loc)) {
-				Logger.error(this, "Invalid location update for " + this + " (" + loc + ")", new Exception("error"));
+				Logger.error(this, "Invalid location update for " + this + " (" + loc + ")",
+							 new Exception("error"));
 				// Ignore it
 				return false;
 			}

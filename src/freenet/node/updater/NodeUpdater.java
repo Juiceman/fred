@@ -67,7 +67,8 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 
 	public abstract String jarName();
 
-	NodeUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max, String blobFilenamePrefix) {
+	NodeUpdater(NodeUpdateManager manager, FreenetURI URI, int current, int min, int max,
+				String blobFilenamePrefix) {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		this.manager = manager;
 		this.node = manager.node;
@@ -106,7 +107,8 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		if(oldBlob.exists()) {
 			File temp;
 			try {
-				temp = File.createTempFile(blobFilenamePrefix + availableVersion + "-", ".fblob.tmp", manager.node.clientCore.getPersistentTempDir());
+				temp = File.createTempFile(blobFilenamePrefix + availableVersion + "-", ".fblob.tmp",
+										   manager.node.clientCore.getPersistentTempDir());
 			} catch (IOException e) {
 				Logger.error(this, "Unable to process old blob: "+e, e);
 				return;
@@ -133,27 +135,35 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	}
 
 	@Override
-	public void onFoundEdition(long l, USK key, ClientContext context, boolean wasMetadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-		if(newKnownGood && !newSlotToo) return;
+	public void onFoundEdition(long l, USK key, ClientContext context, boolean wasMetadata, short codec,
+							   byte[] data, boolean newKnownGood, boolean newSlotToo) {
+		if(newKnownGood && !newSlotToo) {
+			return;
+		}
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Found edition " + l);
+		}
 		int found;
 		synchronized(this) {
-			if(!isRunning)
+			if(!isRunning) {
 				return;
+			}
 			found = (int) key.suggestedEdition;
 
 			realAvailableVersion = found;
 			if(found > maxDeployVersion) {
-				System.err.println("Ignoring "+jarName() + " update edition "+l+": version too new (min "+minDeployVersion+" max "+maxDeployVersion+")");
+				System.err.println("Ignoring "+jarName() + " update edition "+l+": version too new (min "
+								   +minDeployVersion+" max "+maxDeployVersion+")");
 				found = maxDeployVersion;
 			}
 
-			if(found <= availableVersion)
+			if(found <= availableVersion) {
 				return;
+			}
 			System.err.println("Found " + jarName() + " update edition " + found);
-			Logger.minor(this, "Updating availableVersion from " + availableVersion + " to " + found + " and queueing an update");
+			Logger.minor(this, "Updating availableVersion from " + availableVersion + " to " + found +
+						 " and queueing an update");
 			this.availableVersion = found;
 		}
 		finishOnFoundEdition(found);
@@ -168,7 +178,8 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 		}, SECONDS.toMillis(60)); // leave some time in case we get later editions
 		// LOCKING: Always take the NodeUpdater lock *BEFORE* the NodeUpdateManager lock
 		if(found <= currentVersion) {
-			System.err.println("Cancelling fetch for "+found+": not newer than current version "+currentVersion);
+			System.err.println("Cancelling fetch for "+found+": not newer than current version "
+							   +currentVersion);
 			return;
 		}
 		onStartFetching();
@@ -179,20 +190,27 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 
 	public void maybeUpdate() {
 		ClientGetter toStart = null;
-		if(!manager.isEnabled())
+		if(!manager.isEnabled()) {
 			return;
-		if(manager.isBlown())
+		}
+		if(manager.isBlown()) {
 			return;
+		}
 		ClientGetter cancelled = null;
 		synchronized(this) {
-			if(logMINOR)
-				Logger.minor(this, "maybeUpdate: isFetching=" + isFetching + ", isRunning=" + isRunning + ", availableVersion=" + availableVersion);
-			if(!isRunning)
+			if(logMINOR) {
+				Logger.minor(this, "maybeUpdate: isFetching=" + isFetching + ", isRunning=" + isRunning +
+							 ", availableVersion=" + availableVersion);
+			}
+			if(!isRunning) {
 				return;
-			if(isFetching && availableVersion == fetchingVersion)
+			}
+			if(isFetching && availableVersion == fetchingVersion) {
 				return;
-			if(availableVersion <= fetchedVersion)
+			}
+			if(availableVersion <= fetchedVersion) {
 				return;
+			}
 			if(fetchingVersion < minDeployVersion || fetchingVersion == currentVersion) {
 				Logger.normal(this, "Cancelling previous fetch");
 				cancelled = cg;
@@ -202,19 +220,24 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 
 			if(availableVersion > currentVersion) {
 				Logger.normal(this, "Starting the update process (" + availableVersion + ')');
-				System.err.println("Starting the update process: found the update (" + availableVersion + "), now fetching it.");
+				System.err.println("Starting the update process: found the update (" + availableVersion +
+								   "), now fetching it.");
 			}
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Starting the update process (" + availableVersion + ')');
+			}
 			// We fetch it
 			try {
 				if((cg == null) || cg.isCancelled()) {
-					if(logMINOR)
+					if(logMINOR) {
 						Logger.minor(this, "Scheduling request for " + URI.setSuggestedEdition(availableVersion));
-					if(availableVersion > currentVersion)
+					}
+					if(availableVersion > currentVersion) {
 						System.err.println("Starting " + jarName() + " fetch for " + availableVersion);
+					}
 					tempBlobFile =
-						File.createTempFile(blobFilenamePrefix + availableVersion + "-", ".fblob.tmp", manager.node.clientCore.getPersistentTempDir());
+						File.createTempFile(blobFilenamePrefix + availableVersion + "-", ".fblob.tmp",
+											manager.node.clientCore.getPersistentTempDir());
 					FreenetURI uri = URI.setSuggestedEdition(availableVersion);
 					uri = uri.sskForUSK();
 					cg = new ClientGetter(this,
@@ -222,7 +245,8 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 										  null, new BinaryBlobWriter(new FileBucket(tempBlobFile, false, false, false, false)), null);
 					toStart = cg;
 				} else {
-					System.err.println("Already fetching "+jarName() + " fetch for " + fetchingVersion + " want "+availableVersion);
+					System.err.println("Already fetching "+jarName() + " fetch for " + fetchingVersion + " want "
+									   +availableVersion);
 				}
 				isFetching = true;
 			} catch(Exception e) {
@@ -241,17 +265,21 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			} catch (PersistenceDisabledException e) {
 				// Impossible
 			}
-		if(cancelled != null)
+		if(cancelled != null) {
 			cancelled.cancel(core.clientContext);
+		}
 	}
 
 	final File getBlobFile(int availableVersion) {
-		return new File(node.clientCore.getPersistentTempDir(), blobFilenamePrefix + availableVersion + ".fblob");
+		return new File(node.clientCore.getPersistentTempDir(),
+						blobFilenamePrefix + availableVersion + ".fblob");
 	}
 
 	RandomAccessBucket getBlobBucket(int availableVersion) {
 		File f = getBlobFile(availableVersion);
-		if(f == null) return null;
+		if(f == null) {
+			return null;
+		}
 		return new FileBucket(f, true, false, false, false);
 	}
 
@@ -268,8 +296,9 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				tempBlobFile.delete();
 				if(result != null) {
 					Bucket toFree = result.asBucket();
-					if(toFree != null)
+					if(toFree != null) {
 						toFree.free();
+					}
 				}
 				return;
 			}
@@ -293,17 +322,21 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				blobFile.delete();
 				if(!tempBlobFile.renameTo(blobFile))
 					if(blobFile.exists() && tempBlobFile.exists() &&
-							blobFile.length() == tempBlobFile.length())
-						Logger.minor(this, "Can't rename " + tempBlobFile + " over " + blobFile + " for " + fetchedVersion + " - probably not a big deal though as the files are the same size");
-					else {
-						Logger.error(this, "Not able to rename binary blob for node updater: " + tempBlobFile + " -> " + blobFile + " - may not be able to tell other peers about this build");
+							blobFile.length() == tempBlobFile.length()) {
+						Logger.minor(this, "Can't rename " + tempBlobFile + " over " + blobFile + " for " + fetchedVersion +
+									 " - probably not a big deal though as the files are the same size");
+					} else {
+						Logger.error(this, "Not able to rename binary blob for node updater: " + tempBlobFile + " -> " +
+									 blobFile + " - may not be able to tell other peers about this build");
 						blobFile = null;
 					}
 			}
 			this.fetchedVersion = fetchedVersion;
 			System.out.println("Found " + jarName() + " version " + fetchedVersion);
-			if(fetchedVersion > currentVersion)
-				Logger.normal(this, "Found version " + fetchedVersion + ", setting up a new UpdatedVersionAvailableUserAlert");
+			if(fetchedVersion > currentVersion) {
+				Logger.normal(this, "Found version " + fetchedVersion +
+							  ", setting up a new UpdatedVersionAvailableUserAlert");
+			}
 			maybeParseManifest(result, fetchedVersion);
 			this.cg = null;
 		}
@@ -326,14 +359,22 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 				ZipEntry ze;
 				while(true) {
 					ze = zis.getNextEntry();
-					if(ze == null) break;
-					if(ze.isDirectory()) continue;
+					if(ze == null) {
+						break;
+					}
+					if(ze.isDirectory()) {
+						continue;
+					}
 					String name = ze.getName();
 
 					if(name.equals("META-INF/MANIFEST.MF")) {
-						if(logMINOR) Logger.minor(this, "Found manifest");
+						if(logMINOR) {
+							Logger.minor(this, "Found manifest");
+						}
 						long size = ze.getSize();
-						if(logMINOR) Logger.minor(this, "Manifest size: "+size);
+						if(logMINOR) {
+							Logger.minor(this, "Manifest size: "+size);
+						}
 						if(size > MAX_MANIFEST_SIZE) {
 							Logger.error(this, "Manifest is too big: "+size+" bytes, limit is "+MAX_MANIFEST_SIZE);
 							break;
@@ -382,14 +423,22 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			ZipEntry ze;
 			while(true) {
 				ze = zis.getNextEntry();
-				if(ze == null) break;
-				if(ze.isDirectory()) continue;
+				if(ze == null) {
+					break;
+				}
+				if(ze.isDirectory()) {
+					continue;
+				}
 				String name = ze.getName();
 
 				if(name.equals(filename)) {
-					if(logMINOR) Logger.minor(NodeUpdater.class, "Found manifest");
+					if(logMINOR) {
+						Logger.minor(NodeUpdater.class, "Found manifest");
+					}
 					long size = ze.getSize();
-					if(logMINOR) Logger.minor(NodeUpdater.class, "Manifest size: "+size);
+					if(logMINOR) {
+						Logger.minor(NodeUpdater.class, "Manifest size: "+size);
+					}
 					if(size > MAX_MANIFEST_SIZE) {
 						Logger.error(NodeUpdater.class, "Manifest is too big: "+size+" bytes, limit is "+MAX_MANIFEST_SIZE);
 						break;
@@ -442,13 +491,15 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 	@Override
 	public void onFailure(FetchException e, ClientGetter state) {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-		if(!isRunning)
+		if(!isRunning) {
 			return;
+		}
 		FetchExceptionMode errorCode = e.getMode();
 		tempBlobFile.delete();
 
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "onFailure(" + e + ',' + state + ')');
+		}
 		synchronized(this) {
 			this.cg = null;
 			isFetching = false;
@@ -526,10 +577,11 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 
 	public int fetchingVersion() {
 		// We will not deploy currentVersion...
-		if(fetchingVersion <= currentVersion)
+		if(fetchingVersion <= currentVersion) {
 			return availableVersion;
-		else
+		} else {
 			return fetchingVersion;
+		}
 	}
 
 	public long getBlobSize() {
@@ -568,21 +620,25 @@ public abstract class NodeUpdater implements ClientGetCallback, USKCallback, Req
 			}
 			if(requiredExt > -1) {
 				minDeployVersion = requiredExt;
-				if(realAvailableVersion != availableVersion && availableVersion < requiredExt && realAvailableVersion >= requiredExt) {
+				if(realAvailableVersion != availableVersion && availableVersion < requiredExt
+						&& realAvailableVersion >= requiredExt) {
 					// We found a revision but didn't fetch it because it wasn't within the range for the old jar.
 					// The new one requires it, however.
-					System.err.println("Previously out-of-range edition "+realAvailableVersion+" is now needed by the new jar; scheduling fetch.");
+					System.err.println("Previously out-of-range edition "+realAvailableVersion
+									   +" is now needed by the new jar; scheduling fetch.");
 					callFinishedFound = availableVersion = realAvailableVersion;
 				} else if(availableVersion < requiredExt) {
 					// Including if it hasn't been found at all
 					// Just try it ...
 					callFinishedFound = availableVersion = requiredExt;
-					System.err.println("Need minimum edition "+requiredExt+" for new jar, found "+availableVersion+"; scheduling fetch.");
+					System.err.println("Need minimum edition "+requiredExt+" for new jar, found "+availableVersion
+									   +"; scheduling fetch.");
 				}
 			}
 		}
-		if(callFinishedFound > -1)
+		if(callFinishedFound > -1) {
 			finishOnFoundEdition(callFinishedFound);
+		}
 	}
 
 	@Override

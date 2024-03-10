@@ -59,8 +59,9 @@ public class Inet4AddressMatcher implements AddressMatcher {
 			String maskPart = cidrHostname.substring(slashPosition + 1);
 			if (maskPart.indexOf('.') == -1) {
 				int bits = Integer.parseInt(maskPart);
-				if (bits > 32 || bits < 0)
+				if (bits > 32 || bits < 0) {
 					throw new IllegalArgumentException("Mask bits out of range: " + bits + " (" + maskPart + ")");
+				}
 				networkMask = 0xffffffff << (32 - bits);
 				if (Integer.parseInt(maskPart) == 0) {
 					networkMask = 0;
@@ -87,7 +88,9 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 */
 	public static int convertToBytes(String address) {
 		StringTokenizer addressTokens = new StringTokenizer(address, ".");
-		int bytes = Integer.parseInt(addressTokens.nextToken()) << 24 | Integer.parseInt(addressTokens.nextToken()) << 16 | Integer.parseInt(addressTokens.nextToken()) << 8 | Integer.parseInt(addressTokens.nextToken());
+		int bytes = Integer.parseInt(addressTokens.nextToken()) << 24 | Integer.parseInt(
+						addressTokens.nextToken()) << 16 | Integer.parseInt(addressTokens.nextToken()) << 8 |
+					Integer.parseInt(addressTokens.nextToken());
 		return bytes;
 	}
 
@@ -101,7 +104,9 @@ public class Inet4AddressMatcher implements AddressMatcher {
 	 */
 	@Override
 	public boolean matches(InetAddress inetAddress) {
-		if (!(inetAddress instanceof Inet4Address)) return false;
+		if (!(inetAddress instanceof Inet4Address)) {
+			return false;
+		}
 		int matchAddress = convertToBytes(inetAddress.getHostAddress());
 		return (matchAddress & networkMask) == (address & networkMask);
 	}
@@ -126,10 +131,11 @@ public class Inet4AddressMatcher implements AddressMatcher {
 
 	@Override
 	public String getHumanRepresentation() {
-		if(networkMask == -1)
+		if(networkMask == -1) {
 			return convertToString(address);
-		else
+		} else {
 			return convertToString(address)+'/'+convertToString(networkMask);
+		}
 	}
 
 	private String convertToString(int addr) {
@@ -137,7 +143,9 @@ public class Inet4AddressMatcher implements AddressMatcher {
 		for(int i=0; i<4; i++) {
 			int x = addr >>> 24;
 			addr = addr << 8;
-			if(i != 0) sb.append('.');
+			if(i != 0) {
+				sb.append('.');
+			}
 			sb.append(x);
 		}
 		return sb.toString();

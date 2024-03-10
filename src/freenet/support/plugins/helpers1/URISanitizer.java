@@ -17,25 +17,34 @@ public class URISanitizer {
 		return sanitizeURI(null, key, false, options);
 	}
 
-	public static FreenetURI sanitizeURI(List<String> errors, String key, boolean breakOnErrors, Options... options) throws MalformedURLException {
-		if (key == null) throw new NullPointerException();
+	public static FreenetURI sanitizeURI(List<String> errors, String key, boolean breakOnErrors,
+										 Options... options) throws MalformedURLException {
+		if (key == null) {
+			throw new NullPointerException();
+		}
 		FreenetURI uri = new FreenetURI(key);
 		return sanitizeURI(errors, uri, breakOnErrors, options);
 	}
 
-	public static FreenetURI sanitizeURI(List<String> errors, FreenetURI key, boolean breakOnErrors, Options... options) throws MalformedURLException {
-		if (key == null) throw new NullPointerException();
+	public static FreenetURI sanitizeURI(List<String> errors, FreenetURI key, boolean breakOnErrors,
+										 Options... options) throws MalformedURLException {
+		if (key == null) {
+			throw new NullPointerException();
+		}
 
 		FreenetURI tempURI = key;
 
-		Outer:	for (Options option: options) {
+		Outer:
+		for (Options option: options) {
 			switch (option) {
 			case NOMETASTRINGS: {
 				if (tempURI.hasMetaStrings()) {
 					if (errors != null) {
 						tempURI = tempURI.setMetaString(null);
 						errors.add("URI did contain meta strings, removed it for you");
-						if (breakOnErrors) break Outer;
+						if (breakOnErrors) {
+							break Outer;
+						}
 					} else {
 						throw new MalformedURLException("URIs with meta strings not supported");
 					}
@@ -47,7 +56,9 @@ public class URISanitizer {
 					if (errors != null) {
 						tempURI = tempURI.sskForUSK();
 						errors.add("URI was an USK, converted it to SSK for you");
-						if (breakOnErrors) break Outer;
+						if (breakOnErrors) {
+							break Outer;
+						}
 					} else {
 						throw new MalformedURLException("USK not supported, use underlying SSK instead.");
 					}

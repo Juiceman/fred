@@ -16,7 +16,8 @@ import org.junit.Test;
  */
 public class ByteArrayWrapperTest {
 
-	private static final String DATA_STRING_1 = "asldkjaskjdsakdhasdhaskjdhaskjhbkasbhdjkasbduiwbxgdoudgboewuydxbybuewyxbuewyuwe";
+	private static final String DATA_STRING_1 =
+		"asldkjaskjdsakdhasdhaskjdhaskjhbkasbhdjkasbduiwbxgdoudgboewuydxbybuewyxbuewyuwe";
 
 	private static final String DATA_STRING_2 = "string2";
 

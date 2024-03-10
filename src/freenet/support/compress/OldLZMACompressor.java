@@ -35,8 +35,10 @@ public class OldLZMACompressor implements Compressor {
 	// Copied from EncoderThread. See below re licensing.
 	@Deprecated
 	@Override
-	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength, long maxWriteLength) throws IOException, CompressionOutputSizeException {
-		Logger.warning(this, "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
+	public Bucket compress(Bucket data, BucketFactory bf, long maxReadLength,
+						   long maxWriteLength) throws IOException, CompressionOutputSizeException {
+		Logger.warning(this,
+					   "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
 		Bucket output;
 		InputStream is = null;
 		OutputStream os = null;
@@ -44,8 +46,9 @@ public class OldLZMACompressor implements Compressor {
 			output = bf.makeBucket(maxWriteLength);
 			is = data.getInputStream();
 			os = output.getOutputStream();
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Compressing "+data+" size "+data.size()+" to new bucket "+output);
+			}
 			compress(is, os, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
@@ -61,8 +64,10 @@ public class OldLZMACompressor implements Compressor {
 
 	@Deprecated
 	@Override
-	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength) throws IOException, CompressionOutputSizeException {
-		Logger.warning(this, "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
+	public long compress(InputStream is, OutputStream os, long maxReadLength,
+						 long maxWriteLength) throws IOException, CompressionOutputSizeException {
+		Logger.warning(this,
+					   "OldLZMA compression is buggy and no longer supported. It only exists to allow reinserting keys.");
 		CountedInputStream cis = null;
 		CountedOutputStream cos = null;
 		cis = new CountedInputStream(is);
@@ -75,35 +80,43 @@ public class OldLZMACompressor implements Compressor {
 		// enc.WriteCoderProperties( out );
 		// 5d 00 00 10 00
 		encoder.Code( cis, cos, -1, -1, null );
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Read "+cis.count()+" written "+cos.written());
-		if(cos.written() > maxWriteLength)
+		}
+		if(cos.written() > maxWriteLength) {
 			throw new CompressionOutputSizeException();
+		}
 		cos.flush();
 		return cos.written();
 	}
 
 	@Override
-	public long compress(InputStream input, OutputStream output, long maxReadLength, long maxWriteLength, long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage) throws IOException {
+	public long compress(InputStream input, OutputStream output, long maxReadLength,
+						 long maxWriteLength, long amountOfDataToCheckCompressionRatio,
+						 int minimumCompressionPercentage) throws IOException {
 		throw new UnsupportedEncodingException();
 	}
 
-	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException, CompressionOutputSizeException {
+	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength,
+							 Bucket preferred) throws IOException, CompressionOutputSizeException {
 		Bucket output;
-		if(preferred != null)
+		if(preferred != null) {
 			output = preferred;
-		else
+		} else {
 			output = bf.makeBucket(maxLength);
-		if(logMINOR)
+		}
+		if(logMINOR) {
 			Logger.minor(this, "Decompressing "+data+" size "+data.size()+" to new bucket "+output);
+		}
 		CountedInputStream is = null;
 		OutputStream os = null;
 		try {
 			is = new CountedInputStream(data.getInputStream());
 			os = output.getOutputStream();
 			decompress(is, os, maxLength, maxCheckSizeLength);
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Output: "+output+" size "+output.size()+" read "+is.count());
+			}
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
 			is = null;
@@ -134,7 +147,8 @@ public class OldLZMACompressor implements Compressor {
 	}
 
 	@Override
-	public long decompress(InputStream is, OutputStream os, long maxLength, long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
+	public long decompress(InputStream is, OutputStream os, long maxLength,
+						   long maxCheckSizeBytes) throws IOException, CompressionOutputSizeException {
 		CountedOutputStream cos = new CountedOutputStream(os);
 		Decoder decoder = new Decoder();
 		decoder.SetDecoderProperties(props);
@@ -143,7 +157,8 @@ public class OldLZMACompressor implements Compressor {
 	}
 
 	@Override
-	public int decompress(byte[] dbuf, int i, int j, byte[] output) throws CompressionOutputSizeException {
+	public int decompress(byte[] dbuf, int i, int j,
+						  byte[] output) throws CompressionOutputSizeException {
 		// Didn't work with Inflater.
 		// FIXME fix sometimes to use Inflater - format issue?
 		ByteArrayInputStream bais = new ByteArrayInputStream(dbuf, i, j);

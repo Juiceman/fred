@@ -71,7 +71,9 @@ public class SerializerTest {
 
 		//Write to stream.
 		try {
-			for (Object datum : data) Serializer.writeToDataOutputStream(datum, dos);
+			for (Object datum : data) {
+				Serializer.writeToDataOutputStream(datum, dos);
+			}
 		} catch (IOException e) {
 			throw new IllegalStateException("This test should not throw.", e);
 		}

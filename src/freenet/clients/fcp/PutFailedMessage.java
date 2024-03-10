@@ -48,7 +48,9 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 	 */
 	public PutFailedMessage(SimpleFieldSet fs, boolean useVerboseFields) throws MalformedURLException {
 		identifier = fs.get("Identifier");
-		if(identifier == null) throw new NullPointerException();
+		if(identifier == null) {
+			throw new NullPointerException();
+		}
 		global = fs.getBoolean("Global", false);
 		code = InsertExceptionMode.getByCode(Integer.parseInt(fs.get("Code")));
 
@@ -64,10 +66,11 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 
 		extraDescription = fs.get("ExtraDescription");
 		String euri = fs.get("ExpectedURI");
-		if(euri != null && euri.length() > 0)
+		if(euri != null && euri.length() > 0) {
 			expectedURI = new FreenetURI(euri);
-		else
+		} else {
 			expectedURI = null;
+		}
 		SimpleFieldSet trackerSubset = fs.subset("Errors");
 		if(trackerSubset != null) {
 			tracker = new FailureCodeTracker(true, trackerSubset);
@@ -83,24 +86,30 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 
 	public SimpleFieldSet getFieldSet(boolean verbose) {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
-		if(identifier == null)
+		if(identifier == null) {
 			throw new NullPointerException();
+		}
 		fs.putSingle("Identifier", identifier);
 		fs.put("Global", global);
 		fs.put("Code", code.code);
-		if(verbose)
+		if(verbose) {
 			fs.putSingle("CodeDescription", codeDescription);
-		if(extraDescription != null)
+		}
+		if(extraDescription != null) {
 			fs.putSingle("ExtraDescription", extraDescription);
+		}
 		if(tracker != null) {
 			fs.tput("Errors", tracker.toFieldSet(verbose));
 		}
-		if(verbose)
+		if(verbose) {
 			fs.put("Fatal", isFatal);
-		if(verbose)
+		}
+		if(verbose) {
 			fs.putSingle("ShortCodeDescription", shortCodeDescription);
-		if(expectedURI != null)
+		}
+		if(expectedURI != null) {
 			fs.putSingle("ExpectedURI", expectedURI.toString());
+		}
 		return fs;
 	}
 
@@ -112,7 +121,8 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PutFailed goes from server to client not the other way around", identifier, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PutFailed goes from server to client not the other way around", identifier, global);
 	}
 
 	public String getShortFailedMessage() {
@@ -120,10 +130,11 @@ public class PutFailedMessage extends FCPMessage implements Serializable {
 	}
 
 	public String getLongFailedMessage() {
-		if(extraDescription != null)
+		if(extraDescription != null) {
 			return shortCodeDescription + ": " + extraDescription;
-		else
+		} else {
 			return shortCodeDescription;
+		}
 	}
 
 }

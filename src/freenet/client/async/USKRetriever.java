@@ -64,7 +64,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	public USKRetriever(FetchContext fctx, short prio,
 						final RequestClient client, USKRetrieverCallback cb, USK origUSK) {
 		super(prio, client);
-		if(client.persistent()) throw new UnsupportedOperationException("USKRetriever cannot be persistent");
+		if(client.persistent()) {
+			throw new UnsupportedOperationException("USKRetriever cannot be persistent");
+		}
 		this.ctx = fctx;
 		this.cb = cb;
 		this.origUSK = origUSK;
@@ -72,16 +74,20 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	}
 
 	@Override
-	public void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
+	public void onFoundEdition(long l, USK key, ClientContext context, boolean metadata, short codec,
+							   byte[] data, boolean newKnownGood, boolean newSlotToo) {
 		if(l < 0) {
 			Logger.error(this, "Found negative edition: "+l+" for "+key+" !!!");
 			return;
 		}
 		if(l < origUSK.suggestedEdition) {
-			Logger.warning(this, "Found edition prior to that specified by the client: "+l+" < "+origUSK.suggestedEdition);
+			Logger.warning(this, "Found edition prior to that specified by the client: "+l+" < "
+						   +origUSK.suggestedEdition);
 			return;
 		}
-		if(logMINOR) Logger.minor(this, "Found edition "+l+" for "+this+" - fetching...");
+		if(logMINOR) {
+			Logger.minor(this, "Found edition "+l+" for "+this+" - fetching...");
+		}
 		// Create a SingleFileFetcher for the key (as an SSK).
 		// Put the edition number into its context object.
 		// Put ourself as callback.
@@ -89,7 +95,8 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 		FreenetURI uri = key.getSSK(l).getURI();
 		try {
 			SingleFileFetcher getter =
-				(SingleFileFetcher) SingleFileFetcher.create(this, this, uri, ctx, new ArchiveContext(ctx.maxTempLength, ctx.maxArchiveLevels),
+				(SingleFileFetcher) SingleFileFetcher.create(this, this, uri, ctx,
+						new ArchiveContext(ctx.maxTempLength, ctx.maxArchiveLevels),
 						ctx.maxNonSplitfileRetries, 0, true, l, true, false, context, realTimeFlag, false);
 			getter.schedule(context);
 		} catch (MalformedURLException e) {
@@ -100,9 +107,12 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	}
 
 	@Override
-	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, final ClientGetState state, ClientContext context) {
-		if(logMINOR)
-			Logger.minor(this, "Success on "+this+" from "+state+" : length "+streamGenerator.size()+"mime type "+clientMetadata.getMIMEType());
+	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata,
+						  List<? extends Compressor> decompressors, final ClientGetState state, ClientContext context) {
+		if(logMINOR) {
+			Logger.minor(this, "Success on "+this+" from "+state+" : length "+streamGenerator.size()
+						 +"mime type "+clientMetadata.getMIMEType());
+		}
 		DecompressorThreadManager decompressorManager = null;
 		OutputStream output = null;
 		Bucket finalResult = null;
@@ -128,12 +138,16 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 			output = finalResult.getOutputStream();
 			// Decompress
 			if(decompressors != null) {
-				if(logMINOR) Logger.minor(this, "Decompressing...");
+				if(logMINOR) {
+					Logger.minor(this, "Decompressing...");
+				}
 				pipeIn = new PipedInputStream();
 				pipeOut = new PipedOutputStream(pipeIn);
 				decompressorManager = new DecompressorThreadManager(pipeIn, decompressors, maxLen);
 				pipeIn = decompressorManager.execute();
-				ClientGetWorkerThread worker = new ClientGetWorkerThread(new BufferedInputStream(pipeIn), output, null, null, ctx.getSchemeHostAndPort(), null, false, null, null, null, context.linkFilterExceptionProvider);
+				ClientGetWorkerThread worker = new ClientGetWorkerThread(new BufferedInputStream(pipeIn), output,
+						null, null, ctx.getSchemeHostAndPort(), null, false, null, null, null,
+						context.linkFilterExceptionProvider);
 				worker.start();
 				streamGenerator.writeTo(pipeOut, context);
 				worker.waitFinished();
@@ -259,12 +273,15 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	}
 
 	@Override
-	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal, ClientContext context) {
+	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal,
+								  ClientContext context) {
 		// Ignore
 	}
 
 	@Override
-	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max, byte[] splitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway, ClientContext context) {
+	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max,
+			byte[] splitfileKey, boolean compressed, boolean bottomLayer, boolean definitiveAnyway,
+			ClientContext context) {
 		// Ignore
 	}
 
@@ -301,10 +318,12 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 			f = fetcher;
 			p = proxy;
 		}
-		if(f != null)
+		if(f != null) {
 			f.cancel(manager.getContext());
-		if(p != null)
+		}
+		if(p != null) {
 			manager.unsubscribe(origUSK, p);
+		}
 	}
 
 	/** Only works if setFetcher() has been called, i.e. if this was created
@@ -320,7 +339,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 		synchronized(this) {
 			f = fetcher;
 		}
-		if(f == null) throw new IllegalStateException();
+		if(f == null) {
+			throw new IllegalStateException();
+		}
 		f.changeUSKPollParameters(time, tries, context);
 	}
 

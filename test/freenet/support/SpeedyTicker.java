@@ -7,7 +7,8 @@ public class SpeedyTicker implements Ticker {
 
 	public void queueTimedJob(Runnable job, long offset) {
 	}
-	public void queueTimedJob(Runnable job, String name, long offset, boolean runOnTickerAnyway, boolean noDupes) {
+	public void queueTimedJob(Runnable job, String name, long offset, boolean runOnTickerAnyway,
+							  boolean noDupes) {
 	}
 
 	public Executor getExecutor() {

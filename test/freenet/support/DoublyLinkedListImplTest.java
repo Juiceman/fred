@@ -27,10 +27,11 @@ public class DoublyLinkedListImplTest {
 
 		@Override
 		public String toString() {
-			if (isClone)
+			if (isClone) {
 				return "[" + value + "]";
-			else
+			} else {
 				return "(" + value + ")";
+			}
 		}
 
 		void assertV(int v) {
@@ -39,10 +40,12 @@ public class DoublyLinkedListImplTest {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o == null)
+			if (o == null) {
 				return false;
-			if (o.getClass() != this.getClass())
+			}
+			if (o.getClass() != this.getClass()) {
 				return false;
+			}
 			T t = (T) o;
 			return t.value == value && t.isClone == isClone;
 		}

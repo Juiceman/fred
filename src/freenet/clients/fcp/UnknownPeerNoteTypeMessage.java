@@ -20,8 +20,9 @@ public class UnknownPeerNoteTypeMessage extends FCPMessage {
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.put("PeerNoteType", peerNoteType);
-		if(identifier != null)
+		if(identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 
@@ -33,7 +34,8 @@ public class UnknownPeerNoteTypeMessage extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "UnknownPeerNoteType goes from server to client not the other way around", identifier, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "UnknownPeerNoteType goes from server to client not the other way around", identifier, false);
 	}
 
 }

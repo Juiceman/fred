@@ -88,10 +88,12 @@ public class RequestTracker {
 	}
 
 	public boolean lockUID(UIDTag tag) {
-		return lockUID(tag.uid, tag.isSSK(), tag.isInsert(), tag.isOfferReply(), tag.wasLocal(), tag.realTimeFlag, tag);
+		return lockUID(tag.uid, tag.isSSK(), tag.isInsert(), tag.isOfferReply(), tag.wasLocal(),
+					   tag.realTimeFlag, tag);
 	}
 
-	public boolean lockUID(long uid, boolean ssk, boolean insert, boolean offerReply, boolean local, boolean realTimeFlag, UIDTag tag) {
+	public boolean lockUID(long uid, boolean ssk, boolean insert, boolean offerReply, boolean local,
+						   boolean realTimeFlag, UIDTag tag) {
 		// If these are switched around, we must remember to remove from both.
 		if(offerReply) {
 			// local irrelevant for OfferReplyTag's.
@@ -108,9 +110,13 @@ public class RequestTracker {
 		}
 	}
 
-	private<T extends UIDTag> boolean innerLock(HashMap<Long, T> overallMap, HashMap<Long, T> localMap, T tag, Long uid, boolean ssk, boolean insert, boolean offerReply, boolean local) {
+	private<T extends UIDTag> boolean innerLock(HashMap<Long, T> overallMap, HashMap<Long, T> localMap,
+			T tag, Long uid, boolean ssk, boolean insert, boolean offerReply, boolean local) {
 		synchronized(overallMap) {
-			if(logMINOR) Logger.minor(this, "Locking "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+overallMap.size(), new Exception("debug"));
+			if(logMINOR) {
+				Logger.minor(this, "Locking "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="
+							 +local+" size="+overallMap.size(), new Exception("debug"));
+			}
 			T oldTag = overallMap.get(uid);
 			if(oldTag != null) {
 				if(oldTag == tag) {
@@ -120,22 +126,32 @@ public class RequestTracker {
 				}
 			}
 			overallMap.put(uid, tag);
-			if(logMINOR) Logger.minor(this, "Locked "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+overallMap.size());
+			if(logMINOR) {
+				Logger.minor(this, "Locked "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="
+							 +local+" size="+overallMap.size());
+			}
 			if(local) {
-				if(logMINOR) Logger.minor(this, "Locking (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+localMap.size(), new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Locking (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply
+								 +" local="+local+" size="+localMap.size(), new Exception("debug"));
+				}
 				oldTag = localMap.get(uid);
 				if(oldTag != null) {
 					if(oldTag == tag) {
 						Logger.error(this, "Tag already registered (local): "+tag, new Exception("debug"));
 					} else {
 						// Violates the invariant that local requests are always registered on the main (non-local) map too.
-						Logger.error(this, "Different tag already registered (local) EVEN THOUGH NOT ON MAIN MAP: "+tag, new Exception("debug"));
+						Logger.error(this, "Different tag already registered (local) EVEN THOUGH NOT ON MAIN MAP: "+tag,
+									 new Exception("debug"));
 						overallMap.remove(uid);
 						return false;
 					}
 				}
 				localMap.put(uid, tag);
-				if(logMINOR) Logger.minor(this, "Locked (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+localMap.size());
+				if(logMINOR) {
+					Logger.minor(this, "Locked (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply
+								 +" local="+local+" size="+localMap.size());
+				}
 			}
 		}
 		return true;
@@ -143,12 +159,15 @@ public class RequestTracker {
 
 	/** Only used by UIDTag. */
 	void unlockUID(UIDTag tag, boolean canFail, boolean noRecord) {
-		unlockUID(tag.uid, tag.isSSK(), tag.isInsert(), canFail, tag.isOfferReply(), tag.wasLocal(), tag.realTimeFlag, tag, noRecord);
+		unlockUID(tag.uid, tag.isSSK(), tag.isInsert(), canFail, tag.isOfferReply(), tag.wasLocal(),
+				  tag.realTimeFlag, tag, noRecord);
 	}
 
-	protected void unlockUID(long uid, boolean ssk, boolean insert, boolean canFail, boolean offerReply, boolean local, boolean realTimeFlag, UIDTag tag, boolean noRecord) {
-		if(!noRecord)
+	protected void unlockUID(long uid, boolean ssk, boolean insert, boolean canFail, boolean offerReply,
+							 boolean local, boolean realTimeFlag, UIDTag tag, boolean noRecord) {
+		if(!noRecord) {
 			completed(uid);
+		}
 
 		if(offerReply) {
 			HashMap<Long,OfferReplyTag> map = getOfferTracker(ssk, realTimeFlag);
@@ -180,28 +199,45 @@ public class RequestTracker {
 	 * it is not we expect the latter to be null.
 	 * @param canFail
 	 */
-	private<T extends UIDTag> void innerUnlock(HashMap<Long, T> overallMap, HashMap<Long, T> localMap, T tag, Long uid, boolean ssk, boolean insert, boolean offerReply, boolean local, boolean canFail) {
+	private<T extends UIDTag> void innerUnlock(HashMap<Long, T> overallMap, HashMap<Long, T> localMap,
+			T tag, Long uid, boolean ssk, boolean insert, boolean offerReply, boolean local, boolean canFail) {
 		synchronized(overallMap) {
-			if(logMINOR) Logger.minor(this, "Unlocking "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+overallMap.size(), new Exception("debug"));
+			if(logMINOR) {
+				Logger.minor(this, "Unlocking "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply
+							 +" local="+local+" size="+overallMap.size(), new Exception("debug"));
+			}
 			if(overallMap.get(uid) != tag) {
 				if(canFail) {
-					if(logMINOR) Logger.minor(this, "Can fail and did fail: removing "+tag+" got "+overallMap.get(uid)+" for "+uid);
+					if(logMINOR) {
+						Logger.minor(this, "Can fail and did fail: removing "+tag+" got "+overallMap.get(uid)+" for "+uid);
+					}
 				} else {
 					Logger.error(this, "Removing "+tag+" for "+uid+" returned "+overallMap.get(uid));
 				}
-			} else
+			} else {
 				overallMap.remove(uid);
-			if(logMINOR) Logger.minor(this, "Unlocked "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+overallMap.size());
+			}
+			if(logMINOR) {
+				Logger.minor(this, "Unlocked "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="
+							 +local+" size="+overallMap.size());
+			}
 			if(local) {
 				if(localMap.get(uid) != tag) {
 					if(canFail) {
-						if(logMINOR) Logger.minor(this, "Can fail and did fail (local): removing "+tag+" got "+localMap.get(uid)+" for "+uid);
+						if(logMINOR) {
+							Logger.minor(this, "Can fail and did fail (local): removing "+tag+" got "+localMap.get(
+											 uid)+" for "+uid);
+						}
 					} else {
 						Logger.error(this, "Removing "+tag+" for "+uid+" returned (local) "+localMap.get(uid));
 					}
-				} else
+				} else {
 					localMap.remove(uid);
-				if(logMINOR) Logger.minor(this, "Unlocked (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply+" local="+local+" size="+localMap.size());
+				}
+				if(logMINOR) {
+					Logger.minor(this, "Unlocked (local) "+uid+" ssk="+ssk+" insert="+insert+" offerReply="+offerReply
+								 +" local="+local+" size="+localMap.size());
+				}
 
 			} else {
 				assert(localMap == null);
@@ -237,12 +273,15 @@ public class RequestTracker {
 	 * @param counter Transfer counts for all requests will be added to this counter object.
 	 * @param counterSourceRestarted Transfer counts for requests whose source restarted (and so
 	 * are counted as local) will be added to this counter object. */
-	public void countRequests(boolean local, boolean ssk, boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, CountedRequests counter, CountedRequests counterSourceRestarted) {
+	public void countRequests(boolean local, boolean ssk, boolean insert, boolean offer,
+							  boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, CountedRequests counter,
+							  CountedRequests counterSourceRestarted) {
 		HashMap<Long, ? extends UIDTag> map = getTracker(local, ssk, insert, offer, realTimeFlag);
 		// Map is locked by the non-local version, although we're counting from the local version.
 		HashMap<Long, ? extends UIDTag> mapLock = map;
-		if(local)
+		if(local) {
 			mapLock = getTracker(false, ssk, insert, offer, realTimeFlag);
+		}
 		synchronized(mapLock) {
 			int count = 0;
 			int transfersOut = 0;
@@ -253,7 +292,9 @@ public class RequestTracker {
 			for(Map.Entry<Long, ? extends UIDTag> entry : map.entrySet()) {
 				UIDTag tag = entry.getValue();
 				// The overall running* map can include local. But the local map can't include non-local.
-				if((!local) && tag.wasLocal) continue;
+				if((!local) && tag.wasLocal) {
+					continue;
+				}
 				int out = tag.expectedTransfersOut(ignoreLocalVsRemote, transfersPerInsert, true);
 				int in = tag.expectedTransfersIn(ignoreLocalVsRemote, transfersPerInsert, true);
 				count++;
@@ -264,7 +305,9 @@ public class RequestTracker {
 					transfersOutSR += out;
 					transfersInSR += in;
 				}
-				if(logDEBUG) Logger.debug(this, "UID "+entry.getKey()+" : out "+transfersOut+" in "+transfersIn);
+				if(logDEBUG) {
+					Logger.debug(this, "UID "+entry.getKey()+" : out "+transfersOut+" in "+transfersIn);
+				}
 			}
 			counter.total += count;
 			counter.expectedTransfersIn += transfersIn;
@@ -299,12 +342,15 @@ public class RequestTracker {
 	 * @param counter Transfer counts for all requests will be added to this counter object.
 	 * @param counterSR Transfer counts for requests whose source restarted (and so
 	 * are counted as local) will be added to this counter object. */
-	public void countRequests(PeerNode source, boolean requestsToNode, boolean local, boolean ssk, boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, CountedRequests counter, CountedRequests counterSR) {
+	public void countRequests(PeerNode source, boolean requestsToNode, boolean local, boolean ssk,
+							  boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert,
+							  boolean ignoreLocalVsRemote, CountedRequests counter, CountedRequests counterSR) {
 		HashMap<Long, ? extends UIDTag> map = getTracker(local, ssk, insert, offer, realTimeFlag);
 		// Map is locked by the non-local version, although we're counting from the local version.
 		HashMap<Long, ? extends UIDTag> mapLock = map;
-		if(local)
+		if(local) {
 			mapLock = getTracker(false, ssk, insert, offer, realTimeFlag);
+		}
 		synchronized(mapLock) {
 			int count = 0;
 			int transfersOut = 0;
@@ -316,11 +362,15 @@ public class RequestTracker {
 				// If a request is adopted by us as a result of a timeout, it can be in the
 				// remote map despite having source == null. However, if a request is in the
 				// local map it will always have source == null.
-				if(source != null && local) return;
+				if(source != null && local) {
+					return;
+				}
 				for(Map.Entry<Long, ? extends UIDTag> entry : map.entrySet()) {
 					UIDTag tag = entry.getValue();
 					// The overall running* map can include local. But the local map can't include non-local.
-					if((!local) && tag.wasLocal) continue;
+					if((!local) && tag.wasLocal) {
+						continue;
+					}
 					if(tag.getSource() == source) {
 						int out = tag.expectedTransfersOut(ignoreLocalVsRemote, transfersPerInsert, true);
 						int in = tag.expectedTransfersIn(ignoreLocalVsRemote, transfersPerInsert, true);
@@ -332,10 +382,17 @@ public class RequestTracker {
 							transfersOutSR += out;
 							transfersInSR += in;
 						}
-						if(logMINOR) Logger.minor(this, "Counting "+tag+" from "+entry.getKey()+" from "+source+" count now "+count+" out now "+transfersOut+" in now "+transfersIn);
-					} else if(logDEBUG) Logger.debug(this, "Not counting "+entry.getKey());
+						if(logMINOR) {
+							Logger.minor(this, "Counting "+tag+" from "+entry.getKey()+" from "+source+" count now "+count
+										 +" out now "+transfersOut+" in now "+transfersIn);
+						}
+					} else if(logDEBUG) {
+						Logger.debug(this, "Not counting "+entry.getKey());
+					}
 				}
-				if(logMINOR) Logger.minor(this, "Returning count: "+count+" in: "+transfersIn+" out: "+transfersOut);
+				if(logMINOR) {
+					Logger.minor(this, "Returning count: "+count+" in: "+transfersIn+" out: "+transfersOut);
+				}
 				counter.total += count;
 				counter.expectedTransfersIn += transfersIn;
 				counter.expectedTransfersOut += transfersOut;
@@ -350,22 +407,33 @@ public class RequestTracker {
 				for(Map.Entry<Long, ? extends UIDTag> entry : map.entrySet()) {
 					UIDTag tag = entry.getValue();
 					// The overall running* map can include local. But the local map can't include non-local.
-					if((!local) && tag.wasLocal) continue;
+					if((!local) && tag.wasLocal) {
+						continue;
+					}
 					// Ordinary requests can be routed to an offered key.
 					// So we *DO NOT* care whether it's an ordinary routed relayed request or a GetOfferedKey, if we are counting outgoing requests.
 					if(tag.currentlyFetchingOfferedKeyFrom(source)) {
-						if(logMINOR) Logger.minor(this, "Counting "+tag+" to "+entry.getKey());
+						if(logMINOR) {
+							Logger.minor(this, "Counting "+tag+" to "+entry.getKey());
+						}
 						transfersOut += tag.expectedTransfersOut(ignoreLocalVsRemote, transfersPerInsert, false);
 						transfersIn += tag.expectedTransfersIn(ignoreLocalVsRemote, transfersPerInsert, false);
 						count++;
 					} else if(tag.currentlyRoutingTo(source)) {
-						if(logMINOR) Logger.minor(this, "Counting "+tag+" to "+entry.getKey());
+						if(logMINOR) {
+							Logger.minor(this, "Counting "+tag+" to "+entry.getKey());
+						}
 						transfersOut += tag.expectedTransfersOut(ignoreLocalVsRemote, transfersPerInsert, false);
 						transfersIn += tag.expectedTransfersIn(ignoreLocalVsRemote, transfersPerInsert, false);
 						count++;
-					} else if(logDEBUG) Logger.debug(this, "Not counting "+entry.getKey());
+					} else if(logDEBUG) {
+						Logger.debug(this, "Not counting "+entry.getKey());
+					}
 				}
-				if(logMINOR) Logger.minor(this, "Counted for "+(local?"local":"remote")+" "+(ssk?"ssk":"chk")+" "+(insert?"insert":"request")+" "+(offer?"offer":"")+" : "+count+" of "+map.size()+" for "+source);
+				if(logMINOR) {
+					Logger.minor(this, "Counted for "+(local?"local":"remote")+" "+(ssk?"ssk":"chk")+" "+
+								 (insert?"insert":"request")+" "+(offer?"offer":"")+" : "+count+" of "+map.size()+" for "+source);
+				}
 				counter.total += count;
 				counter.expectedTransfersIn += transfersIn;
 				counter.expectedTransfersOut += transfersOut;
@@ -389,12 +457,15 @@ public class RequestTracker {
 	 * various cases: local requests, requested that have been adopted because their originator
 	 * restarted, requests where the originator PeerNode has been removed from the routing table
 	 * etc. */
-	public void countAllRequestsByIncomingPeer(boolean requestsToNode, boolean local, boolean ssk, boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert, boolean ignoreLocalVsRemote, Map<PeerNode, CountedRequests> counterMap) {
+	public void countAllRequestsByIncomingPeer(boolean requestsToNode, boolean local, boolean ssk,
+			boolean insert, boolean offer, boolean realTimeFlag, int transfersPerInsert,
+			boolean ignoreLocalVsRemote, Map<PeerNode, CountedRequests> counterMap) {
 		HashMap<Long, ? extends UIDTag> map = getTracker(local, ssk, insert, offer, realTimeFlag);
 		// Map is locked by the non-local version, although we're counting from the local version.
 		HashMap<Long, ? extends UIDTag> mapLock = map;
-		if(local)
+		if(local) {
 			mapLock = getTracker(false, ssk, insert, offer, realTimeFlag);
+		}
 		synchronized(mapLock) {
 			if(!requestsToNode) {
 				// If a request is adopted by us as a result of a timeout, it can be in the
@@ -403,7 +474,9 @@ public class RequestTracker {
 				for(Map.Entry<Long, ? extends UIDTag> entry : map.entrySet()) {
 					UIDTag tag = entry.getValue();
 					// The overall running* map can include local. But the local map can't include non-local.
-					if((!local) && tag.wasLocal) continue;
+					if((!local) && tag.wasLocal) {
+						continue;
+					}
 					PeerNode source = tag.getSource(); // Can be null in various cases
 					CountedRequests counter = counterMap.get(source);
 					if(counter == null) {
@@ -444,16 +517,20 @@ public class RequestTracker {
 		return slots;
 	}
 
-	private void countRequestsWaitingForSlots(HashMap<Long, ? extends UIDTag> runningUIDs, WaitingForSlots slots) {
+	private void countRequestsWaitingForSlots(HashMap<Long, ? extends UIDTag> runningUIDs,
+			WaitingForSlots slots) {
 		// FIXME use a counter, but that means make sure it always removes it when something bad happens.
 
 		synchronized(runningUIDs) {
 			for(UIDTag tag : runningUIDs.values()) {
-				if(!tag.isWaitingForSlot()) continue;
-				if(tag.isLocal())
+				if(!tag.isWaitingForSlot()) {
+					continue;
+				}
+				if(tag.isLocal()) {
 					slots.local++;
-				else
+				} else {
 					slots.remote++;
+				}
 			}
 		}
 	}
@@ -465,16 +542,18 @@ public class RequestTracker {
 
 	private HashMap<Long, ? extends UIDTag> getTracker(boolean local, boolean ssk,
 			boolean insert, boolean offer, boolean realTimeFlag) {
-		if(offer)
+		if(offer) {
 			return getOfferTracker(ssk, realTimeFlag);
-		else if(insert)
+		} else if(insert) {
 			return getInsertTracker(ssk, local, realTimeFlag);
-		else
+		} else {
 			return getRequestTracker(ssk, local, realTimeFlag);
+		}
 	}
 
 
-	private HashMap<Long, RequestTag> getRequestTracker(boolean ssk, boolean local, boolean realTimeFlag) {
+	private HashMap<Long, RequestTag> getRequestTracker(boolean ssk, boolean local,
+			boolean realTimeFlag) {
 		if(realTimeFlag) {
 			if(ssk) {
 				return local ? runningLocalSSKGetUIDsRT : runningSSKGetUIDsRT;
@@ -490,7 +569,8 @@ public class RequestTracker {
 		}
 	}
 
-	private HashMap<Long, InsertTag> getInsertTracker(boolean ssk, boolean local, boolean realTimeFlag) {
+	private HashMap<Long, InsertTag> getInsertTracker(boolean ssk, boolean local,
+			boolean realTimeFlag) {
 		if(realTimeFlag) {
 			if(ssk) {
 				return local ? runningLocalSSKPutUIDsRT : runningSSKPutUIDsRT;
@@ -507,10 +587,11 @@ public class RequestTracker {
 	}
 
 	private HashMap<Long, OfferReplyTag> getOfferTracker(boolean ssk, boolean realTimeFlag) {
-		if(realTimeFlag)
+		if(realTimeFlag) {
 			return ssk ? runningSSKOfferReplyUIDsRT : runningCHKOfferReplyUIDsRT;
-		else
+		} else {
 			return ssk ? runningSSKOfferReplyUIDsBulk : runningCHKOfferReplyUIDsBulk;
+		}
 	}
 
 	// Must include bulk inserts so fairly long.
@@ -576,8 +657,9 @@ public class RequestTracker {
 									   HashMap<Long, ? extends UIDTag> uids) {
 		synchronized(uids) {
 			for(UIDTag tag : uids.values()) {
-				if(tag.isSource(pn))
+				if(tag.isSource(pn)) {
 					tag.onRestartOrDisconnectSource();
+				}
 			}
 		}
 	}
@@ -771,10 +853,14 @@ public class RequestTracker {
 	}
 
 	public int getTotalRunningUIDsAlt() {
-		return this.runningCHKGetUIDsRT.size() + this.runningCHKPutUIDsRT.size() + this.runningSSKGetUIDsRT.size() +
-			   this.runningSSKPutUIDsRT.size() + this.runningSSKOfferReplyUIDsRT.size() + this.runningCHKOfferReplyUIDsRT.size() +
-			   this.runningCHKGetUIDsBulk.size() + this.runningCHKPutUIDsBulk.size() + this.runningSSKGetUIDsBulk.size() +
-			   this.runningSSKPutUIDsBulk.size() + this.runningSSKOfferReplyUIDsBulk.size() + this.runningCHKOfferReplyUIDsBulk.size();
+		return this.runningCHKGetUIDsRT.size() + this.runningCHKPutUIDsRT.size() +
+			   this.runningSSKGetUIDsRT.size() +
+			   this.runningSSKPutUIDsRT.size() + this.runningSSKOfferReplyUIDsRT.size() +
+			   this.runningCHKOfferReplyUIDsRT.size() +
+			   this.runningCHKGetUIDsBulk.size() + this.runningCHKPutUIDsBulk.size() +
+			   this.runningSSKGetUIDsBulk.size() +
+			   this.runningSSKPutUIDsBulk.size() + this.runningSSKOfferReplyUIDsBulk.size() +
+			   this.runningCHKOfferReplyUIDsBulk.size();
 	}
 
 	private ArrayList<Long> completedBuffer = new ArrayList<Long>();
@@ -790,12 +876,16 @@ public class RequestTracker {
 		Long[] list;
 		synchronized (completedBuffer) {
 			completedBuffer.add(id);
-			if(completedBuffer.size() < COMPLETED_THRESHOLD) return;
+			if(completedBuffer.size() < COMPLETED_THRESHOLD) {
+				return;
+			}
 			list = completedBuffer.toArray(new Long[completedBuffer.size()]);
 			completedBuffer.clear();
 		}
 		for(PeerNode pn : peers.myPeers()) {
-			if(!pn.isRoutingCompatible()) continue;
+			if(!pn.isRoutingCompatible()) {
+				continue;
+			}
 			pn.removeUIDsFromMessageQueues(list);
 		}
 	}
@@ -848,8 +938,9 @@ public class RequestTracker {
 
 			// Since there is no request coalescing, we only remove it if it matches,
 			// and don't complain if it doesn't.
-			if(transferringRequestSenders.get(key) == sender)
+			if(transferringRequestSenders.get(key) == sender) {
 				transferringRequestSenders.remove(key);
+			}
 		}
 	}
 

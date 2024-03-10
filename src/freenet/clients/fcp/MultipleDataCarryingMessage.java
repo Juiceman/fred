@@ -25,7 +25,8 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 	//We can't read an arbitrary multiple data carrying message from an InputStream
 	//This class is only used to send such messages to the client
 	@Override
-	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException {
+	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException,
+		MessageInvalidException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -34,7 +35,9 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 		for(Map.Entry<String, Bucket> entry : buckets.entrySet()) {
 			Bucket bucket = entry.getValue();
 			BucketTools.copyTo(bucket, os, bucket.size());
-			if(freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
+			if(freeOnSent) {
+				bucket.free();    // Always transient so no removeFrom() needed.
+			}
 		}
 	}
 
@@ -55,8 +58,9 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 	@Override
 	public long dataLength() {
 		int dataLength = 0;
-		for(Bucket bucket : buckets.values())
+		for(Bucket bucket : buckets.values()) {
 			dataLength += bucket.size();
+		}
 		return dataLength;
 	}
 

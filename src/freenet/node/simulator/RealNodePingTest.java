@@ -40,12 +40,18 @@ public class RealNodePingTest {
 	static final FRIEND_TRUST trust = FRIEND_TRUST.LOW;
 	static final FRIEND_VISIBILITY visibility = FRIEND_VISIBILITY.NO;
 
-	public static void main(String[] args) throws FSParseException, PeerParseException, InterruptedException, ReferenceSignatureVerificationException, NodeInitException, InvalidThresholdException, PeerTooOldException {
+	public static void main(String[] args) throws FSParseException, PeerParseException,
+			   InterruptedException, ReferenceSignatureVerificationException, NodeInitException,
+		InvalidThresholdException, PeerTooOldException {
 		RandomSource random = NodeStarter.globalTestInit("pingtest", false, LogLevel.ERROR, "", true);
 		// Create 2 nodes
 		Executor executor = new PooledExecutor();
-		Node node1 = NodeStarter.createTestNode(DARKNET_PORT1, 0, "pingtest", true, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 65536, true, false, false, false, false, false, true, 0, false, false, true, false, null);
-		Node node2 = NodeStarter.createTestNode(DARKNET_PORT2, 0, "pingtest", true, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 65536, true, false, false, false, false, false, true, 0, false, false, true, false, null);
+		Node node1 = NodeStarter.createTestNode(DARKNET_PORT1, 0, "pingtest", true, Node.DEFAULT_MAX_HTL, 0,
+												random, executor, 1000, 65536, true, false, false, false, false, false, true, 0, false, false, true,
+												false, null);
+		Node node2 = NodeStarter.createTestNode(DARKNET_PORT2, 0, "pingtest", true, Node.DEFAULT_MAX_HTL, 0,
+												random, executor, 1000, 65536, true, false, false, false, false, false, true, 0, false, false, true,
+												false, null);
 		// Connect
 		node1.connect(node2, trust, visibility);
 		node2.connect(node1, trust, visibility);
@@ -66,10 +72,11 @@ public class RealNodePingTest {
 				Logger.error(RealNodePingTest.class, "Not connected");
 				continue;
 			}
-			if(success)
+			if(success) {
 				Logger.error(RealNodePingTest.class, "PING "+pingID+" successful");
-			else
+			} else {
 				Logger.error(RealNodePingTest.class, "PING FAILED: "+pingID);
+			}
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {

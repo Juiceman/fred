@@ -94,7 +94,8 @@ public class Bzip2CompressorTest {
 
 		int writtenBytes = 0;
 
-		writtenBytes = Compressor.COMPRESSOR_TYPE.BZIP2.decompress(compressedData, 0, compressedData.length, outUncompressedData);
+		writtenBytes = Compressor.COMPRESSOR_TYPE.BZIP2.decompress(compressedData, 0, compressedData.length,
+					   outUncompressedData);
 
 		assertEquals(originalUncompressedData.length, writtenBytes);
 		assertEquals(originalUncompressedData.length, outUncompressedData.length);
@@ -141,7 +142,8 @@ public class Bzip2CompressorTest {
 		try {
 			decompressorInput = inBucket.getInputStream();
 			decompressorOutput = outBucket.getOutputStream();
-			Compressor.COMPRESSOR_TYPE.BZIP2.decompress(decompressorInput, decompressorOutput, 4096 + 10, 4096 + 20);
+			Compressor.COMPRESSOR_TYPE.BZIP2.decompress(decompressorInput, decompressorOutput, 4096 + 10,
+					4096 + 20);
 			decompressorInput.close();
 			decompressorOutput.close();
 		} catch (CompressionOutputSizeException e) {
@@ -161,7 +163,8 @@ public class Bzip2CompressorTest {
 		ByteArrayInputStream decompressorInput = new ByteArrayInputStream(compressedData);
 		ByteArrayOutputStream decompressorOutput = new ByteArrayOutputStream();
 
-		Compressor.COMPRESSOR_TYPE.BZIP2.decompress(decompressorInput, decompressorOutput, 32768, 32768 * 2);
+		Compressor.COMPRESSOR_TYPE.BZIP2.decompress(decompressorInput, decompressorOutput, 32768,
+				32768 * 2);
 
 		byte[] outBuf = decompressorOutput.toByteArray();
 		try {

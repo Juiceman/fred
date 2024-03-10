@@ -18,13 +18,17 @@ public class BandwidthStatsContainer implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == null) return false;
+		if(o == null) {
+			return false;
+		}
 		if(o.getClass() == BandwidthStatsContainer.class) {
 			BandwidthStatsContainer oB = (BandwidthStatsContainer) o;
 			return (oB.creationTime == this.creationTime) &&
 				   (oB.totalBytesIn == this.totalBytesIn) &&
 				   (oB.totalBytesOut == this.totalBytesOut);
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

@@ -26,7 +26,8 @@ public abstract class PluginDownLoader<T> {
 		return _source;
 	}
 
-	abstract InputStream getInputStream(PluginProgress progress) throws IOException, PluginNotFoundException;
+	abstract InputStream getInputStream(PluginProgress progress) throws IOException,
+				 PluginNotFoundException;
 
 	abstract T checkSource(String source) throws PluginNotFoundException;
 

@@ -112,9 +112,9 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 								  Bucket bucket2, Boolean success, String errorCode, String errorMessage) {
 
 		bucket = bucket2;
-		if (bucket == null)
+		if (bucket == null) {
 			dataLength = -1;
-		else {
+		} else {
 			bucket.setReadOnly();
 			dataLength = bucket.size();
 		}
@@ -143,10 +143,11 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 
 	@Override
 	String getEndString() {
-		if (dataLength() > 0)
+		if (dataLength() > 0) {
 			return "Data";
-		else
+		} else {
 			return "EndMessage";
+		}
 	}
 
 	@Override
@@ -154,8 +155,9 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putSingle("PluginName", plugname);
 		sfs.putSingle("Identifier", identifier);
-		if (dataLength() > 0)
+		if (dataLength() > 0) {
 			sfs.put("DataLength", dataLength());
+		}
 
 		// The sfs.put() would throw IllegalArgumentException if plugparams.isEmpty() == true.
 		if(plugparams != null && !plugparams.isEmpty()) {
@@ -183,7 +185,8 @@ public class FCPPluginServerMessage extends DataCarryingMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, NAME + " goes from server to client not the other way around", null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  NAME + " goes from server to client not the other way around", null, false);
 	}
 
 }

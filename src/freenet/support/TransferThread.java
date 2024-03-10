@@ -87,7 +87,8 @@ public abstract class TransferThread implements PrioRunnable, ClientGetCallback,
 		} catch(Exception e) {
 			Logger.error(this, "Error in iterate() or getSleepTime() probably", e);
 		} finally {
-			Logger.debug(this, "Loop finished. Sleeping for " + MINUTES.convert(sleepTime, MILLISECONDS) + " minutes.");
+			Logger.debug(this, "Loop finished. Sleeping for " + MINUTES.convert(sleepTime,
+						 MILLISECONDS) + " minutes.");
 			mTicker.queueTimedJob(this, mName, sleepTime, false, true);
 		}
 	}

@@ -56,7 +56,8 @@ public class WELCOME implements Step {
 		//Add option dropdown for languages
 		Option<?> language = config.get("node").getOption("l10n");
 		EnumerableOptionCallback l10nCallback = (EnumerableOptionCallback)language.getCallback();
-		HTMLNode dropDown = ConfigToadlet.addComboBox(language.getValueDisplayString(), l10nCallback, language.getName(), false);
+		HTMLNode dropDown = ConfigToadlet.addComboBox(language.getValueDisplayString(), l10nCallback,
+							language.getName(), false);
 		//Submit automatically upon selection if Javascript.
 		dropDown.addAttribute("onchange", "this.form.submit()");
 		languageForm.addChild(dropDown);
@@ -89,7 +90,8 @@ public class WELCOME implements Step {
 	 * @param helper used to add a form
 	 * @param incognito whether incognito mode is enabled
 	 */
-	private void addSecurityTableCell(HTMLNode header, HTMLNode row, String preset, PageHelper helper, boolean incognito) {
+	private void addSecurityTableCell(HTMLNode header, HTMLNode row, String preset, PageHelper helper,
+									  boolean incognito) {
 		header.addChild("th", "width", "33%", WizardL10n.l10n("presetTitle"+preset));
 		HTMLNode tableCell = row.addChild("td");
 		tableCell.addChild("p", WizardL10n.l10n("preset" + preset));

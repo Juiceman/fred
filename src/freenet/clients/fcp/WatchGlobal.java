@@ -19,9 +19,11 @@ public class WatchGlobal extends FCPMessage {
 			try {
 				verbosityMask = Integer.parseInt(s);
 			} catch (NumberFormatException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, e.toString(), null, false);
-			} else
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, e.toString(), null,
+												  false);
+			} else {
 			verbosityMask = Integer.MAX_VALUE;
+		}
 	}
 
 	@Override
@@ -40,13 +42,16 @@ public class WatchGlobal extends FCPMessage {
 	@Override
 	public void run(final FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		if(!handler.getRebootClient().setWatchGlobal(enabled, verbosityMask, node.clientCore.getFCPServer())) {
-			FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false, "Persistence disabled", null, true);
+		if(!handler.getRebootClient().setWatchGlobal(enabled, verbosityMask,
+				node.clientCore.getFCPServer())) {
+			FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.PERSISTENCE_DISABLED, false,
+					"Persistence disabled", null, true);
 			handler.send(err);
 		}
 		PersistentRequestClient client = handler.getForeverClient();
-		if(client != null)
+		if(client != null) {
 			client.setWatchGlobal(enabled, verbosityMask, handler.server);
+		}
 	}
 
 }

@@ -26,7 +26,8 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	private String sourceNodeName;
 	private String sourcePeer;
 
-	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber, long composedTime,
+	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber,
+						  long composedTime,
 						  long sentTime, long receivedTime, long msgid) {
 		super(true, null, null, null, null, UserAlert.MINOR, true, null, true, null);
 		this.messageText = message;
@@ -40,7 +41,8 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 		this.msgid = msgid;
 	}
 
-	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber, long composedTime,
+	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber,
+						  long composedTime,
 						  long sentTime, long receivedTime) {
 		this(sourcePeerNode, message, fileNumber, composedTime, sentTime, receivedTime, -1);
 	}
@@ -78,8 +80,9 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 		String[] lines = messageText.split("\n");
 		for (int i = 0, c = lines.length; i < c; i++) {
 			alertNode.addChild("#", lines[i]);
-			if (i != lines.length - 1)
+			if (i != lines.length - 1) {
 				alertNode.addChild("br");
+			}
 		}
 
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
@@ -109,13 +112,15 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	@Override
 	public void onDismiss() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if (pn != null)
+		if (pn != null) {
 			pn.deleteExtraPeerDataFile(fileNumber);
+		}
 	}
 
 	@Override
 	public FCPMessage getFCPMessage() {
-		return new TextFeedMessage(getTitle(), getShortText(), getText(), getPriorityClass(), getUpdatedTime(),
+		return new TextFeedMessage(getTitle(), getShortText(), getText(), getPriorityClass(),
+								   getUpdatedTime(),
 								   sourceNodeName, composedTime, sentTime, receivedTime, messageText);
 	}
 

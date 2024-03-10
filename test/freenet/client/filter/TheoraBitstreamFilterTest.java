@@ -22,7 +22,8 @@ public class TheoraBitstreamFilterTest {
 
 	@Test
 	public void parseTest() throws IOException {
-		try (DataInputStream input = resourceToDataInputStream("./ogg/Infinite_Hands-2008-Thusnelda-2009-09-18.ogv")) {
+		try (DataInputStream input =
+						resourceToDataInputStream("./ogg/Infinite_Hands-2008-Thusnelda-2009-09-18.ogv")) {
 			OggPage page = OggPage.readPage(input);
 			int pageSerial = page.getSerial();
 			TheoraBitstreamFilter theoraBitstreamFilter = new TheoraBitstreamFilter(page);

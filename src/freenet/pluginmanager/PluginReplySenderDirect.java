@@ -23,7 +23,8 @@ public class PluginReplySenderDirect extends PluginReplySender {
 	/**
 	 * @see PluginReplySender#PluginReplySender(String, String, String)
 	 */
-	public PluginReplySenderDirect(Node node2, FredPluginTalker target2, String pluginname2, String clientIdentifier, String clientSideIdentifier) {
+	public PluginReplySenderDirect(Node node2, FredPluginTalker target2, String pluginname2,
+								   String clientIdentifier, String clientSideIdentifier) {
 		super(pluginname2, clientIdentifier, clientSideIdentifier);
 		node = node2;
 		target = target2;

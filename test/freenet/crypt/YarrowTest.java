@@ -28,8 +28,9 @@ public class YarrowTest {
 	@Before
 	public void setUp() throws Exception {
 		FileWriter fw = new FileWriter(SEED_FILE);
-		for(int i = 0; i < 256; i++)
+		for(int i = 0; i < 256; i++) {
 			fw.write(i);
+		}
 		fw.flush();
 		fw.close();
 	}
@@ -89,10 +90,11 @@ public class YarrowTest {
 		int[] results = new int[2];
 		int RUNS = 1000000;
 		for(int i=0; i<RUNS; i++) {
-			if(y.nextBoolean())
+			if(y.nextBoolean()) {
 				results[0]++;
-			else
+			} else {
 				results[1]++;
+			}
 		}
 
 		assertEquals(RUNS, results[0]+results[1]);

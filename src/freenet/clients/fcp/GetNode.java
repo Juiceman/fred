@@ -25,8 +25,9 @@ public class GetNode extends FCPMessage {
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
-		if(identifier != null)
+		if(identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 
@@ -39,7 +40,8 @@ public class GetNode extends FCPMessage {
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "GetNode requires full access", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+											  "GetNode requires full access", identifier, false);
 		}
 		handler.send(new NodeData(node, giveOpennetRef, withPrivate, withVolatile, identifier));
 	}

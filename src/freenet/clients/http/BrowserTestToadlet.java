@@ -178,26 +178,33 @@ public class BrowserTestToadlet extends Toadlet {
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx)
 	throws ToadletContextClosedException, IOException {
 		// Yes, we need that in order to test the browser (number of connections per server)
-		if (request.isParameterSet("wontload")) return;
+		if (request.isParameterSet("wontload")) {
+			return;
+		}
 
 		PageNode page = ctx.getPageMaker().getPageNode("Freenet browser testing tool", ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 
-		if(ctx.isAllowedFullAccess())
+		if(ctx.isAllowedFullAccess()) {
 			contentNode.addChild(ctx.getAlertManager().createSummary());
+		}
 
 		// #### Test MIME inline
 		/* for test (for allow <img src="data:...) add "; img-src 'self' data:"
 		 * to freenet.clients.http.ToadletContextImpl#generateCSP return statement */
-		ctx.getPageMaker().getInfobox("infobox-warning", "MIME Inline", contentNode, "mime-inline-test", true).
+		ctx.getPageMaker().getInfobox("infobox-warning", "MIME Inline", contentNode, "mime-inline-test",
+									  true).
 		addChild("img", new String[] {"src", "alt"}, new String[] {"data:image/gif;base64,"+imgWarningMime, "Your browser is probably safe."});
 
 		// #### Test whether we can have more than 10 simultaneous connections to fproxy
-		HTMLNode maxConnectionsPerServerContent = ctx.getPageMaker().getInfobox("infobox-warning", "Number of connections", contentNode, "browser-connections", true);
-		maxConnectionsPerServerContent.addChild("#", "If you do not see a green picture below, your browser is probably missconfigured! Ensure it allows more than 10 connections per server.");
-		for(int i = 0; i < 10 ; i++)
+		HTMLNode maxConnectionsPerServerContent = ctx.getPageMaker().getInfobox("infobox-warning",
+				"Number of connections", contentNode, "browser-connections", true);
+		maxConnectionsPerServerContent.addChild("#",
+												"If you do not see a green picture below, your browser is probably missconfigured! Ensure it allows more than 10 connections per server.");
+		for(int i = 0; i < 10 ; i++) {
 			maxConnectionsPerServerContent.addChild("img", "src", ".?wontload");
+		}
 		maxConnectionsPerServerContent.addChild("img",
 												new String[] {"src", "alt"},
 												new String[] {"/static/themes/clean/success.png", "fail!"});

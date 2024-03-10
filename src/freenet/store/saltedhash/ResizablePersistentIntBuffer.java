@@ -74,19 +74,22 @@ public class ResizablePersistentIntBuffer {
 		buffer = new int[size];
 		long expectedLength = ((long)size)*4;
 		long realLength = raf.length();
-		if(realLength > expectedLength)
+		if(realLength > expectedLength) {
 			raf.setLength(expectedLength);
+		}
 		readBuffer((int)Math.min(size, realLength/4));
-		if(realLength < expectedLength)
+		if(realLength < expectedLength) {
 			raf.setLength(expectedLength);
+		}
 		channel = raf.getChannel();
 	}
 
 	/** Should be called during startup to fill in an appropriate default value e.g. if the store
 	 * is completely new. */
 	public void fill(int value) {
-		for(int i=0; i<buffer.length; i++)
+		for(int i=0; i<buffer.length; i++) {
 			buffer[i] = value;
+		}
 	}
 
 	private void readBuffer(int size) throws IOException {
@@ -116,7 +119,9 @@ public class ResizablePersistentIntBuffer {
 
 	public int get(int offset) {
 		lock.readLock().lock();
-		if(closed) throw new IllegalStateException("Already shut down");
+		if(closed) {
+			throw new IllegalStateException("Already shut down");
+		}
 		try {
 			return buffer[offset];
 		} finally {
@@ -130,7 +135,9 @@ public class ResizablePersistentIntBuffer {
 
 	public void put(int offset, int value, boolean noWrite) throws IOException {
 		lock.readLock().lock(); // Only resize needs write lock because it creates a new buffer.
-		if(closed) throw new IllegalStateException("Already shut down");
+		if(closed) {
+			throw new IllegalStateException("Already shut down");
+		}
 		try {
 			int persistenceTime = getPersistenceTime();
 			buffer[offset] = value;
@@ -146,7 +153,8 @@ public class ResizablePersistentIntBuffer {
 							scheduled = true;
 						}
 					} else {
-						Logger.normal(this, "Will scheduling write of slot cache after startup: "+this+" in "+persistenceTime);
+						Logger.normal(this, "Will scheduling write of slot cache after startup: "+this+" in "
+									  +persistenceTime);
 					}
 				}
 			} else {
@@ -195,7 +203,9 @@ public class ResizablePersistentIntBuffer {
 		lock.writeLock().lock();
 		try {
 			synchronized(this) {
-				if(closed) return;
+				if(closed) {
+					return;
+				}
 				closed = true;
 				if(writing) {
 					// Wait for write to finish.
@@ -206,7 +216,9 @@ public class ResizablePersistentIntBuffer {
 							// Ignore.
 						}
 					}
-					if(!dirty) return;
+					if(!dirty) {
+						return;
+					}
 				}
 				writing = true;
 			}
@@ -234,7 +246,9 @@ public class ResizablePersistentIntBuffer {
 		lock.writeLock().lock();
 		try {
 			synchronized(this) {
-				if(closed) return;
+				if(closed) {
+					return;
+				}
 				closed = true;
 			}
 			try {
@@ -262,7 +276,9 @@ public class ResizablePersistentIntBuffer {
 	public void resize(int size) {
 		lock.writeLock().lock();
 		try {
-			if(this.size == size) return;
+			if(this.size == size) {
+				return;
+			}
 			Logger.normal(this, "Resizing cache from "+this.size+" slots to "+size);
 			this.size = size;
 			buffer = Arrays.copyOf(buffer, size);
@@ -282,7 +298,9 @@ public class ResizablePersistentIntBuffer {
 		lock.readLock().lock();
 		try {
 			synchronized(this) {
-				if(closed) return;
+				if(closed) {
+					return;
+				}
 				dirty = false;
 				if(writing) {
 					// Wait for write to finish.
@@ -293,7 +311,9 @@ public class ResizablePersistentIntBuffer {
 							// Ignore.
 						}
 					}
-					if(!dirty) return;
+					if(!dirty) {
+						return;
+					}
 				}
 				writing = true;
 			}
@@ -321,7 +341,9 @@ public class ResizablePersistentIntBuffer {
 	// Testing only! Hence no lock.
 	public void replaceAllEntries(int key, int value) {
 		for(int i=0; i<buffer.length; i++)
-			if(buffer[i] == key) buffer[i] = value;
+			if(buffer[i] == key) {
+				buffer[i] = value;
+			}
 	}
 
 	public int size() {

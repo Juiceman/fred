@@ -74,7 +74,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	// Layer 2: RGAs (for a ClientRequestSchedulerGroup), contain SendableRequest's.
 	// Layer 3: SendableRequest's.
 
-	static class ClientRequestRGANode extends SectoredRandomGrabArraySimple<RequestClient,ClientRequestSchedulerGroup> {
+	static class ClientRequestRGANode extends
+		SectoredRandomGrabArraySimple<RequestClient,ClientRequestSchedulerGroup> {
 
 		public ClientRequestRGANode(RequestClient object, RemoveRandomParent parent,
 									ClientRequestSelector root) {
@@ -83,7 +84,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 
 	}
 
-	static class RequestClientRGANode extends SectoredRandomGrabArray<RequestClient,ClientRequestRGANode> {
+	static class RequestClientRGANode extends
+		SectoredRandomGrabArray<RequestClient,ClientRequestRGANode> {
 
 		public RequestClientRGANode(RemoveRandomParent parent, ClientRequestSelector root) {
 			super(parent, root);
@@ -98,7 +100,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 
 	protected final Deque<BaseSendableGet>recentSuccesses;
 
-	ClientRequestSelector(boolean isInsertScheduler, boolean isSSKScheduler, boolean isRTScheduler, ClientRequestScheduler sched) {
+	ClientRequestSelector(boolean isInsertScheduler, boolean isSSKScheduler, boolean isRTScheduler,
+						  ClientRequestScheduler sched) {
 		this.sched = sched;
 		this.isInsertScheduler = isInsertScheduler;
 		this.isSSKScheduler = isSSKScheduler;
@@ -139,7 +142,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 */
 	private transient HashSet<Key> keysFetching;
 
-	private transient HashMap<Key, WeakReference<BaseSendableGet>[]> transientRequestsWaitingForKeysFetching;
+	private transient HashMap<Key, WeakReference<BaseSendableGet>[]>
+	transientRequestsWaitingForKeysFetching;
 
 	private transient final HashSet<SendableRequestItemKey> runningInserts;
 
@@ -147,7 +151,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * @return The priority chosen or the time at which a priority will have requests to send.
 	 * LOCKING: Synchronized because we may create new priorities. Both the cooldown queue and the
 	 * RGA hierarchy, rooted at the priorities, use ClientRequestSelector lock. */
-	private synchronized long choosePriority(int fuzz, RandomSource random, ClientContext context, long now) {
+	private synchronized long choosePriority(int fuzz, RandomSource random, ClientContext context,
+			long now) {
 		RequestClientRGANode result = null;
 
 		long wakeupTime = Long.MAX_VALUE;
@@ -158,17 +163,22 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 		// PRIO will do 0,1,2,3,4,5,6,0
 		// TWEAKED will do rand%6,0,1,2,3,4,5,6
 		while(iteration++ < RequestStarter.NUMBER_OF_PRIORITY_CLASSES + 1) {
-			priority = fuzz<0 ? tweakedPrioritySelector[random.nextInt(tweakedPrioritySelector.length)] : prioritySelector[Math.abs(fuzz % prioritySelector.length)];
+			priority = fuzz<0 ? tweakedPrioritySelector[random.nextInt(tweakedPrioritySelector.length)] :
+					   prioritySelector[Math.abs(fuzz % prioritySelector.length)];
 			result = priorities[priority];
 			if(result != null) {
 				long cooldownTime = result.getWakeupTime(context, now);
 				if(cooldownTime > 0) {
-					if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
+					if(cooldownTime < wakeupTime) {
+						wakeupTime = cooldownTime;
+					}
 					if(logMINOR) {
-						if(cooldownTime == Long.MAX_VALUE)
+						if(cooldownTime == Long.MAX_VALUE) {
 							Logger.minor(this, "Priority "+priority+" is waiting until a request finishes or is empty");
-						else
-							Logger.minor(this, "Priority "+priority+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
+						} else {
+							Logger.minor(this, "Priority "+priority+" is in cooldown for another "+
+										 (cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
+						}
 					}
 					result = null;
 				}
@@ -178,11 +188,15 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				continue; // Don't return because first round may be higher with soft scheduling
 			}
 			if(((result != null) && (!result.isEmpty()))) {
-				if(logMINOR) Logger.minor(this, "using priority : "+priority);
+				if(logMINOR) {
+					Logger.minor(this, "using priority : "+priority);
+				}
 				return priority;
 			}
 
-			if(logMINOR) Logger.minor(this, "Priority "+priority+" is null (fuzz = "+fuzz+ ')');
+			if(logMINOR) {
+				Logger.minor(this, "Priority "+priority+" is null (fuzz = "+fuzz+ ')');
+			}
 			fuzz++;
 		}
 
@@ -195,7 +209,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * running), so we may need to try repeatedly. FIXME this is only necessary because many
 	 * classes only update their cooldown status when choosing a block to send, e.g.
 	 * SplitFileInserter. */
-	ChosenBlock chooseRequest(int fuzz, RandomSource random, OfferedKeysList offeredKeys, RequestStarter starter, boolean realTime, ClientContext context) {
+	ChosenBlock chooseRequest(int fuzz, RandomSource random, OfferedKeysList offeredKeys,
+							  RequestStarter starter, boolean realTime, ClientContext context) {
 		long now = System.currentTimeMillis();
 		for(int i=0; i<5; i++) {
 			SelectorReturn r = chooseRequestInner(fuzz, random, offeredKeys, starter, realTime, context, now);
@@ -215,31 +230,42 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				continue;
 			}
 			if(isInsertScheduler && req instanceof SendableGet) {
-				IllegalStateException e = new IllegalStateException("removeFirstInner returned a SendableGet on an insert scheduler!!");
+				IllegalStateException e = new
+				IllegalStateException("removeFirstInner returned a SendableGet on an insert scheduler!!");
 				req.internalError(e, sched, context, req.persistent());
 				throw e;
 			}
 			ChosenBlock block = maybeMakeChosenRequest(req, context, now);
-			if(block != null) return block;
+			if(block != null) {
+				return block;
+			}
 		}
 		return null;
 	}
 
 	public ChosenBlock maybeMakeChosenRequest(SendableRequest req, ClientContext context, long now) {
-		if(req == null) return null;
+		if(req == null) {
+			return null;
+		}
 		if(req.isCancelled()) {
-			if(logMINOR) Logger.minor(this, "Request is cancelled: "+req);
+			if(logMINOR) {
+				Logger.minor(this, "Request is cancelled: "+req);
+			}
 			return null;
 		}
 		if(req.getWakeupTime(context, now) != 0) {
 			// Race condition. We don't need to add a wake-up job. FIXME this shouldn't happen
 			// because we only consider local requests of the same type?! Add logging and debug!
-			if(logMINOR) Logger.minor(this, "Request is in cooldown: "+req);
+			if(logMINOR) {
+				Logger.minor(this, "Request is in cooldown: "+req);
+			}
 			return null;
 		}
 		SendableRequestItem token = req.chooseKey(this, context);
 		if(token == null) {
-			if(logMINOR) Logger.minor(this, "Choose key returned null: "+req);
+			if(logMINOR) {
+				Logger.minor(this, "Choose key returned null: "+req);
+			}
 			return null;
 		} else {
 			Key key;
@@ -249,14 +275,16 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				ckey = null;
 			} else {
 				key = ((BaseSendableGet)req).getNodeKey(token);
-				if(req instanceof SendableGet)
+				if(req instanceof SendableGet) {
 					ckey = ((SendableGet)req).getKey(token);
-				else
+				} else {
 					ckey = null;
+				}
 			}
 			ChosenBlock ret;
-			if(key != null && key.getRoutingKey() == null)
+			if(key != null && key.getRoutingKey() == null) {
 				throw new NullPointerException();
+			}
 			boolean localRequestOnly;
 			boolean ignoreStore;
 			boolean canWriteClientCache;
@@ -285,8 +313,11 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				}
 				ignoreStore = false;
 			}
-			ret = new ChosenBlockImpl(req, token, key, ckey, localRequestOnly, ignoreStore, canWriteClientCache, forkOnCacheable, realTimeFlag, sched, req.persistent());
-			if(logMINOR) Logger.minor(this, "Created "+ret+" for "+req);
+			ret = new ChosenBlockImpl(req, token, key, ckey, localRequestOnly, ignoreStore, canWriteClientCache,
+									  forkOnCacheable, realTimeFlag, sched, req.persistent());
+			if(logMINOR) {
+				Logger.minor(this, "Created "+ret+" for "+req);
+			}
 			return ret;
 		}
 	}
@@ -309,48 +340,66 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * most of the time.
 	 * @return Either a chosen request or the time at which we should try again if all priorities
 	 * are waiting for requests to finish / cooldown periods to expire. */
-	SelectorReturn chooseRequestInner(int fuzz, RandomSource random, OfferedKeysList offeredKeys, RequestStarter starter, boolean realTime, ClientContext context, long now) {
+	SelectorReturn chooseRequestInner(int fuzz, RandomSource random, OfferedKeysList offeredKeys,
+									  RequestStarter starter, boolean realTime, ClientContext context, long now) {
 		// Priorities start at 0
-		if(logMINOR) Logger.minor(this, "removeFirst()");
+		if(logMINOR) {
+			Logger.minor(this, "removeFirst()");
+		}
 		boolean tryOfferedKeys = offeredKeys != null && random.nextBoolean();
 		if(tryOfferedKeys) {
-			if(offeredKeys.getWakeupTime(context, now) == 0)
+			if(offeredKeys.getWakeupTime(context, now) == 0) {
 				return new SelectorReturn(offeredKeys);
+			}
 		}
 		long l = choosePriority(fuzz, random, context, now);
 		if(l > Integer.MAX_VALUE) {
-			if(logMINOR) Logger.minor(this, "No priority available for the next "+TimeUtil.formatTime(l - now));
+			if(logMINOR) {
+				Logger.minor(this, "No priority available for the next "+TimeUtil.formatTime(l - now));
+			}
 			return new SelectorReturn(l);
 		}
 		int choosenPriorityClass = (int)l;
 		if(choosenPriorityClass == -1) {
 			if(!tryOfferedKeys) {
-				if(offeredKeys != null && offeredKeys.getWakeupTime(context, now) == 0)
+				if(offeredKeys != null && offeredKeys.getWakeupTime(context, now) == 0) {
 					return new SelectorReturn(offeredKeys);
+				}
 			}
-			if(logMINOR)
+			if(logMINOR) {
 				Logger.minor(this, "Nothing to do");
+			}
 			// No requests queued at all.
 			return new SelectorReturn(Long.MAX_VALUE);
 		}
 		long wakeupTime = Long.MAX_VALUE;
-		outer:	for(; choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CLASS; choosenPriorityClass++) {
-			if(logMINOR) Logger.minor(this, "Using priority "+choosenPriorityClass);
+		outer:
+		for(; choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CLASS;
+				choosenPriorityClass++) {
+			if(logMINOR) {
+				Logger.minor(this, "Using priority "+choosenPriorityClass);
+			}
 			RequestClientRGANode chosenTracker = priorities[choosenPriorityClass];
 			if(chosenTracker == null) {
-				if(logMINOR) Logger.minor(this, "No requests to run: chosen priority empty");
+				if(logMINOR) {
+					Logger.minor(this, "No requests to run: chosen priority empty");
+				}
 				continue; // Try next priority
 			}
 			while(true) {
 				long cooldownTime = chosenTracker.getWakeupTime(context, now);
 				if(cooldownTime > 0) {
-					if(cooldownTime < wakeupTime) wakeupTime = cooldownTime;
-					Logger.normal(this, "Priority "+choosenPriorityClass+" is in cooldown for another "+(cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
+					if(cooldownTime < wakeupTime) {
+						wakeupTime = cooldownTime;
+					}
+					Logger.normal(this, "Priority "+choosenPriorityClass+" is in cooldown for another "+
+								  (cooldownTime - now)+" "+TimeUtil.formatTime(cooldownTime - now));
 					continue outer;
 				}
 
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Got priority tracker "+chosenTracker);
+				}
 				RemoveRandomReturn val;
 				synchronized(this) {
 					// We must hold the overall lock, just as in addToGrabArrays.
@@ -362,15 +411,19 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				}
 				SendableRequest req;
 				if(val == null) {
-					Logger.normal(this, "Priority "+choosenPriorityClass+" returned null - nothing to schedule, should remove priority");
+					Logger.normal(this, "Priority "+choosenPriorityClass
+								  +" returned null - nothing to schedule, should remove priority");
 					continue outer;
 				} else if(val.item == null) {
-					if(val.wakeupTime == -1)
-						Logger.normal(this, "Priority "+choosenPriorityClass+" returned cooldown time of -1 - nothing to schedule, should remove priority");
-					else {
-						Logger.normal(this, "Priority "+choosenPriorityClass+" returned cooldown time of "+(val.wakeupTime - now)+" = "+TimeUtil.formatTime(val.wakeupTime - now));
-						if(val.wakeupTime > 0 && val.wakeupTime < wakeupTime)
+					if(val.wakeupTime == -1) {
+						Logger.normal(this, "Priority "+choosenPriorityClass
+									  +" returned cooldown time of -1 - nothing to schedule, should remove priority");
+					} else {
+						Logger.normal(this, "Priority "+choosenPriorityClass+" returned cooldown time of "+
+									  (val.wakeupTime - now)+" = "+TimeUtil.formatTime(val.wakeupTime - now));
+						if(val.wakeupTime > 0 && val.wakeupTime < wakeupTime) {
 							wakeupTime = val.wakeupTime;
+						}
 					}
 					continue outer;
 				} else {
@@ -379,7 +432,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				if(req.getPriorityClass() != choosenPriorityClass) {
 					// Reinsert it : shouldn't happen if we are calling reregisterAll,
 					// maybe we should ask people to report that error if seen
-					Logger.normal(this, "In wrong priority class: "+req+" (req.prio="+req.getPriorityClass()+" but chosen="+choosenPriorityClass+ ')');
+					Logger.normal(this, "In wrong priority class: "+req+" (req.prio="+req.getPriorityClass()
+								  +" but chosen="+choosenPriorityClass+ ')');
 					// Remove it.
 					ClientRequestRGANode clientGrabber = chosenTracker.getGrabber(req.getClient());
 					if(clientGrabber != null) {
@@ -393,7 +447,8 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 							// Okay, it's been removed already. Cool.
 						}
 					} else {
-						Logger.error(this, "Could not find client grabber for client "+req.getClient()+" from "+chosenTracker);
+						Logger.error(this, "Could not find client grabber for client "+req.getClient()+" from "
+									 +chosenTracker);
 					}
 					innerRegister(req, context, null);
 					continue;
@@ -414,13 +469,15 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 						}
 					}
 					if(altReq != null && (altReq.isCancelled())) {
-						if(logMINOR)
+						if(logMINOR) {
 							Logger.minor(this, "Ignoring cancelled recently succeeded item "+altReq);
+						}
 						altReq = null;
 					}
 					if(altReq != null && (l = altReq.getWakeupTime(context, now)) != 0) {
 						if(logMINOR) {
-							Logger.minor(this, "Ignoring recently succeeded item, cooldown time = "+l+((l > 0) ? " ("+TimeUtil.formatTime(l - now)+")" : ""));
+							Logger.minor(this, "Ignoring recently succeeded item, cooldown time = "+l+((
+											 l > 0) ? " ("+TimeUtil.formatTime(l - now)+")" : ""));
 							altReq = null;
 						}
 					}
@@ -428,14 +485,17 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 						int prio = altReq.getPriorityClass();
 						if(prio <= choosenPriorityClass) {
 							// Use the recent one instead
-							if(logMINOR)
-								Logger.minor(this, "Recently succeeded (transient) req "+altReq+" (prio="+altReq.getPriorityClass()+") is better than "+req+" (prio="+req.getPriorityClass()+"), using that");
+							if(logMINOR) {
+								Logger.minor(this, "Recently succeeded (transient) req "+altReq+" (prio="+altReq.getPriorityClass()
+											 +") is better than "+req+" (prio="+req.getPriorityClass()+"), using that");
+							}
 							// Don't need to reregister, because removeRandom doesn't actually remove!
 							req = altReq;
 						} else {
 							// Don't use the recent one
-							if(logMINOR)
+							if(logMINOR) {
 								Logger.minor(this, "Chosen req "+req+" is better, reregistering recently succeeded "+altReq);
+							}
 							synchronized(recentSuccesses) {
 								recentSuccesses.add(altReq);
 							}
@@ -446,13 +506,17 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				// Now we have chosen a request.
 				if(logMINOR) Logger.minor(this, "removeFirst() returning "+req+" (prio "+
 											  req.getPriorityClass()+", client "+req.getClient()+", client-req "+req.getClientRequest()+ ')');
-				if(logMINOR) Logger.minor(this, "removeFirst() returning "+req+" of "+req.getClientRequest());
+				if(logMINOR) {
+					Logger.minor(this, "removeFirst() returning "+req+" of "+req.getClientRequest());
+				}
 				assert(req.realTimeFlag() == realTime);
 				return new SelectorReturn(req);
 
 			}
 		}
-		if(logMINOR) Logger.minor(this, "No requests to run");
+		if(logMINOR) {
+			Logger.minor(this, "No requests to run");
+		}
 		return new SelectorReturn(wakeupTime);
 	}
 
@@ -508,8 +572,9 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 			if(!retval) {
 				Logger.normal(this, "Already in keysFetching: "+key);
 			} else {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Added to keysFetching: "+key);
+				}
 			}
 			return retval;
 		}
@@ -523,15 +588,20 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 		}
 		synchronized(keysFetching) {
 			boolean ret = keysFetching.contains(key);
-			if(!ret) return ret;
+			if(!ret) {
+				return ret;
+			}
 			// It is being fetched. Add the BaseSendableGet to the wait list so it gets woken up when the request finishes.
 			if(getterWaiting != null) {
 				WeakReference<BaseSendableGet>[] waiting = transientRequestsWaitingForKeysFetching.get(key);
 				if(waiting == null) {
-					transientRequestsWaitingForKeysFetching.put(key, (WeakReference<BaseSendableGet>[])new WeakReference<?>[] { new WeakReference<BaseSendableGet>(getterWaiting) });
+					transientRequestsWaitingForKeysFetching.put(key,
+					(WeakReference<BaseSendableGet>[])new WeakReference<?>[] { new WeakReference<BaseSendableGet>(getterWaiting) });
 				} else {
 					for(WeakReference<BaseSendableGet> ref : waiting) {
-						if(ref.get() == getterWaiting) return true;
+						if(ref.get() == getterWaiting) {
+							return true;
+						}
 					}
 					WeakReference<BaseSendableGet>[] newWaiting = Arrays.copyOf(waiting, waiting.length+1);
 					newWaiting[waiting.length] = new WeakReference<BaseSendableGet>(getterWaiting);
@@ -545,8 +615,9 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	/** LOCKING: Caller should hold as few locks as possible */
 	public void removeFetchingKey(final Key key) {
 		WeakReference<BaseSendableGet>[] transientWaiting;
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Removing from keysFetching: "+key);
+		}
 		if(key != null) {
 			synchronized(keysFetching) {
 				keysFetching.remove(key);
@@ -556,7 +627,9 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				if(transientWaiting != null) {
 					for(WeakReference<BaseSendableGet> ref : transientWaiting) {
 						BaseSendableGet get = ref.get();
-						if(get == null) continue;
+						if(get == null) {
+							continue;
+						}
 						get.clearWakeupTime(sched.getContext());
 					}
 				}
@@ -578,16 +651,18 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 				// This shouldn't happen often, because the chooseBlock()'s should check for it...
 				Logger.error(this, "Already in runningInserts: "+token);
 			} else {
-				if(logMINOR)
+				if(logMINOR) {
 					Logger.minor(this, "Added to runningInserts: "+token);
+				}
 			}
 			return retval;
 		}
 	}
 
 	public void removeRunningInsert(SendableRequestItemKey token) {
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Removing from runningInserts: "+token);
+		}
 		synchronized(runningInserts) {
 			runningInserts.remove(token);
 		}
@@ -614,9 +689,14 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	* @param context The client context object, which contains links to all the important objects
 	* that are not persisted in the database, e.g. executors, temporary filename generator, etc.
 	*/
-	void addToGrabArray(short priorityClass, RequestClient client, ClientRequestSchedulerGroup cr, SendableRequest req, ClientContext context) {
-		if((priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS) || (priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS))
-			throw new IllegalStateException("Invalid priority: "+priorityClass+" - range is "+RequestStarter.MAXIMUM_PRIORITY_CLASS+" (most important) to "+RequestStarter.PAUSED_PRIORITY_CLASS+" (least important)");
+	void addToGrabArray(short priorityClass, RequestClient client, ClientRequestSchedulerGroup cr,
+						SendableRequest req, ClientContext context) {
+		if((priorityClass > RequestStarter.PAUSED_PRIORITY_CLASS)
+				|| (priorityClass < RequestStarter.MAXIMUM_PRIORITY_CLASS)) {
+			throw new IllegalStateException("Invalid priority: "+priorityClass+" - range is "
+											+RequestStarter.MAXIMUM_PRIORITY_CLASS+" (most important) to "+RequestStarter.PAUSED_PRIORITY_CLASS
+											+" (least important)");
+		}
 		// Client
 		synchronized(this) {
 			ClientRequestRGANode requestGrabber = makeSRGAForClient(priorityClass, client, context);
@@ -631,21 +711,26 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 		if(clientGrabber == null) {
 			clientGrabber = new RequestClientRGANode(null, this);
 			priorities[priorityClass] = clientGrabber;
-			if(logMINOR) Logger.minor(this, "Registering client tracker for priority "+priorityClass+" : "+clientGrabber);
+			if(logMINOR) {
+				Logger.minor(this, "Registering client tracker for priority "+priorityClass+" : "+clientGrabber);
+			}
 		}
 		// Request
 		ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
 		if(requestGrabber == null) {
 			requestGrabber = new ClientRequestRGANode(client, clientGrabber, this);
-			if(logMINOR)
-				Logger.minor(this, "Creating new grabber: "+requestGrabber+" for "+client+" from "+clientGrabber+" : prio="+priorityClass);
+			if(logMINOR) {
+				Logger.minor(this, "Creating new grabber: "+requestGrabber+" for "+client+" from "+clientGrabber
+							 +" : prio="+priorityClass);
+			}
 			clientGrabber.addGrabber(client, requestGrabber, context);
 			clientGrabber.clearWakeupTime(context);
 		}
 		return requestGrabber;
 	}
 
-	public void reregisterAll(ClientRequester request, RequestScheduler lock, ClientContext context, short oldPrio) {
+	public void reregisterAll(ClientRequester request, RequestScheduler lock, ClientContext context,
+							  short oldPrio) {
 		RequestClient client = request.getClient();
 		short newPrio = request.getPriorityClass();
 		if(newPrio == oldPrio) {
@@ -658,18 +743,24 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 			RequestClientRGANode clientGrabber = priorities[oldPrio];
 			if(clientGrabber == null) {
 				// Normal as most of the schedulers aren't relevant to any given insert/request.
-				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				}
 				return;
 			}
 			// Then by RequestClient
 			ClientRequestRGANode requestGrabber = clientGrabber.getGrabber(client);
 			if(requestGrabber == null) {
-				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				}
 				return;
 			}
 			RandomGrabArrayWithObject<ClientRequestSchedulerGroup> rga = requestGrabber.getGrabber(group);
 			if(rga == null) {
-				if(logMINOR) Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				if(logMINOR) {
+					Logger.minor(this, "Changing priority but request not running "+request, new Exception("debug"));
+				}
 				return;
 			}
 			requestGrabber.maybeRemove(rga, context);
@@ -687,9 +778,9 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 		long total = 0;
 		for(int i=0; i<priorities.length; i++) {
 			RequestClientRGANode prio = priorities[i];
-			if(prio == null || prio.isEmpty())
+			if(prio == null || prio.isEmpty()) {
 				System.out.println("Priority "+i+" : empty");
-			else {
+			} else {
 				System.out.println("Priority "+i+" : "+prio.size());
 				System.out.println("Clients: "+prio.size()+" for "+prio);
 				for(int k=0; k<prio.size(); k++) {
@@ -706,7 +797,9 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 						long all = 0;
 						for(int m=0; m<rga.size(); m++) {
 							SendableRequest req = (SendableRequest) rga.get(m);
-							if(req == null) continue;
+							if(req == null) {
+								continue;
+							}
 							sendable += req.countSendableKeys(context);
 							all += req.countAllKeys(context);
 						}
@@ -731,29 +824,44 @@ public class ClientRequestSelector implements KeysFetchingLocally {
 	 * or make req a SendableRequest[] and register them all at once.
 	 */
 	void innerRegister(SendableRequest req, ClientContext context, SendableRequest[] maybeActive) {
-		if(isInsertScheduler && req instanceof BaseSendableGet)
+		if(isInsertScheduler && req instanceof BaseSendableGet) {
 			throw new IllegalArgumentException("Adding a SendableGet to an insert scheduler!!");
-		if((!isInsertScheduler) && req instanceof SendableInsert)
+		}
+		if((!isInsertScheduler) && req instanceof SendableInsert) {
 			throw new IllegalArgumentException("Adding a SendableInsert to a request scheduler!!");
-		if(isInsertScheduler != req.isInsert())
-			throw new IllegalArgumentException("Request isInsert="+req.isInsert()+" but my isInsertScheduler="+isInsertScheduler+"!!");
+		}
+		if(isInsertScheduler != req.isInsert()) {
+			throw new IllegalArgumentException("Request isInsert="+req.isInsert()+" but my isInsertScheduler="
+											   +isInsertScheduler+"!!");
+		}
 		short prio = req.getPriorityClass();
-		if(logMINOR) Logger.minor(this, "Still registering "+req+" at prio "+prio+" for "+req.getClientRequest()+" ssk="+this.isSSKScheduler+" insert="+this.isInsertScheduler);
+		if(logMINOR) {
+			Logger.minor(this, "Still registering "+req+" at prio "+prio+" for "+req.getClientRequest()+" ssk="
+						 +this.isSSKScheduler+" insert="+this.isInsertScheduler);
+		}
 		addToGrabArray(prio, req.getClient(), req.getSchedulerGroup(), req, context);
-		if(logMINOR) Logger.minor(this, "Registered "+req+" on prioclass="+prio);
+		if(logMINOR) {
+			Logger.minor(this, "Registered "+req+" on prioclass="+prio);
+		}
 	}
 
 	public void succeeded(BaseSendableGet succeeded) {
 		// Do nothing.
 		// FIXME: Keep a list of recently succeeded ClientRequester's.
-		if(isInsertScheduler) return;
-		if(succeeded.isCancelled()) return;
+		if(isInsertScheduler) {
+			return;
+		}
+		if(succeeded.isCancelled()) {
+			return;
+		}
 		// Don't bother with getCooldownTime at this point.
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Recording successful fetch from "+succeeded);
+		}
 		synchronized(recentSuccesses) {
-			while(recentSuccesses.size() >= 8)
+			while(recentSuccesses.size() >= 8) {
 				recentSuccesses.pollFirst();
+			}
 			recentSuccesses.add(succeeded);
 		}
 	}

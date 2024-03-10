@@ -32,10 +32,13 @@ public class DownloadRequestStatus extends RequestStatus {
 	private boolean detectedDontCompress;
 
 	synchronized void setFinished(boolean success, long dataSize, String mimeType,
-								  FetchExceptionMode failureCode, String failureReasonLong, String failureReasonShort, Bucket dataShadow, boolean filtered) {
+								  FetchExceptionMode failureCode, String failureReasonLong, String failureReasonShort,
+								  Bucket dataShadow, boolean filtered) {
 		setFinished(success);
-		if(mimeType == null && (failureCode == FetchExceptionMode.CONTENT_VALIDATION_UNKNOWN_MIME || failureCode == FetchExceptionMode.CONTENT_VALIDATION_BAD_MIME)) {
-			Logger.error(this, "MIME type is null but failure code is "+FetchException.getMessage(failureCode)+" for "+getIdentifier()+" : "+uri, new Exception("error"));
+		if(mimeType == null && (failureCode == FetchExceptionMode.CONTENT_VALIDATION_UNKNOWN_MIME
+								|| failureCode == FetchExceptionMode.CONTENT_VALIDATION_BAD_MIME)) {
+			Logger.error(this, "MIME type is null but failure code is "+FetchException.getMessage(
+							 failureCode)+" for "+getIdentifier()+" : "+uri, new Exception("error"));
 		}
 		this.dataSize = dataSize;
 		this.mimeType = mimeType;
@@ -51,11 +54,15 @@ public class DownloadRequestStatus extends RequestStatus {
 						  int failed, Date latestFailure, boolean totalFinalized, short prio,
 						  // all above these passed to parent
 						  FetchExceptionMode failureCode, String mime, long size, File dest,
-						  CompatibilityMode[] compat, byte[] splitfileKey, FreenetURI uri, String failureReasonShort, String failureReasonLong, boolean overriddenDataType, Bucket dataShadow, boolean filterData, boolean dontCompress) {
+						  CompatibilityMode[] compat, byte[] splitfileKey, FreenetURI uri, String failureReasonShort,
+						  String failureReasonLong, boolean overriddenDataType, Bucket dataShadow, boolean filterData,
+						  boolean dontCompress) {
 		super(identifier, persistence, started, finished, success, total, min, fetched,
 			  latestSuccess, fatal, failed, latestFailure, totalFinalized, prio);
-		if(mime == null && (failureCode == FetchExceptionMode.CONTENT_VALIDATION_UNKNOWN_MIME || failureCode == FetchExceptionMode.CONTENT_VALIDATION_BAD_MIME)) {
-			Logger.error(this, "MIME type is null but failure code is "+FetchException.getMessage(failureCode)+" for "+identifier+" : "+uri, new Exception("error"));
+		if(mime == null && (failureCode == FetchExceptionMode.CONTENT_VALIDATION_UNKNOWN_MIME
+							|| failureCode == FetchExceptionMode.CONTENT_VALIDATION_BAD_MIME)) {
+			Logger.error(this, "MIME type is null but failure code is "+FetchException.getMessage(
+							 failureCode)+" for "+identifier+" : "+uri, new Exception("error"));
 		}
 		this.overriddenDataType = overriddenDataType;
 		this.failureCode = failureCode;
@@ -108,10 +115,11 @@ public class DownloadRequestStatus extends RequestStatus {
 
 	@Override
 	public String getFailureReason(boolean longDescription) {
-		if(longDescription)
+		if(longDescription) {
 			return failureReasonLong;
-		else
+		} else {
 			return failureReasonShort;
+		}
 	}
 
 	synchronized void updateDetectedCompatModes(
@@ -146,11 +154,13 @@ public class DownloadRequestStatus extends RequestStatus {
 
 	@Override
 	public String getPreferredFilename() {
-		if(destFilename != null)
+		if(destFilename != null) {
 			return destFilename.getName();
+		}
 		if(uri != null &&
-				(uri.hasMetaStrings() || uri.getDocName() != null))
+				(uri.hasMetaStrings() || uri.getDocName() != null)) {
 			return uri.getPreferredFilename();
+		}
 		return null;
 	}
 

@@ -21,13 +21,15 @@ public class PrependLengthOutputStream extends FilterOutputStream {
 
 	/** Create a stream which writes to temporary space and then on a non-aborted close() will
 	 * write the length (minus the offset) followed by the data. */
-	public static PrependLengthOutputStream create(OutputStream out, BucketFactory bf, int offset, boolean closeUnderlying) throws IOException {
+	public static PrependLengthOutputStream create(OutputStream out, BucketFactory bf, int offset,
+			boolean closeUnderlying) throws IOException {
 		Bucket temp = bf.makeBucket(-1);
 		OutputStream os = temp.getOutputStream();
 		return new PrependLengthOutputStream(os, temp, out, offset, closeUnderlying);
 	}
 
-	private PrependLengthOutputStream(OutputStream os, Bucket temp, OutputStream origOS, int offset, boolean closeUnderlying) {
+	private PrependLengthOutputStream(OutputStream os, Bucket temp, OutputStream origOS, int offset,
+									  boolean closeUnderlying) {
 		super(os);
 		this.temp = temp;
 		this.origOS = origOS;
@@ -49,14 +51,18 @@ public class PrependLengthOutputStream extends FilterOutputStream {
 	/** Abort the stream. Will write a length of 0 when close()'ed.
 	 * @return False if the stream has already been closed. */
 	public boolean abort() throws IOException {
-		if(closed) return false;
+		if(closed) {
+			return false;
+		}
 		aborted = true;
 		return true;
 	}
 
 	@Override
 	public void close() throws IOException {
-		if(closed) return;
+		if(closed) {
+			return;
+		}
 		out.close();
 		DataOutputStream dos = new DataOutputStream(origOS);
 		if(aborted) {
@@ -67,8 +73,9 @@ public class PrependLengthOutputStream extends FilterOutputStream {
 		}
 		temp.free();
 		closed = true;
-		if(closeUnderlying)
+		if(closeUnderlying) {
 			dos.close();
+		}
 	}
 
 }

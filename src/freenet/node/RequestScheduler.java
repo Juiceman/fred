@@ -38,7 +38,8 @@ public interface RequestScheduler {
 
 	public void callFailure(SendableGet get, LowLevelGetException e, int prio, boolean persistent);
 
-	public void callFailure(SendableInsert insert, LowLevelPutException exception, int prio, boolean persistent);
+	public void callFailure(SendableInsert insert, LowLevelPutException exception, int prio,
+							boolean persistent);
 
 	public ClientContext getContext();
 

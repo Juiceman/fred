@@ -82,8 +82,9 @@ public class SecurityLevels {
 			public String[] getPossibleValues() {
 				NETWORK_THREAT_LEVEL[] values = NETWORK_THREAT_LEVEL.values();
 				String[] names = new String[values.length];
-				for(int i=0; i<names.length; i++)
+				for(int i=0; i<names.length; i++) {
 					names[i] = values[i].name();
+				}
 				return names;
 			}
 
@@ -95,16 +96,20 @@ public class SecurityLevels {
 			@Override
 			protected void setValue(String val) throws InvalidConfigValueException {
 				NETWORK_THREAT_LEVEL newValue = parseNetworkThreatLevel(val);
-				if(newValue == null)
+				if(newValue == null) {
 					throw new InvalidConfigValueException("Invalid value for network threat level: "+val);
+				}
 				synchronized(SecurityLevels.this) {
 					networkThreatLevel = newValue;
 				}
 			}
 
 		};
-		myConfig.register("networkThreatLevel", "HIGH", sortOrder++, false, true, "SecurityLevels.networkThreatLevelShort", "SecurityLevels.networkThreatLevel", networkThreatLevelCallback);
-		NETWORK_THREAT_LEVEL netLevel = NETWORK_THREAT_LEVEL.valueOf(myConfig.getString("networkThreatLevel"));
+		myConfig.register("networkThreatLevel", "HIGH", sortOrder++, false, true,
+						  "SecurityLevels.networkThreatLevelShort", "SecurityLevels.networkThreatLevel",
+						  networkThreatLevelCallback);
+		NETWORK_THREAT_LEVEL netLevel = NETWORK_THREAT_LEVEL.valueOf(
+											myConfig.getString("networkThreatLevel"));
 		if(myConfig.getRawOption("networkThreatLevel") != null) {
 			networkThreatLevel = netLevel;
 		} else {
@@ -131,8 +136,9 @@ public class SecurityLevels {
 			public String[] getPossibleValues() {
 				PHYSICAL_THREAT_LEVEL[] values = PHYSICAL_THREAT_LEVEL.values();
 				String[] names = new String[values.length];
-				for(int i=0; i<names.length; i++)
+				for(int i=0; i<names.length; i++) {
 					names[i] = values[i].name();
+				}
 				return names;
 			}
 
@@ -144,16 +150,20 @@ public class SecurityLevels {
 			@Override
 			protected void setValue(String val) throws InvalidConfigValueException {
 				PHYSICAL_THREAT_LEVEL newValue = PHYSICAL_THREAT_LEVEL.valueOf(val);
-				if(newValue != null)
+				if(newValue != null) {
 					throw new InvalidConfigValueException("Invalid value for physical threat level: "+val);
+				}
 				synchronized(SecurityLevels.this) {
 					physicalThreatLevel = newValue;
 				}
 			}
 
 		};
-		myConfig.register("physicalThreatLevel", "NORMAL", sortOrder++, false, true, "SecurityLevels.physicalThreatLevelShort", "SecurityLevels.physicalThreatLevel", physicalThreatLevelCallback);
-		PHYSICAL_THREAT_LEVEL physLevel = PHYSICAL_THREAT_LEVEL.valueOf(myConfig.getString("physicalThreatLevel"));
+		myConfig.register("physicalThreatLevel", "NORMAL", sortOrder++, false, true,
+						  "SecurityLevels.physicalThreatLevelShort", "SecurityLevels.physicalThreatLevel",
+						  physicalThreatLevelCallback);
+		PHYSICAL_THREAT_LEVEL physLevel = PHYSICAL_THREAT_LEVEL.valueOf(
+											  myConfig.getString("physicalThreatLevel"));
 		if(myConfig.getRawOption("physicalThreatLevel") != null) {
 			physicalThreatLevel = physLevel;
 		} else {
@@ -164,11 +174,13 @@ public class SecurityLevels {
 		myConfig.finishedInitialization();
 	}
 
-	public synchronized void addNetworkThreatLevelListener(SecurityLevelListener<NETWORK_THREAT_LEVEL> listener) {
+	public synchronized void addNetworkThreatLevelListener(SecurityLevelListener<NETWORK_THREAT_LEVEL>
+			listener) {
 		networkThreatLevelCallback.addListener(listener);
 	}
 
-	public synchronized void addPhysicalThreatLevelListener(SecurityLevelListener<PHYSICAL_THREAT_LEVEL> listener) {
+	public synchronized void addPhysicalThreatLevelListener(SecurityLevelListener<PHYSICAL_THREAT_LEVEL>
+			listener) {
 		physicalThreatLevelCallback.addListener(listener);
 	}
 
@@ -247,52 +259,65 @@ public class SecurityLevels {
 	 * @return
 	 */
 	public HTMLNode getConfirmWarning(NETWORK_THREAT_LEVEL newThreatLevel, String checkboxName) {
-		if(newThreatLevel == networkThreatLevel)
-			return null; // Not going to be changed.
+		if(newThreatLevel == networkThreatLevel) {
+			return null;    // Not going to be changed.
+		}
 		HTMLNode parent = new HTMLNode("div");
-		if((newThreatLevel == NETWORK_THREAT_LEVEL.HIGH && networkThreatLevel != NETWORK_THREAT_LEVEL.MAXIMUM) ||
+		if((newThreatLevel == NETWORK_THREAT_LEVEL.HIGH
+				&& networkThreatLevel != NETWORK_THREAT_LEVEL.MAXIMUM) ||
 				newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 			if(node.peers.getDarknetPeers().length == 0) {
 				parent.addChild("p", l10n("noFriendsWarning"));
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
-					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
+					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning",
+														   new String[] { "bold" },
 														   new HTMLNode[] { HTMLNode.STRONG });
 				}
-				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("noFriendsCheckbox"));
+				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" },
+								l10n("noFriendsCheckbox"));
 				return parent;
 			} else if(node.peers.countConnectedDarknetPeers() == 0) {
-				parent.addChild("p", l10n("noConnectedFriendsWarning", "added", Integer.toString(node.peers.getDarknetPeers().length)));
+				parent.addChild("p", l10n("noConnectedFriendsWarning", "added",
+										  Integer.toString(node.peers.getDarknetPeers().length)));
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
-					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
+					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning",
+														   new String[] { "bold" },
 														   new HTMLNode[] { HTMLNode.STRONG });
 				}
-				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("noConnectedFriendsCheckbox"));
+				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" },
+								l10n("noConnectedFriendsCheckbox"));
 				return parent;
 			} else if(node.peers.countConnectedDarknetPeers() < 10) {
-				parent.addChild("p", l10n("fewConnectedFriendsWarning", new String[] { "connected", "added" }, new String[] { Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.getDarknetPeers().length)}));
+				parent.addChild("p", l10n("fewConnectedFriendsWarning", new String[] { "connected", "added" }, new
+										  String[] { Integer.toString(node.peers.countConnectedDarknetPeers()), Integer.toString(node.peers.getDarknetPeers().length)}));
 				if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 					HTMLNode p = parent.addChild("p");
-					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
+					NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning",
+														   new String[] { "bold" },
 														   new HTMLNode[] { HTMLNode.STRONG });
 				}
-				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("fewConnectedFriendsCheckbox"));
+				parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" },
+								l10n("fewConnectedFriendsCheckbox"));
 				return parent;
 			}
 		} else if(newThreatLevel == NETWORK_THREAT_LEVEL.LOW) {
 			parent.addChild("p", l10n("networkThreatLevelLowWarning"));
-			parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("networkThreatLevelLowCheckbox"));
+			parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" },
+							l10n("networkThreatLevelLowCheckbox"));
 			return parent;
 		} // Don't warn on switching to NORMAL.
 		if(newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
 			HTMLNode p = parent.addChild("p");
-			NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning", new String[] { "bold" },
+			NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maximumNetworkThreatLevelWarning",
+												   new String[] { "bold" },
 												   new HTMLNode[] { HTMLNode.STRONG });
 			p.addChild("#", " ");
 			NodeL10n.getBase().addL10nSubstitution(p, "SecurityLevels.maxSecurityYouNeedFriends", new String[] { "bold" },
 												   new HTMLNode[] { HTMLNode.STRONG });
-			parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" }, l10n("maximumNetworkThreatLevelCheckbox"));
+			parent.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", checkboxName, "off" },
+							l10n("maximumNetworkThreatLevelCheckbox"));
 			return parent;
 		}
 		return null;
@@ -311,10 +336,14 @@ public class SecurityLevels {
 	}
 
 	public void setThreatLevel(NETWORK_THREAT_LEVEL newThreatLevel) {
-		if(newThreatLevel == null) throw new NullPointerException();
+		if(newThreatLevel == null) {
+			throw new NullPointerException();
+		}
 		NETWORK_THREAT_LEVEL oldLevel;
 		synchronized(this) {
-			if(networkThreatLevel == newThreatLevel) return;
+			if(networkThreatLevel == newThreatLevel) {
+				return;
+			}
 			oldLevel = networkThreatLevel;
 			networkThreatLevel = newThreatLevel;
 		}
@@ -322,10 +351,14 @@ public class SecurityLevels {
 	}
 
 	public void setThreatLevel(PHYSICAL_THREAT_LEVEL newThreatLevel) {
-		if(newThreatLevel == null) throw new NullPointerException();
+		if(newThreatLevel == null) {
+			throw new NullPointerException();
+		}
 		PHYSICAL_THREAT_LEVEL oldLevel;
 		synchronized(this) {
-			if(physicalThreatLevel == newThreatLevel) return;
+			if(physicalThreatLevel == newThreatLevel) {
+				return;
+			}
 			oldLevel = physicalThreatLevel;
 			physicalThreatLevel = newThreatLevel;
 		}
@@ -337,11 +370,13 @@ public class SecurityLevels {
 	}
 
 	public static String localisedName(NETWORK_THREAT_LEVEL newThreatLevel) {
-		return NodeL10n.getBase().getString("SecurityLevels.networkThreatLevel.name."+newThreatLevel.name());
+		return NodeL10n.getBase().getString("SecurityLevels.networkThreatLevel.name."
+											+newThreatLevel.name());
 	}
 
 	public static String localisedName(PHYSICAL_THREAT_LEVEL newPhysicalLevel) {
-		return NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevel.name."+newPhysicalLevel.name());
+		return NodeL10n.getBase().getString("SecurityLevels.physicalThreatLevel.name."
+											+newPhysicalLevel.name());
 	}
 
 	public FRIEND_TRUST getDefaultFriendTrust() {
@@ -350,12 +385,14 @@ public class SecurityLevels {
 				Logger.error(this, "Asking for default friend trust yet we have no friend security level!");
 				return FRIEND_TRUST.NORMAL;
 			}
-			if(friendsThreatLevel == FRIENDS_THREAT_LEVEL.HIGH)
+			if(friendsThreatLevel == FRIENDS_THREAT_LEVEL.HIGH) {
 				return FRIEND_TRUST.LOW;
-			if(friendsThreatLevel == FRIENDS_THREAT_LEVEL.NORMAL)
+			}
+			if(friendsThreatLevel == FRIENDS_THREAT_LEVEL.NORMAL) {
 				return FRIEND_TRUST.NORMAL;
-			else // friendsThreatLevel == FRIENDS_THREAT_LEVEL.LOW
+			} else { // friendsThreatLevel == FRIENDS_THREAT_LEVEL.LOW
 				return FRIEND_TRUST.HIGH;
+			}
 		}
 	}
 }

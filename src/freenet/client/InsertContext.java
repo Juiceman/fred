@@ -109,7 +109,9 @@ public class InsertContext implements Cloneable, Serializable {
 		/** Must be called whenever we accept a CompatibilityMode as e.g. a config option. Converts
 		 * the pseudo- */
 		public CompatibilityMode intern() {
-			if(this == COMPAT_CURRENT) return latest();
+			if(this == COMPAT_CURRENT) {
+				return latest();
+			}
 			return this;
 		}
 
@@ -118,14 +120,18 @@ public class InsertContext implements Cloneable, Serializable {
 		static {
 			HashMap<Short, CompatibilityMode> cmodes = new HashMap<Short, CompatibilityMode>();
 			for(CompatibilityMode mode : CompatibilityMode.values) {
-				if(cmodes.containsKey(mode.code)) throw new Error("Duplicated code!");
+				if(cmodes.containsKey(mode.code)) {
+					throw new Error("Duplicated code!");
+				}
 				cmodes.put(mode.code, mode);
 			}
 			modesByCode = Collections.unmodifiableMap(cmodes);
 		}
 
 		public static CompatibilityMode byCode(short code) {
-			if(!modesByCode.containsKey(code)) throw new IllegalArgumentException();
+			if(!modesByCode.containsKey(code)) {
+				throw new IllegalArgumentException();
+			}
 			return modesByCode.get(code);
 		}
 
@@ -172,7 +178,9 @@ public class InsertContext implements Cloneable, Serializable {
 
 	public InsertContext(
 		int maxRetries, int rnfsToSuccess, int splitfileSegmentDataBlocks, int splitfileSegmentCheckBlocks,
-		ClientEventProducer eventProducer, boolean canWriteClientCache, boolean forkOnCacheable, boolean localRequestOnly, String compressorDescriptor, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, CompatibilityMode compatibilityMode) {
+		ClientEventProducer eventProducer, boolean canWriteClientCache, boolean forkOnCacheable,
+		boolean localRequestOnly, String compressorDescriptor, int extraInsertsSingleBlock,
+		int extraInsertsSplitfileHeaderBlock, CompatibilityMode compatibilityMode) {
 		dontCompress = false;
 		splitfileAlgo = SplitfileAlgorithm.ONION_STANDARD;
 		splitfileAlgorithm = splitfileAlgo.code;
@@ -247,45 +255,63 @@ public class InsertContext implements Cloneable, Serializable {
 	 * values. */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		InsertContext other = (InsertContext) obj;
-		if (canWriteClientCache != other.canWriteClientCache)
+		if (canWriteClientCache != other.canWriteClientCache) {
 			return false;
-		if (compatibilityMode != other.compatibilityMode)
+		}
+		if (compatibilityMode != other.compatibilityMode) {
 			return false;
+		}
 		if (compressorDescriptor == null) {
-			if (other.compressorDescriptor != null)
+			if (other.compressorDescriptor != null) {
 				return false;
-		} else if (!compressorDescriptor.equals(other.compressorDescriptor))
+			}
+		} else if (!compressorDescriptor.equals(other.compressorDescriptor)) {
 			return false;
-		if (consecutiveRNFsCountAsSuccess != other.consecutiveRNFsCountAsSuccess)
+		}
+		if (consecutiveRNFsCountAsSuccess != other.consecutiveRNFsCountAsSuccess) {
 			return false;
-		if (dontCompress != other.dontCompress)
+		}
+		if (dontCompress != other.dontCompress) {
 			return false;
+		}
 		// eventProducer is ignored, and assumed to be unique.
-		if (extraInsertsSingleBlock != other.extraInsertsSingleBlock)
+		if (extraInsertsSingleBlock != other.extraInsertsSingleBlock) {
 			return false;
-		if (extraInsertsSplitfileHeaderBlock != other.extraInsertsSplitfileHeaderBlock)
+		}
+		if (extraInsertsSplitfileHeaderBlock != other.extraInsertsSplitfileHeaderBlock) {
 			return false;
-		if (forkOnCacheable != other.forkOnCacheable)
+		}
+		if (forkOnCacheable != other.forkOnCacheable) {
 			return false;
-		if (ignoreUSKDatehints != other.ignoreUSKDatehints)
+		}
+		if (ignoreUSKDatehints != other.ignoreUSKDatehints) {
 			return false;
-		if (localRequestOnly != other.localRequestOnly)
+		}
+		if (localRequestOnly != other.localRequestOnly) {
 			return false;
-		if (maxInsertRetries != other.maxInsertRetries)
+		}
+		if (maxInsertRetries != other.maxInsertRetries) {
 			return false;
-		if (splitfileAlgo != other.splitfileAlgo)
+		}
+		if (splitfileAlgo != other.splitfileAlgo) {
 			return false;
-		if (splitfileSegmentCheckBlocks != other.splitfileSegmentCheckBlocks)
+		}
+		if (splitfileSegmentCheckBlocks != other.splitfileSegmentCheckBlocks) {
 			return false;
-		if (splitfileSegmentDataBlocks != other.splitfileSegmentDataBlocks)
+		}
+		if (splitfileSegmentDataBlocks != other.splitfileSegmentDataBlocks) {
 			return false;
+		}
 		return true;
 	}
 
@@ -298,8 +324,9 @@ public class InsertContext implements Cloneable, Serializable {
 	@Deprecated
 	public void onResume() {
 		// Used to encode it as a long.
-		if(realCompatMode == null)
+		if(realCompatMode == null) {
 			realCompatMode = CompatibilityMode.byCode((short)compatibilityMode);
+		}
 		// Max blocks was wrong too.
 		splitfileSegmentDataBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;
 		splitfileSegmentCheckBlocks = FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT;

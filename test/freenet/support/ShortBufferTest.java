@@ -33,8 +33,9 @@ import org.junit.Test;
  */
 public class ShortBufferTest {
 
-	private static final String DATA_STRING_1 = "asldkjaskjdsakdhasdhaskjdhaskjhbkasbhdjkasbduiwbxgdoudgboewuydxbybuewyxbuewyuwe" +
-			"dasdkljasndijwnodhnqweoidhnaouidhbnwoduihwnxodiuhnwuioxdhnwqiouhnxwqoiushdnxwqoiudhxnwqoiudhxni";
+	private static final String DATA_STRING_1 =
+		"asldkjaskjdsakdhasdhaskjdhaskjhbkasbhdjkasbduiwbxgdoudgboewuydxbybuewyxbuewyuwe" +
+		"dasdkljasndijwnodhnqweoidhnaouidhbnwoduihwnxodiuhnwuioxdhnwqiouhnxwqoiushdnxwqoiudhxnwqoiudhxni";
 
 	@Test
 	public void testByteArrayShortBuffer() {

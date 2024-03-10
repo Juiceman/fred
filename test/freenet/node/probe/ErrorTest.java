@@ -38,12 +38,16 @@ public class ErrorTest {
 		}
 
 		for (byte code = Byte.MIN_VALUE; code <= Byte.MAX_VALUE; code++) {
-			if (validCodes.contains(code)) continue;
+			if (validCodes.contains(code)) {
+				continue;
+			}
 
 			if (Error.isValid(code)) {
 				assertTrue("isValid() returned true for invalid code " + code + ".", false);
 			}
-			if (code == Byte.MAX_VALUE) return;
+			if (code == Byte.MAX_VALUE) {
+				return;
+			}
 		}
 	}
 

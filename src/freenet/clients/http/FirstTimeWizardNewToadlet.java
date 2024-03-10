@@ -32,7 +32,8 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 
 	public static final String TOADLET_URL = "/wiz/";
 
-	private static final long MIN_STORAGE_LIMIT = Node.MIN_STORE_SIZE * 5 / 4;  // min store size + 10% for client cache + 10% for slashdot cache
+	private static final long MIN_STORAGE_LIMIT = Node.MIN_STORE_SIZE * 5 /
+			4;  // min store size + 10% for client cache + 10% for slashdot cache
 
 	private final NodeClientCore core;
 
@@ -119,7 +120,8 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 
 		private String storageLimit;
 
-		private final String minStorageLimit = String.format(Locale.ENGLISH, "%.2f", (float) MIN_STORAGE_LIMIT / DatastoreUtil.oneGiB);
+		private final String minStorageLimit = String.format(Locale.ENGLISH, "%.2f",
+											   (float) MIN_STORAGE_LIMIT / DatastoreUtil.oneGiB);
 
 		private String setPassword = "";
 
@@ -139,8 +141,10 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 				@SuppressWarnings("unchecked")
 				Option<Long> clientCacheSizeOption = (Option<Long>) config.get("node").getOption("clientCacheSize");
 				@SuppressWarnings("unchecked")
-				Option<Long> slashdotCacheSizeOption = (Option<Long>) config.get("node").getOption("slashdotCacheSize");
-				long totalSize = sizeOption.getValue() + clientCacheSizeOption.getValue() + slashdotCacheSizeOption.getValue();
+				Option<Long> slashdotCacheSizeOption = (Option<Long>)
+													   config.get("node").getOption("slashdotCacheSize");
+				long totalSize = sizeOption.getValue() + clientCacheSizeOption.getValue() +
+								 slashdotCacheSizeOption.getValue();
 				storage = (float) totalSize / DatastoreUtil.oneGiB;
 			} else {
 				long autodetectedDatastoreSize = DatastoreUtil.autodetectDatastoreSize(core, config);
@@ -169,8 +173,10 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 			bandwidthMonthlyLimit = request.getPartAsStringFailsafe("monthlyLimit", 100);
 			storageLimit = request.getPartAsStringFailsafe("storage", 100);
 			setPassword = request.getPartAsStringFailsafe("setPassword", 20);
-			password = request.getPartAsStringFailsafe("password", SecurityLevelsToadlet.MAX_PASSWORD_LENGTH + 1);
-			String passwordConfirmation = request.getPartAsStringFailsafe("confirmPassword", SecurityLevelsToadlet.MAX_PASSWORD_LENGTH);
+			password = request.getPartAsStringFailsafe("password",
+					   SecurityLevelsToadlet.MAX_PASSWORD_LENGTH + 1);
+			String passwordConfirmation = request.getPartAsStringFailsafe("confirmPassword",
+										  SecurityLevelsToadlet.MAX_PASSWORD_LENGTH);
 
 			// validate
 			if (haveMonthlyLimit.isEmpty()) {
@@ -218,7 +224,8 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 
 			try {
 				long storageLimit = this.storageLimit.isEmpty() ? 0 : Fields.parseLong(this.storageLimit + "GiB");
-				if (storageLimit < MIN_STORAGE_LIMIT) { // min store size + 10% for client cache + 10% for slashdot cache
+				if (storageLimit <
+						MIN_STORAGE_LIMIT) { // min store size + 10% for client cache + 10% for slashdot cache
 					errors.put("storageLimitError", NodeL10n.getBase().getString("Node.invalidMinStoreSizeWithCaches"));
 				} else {
 					long maxDatastoreSize = DatastoreUtil.maxDatastoreSize();
@@ -282,8 +289,12 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 			if (downloadLimitDetected == null || uploadLimitDetected == null) {
 				detectBandwidthLimit();
 			}
-			model.put("downloadLimitDetected", downloadLimitDetected != null ? downloadLimitDetected : l10n("bandwidthCommonInternetConnectionSpeedsDetectedUnavailable"));
-			model.put("uploadLimitDetected", uploadLimitDetected != null ? uploadLimitDetected : l10n("bandwidthCommonInternetConnectionSpeedsDetectedUnavailable"));
+			model.put("downloadLimitDetected",
+					  downloadLimitDetected != null ? downloadLimitDetected :
+					  l10n("bandwidthCommonInternetConnectionSpeedsDetectedUnavailable"));
+			model.put("uploadLimitDetected",
+					  uploadLimitDetected != null ? uploadLimitDetected :
+					  l10n("bandwidthCommonInternetConnectionSpeedsDetectedUnavailable"));
 
 			model.put("errors", errors);
 
@@ -328,7 +339,8 @@ public class FirstTimeWizardNewToadlet extends WebTemplateToadlet {
 						core.node.securityLevels.setThreatLevel(SecurityLevels.PHYSICAL_THREAT_LEVEL.HIGH);
 						core.node.setMasterPassword(password, true);
 					}
-				} catch (Node.AlreadySetPasswordException | MasterKeysWrongPasswordException | MasterKeysFileSizeException | IOException e) {
+				} catch (Node.AlreadySetPasswordException | MasterKeysWrongPasswordException |
+							 MasterKeysFileSizeException | IOException e) {
 					Logger.error(this, "Should not happen, please report! " + e, e);
 				}
 			}

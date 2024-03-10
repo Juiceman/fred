@@ -28,8 +28,9 @@ class CorruptingOutputStream extends OutputStream {
 		}
 		killBytes = new long[errors];
 		Iterator<Long> it = toKill.iterator();
-		for(int i=0; i<errors; i++)
+		for(int i=0; i<errors; i++) {
 			killBytes[i] = it.next();
+		}
 		ptr = 0;
 	}
 
@@ -49,9 +50,15 @@ class CorruptingOutputStream extends OutputStream {
 		long maxFair = (Long.MAX_VALUE / range) * range;
 		while(true) {
 			long r = random.nextLong();
-			if(r < 0) r = -r;
-			if(r == Long.MIN_VALUE) continue; // Wierd case!
-			if(r > maxFair) continue;
+			if(r < 0) {
+				r = -r;
+			}
+			if(r == Long.MIN_VALUE) {
+				continue;    // Wierd case!
+			}
+			if(r > maxFair) {
+				continue;
+			}
 			return r % range;
 		}
 	}

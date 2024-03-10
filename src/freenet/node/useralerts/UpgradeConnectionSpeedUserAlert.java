@@ -77,7 +77,8 @@ public class UpgradeConnectionSpeedUserAlert extends AbstractUserAlert {
 
 	@Override
 	public String dismissButtonText() {
-		return upgraded ? NodeL10n.getBase().getString("Toadlet.ok") : NodeL10n.getBase().getString("Toadlet.no");
+		return upgraded ? NodeL10n.getBase().getString("Toadlet.ok") :
+			   NodeL10n.getBase().getString("Toadlet.no");
 	}
 
 	@Override

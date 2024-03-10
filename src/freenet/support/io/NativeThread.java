@@ -45,8 +45,9 @@ public class NativeThread extends Thread {
 
 		public static PriorityLevel fromValue(int value) {
 			for(PriorityLevel level :PriorityLevel.values()) {
-				if(level.value == value)
+				if(level.value == value) {
 					return level;
+				}
 			}
 
 			throw new IllegalArgumentException();
@@ -77,13 +78,15 @@ public class NativeThread extends Thread {
 		if(maybeLoadNative) {
 			NATIVE_PRIORITY_BASE = LinuxNativeThread.getpriority(0,0);
 			NATIVE_PRIORITY_RANGE = 20 - NATIVE_PRIORITY_BASE;
-			System.out.println("Using the NativeThread implementation (base nice level is "+NATIVE_PRIORITY_BASE+')');
+			System.out.println("Using the NativeThread implementation (base nice level is "+NATIVE_PRIORITY_BASE
+							   +')');
 			// they are 3 main prio levels
 			HAS_THREE_NICE_LEVELS = NATIVE_PRIORITY_RANGE >= 3;
 			HAS_ENOUGH_NICE_LEVELS = NATIVE_PRIORITY_RANGE >= ENOUGH_NICE_LEVELS;
 			HAS_PLENTY_NICE_LEVELS = NATIVE_PRIORITY_RANGE >=JAVA_PRIORITY_RANGE;
-			if(!(HAS_ENOUGH_NICE_LEVELS && HAS_THREE_NICE_LEVELS))
+			if(!(HAS_ENOUGH_NICE_LEVELS && HAS_THREE_NICE_LEVELS)) {
 				System.err.println("WARNING!!! The JVM has been niced down to a level which won't allow it to schedule threads properly! LOWER THE NICE LEVEL!!");
+			}
 			_loadNative = true;
 		} else {
 			// unused anyway
@@ -150,8 +153,9 @@ public class NativeThread extends Thread {
 
 	@Override
 	public final void run() {
-		if(!setNativePriority(currentPriority))
+		if(!setNativePriority(currentPriority)) {
 			System.err.println("setNativePriority("+currentPriority+") has failed!");
+		}
 		super.run();
 		realRun();
 	}
@@ -182,20 +186,27 @@ public class NativeThread extends Thread {
 			 * Let's disable the renicing as we can't rely on it anymore.
 			 */
 			_disabled = true;
-			Logger.error(this, "Freenet has detected it has been reniced : THAT'S BAD, DON'T DO IT! Nice level detected statically: "+NATIVE_PRIORITY_BASE+" actual nice level: "+realPrio+" on "+this);
-			System.err.println("Freenet has detected it has been reniced : THAT'S BAD, DON'T DO IT! Nice level detected statically: "+NATIVE_PRIORITY_BASE+" actual nice level: "+realPrio+" on "+this);
+			Logger.error(this,
+						 "Freenet has detected it has been reniced : THAT'S BAD, DON'T DO IT! Nice level detected statically: "
+						 +NATIVE_PRIORITY_BASE+" actual nice level: "+realPrio+" on "+this);
+			System.err.println("Freenet has detected it has been reniced : THAT'S BAD, DON'T DO IT! Nice level detected statically: "
+							   +NATIVE_PRIORITY_BASE+" actual nice level: "+realPrio+" on "+this);
 			new NullPointerException().printStackTrace();
 			return false;
 		}
-		final int linuxPriority = NATIVE_PRIORITY_BASE + NATIVE_PRIORITY_RANGE - (NATIVE_PRIORITY_RANGE * (prio - MIN_PRIORITY)) / JAVA_PRIORITY_RANGE;
-		if(linuxPriority == realPrio) return true; // Ok
+		final int linuxPriority = NATIVE_PRIORITY_BASE + NATIVE_PRIORITY_RANGE - (NATIVE_PRIORITY_RANGE *
+								  (prio - MIN_PRIORITY)) / JAVA_PRIORITY_RANGE;
+		if(linuxPriority == realPrio) {
+			return true;    // Ok
+		}
 		// That's an obvious coding mistake
 		if(prio < currentPriority)
 			throw new IllegalStateException("You're trying to set a thread priority" +
 											" above the current value!! It's not possible if you aren't root" +
 											" and shouldn't ever occur in our code. (asked="+prio+':'+linuxPriority+" currentMax="+
 											+currentPriority+':'+NATIVE_PRIORITY_BASE+") SHOUDLN'T HAPPEN, please report!");
-		Logger.minor(this, "Setting native priority to "+linuxPriority+" (base="+NATIVE_PRIORITY_BASE+") for "+this);
+		Logger.minor(this, "Setting native priority to "+linuxPriority+" (base="+NATIVE_PRIORITY_BASE
+					 +") for "+this);
 		return (LinuxNativeThread.setpriority(0, 0, linuxPriority) > -1 ? true : false);
 	}
 
@@ -208,12 +219,15 @@ public class NativeThread extends Thread {
 	}
 
 	public static String normalizeName(String name) {
-		if(name.indexOf(" for ") != -1)
+		if(name.indexOf(" for ") != -1) {
 			name = name.substring(0, name.indexOf(" for "));
-		if(name.indexOf('@') != -1)
+		}
+		if(name.indexOf('@') != -1) {
 			name = name.substring(0, name.indexOf('@'));
-		if (name.indexOf('(') != -1)
+		}
+		if (name.indexOf('(') != -1) {
 			name = name.substring(0, name.indexOf('('));
+		}
 
 		return name.trim();
 	}

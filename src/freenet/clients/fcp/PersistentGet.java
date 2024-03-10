@@ -37,11 +37,14 @@ public class PersistentGet extends FCPMessage {
 
 	public PersistentGet(String identifier, FreenetURI uri, int verbosity,
 						 short priorityClass, ReturnType returnType, Persistence persistence,
-						 File targetFile, String clientToken, boolean global, boolean started, int maxRetries, boolean binaryBlob, long maxSize, boolean realTime) {
+						 File targetFile, String clientToken, boolean global, boolean started, int maxRetries,
+						 boolean binaryBlob, long maxSize, boolean realTime) {
 		this.identifier = identifier;
 		this.uri = uri;
 		// This has been seen in practice (bug #3606), lets try to get an earlier stack trace...
-		if(uri == null) throw new NullPointerException();
+		if(uri == null) {
+			throw new NullPointerException();
+		}
 		this.verbosity = verbosity;
 		this.priorityClass = priorityClass;
 		this.returnType = returnType;
@@ -68,8 +71,9 @@ public class PersistentGet extends FCPMessage {
 			fs.putSingle("Filename", targetFile.getAbsolutePath());
 		}
 		fs.put("PriorityClass", priorityClass);
-		if(clientToken != null)
+		if(clientToken != null) {
 			fs.putSingle("ClientToken", clientToken);
+		}
 		fs.put("Global", global);
 		fs.put("Started", started);
 		fs.put("MaxRetries", maxRetries);
@@ -87,7 +91,8 @@ public class PersistentGet extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentGet goes from server to client not the other way around", identifier, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PersistentGet goes from server to client not the other way around", identifier, global);
 	}
 
 }

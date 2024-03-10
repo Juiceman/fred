@@ -17,7 +17,8 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 	private final NodeUpdateManager updater;
 
 	public UpdatedVersionAvailableUserAlert(NodeUpdateManager updater) {
-		super(false, null, null, null, null, (short) 0, false, NodeL10n.getBase().getString("UserAlert.hide"), false, null);
+		super(false, null, null, null, null, (short) 0, false,
+			  NodeL10n.getBase().getString("UserAlert.hide"), false, null);
 		this.updater = updater;
 	}
 
@@ -88,7 +89,8 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 		alertNode.addChild("#", ut.firstBit);
 
 		if(ut.formText != null) {
-			alertNode.addChild("form", new String[] { "action", "method" }, new String[] { "/", "post" }).addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "update", ut.formText });
+			alertNode.addChild("form", new String[] { "action", "method" }, new String[] { "/", "post" }).addChild("input",
+					new String[] { "type", "name", "value" }, new String[] { "submit", "update", ut.formText });
 			alertNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "formPassword", updater.node.clientCore.formPassword });
 		}
 
@@ -137,12 +139,13 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 					formText = l10n("updateASAPButton");
 				}
 			} else {
-				if(updater.fetchingFromUOM())
+				if(updater.fetchingFromUOM()) {
 					sb.append(l10n("fetchingUOM", "updateScript", getUpdateScriptName()));
-				else {
+				} else {
 					boolean fetchingNew = updater.fetchingNewMainJar();
 					if(fetchingNew) {
-						sb.append(l10n("fetchingNewNode", "nodeVersion", Integer.toString(updater.fetchingNewMainJarVersion())));
+						sb.append(l10n("fetchingNewNode", "nodeVersion",
+									   Integer.toString(updater.fetchingNewMainJarVersion())));
 					}
 				}
 				sb.append(" ");
@@ -174,21 +177,27 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 			name = "update.sh";
 		}
 		File f = new File(updater.node.getNodeDir(), name);
-		if(f.exists()) return f.toString();
+		if(f.exists()) {
+			return f.toString();
+		}
 		f = new File(new File(updater.node.getNodeDir(), "bin"), name);
-		if(f.exists()) return f.toString();
+		if(f.exists()) {
+			return f.toString();
+		}
 		return name;
 	}
 
 	@Override
 	public short getPriorityClass() {
 		Node node = updater.node;
-		if(node.updateIsUrgent())
+		if(node.updateIsUrgent()) {
 			return UserAlert.CRITICAL_ERROR;
-		if(updater.inFinalCheck() || updater.canUpdateNow() || !updater.isArmed())
+		}
+		if(updater.inFinalCheck() || updater.canUpdateNow() || !updater.isArmed()) {
 			return UserAlert.ERROR;
-		else
+		} else {
 			return UserAlert.MINOR;
+		}
 	}
 
 	@Override

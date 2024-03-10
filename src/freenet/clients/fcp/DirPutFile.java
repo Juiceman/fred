@@ -45,13 +45,18 @@ abstract class DirPutFile {
 	/**
 	 * Create a DirPutFile from a SimpleFieldSet.
 	 */
-	public static DirPutFile create(SimpleFieldSet subset, String identifier, boolean global, BucketFactory bf) throws MessageInvalidException {
+	public static DirPutFile create(SimpleFieldSet subset, String identifier, boolean global,
+									BucketFactory bf) throws MessageInvalidException {
 		String name = subset.get("Name");
-		if(name == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field Name", identifier, global);
+		if(name == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field Name",
+											  identifier, global);
+		}
 		String contentTypeOverride = subset.get("Metadata.ContentType");
-		if(contentTypeOverride != null && !contentTypeOverride.isEmpty() && !DefaultMIMETypes.isPlausibleMIMEType(contentTypeOverride)) {
-			throw new MessageInvalidException(ProtocolErrorMessage.BAD_MIME_TYPE, "Bad MIME type in Metadata.ContentType", identifier, global);
+		if(contentTypeOverride != null && !contentTypeOverride.isEmpty()
+				&& !DefaultMIMETypes.isPlausibleMIMEType(contentTypeOverride)) {
+			throw new MessageInvalidException(ProtocolErrorMessage.BAD_MIME_TYPE,
+											  "Bad MIME type in Metadata.ContentType", identifier, global);
 		}
 		String type = subset.get("UploadFrom");
 		if((type == null) || type.equalsIgnoreCase("direct")) {
@@ -61,7 +66,8 @@ abstract class DirPutFile {
 		} else if(type.equalsIgnoreCase("redirect")) {
 			return RedirectDirPutFile.create(name, contentTypeOverride, subset, identifier, global);
 		} else {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unsupported or unknown UploadFrom: "+type, identifier, global);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+											  "Unsupported or unknown UploadFrom: "+type, identifier, global);
 		}
 	}
 
@@ -78,9 +84,12 @@ abstract class DirPutFile {
 	public ManifestElement getElement() {
 		String n = name;
 		int idx = n.lastIndexOf('/');
-		if(idx != -1) n = n.substring(idx+1);
-		if(logMINOR)
+		if(idx != -1) {
+			n = n.substring(idx+1);
+		}
+		if(logMINOR) {
 			Logger.minor(this, "Element name: "+name+" -> "+n);
+		}
 		return new ManifestElement(n, getData(), getMIMEType(), getData().size());
 	}
 

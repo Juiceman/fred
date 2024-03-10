@@ -57,10 +57,12 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 	public static final int MIN_CONN_ERROR_ALERT_THRESHOLD = 5;
 
 	/** How high can oldestNeverConnectedPeerAge be before we alert (in milliseconds)*/
-	public static final long MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD = DAYS.toMillis(14); // 2 weeks
+	public static final long MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD = DAYS.toMillis(
+				14); // 2 weeks
 
 	public PeerManagerUserAlert(NodeStats n, NodeUpdateManager nodeUpdater) {
-		super(false, null, null, null, null, (short) 0, true, NodeL10n.getBase().getString("UserAlert.hide"), false, null);
+		super(false, null, null, null, null, (short) 0, true,
+			  NodeL10n.getBase().getString("UserAlert.hide"), false, null);
 		this.n = n;
 		this.nodeUpdater = nodeUpdater;
 	}
@@ -68,33 +70,49 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 	@Override
 	public String getTitle() {
 		synchronized(this) {
-			if(isOutdated)
+			if(isOutdated) {
 				return l10n("outdatedUpdateTitle");
-			if(!isOpennetEnabled) {
-				if(peers == 0)
-					return l10n("noPeersTitle");
-				if(conns == 0)
-					return l10n("noConnsTitle");
-				if(conns < MIN_CONN_ALERT_THRESHOLD)
-					return l10n("onlyFewConnsTitle", "count", Integer.toString(conns));
 			}
-			if(bwlimitDelayAlertRelevant && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD))
+			if(!isOpennetEnabled) {
+				if(peers == 0) {
+					return l10n("noPeersTitle");
+				}
+				if(conns == 0) {
+					return l10n("noConnsTitle");
+				}
+				if(conns < MIN_CONN_ALERT_THRESHOLD) {
+					return l10n("onlyFewConnsTitle", "count", Integer.toString(conns));
+				}
+			}
+			if(bwlimitDelayAlertRelevant
+					&& (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
 				return l10n("tooHighBwlimitDelayTimeTitle");
-			if(nodeAveragePingAlertRelevant && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD))
+			}
+			if(nodeAveragePingAlertRelevant
+					&& (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
 				return l10n("tooHighPingTimeTitle");
-			if(clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD)
+			}
+			if(clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
 				return l10n("clockProblemTitle");
-			if(neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD)
+			}
+			if(neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD) {
 				return l10n("tooManyNeverConnectedTitle");
-			if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD)
+			}
+			if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD) {
 				return l10n("connErrorTitle");
-			if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded && !darknetAssumeNAT)
+			}
+			if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded
+					&& !darknetAssumeNAT) {
 				return l10n("tooManyDisconnectedTitle");
-			if(darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD)
+			}
+			if(darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD) {
 				return l10n("tooManyConnsTitle");
-			if(oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD)
+			}
+			if(oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD) {
 				return l10n("tooOldNeverConnectedPeersTitle");
-			else throw new IllegalArgumentException("Not valid");
+			} else {
+				throw new IllegalArgumentException("Not valid");
+			}
 		}
 	}
 
@@ -119,8 +137,9 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 	public String getText() {
 		String s;
 		synchronized(this) {
-			if(isOutdated)
+			if(isOutdated) {
 				return l10n("outdatedUpdate");
+			}
 			if(peers == 0 && !isOpennetEnabled) {
 				return l10n("noPeersDarknet");
 			} else if(conns < 3 && clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
@@ -133,11 +152,13 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 				return l10n("oneConn");
 			} else if(conns == 2 && !isOpennetEnabled) {
 				return l10n("twoConns");
-			} else if(bwlimitDelayAlertRelevant && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
+			} else if(bwlimitDelayAlertRelevant
+					  && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
 				s = l10n("tooHighBwlimitDelayTime", new String[] { "delay", "max" },
 						 new String[] { Integer.toString(bwlimitDelayTime), Long.toString(NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)});
 				// FIXME I'm not convinced about the next one!
-			} else if(nodeAveragePingAlertRelevant && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
+			} else if(nodeAveragePingAlertRelevant
+					  && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
 				s = l10n("tooHighPingTime", new String[] { "ping", "max" },
 						 new String[] { Integer.toString(nodeAveragePingTime), Long.toString(NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD) });
 			} else if(clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
@@ -146,7 +167,8 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 				s = l10n("tooManyNeverConnected", "count", Integer.toString(neverConn));
 			} else if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD) {
 				s = l10n("connError", "count", Integer.toString(connError));
-			} else if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded && !darknetAssumeNAT) {
+			} else if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded
+					  && !darknetAssumeNAT) {
 				s = l10n("tooManyDisconnected", new String[] { "count", "max" },
 						 new String[] { Integer.toString(disconnDarknetPeers), Integer.toString(MAX_DISCONN_PEER_ALERT_THRESHOLD)});
 			} else if(darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD) {
@@ -154,7 +176,9 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 						 new String[] { Integer.toString(conns), Integer.toString(MAX_DARKNET_CONN_ALERT_THRESHOLD)});
 			} else if(oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD) {
 				return l10n("tooOldNeverConnectedPeers");
-			} else throw new IllegalArgumentException("Not valid");
+			} else {
+				throw new IllegalArgumentException("Not valid");
+			}
 			return s;
 		}
 	}
@@ -173,11 +197,13 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 
 	static public String replaceCareful(String text, String find, String replace) {
 		String[] split = text.split(find, -1);
-		StringBuilder sb = new StringBuilder(text.length() + (split.length-1)*(replace.length() - find.length()));
+		StringBuilder sb = new StringBuilder(text.length() + (split.length-1)*
+											 (replace.length() - find.length()));
 		for(int i=0; i<split.length; i++) {
 			sb.append(split[i]);
-			if(i < split.length - 1)
+			if(i < split.length - 1) {
 				sb.append(replace);
+			}
 		}
 		return sb.toString();
 	}
@@ -191,8 +217,9 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 				// Arguably we should provide a button to turn on auto-update,
 				// but very few users will turn off auto-update completely.
 				// This is useful to not lose those who do however.
+			{
 				alertNode.addChild("#", l10n("outdatedUpdate"));
-			else if (peers == 0 && !isOpennetEnabled) {
+			} else if (peers == 0 && !isOpennetEnabled) {
 				alertNode.addChild("#", l10n("noPeersDarknet"));
 			} else if(conns < 3 && clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
 				alertNode.addChild("#", l10n("clockProblem", "count", Integer.toString(clockProblem)));
@@ -204,39 +231,50 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 				alertNode.addChild("#", l10n("oneConn"));
 			} else if (conns == 2 && !isOpennetEnabled) {
 				alertNode.addChild("#", l10n("twoConns"));
-			} else if (bwlimitDelayAlertRelevant && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
+			} else if (bwlimitDelayAlertRelevant
+					   && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
 				alertNode.addChild("#", l10n("tooHighBwlimitDelayTime", new String[] { "delay", "max" },
 											 new String[] { Integer.toString(bwlimitDelayTime), Long.toString(NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)}));
-			} else if (nodeAveragePingAlertRelevant && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
+			} else if (nodeAveragePingAlertRelevant
+					   && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
 				alertNode.addChild("#", l10n("tooHighPingTime", new String[] { "ping", "max" },
 											 new String[] { Integer.toString(nodeAveragePingTime), Long.toString(NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD) }));
 			} else if (clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
 				alertNode.addChild("#", l10n("clockProblem", "count", Integer.toString(clockProblem)));
 			} else if (neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD) {
-				NodeL10n.getBase().addL10nSubstitution(alertNode, "PeerManagerUserAlert.tooManyNeverConnectedWithLink",
+				NodeL10n.getBase().addL10nSubstitution(alertNode,
+													   "PeerManagerUserAlert.tooManyNeverConnectedWithLink",
 													   new String[] { "link", "count" },
 													   new HTMLNode[] { HTMLNode.link("/friends/myref.fref"), HTMLNode.text(neverConn) });
 			} else if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD) {
 				alertNode.addChild("#", l10n("connError", "count", Integer.toString(connError)));
-			} else if (disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded && !darknetAssumeNAT) {
+			} else if (disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD
+					   && !darknetDefinitelyPortForwarded && !darknetAssumeNAT) {
 				alertNode.addChild("#", l10n("tooManyDisconnected", new String[] { "count", "max" }, new String[] { Integer.toString(disconnDarknetPeers), Integer.toString(MAX_DISCONN_PEER_ALERT_THRESHOLD)}));
 			} else if (darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD) {
 				alertNode.addChild("#", l10n("tooManyConns", new String[] { "count", "max" },
 											 new String[] { Integer.toString(conns), Integer.toString(MAX_DARKNET_CONN_ALERT_THRESHOLD)}));
 			} else if (oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD) {
 				alertNode.addChild("#", l10n("tooOldNeverConnectedPeers"));
-			} else throw new IllegalArgumentException("not valid");
+			} else {
+				throw new IllegalArgumentException("not valid");
+			}
 		}
 		return alertNode;
 	}
 
 	private boolean calculateIsOutdated() {
 		// Do not show the message if updater is enabled.
-		if(nodeUpdater.isEnabled()) return false;
-		if(nodeUpdater.isBlown()) return false;
+		if(nodeUpdater.isEnabled()) {
+			return false;
+		}
+		if(nodeUpdater.isBlown()) {
+			return false;
+		}
 		synchronized(this) {
-			if(tooNewPeersDarknet >= PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET)
+			if(tooNewPeersDarknet >= PeerManager.OUTDATED_MIN_TOO_NEW_DARKNET) {
 				return true;
+			}
 			return conns < PeerManager.OUTDATED_MAX_CONNS &&
 				   tooNewPeersTotal >= PeerManager.OUTDATED_MIN_TOO_NEW_TOTAL;
 		}
@@ -246,37 +284,54 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 	public short getPriorityClass() {
 		synchronized(this) {
 			if(isOutdated) {
-				if(conns == 0)
+				if(conns == 0) {
 					return UserAlert.CRITICAL_ERROR;
-				else
+				} else {
 					return UserAlert.ERROR;
+				}
 			}
-			if(peers == 0 && !isOpennetEnabled)
+			if(peers == 0 && !isOpennetEnabled) {
 				return UserAlert.CRITICAL_ERROR;
-			if(conns == 0 && !isOpennetEnabled)
+			}
+			if(conns == 0 && !isOpennetEnabled) {
 				return UserAlert.ERROR;
-			if(conns < 3 && clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD)
+			}
+			if(conns < 3 && clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
 				return ERROR;
-			if(conns < 3 && connError > MIN_CONN_ERROR_ALERT_THRESHOLD)
+			}
+			if(conns < 3 && connError > MIN_CONN_ERROR_ALERT_THRESHOLD) {
 				return ERROR;
-			if(conns < 3 && !isOpennetEnabled)
+			}
+			if(conns < 3 && !isOpennetEnabled) {
 				return ERROR;
-			if(bwlimitDelayAlertRelevant && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD))
+			}
+			if(bwlimitDelayAlertRelevant
+					&& (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) {
 				return ERROR;
-			if(nodeAveragePingAlertRelevant && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD))
+			}
+			if(nodeAveragePingAlertRelevant
+					&& (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) {
 				return ERROR;
-			if(clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD)
+			}
+			if(clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) {
 				return ERROR;
-			if(neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD)
+			}
+			if(neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD) {
 				return WARNING;
-			if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD)
+			}
+			if(connError > MIN_CONN_ERROR_ALERT_THRESHOLD) {
 				return WARNING;
-			if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded && !darknetAssumeNAT)
+			}
+			if(disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded
+					&& !darknetAssumeNAT) {
 				return WARNING;
-			if(darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD)
+			}
+			if(darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD) {
 				return WARNING;
-			if(oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD)
+			}
+			if(oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD) {
 				return WARNING;
+			}
 			return ERROR;
 		}
 	}
@@ -290,16 +345,20 @@ public class PeerManagerUserAlert extends AbstractUserAlert {
 			ret = ((peers == 0 && !isOpennetEnabled) ||
 				   (conns < 3 && !isOpennetEnabled) ||
 				   (neverConn > MAX_NEVER_CONNECTED_PEER_ALERT_THRESHOLD) ||
-				   (disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded && !darknetAssumeNAT) ||
+				   (disconnDarknetPeers > MAX_DISCONN_PEER_ALERT_THRESHOLD && !darknetDefinitelyPortForwarded
+					&& !darknetAssumeNAT) ||
 				   (darknetConns > MAX_DARKNET_CONN_ALERT_THRESHOLD) ||
 				   (clockProblem > MIN_CLOCK_PROBLEM_PEER_ALERT_THRESHOLD) ||
 				   (connError > MIN_CONN_ERROR_ALERT_THRESHOLD) ||
-				   (bwlimitDelayAlertRelevant && (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) ||
-				   (nodeAveragePingAlertRelevant && (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) ||
+				   (bwlimitDelayAlertRelevant
+					&& (bwlimitDelayTime > NodeStats.MAX_BWLIMIT_DELAY_TIME_ALERT_THRESHOLD)) ||
+				   (nodeAveragePingAlertRelevant
+					&& (nodeAveragePingTime > NodeStats.MAX_NODE_AVERAGE_PING_TIME_ALERT_THRESHOLD)) ||
 				   (oldestNeverConnectedPeerAge > MAX_OLDEST_NEVER_CONNECTED_PEER_AGE_ALERT_THRESHOLD));
 		}
-		if(!ret)
+		if(!ret) {
 			ret = isOutdated;
+		}
 		return ret;
 	}
 

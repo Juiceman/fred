@@ -31,7 +31,8 @@ public final class LRUCache<Key extends Comparable<Key>, Value> {
 
 		public Entry(final Value myValue) {
 			mValue = myValue;
-			mExpirationDate = (mExpirationDelay < Long.MAX_VALUE) ? (System.currentTimeMillis() + mExpirationDelay) : (Long.MAX_VALUE);
+			mExpirationDate = (mExpirationDelay < Long.MAX_VALUE) ? (System.currentTimeMillis() +
+							  mExpirationDelay) : (Long.MAX_VALUE);
 		}
 
 		public boolean expired(final long time) {
@@ -77,8 +78,9 @@ public final class LRUCache<Key extends Comparable<Key>, Value> {
 		assert(capacity <= mSizeLimit);
 
 		final int limit = mSizeLimit - capacity;
-		while(mCache.size() > limit)
+		while(mCache.size() > limit) {
 			mCache.popValue();
+		}
 	}
 
 	/**
@@ -99,8 +101,9 @@ public final class LRUCache<Key extends Comparable<Key>, Value> {
 	 */
 	public Value get(final Key key) {
 		final Entry entry = mCache.get(key);
-		if(entry == null)
+		if(entry == null) {
 			return null;
+		}
 
 		if(mExpirationDelay < Long.MAX_VALUE && entry.expired()) {
 			mCache.removeKey(key);

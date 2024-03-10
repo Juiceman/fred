@@ -91,15 +91,17 @@ public class AddressTrackerItem {
 
 	public synchronized void sentPacket(long now) {
 		packetsSent++;
-		if(timeFirstSentPacket < 0)
+		if(timeFirstSentPacket < 0) {
 			timeFirstSentPacket = now;
+		}
 		timeLastSentPacket = now;
 	}
 
 	public synchronized void receivedPacket(long now) {
 		packetsReceived++;
-		if(timeFirstReceivedPacket < 0)
+		if(timeFirstReceivedPacket < 0) {
 			timeFirstReceivedPacket = now;
+		}
 		long oldTimeLastReceivedPacket = timeLastReceivedPacket;
 		timeLastReceivedPacket = now;
 		// Establish the interval
@@ -110,7 +112,9 @@ public class AddressTrackerItem {
 			startTime = Math.max(startTime, oldTimeLastReceivedPacket);
 			startTime = Math.max(startTime, timeDefinitelyNoPacketsReceived);
 		}
-		if(startTime <= 0) return; // No information
+		if(startTime <= 0) {
+			return;    // No information
+		}
 		if(now - startTime > GAP_THRESHOLD) {
 			// Not necessarily a new gap
 			// If no packets sent since last one, just replace it
@@ -133,7 +137,9 @@ public class AddressTrackerItem {
 	public long longestGap(long horizon, long now) {
 		long longestGap = -1;
 		for(int i=0; i<TRACK_GAPS; i++) {
-			if(gapLengthRecvTimes[i] < now - horizon) break;
+			if(gapLengthRecvTimes[i] < now - horizon) {
+				break;
+			}
 			longestGap = Math.max(longestGap, gapLengths[i]);
 		}
 		return longestGap;
@@ -189,18 +195,26 @@ public class AddressTrackerItem {
 	}
 
 	public synchronized boolean weSentFirst() {
-		if(timeFirstReceivedPacket == -1) return true;
-		if(timeFirstSentPacket == -1) return false;
+		if(timeFirstReceivedPacket == -1) {
+			return true;
+		}
+		if(timeFirstSentPacket == -1) {
+			return false;
+		}
 		return timeFirstSentPacket < timeFirstReceivedPacket;
 	}
 
 	public synchronized long timeFromStartupToFirstSentPacket() {
-		if(packetsSent == 0) return -1;
+		if(packetsSent == 0) {
+			return -1;
+		}
 		return timeFirstSentPacket - timeDefinitelyNoPacketsSent;
 	}
 
 	public synchronized long timeFromStartupToFirstReceivedPacket() {
-		if(packetsReceived == 0) return -1;
+		if(packetsReceived == 0) {
+			return -1;
+		}
 		return timeFirstReceivedPacket - timeDefinitelyNoPacketsReceived;
 	}
 

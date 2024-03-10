@@ -57,7 +57,8 @@ public class BROWSER_WARNING implements Step {
 		HTMLNode contentNode = helper.getPageContent(WizardL10n.l10n("browserWarningPageTitle"));
 
 		String infoBoxHeader = infoBoxHeaderText(incognito, isRelativelySafe);
-		HTMLNode infoboxContent = helper.getInfobox("infobox-normal", infoBoxHeader, contentNode, null, false);
+		HTMLNode infoboxContent = helper.getInfobox("infobox-normal", infoBoxHeader, contentNode, null,
+								  false);
 
 		List<String> oldBrowserWarnings = oldBrowserWarnings(
 											  incognito,

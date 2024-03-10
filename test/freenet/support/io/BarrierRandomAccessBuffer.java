@@ -25,7 +25,9 @@ public class BarrierRandomAccessBuffer implements LockableRandomAccessBuffer {
 	/** Wait until some threads are waiting for the proceed thread. */
 	public void waitForWaiting() {
 		synchronized(this) {
-			if(proceed) throw new IllegalArgumentException();
+			if(proceed) {
+				throw new IllegalArgumentException();
+			}
 			while(waiting == 0) {
 				try {
 					wait();
@@ -40,8 +42,9 @@ public class BarrierRandomAccessBuffer implements LockableRandomAccessBuffer {
 	private void waitForClear() {
 		synchronized(this) {
 			waiting++;
-			if(waiting == 1)
+			if(waiting == 1) {
 				notifyAll();
+			}
 			while(!proceed) {
 				try {
 					wait();

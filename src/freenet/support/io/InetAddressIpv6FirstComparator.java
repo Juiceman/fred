@@ -22,11 +22,19 @@ public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 
 	@Override
 	public int compare(InetAddress arg0, InetAddress arg1) {
-		if ((arg0 == null && arg1 == null)) return 0;
+		if ((arg0 == null && arg1 == null)) {
+			return 0;
+		}
 		// prefer non-null over null
-		if (arg0 == null) return 1;
-		if (arg1 == null) return -1;
-		if(arg0.equals(arg1)) return 0;
+		if (arg0 == null) {
+			return 1;
+		}
+		if (arg1 == null) {
+			return -1;
+		}
+		if(arg0.equals(arg1)) {
+			return 0;
+		}
 		// prefer everything to broadcast
 		if (!arg0.isAnyLocalAddress() && arg1.isAnyLocalAddress()) {
 			return -1;
@@ -87,8 +95,11 @@ public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 		}
 
 		// Sort by hash code as fallback. This is fast.
-		if(a > b) return 1;
-		else if(b > a) return -1;
+		if(a > b) {
+			return 1;
+		} else if(b > a) {
+			return -1;
+		}
 		return Fields.compareBytes(bytes0, bytes1);
 		// Hostnames in InetAddress are merely cached, equals() only operates on the byte[].
 	}

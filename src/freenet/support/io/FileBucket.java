@@ -51,14 +51,18 @@ public class FileBucket extends BaseFileBucket implements Bucket, Serializable {
 	 * @param deleteOnExit If true, delete the file on a clean exit of the JVM. Irreversible - use with care!
 	 * @param deleteOnFree If true, delete the file on finalization. Reversible.
 	 */
-	public FileBucket(File file, boolean readOnly, boolean createFileOnly, boolean deleteOnExit, boolean deleteOnFree) {
+	public FileBucket(File file, boolean readOnly, boolean createFileOnly, boolean deleteOnExit,
+					  boolean deleteOnFree) {
 		super(file, deleteOnExit);
-		if(file == null) throw new NullPointerException();
+		if(file == null) {
+			throw new NullPointerException();
+		}
 		File origFile = file;
 		file = file.getAbsoluteFile();
 		// Copy it so we can safely delete it.
-		if(origFile == file)
+		if(origFile == file) {
 			file = new File(file.getPath());
+		}
 		this.readOnly = readOnly;
 		this.createFileOnly = createFileOnly;
 		this.file = file;
@@ -140,14 +144,18 @@ public class FileBucket extends BaseFileBucket implements Bucket, Serializable {
 		dos.writeUTF(file.toString());
 		dos.writeBoolean(readOnly);
 		dos.writeBoolean(deleteOnFree);
-		if(deleteOnExit) throw new IllegalStateException("Must not free on exit if persistent");
+		if(deleteOnExit) {
+			throw new IllegalStateException("Must not free on exit if persistent");
+		}
 		dos.writeBoolean(createFileOnly);
 	}
 
 	protected FileBucket(DataInputStream dis) throws IOException, StorageFormatException {
 		super(dis);
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		file = new File(dis.readUTF());
 		readOnly = dis.readBoolean();
 		deleteOnFree = dis.readBoolean();

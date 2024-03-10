@@ -42,7 +42,8 @@ public class TesterElement extends BaseUpdateableElement {
 		if (status >= maxStatus) {
 			t.cancel();
 		}
-		((SimpleToadletServer) ctx.getContainer()).pushDataManager.updateElement(getUpdaterId(ctx.getUniqueId()));
+		((SimpleToadletServer) ctx.getContainer()).pushDataManager.updateElement(getUpdaterId(
+					ctx.getUniqueId()));
 	}
 
 	@Override
@@ -56,7 +57,8 @@ public class TesterElement extends BaseUpdateableElement {
 	}
 
 	public static String getId(String requestId,String id) {
-		return Base64.encodeStandardUTF8(("test:" + requestId + "id:" + id+"gndfjkghghdfukggherugbdfkutg54ibngjkdfgyisdhiterbyjhuyfghdightw7i4tfgsdgo;dfnghsdbfuiyfgfoinfsdbufvwte4785tu4kgjdfnzukfbyfhe48e54gjfdjgbdruserigbfdnvbxdio;fherigtuseofjuodsvbyfhsd8ofghfio;"));
+		return Base64.encodeStandardUTF8(("test:" + requestId + "id:" + id
+										  +"gndfjkghghdfukggherugbdfkutg54ibngjkdfgyisdhiterbyjhuyfghdightw7i4tfgsdgo;dfnghsdbfuiyfgfoinfsdbufvwte4785tu4kgjdfnzukfbyfhe48e54gjfdjgbdruserigbfdnvbxdio;fherigtuseofjuodsvbyfhsd8ofghfio;"));
 	}
 
 	@Override
@@ -67,7 +69,8 @@ public class TesterElement extends BaseUpdateableElement {
 	@Override
 	public void updateState(boolean initial) {
 		children.clear();
-		addChild(new HTMLNode("img", "src","/imagecreator/?text="+status+"&width="+Math.min(status+30,300)+"&height="+Math.min(status+30,300)));
+		addChild(new HTMLNode("img", "src","/imagecreator/?text="+status+"&width="+Math.min(status+30,
+							  300)+"&height="+Math.min(status+30,300)));
 	}
 
 }

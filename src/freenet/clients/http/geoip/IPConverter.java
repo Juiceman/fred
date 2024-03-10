@@ -283,7 +283,9 @@ public class IPConverter {
 	 */
 	public long ip2num(String ip) {
 		String[] split = ip.split("\\.");
-		if(split.length != 4) throw new NumberFormatException();
+		if(split.length != 4) {
+			throw new NumberFormatException();
+		}
 		long num = 0;
 		long coef = (256 << 16);
 		for (int i = 0; i < split.length; i++) {
@@ -304,7 +306,9 @@ public class IPConverter {
 	 * @throws IOException
 	 */
 	public Country locateIP(String ip) {
-		if(ip == null) return null;
+		if(ip == null) {
+			return null;
+		}
 		long longip;
 		try {
 			longip = ip2num(ip);
@@ -315,7 +319,9 @@ public class IPConverter {
 	}
 
 	public Country locateIP(byte[] ip) {
-		if(ip == null) return null;
+		if(ip == null) {
+			return null;
+		}
 		if(ip.length == 16) {
 			/* Convert some special IPv6 addresses to IPv4 */
 			if(ip[0] == (byte)0x20 && ip[1] == (byte)0x02) {
@@ -344,7 +350,9 @@ public class IPConverter {
 			}
 			/* we cannot handle other IPv6 addresses (yet) */
 		}
-		if(ip.length != 4) return null;
+		if(ip.length != 4) {
+			return null;
+		}
 		long longip = (
 						  ((ip[0] << 24) & 0xff000000L) |
 						  ((ip[1] << 16) & 0x00ff0000L) |
@@ -360,7 +368,9 @@ public class IPConverter {
 			return cached;
 		}
 		Cache memCache = getCache();
-		if(memCache == null) return null;
+		if(memCache == null) {
+			return null;
+		}
 		int[] ips = memCache.getIps();
 		short[] codes = memCache.getCodes();
 		// Binary search
@@ -377,7 +387,9 @@ public class IPConverter {
 			}
 		}
 		short countryOrdinal = codes[last];
-		if(countryOrdinal < 0) return null;
+		if(countryOrdinal < 0) {
+			return null;
+		}
 		Country country = Country.values[countryOrdinal];
 		cache.put((int)longip, country);
 		return country;
@@ -391,10 +403,13 @@ public class IPConverter {
 	private Cache getCache() {
 		Cache memCache = null;
 		synchronized (IPConverter.class) {
-			if(fullCache != null)
+			if(fullCache != null) {
 				memCache = fullCache.get();
+			}
 			if(memCache == null) {
-				if(dbFileCorrupt) return null;
+				if(dbFileCorrupt) {
+					return null;
+				}
 				fullCache = new SoftReference<Cache>(memCache = readRanges());
 			}
 		}
@@ -411,11 +426,13 @@ public class IPConverter {
 	 */
 	private long decodeBase85(byte[] code) throws IPConverterParseException {
 		long result = 0;
-		if (code.length != 5)
+		if (code.length != 5) {
 			throw new IPConverterParseException();
+		}
 		for (int i = 0; i < code.length; i++) {
-			if (code[i] < (byte)32 || base85inv[code[i] - 32] < (byte)0)
+			if (code[i] < (byte)32 || base85inv[code[i] - 32] < (byte)0) {
 				throw new IPConverterParseException();
+			}
 			result = (result * base) + base85inv[code[i] - 32];
 		}
 		return result;

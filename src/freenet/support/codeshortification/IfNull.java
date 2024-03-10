@@ -22,15 +22,17 @@ public final class IfNull {
 	/** @deprecated Use {@link Objects#requireNonNull(Object)} */
 	@Deprecated
 	public static void thenThrow(Object value) {
-		if(value == null)
+		if(value == null) {
 			throw new NullPointerException();
+		}
 	}
 
 	/** @deprecated Use {@link Objects#requireNonNull(Object, String)} */
 	@Deprecated
 	public static void thenThrow(Object value, String message) {
-		if(value == null)
+		if(value == null) {
 			throw new NullPointerException(message);
+		}
 	}
 
 }

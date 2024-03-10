@@ -95,11 +95,13 @@ public class SplitFileInserterStorageTest {
 		bigRAFFactory = new PooledFileRandomAccessBufferFactory(fg, r);
 		smallBucketFactory = new ArrayBucketFactory();
 		bigBucketFactory = new TempBucketFactory(executor, fg, 0, 0, r, false, 0, null);
-		baseContext = HighLevelSimpleClientImpl.makeDefaultInsertContext(bigBucketFactory, new SimpleEventProducer());
+		baseContext = HighLevelSimpleClientImpl.makeDefaultInsertContext(bigBucketFactory,
+					  new SimpleEventProducer());
 		cryptoKey = new byte[32];
 		r.nextBytes(cryptoKey);
 		checker = new CRCChecksumChecker();
-		memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 20, executor, NativeThread.JAVA_PRIORITY_RANGE);
+		memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 20, executor,
+				NativeThread.JAVA_PRIORITY_RANGE);
 		jobRunner = new DummyJobRunner(executor, null);
 		URI = FreenetURI.generateRandomCHK(r);
 		random = new Random(12121);
@@ -213,7 +215,8 @@ public class SplitFileInserterStorageTest {
 
 	@Test
 	public void testSmallSplitfileNoLastBlock() throws Exception {
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 	}
 
@@ -222,7 +225,8 @@ public class SplitFileInserterStorageTest {
 		byte[] originalData = new byte[(int) size];
 		random.nextBytes(originalData);
 		data = smallRAFFactory.makeRAF(originalData, 0, originalData.length, true);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		// Now check the data blocks...
 		assertProperSegmentStateAndGet(storage);
 		assertArrayEquals(
@@ -234,7 +238,8 @@ public class SplitFileInserterStorageTest {
 		byte[] buf = storage.readSegmentDataBlock(0, 1);
 		assertEquals(CHKBlock.DATA_LENGTH, buf.length);
 		byte[] truncated = Arrays.copyOfRange(buf, 0, truncateLength);
-		byte[] originalLastBlock = Arrays.copyOfRange(originalData, (int) offsetLastBlock, originalData.length);
+		byte[] originalLastBlock = Arrays.copyOfRange(originalData, (int) offsetLastBlock,
+								   originalData.length);
 		assertEquals(originalLastBlock.length, truncated.length);
 		assertArrayEquals(originalLastBlock, truncated);
 		assertEquals(Status.ENCODED, storage.getStatus());
@@ -243,10 +248,13 @@ public class SplitFileInserterStorageTest {
 	@Test
 	public void testSmallSplitfileHasKeys() throws Exception {
 		context.earlyEncode = true;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		cb.waitForHasKeys();
-		for (int i = 0; i < storage.segments[0].dataBlockCount + storage.segments[0].checkBlockCount + storage.segments[0].crossCheckBlockCount; i++) {
+		for (int i = 0;
+				i < storage.segments[0].dataBlockCount + storage.segments[0].checkBlockCount +
+				storage.segments[0].crossCheckBlockCount; i++) {
 			storage.segments[0].readKey(i);
 		}
 		storage.encodeMetadata();
@@ -255,7 +263,8 @@ public class SplitFileInserterStorageTest {
 
 	@Test
 	public void testSmallSplitfileCompletion() throws Exception {
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		for (int i = 0; i < segment.totalBlockCount; i++) {
 			segment.onInsertedBlock(i, segment.encodeBlock(i).getClientKey());
@@ -267,7 +276,8 @@ public class SplitFileInserterStorageTest {
 	@Test
 	public void testSmallSplitfileChooseCompletion() throws Exception {
 		context.maxInsertRetries = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		boolean[] chosenBlocks = new boolean[segment.totalBlockCount];
 		// Choose and fail all blocks.
@@ -298,7 +308,8 @@ public class SplitFileInserterStorageTest {
 	public void testSmallSplitfileChooseCooldown() throws Exception {
 		context.maxInsertRetries = 2;
 		context.consecutiveRNFsCountAsSuccess = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		boolean[] chosenBlocks = new boolean[segment.totalBlockCount];
 		assertFalse(storage.noBlocksToSend());
@@ -334,7 +345,8 @@ public class SplitFileInserterStorageTest {
 	@Test
 	public void testSmallSplitfileChooseCooldownNotRNF() throws Exception {
 		context.maxInsertRetries = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		boolean[] chosenBlocks = new boolean[segment.totalBlockCount];
 		assertFalse(storage.noBlocksToSend());
@@ -372,7 +384,8 @@ public class SplitFileInserterStorageTest {
 	public void testSmallSplitfileConsecutiveRNFsHack() throws Exception {
 		context.maxInsertRetries = 0;
 		context.consecutiveRNFsCountAsSuccess = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		boolean[] chosenBlocks = new boolean[segment.totalBlockCount];
 		// First RNF.
@@ -406,7 +419,8 @@ public class SplitFileInserterStorageTest {
 		// Do 2 RNFs and then a RejectedOverload. Should fail at that point.
 		context.maxInsertRetries = 2;
 		context.consecutiveRNFsCountAsSuccess = 3;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		segment.setKey(0, segment.encodeBlock(0).getClientKey());
 		segment.onFailure(0, new InsertException(InsertExceptionMode.ROUTE_NOT_FOUND));
@@ -428,7 +442,8 @@ public class SplitFileInserterStorageTest {
 	public void testSmallSplitfileFailureMaxRetries() throws Exception {
 		context.consecutiveRNFsCountAsSuccess = 0;
 		context.maxInsertRetries = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		for (int i = 0; i < 3; i++) {
 			segment.onFailure(0, new InsertException(InsertExceptionMode.ROUTE_NOT_FOUND));
@@ -446,7 +461,8 @@ public class SplitFileInserterStorageTest {
 	@Test
 	public void testSmallSplitfileFailureFatalError() throws Exception {
 		context.maxInsertRetries = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		SplitFileInserterSegmentStorage segment = assertProperSegmentStateAndGet(storage);
 		assertTrue(InsertException.isFatal(InsertExceptionMode.INTERNAL_ERROR));
 		segment.onFailure(0, new InsertException(InsertExceptionMode.INTERNAL_ERROR));
@@ -494,12 +510,15 @@ public class SplitFileInserterStorageTest {
 
 	@Test
 	public void testRoundTripOneBlockSegment() throws Exception {
-		testRoundTripSimpleRandom(CHKBlock.DATA_LENGTH * (128 + 1) - 1, CompatibilityMode.COMPAT_1250_EXACT);
+		testRoundTripSimpleRandom(CHKBlock.DATA_LENGTH * (128 + 1) - 1,
+								  CompatibilityMode.COMPAT_1250_EXACT);
 	}
 
 	@Test
 	public void testRoundTripCrossSegment() throws Exception {
-		if (!TestProperty.EXTENSIVE) return;
+		if (!TestProperty.EXTENSIVE) {
+			return;
+		}
 		// Test cross-segment:
 		testRoundTripCrossSegmentRandom(CHKBlock.DATA_LENGTH * 128 * 21);
 	}
@@ -507,27 +526,35 @@ public class SplitFileInserterStorageTest {
 	@Test
 	public void testRoundTripDataBlocksOnly() throws Exception {
 		testRoundTripCrossSegmentDataBlocks(CHKBlock.DATA_LENGTH * 128 * 5);
-		if (!TestProperty.EXTENSIVE) return;
+		if (!TestProperty.EXTENSIVE) {
+			return;
+		}
 		// Test cross-segment:
 		testRoundTripCrossSegmentDataBlocks(CHKBlock.DATA_LENGTH * 128 * 21);
 	}
 
 	@Test
 	public void testResumeCrossSegment() throws Exception {
-		if (!TestProperty.EXTENSIVE) return;
+		if (!TestProperty.EXTENSIVE) {
+			return;
+		}
 		testResumeCrossSegment(CHKBlock.DATA_LENGTH * 128 * 21);
 	}
 
 	@Test
 	public void testEncodeAfterShutdownCrossSegment() throws Exception {
-		if (!TestProperty.EXTENSIVE) return;
+		if (!TestProperty.EXTENSIVE) {
+			return;
+		}
 		testEncodeAfterShutdownCrossSegment(CHKBlock.DATA_LENGTH * 128 * 21);
 	}
 
 	@Test
 	public void testRepeatedEncodeAfterShutdown() throws Exception {
 		testRepeatedEncodeAfterShutdownCrossSegment(CHKBlock.DATA_LENGTH * 128 * 5); // Not cross-segment.
-		if (!TestProperty.EXTENSIVE) return;
+		if (!TestProperty.EXTENSIVE) {
+			return;
+		}
 		testRepeatedEncodeAfterShutdownCrossSegment(CHKBlock.DATA_LENGTH * 128 * 21); // Cross-segment.
 	}
 
@@ -577,12 +604,14 @@ public class SplitFileInserterStorageTest {
 		KeysFetchingLocally keys = new MyKeysFetchingLocally();
 		boolean old = cmode.code < CompatibilityMode.COMPAT_1255.code;
 		byte cryptoAlgorithm;
-		if (!(cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1416.ordinal())) {
+		if (!(cmode == CompatibilityMode.COMPAT_CURRENT
+				|| cmode.ordinal() >= CompatibilityMode.COMPAT_1416.ordinal())) {
 			cryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256;
 		} else {
 			cryptoAlgorithm = Key.ALGO_AES_CTR_256_SHA256;
 		}
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, old ? null : cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, old ? null : cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
 		assertEquals(Status.ENCODED, storage.getStatus());
 		// Encoded. Now try to decode it ...
 		cb.waitForHasKeys();
@@ -597,9 +626,11 @@ public class SplitFileInserterStorageTest {
 
 		FetchCallbackForTestingSplitFileInserter fcb = new FetchCallbackForTestingSplitFileInserter();
 
-		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2, smallBucketFactory, new SimpleEventProducer());
+		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2,
+							smallBucketFactory, new SimpleEventProducer());
 
-		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(), cmode.code, fctx, r);
+		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(),
+				cmode.code, fctx, r);
 
 		fetcherStorage.start(false);
 
@@ -612,7 +643,8 @@ public class SplitFileInserterStorageTest {
 			int totalBlocks = inserterSegment.totalBlockCount;
 			boolean[] fetched = new boolean[totalBlocks];
 			if (i == storage.segments.length - 1 && cmode.ordinal() < CompatibilityMode.COMPAT_1255.ordinal()) {
-				fetched[inserterSegment.dataBlockCount - 1] = true; // We don't use the last block of the last segment for old splitfiles
+				fetched[inserterSegment.dataBlockCount - 1] =
+					true; // We don't use the last block of the last segment for old splitfiles
 			}
 			for (int j = 0; j < minBlocks; j++) {
 				int blockNo;
@@ -639,7 +671,8 @@ public class SplitFileInserterStorageTest {
 	private void testResumeCrossSegment(long size) throws Exception {
 		LockableRandomAccessBuffer data = generateData(random, size);
 		hashes = getHashes(data);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		cb.waitForHasKeys();
 		executor.waitForIdle();
 		Metadata metadata = storage.encodeMetadata();
@@ -648,7 +681,8 @@ public class SplitFileInserterStorageTest {
 		try (DataOutputStream os = new DataOutputStream(mBucket1.getOutputStream())) {
 			metadata.writeTo(os);
 		}
-		SplitFileInserterStorage resumed = createSplitFileInserterStorage(storage, data, cb, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage resumed = createSplitFileInserterStorage(storage, data, cb,
+										   memoryLimitedJobRunner, keys);
 		// Doesn't need to start since already encoded.
 		Metadata metadata2 = storage.encodeMetadata();
 		Bucket mBucket2 = bigBucketFactory.makeBucket(-1);
@@ -687,13 +721,15 @@ public class SplitFileInserterStorageTest {
 	private void testEncodeAfterShutdownCrossSegment(long size) throws Exception {
 		data = generateData(random, size);
 		hashes = getHashes(data);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		executor.waitForIdle();
 		// Has not encoded anything.
 		for (SplitFileInserterSegmentStorage segment : storage.segments) {
 			assertFalse(segment.isFinishedEncoding());
 		}
-		SplitFileInserterStorage resumed = createSplitFileInserterStorage(storage, data, cb, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage resumed = createSplitFileInserterStorage(storage, data, cb,
+										   memoryLimitedJobRunner, keys);
 		resumed.start();
 		cb.waitForFinishedEncode();
 		cb.waitForHasKeys();
@@ -708,7 +744,8 @@ public class SplitFileInserterStorageTest {
 		data = generateData(random, size);
 		hashes = getHashes(data);
 		// Only enough for one segment at a time.
-		MemoryLimitedJobRunner memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1, executor, NativeThread.JAVA_PRIORITY_RANGE);
+		MemoryLimitedJobRunner memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1,
+				executor, NativeThread.JAVA_PRIORITY_RANGE);
 		SplitFileInserterStorage storage = new SplitFileInserterStorage(
 			data,
 			size,
@@ -745,7 +782,8 @@ public class SplitFileInserterStorageTest {
 		SplitFileInserterStorage resumed = null;
 		if (storage.crossSegments != null) {
 			for (int i = 0; i < storage.crossSegments.length; i++) {
-				memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1, executor, NativeThread.JAVA_PRIORITY_RANGE);
+				memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1, executor,
+						NativeThread.JAVA_PRIORITY_RANGE);
 				resumed = createSplitFileInserterStorage(storage, data, cb, memoryLimitedJobRunner, keys);
 				assertEquals(i, countEncodedCrossSegments(resumed));
 				resumed.start();
@@ -759,7 +797,8 @@ public class SplitFileInserterStorageTest {
 		}
 
 		for (int i = 0; i < storage.segments.length; i++) {
-			memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1, executor, NativeThread.JAVA_PRIORITY_RANGE);
+			memoryLimitedJobRunner = new MemoryLimitedJobRunner(9 * 1024 * 1024L, 1, executor,
+					NativeThread.JAVA_PRIORITY_RANGE);
 			resumed = createSplitFileInserterStorage(storage, data, cb, memoryLimitedJobRunner, keys);
 			assertEquals(i, countEncodedSegments(resumed));
 			if (storage.crossSegments != null) {
@@ -811,7 +850,8 @@ public class SplitFileInserterStorageTest {
 		Bucket dataBucket = new RAFBucket(data);
 		hashes = getHashes(data);
 		context.earlyEncode = true;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
 		// Encoded. Now try to decode it ...
 		cb.waitForHasKeys();
 		Metadata metadata = storage.encodeMetadata();
@@ -826,17 +866,20 @@ public class SplitFileInserterStorageTest {
 
 		FetchCallbackForTestingSplitFileInserter fcb = new FetchCallbackForTestingSplitFileInserter();
 
-		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2, smallBucketFactory, new SimpleEventProducer());
+		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2,
+							smallBucketFactory, new SimpleEventProducer());
 
 		short cmode = (short) context.getCompatibilityMode().ordinal();
 
-		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(), cmode, fctx, r);
+		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(), cmode,
+				fctx, r);
 
 		fetcherStorage.start(false);
 
 		int segments = storage.segments.length;
 		for (int i = 0; i < segments; i++) {
-			assertEquals(storage.crossSegments[i].dataBlockCount, fetcherStorage.crossSegments[i].dataBlockCount);
+			assertEquals(storage.crossSegments[i].dataBlockCount,
+						 fetcherStorage.crossSegments[i].dataBlockCount);
 			assertArrayEquals(
 				storage.crossSegments[i].getSegmentNumbers(),
 				fetcherStorage.crossSegments[i].getSegmentNumbers()
@@ -889,7 +932,8 @@ public class SplitFileInserterStorageTest {
 		Bucket dataBucket = new RAFBucket(data);
 		hashes = getHashes(data);
 		context.earlyEncode = true;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context, cryptoAlgorithm, cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, false, context,
+										   cryptoAlgorithm, cryptoKey, hashes, r, memoryLimitedJobRunner, keys);
 		// Encoded. Now try to decode it ...
 		cb.waitForHasKeys();
 		Metadata metadata = storage.encodeMetadata();
@@ -904,18 +948,21 @@ public class SplitFileInserterStorageTest {
 
 		FetchCallbackForTestingSplitFileInserter fcb = new FetchCallbackForTestingSplitFileInserter();
 
-		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2, smallBucketFactory, new SimpleEventProducer());
+		FetchContext fctx = HighLevelSimpleClientImpl.makeDefaultFetchContext(size * 2, size * 2,
+							smallBucketFactory, new SimpleEventProducer());
 
 		short cmode = (short) context.getCompatibilityMode().ordinal();
 
-		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(), cmode, fctx, r);
+		SplitFileFetcherStorage fetcherStorage = createFetcherStorage(m1, fcb, new ArrayList<>(), cmode,
+				fctx, r);
 
 		fetcherStorage.start(false);
 
 		if (storage.crossSegments != null) {
 			int segments = storage.segments.length;
 			for (int i = 0; i < segments; i++) {
-				assertEquals(storage.crossSegments[i].dataBlockCount, fetcherStorage.crossSegments[i].dataBlockCount);
+				assertEquals(storage.crossSegments[i].dataBlockCount,
+							 fetcherStorage.crossSegments[i].dataBlockCount);
 				assertArrayEquals(
 					storage.crossSegments[i].getSegmentNumbers(),
 					fetcherStorage.crossSegments[i].getSegmentNumbers()
@@ -1105,7 +1152,8 @@ public class SplitFileInserterStorageTest {
 		}
 
 		@Override
-		public void onResume(int succeededBlocks, int failedBlocks, ClientMetadata mimeType, long finalSize) {
+		public void onResume(int succeededBlocks, int failedBlocks, ClientMetadata mimeType,
+							 long finalSize) {
 			// Ignore.
 		}
 
@@ -1336,7 +1384,8 @@ public class SplitFileInserterStorageTest {
 	public void testPersistentSmallSplitfileNoLastBlockCompletion() throws Exception {
 		LockableRandomAccessBuffer data = generateData(random, size, bigRAFFactory);
 		HashResult[] hashes = getHashes(data);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		executor.waitForIdle();
 		SplitFileInserterStorage resumed = createSplitFileInserterStorage(
@@ -1358,7 +1407,8 @@ public class SplitFileInserterStorageTest {
 	public void testPersistentSmallSplitfileNoLastBlockCompletionAfterResume() throws Exception {
 		data = generateData(random, size, bigRAFFactory);
 		HashResult[] hashes = getHashes(data);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		SplitFileInserterStorage resumed = null;
 		for (int i = 0; i < storage.segments[0].totalBlockCount; i++) {
@@ -1376,7 +1426,8 @@ public class SplitFileInserterStorageTest {
 	public void testPersistentSmallSplitfileWithLastBlockCompletionAfterResume() throws Exception {
 		data = generateData(random, size, bigRAFFactory);
 		hashes = getHashes(data);
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true,
+										   baseContext.clone(), cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		SplitFileInserterStorage resumed = null;
 		for (int i = 0; i < storage.segments[0].totalBlockCount; i++) {
@@ -1396,7 +1447,8 @@ public class SplitFileInserterStorageTest {
 		hashes = getHashes(data);
 		context.consecutiveRNFsCountAsSuccess = 0;
 		context.maxInsertRetries = 2;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		SplitFileInserterStorage resumed = null;
 
@@ -1421,7 +1473,8 @@ public class SplitFileInserterStorageTest {
 		HashResult[] hashes = getHashes(data);
 		context.consecutiveRNFsCountAsSuccess = 0;
 		context.maxInsertRetries = 1;
-		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, context, cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
+		SplitFileInserterStorage storage = createSplitFileInserterStorage(data, size, cb, true, context,
+										   cryptoAlgorithm, cryptoKey, hashes, random, memoryLimitedJobRunner, keys);
 		assertProperSegmentStateAndGet(storage);
 		SplitFileInserterStorage resumed = null;
 		int totalBlockCount = storage.segments[0].totalBlockCount;
@@ -1564,7 +1617,8 @@ public class SplitFileInserterStorageTest {
 			   );
 	}
 
-	private SplitFileInserterSegmentStorage assertProperSegmentStateAndGet(SplitFileInserterStorage storage) {
+	private SplitFileInserterSegmentStorage assertProperSegmentStateAndGet(
+		SplitFileInserterStorage storage) {
 		assertEquals(1, storage.segments.length);
 		SplitFileInserterSegmentStorage segment = storage.segments[0];
 		assertEquals(2, segment.dataBlockCount);

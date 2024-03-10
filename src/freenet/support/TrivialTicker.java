@@ -47,8 +47,9 @@ public class TrivialTicker implements Ticker {
 		};
 
 		synchronized(this) {
-			if(!running)
+			if(!running) {
 				return;
+			}
 
 			timer.schedule(t, offset);
 			jobs.put(job, t);
@@ -76,11 +77,13 @@ public class TrivialTicker implements Ticker {
 		};
 
 		synchronized(this) {
-			if(!running)
+			if(!running) {
 				return;
+			}
 
-			if(noDupes && jobs.containsKey(job))
+			if(noDupes && jobs.containsKey(job)) {
 				return;
+			}
 
 			timer.schedule(t, offset);
 			jobs.put(job, t);
@@ -94,8 +97,9 @@ public class TrivialTicker implements Ticker {
 	@Override
 	public void removeQueuedJob(final Runnable job) {
 		synchronized(this) {
-			if(!running)
+			if(!running) {
 				return;
+			}
 
 			TimerTask t = jobs.remove(job);
 			if(t != null) {

@@ -38,7 +38,8 @@ public class InvalidAddressOverrideUserAlert extends AbstractUserAlert {
 		Option<?> o = sc.getOption("ipAddressOverride");
 
 		HTMLNode textNode = new HTMLNode("div");
-		NodeL10n.getBase().addL10nSubstitution(textNode, "InvalidAddressOverrideUserAlert.unknownAddressWithConfigLink",
+		NodeL10n.getBase().addL10nSubstitution(textNode,
+											   "InvalidAddressOverrideUserAlert.unknownAddressWithConfigLink",
 											   new String[] { "link" },
 											   new HTMLNode[] { HTMLNode.link("/config/node")});
 		HTMLNode formNode = textNode.addChild("form", new String[] { "action", "method" }, new String[] { "/config/node", "post" });
@@ -46,7 +47,8 @@ public class InvalidAddressOverrideUserAlert extends AbstractUserAlert {
 		formNode.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "subconfig", sc.getPrefix() });
 		HTMLNode listNode = formNode.addChild("ul", "class", "config");
 		HTMLNode itemNode = listNode.addChild("li");
-		itemNode.addChild("span", "class", "configshortdesc", o.getLocalisedShortDesc()).addChild("input", new String[] { "type", "name", "value" }, new String[] { "text", sc.getPrefix() + ".ipAddressOverride", o.getValueDisplayString() });
+		itemNode.addChild("span", "class", "configshortdesc", o.getLocalisedShortDesc()).addChild("input",
+				new String[] { "type", "name", "value" }, new String[] { "text", sc.getPrefix() + ".ipAddressOverride", o.getValueDisplayString() });
 		itemNode.addChild("span", "class", "configlongdesc", o.getLocalisedLongDesc());
 		formNode.addChild("input", new String[] { "type", "value" }, new String[] { "submit", NodeL10n.getBase().getString("UserAlert.apply") });
 		formNode.addChild("input", new String[] { "type", "value" }, new String[] { "reset", NodeL10n.getBase().getString("UserAlert.reset") });

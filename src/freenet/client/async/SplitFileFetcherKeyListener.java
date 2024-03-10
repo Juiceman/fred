@@ -66,17 +66,21 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 
 	/** Create a set of bloom filters for a new download.
 	 * @throws FetchException */
-	public SplitFileFetcherKeyListener(SplitFileFetcherStorageCallback fetcher, SplitFileFetcherStorage storage,
+	public SplitFileFetcherKeyListener(SplitFileFetcherStorageCallback fetcher,
+									   SplitFileFetcherStorage storage,
 									   boolean persistent, byte[] localSalt, int origSize, int segBlocks, int segments)
 	throws FetchException {
 		if (origSize <= 0) {
-			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Cannot listen for non-positive number of blocks: " + origSize);
+			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR,
+									 "Cannot listen for non-positive number of blocks: " + origSize);
 		}
 		if (segBlocks <= 0) {
-			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Cannot listen for non-positive number of blocks per segment: " + segBlocks);
+			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR,
+									 "Cannot listen for non-positive number of blocks per segment: " + segBlocks);
 		}
 		if (segments <= 0) {
-			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Cannot listen for non-positive number of segments: " + segments);
+			throw new FetchException(FetchExceptionMode.INTERNAL_ERROR,
+									 "Cannot listen for non-positive number of segments: " + segments);
 		}
 		this.fetcher = fetcher;
 		this.storage = storage;
@@ -86,15 +90,19 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 		mainBloomK = (int) (mainElementsPerKey * 0.7);
 		long elementsLong = origSize * mainElementsPerKey;
 		// REDFLAG: SIZE LIMIT: 3.36TB limit!
-		if(elementsLong > Integer.MAX_VALUE)
-			throw new FetchException(FetchExceptionMode.TOO_BIG, "Cannot fetch splitfiles with more than "+(Integer.MAX_VALUE/mainElementsPerKey)+" keys! (approx 3.3TB)");
+		if(elementsLong > Integer.MAX_VALUE) {
+			throw new FetchException(FetchExceptionMode.TOO_BIG,
+									 "Cannot fetch splitfiles with more than "+(Integer.MAX_VALUE/mainElementsPerKey)
+									 +" keys! (approx 3.3TB)");
+		}
 		int mainSizeBits = (int)elementsLong; // counting filter
 		mainSizeBits = (mainSizeBits + 7) & ~7; // round up to bytes
 		mainBloomFilterSizeBytes = mainSizeBits / 8 * 2; // counting filter
 		double acceptableFalsePositives = ACCEPTABLE_BLOOM_FALSE_POSITIVES_ALL_SEGMENTS / segments;
 		int perSegmentBitsPerKey = (int) Math.ceil(Math.log(acceptableFalsePositives) / Math.log(0.6185));
-		if(segBlocks > origSize)
+		if(segBlocks > origSize) {
 			segBlocks = origSize;
+		}
 		int perSegmentSize = perSegmentBitsPerKey * segBlocks;
 		perSegmentSize = (perSegmentSize + 7) & ~7;
 		perSegmentBloomFilterSizeBytes = perSegmentSize / 8;
@@ -129,24 +137,30 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 		dis.readFully(localSalt);
 		mainBloomFilterSizeBytes = dis.readInt();
 		// FIXME impose an upper bound based on estimate of bits per key.
-		if(mainBloomFilterSizeBytes < 0)
+		if(mainBloomFilterSizeBytes < 0) {
 			throw new StorageFormatException("Bad main bloom filter size");
+		}
 		mainBloomK = dis.readInt();
-		if(mainBloomK < 1)
+		if(mainBloomK < 1) {
 			throw new StorageFormatException("Bad main bloom filter K");
+		}
 		perSegmentBloomFilterSizeBytes = dis.readInt();
-		if(perSegmentBloomFilterSizeBytes < 0)
+		if(perSegmentBloomFilterSizeBytes < 0) {
 			throw new StorageFormatException("Bad per segment bloom filter size");
+		}
 		perSegmentK = dis.readInt();
-		if(perSegmentK < 0)
+		if(perSegmentK < 0) {
 			throw new StorageFormatException("Bad per segment bloom filter K");
+		}
 		int segments = storage.segments.length;
 		segmentFilters = new BinaryBloomFilter[segments];
 		byte[] segmentsFilterBuffer = new byte[perSegmentBloomFilterSizeBytes * segments];
 		try {
-			storage.preadChecksummed(storage.offsetSegmentBloomFilters, segmentsFilterBuffer, 0, segmentsFilterBuffer.length);
+			storage.preadChecksummed(storage.offsetSegmentBloomFilters, segmentsFilterBuffer, 0,
+									 segmentsFilterBuffer.length);
 		} catch (ChecksumFailedException e) {
-			Logger.error(this, "Checksummed read for segment filters at "+storage.offsetSegmentBloomFilters+" failed for "+this+": "+e);
+			Logger.error(this, "Checksummed read for segment filters at "+storage.offsetSegmentBloomFilters
+						 +" failed for "+this+": "+e);
 			mustRegenerateSegmentFilters = true;
 		}
 		ByteBuffer baseBuffer = ByteBuffer.wrap(segmentsFilterBuffer);
@@ -167,7 +181,8 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 			try {
 				storage.preadChecksummed(storage.offsetMainBloomFilter, filterBuffer, 0, mainBloomFilterSizeBytes);
 			} catch (ChecksumFailedException e) {
-				Logger.error(this, "Checksummed read for main filters at "+storage.offsetMainBloomFilter+" failed for "+this+": "+e);
+				Logger.error(this, "Checksummed read for main filters at "+storage.offsetMainBloomFilter
+							 +" failed for "+this+": "+e);
 				mustRegenerateMainFilter = true;
 			}
 		} else {
@@ -182,8 +197,9 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 	 * @param keys
 	 */
 	synchronized void addKey(Key key, int segNo, KeySalter salter) {
-		if(finishedSetup && !(mustRegenerateMainFilter || mustRegenerateSegmentFilters))
+		if(finishedSetup && !(mustRegenerateMainFilter || mustRegenerateSegmentFilters)) {
 			throw new IllegalStateException();
+		}
 		if(mustRegenerateMainFilter || !finishedSetup) {
 			byte[] saltedKey = salter.saltKey(key);
 			filter.addKey(saltedKey);
@@ -225,7 +241,9 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 
 	void maybeWriteMainBloomFilter(long fileOffset) throws IOException {
 		synchronized(this) {
-			if(!dirty) return;
+			if(!dirty) {
+				return;
+			}
 			dirty = false;
 		}
 		innerWriteMainBloomFilter(fileOffset);
@@ -262,8 +280,9 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 		byte[] salted = localSaltKey(key);
 		for(int i=0; i<segmentFilters.length; i++) {
 			if(segmentFilters[i].checkFilter(salted)) {
-				if(storage.segments[i].definitelyWantKey((NodeCHK)key))
+				if(storage.segments[i].definitelyWantKey((NodeCHK)key)) {
 					return fetcher.getPriorityClass();
+				}
 			}
 		}
 		return -1;
@@ -280,8 +299,9 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 		// Caller has already called probablyWantKey(), so don't do it again.
 		boolean found = false;
 		byte[] salted = localSaltKey(key);
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "handleBlock("+key+") on "+this+" for "+fetcher, new Exception("debug"));
+		}
 		for(int i=0; i<segmentFilters.length; i++) {
 			boolean match;
 			synchronized(this) {
@@ -301,8 +321,9 @@ public class SplitFileFetcherKeyListener implements KeyListener {
 				dirty = true;
 			}
 			filter.removeKey(saltedKey);
-			if(persistent)
+			if(persistent) {
 				storage.lazyWriteMetadata();
+			}
 		}
 		return found;
 	}

@@ -32,7 +32,8 @@ public class ExternalLinkToadlet extends Toadlet {
 		return PATH;
 	}
 
-	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodPOST(URI uri, HTTPRequest request,
+								 ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		String url = request.getPartAsStringFailsafe(magicHTTPEscapeString, MAX_URL_LENGTH);
 		MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
 		//If the user clicked cancel, or the URL is not defined, return to the main page.
@@ -45,7 +46,8 @@ public class ExternalLinkToadlet extends Toadlet {
 		ctx.sendReplyHeaders(302, "Found", headers, null, 0);
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
 
 		//Unexpected: a URL should have been specified.
 		if (request.getParam(magicHTTPEscapeString).isEmpty()) {
@@ -58,7 +60,8 @@ public class ExternalLinkToadlet extends Toadlet {
 		//Confirm whether the user really means to access an HTTP link.
 		//Only render status and navigation bars if the user has completed the wizard.
 		boolean renderBars = node.clientCore.getToadletContainer().fproxyHasCompletedWizard();
-		PageNode page = ctx.getPageMaker().getPageNode(l10n("confirmExternalLinkTitle"), ctx, new RenderParameters().renderNavigationLinks(renderBars).renderStatus(renderBars));
+		PageNode page = ctx.getPageMaker().getPageNode(l10n("confirmExternalLinkTitle"), ctx,
+						new RenderParameters().renderNavigationLinks(renderBars).renderStatus(renderBars));
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 		HTMLNode warnboxContent = ctx.getPageMaker().getInfobox("infobox-warning",

@@ -30,6 +30,7 @@ public interface LockableRandomAccessBufferFactory {
 	 * @return
 	 * @throws IOException If an I/O error prevented the operation.
 	 */
-	public LockableRandomAccessBuffer makeRAF(byte[] initialContents, int offset, int size, boolean readOnly) throws IOException;
+	public LockableRandomAccessBuffer makeRAF(byte[] initialContents, int offset, int size,
+			boolean readOnly) throws IOException;
 
 }

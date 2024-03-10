@@ -25,9 +25,11 @@ public class UserAlertsToadlet extends Toadlet {
 		super(client);
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if(!ctx.checkFullAccess(this))
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		PageNode page = ctx.getPageMaker().getPageNode(l10n("title"), ctx);
 		HTMLNode pageNode = page.outer;
@@ -35,14 +37,16 @@ public class UserAlertsToadlet extends Toadlet {
 		HTMLNode alertsNode = ctx.getAlertManager().createAlerts(false);
 		if (alertsNode.getFirstTag() == null) {
 			alertsNode = new HTMLNode("div", "class", "infobox");
-			alertsNode.addChild("div", "class", "infobox-content").addChild("div", NodeL10n.getBase().getString("UserAlertsToadlet.noMessages"));
+			alertsNode.addChild("div", "class", "infobox-content").addChild("div",
+					NodeL10n.getBase().getString("UserAlertsToadlet.noMessages"));
 		}
 		contentNode.addChild(alertsNode);
 
 		writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 	}
 
-	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodPOST(URI uri, HTTPRequest request,
+								 ToadletContext ctx) throws ToadletContextClosedException, IOException {
 
 		MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
 

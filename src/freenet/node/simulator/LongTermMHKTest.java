@@ -99,7 +99,8 @@ public class LongTermMHKTest extends LongTermTest {
 				fis.close();
 
 				// Create one node
-				node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL,
+				node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+												  Node.DEFAULT_MAX_HTL,
 												  0, random, new PooledExecutor(), 1000, 4 * 1024 * 1024, true, true, true, true, true, true, true,
 												  12 * 1024, true, true, false, false, null);
 				Logger.getChain().setThreshold(LogLevel.ERROR);
@@ -121,7 +122,9 @@ public class LongTermMHKTest extends LongTermTest {
 				RandomAccessBucket single = randomData(node);
 				RandomAccessBucket[] mhks = new RandomAccessBucket[3];
 
-				for(int i=0; i<mhks.length; i++) mhks[i] = randomData(node);
+				for(int i=0; i<mhks.length; i++) {
+					mhks[i] = randomData(node);
+				}
 
 				client = node.clientCore.makeClient((short) 0, false, false);
 
@@ -157,12 +160,13 @@ public class LongTermMHKTest extends LongTermTest {
 					}
 				}
 
-				if(successes == 3)
+				if(successes == 3) {
 					System.err.println("All inserts succeeded for single block: "+successes);
-				else if(successes != 0)
+				} else if(successes != 0) {
 					System.err.println("Some inserts succeeded for single block: "+successes);
-				else
+				} else {
 					System.err.println("NO INSERTS SUCCEEDED FOR SINGLE BLOCK: "+successes);
+				}
 
 				uri = null;
 
@@ -190,12 +194,13 @@ public class LongTermMHKTest extends LongTermTest {
 					}
 				}
 
-				if(successes == 3)
+				if(successes == 3) {
 					System.err.println("All inserts succeeded for MHK: "+successes);
-				else if(successes != 0)
+				} else if(successes != 0) {
 					System.err.println("Some inserts succeeded for MHK: "+successes);
-				else
+				} else {
 					System.err.println("NO INSERTS SUCCEEDED FOR MHK: "+successes);
+				}
 
 				uri = null;
 			}
@@ -215,7 +220,9 @@ public class LongTermMHKTest extends LongTermTest {
 			while((line = br.readLine()) != null) {
 
 				singleURI = null;
-				for(int i=0; i<mhkURIs.length; i++) mhkURIs[i] = null;
+				for(int i=0; i<mhkURIs.length; i++) {
+					mhkURIs[i] = null;
+				}
 				//System.out.println("LINE: "+line);
 				String[] split = line.split("!");
 				Date date = dateFormat.parse(split[0]);
@@ -253,11 +260,12 @@ public class LongTermMHKTest extends LongTermTest {
 						System.out.println("Single key insert "+i+" : "+insertTime);
 						token++;
 						FreenetURI thisURI = new FreenetURI(split[token]);
-						if(singleURI == null)
+						if(singleURI == null) {
 							singleURI = thisURI;
-						else {
+						} else {
 							if(!singleURI.equals(thisURI)) {
-								System.err.println("URI is not the same for all 3 inserts: was "+singleURI+" but "+i+" is "+thisURI);
+								System.err.println("URI is not the same for all 3 inserts: was "+singleURI+" but "+i+" is "
+												   +thisURI);
 								linesBroken++;
 								continue;
 							}
@@ -284,7 +292,8 @@ public class LongTermMHKTest extends LongTermTest {
 					continue;
 				}
 				if(Math.abs(target.getTimeInMillis() - calendar.getTimeInMillis()) < HOURS.toMillis(12)) {
-					System.out.println("Found row for target date "+dateFormat.format(target.getTime())+" : "+dateFormat.format(calendar.getTime()));
+					System.out.println("Found row for target date "+dateFormat.format(target.getTime())+" : "
+									   +dateFormat.format(calendar.getTime()));
 					System.out.println("Version: "+split[1]);
 					match = true;
 					break;
@@ -321,21 +330,29 @@ public class LongTermMHKTest extends LongTermTest {
 						token++;
 					}
 					total++;
-					if(singleKeySuccess)
+					if(singleKeySuccess) {
 						singleKeysSucceeded++;
-					if(mhkSuccess)
+					}
+					if(mhkSuccess) {
 						mhkSucceeded++;
-				} else linesNoFetch++;
+					}
+				} else {
+					linesNoFetch++;
+				}
 			}
-			System.out.println("Lines where insert failed or no fetch: too short: "+linesTooShort+" broken: "+linesBroken+" no number: "+linesNoNumber+" no url: "+linesNoURL+" no fetch "+linesNoFetch);
+			System.out.println("Lines where insert failed or no fetch: too short: "+linesTooShort+" broken: "
+							   +linesBroken+" no number: "+linesNoNumber+" no url: "+linesNoURL+" no fetch "+linesNoFetch);
 			System.out.println("Total attempts where insert succeeded and fetch executed: "+total);
 			System.out.println("Single keys succeeded: "+singleKeysSucceeded);
 			System.out.println("MHKs succeeded: "+mhkSucceeded);
 			System.out.println("Single key individual fetches: "+totalSingleKeyFetches);
 			System.out.println("Single key individual fetches succeeded: "+totalSingleKeySuccesses);
-			System.out.println("Success rate for individual keys (from MHK inserts): "+((double)totalSingleKeySuccesses)/((double)totalSingleKeyFetches));
-			System.out.println("Success rate for the single key triple inserted: "+((double)singleKeysSucceeded)/((double)total));
-			System.out.println("Success rate for the MHK (success = any of the 3 different keys worked): "+((double)mhkSucceeded)/((double)total));
+			System.out.println("Success rate for individual keys (from MHK inserts): "+((
+								   double)totalSingleKeySuccesses)/((double)totalSingleKeyFetches));
+			System.out.println("Success rate for the single key triple inserted: "+((
+								   double)singleKeysSucceeded)/((double)total));
+			System.out.println("Success rate for the MHK (success = any of the 3 different keys worked): "+((
+								   double)mhkSucceeded)/((double)total));
 			fis.close();
 			fis = null;
 
@@ -365,8 +382,9 @@ public class LongTermMHKTest extends LongTermTest {
 						fetched = true;
 					} catch (FetchException e) {
 						if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-								&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+								&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 							e.printStackTrace();
+						}
 						csvLine.add(FetchException.getShortMessage(e.getMode()));
 						System.err.println("FAILED PULL FOR SINGLE URI: "+e);
 					}
@@ -382,8 +400,9 @@ public class LongTermMHKTest extends LongTermTest {
 						csvLine.add(String.valueOf(t2 - t1));
 					} catch (FetchException e) {
 						if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-								&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+								&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 							e.printStackTrace();
+						}
 						csvLine.add(FetchException.getShortMessage(e.getMode()));
 						System.err.println("FAILED PULL FOR MHK #"+i+": "+e);
 					}
@@ -395,13 +414,15 @@ public class LongTermMHKTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable tt) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable tt) {
 			}
 			Closer.close(fis);

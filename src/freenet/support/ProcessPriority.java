@@ -75,10 +75,12 @@ public class ProcessPriority {
 					return false;
 				}
 			} else if (Platform.isLinux()) {
-				return handleReturn(LinuxHolder.setpriority(LinuxHolder.PRIO_PROCESS, LinuxHolder.MYSELF, LinuxHolder.LOWER_PRIORITY));
+				return handleReturn(LinuxHolder.setpriority(LinuxHolder.PRIO_PROCESS, LinuxHolder.MYSELF,
+									LinuxHolder.LOWER_PRIORITY));
 
 			} else if (Platform.isMac()) {
-				return handleReturn(OSXHolder.setpriority(OSXHolder.PRIO_DARWIN_THREAD, OSXHolder.MYSELF, OSXHolder.PRIO_DARWIN_BG));
+				return handleReturn(OSXHolder.setpriority(OSXHolder.PRIO_DARWIN_THREAD, OSXHolder.MYSELF,
+									OSXHolder.PRIO_DARWIN_BG));
 			}
 		}
 		return background;

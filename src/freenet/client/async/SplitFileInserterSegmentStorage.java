@@ -124,22 +124,28 @@ public class SplitFileInserterSegmentStorage {
 		this.segNo = segNo;
 		this.keyLength = keyLength;
 		dataBlockCount = dis.readInt();
-		if(dataBlockCount < 0)
+		if(dataBlockCount < 0) {
 			throw new StorageFormatException("Bogus data block count");
+		}
 		crossCheckBlockCount = dis.readInt();
-		if(crossCheckBlockCount < 0)
+		if(crossCheckBlockCount < 0) {
 			throw new StorageFormatException("Bogus cross-check block count");
-		if((crossCheckBlockCount == 0) != (parent.crossSegments == null))
+		}
+		if((crossCheckBlockCount == 0) != (parent.crossSegments == null)) {
 			throw new StorageFormatException("Cross-check block count inconsistent with parent");
+		}
 		checkBlockCount = dis.readInt();
-		if(checkBlockCount < 0)
+		if(checkBlockCount < 0) {
 			throw new StorageFormatException("Bogus check block count");
+		}
 		totalBlockCount = dataBlockCount + crossCheckBlockCount + checkBlockCount;
-		if(totalBlockCount > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if(totalBlockCount > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new StorageFormatException("Bogus total block count");
+		}
 		this.statusLength = dis.readInt();
-		if(statusLength < 0)
+		if(statusLength < 0) {
 			throw new StorageFormatException("Bogus status length");
+		}
 		crossSegmentBlockSegments = new SplitFileInserterCrossSegmentStorage[crossCheckBlockCount];
 		crossSegmentBlockNumbers = new int[crossCheckBlockCount];
 		blocksHaveKeys = new boolean[totalBlockCount];
@@ -154,8 +160,9 @@ public class SplitFileInserterSegmentStorage {
 			innerStoreStatus(dos);
 			dos.close();
 			int minStatusLength = (int) cos.written() + parent.checker.checksumLength();
-			if(minStatusLength > statusLength)
+			if(minStatusLength > statusLength) {
 				throw new StorageFormatException("Bad status length (too short)");
+			}
 		} catch (IOException e) {
 			throw new Error(e); // Impossible
 		}
@@ -172,7 +179,9 @@ public class SplitFileInserterSegmentStorage {
 	 */
 	int allocateCrossDataBlock(SplitFileInserterCrossSegmentStorage seg, Random random) {
 		int size = dataBlockCount;
-		if(crossDataBlocksAllocatedCount == size) return -1;
+		if(crossDataBlocksAllocatedCount == size) {
+			return -1;
+		}
 		int x = 0;
 		for(int i=0; i<10; i++) {
 			x = random.nextInt(size);
@@ -184,7 +193,9 @@ public class SplitFileInserterSegmentStorage {
 		}
 		for(int i=0; i<size; i++) {
 			x++;
-			if(x == size) x = 0;
+			if(x == size) {
+				x = 0;
+			}
 			if(!crossDataBlocksAllocated[x]) {
 				crossDataBlocksAllocated[x] = true;
 				crossDataBlocksAllocatedCount++;
@@ -202,12 +213,17 @@ public class SplitFileInserterSegmentStorage {
 	 * @param crossSegmentBlockNumber Block number within the cross-segment.
 	 * @return The block number allocated (between dataBlockCount and dataBlockCount+crossSegmentCheckBlocks).
 	 */
-	int allocateCrossCheckBlock(SplitFileInserterCrossSegmentStorage seg, Random random, int crossSegmentBlockNumber) {
-		if(crossCheckBlocksAllocatedCount == crossCheckBlockCount) return -1;
+	int allocateCrossCheckBlock(SplitFileInserterCrossSegmentStorage seg, Random random,
+								int crossSegmentBlockNumber) {
+		if(crossCheckBlocksAllocatedCount == crossCheckBlockCount) {
+			return -1;
+		}
 		int x = crossCheckBlockCount - (1 + random.nextInt(crossCheckBlockCount));
 		for(int i=0; i<crossCheckBlockCount; i++) {
 			x++;
-			if(x == crossCheckBlockCount) x = 0;
+			if(x == crossCheckBlockCount) {
+				x = 0;
+			}
 			if(crossSegmentBlockSegments[x] == null) {
 				crossSegmentBlockSegments[x] = seg;
 				crossSegmentBlockNumbers[x] = crossSegmentBlockNumber;
@@ -219,15 +235,24 @@ public class SplitFileInserterSegmentStorage {
 	}
 
 	public void storeStatus(boolean force) {
-		if(!parent.persistent) return;
-		if(parent.hasFinished()) return;
+		if(!parent.persistent) {
+			return;
+		}
+		if(parent.hasFinished()) {
+			return;
+		}
 		try {
 			DataOutputStream dos;
 			synchronized(this) {
-				if(!force && !metadataDirty) return;
-				if(cancelled) return;
+				if(!force && !metadataDirty) {
+					return;
+				}
+				if(cancelled) {
+					return;
+				}
 				try {
-					dos = new DataOutputStream(parent.writeChecksummedTo(parent.segmentStatusOffset(segNo), statusLength));
+					dos = new DataOutputStream(parent.writeChecksummedTo(parent.segmentStatusOffset(segNo),
+											   statusLength));
 					innerStoreStatus(dos);
 				} catch (IOException e) {
 					Logger.error(this, "Impossible: "+e, e);
@@ -253,7 +278,9 @@ public class SplitFileInserterSegmentStorage {
 		byte[] data = new byte[statusLength-parent.checker.checksumLength()];
 		parent.preadChecksummed(parent.getOffsetSegmentStatus(segNo), data, 0, data.length);
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
-		if(dis.readInt() != segNo) throw new StorageFormatException("Bad segment number");
+		if(dis.readInt() != segNo) {
+			throw new StorageFormatException("Bad segment number");
+		}
 		encoded = dis.readBoolean();
 		blockChooser.read(dis);
 	}
@@ -292,7 +319,8 @@ public class SplitFileInserterSegmentStorage {
 		return ret;
 	}
 
-	static void innerWriteKey(ClientCHK key, DataOutputStream dos, boolean hasSplitfileKey) throws IOException {
+	static void innerWriteKey(ClientCHK key, DataOutputStream dos,
+							  boolean hasSplitfileKey) throws IOException {
 		if(hasSplitfileKey) {
 			dos.write(key.getRoutingKey());
 		} else {
@@ -310,11 +338,15 @@ public class SplitFileInserterSegmentStorage {
 	}
 
 	void setKey(int blockNumber, ClientCHK key) throws IOException {
-		if(logMINOR) Logger.minor(this, "Setting key "+key+" for block "+blockNumber+" on "+this, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Setting key "+key+" for block "+blockNumber+" on "+this,
+						 new Exception("debug"));
+		}
 		try {
 			ClientCHK oldKey = readKey(blockNumber);
-			if(!oldKey.equals(key))
+			if(!oldKey.equals(key)) {
 				throw new IOException("Key for block has changed! Data corruption or bugs in SplitFileInserter code");
+			}
 		} catch (MissingKeyException e) {
 			// Ok.
 			writeKey(blockNumber, key);
@@ -337,10 +369,14 @@ public class SplitFileInserterSegmentStorage {
 	 * Note that this structure is not persisted! */
 	private void setHasKey(int blockNumber) {
 		synchronized(this) {
-			if(blocksHaveKeys[blockNumber]) return;
+			if(blocksHaveKeys[blockNumber]) {
+				return;
+			}
 			blocksHaveKeys[blockNumber] = true;
 			blocksWithKeysCounter++;
-			if(blocksWithKeysCounter != totalBlockCount) return;
+			if(blocksWithKeysCounter != totalBlockCount) {
+				return;
+			}
 		}
 		parent.onHasKeys(this);
 	}
@@ -354,7 +390,9 @@ public class SplitFileInserterSegmentStorage {
 	 * but we would then need to re-encode ... */
 	public void checkKeys() {
 		synchronized(this) {
-			if(!encoded) return;
+			if(!encoded) {
+				return;
+			}
 		}
 		try {
 			for(int i=0; i<totalBlockCount; i++) {
@@ -392,8 +430,12 @@ public class SplitFileInserterSegmentStorage {
 	}
 
 	public synchronized void startEncode(final short prio) {
-		if(encoded) return;
-		if(encoding) return;
+		if(encoded) {
+			return;
+		}
+		if(encoding) {
+			return;
+		}
 		encoding = true;
 		int totalBlockCount = dataBlockCount + checkBlockCount + crossCheckBlockCount;
 		long limit = totalBlockCount * CHKBlock.DATA_LENGTH +
@@ -431,7 +473,9 @@ public class SplitFileInserterSegmentStorage {
 						}
 					} finally {
 						// Callback is part of the persistent job, unlock *after* calling it.
-						if(lock != null) lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						if(lock != null) {
+							lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						}
 					}
 				}
 				return true;
@@ -444,31 +488,43 @@ public class SplitFileInserterSegmentStorage {
 		RAFLock lock = null;
 		try {
 			synchronized(this) {
-				if(cancelled) return;
+				if(cancelled) {
+					return;
+				}
 			}
 			lock = parent.lockRAF();
-			if(logMINOR) Logger.minor(this, "Encoding "+this+" for "+parent);
+			if(logMINOR) {
+				Logger.minor(this, "Encoding "+this+" for "+parent);
+			}
 			byte[][] dataBlocks = readDataAndCrossCheckBlocks();
 			generateKeys(dataBlocks, 0);
 			byte[][] checkBlocks = new byte[checkBlockCount][];
-			for(int i=0; i<checkBlocks.length; i++)
+			for(int i=0; i<checkBlocks.length; i++) {
 				checkBlocks[i] = new byte[CHKBlock.DATA_LENGTH];
-			if(dataBlocks == null || checkBlocks == null) return; // Failed with disk error.
+			}
+			if(dataBlocks == null || checkBlocks == null) {
+				return;    // Failed with disk error.
+			}
 			parent.codec.encode(dataBlocks, checkBlocks, new boolean[checkBlocks.length], CHKBlock.DATA_LENGTH);
-			for(int i=0; i<checkBlocks.length; i++)
+			for(int i=0; i<checkBlocks.length; i++) {
 				writeCheckBlock(i, checkBlocks[i]);
+			}
 			generateKeys(checkBlocks, dataBlockCount + crossCheckBlockCount);
 			synchronized(this) {
 				encoded = true;
 			}
-			if(logMINOR) Logger.minor(this, "Encoded "+this+" for "+parent);
+			if(logMINOR) {
+				Logger.minor(this, "Encoded "+this+" for "+parent);
+			}
 		} catch (IOException e) {
 			parent.failOnDiskError(e);
 		} catch (Throwable t) {
 			Logger.error(this, "Failed: "+t, t);
 			parent.fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR, t, null));
 		} finally {
-			if(lock != null) lock.unlock();
+			if(lock != null) {
+				lock.unlock();
+			}
 		}
 	}
 
@@ -484,13 +540,15 @@ public class SplitFileInserterSegmentStorage {
 		byte[][] data = new byte[dataBlockCount + crossCheckBlockCount][];
 		RAFLock lock = parent.lockUnderlying();
 		try {
-			for(int i=0; i<dataBlockCount; i++)
+			for(int i=0; i<dataBlockCount; i++) {
 				data[i] = readDataBlock(i);
+			}
 		} finally {
 			lock.unlock();
 		}
-		for(int i=0; i<crossCheckBlockCount; i++)
+		for(int i=0; i<crossCheckBlockCount; i++) {
 			data[i+dataBlockCount] = readCrossCheckBlock(i);
+		}
 		return data;
 	}
 
@@ -525,12 +583,13 @@ public class SplitFileInserterSegmentStorage {
 
 	private byte[] readBlock(int blockNo) throws IOException {
 		assert(blockNo >= 0 && blockNo < totalBlockCount);
-		if(blockNo < dataBlockCount)
+		if(blockNo < dataBlockCount) {
 			return readDataBlock(blockNo);
-		else if(blockNo < dataBlockCount + crossCheckBlockCount)
+		} else if(blockNo < dataBlockCount + crossCheckBlockCount) {
 			return readCrossCheckBlock(blockNo - dataBlockCount);
-		else
+		} else {
 			return readCheckBlock(blockNo - (dataBlockCount + crossCheckBlockCount));
+		}
 	}
 
 	ClientCHKBlock encodeBlock(byte[] buf) {
@@ -571,10 +630,14 @@ public class SplitFileInserterSegmentStorage {
 		byte[] checksum = Arrays.copyOfRange(buf, buf.length - checksumLength, buf.length);
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(buf));
 		byte b = dis.readByte();
-		if(b != 1) throw new MissingKeyException();
+		if(b != 1) {
+			throw new MissingKeyException();
+		}
 		ClientCHK key = innerReadKey(dis);
 		setHasKey(blockNumber);
-		if(logDEBUG) Logger.debug(this, "Returning "+key);
+		if(logDEBUG) {
+			Logger.debug(this, "Returning "+key);
+		}
 		return key;
 	}
 
@@ -586,7 +649,9 @@ public class SplitFileInserterSegmentStorage {
 	 * Should not change once we reach this state, but might be possible in case of disk errors
 	 * causing losing keys etc. */
 	public synchronized boolean hasSucceeded() {
-		if(cancelled) return false;
+		if(cancelled) {
+			return false;
+		}
 		return blockChooser.hasSucceededAll();
 	}
 
@@ -598,29 +663,42 @@ public class SplitFileInserterSegmentStorage {
 	/** Called when a block insert succeeds */
 	public void onInsertedBlock(int blockNo, ClientCHK key) {
 		try {
-			if(parent.hasFinished()) return;
+			if(parent.hasFinished()) {
+				return;
+			}
 			this.setKey(blockNo, key);
-			if(blockChooser.onSuccess(blockNo))
+			if(blockChooser.onSuccess(blockNo)) {
 				parent.callback.onInsertedBlock();
+			}
 			lazyWriteMetadata();
 		} catch (IOException e) {
-			if(parent.hasFinished()) return; // Race condition possible as this is a callback
+			if(parent.hasFinished()) {
+				return;    // Race condition possible as this is a callback
+			}
 			parent.failOnDiskError(e);
 		}
 	}
 
 	/** Called by BlockChooser when all blocks have been inserted. */
 	void onInsertedAllBlocks() {
-		if(logMINOR) Logger.minor(this, "Inserted all blocks in segment "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Inserted all blocks in segment "+this);
+		}
 		synchronized(this) {
-			if(!encoded) return;
+			if(!encoded) {
+				return;
+			}
 		}
 		parent.segmentSucceeded(this);
 	}
 
 	public void onFailure(int blockNo, InsertException e) {
-		if(logMINOR) Logger.minor(this, "Failed block "+blockNo+" with "+e+" for "+this+" for "+parent);
-		if(parent.hasFinished()) return; // Race condition possible as this is a callback
+		if(logMINOR) {
+			Logger.minor(this, "Failed block "+blockNo+" with "+e+" for "+this+" for "+parent);
+		}
+		if(parent.hasFinished()) {
+			return;    // Race condition possible as this is a callback
+		}
 		parent.addFailure(e);
 		if(e.isFatal()) {
 			parent.failFatalErrorInBlock();
@@ -635,7 +713,9 @@ public class SplitFileInserterSegmentStorage {
 				} catch (MissingKeyException e1) {
 					Logger.error(this, "RNF but no key on block "+blockNo+" on "+this);
 				} catch (IOException e1) {
-					if(parent.hasFinished()) return; // Race condition possible as this is a callback
+					if(parent.hasFinished()) {
+						return;    // Race condition possible as this is a callback
+					}
 					parent.failOnDiskError(e1);
 					return;
 				}
@@ -648,7 +728,9 @@ public class SplitFileInserterSegmentStorage {
 			if(blockChooser.onNonFatalFailure(blockNo)) {
 				parent.failTooManyRetriesInBlock();
 			} else {
-				if(blockChooser.maxRetries >= 0) lazyWriteMetadata();
+				if(blockChooser.maxRetries >= 0) {
+					lazyWriteMetadata();
+				}
 				parent.clearCooldown();
 			}
 		}
@@ -662,10 +744,18 @@ public class SplitFileInserterSegmentStorage {
 	}
 
 	public synchronized boolean hasCompletedOrFailed() {
-		if(encoded) return true; // No more encoding jobs will run.
-		if(encoding) return false; // Waiting for job to finish.
-		if(cancelled) return true;
-		if(blockChooser.hasSucceededAll()) return true;
+		if(encoded) {
+			return true;    // No more encoding jobs will run.
+		}
+		if(encoding) {
+			return false;    // Waiting for job to finish.
+		}
+		if(cancelled) {
+			return true;
+		}
+		if(blockChooser.hasSucceededAll()) {
+			return true;
+		}
 		return false;
 	}
 
@@ -674,20 +764,28 @@ public class SplitFileInserterSegmentStorage {
 	 * @return True if the segment has completed cancellation. False if it is waiting for an
 	 * encode, in which case a callback to parent will be made when the encode finishes. */
 	public synchronized boolean cancel() {
-		if(cancelled) return false;
+		if(cancelled) {
+			return false;
+		}
 		cancelled = true;
-		if(hasCompletedOrFailed()) return true;
+		if(hasCompletedOrFailed()) {
+			return true;
+		}
 		return false;
 	}
 
 	public synchronized BlockInsert chooseBlock() {
 		int chosenBlock = innerChooseBlock();
-		if(chosenBlock == -1) return null;
+		if(chosenBlock == -1) {
+			return null;
+		}
 		return new BlockInsert(this, chosenBlock);
 	}
 
 	synchronized int innerChooseBlock() {
-		if(cancelled) return -1;
+		if(cancelled) {
+			return -1;
+		}
 		return blockChooser.chooseKey();
 	}
 
@@ -718,15 +816,19 @@ public class SplitFileInserterSegmentStorage {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (!(obj instanceof BlockInsert))
+			}
+			if (!(obj instanceof BlockInsert)) {
 				return false;
+			}
 			BlockInsert other = (BlockInsert) obj;
-			if (blockNumber != other.blockNumber)
+			if (blockNumber != other.blockNumber) {
 				return false;
+			}
 			return segment == other.segment;
 		}
 

@@ -55,21 +55,24 @@ public class MultiHashOutputStream extends FilterOutputStream {
 	@Override
 	public void write(byte[] arg0) throws java.io.IOException {
 		out.write(arg0);
-		for(Digester d : digesters)
+		for(Digester d : digesters) {
 			d.digest.update(arg0);
+		}
 	}
 
 	@Override
 	public void write(byte[] arg0, int arg1, int arg2) throws java.io.IOException {
 		out.write(arg0, arg1, arg2);
-		for(Digester d : digesters)
+		for(Digester d : digesters) {
 			d.digest.update(arg0, arg1, arg2);
+		}
 	}
 
 	public HashResult[] getResults() {
 		HashResult[] results = new HashResult[digesters.length];
-		for(int i=0; i<digesters.length; i++)
+		for(int i=0; i<digesters.length; i++) {
 			results[i] = digesters[i].getResult();
+		}
 		digesters = null;
 		return results;
 	}

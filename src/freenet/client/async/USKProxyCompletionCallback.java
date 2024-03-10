@@ -34,7 +34,8 @@ public class USKProxyCompletionCallback implements GetCompletionCallback, Serial
 	}
 
 	@Override
-	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
+	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata,
+						  List<? extends Compressor> decompressors, ClientGetState state, ClientContext context) {
 		context.uskManager.updateKnownGood(usk, usk.suggestedEdition, context);
 		cb.onSuccess(streamGenerator, clientMetadata, decompressors, state, context);
 	}
@@ -81,13 +82,17 @@ public class USKProxyCompletionCallback implements GetCompletionCallback, Serial
 	}
 
 	@Override
-	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal, ClientContext context) {
+	public void onExpectedTopSize(long size, long compressed, int blocksReq, int blocksTotal,
+								  ClientContext context) {
 		cb.onExpectedTopSize(size, compressed, blocksReq, blocksTotal, context);
 	}
 
 	@Override
-	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max, byte[] splitfileKey, boolean dontCompress, boolean bottomLayer, boolean definitiveAnyway, ClientContext context) {
-		cb.onSplitfileCompatibilityMode(min, max, splitfileKey, dontCompress, bottomLayer, definitiveAnyway, context);
+	public void onSplitfileCompatibilityMode(CompatibilityMode min, CompatibilityMode max,
+			byte[] splitfileKey, boolean dontCompress, boolean bottomLayer, boolean definitiveAnyway,
+			ClientContext context) {
+		cb.onSplitfileCompatibilityMode(min, max, splitfileKey, dontCompress, bottomLayer, definitiveAnyway,
+										context);
 	}
 
 	@Override

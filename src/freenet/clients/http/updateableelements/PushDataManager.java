@@ -19,10 +19,12 @@ public class PushDataManager {
 	}
 
 	/** What notifications are waiting for the leader */
-	private Map<String, List<UpdateEvent>>				awaitingNotifications	= new HashMap<String, List<UpdateEvent>>();
+	private Map<String, List<UpdateEvent>>				awaitingNotifications	= new
+	HashMap<String, List<UpdateEvent>>();
 
 	/** What elements are on the page */
-	private Map<String, List<BaseUpdateableElement>>	pages					= new HashMap<String, List<BaseUpdateableElement>>();
+	private Map<String, List<BaseUpdateableElement>>	pages					= new
+	HashMap<String, List<BaseUpdateableElement>>();
 
 	/** What pages are on the element. It is redundant with the pages map. */
 	private Map<String, List<String>>					elements				= new HashMap<String, List<String>>();
@@ -58,12 +60,14 @@ public class PushDataManager {
 		boolean needsUpdate = false;
 		if(elements.containsKey(id)==false) {
 			if(logMINOR) {
-				Logger.minor(this, "Element is updating, but not present on elements! elements:"+elements+" pages:"+pages+" awaitingNotifications:"+awaitingNotifications);
+				Logger.minor(this, "Element is updating, but not present on elements! elements:"+elements+" pages:"
+							 +pages+" awaitingNotifications:"+awaitingNotifications);
 			}
 		}
 		if (elements.containsKey(id)) for (String reqId : elements.get(id)) {
 				if(logMINOR) {
-					Logger.minor(this, "Element is present on page:"+reqId+". Adding an UpdateEvent for all notification list.");
+					Logger.minor(this, "Element is present on page:"+reqId
+								 +". Adding an UpdateEvent for all notification list.");
 				}
 				for(Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
 //			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
@@ -72,11 +76,13 @@ public class PushDataManager {
 					if (notificationList.contains(updateEvent) == false) {
 						notificationList.add(updateEvent);
 						if (logMINOR) {
-							Logger.minor(this, "Notification("+updateEvent+") added to a notification list for "+entry.getKey());
+							Logger.minor(this, "Notification("+updateEvent+") added to a notification list for "
+										 +entry.getKey());
 						}
 					} else {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Not notifying "+entry.getKey()+" because already on list");
+						}
 					}
 				}
 				needsUpdate = true;
@@ -146,7 +152,8 @@ public class PushDataManager {
 					return element;
 				}
 			}
-		Logger.error(this, "Could not find data for the element requested. requestId:"+requestId+" id:"+id+" pages:"+pages+" keepaliveReceived:"+isKeepaliveReceived);
+		Logger.error(this, "Could not find data for the element requested. requestId:"+requestId+" id:"+id
+					 +" pages:"+pages+" keepaliveReceived:"+isKeepaliveReceived);
 		return null;
 	}
 
@@ -166,7 +173,8 @@ public class PushDataManager {
 		if (awaitingNotifications.containsKey(originalRequestId)) {
 			awaitingNotifications.put(newRequestId, awaitingNotifications.remove(originalRequestId));
 			if (logMINOR) {
-				Logger.minor(this, "copied " + awaitingNotifications.get(newRequestId).size() + " notification:" + awaitingNotifications.get(newRequestId));
+				Logger.minor(this, "copied " + awaitingNotifications.get(newRequestId).size() + " notification:" +
+							 awaitingNotifications.get(newRequestId));
 			}
 			notifyAll();
 			return true;
@@ -224,8 +232,11 @@ public class PushDataManager {
 		if (logMINOR) {
 			Logger.minor(this, "Polling for notification:" + requestId);
 		}
-		while (awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() == 0 || // No notifications
-				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId)==false)) { // Not asked us yet
+		while (awaitingNotifications.get(requestId) != null
+				&& awaitingNotifications.get(requestId).size() == 0 || // No notifications
+				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0
+				 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(
+							 0).requestId)==false)) { // Not asked us yet
 			try {
 				wait();
 			} catch (InterruptedException ie) {
@@ -236,7 +247,8 @@ public class PushDataManager {
 			return null;
 		}
 		if (logMINOR) {
-			Logger.minor(this, "Getting notification, notification:" + awaitingNotifications.get(requestId).get(0) + ",remaining:" + (awaitingNotifications.get(requestId).size() - 1));
+			Logger.minor(this, "Getting notification, notification:" + awaitingNotifications.get(requestId).get(
+							 0) + ",remaining:" + (awaitingNotifications.get(requestId).size() - 1));
 		}
 		return awaitingNotifications.get(requestId).remove(0);
 	}
@@ -311,7 +323,9 @@ public class PushDataManager {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) return true;
+			if (obj == this) {
+				return true;
+			}
 			if (obj instanceof UpdateEvent) {
 				UpdateEvent o = (UpdateEvent) obj;
 				if (o.getRequestId().compareTo(requestId) == 0 && o.getElementId().compareTo(elementId) == 0) {

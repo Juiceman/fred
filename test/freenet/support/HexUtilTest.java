@@ -159,8 +159,9 @@ public class HexUtilTest {
 		//border case
 		assertEquals(HexUtil.countBytesForBits(0),0);
 		for (int expectedBytesCount = 1; expectedBytesCount < 256; expectedBytesCount++)
-			for (int bits = (expectedBytesCount-1)*8+1; bits <= (expectedBytesCount)*8; bits++)
+			for (int bits = (expectedBytesCount-1)*8+1; bits <= (expectedBytesCount)*8; bits++) {
 				assertEquals(HexUtil.countBytesForBits(bits),expectedBytesCount);
+			}
 	}
 
 	/**

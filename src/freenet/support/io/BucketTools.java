@@ -66,8 +66,9 @@ public class BucketTools {
 			ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 			while (readChannel.read(buffer) != -1) {
 				buffer.flip();
-				while(buffer.hasRemaining())
+				while(buffer.hasRemaining()) {
 					writeChannel.write(buffer);
+				}
 				buffer.clear();
 			}
 
@@ -151,10 +152,12 @@ public class BucketTools {
 				}
 			}
 		} finally {
-			if (in != null)
+			if (in != null) {
 				in.close();
-			if (out != null)
+			}
+			if (out != null) {
 				out.close();
+			}
 		}
 	}
 
@@ -219,7 +222,9 @@ public class BucketTools {
 	 */
 	public static byte[] toByteArray(Bucket bucket) throws IOException {
 		long size = bucket.size();
-		if(size > Integer.MAX_VALUE) throw new OutOfMemoryError();
+		if(size > Integer.MAX_VALUE) {
+			throw new OutOfMemoryError();
+		}
 		byte[] data = new byte[(int)size];
 		InputStream is = bucket.getInputStreamUnbuffered();
 		DataInputStream dis = null;
@@ -235,32 +240,42 @@ public class BucketTools {
 
 	public static int toByteArray(Bucket bucket, byte[] output) throws IOException {
 		long size = bucket.size();
-		if(size > output.length)
+		if(size > output.length) {
 			throw new IllegalArgumentException("Data does not fit in provided buffer");
+		}
 		InputStream is = null;
 		try {
 			is = bucket.getInputStreamUnbuffered();
 			int moved = 0;
 			while(true) {
-				if(moved == size) return moved;
+				if(moved == size) {
+					return moved;
+				}
 				int x = is.read(output, moved, (int)(size - moved));
-				if(x == -1) return moved;
+				if(x == -1) {
+					return moved;
+				}
 				moved += x;
 			}
 		} finally {
-			if(is != null) is.close();
+			if(is != null) {
+				is.close();
+			}
 		}
 	}
 
-	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory, byte[] data) throws IOException {
+	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory,
+			byte[] data) throws IOException {
 		return makeImmutableBucket(bucketFactory, data, data.length);
 	}
 
-	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory, byte[] data, int length) throws IOException {
+	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory, byte[] data,
+			int length) throws IOException {
 		return makeImmutableBucket(bucketFactory, data, 0, length);
 	}
 
-	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory, byte[] data, int offset, int length) throws IOException {
+	public static RandomAccessBucket makeImmutableBucket(BucketFactory bucketFactory, byte[] data,
+			int offset, int length) throws IOException {
 		RandomAccessBucket bucket = bucketFactory.makeBucket(length);
 		OutputStream os = bucket.getOutputStreamUnbuffered();
 		try {
@@ -282,47 +297,65 @@ public class BucketTools {
 				byte[] buf = new byte[BUFFER_SIZE];
 				while ((bytesRead < bucketLength) || (bucketLength == -1)) {
 					int readBytes = is.read(buf);
-					if (readBytes < 0)
+					if (readBytes < 0) {
 						break;
+					}
 					bytesRead += readBytes;
-					if (readBytes > 0)
+					if (readBytes > 0) {
 						md.update(buf, 0, readBytes);
+					}
 				}
-				if ((bytesRead < bucketLength) && (bucketLength > 0))
+				if ((bytesRead < bucketLength) && (bucketLength > 0)) {
 					throw new EOFException();
-				if ((bytesRead != bucketLength) && (bucketLength > 0))
-					throw new IOException("Read " + bytesRead + " but bucket length " + bucketLength + " on " + data + '!');
+				}
+				if ((bytesRead != bucketLength) && (bucketLength > 0)) {
+					throw new IOException("Read " + bytesRead + " but bucket length " + bucketLength + " on " + data +
+										  '!');
+				}
 				byte[] retval = md.digest();
 				return retval;
 			} finally {
 				SHA256.returnMessageDigest(md);
 			}
 		} finally {
-			if(is != null) is.close();
+			if(is != null) {
+				is.close();
+			}
 		}
 	}
 
 	/** Copy the given quantity of data from the given bucket to the given OutputStream.
 	 * @throws IOException If there was an error reading from the bucket or writing to the stream. */
-	public static long copyTo(Bucket decodedData, OutputStream os, long truncateLength) throws IOException {
-		if(truncateLength == 0) return 0;
-		if(truncateLength < 0) truncateLength = Long.MAX_VALUE;
+	public static long copyTo(Bucket decodedData, OutputStream os,
+							  long truncateLength) throws IOException {
+		if(truncateLength == 0) {
+			return 0;
+		}
+		if(truncateLength < 0) {
+			truncateLength = Long.MAX_VALUE;
+		}
 		InputStream is = decodedData.getInputStreamUnbuffered();
 		try {
 			int bufferSize = BUFFER_SIZE;
-			if(truncateLength > 0 && truncateLength < bufferSize) bufferSize = (int) truncateLength;
+			if(truncateLength > 0 && truncateLength < bufferSize) {
+				bufferSize = (int) truncateLength;
+			}
 			byte[] buf = new byte[bufferSize];
 			long moved = 0;
 			while(moved < truncateLength) {
 				// DO NOT move the (int) inside the Math.min()! big numbers truncate to negative numbers.
 				int bytes = (int) Math.min(buf.length, truncateLength - moved);
-				if(bytes <= 0)
-					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="+moved);
+				if(bytes <= 0) {
+					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="
+													+moved);
+				}
 				bytes = is.read(buf, 0, bytes);
 				if(bytes <= 0) {
-					if(truncateLength == Long.MAX_VALUE)
+					if(truncateLength == Long.MAX_VALUE) {
 						break;
-					IOException ioException = new IOException("Could not move required quantity of data in copyTo: "+bytes+" (moved "+moved+" of "+truncateLength+"): unable to read from "+is);
+					}
+					IOException ioException = new IOException("Could not move required quantity of data in copyTo: "
+							+bytes+" (moved "+moved+" of "+truncateLength+"): unable to read from "+is);
 					ioException.printStackTrace();
 					throw ioException;
 				}
@@ -340,18 +373,23 @@ public class BucketTools {
 	public static void copyFrom(Bucket bucket, InputStream is, long truncateLength) throws IOException {
 		OutputStream os = bucket.getOutputStreamUnbuffered();
 		byte[] buf = new byte[BUFFER_SIZE];
-		if(truncateLength < 0) truncateLength = Long.MAX_VALUE;
+		if(truncateLength < 0) {
+			truncateLength = Long.MAX_VALUE;
+		}
 		try {
 			long moved = 0;
 			while(moved < truncateLength) {
 				// DO NOT move the (int) inside the Math.min()! big numbers truncate to negative numbers.
 				int bytes = (int) Math.min(buf.length, truncateLength - moved);
-				if(bytes <= 0)
-					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="+moved);
+				if(bytes <= 0) {
+					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="
+													+moved);
+				}
 				bytes = is.read(buf, 0, bytes);
 				if(bytes <= 0) {
-					if(truncateLength == Long.MAX_VALUE)
+					if(truncateLength == Long.MAX_VALUE) {
 						break;
+					}
 					IOException ioException = new IOException("Could not move required quantity of data in copyFrom: "
 							+ bytes + " (moved " + moved + " of " + truncateLength + "): unable to read from " + is);
 					ioException.printStackTrace();
@@ -383,22 +421,30 @@ public class BucketTools {
 	 * @throws IOException If there is an error creating buckets, reading from
 	 * the provided bucket, or writing to created buckets.
 	 */
-	public static Bucket[] split(Bucket origData, int splitSize, BucketFactory bf, boolean freeData, boolean persistent) throws IOException {
+	public static Bucket[] split(Bucket origData, int splitSize, BucketFactory bf, boolean freeData,
+								 boolean persistent) throws IOException {
 		if(origData instanceof FileBucket) {
 			if(freeData) {
-				Logger.error(BucketTools.class, "Asked to free data when splitting a FileBucket ?!?!? Not freeing as this would clobber the split result...");
+				Logger.error(BucketTools.class,
+							 "Asked to free data when splitting a FileBucket ?!?!? Not freeing as this would clobber the split result...");
 			}
 			Bucket[] buckets = ((FileBucket)origData).split(splitSize);
-			if(persistent)
+			if(persistent) {
 				return buckets;
+			}
 		}
 		long length = origData.size();
-		if(length > ((long)Integer.MAX_VALUE) * splitSize)
+		if(length > ((long)Integer.MAX_VALUE) * splitSize) {
 			throw new IllegalArgumentException("Way too big!: "+length+" for "+splitSize);
+		}
 		int bucketCount = (int) (length / splitSize);
-		if(length % splitSize > 0) bucketCount++;
-		if(logMINOR)
-			Logger.minor(BucketTools.class, "Splitting bucket "+origData+" of size "+length+" into "+bucketCount+" buckets");
+		if(length % splitSize > 0) {
+			bucketCount++;
+		}
+		if(logMINOR) {
+			Logger.minor(BucketTools.class,
+						 "Splitting bucket "+origData+" of size "+length+" into "+bucketCount+" buckets");
+		}
 		Bucket[] buckets = new Bucket[bucketCount];
 		InputStream is = origData.getInputStreamUnbuffered();
 		DataInputStream dis = null;
@@ -420,13 +466,15 @@ public class BucketTools {
 				}
 			}
 		} finally {
-			if(dis != null)
+			if(dis != null) {
 				dis.close();
-			else
+			} else {
 				is.close();
+			}
 		}
-		if(freeData)
+		if(freeData) {
 			origData.free();
+		}
 		return buckets;
 	}
 
@@ -440,7 +488,8 @@ public class BucketTools {
 	 *
 	 * @return the paded bucket
 	 */
-	public static Bucket pad(Bucket oldBucket, int blockLength, BucketFactory bf, int length) throws IOException {
+	public static Bucket pad(Bucket oldBucket, int blockLength, BucketFactory bf,
+							 int length) throws IOException {
 		byte[] hash = BucketTools.hash(oldBucket);
 		Bucket b = bf.makeBucket(blockLength);
 		MersenneTwister mt = new MersenneTwister(hash);
@@ -457,8 +506,10 @@ public class BucketTools {
 			}
 			os.close();
 			os = null;
-			if(b.size() != blockLength)
-				throw new IllegalStateException("The bucket's size is "+b.size()+" whereas it should be "+blockLength+'!');
+			if(b.size() != blockLength) {
+				throw new IllegalStateException("The bucket's size is "+b.size()+" whereas it should be "
+												+blockLength+'!');
+			}
 			return b;
 		} finally {
 			Closer.close(os);
@@ -474,7 +525,9 @@ public class BucketTools {
 	}
 
 	public static boolean equalBuckets(Bucket a, Bucket b) throws IOException {
-		if(a.size() != b.size()) return false;
+		if(a.size() != b.size()) {
+			return false;
+		}
 		long size = a.size();
 		InputStream aIn = null, bIn = null;
 		try {
@@ -495,7 +548,9 @@ public class BucketTools {
 			os = bucket.getOutputStreamUnbuffered();
 			FileUtil.fill(os, random, length);
 		} finally {
-			if(os != null) os.close();
+			if(os != null) {
+				os.close();
+			}
 		}
 	}
 
@@ -520,7 +575,9 @@ public class BucketTools {
 			os = bucket.getOutputStreamUnbuffered();
 			FileUtil.fill(os, length);
 		} finally {
-			if(os != null) os.close();
+			if(os != null) {
+				os.close();
+			}
 		}
 	}
 
@@ -534,24 +591,34 @@ public class BucketTools {
 	 * @throws IOException If something breaks while copying the data. */
 	public static long copyTo(Bucket bucket, RandomAccessBuffer raf, long fileOffset,
 							  long truncateLength) throws IOException {
-		if(truncateLength == 0) return 0;
-		if(truncateLength < 0) truncateLength = Long.MAX_VALUE;
+		if(truncateLength == 0) {
+			return 0;
+		}
+		if(truncateLength < 0) {
+			truncateLength = Long.MAX_VALUE;
+		}
 		InputStream is = bucket.getInputStreamUnbuffered();
 		try {
 			int bufferSize = BUFFER_SIZE;
-			if(truncateLength > 0 && truncateLength < bufferSize) bufferSize = (int) truncateLength;
+			if(truncateLength > 0 && truncateLength < bufferSize) {
+				bufferSize = (int) truncateLength;
+			}
 			byte[] buf = new byte[bufferSize];
 			long moved = 0;
 			while(moved < truncateLength) {
 				// DO NOT move the (int) inside the Math.min()! big numbers truncate to negative numbers.
 				int bytes = (int) Math.min(buf.length, truncateLength - moved);
-				if(bytes <= 0)
-					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="+moved);
+				if(bytes <= 0) {
+					throw new IllegalStateException("bytes="+bytes+", truncateLength="+truncateLength+", moved="
+													+moved);
+				}
 				bytes = is.read(buf, 0, bytes);
 				if(bytes <= 0) {
-					if(truncateLength == Long.MAX_VALUE)
+					if(truncateLength == Long.MAX_VALUE) {
 						break;
-					IOException ioException = new IOException("Could not move required quantity of data in copyTo: "+bytes+" (moved "+moved+" of "+truncateLength+"): unable to read from "+is);
+					}
+					IOException ioException = new IOException("Could not move required quantity of data in copyTo: "
+							+bytes+" (moved "+moved+" of "+truncateLength+"): unable to read from "+is);
 					ioException.printStackTrace();
 					throw ioException;
 				}
@@ -629,12 +696,16 @@ public class BucketTools {
 		}
 	}
 
-	public static RandomAccessBucket toRandomAccessBucket(Bucket bucket, BucketFactory bf) throws IOException {
-		if(bucket instanceof RandomAccessBucket)
+	public static RandomAccessBucket toRandomAccessBucket(Bucket bucket,
+			BucketFactory bf) throws IOException {
+		if(bucket instanceof RandomAccessBucket) {
 			return (RandomAccessBucket)bucket;
+		}
 		if(bucket instanceof DelayedFreeBucket) {
 			RandomAccessBucket ret = ((DelayedFreeBucket)bucket).toRandomAccessBucket();
-			if(ret != null) return ret;
+			if(ret != null) {
+				return ret;
+			}
 		}
 		RandomAccessBucket ret = bf.makeBucket(bucket.size());
 		BucketTools.copy(bucket, ret);

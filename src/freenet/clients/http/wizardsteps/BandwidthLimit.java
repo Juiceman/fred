@@ -17,7 +17,8 @@ public class BandwidthLimit {
 	 * Bandwidth used if both the upload and download limit are at the minimum. In GB. Assumes 24/7 uptime.
 	 * 49.4384765625 GiB
 	 */
-	public static final Double minMonthlyLimit = 2 * Node.getMinimumBandwidth() * secondsPerMonth / DatastoreUtil.oneGiB;
+	public static final Double minMonthlyLimit = 2 * Node.getMinimumBandwidth() * secondsPerMonth /
+			DatastoreUtil.oneGiB;
 
 	/**
 	 * Download limit in bytes.

@@ -53,10 +53,12 @@ public class ProbeRequest extends FCPMessage {
 			}
 
 		} catch (IllegalArgumentException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unrecognized parse probe type \"" + fs.get(TYPE) + "\": " + e, null, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+											  "Unrecognized parse probe type \"" + fs.get(TYPE) + "\": " + e, null, false);
 		} catch (FSParseException e) {
 			//Getting a String from a SimpleFieldSet does not throw - it can at worst return null.
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unable to parse hopsToLive \"" + fs.get(HTL) + "\": " + e, null, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+											  "Unable to parse hopsToLive \"" + fs.get(HTL) + "\": " + e, null, false);
 		}
 	}
 
@@ -73,7 +75,8 @@ public class ProbeRequest extends FCPMessage {
 	@Override
 	public void run(final FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Probe requires full access.", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Probe requires full access.",
+											  identifier, false);
 		}
 
 		Listener listener = new Listener() {
@@ -130,7 +133,8 @@ public class ProbeRequest extends FCPMessage {
 			@Override
 			public void onOverallBulkOutputCapacity(
 				byte bandwidthClassForCapacityUsage, float capacityUsage) {
-				handler.send(new ProbeOverallBulkOutputCapacityUsage(identifier, bandwidthClassForCapacityUsage, capacityUsage));
+				handler.send(new ProbeOverallBulkOutputCapacityUsage(identifier, bandwidthClassForCapacityUsage,
+							 capacityUsage));
 			}
 		};
 		node.startProbe(htl, node.random.nextLong(), type, listener);

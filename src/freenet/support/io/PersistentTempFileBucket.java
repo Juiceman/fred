@@ -21,11 +21,13 @@ public class PersistentTempFileBucket extends TempFileBucket implements Serializ
 		Logger.registerClass(PersistentTempFileBucket.class);
 	}
 
-	public PersistentTempFileBucket(long id, FilenameGenerator generator, PersistentFileTracker tracker) {
+	public PersistentTempFileBucket(long id, FilenameGenerator generator,
+									PersistentFileTracker tracker) {
 		this(id, generator, tracker, true);
 	}
 
-	protected PersistentTempFileBucket(long id, FilenameGenerator generator, PersistentFileTracker tracker, boolean deleteOnFree) {
+	protected PersistentTempFileBucket(long id, FilenameGenerator generator,
+									   PersistentFileTracker tracker, boolean deleteOnFree) {
 		super(id, generator, deleteOnFree);
 		this.tracker = tracker;
 	}
@@ -61,14 +63,18 @@ public class PersistentTempFileBucket extends TempFileBucket implements Serializ
 	public RandomAccessBucket createShadow() {
 		PersistentTempFileBucket ret = new PersistentTempFileBucket(filenameID, generator, tracker, false);
 		ret.setReadOnly();
-		if(!getFile().exists()) Logger.error(this, "File does not exist when creating shadow: "+getFile());
+		if(!getFile().exists()) {
+			Logger.error(this, "File does not exist when creating shadow: "+getFile());
+		}
 		return ret;
 	}
 
 	@Override
 	protected void innerResume(ClientContext context) throws ResumeFailedException {
 		super.innerResume(context);
-		if(logMINOR) Logger.minor(this, "Resuming "+this, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Resuming "+this, new Exception("debug"));
+		}
 		tracker = context.persistentFileTracker;
 		tracker.register(getFile());
 	}

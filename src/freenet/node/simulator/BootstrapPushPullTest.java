@@ -39,16 +39,19 @@ public class BootstrapPushPullTest {
 	public static int DARKNET_PORT2 = 5004;
 	public static int OPENNET_PORT2 = 5005;
 
-	public static void main(String[] args) throws InvalidThresholdException, IOException, NodeInitException, InterruptedException {
+	public static void main(String[] args) throws InvalidThresholdException, IOException,
+		NodeInitException, InterruptedException {
 		Node node = null;
 		Node secondNode = null;
 		try {
 			String ipOverride = null;
-			if(args.length > 0)
+			if(args.length > 0) {
 				ipOverride = args[0];
+			}
 			File dir = new File("bootstrap-push-pull-test");
 			FileUtil.removeAll(dir);
-			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.NORMAL, ""/*"freenet.node:MINOR,freenet.client:MINOR"*/, false);
+			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.NORMAL,
+								  ""/*"freenet.node:MINOR,freenet.client:MINOR"*/, false);
 			File seednodes = new File("seednodes.fref");
 			if(!seednodes.exists() || seednodes.length() == 0 || !seednodes.canRead()) {
 				System.err.println("Unable to read seednodes.fref, it doesn't exist, or is empty");
@@ -61,7 +64,9 @@ public class BootstrapPushPullTest {
 			fis.close();
 			// Create one node
 			Executor executor = new PooledExecutor();
-			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true, true, 12*1024, false, true, false, false, ipOverride);
+			node = NodeStarter.createTestNode(DARKNET_PORT1, OPENNET_PORT1, dir.getPath(), false,
+											  Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true,
+											  true, 12*1024, false, true, false, false, ipOverride);
 			//NodeCrypto.DISABLE_GROUP_STRIP = true;
 			//Logger.setupStdoutLogging(LogLevel.MINOR, "freenet:NORMAL,freenet.node.NodeDispatcher:MINOR,freenet.node.FNPPacketMangler:MINOR");
 			Logger.getChain().setThreshold(LogLevel.ERROR); // kill logging
@@ -99,7 +104,8 @@ public class BootstrapPushPullTest {
 				return;
 			}
 			long endInsertTime = System.currentTimeMillis();
-			System.err.println("RESULT: Insert took "+(endInsertTime-startInsertTime)+"ms ("+TimeUtil.formatTime(endInsertTime-startInsertTime)+") to "+uri+" .");
+			System.err.println("RESULT: Insert took "+(endInsertTime-startInsertTime)+"ms ("
+							   +TimeUtil.formatTime(endInsertTime-startInsertTime)+") to "+uri+" .");
 			node.park();
 
 			// Bootstrap a second node.
@@ -109,7 +115,9 @@ public class BootstrapPushPullTest {
 			FileUtil.writeTo(fis, new File(secondInnerDir, "seednodes.fref"));
 			fis.close();
 			executor = new PooledExecutor();
-			secondNode = NodeStarter.createTestNode(DARKNET_PORT2, OPENNET_PORT2, dir.getPath(), false, Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true, true, 12*1024, false, true, false, false, ipOverride);
+			secondNode = NodeStarter.createTestNode(DARKNET_PORT2, OPENNET_PORT2, dir.getPath(), false,
+													Node.DEFAULT_MAX_HTL, 0, random, executor, 1000, 5*1024*1024, true, true, true, true, true, true,
+													true, 12*1024, false, true, false, false, ipOverride);
 			secondNode.start(true);
 			if (!TestUtil.waitForNodes(secondNode)) {
 				secondNode.park();
@@ -128,19 +136,22 @@ public class BootstrapPushPullTest {
 				return;
 			}
 			long endFetchTime = System.currentTimeMillis();
-			System.err.println("RESULT: Fetch took "+(endFetchTime-startFetchTime)+"ms ("+TimeUtil.formatTime(endFetchTime-startFetchTime)+") of "+uri+" .");
+			System.err.println("RESULT: Fetch took "+(endFetchTime-startFetchTime)+"ms ("+TimeUtil.formatTime(
+								   endFetchTime-startFetchTime)+") of "+uri+" .");
 			secondNode.park();
 			System.exit(0);
 		} catch (Throwable t) {
 			System.err.println("CAUGHT: "+t);
 			t.printStackTrace();
 			try {
-				if(node != null)
+				if(node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {}
 			try {
-				if(secondNode != null)
+				if(secondNode != null) {
 					secondNode.park();
+				}
 			} catch (Throwable t1) {}
 
 			System.exit(EXIT_THREW_SOMETHING);

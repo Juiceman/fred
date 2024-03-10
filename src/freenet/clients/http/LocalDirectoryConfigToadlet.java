@@ -10,7 +10,8 @@ import freenet.support.HTMLNode;
 
 public class LocalDirectoryConfigToadlet extends LocalDirectoryToadlet {
 
-	public LocalDirectoryConfigToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient,
+	public LocalDirectoryConfigToadlet (NodeClientCore core,
+										HighLevelSimpleClient highLevelSimpleClient,
 										String postTo) {
 		super(core, highLevelSimpleClient, postTo);
 	}

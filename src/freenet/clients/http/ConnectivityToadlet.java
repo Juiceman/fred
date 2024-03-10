@@ -49,16 +49,19 @@ public class ConnectivityToadlet extends Toadlet {
 		this.node = node;
 	}
 
-	public void handleMethodGET(URI uri, final HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodGET(URI uri, final HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		PageMaker pageMaker = ctx.getPageMaker();
 
-		PageNode page = pageMaker.getPageNode(NodeL10n.getBase().getString("ConnectivityToadlet.title"), ctx);
+		PageNode page = pageMaker.getPageNode(NodeL10n.getBase().getString("ConnectivityToadlet.title"),
+											  ctx);
 		HTMLNode pageNode = page.outer;
 		HTMLNode contentNode = page.content;
 
 		/* add alert summary box */
-		if(ctx.isAllowedFullAccess())
+		if(ctx.isAllowedFullAccess()) {
 			contentNode.addChild(ctx.getAlertManager().createSummary());
+		}
 
 		// our ports
 		HTMLNode portInfobox = contentNode.addChild("div", "class", "infobox infobox-normal");
@@ -68,23 +71,28 @@ public class ConnectivityToadlet extends Toadlet {
 		SimpleFieldSet fproxyConfig = node.config.get("fproxy").exportFieldSet(true);
 		SimpleFieldSet fcpConfig = node.config.get("fcp").exportFieldSet(true);
 		SimpleFieldSet tmciConfig = node.config.get("console").exportFieldSet(true);
-		portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.darknetFnpPort", new String[] { "port" }, new String[] { Integer.toString(node.getFNPPort()) }));
+		portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.darknetFnpPort",
+							  new String[] { "port" }, new String[] { Integer.toString(node.getFNPPort()) }));
 		int opennetPort = node.getOpennetFNPPort();
 		if(opennetPort > 0)
-			portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.opennetFnpPort", new String[] { "port" }, new String[] { Integer.toString(opennetPort) }));
+			portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.opennetFnpPort",
+								  new String[] { "port" }, new String[] { Integer.toString(opennetPort) }));
 		try {
 			if(fproxyConfig.getBoolean("enabled", false)) {
-				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.fproxyPort", new String[] { "port" }, new String[] { Integer.toString(fproxyConfig.getInt("port")) }));
+				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.fproxyPort",
+									  new String[] { "port" }, new String[] { Integer.toString(fproxyConfig.getInt("port")) }));
 			} else {
 				portInfoList.addChild("li", l10nConn("fproxyDisabled"));
 			}
 			if(fcpConfig.getBoolean("enabled", false)) {
-				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.fcpPort", new String[] { "port" }, new String[] { Integer.toString(fcpConfig.getInt("port")) }));
+				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.fcpPort",
+									  new String[] { "port" }, new String[] { Integer.toString(fcpConfig.getInt("port")) }));
 			} else {
 				portInfoList.addChild("li", l10nConn("fcpDisabled"));
 			}
 			if(tmciConfig.getBoolean("enabled", false)) {
-				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.tmciPort", new String[] { "port" }, new String[] { Integer.toString(tmciConfig.getInt("port")) }));
+				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.tmciPort",
+									  new String[] { "port" }, new String[] { Integer.toString(tmciConfig.getInt("port")) }));
 			} else {
 				portInfoList.addChild("li", l10nConn("tmciDisabled"));
 			}
@@ -98,7 +106,9 @@ public class ConnectivityToadlet extends Toadlet {
 
 		UdpSocketHandler[] handlers = node.getPacketSocketHandlers();
 
-		HTMLNode summaryContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.summaryTitle"), contentNode, "connectivity-summary", true);
+		HTMLNode summaryContent = pageMaker.getInfobox("#",
+								  NodeL10n.getBase().getString("ConnectivityToadlet.summaryTitle"), contentNode,
+								  "connectivity-summary", true);
 
 		HTMLNode table = summaryContent.addChild("table", "border", "0");
 
@@ -121,7 +131,10 @@ public class ConnectivityToadlet extends Toadlet {
 			for(UdpSocketHandler handler: handlers) {
 				// Peers
 				AddressTracker tracker = handler.getAddressTracker();
-				HTMLNode portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byPortTitle", new String[] { "port", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-port", false);
+				HTMLNode portsContent = pageMaker.getInfobox("#",
+										NodeL10n.getBase().getString("ConnectivityToadlet.byPortTitle", new String[] { "port", "status", "tunnelLength" },
+												new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }),
+										contentNode, "connectivity-port", false);
 				PeerAddressTrackerItem[] items = tracker.getPeerAddressTrackerItems();
 				table = portsContent.addChild("table");
 				HTMLNode row = table.addChild("tr");
@@ -149,12 +162,16 @@ public class ConnectivityToadlet extends Toadlet {
 					Gap[] gaps = item.getGaps();
 					for(int k=0; k<AddressTrackerItem.TRACK_GAPS; k++) {
 						row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" :
-									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
+									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)
+									  +" ago" /* fixme l10n */));
 					}
 				}
 
 				// IPs
-				portsContent = pageMaker.getInfobox("#", NodeL10n.getBase().getString("ConnectivityToadlet.byIPTitle", new String[] { "ip", "status", "tunnelLength" }, new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }), contentNode, "connectivity-ip", false);
+				portsContent = pageMaker.getInfobox("#",
+													NodeL10n.getBase().getString("ConnectivityToadlet.byIPTitle", new String[] { "ip", "status", "tunnelLength" },
+															new String[] { handler.getTitle(), AddressTracker.statusString(tracker.getPortForwardStatus()), TimeUtil.formatTime(tracker.getLongestSendReceiveGap()) }),
+													contentNode, "connectivity-ip", false);
 				InetAddressAddressTrackerItem[] ipItems = tracker.getInetAddressTrackerItems();
 				table = portsContent.addChild("table");
 				row = table.addChild("tr");
@@ -182,7 +199,8 @@ public class ConnectivityToadlet extends Toadlet {
 					Gap[] gaps = item.getGaps();
 					for(int k=0; k<AddressTrackerItem.TRACK_GAPS; k++) {
 						row.addChild("td", gaps[k].receivedPacketAt == 0 ? "" :
-									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)+" ago" /* fixme l10n */));
+									 (TimeUtil.formatTime(gaps[k].gapLength)+" @ "+TimeUtil.formatTime(now - gaps[k].receivedPacketAt)
+									  +" ago" /* fixme l10n */));
 					}
 				}
 

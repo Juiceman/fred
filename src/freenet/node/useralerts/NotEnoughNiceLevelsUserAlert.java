@@ -16,7 +16,8 @@ import freenet.support.io.NativeThread;
  */
 public class NotEnoughNiceLevelsUserAlert extends AbstractUserAlert {
 	public NotEnoughNiceLevelsUserAlert() {
-		super(true, null, null, null, null, UserAlert.WARNING, true, NodeL10n.getBase().getString("UserAlert.hide"), true, null);
+		super(true, null, null, null, null, UserAlert.WARNING, true,
+			  NodeL10n.getBase().getString("UserAlert.hide"), true, null);
 	}
 
 	@Override

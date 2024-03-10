@@ -37,7 +37,8 @@ public class ModifyConfig extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
 		if(!handler.hasFullAccess()) {
-			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "ModifyConfig requires full access", identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED,
+											  "ModifyConfig requires full access", identifier, false);
 		}
 		Config config = node.config;
 
@@ -47,13 +48,17 @@ public class ModifyConfig extends FCPMessage {
 			String prefix = sc.getPrefix();
 			for(Option<?> o: sc.getOptions()) {
 				String configName=o.getName();
-				if(logMINOR) Logger.minor(this, "Setting "+prefix+ '.' +configName);
+				if(logMINOR) {
+					Logger.minor(this, "Setting "+prefix+ '.' +configName);
+				}
 
 				// we ignore unreconized parameters
 				String s = fs.get(prefix+ '.' +configName);
 				if(s != null) {
 					if(!(o.getValueString().equals(s))) {
-						if(logMINOR) Logger.minor(this, "Setting "+prefix+ '.' +configName+" to "+s);
+						if(logMINOR) {
+							Logger.minor(this, "Setting "+prefix+ '.' +configName+" to "+s);
+						}
 						try {
 							o.setValue(s);
 						} catch(Exception e) {
@@ -65,7 +70,8 @@ public class ModifyConfig extends FCPMessage {
 			}
 		}
 		node.clientCore.storeConfig();
-		handler.send(new ConfigData(node, true, false, false, false, false, false, false, false, identifier));
+		handler.send(new ConfigData(node, true, false, false, false, false, false, false, false,
+									identifier));
 	}
 
 }

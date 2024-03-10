@@ -48,9 +48,12 @@ public class PersistentPutDir extends FCPMessage {
 	final byte[] splitfileCryptoKey;
 	final InsertContext.CompatibilityMode compatMode;
 
-	public PersistentPutDir(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity, short priorityClass,
-							Persistence persistence, boolean global, String defaultName, HashMap<String, Object> manifestElements,
-							String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor, boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
+	public PersistentPutDir(String identifier, FreenetURI publicURI, FreenetURI privateURI,
+							int verbosity, short priorityClass,
+							Persistence persistence, boolean global, String defaultName,
+							HashMap<String, Object> manifestElements,
+							String token, boolean started, int maxRetries, boolean dontCompress, String compressorDescriptor,
+							boolean wasDiskPut, boolean realTime, byte[] splitfileCryptoKey,
 							InsertContext.CompatibilityMode cmode) {
 		this.identifier = identifier;
 		this.uri = publicURI;
@@ -77,8 +80,9 @@ public class PersistentPutDir extends FCPMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(false); // false because this can get HUGE
 		fs.putSingle("Identifier", identifier);
 		fs.putSingle("URI", uri.toString(false, false));
-		if(privateURI != null)
+		if(privateURI != null) {
 			fs.putSingle("PrivateURI", privateURI.toString(false, false));
+		}
 		fs.put("Verbosity", verbosity);
 		fs.putSingle("Persistence", persistence.toString().toLowerCase());
 		fs.put("PriorityClass", priorityClass);
@@ -113,16 +117,20 @@ public class PersistentPutDir extends FCPMessage {
 					data = ((DelayedFreeRandomAccessBucket)data).getUnderlying();
 				}
 				subset.put("DataLength", e.getSize());
-				if(mimeOverride != null)
+				if(mimeOverride != null) {
 					subset.putSingle("Metadata.ContentType", mimeOverride);
+				}
 				// What to do with the bucket?
 				// It is either a persistent encrypted bucket or a file bucket ...
 				if(data == null) {
-					Logger.error(this, "Bucket already freed: "+e.getData()+" for "+e+" for "+e.getName()+" for "+identifier);
+					Logger.error(this, "Bucket already freed: "+e.getData()+" for "+e+" for "+e.getName()+" for "
+								 +identifier);
 				} else if(data instanceof FileBucket) {
 					subset.putSingle("UploadFrom", "disk");
 					subset.putSingle("Filename", ((FileBucket)data).getFile().getPath());
-				} else if (data instanceof PaddedEphemerallyEncryptedBucket || data instanceof NullBucket || data instanceof PersistentTempFileBucket || data instanceof TempBucketFactory.TempBucket || data instanceof EncryptedRandomAccessBucket) {
+				} else if (data instanceof PaddedEphemerallyEncryptedBucket || data instanceof NullBucket
+						   || data instanceof PersistentTempFileBucket || data instanceof TempBucketFactory.TempBucket
+						   || data instanceof EncryptedRandomAccessBucket) {
 					subset.putSingle("UploadFrom", "direct");
 				} else {
 					throw new IllegalStateException("Don't know what to do with bucket: "+data);
@@ -132,16 +140,19 @@ public class PersistentPutDir extends FCPMessage {
 		}
 		files.put("Count", elements.length);
 		fs.put("Files", files);
-		if(token != null)
+		if(token != null) {
 			fs.putSingle("ClientToken", token);
+		}
 		fs.put("Started", started);
 		fs.put("MaxRetries", maxRetries);
 		fs.put("DontCompress", dontCompress);
-		if(compressorDescriptor != null)
+		if(compressorDescriptor != null) {
 			fs.putSingle("Codecs", compressorDescriptor);
+		}
 		fs.put("RealTime", realTime);
-		if(splitfileCryptoKey != null)
+		if(splitfileCryptoKey != null) {
 			fs.putSingle("SplitfileCryptoKey", HexUtil.bytesToHex(splitfileCryptoKey));
+		}
 		return fs;
 	}
 
@@ -158,7 +169,8 @@ public class PersistentPutDir extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "PersistentPut goes from server to client not the other way around", identifier, global);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "PersistentPut goes from server to client not the other way around", identifier, global);
 	}
 
 }

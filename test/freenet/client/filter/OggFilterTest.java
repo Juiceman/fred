@@ -50,10 +50,12 @@ public class OggFilterTest {
 	public void testFilterFfmpegEncodedVideoSegment() throws IOException {
 		ByteArrayOutputStream expectedData = new ByteArrayOutputStream();
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try (DataInputStream input = resourceToDataInputStream("./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--filtered.ogv")) {
+		try (DataInputStream input =
+						resourceToDataInputStream("./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--filtered.ogv")) {
 			IOUtils.copy(input, expectedData);
 		}
-		try (DataInputStream input = resourceToDataInputStream("./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--orig.ogv")) {
+		try (DataInputStream input =
+						resourceToDataInputStream("./ogg/36C3_-_opening--cc-by--c3voc--fem-ags-opensuse--ccc--orig.ogv")) {
 			filter.readFilter(input, output, null, null, null, null);
 			writeToTestOutputFile(output);
 		}

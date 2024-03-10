@@ -69,12 +69,14 @@ public abstract class UploadRequestStatus extends RequestStatus {
 	public String getPreferredFilename() {
 		FreenetURI uri = getFinalURI();
 		if(uri != null &&
-				(uri.hasMetaStrings() || uri.getDocName() != null))
+				(uri.hasMetaStrings() || uri.getDocName() != null)) {
 			return uri.getPreferredFilename();
+		}
 		uri = getTargetURI();
 		if(uri != null &&
-				(uri.hasMetaStrings() || uri.getDocName() != null))
+				(uri.hasMetaStrings() || uri.getDocName() != null)) {
 			return uri.getPreferredFilename();
+		}
 		return null;
 	}
 

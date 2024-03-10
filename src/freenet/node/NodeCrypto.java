@@ -82,7 +82,8 @@ public class NodeCrypto {
 	 * Get port number from a config, create socket and packet mangler
 	 * @throws NodeInitException
 	 */
-	public NodeCrypto(final Node node, final boolean isOpennet, NodeCryptoConfig config, long startupTime, boolean enableARKs) throws NodeInitException {
+	public NodeCrypto(final Node node, final boolean isOpennet, NodeCryptoConfig config,
+					  long startupTime, boolean enableARKs) throws NodeInitException {
 
 		this.node = node;
 		this.config = config;
@@ -100,13 +101,15 @@ public class NodeCrypto {
 			UdpSocketHandler u = null;
 
 			if(port > 65535) {
-				throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Impossible port number: "+port);
+				throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT,
+											"Impossible port number: "+port);
 			} else if(port == -1) {
 				// Pick a random port
 				for(int i=0; i<200000; i++) {
 					int portNo = 1024 + random.nextInt(65535-1024);
 					try {
-						u = new UdpSocketHandler(portNo, bindto.getAddress(), node, startupTime, getTitle(portNo), node.collector);
+						u = new UdpSocketHandler(portNo, bindto.getAddress(), node, startupTime, getTitle(portNo),
+												 node.collector);
 						port = u.getPortNumber();
 						break;
 					} catch (Exception e) {
@@ -116,16 +119,20 @@ public class NodeCrypto {
 						continue;
 					}
 				}
-				if(u == null)
-					throw new NodeInitException(NodeInitException.EXIT_NO_AVAILABLE_UDP_PORTS, "Could not find an available UDP port number for FNP (none specified)");
+				if(u == null) {
+					throw new NodeInitException(NodeInitException.EXIT_NO_AVAILABLE_UDP_PORTS,
+												"Could not find an available UDP port number for FNP (none specified)");
+				}
 			} else {
 				try {
-					u = new UdpSocketHandler(port, bindto.getAddress(), node, startupTime, getTitle(port), node.collector);
+					u = new UdpSocketHandler(port, bindto.getAddress(), node, startupTime, getTitle(port),
+											 node.collector);
 				} catch (Exception e) {
 					Logger.error(this, "Caught "+e, e);
 					System.err.println(e);
 					e.printStackTrace();
-					throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT, "Could not bind to port: "+port+" (node already running?)");
+					throw new NodeInitException(NodeInitException.EXIT_IMPOSSIBLE_USM_PORT,
+												"Could not bind to port: "+port+" (node already running?)");
 				}
 			}
 			socket = u;
@@ -172,8 +179,9 @@ public class NodeCrypto {
 	 */
 	public void readCrypto(SimpleFieldSet fs) throws IOException {
 		String identity = fs.get("identity");
-		if(identity == null)
+		if(identity == null) {
 			throw new IOException();
+		}
 		try {
 			myIdentity = Base64.decode(identity);
 		} catch (IllegalBase64Exception e2) {
@@ -185,8 +193,9 @@ public class NodeCrypto {
 
 		try {
 			SimpleFieldSet ecdsaSFS = fs.subset("ecdsa");
-			if(ecdsaSFS != null)
+			if(ecdsaSFS != null) {
 				ecdsaP256 = new ECDSA(ecdsaSFS.subset(ECDSA.Curves.P256.name()), Curves.P256);
+			}
 		} catch (FSParseException e) {
 			Logger.error(this, "Caught "+e, e);
 			throw new IOException(e.toString());
@@ -300,8 +309,9 @@ public class NodeCrypto {
 			// IP addresses
 			Peer[] ips = detector.detectPrimaryPeers();
 			if(ips != null) {
-				for(Peer ip: ips)
-					fs.putAppend("physical.udp", ip.toString()); // Keep; important that node know all our IPs
+				for(Peer ip: ips) {
+					fs.putAppend("physical.udp", ip.toString());    // Keep; important that node know all our IPs
+				}
 			}
 		} // Don't include IPs for anonymous initiator.
 		// Negotiation types
@@ -310,21 +320,25 @@ public class NodeCrypto {
 			// This is necessary so we can take the location into account in OpennetManager.wantPeer().
 			fs.put("location", node.lm.getLocation());
 		}
-		fs.putSingle("version", Version.getVersionString()); // Keep, vital that peer know our version. For example, some types may be sent in different formats to different node versions (e.g. Peer).
-		if(!forAnonInitiator)
-			fs.putSingle("lastGoodVersion", Version.getLastGoodVersionString()); // Also vital
+		fs.putSingle("version",
+					 Version.getVersionString()); // Keep, vital that peer know our version. For example, some types may be sent in different formats to different node versions (e.g. Peer).
+		if(!forAnonInitiator) {
+			fs.putSingle("lastGoodVersion", Version.getLastGoodVersionString());    // Also vital
+		}
 		if(Node.isTestnetEnabled()) {
 			fs.put("testnet", true);
 			//fs.put("testnetPort", node.testnetHandler.getPort()); // Useful, saves a lot of complexity
 		}
-		if((!isOpennet) && (!forSetup) && (!forARK))
+		if((!isOpennet) && (!forSetup) && (!forARK)) {
 			fs.putSingle("myName", node.getMyName());
+		}
 
 		if(!forAnonInitiator) {
 			// Anonymous initiator setup type specifies whether the node is opennet or not.
 			fs.put("opennet", isOpennet);
 			synchronized (referenceSync) {
-				if(myReferenceECDSASignature == null || mySignedReference == null || !mySignedReference.equals(fs.toOrderedString())) {
+				if(myReferenceECDSASignature == null || mySignedReference == null
+						|| !mySignedReference.equals(fs.toOrderedString())) {
 					mySignedReference = fs.toOrderedString();
 					try {
 						myReferenceECDSASignature = ecdsaSignRef(mySignedReference);
@@ -339,7 +353,9 @@ public class NodeCrypto {
 			}
 		}
 
-		if(logMINOR) Logger.minor(this, "My reference: "+fs.toOrderedString());
+		if(logMINOR) {
+			Logger.minor(this, "My reference: "+fs.toOrderedString());
+		}
 		return fs;
 	}
 
@@ -363,14 +379,17 @@ public class NodeCrypto {
 	}
 
 	private String ecdsaSignRef(String mySignedReference) throws NodeInitException {
-		if(logMINOR) Logger.minor(this, "Signing reference:\n"+mySignedReference);
+		if(logMINOR) {
+			Logger.minor(this, "Signing reference:\n"+mySignedReference);
+		}
 
 		byte[] ref = mySignedReference.getBytes(StandardCharsets.UTF_8);
 
 		// We don't need a padded signature here
 		byte[] sig = ecdsaP256.sign(ref);
-		if(logMINOR && !ECDSA.verify(Curves.P256, getECDSAP256Pubkey(), sig, ref))
+		if(logMINOR && !ECDSA.verify(Curves.P256, getECDSAP256Pubkey(), sig, ref)) {
 			throw new NodeInitException(NodeInitException.EXIT_EXCEPTION_TO_DEBUG, mySignedReference);
+		}
 		return Base64.encode(sig);
 	}
 
@@ -390,14 +409,16 @@ public class NodeCrypto {
 		}
 
 		byte[] buf = baos.toByteArray();
-		if(buf.length >= 4096)
+		if(buf.length >= 4096) {
 			throw new IllegalStateException("We are attempting to send a "+buf.length+" bytes big reference!");
+		}
 		byte[] obuf = new byte[buf.length + 1];
 		int offset = 0;
 		obuf[offset++] = 0x01; // compressed noderef
 		System.arraycopy(buf, 0, obuf, offset, buf.length);
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "myCompressedRef("+setup+","+heavySetup+") returning "+obuf.length+" bytes");
+		}
 		return obuf;
 	}
 
@@ -447,7 +468,9 @@ public class NodeCrypto {
 
 	public void onSetDropProbability(int val) {
 		synchronized(this) {
-			if(socket == null) return;
+			if(socket == null) {
+				return;
+			}
 		}
 		socket.setDropProbability(val);
 	}
@@ -458,11 +481,14 @@ public class NodeCrypto {
 	}
 
 	public PeerNode[] getPeerNodes() {
-		if(node.peers == null) return null;
-		if(isOpennet)
+		if(node.peers == null) {
+			return null;
+		}
+		if(isOpennet) {
 			return node.peers.getOpennetAndSeedServerPeers();
-		else
+		} else {
 			return node.peers.getDarknetPeers();
+		}
 	}
 
 	public boolean allowConnection(PeerNode pn, FreenetInetAddress addr) {
@@ -472,7 +498,8 @@ public class NodeCrypto {
 			// check for "same /64 subnet" [configurable] instead of exact match
 			if(node.peers.anyConnectedPeerHasAddress(addr, pn) && !detector.includes(addr)
 					&& addr.isRealInternetAddress(false, false, false)) {
-				Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn+" : Same IP address as another node");
+				Logger.normal(this, "Not sending handshake packets to "+addr+" for "+pn
+							  +" : Same IP address as another node");
 				return false;
 			}
 		}
@@ -486,13 +513,23 @@ public class NodeCrypto {
 	 */
 	public void maybeBootConnection(PeerNode peerNode,
 									FreenetInetAddress address) {
-		if(detector.includes(address)) return;
-		if(!address.isRealInternetAddress(false, false, false)) return;
+		if(detector.includes(address)) {
+			return;
+		}
+		if(!address.isRealInternetAddress(false, false, false)) {
+			return;
+		}
 		ArrayList<PeerNode> possibleMatches = node.peers.getAllConnectedByAddress(address, true);
-		if(possibleMatches == null) return;
+		if(possibleMatches == null) {
+			return;
+		}
 		for(PeerNode pn : possibleMatches) {
-			if(pn == peerNode) continue;
-			if(pn.equals(peerNode)) continue;
+			if(pn == peerNode) {
+				continue;
+			}
+			if(pn.equals(peerNode)) {
+				continue;
+			}
 			if(pn.crypto.config.oneConnectionPerAddress()) {
 				if(pn instanceof DarknetPeerNode) {
 					if(!(peerNode instanceof DarknetPeerNode)) {
@@ -502,8 +539,11 @@ public class NodeCrypto {
 						// FIXME likewise, FOAFs should not boot darknet connections.
 						continue;
 					}
-					Logger.error(this, "Dropping peer "+pn+" because don't want connection due to others on the same IP address!");
-					System.out.println("Disconnecting permanently from your friend \""+((DarknetPeerNode)pn).getName()+"\" because your friend \""+((DarknetPeerNode)peerNode).getName()+"\" is using the same IP address "+address+"!");
+					Logger.error(this, "Dropping peer "+pn
+								 +" because don't want connection due to others on the same IP address!");
+					System.out.println("Disconnecting permanently from your friend \""+((DarknetPeerNode)pn).getName()
+									   +"\" because your friend \""+((DarknetPeerNode)peerNode).getName()
+									   +"\" is using the same IP address "+address+"!");
 				}
 				node.peers.disconnectAndRemove(pn, true, true, pn.isOpennet());
 			}
@@ -520,8 +560,9 @@ public class NodeCrypto {
 	public PeerNode[] getAnonSetupPeerNodes() {
 		ArrayList<PeerNode> v = new ArrayList<PeerNode>();
 		for(PeerNode pn: node.peers.myPeers()) {
-			if(pn.handshakeUnknownInitiator() && pn.getOutgoingMangler() == packetMangler)
+			if(pn.handshakeUnknownInitiator() && pn.getOutgoingMangler() == packetMangler) {
 				v.add(pn);
+			}
 		}
 		return v.toArray(new PeerNode[v.size()]);
 	}

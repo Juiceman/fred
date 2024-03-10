@@ -38,19 +38,26 @@ public class ModifyPersistentRequest extends FCPMessage {
 		this.global = fs.getBoolean("Global", false);
 		this.identifier = fs.get("Identifier");
 		this.clientToken = fs.get("ClientToken");
-		if(identifier == null)
-			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field: Identifier", null, global);
+		if(identifier == null) {
+			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field: Identifier",
+											  null, global);
+		}
 		String prio = fs.get("PriorityClass");
 		if(prio != null) {
 			try {
 				priorityClass = Short.parseShort(prio);
-				if(!RequestStarter.isValidPriorityClass(priorityClass))
-					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid priority class "+priorityClass+" - range is "+RequestStarter.PAUSED_PRIORITY_CLASS+" to "+RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				if(!RequestStarter.isValidPriorityClass(priorityClass)) {
+					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD,
+													  "Invalid priority class "+priorityClass+" - range is "+RequestStarter.PAUSED_PRIORITY_CLASS+" to "
+													  +RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				}
 			} catch (NumberFormatException e) {
-				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Could not parse PriorityClass: "+e.getMessage(), identifier, global);
+				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER,
+												  "Could not parse PriorityClass: "+e.getMessage(), identifier, global);
 			}
-		} else
+		} else {
 			priorityClass = -1;
+		}
 	}
 
 	@Override
@@ -59,8 +66,9 @@ public class ModifyPersistentRequest extends FCPMessage {
 		fs.putSingle("Identifier", identifier);
 		fs.put("Global", global);
 		fs.put("PriorityClass", priorityClass);
-		if(clientToken != null)
+		if(clientToken != null) {
 			fs.putSingle("ClientToken", clientToken);
+		}
 		return fs;
 	}
 
@@ -83,7 +91,8 @@ public class ModifyPersistentRequest extends FCPMessage {
 						ClientRequest req = handler.getForeverRequest(global, handler, identifier);
 						if(req==null) {
 							Logger.error(this, "Huh ? the request is null!");
-							ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+							ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false,
+									null, identifier, global);
 							handler.send(msg);
 							return false;
 						} else {
@@ -94,7 +103,8 @@ public class ModifyPersistentRequest extends FCPMessage {
 
 				}, NativeThread.NORM_PRIORITY);
 			} catch (PersistenceDisabledException e) {
-				ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false, null, identifier, global);
+				ProtocolErrorMessage msg = new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, false,
+						null, identifier, global);
 				handler.send(msg);
 			}
 		} else {

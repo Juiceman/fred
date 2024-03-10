@@ -36,11 +36,13 @@ public class PacketThrottle {
 	}
 
 	protected static final double PACKET_DROP_DECREASE_MULTIPLE = 0.875;
-	protected static final double PACKET_TRANSMIT_INCREMENT = (4 * (1 - (PACKET_DROP_DECREASE_MULTIPLE * PACKET_DROP_DECREASE_MULTIPLE))) / 3;
+	protected static final double PACKET_TRANSMIT_INCREMENT = (4 * (1 - (PACKET_DROP_DECREASE_MULTIPLE *
+			PACKET_DROP_DECREASE_MULTIPLE))) / 3;
 	protected static final double SLOW_START_DIVISOR = 3.0;
 	protected static final long MAX_DELAY = 1000;
 	protected static final long MIN_DELAY = 1;
-	public static final String VERSION = "$Id: PacketThrottle.java,v 1.3 2005/08/25 17:28:19 amphibian Exp $";
+	public static final String VERSION =
+		"$Id: PacketThrottle.java,v 1.3 2005/08/25 17:28:19 amphibian Exp $";
 	public static final long DEFAULT_DELAY = 200;
 	private long _roundTripTime = 500, _totalPackets, _droppedPackets;
 	/** The size of the window, in packets.
@@ -56,7 +58,9 @@ public class PacketThrottle {
 
 	public synchronized void setRoundTripTime(long rtt) {
 		_roundTripTime = Math.max(rtt, 10);
-		if(logMINOR) Logger.minor(this, "Set round trip time to "+rtt+" on "+this);
+		if(logMINOR) {
+			Logger.minor(this, "Set round trip time to "+rtt+" on "+this);
+		}
 	}
 
 	public synchronized void notifyOfPacketsLost(int numPackets) {
@@ -90,24 +94,33 @@ public class PacketThrottle {
 		int windowSize = (int)getWindowSize();
 
 		if(slowStart) {
-			if(logMINOR) Logger.minor(this, "Still in slow start");
+			if(logMINOR) {
+				Logger.minor(this, "Still in slow start");
+			}
 			_windowSize += _windowSize / SLOW_START_DIVISOR;
 			// Avoid craziness if there is lag in detecting packet loss.
-			if(_windowSize > maxWindowSize) slowStart = false;
+			if(_windowSize > maxWindowSize) {
+				slowStart = false;
+			}
 			// Window size must not drop below 1.0. Partly this is because we need to be able to send one packet, so it is a logical lower bound.
 			// But mostly it is because of the non-slow-start division by _windowSize!
-			if(_windowSize < 1.0F) _windowSize = 1.0F;
+			if(_windowSize < 1.0F) {
+				_windowSize = 1.0F;
+			}
 		} else {
 			_windowSize += (PACKET_TRANSMIT_INCREMENT / _windowSize);
 		}
 		// Ensure that we the window size does not grow dramatically larger than the largest window
 		// that has actually been in flight at one time.
-		if(_windowSize > maxWindowSize)
+		if(_windowSize > maxWindowSize) {
 			_windowSize = (float) maxWindowSize;
-		if(_windowSize > (windowSize + 1))
+		}
+		if(_windowSize > (windowSize + 1)) {
 			notifyAll();
-		if(logMINOR)
+		}
+		if(logMINOR) {
 			Logger.minor(this, "notifyOfPacketAcked(): "+this);
+		}
 	}
 
 	/** Only used for diagnostics. We actually maintain a real window size. So we don't
@@ -121,7 +134,8 @@ public class PacketThrottle {
 	public synchronized String toString() {
 		return Double.toString(getBandwidth()) + " k/sec, (w: "
 			   + _windowSize + ", r:" + _roundTripTime + ", d:"
-			   + (((float) _droppedPackets / (float) _totalPackets)) + ") total="+_totalPackets+" : "+super.toString();
+			   + (((float) _droppedPackets / (float) _totalPackets)) + ") total="+_totalPackets+" : "
+			   +super.toString();
 	}
 
 	public synchronized long getRoundTripTime() {

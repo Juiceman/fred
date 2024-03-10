@@ -220,11 +220,16 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 */
 	@Override
 	public InputStream getResourceAsStream(String name) {
-		if(logMINOR) Logger.minor(this, "Requested resource: " + name, new Exception("debug"));
+		if(logMINOR) {
+			Logger.minor(this, "Requested resource: " + name, new Exception("debug"));
+		}
 		URL url = getResource(name);
-		if (url == null)
+		if (url == null) {
 			return null;
-		if(logMINOR) Logger.minor(this, "Found resource at URL: " + url);
+		}
+		if(logMINOR) {
+			Logger.minor(this, "Found resource at URL: " + url);
+		}
 
 		// If the resource is not from our jar, return it as normal
 		URL localUrl = findResource(name);
@@ -273,7 +278,9 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 			if (pkg == null) {
 				try {
 					Manifest man = tempJarFile.getManifest();
-					if(man == null) throw new IOException();
+					if(man == null) {
+						throw new IOException();
+					}
 					pkg = definePackage(pkgname, man);
 				} catch (IOException e) {
 					pkg = definePackage(pkgname, null, null, null, null, null, null, null);
@@ -324,7 +331,8 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 				sealed = attr.getValue(Name.SEALED);
 			}
 		}
-		return definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, sealBase);
+		return definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor,
+							 sealBase);
 	}
 
 	@Override

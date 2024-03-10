@@ -106,11 +106,13 @@ public final class FCPPluginConnectionImplTest {
 		// Start them in a separate loop, not in the loop where we construct them, to ensure that
 		// they are all started at the same time, execute in parallel, and thus have maximal
 		// probability of race conditions.
-		for(int i=0; i < threadCount; ++i)
+		for(int i=0; i < threadCount; ++i) {
 			threads[i].start();
+		}
 
-		for(int i=0; i < threadCount; ++i)
+		for(int i=0; i < threadCount; ++i) {
 			threads[i].join();
+		}
 
 		assertEquals("JUnit failures cannot be passed out of threads, please check stdout/stderr.",
 					 false, failure.get());

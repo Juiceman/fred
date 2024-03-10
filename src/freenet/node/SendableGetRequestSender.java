@@ -31,17 +31,21 @@ public class SendableGetRequestSender implements SendableRequestSender {
 	 * @return True if a request was executed. False if caller should try to find another request, and remove
 	 * this one from the queue. */
 	@Override
-	public boolean send(NodeClientCore core, final RequestScheduler sched, final ClientContext context, final ChosenBlock req) {
+	public boolean send(NodeClientCore core, final RequestScheduler sched, final ClientContext context,
+						final ChosenBlock req) {
 		Object keyNum = req.token;
 		final ClientKey key = req.ckey;
 		if(key == null) {
 			Logger.error(SendableGet.class, "Key is null in send(): keyNum = "+keyNum+" for "+req);
 			return false;
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(SendableGet.class, "Sending get for key "+keyNum+" : "+key);
+		}
 		if(req.isCancelled()) {
-			if(logMINOR) Logger.minor(SendableGet.class, "Cancelled: "+req);
+			if(logMINOR) {
+				Logger.minor(SendableGet.class, "Cancelled: "+req);
+			}
 			req.onFailure(new LowLevelGetException(LowLevelGetException.CANCELLED), context);
 			return false;
 		}
@@ -60,7 +64,8 @@ public class SendableGetRequestSender implements SendableRequestSender {
 						req.onFailure(e, context);
 					}
 
-				}, !req.ignoreStore, req.canWriteClientCache, req.realTimeFlag, req.localRequestOnly, req.ignoreStore);
+				}, !req.ignoreStore, req.canWriteClientCache, req.realTimeFlag, req.localRequestOnly,
+				req.ignoreStore);
 			} catch (Throwable t) {
 				Logger.error(this, "Caught "+t, t);
 				req.onFailure(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR), context);

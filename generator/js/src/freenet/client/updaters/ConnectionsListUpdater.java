@@ -21,7 +21,8 @@ public class ConnectionsListUpdater extends ReplacerUpdater {
 				RootPanel htmlTitlePanel=RootPanel.get("topbar");
 				if(htmlTitlePanel!=null) {
 					if(htmlTitlePanel.getElement().getElementsByTagName("h1").getLength()==1) {
-						htmlTitlePanel.getElement().getElementsByTagName("h1").getItem(0).setInnerHTML(e.getAttribute("value"));
+						htmlTitlePanel.getElement().getElementsByTagName("h1").getItem(0).setInnerHTML(
+							e.getAttribute("value"));
 					}
 				}
 			}

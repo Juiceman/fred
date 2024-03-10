@@ -65,8 +65,9 @@ public class LRUMap<K, V> {
 	 *       a duplicate entry in the queue.
 	 */
 	public final synchronized V push(K key, V value) {
-		if(key == null)
+		if(key == null) {
 			throw new NullPointerException();
+		}
 		V old = null;
 		QItem<K,V> insert = hash.get(key);
 		if (insert == null) {
@@ -77,8 +78,9 @@ public class LRUMap<K, V> {
 			insert.value = value;
 			list.remove(insert);
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Pushed "+insert+" ( "+key+ ' ' +value+" )");
+		}
 
 		list.unshift(insert);
 		return old;
@@ -127,8 +129,9 @@ public class LRUMap<K, V> {
 	}
 
 	public final synchronized boolean removeKey(K key) {
-		if(key == null)
+		if(key == null) {
 			throw new NullPointerException();
+		}
 		QItem<K,V> i = (hash.remove(key));
 		if(i != null) {
 			list.remove(i);
@@ -144,8 +147,9 @@ public class LRUMap<K, V> {
 	 * @return true if this queue contains obj.
 	 */
 	public final synchronized boolean containsKey(K key) {
-		if(key == null)
+		if(key == null) {
 			throw new NullPointerException();
+		}
 		return hash.containsKey(key);
 	}
 
@@ -154,10 +158,13 @@ public class LRUMap<K, V> {
 	 * to do that by hand with push(key, value).
 	 */
 	public final synchronized V get(K key) {
-		if(key == null)
+		if(key == null) {
 			throw new NullPointerException();
+		}
 		QItem<K,V> q = hash.get(key);
-		if(q == null) return null;
+		if(q == null) {
+			return null;
+		}
 		return q.value;
 	}
 
@@ -233,8 +240,9 @@ public class LRUMap<K, V> {
 	public synchronized void valuesToArray(V[] entries) {
 		Enumeration<V> values = values();
 		int i=0;
-		while(values.hasMoreElements())
+		while(values.hasMoreElements()) {
 			entries[i++] = values.nextElement();
+		}
 	}
 
 	public synchronized void clear() {

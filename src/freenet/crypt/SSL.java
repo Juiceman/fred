@@ -109,7 +109,8 @@ public class SSL {
 			}
 		});
 
-		sslConfig.register("sslKeyStore", "datastore/certs", configItemOrder++, true, true, "SSL.keyStore", "SSL.keyStore",
+		sslConfig.register("sslKeyStore", "datastore/certs", configItemOrder++, true, true, "SSL.keyStore",
+						   "SSL.keyStore",
 		new StringCallback() {
 
 			@Override
@@ -133,7 +134,8 @@ public class SSL {
 			}
 		});
 
-		sslConfig.register("sslKeyStorePass", "freenet", configItemOrder++, true, true, "SSL.keyStorePass", "SSL.keyStorePass",
+		sslConfig.register("sslKeyStorePass", "freenet", configItemOrder++, true, true, "SSL.keyStorePass",
+						   "SSL.keyStorePass",
 		new StringCallback() {
 
 			@Override
@@ -157,7 +159,8 @@ public class SSL {
 			}
 		});
 
-		sslConfig.register("sslKeyPass", "freenet", configItemOrder++, true, true, "SSL.keyPass", "SSL.keyPass",
+		sslConfig.register("sslKeyPass", "freenet", configItemOrder++, true, true, "SSL.keyPass",
+						   "SSL.keyPass",
 		new StringCallback() {
 
 			@Override
@@ -206,12 +209,15 @@ public class SSL {
 	 * @throws IOException
 	 */
 	public static ServerSocket createServerSocket() throws IOException {
-		if(ssf == null)
+		if(ssf == null) {
 			throw new IOException("SSL not initialized");
+		}
 		return ssf.createServerSocket();
 	}
 
-	private static void loadKeyStore() throws NoSuchAlgorithmException, CertificateException, IOException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
+	private static void loadKeyStore() throws NoSuchAlgorithmException, CertificateException,
+				IOException, IllegalArgumentException, InstantiationException, IllegalAccessException,
+		InvocationTargetException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
 		if(enable) {
 			// A keystore is where keys and certificates are kept
 			// Both the keystore and individual private keys should be password protected
@@ -227,13 +233,15 @@ public class SSL {
 													  "sun.security.x509.CertAndKeyGen", // Java 7 and earlier
 													  "sun.security.tools.keytool.CertAndKeyGen" // Java 8 and later
 												  );
-					Constructor<?> certAndKeyGenCtor = certAndKeyGenClazz.getConstructor(String.class, String.class, String.class);
+					Constructor<?> certAndKeyGenCtor = certAndKeyGenClazz.getConstructor(String.class, String.class,
+													   String.class);
 					Object keypair = certAndKeyGenCtor.newInstance(KEY_ALGORITHM, SIG_ALGORITHM, "BC");
 
 					Class<?> x500NameClazz = Class.forName("sun.security.x509.X500Name");
 					Constructor<?> x500NameCtor = x500NameClazz.getConstructor(String.class, String.class,
 												  String.class, String.class, String.class, String.class);
-					Object x500Name = x500NameCtor.newInstance(CERTIFICATE_CN, CERTIFICATE_OU, CERTIFICATE_ON, "", "", "");
+					Object x500Name = x500NameCtor.newInstance(CERTIFICATE_CN, CERTIFICATE_OU, CERTIFICATE_ON, "", "",
+									  "");
 
 					Method certAndKeyGenGenerate = certAndKeyGenClazz.getMethod("generate", int.class);
 					certAndKeyGenGenerate.invoke(keypair, KEY_SIZE);
@@ -251,9 +259,11 @@ public class SSL {
 					storeKeyStore();
 					createSSLContext();
 				} catch (ClassNotFoundException cnfe) {
-					throw new UnsupportedOperationException("The JVM you are using does not support generating strong SSL certificates", cnfe);
+					throw new UnsupportedOperationException("The JVM you are using does not support generating strong SSL certificates",
+															cnfe);
 				} catch (NoSuchMethodException nsme) {
-					throw new UnsupportedOperationException("The JVM you are using does not support generating strong SSL certificates", nsme);
+					throw new UnsupportedOperationException("The JVM you are using does not support generating strong SSL certificates",
+															nsme);
 				}
 			} finally {
 				Closer.close(fis);
@@ -261,7 +271,8 @@ public class SSL {
 		}
 	}
 
-	private static void storeKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	private static void storeKeyStore() throws KeyStoreException, NoSuchAlgorithmException,
+		CertificateException, IOException {
 		if(enable) {
 			FileOutputStream fos = null;
 			try {
@@ -273,7 +284,8 @@ public class SSL {
 		}
 	}
 
-	private static void createSSLContext() throws NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, KeyManagementException {
+	private static void createSSLContext() throws NoSuchAlgorithmException, UnrecoverableKeyException,
+		KeyStoreException, KeyManagementException {
 		if(enable) {
 			// A KeyManagerFactory is used to create key managers
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");

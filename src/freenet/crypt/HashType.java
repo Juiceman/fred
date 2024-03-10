@@ -40,10 +40,12 @@ public enum HashType {
 
 	public final MessageDigest get() {
 		if(javaName == null) {
-			if(this.name().equals("ED2K"))
+			if(this.name().equals("ED2K")) {
 				return new Ed2MessageDigest();
-			if(this.name().equals("TTH"))
+			}
+			if(this.name().equals("TTH")) {
 				return new TigerTree();
+			}
 		}
 		if(name().equals("SHA256")) {
 			// Use the pool

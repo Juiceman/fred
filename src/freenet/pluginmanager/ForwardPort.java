@@ -37,9 +37,14 @@ public class ForwardPort {
 
 	@Override
 	public boolean equals(Object o) {
-		if(o == this) return true;
-		if(!(o instanceof ForwardPort)) return false;
+		if(o == this) {
+			return true;
+		}
+		if(!(o instanceof ForwardPort)) {
+			return false;
+		}
 		ForwardPort f = (ForwardPort) o;
-		return (f.name.equals(name)) && f.isIP6 == isIP6 && f.protocol == protocol && f.portNumber == portNumber;
+		return (f.name.equals(name)) && f.isIP6 == isIP6 && f.protocol == protocol
+			   && f.portNumber == portNumber;
 	}
 }

@@ -11,15 +11,19 @@ import freenet.support.api.LongCallback;
 public class LongOption extends Option<Long> {
 	protected final boolean isSize;
 
-	public LongOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder, boolean expert,
+	public LongOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder,
+					  boolean expert,
 					  boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
-		this(conf, optionName, Fields.parseLong(defaultValueString), sortOrder, expert, forceWrite, shortDesc,
+		this(conf, optionName, Fields.parseLong(defaultValueString), sortOrder, expert, forceWrite,
+			 shortDesc,
 			 longDesc, cb, isSize);
 	}
 
-	public LongOption(SubConfig conf, String optionName, Long defaultValue, int sortOrder, boolean expert,
+	public LongOption(SubConfig conf, String optionName, Long defaultValue, int sortOrder,
+					  boolean expert,
 					  boolean forceWrite, String shortDesc, String longDesc, LongCallback cb, boolean isSize) {
-		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc, Option.DataType.NUMBER);
+		super(conf, optionName, cb, sortOrder, expert, forceWrite, shortDesc, longDesc,
+			  Option.DataType.NUMBER);
 		this.defaultValue = defaultValue;
 		this.currentValue = defaultValue;
 		this.isSize = isSize;

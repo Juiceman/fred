@@ -56,7 +56,8 @@ public class PartiallyReceivedBlock {
 	boolean _abortedLocally;
 	int _abortReason;
 	String _abortDescription;
-	ArrayList<PacketReceivedListener> _packetReceivedListeners = new ArrayList<PacketReceivedListener>();
+	ArrayList<PacketReceivedListener> _packetReceivedListeners = new
+	ArrayList<PacketReceivedListener>();
 
 	public PartiallyReceivedBlock(int packets, int packetSize, byte[] data) {
 		if (data.length != packets * packetSize) {
@@ -79,7 +80,8 @@ public class PartiallyReceivedBlock {
 		_packetSize = packetSize;
 	}
 
-	public synchronized Deque<Integer> addListener(PacketReceivedListener listener) throws AbortedException {
+	public synchronized Deque<Integer> addListener(PacketReceivedListener listener) throws
+		AbortedException {
 		if (_aborted) {
 			throw new AbortedException("Adding listener to aborted PRB");
 		}
@@ -123,17 +125,20 @@ public class PartiallyReceivedBlock {
 				throw new AbortedException("PRB is aborted");
 			}
 			if (packet.getLength() != _packetSize) {
-				throw new RuntimeException("New packet size "+packet.getLength()+" but expecting packet of size "+_packetSize);
+				throw new RuntimeException("New packet size "+packet.getLength()+" but expecting packet of size "
+										   +_packetSize);
 			}
-			if (_received[position])
+			if (_received[position]) {
 				return;
+			}
 
 			_receivedCount++;
 			packet.copyTo(_data, position * _packetSize);
 			_received[position] = true;
 
 			// FIXME keep it as as an array
-			prls = _packetReceivedListeners.toArray(new PacketReceivedListener[_packetReceivedListeners.size()]);
+			prls = _packetReceivedListeners.toArray(new
+													PacketReceivedListener[_packetReceivedListeners.size()]);
 		}
 
 
@@ -148,17 +153,22 @@ public class PartiallyReceivedBlock {
 
 	public synchronized boolean allReceived() throws AbortedException {
 		if(_receivedCount == _packets) {
-			if(logDEBUG) Logger.debug(this, "Received "+_receivedCount+" of "+_packets+" on "+this);
+			if(logDEBUG) {
+				Logger.debug(this, "Received "+_receivedCount+" of "+_packets+" on "+this);
+			}
 			return true;
 		}
 		if (_aborted) {
-			throw new AbortedException("PRB is aborted: "+_abortReason+" : "+_abortDescription+" received "+_receivedCount+" of "+_packets+" on "+this);
+			throw new AbortedException("PRB is aborted: "+_abortReason+" : "+_abortDescription+" received "
+									   +_receivedCount+" of "+_packets+" on "+this);
 		}
 		return false;
 	}
 
 	public synchronized byte[] getBlock() throws AbortedException {
-		if(allReceived()) return _data;
+		if(allReceived()) {
+			return _data;
+		}
 		throw new RuntimeException("Tried to get block before all packets received");
 	}
 
@@ -189,11 +199,16 @@ public class PartiallyReceivedBlock {
 		PacketReceivedListener[] listeners;
 		synchronized(this) {
 			if(_aborted) {
-				if(logMINOR) Logger.minor(this, "Already aborted "+this+" : reason="+_abortReason+" description="+_abortDescription);
+				if(logMINOR) {
+					Logger.minor(this, "Already aborted "+this+" : reason="+_abortReason+" description="
+								 +_abortDescription);
+				}
 				return null;
 			}
 			if(_receivedCount == _packets) {
-				if(logMINOR) Logger.minor(this, "Already received");
+				if(logMINOR) {
+					Logger.minor(this, "Already received");
+				}
 				return _data;
 			}
 			Logger.normal(this, "Aborting PRB: "+reason+" : "+description+" on "+this, new Exception("debug"));
@@ -201,7 +216,8 @@ public class PartiallyReceivedBlock {
 			_abortedLocally = cancelledLocally;
 			_abortReason = reason;
 			_abortDescription = description;
-			listeners = _packetReceivedListeners.toArray(new PacketReceivedListener[_packetReceivedListeners.size()]);
+			listeners = _packetReceivedListeners.toArray(new
+						PacketReceivedListener[_packetReceivedListeners.size()]);
 			_packetReceivedListeners.clear();
 		}
 		for (PacketReceivedListener prl : listeners) {

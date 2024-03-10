@@ -47,10 +47,11 @@ public class BMPFilter implements ContentDataFilter {
 
 
 	private int unsignedByte(byte b) {
-		if (b >= 0)
+		if (b >= 0) {
 			return b;
-		else
+		} else {
 			return 256+b;
+		}
 	}
 
 
@@ -59,8 +60,9 @@ public class BMPFilter implements ContentDataFilter {
 		byte[] data = new byte[4];
 
 		result = dis.read(data);
-		if (result < 0) // end of file reached
+		if (result < 0) { // end of file reached
 			throw new EOFException();
+		}
 
 		result = (unsignedByte(data[2]) << 16) | (unsignedByte(data[1]) << 8) | unsignedByte(data[0]);
 		result|=(unsignedByte(data[3]) << 24);
@@ -71,12 +73,14 @@ public class BMPFilter implements ContentDataFilter {
 
 	public int readShort(DataInputStream dis) throws IOException {
 		int result = dis.read();
-		if (result < 0)// end of file reached
+		if (result < 0) { // end of file reached
 			throw new EOFException();
+		}
 
 		int r2 = dis.read();
-		if (r2 < 0)// end of file reached
+		if (r2 < 0) { // end of file reached
 			throw new EOFException();
+		}
 
 		return result | (r2*256);
 	}
@@ -90,7 +94,11 @@ public class BMPFilter implements ContentDataFilter {
 		dis.mark(54);
 		byte[] StartWord = new byte[2];
 		dis.readFully(StartWord);
-		if((!Arrays.equals(StartWord, bmpHeaderwindows)) && (!Arrays.equals(StartWord, bmpHeaderos2bArray)) && (!Arrays.equals(StartWord, bmpHeaderos2cIcon)) && (!Arrays.equals(StartWord, bmpHeaderos2cPointer)) && (!Arrays.equals(StartWord, bmpHeaderos2Icon)) && (!Arrays.equals(StartWord, bmpHeaderos2Pointer))) {	//Checking the first word
+		if((!Arrays.equals(StartWord, bmpHeaderwindows)) && (!Arrays.equals(StartWord, bmpHeaderos2bArray))
+				&& (!Arrays.equals(StartWord, bmpHeaderos2cIcon))
+				&& (!Arrays.equals(StartWord, bmpHeaderos2cPointer))
+				&& (!Arrays.equals(StartWord, bmpHeaderos2Icon))
+				&& (!Arrays.equals(StartWord, bmpHeaderos2Pointer))) {	//Checking the first word
 			throwHeaderError(l10n("InvalidStartWordT"), l10n("InvalidStartWordD"));
 		}
 
@@ -120,13 +128,15 @@ public class BMPFilter implements ContentDataFilter {
 
 		int bitDepth = readShort(dis);
 		// Bit depth should be 1,2,4,8,16 or 32.
-		if(bitDepth!=1 && bitDepth!=2 && bitDepth!=4 && bitDepth!=8 && bitDepth!=16 && bitDepth!=24 && bitDepth!=32) {
+		if(bitDepth!=1 && bitDepth!=2 && bitDepth!=4 && bitDepth!=8 && bitDepth!=16 && bitDepth!=24
+				&& bitDepth!=32) {
 			throwHeaderError(l10n("InvalidBitDepthT"), l10n("InvalidBitDepthD"));
 		}
 
 		int compression_type=readInt(dis);
 		if( !(compression_type>=0 && compression_type<=3) ) {
-			throwHeaderError(l10n("Invalid Compression type"), l10n("Compression type field is set to "+compression_type+" instead of 0-3"));
+			throwHeaderError(l10n("Invalid Compression type"),
+							 l10n("Compression type field is set to "+compression_type+" instead of 0-3"));
 		}
 
 		int imagedatasize=readInt(dis);
@@ -168,9 +178,12 @@ public class BMPFilter implements ContentDataFilter {
 	private void throwHeaderError(String shortReason, String reason) throws DataFilterException {
 		// Throw an exception
 		String message = l10n("notBMP");
-		if(reason != null) message += ' ' + reason;
-		if(shortReason != null)
+		if(reason != null) {
+			message += ' ' + reason;
+		}
+		if(shortReason != null) {
 			message += " - (" + shortReason + ')';
+		}
 		throw new DataFilterException(shortReason, shortReason, message);
 	}
 

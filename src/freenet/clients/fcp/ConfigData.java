@@ -21,7 +21,9 @@ public class ConfigData extends FCPMessage {
 	final boolean withDataTypes;
 	final String identifier;
 
-	public ConfigData(Node node, boolean withCurrent, boolean withDefaults, boolean withSortOrder, boolean withExpertFlag, boolean withForceWriteFlag, boolean withShortDescription, boolean withLongDescription, boolean withDataTypes, String identifier) {
+	public ConfigData(Node node, boolean withCurrent, boolean withDefaults, boolean withSortOrder,
+					  boolean withExpertFlag, boolean withForceWriteFlag, boolean withShortDescription,
+					  boolean withLongDescription, boolean withDataTypes, String identifier) {
 		this.node = node;
 		this.withCurrent = withCurrent;
 		this.withDefaults = withDefaults;
@@ -45,7 +47,8 @@ public class ConfigData extends FCPMessage {
 			}
 		}
 		if(withDefaults) {
-			SimpleFieldSet defaultSettings = node.config.exportFieldSet(Config.RequestType.DEFAULT_SETTINGS, false);
+			SimpleFieldSet defaultSettings = node.config.exportFieldSet(Config.RequestType.DEFAULT_SETTINGS,
+											 false);
 			if(!defaultSettings.isEmpty()) {
 				fs.put("default", defaultSettings);
 			}
@@ -63,19 +66,22 @@ public class ConfigData extends FCPMessage {
 			}
 		}
 		if(withForceWriteFlag) {
-			SimpleFieldSet forceWriteFlag = node.config.exportFieldSet(Config.RequestType.FORCE_WRITE_FLAG, false);
+			SimpleFieldSet forceWriteFlag = node.config.exportFieldSet(Config.RequestType.FORCE_WRITE_FLAG,
+											false);
 			if(!forceWriteFlag.isEmpty()) {
 				fs.put("forceWriteFlag", forceWriteFlag);
 			}
 		}
 		if(withShortDescription) {
-			SimpleFieldSet shortDescription = node.config.exportFieldSet(Config.RequestType.SHORT_DESCRIPTION, false);
+			SimpleFieldSet shortDescription = node.config.exportFieldSet(Config.RequestType.SHORT_DESCRIPTION,
+											  false);
 			if(!shortDescription.isEmpty()) {
 				fs.put("shortDescription", shortDescription);
 			}
 		}
 		if(withLongDescription) {
-			SimpleFieldSet longDescription = node.config.exportFieldSet(Config.RequestType.LONG_DESCRIPTION, false);
+			SimpleFieldSet longDescription = node.config.exportFieldSet(Config.RequestType.LONG_DESCRIPTION,
+											 false);
 			if(!longDescription.isEmpty()) {
 				fs.put("longDescription", longDescription);
 			}
@@ -86,8 +92,9 @@ public class ConfigData extends FCPMessage {
 				fs.put("dataType", type);
 			}
 		}
-		if(identifier != null)
+		if(identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 
@@ -99,7 +106,8 @@ public class ConfigData extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 	throws MessageInvalidException {
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "ConfigData goes from server to client not the other way around", null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
+										  "ConfigData goes from server to client not the other way around", null, false);
 	}
 
 }

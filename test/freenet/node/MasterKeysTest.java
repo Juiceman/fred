@@ -30,16 +30,19 @@ public class MasterKeysTest {
 	}
 
 	@Test
-	public void testRestartNoPassword() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testRestartNoPassword() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testRestart("");
 	}
 
 	@Test
-	public void testRestartWithPassword() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testRestartWithPassword() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testRestart("password");
 	}
 
-	private void testRestart(String password) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	private void testRestart(String password) throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		File keysFile = new File(base, "test.master.keys");
 		DummyRandomSource random = new DummyRandomSource(77391);
 		MasterKeys original = MasterKeys.read(keysFile, random, password);
@@ -53,26 +56,32 @@ public class MasterKeysTest {
 	}
 
 	@Test
-	public void testChangePasswordEmptyToSomething() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testChangePasswordEmptyToSomething() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testChangePassword("", "password");
 	}
 
 	@Test
-	public void testChangePasswordEmptyToEmpty() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testChangePasswordEmptyToEmpty() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testChangePassword("", "");
 	}
 
 	@Test
-	public void testChangePasswordSomethingToEmpty() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testChangePasswordSomethingToEmpty() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testChangePassword("password", "");
 	}
 
 	@Test
-	public void testChangePasswordSomethingToSomething() throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	public void testChangePasswordSomethingToSomething() throws MasterKeysWrongPasswordException,
+		MasterKeysFileSizeException, IOException {
 		testChangePassword("password", "new password");
 	}
 
-	private void testChangePassword(String oldPassword, String newPassword) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException, IOException {
+	private void testChangePassword(String oldPassword,
+									String newPassword) throws MasterKeysWrongPasswordException, MasterKeysFileSizeException,
+		IOException {
 		File keysFile = new File(base, "test.master.keys");
 		DummyRandomSource random = new DummyRandomSource(77391);
 		MasterKeys original = MasterKeys.read(keysFile, random, oldPassword);

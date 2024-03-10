@@ -37,8 +37,11 @@ public class NodeAndClientLayerTest extends NodeAndClientLayerTestBase {
 	private static final File dir = new File("test-fetch-pull-single-node");
 
 	@Test
-	public void testFetchPullSingleNodeSsk() throws InvalidThresholdException, NodeInitException, InsertException, FetchException, IOException {
-		if(!TestProperty.EXTENSIVE) return;
+	public void testFetchPullSingleNodeSsk() throws InvalidThresholdException, NodeInitException,
+		InsertException, FetchException, IOException {
+		if(!TestProperty.EXTENSIVE) {
+			return;
+		}
 		DummyRandomSource random = new DummyRandomSource(25312);
 		InsertBlock block = generateBlock(random, false);
 		FetchResult result = insertAndRetrieveBlock(random, block);
@@ -46,8 +49,11 @@ public class NodeAndClientLayerTest extends NodeAndClientLayerTestBase {
 	}
 
 	@Test
-	public void testFetchPullSingleNodeUskEditionZero() throws InvalidThresholdException, NodeInitException, InsertException, FetchException, IOException {
-		if(!TestProperty.EXTENSIVE) return;
+	public void testFetchPullSingleNodeUskEditionZero() throws InvalidThresholdException,
+		NodeInitException, InsertException, FetchException, IOException {
+		if(!TestProperty.EXTENSIVE) {
+			return;
+		}
 		DummyRandomSource random = new DummyRandomSource(25312);
 		InsertBlock block = generateBlock(random, true);
 		FetchResult result = insertAndRetrieveBlock(random, block);

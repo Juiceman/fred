@@ -45,7 +45,8 @@ public class DefaultThreadDiagnostics implements Runnable, ThreadDiagnostics {
 	 * @param name Thread name
 	 * @param monitorInterval Sleep intervals to retrieve CPU usage
 	 */
-	public DefaultThreadDiagnostics(NodeStats nodeStats, Ticker ticker, String name, int monitorInterval) {
+	public DefaultThreadDiagnostics(NodeStats nodeStats, Ticker ticker, String name,
+									int monitorInterval) {
 		this.nodeStats = nodeStats;
 		this.ticker = ticker;
 		this.name = name;

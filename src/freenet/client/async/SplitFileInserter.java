@@ -23,7 +23,8 @@ import freenet.support.io.StorageFormatException;
  * recreated here on resume, like in splitfile fetches. The actual status is stored in a RAF.
  * @author toad
  */
-public class SplitFileInserter implements ClientPutState, Serializable, SplitFileInserterStorageCallback {
+public class SplitFileInserter implements ClientPutState, Serializable,
+	SplitFileInserterStorageCallback {
 
 	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
@@ -128,7 +129,9 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 	public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 		assert(persistent);
 		synchronized(this) {
-			if(resumed) return;
+			if(resumed) {
+				return;
+			}
 			resumed = true;
 		}
 		this.context = context;
@@ -147,24 +150,27 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 			raf.close();
 			raf.free();
 			originalData.close();
-			if(freeData)
+			if(freeData) {
 				originalData.free();
+			}
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		} catch (StorageFormatException e) {
 			Logger.error(this, "Resume failed: "+e, e);
 			raf.close();
 			raf.free();
 			originalData.close();
-			if(freeData)
+			if(freeData) {
 				originalData.free();
+			}
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		} catch (ChecksumFailedException e) {
 			Logger.error(this, "Resume failed: "+e, e);
 			raf.close();
 			raf.free();
 			originalData.close();
-			if(freeData)
+			if(freeData) {
 				originalData.free();
+			}
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		}
 	}
@@ -199,12 +205,14 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 					try {
 						Metadata metadata = storage.encodeMetadata();
 						reportMetadata(metadata);
-						if(ctx.getCHKOnly)
+						if(ctx.getCHKOnly) {
 							onSucceeded(metadata);
+						}
 					} catch (IOException e) {
 						storage.fail(new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null));
 					} catch (MissingKeyException e) {
-						storage.fail(new InsertException(InsertExceptionMode.BUCKET_ERROR, "Lost one or more keys", e, null));
+						storage.fail(new InsertException(InsertExceptionMode.BUCKET_ERROR, "Lost one or more keys", e,
+														 null));
 					}
 					return false;
 				}
@@ -219,7 +227,9 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 
 			@Override
 			public boolean run(ClientContext context) {
-				if(logMINOR) Logger.minor(this, "Succeeding on "+SplitFileInserter.this);
+				if(logMINOR) {
+					Logger.minor(this, "Succeeding on "+SplitFileInserter.this);
+				}
 				unregisterSender();
 				if(!(ctx.earlyEncode || ctx.getCHKOnly)) {
 					reportMetadata(metadata);
@@ -228,8 +238,9 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 				raf.close();
 				raf.free();
 				originalData.close();
-				if(freeData)
+				if(freeData) {
 					originalData.free();
+				}
 				return true;
 			}
 
@@ -256,8 +267,9 @@ public class SplitFileInserter implements ClientPutState, Serializable, SplitFil
 				raf.close();
 				raf.free();
 				originalData.close();
-				if(freeData)
+				if(freeData) {
 					originalData.free();
+				}
 				cb.onFailure(e, SplitFileInserter.this, context);
 				return true;
 			}

@@ -111,8 +111,12 @@ public class FirstTimeWizardToadlet extends Toadlet {
 
 	private void addWizardConfiguration(Config configuration) {
 		SubConfig wizardConfiguration = new SubConfig("firstTimeWizard", configuration);
-		wizardConfiguration.register("loadUPnPPlugin", true, 0, true, false, "FirstTimeWizardToadlet.loadUPnPPlugin", "FirstTimeWizardToadlet.loadUPnPPluginLong", createLoadUPnPPluginCallback());
-		wizardConfiguration.register("enableAutoUpdater", true, 1, true, false, "FirstTimeWizardToadlet.enableAutoUpdater", "FirstTimeWizardToadlet.enableAutoUpdaterLong", createEnableAutoUpdaterCallback());
+		wizardConfiguration.register("loadUPnPPlugin", true, 0, true, false,
+									 "FirstTimeWizardToadlet.loadUPnPPlugin", "FirstTimeWizardToadlet.loadUPnPPluginLong",
+									 createLoadUPnPPluginCallback());
+		wizardConfiguration.register("enableAutoUpdater", true, 1, true, false,
+									 "FirstTimeWizardToadlet.enableAutoUpdater", "FirstTimeWizardToadlet.enableAutoUpdaterLong",
+									 createEnableAutoUpdaterCallback());
 		loadUPnPPlugin = wizardConfiguration.getBoolean("loadUPnPPlugin");
 		enableAutoUpdater = wizardConfiguration.getBoolean("enableAutoUpdater");
 		wizardConfiguration.finishedInitialization();
@@ -150,9 +154,11 @@ public class FirstTimeWizardToadlet extends Toadlet {
 		};
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if(!ctx.checkFullAccess(this))
+	public void handleMethodGET(URI uri, HTTPRequest request,
+								ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		//Read the current step from the URL parameter, defaulting to the welcome page if unset or invalid..
 		WIZARD_STEP currentStep;
@@ -210,9 +216,11 @@ public class FirstTimeWizardToadlet extends Toadlet {
 		return logMINOR;
 	}
 
-	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if(!ctx.checkFullAccess(this))
+	public void handleMethodPOST(URI uri, HTTPRequest request,
+								 ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		if(!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		WIZARD_STEP currentStep;
 		try {
@@ -229,7 +237,8 @@ public class FirstTimeWizardToadlet extends Toadlet {
 		String redirectTarget;
 
 		if (currentStep.equals(WIZARD_STEP.WELCOME) &&
-				(request.isPartSet("presetLow") || request.isPartSet("presetHigh") || request.isPartSet("presetNone"))) {
+				(request.isPartSet("presetLow") || request.isPartSet("presetHigh")
+				 || request.isPartSet("presetNone"))) {
 
 			/*Apply presets and UPnP is enabled first to allow it time to load (and thus enable
 			  autodetection) before hitting the bandwidth page. This also effectively sets the preset field.*/
@@ -323,7 +332,8 @@ public class FirstTimeWizardToadlet extends Toadlet {
 				return;
 			}
 		}
-		super.writeTemporaryRedirect(ctx, "Wizard redirect", stepURL(persistFields.appendTo(redirectTarget)));
+		super.writeTemporaryRedirect(ctx, "Wizard redirect",
+									 stepURL(persistFields.appendTo(redirectTarget)));
 	}
 
 	private String stepURL(String step) {

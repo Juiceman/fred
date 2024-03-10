@@ -70,8 +70,9 @@ public class MersenneTwisterTest {
 		int[] output = Fields.bytesToInts(OUTPUT_1, 0, OUTPUT_1.length);
 
 		assertEquals(INPUT_1.length, output.length);
-		for(int i=0; i<INPUT_1.length; i++)
+		for(int i=0; i<INPUT_1.length; i++) {
 			assertEquals(INPUT_1[i], output[i]);
+		}
 	}
 
 	@Test

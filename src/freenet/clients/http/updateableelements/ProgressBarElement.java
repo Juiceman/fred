@@ -27,7 +27,8 @@ public class ProgressBarElement extends BaseUpdateableElement {
 	private final NotifierFetchListener	fetchListener;
 	private final FetchContext		fctx;
 
-	public ProgressBarElement(FProxyFetchTracker tracker, FreenetURI key, FetchContext fctx, long maxSize, ToadletContext ctx, boolean pushed) {
+	public ProgressBarElement(FProxyFetchTracker tracker, FreenetURI key, FetchContext fctx,
+							  long maxSize, ToadletContext ctx, boolean pushed) {
 		// This is a <div>
 		super("div", "class", "progressbar", ctx);
 		this.tracker = tracker;
@@ -40,7 +41,8 @@ public class ProgressBarElement extends BaseUpdateableElement {
 			return;
 		}
 		// Creates and registers the FetchListener
-		fetchListener = new NotifierFetchListener(((SimpleToadletServer) ctx.getContainer()).pushDataManager, this);
+		fetchListener = new NotifierFetchListener(((SimpleToadletServer)
+				ctx.getContainer()).pushDataManager, this);
 		tracker.getFetchInProgress(key, maxSize, fctx).addListener(fetchListener);
 	}
 
@@ -74,11 +76,13 @@ public class ProgressBarElement extends BaseUpdateableElement {
 				nf.setMaximumFractionDigits(1);
 				String prefix = '('+Integer.toString(fr.fetchedBlocks) + "/ " + Integer.toString(total)+"): ";
 				if (fr.finalizedBlocks) {
-					progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_finalized", prefix + NodeL10n.getBase().getString("QueueToadlet.progressbarAccurate") }, nf.format((int) ((fr.fetchedBlocks / (double) total) * 1000) / 10.0) + '%');
+					progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_finalized", prefix + NodeL10n.getBase().getString("QueueToadlet.progressbarAccurate") },
+										 nf.format((int) ((fr.fetchedBlocks / (double) total) * 1000) / 10.0) + '%');
 				} else {
 					String text = nf.format((int) ((fr.fetchedBlocks / (double) total) * 1000) / 10.0)+ '%';
 					text = "" + fr.fetchedBlocks + " ("+text+"??)";
-					progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_not_finalized", prefix + NodeL10n.getBase().getString("QueueToadlet.progressbarNotAccurate") }, text);
+					progressBar.addChild("div", new String[] { "class", "title" }, new String[] { "progress_fraction_not_finalized", prefix + NodeL10n.getBase().getString("QueueToadlet.progressbarNotAccurate") },
+										 text);
 				}
 			}
 		}
@@ -115,7 +119,8 @@ public class ProgressBarElement extends BaseUpdateableElement {
 
 	@Override
 	public String toString() {
-		return "ProgressBarElement[key:" + key + ",maxSize:" + maxSize + ",updaterId:" + getUpdaterId(null) + "]";
+		return "ProgressBarElement[key:" + key + ",maxSize:" + maxSize + ",updaterId:" + getUpdaterId(
+				   null) + "]";
 	}
 
 }

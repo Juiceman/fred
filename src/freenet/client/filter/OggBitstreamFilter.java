@@ -30,9 +30,11 @@ public class OggBitstreamFilter {
 	 * @throws IOException
 	 */
 	OggPage parse(OggPage page) throws IOException {
-		if(!(page.getPageNumber() == lastPageSequenceNumber+1 || page.getPageNumber() == lastPageSequenceNumber)) {
+		if(!(page.getPageNumber() == lastPageSequenceNumber+1
+				|| page.getPageNumber() == lastPageSequenceNumber)) {
 			isValidStream = false;
-			throw new DataFilterException(l10n("MalformedTitle"), l10n("MalformedTitle"), l10n("MalformedMessage"));
+			throw new DataFilterException(l10n("MalformedTitle"), l10n("MalformedTitle"),
+										  l10n("MalformedMessage"));
 		}
 		lastPageSequenceNumber = page.getPageNumber();
 		return page;
@@ -46,19 +48,28 @@ public class OggBitstreamFilter {
 	 */
 	public static OggBitstreamFilter getBitstreamFilter(OggPage page) {
 		for(int i = 0; i <= VorbisPacketFilter.magicNumber.length; i++) {
-			if(i == VorbisPacketFilter.magicNumber.length) return new VorbisBitstreamFilter(page);
-			if(page.payload.length < i+1 || page.payload[i+1] != VorbisPacketFilter.magicNumber[i]) break;
+			if(i == VorbisPacketFilter.magicNumber.length) {
+				return new VorbisBitstreamFilter(page);
+			}
+			if(page.payload.length < i+1 || page.payload[i+1] != VorbisPacketFilter.magicNumber[i]) {
+				break;
+			}
 		}
 		for(int i = 0; i <= TheoraPacketFilter.magicNumber.length; i++) {
-			if(i == TheoraPacketFilter.magicNumber.length) return new TheoraBitstreamFilter(page);
-			if(page.payload.length < i+1 || page.payload[i+1] != TheoraPacketFilter.magicNumber[i]) break;
+			if(i == TheoraPacketFilter.magicNumber.length) {
+				return new TheoraBitstreamFilter(page);
+			}
+			if(page.payload.length < i+1 || page.payload[i+1] != TheoraPacketFilter.magicNumber[i]) {
+				break;
+			}
 		}
 		return null;
 	}
 
 	protected void invalidate() throws DataFilterException {
 		isValidStream = false;
-		throw new DataFilterException(l10n("MalformedTitle"), l10n("MalformedTitle"), l10n("MalformedMessage"));
+		throw new DataFilterException(l10n("MalformedTitle"), l10n("MalformedTitle"),
+									  l10n("MalformedMessage"));
 	}
 
 	private String l10n(String key) {

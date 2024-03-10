@@ -52,14 +52,20 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 		this.factory = factory;
 		this.bucket = bucket;
 		this.createdCommitID = factory.commitID();
-		if(bucket == null) throw new NullPointerException();
+		if(bucket == null) {
+			throw new NullPointerException();
+		}
 	}
 
 	@Override
 	public OutputStream getOutputStream() throws IOException {
 		synchronized(this) {
-			if(migrated) throw new IOException("Already migrated to a RandomAccessBucket");
-			if(freed) throw new IOException("Already freed");
+			if(migrated) {
+				throw new IOException("Already migrated to a RandomAccessBucket");
+			}
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getOutputStream();
 	}
@@ -67,8 +73,12 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 	@Override
 	public OutputStream getOutputStreamUnbuffered() throws IOException {
 		synchronized(this) {
-			if(migrated) throw new IOException("Already migrated to a RandomAccessBucket");
-			if(freed) throw new IOException("Already freed");
+			if(migrated) {
+				throw new IOException("Already migrated to a RandomAccessBucket");
+			}
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getOutputStreamUnbuffered();
 	}
@@ -76,8 +86,12 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		synchronized(this) {
-			if(migrated) throw new IOException("Already migrated to a RandomAccessBucket");
-			if(freed) throw new IOException("Already freed");
+			if(migrated) {
+				throw new IOException("Already migrated to a RandomAccessBucket");
+			}
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getInputStream();
 	}
@@ -85,8 +99,12 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 	@Override
 	public InputStream getInputStreamUnbuffered() throws IOException {
 		synchronized(this) {
-			if(migrated) throw new IOException("Already migrated to a RandomAccessBucket");
-			if(freed) throw new IOException("Already freed");
+			if(migrated) {
+				throw new IOException("Already migrated to a RandomAccessBucket");
+			}
+			if(freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return bucket.getInputStreamUnbuffered();
 	}
@@ -112,20 +130,29 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 	}
 
 	public synchronized Bucket getUnderlying() {
-		if(freed) return null;
-		if(migrated) return null;
+		if(freed) {
+			return null;
+		}
+		if(migrated) {
+			return null;
+		}
 		return bucket;
 	}
 
 	@Override
 	public void free() {
 		synchronized(this) {
-			if(freed) return;
-			if(migrated) return;
+			if(freed) {
+				return;
+			}
+			if(migrated) {
+				return;
+			}
 			freed = true;
 		}
-		if(logMINOR)
+		if(logMINOR) {
 			Logger.minor(this, "Freeing "+this+" underlying="+bucket, new Exception("debug"));
+		}
 		this.factory.delayedFree(this, createdCommitID);
 	}
 
@@ -164,14 +191,18 @@ public class DelayedFreeBucket implements Bucket, Serializable, DelayedFree {
 								PersistentFileTracker persistentFileTracker, MasterSecret masterKey)
 	throws StorageFormatException, IOException, ResumeFailedException {
 		int version = dis.readInt();
-		if(version != VERSION) throw new StorageFormatException("Bad version");
+		if(version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		bucket = (RandomAccessBucket) BucketTools.restoreFrom(dis, fg, persistentFileTracker, masterKey);
 	}
 
 	/** Convert to a RandomAccessBucket if it can be done quickly. Otherwise return null.
 	 * @throws IOException If the bucket has already been freed. */
 	public synchronized RandomAccessBucket toRandomAccessBucket() throws IOException {
-		if(freed) throw new IOException("Already freed");
+		if(freed) {
+			throw new IOException("Already freed");
+		}
 		if(bucket instanceof RandomAccessBucket) {
 			migrated = true;
 			return new DelayedFreeRandomAccessBucket(factory, (RandomAccessBucket)bucket);

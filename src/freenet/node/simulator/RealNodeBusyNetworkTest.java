@@ -71,12 +71,16 @@ public class RealNodeBusyNetworkTest extends RealNodeRoutingTest {
 		Executor executor = new PooledExecutor();
 		for(int i=0; i<NUMBER_OF_NODES; i++) {
 			nodes[i] =
-				NodeStarter.createTestNode(DARKNET_PORT_BASE+i, 0, name, false, MAX_HTL, 20 /* 5% */, random, executor, 500*NUMBER_OF_NODES, (CHKBlock.DATA_LENGTH+CHKBlock.TOTAL_HEADERS_LENGTH)*100, true, ENABLE_SWAPPING, false, ENABLE_ULPRS, ENABLE_PER_NODE_FAILURE_TABLES, ENABLE_SWAP_QUEUEING, ENABLE_PACKET_COALESCING, 8000, ENABLE_FOAF, false, true, false, null);
+				NodeStarter.createTestNode(DARKNET_PORT_BASE+i, 0, name, false, MAX_HTL, 20 /* 5% */, random,
+										   executor, 500*NUMBER_OF_NODES, (CHKBlock.DATA_LENGTH+CHKBlock.TOTAL_HEADERS_LENGTH)*100, true,
+										   ENABLE_SWAPPING, false, ENABLE_ULPRS, ENABLE_PER_NODE_FAILURE_TABLES, ENABLE_SWAP_QUEUEING,
+										   ENABLE_PACKET_COALESCING, 8000, ENABLE_FOAF, false, true, false, null);
 			Logger.normal(RealNodeRoutingTest.class, "Created node "+i);
 		}
 
 		// Now link them up
-		makeKleinbergNetwork(nodes, START_WITH_IDEAL_LOCATIONS, DEGREE, FORCE_NEIGHBOUR_CONNECTIONS, random);
+		makeKleinbergNetwork(nodes, START_WITH_IDEAL_LOCATIONS, DEGREE, FORCE_NEIGHBOUR_CONNECTIONS,
+							 random);
 
 		Logger.normal(RealNodeRoutingTest.class, "Added random links");
 
@@ -95,7 +99,8 @@ public class RealNodeBusyNetworkTest extends RealNodeRoutingTest {
 
 		HighLevelSimpleClient[] clients = new HighLevelSimpleClient[nodes.length];
 		for(int i=0; i<clients.length; i++) {
-			clients[i] = nodes[i].clientCore.makeClient(RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, false, false);
+			clients[i] = nodes[i].clientCore.makeClient(RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS,
+						 false, false);
 		}
 
 		// Insert 100 keys into random nodes
@@ -110,21 +115,24 @@ public class RealNodeBusyNetworkTest extends RealNodeRoutingTest {
 			String dataString = baseString + i;
 			byte[] data = dataString.getBytes(StandardCharsets.UTF_8);
 			ClientCHKBlock b;
-			b = ClientCHKBlock.encode(data, false, false, (short)-1, 0, COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
+			b = ClientCHKBlock.encode(data, false, false, (short)-1, 0,
+									  COMPRESSOR_TYPE.DEFAULT_COMPRESSORDESCRIPTOR);
 			CHKBlock block = b.getBlock();
 			ClientCHK chk = b.getClientKey();
 			byte[] encData = block.getData();
 			byte[] encHeaders = block.getHeaders();
 			ClientCHKBlock newBlock = new ClientCHKBlock(encData, encHeaders, chk, true);
 			keys[i] = chk;
-			Logger.minor(RealNodeRequestInsertTest.class, "Decoded: "+new String(newBlock.memoryDecode(), StandardCharsets.UTF_8));
+			Logger.minor(RealNodeRequestInsertTest.class, "Decoded: "+new String(newBlock.memoryDecode(),
+						 StandardCharsets.UTF_8));
 			Logger.normal(RealNodeRequestInsertTest.class,"CHK: "+chk.getURI());
 			Logger.minor(RealNodeRequestInsertTest.class,"Headers: "+HexUtil.bytesToHex(block.getHeaders()));
 			// Insert it.
 			try {
 				randomNode.clientCore.realPut(block, false, FORK_ON_CACHEABLE, false, false, REAL_TIME_FLAG);
 				Logger.error(RealNodeRequestInsertTest.class, "Inserted to "+node1);
-				Logger.minor(RealNodeRequestInsertTest.class, "Data: "+Fields.hashCode(encData)+", Headers: "+Fields.hashCode(encHeaders));
+				Logger.minor(RealNodeRequestInsertTest.class,
+							 "Data: "+Fields.hashCode(encData)+", Headers: "+Fields.hashCode(encHeaders));
 			} catch (freenet.node.LowLevelPutException putEx) {
 				Logger.error(RealNodeRequestInsertTest.class, "Insert failed: "+ putEx);
 				System.err.println("Insert failed: "+ putEx);
@@ -154,7 +162,9 @@ public class RealNodeBusyNetworkTest extends RealNodeRoutingTest {
 				totalRunningRequests += nodes[i].clientCore.countQueuedRequests();
 			}
 			System.err.println("Running requests: "+totalRunningRequests);
-			if(totalRunningRequests == 0) break;
+			if(totalRunningRequests == 0) {
+				break;
+			}
 			Thread.sleep(1000);
 		}
 		System.exit(0);
