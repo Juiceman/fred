@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Fetch 'next' branch
-        run: git fetch origin next:next
+        run: git fetch ${{ github.event.repository.full_name }} next:next
 
       - name: Switch to 'next' branch
         run: git checkout next
@@ -27,12 +27,12 @@ jobs:
       - name: Get commit hashes
         id: commit_hashes
         run: |
-          before=$(git rev-parse origin/next)
+          before=$(git rev-parse origin/${{ github.event.pull_request.base.ref }})
           after=$(git rev-parse HEAD)
           echo "::set-output name=before::$before"
           echo "::set-output name=after::$after"
-          echo "Before: " $before
-          echo "After: " $after
+          echo "Before: $before"
+          echo "After: $after"
 
       - name: Get modified files
         id: get_files
