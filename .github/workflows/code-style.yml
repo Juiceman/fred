@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.1
       
       - name: Fetch 'next' branch
         run: git fetch origin next
@@ -22,16 +22,19 @@ jobs:
           sudo apt-get install -y astyle
 
       - name: Get commit hashes
+        id: commit_hashes
         run: |
           before=$(git rev-parse origin/next)
           after=$(git rev-parse HEAD^2)
+          echo "::set-output name=before::$before"
+          echo "::set-output name=after::$after"
           echo "Before: $before"
           echo "After: $after"
 
       - name: Get modified files
         id: get_files
         run: |
-          echo "::set-output name=files::$(git diff --name-only $before $after)"
+          echo "::set-output name=files::$(git diff --name-only ${{ steps.commit_hashes.outputs.before }} ${{ steps.commit_hashes.outputs.after }})"
           echo "Modified files:"
           cat ${{ steps.get_files.outputs.files }}
 
