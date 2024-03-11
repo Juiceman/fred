@@ -1,0 +1,41 @@
+name: Astyle Code Formatter
+
+on:
+  pull_request:
+    branches:
+      - next  # Change the pull request branch name to 'next'
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.1
+
+      - name: Fetch base branch
+        run: git fetch origin next
+
+      - name: Get modified files
+        run: |
+          files=$(git diff --name-only origin/next ${{ github.sha }})
+          echo "Modified files:"
+          echo "$files"
+
+      - name: Install Astyle
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y astyle
+
+      - name: Format modified files
+        run: |
+          for file in $files; do
+            astyle --indent=force-tab=4 --suffix=none "$file"
+          done
+
+      - name: Create commit
+        uses: stefanzweifel/git-auto-commit-action@v5.0.0
+        with:
+          commit_message: "Format code using Astyle"
+          commit_user_name: "GitHub Actions"
+          commit_user_email: "actions@github.com"
