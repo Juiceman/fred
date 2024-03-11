@@ -31,7 +31,7 @@ jobs:
 
       - name: Format modified files
         run: |
-          IFS=$'\n' read -r -d '' -a files2 <<< "${{ steps.get_files.outputs.files }}"
+          IFS=$'\n' read -r -d '' -a files2 <<< "$files"
           for file in "${files2[@]}"; do
             astyle --indent=force-tab=4 --suffix=none "$file"
             echo "$file"
