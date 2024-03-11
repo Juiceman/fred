@@ -23,11 +23,11 @@ import freenet.support.Logger.LogLevel;
  */
 public abstract class Fields {
 
-	private static volatile boolean logMINOR;
+        private static volatile boolean logMINOR;
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
+		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
 			@Override
-			public void shouldUpdate() {
+			public void shouldUpdate(){
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -104,7 +104,7 @@ public abstract class Fields {
 	 *             character is not in the set [0-9a-fA-f]
 	 */
 	public static long hexToLong(String hex)
-	throws NumberFormatException {
+		throws NumberFormatException {
 		int len = hex.length();
 		if(len > 16)
 			throw new NumberFormatException();
@@ -227,7 +227,7 @@ public abstract class Fields {
 	}
 
 	public static long[] numberList(String ls)
-	throws NumberFormatException {
+		throws NumberFormatException {
 		StringTokenizer st = new StringTokenizer(ls, ",");
 		long[] r = new long[st.countTokens()];
 		for(int i = 0; i < r.length; i++) {
@@ -266,7 +266,7 @@ public abstract class Fields {
 	 * @return millis of the epoch of at the time described.
 	 */
 	public static long dateTime(String date)
-	throws NumberFormatException {
+		throws NumberFormatException {
 
 		if(date.length() == 0)
 			throw new NumberFormatException("Date time empty");
@@ -289,38 +289,38 @@ public abstract class Fields {
 			else {
 				String deltaTypeString = date.substring(chop).toLowerCase();
 				switch (deltaTypeString) {
-				case "y":
-				case "year":
-					deltaType = Calendar.YEAR;
-					break;
-				case "month":
-				case "mo":
-					deltaType = Calendar.MONTH;
-					break;
-				case "week":
-				case "w":
-					deltaType = Calendar.WEEK_OF_YEAR;
-					break;
-				case "day":
-				case "d":
-					deltaType = Calendar.DAY_OF_YEAR;
-					break;
-				case "hour":
-				case "h":
-					deltaType = Calendar.HOUR;
-					break;
-				case "minute":
-				case "min":
-					deltaType = Calendar.MINUTE;
-					break;
-				case "second":
-				case "s":
-				case "sec":
-					deltaType = Calendar.SECOND;
-					break;
-				default:
-					throw new NumberFormatException(
-						"unknown time/date delta type: " + deltaTypeString);
+					case "y":
+					case "year":
+						deltaType = Calendar.YEAR;
+						break;
+					case "month":
+					case "mo":
+						deltaType = Calendar.MONTH;
+						break;
+					case "week":
+					case "w":
+						deltaType = Calendar.WEEK_OF_YEAR;
+						break;
+					case "day":
+					case "d":
+						deltaType = Calendar.DAY_OF_YEAR;
+						break;
+					case "hour":
+					case "h":
+						deltaType = Calendar.HOUR;
+						break;
+					case "minute":
+					case "min":
+						deltaType = Calendar.MINUTE;
+						break;
+					case "second":
+					case "s":
+					case "sec":
+						deltaType = Calendar.SECOND;
+						break;
+					default:
+						throw new NumberFormatException(
+								"unknown time/date delta type: " + deltaTypeString);
 				}
 				GregorianCalendar gc = new GregorianCalendar();
 				gc.add(deltaType, (date.charAt(0) == '+') ? num : -num);
@@ -344,12 +344,12 @@ public abstract class Fields {
 		// Note that month is zero based in GregorianCalender!
 		try {
 			return (new GregorianCalendar(
-						year,
-						month - 1,
-						day,
-						hour,
-						minute,
-						second)).getTime().getTime();
+				year,
+				month - 1,
+				day,
+				hour,
+				minute,
+				second)).getTime().getTime();
 		} catch(Exception e) {
 			e.printStackTrace();
 			// The API docs don't say which exception is thrown on bad numbers!
@@ -568,7 +568,7 @@ public abstract class Fields {
 	public static int bytesToInt(byte[] buf) {
 		return bytesToInt(buf, 0);
 	}
-
+	
 	/**
 	 * Convert an array of bytes to a single int.
 	 */
@@ -624,7 +624,7 @@ public abstract class Fields {
 		}
 		return buf;
 	}
-
+	
 	public static byte[] intsToBytes(int[] ints) {
 		return intsToBytes(ints, 0, ints.length);
 	}
@@ -643,19 +643,19 @@ public abstract class Fields {
 
 	public static byte[] intToBytes(int x) {
 		byte[] buf = new byte[4];
-		for(int j = 0; j < 4; j++) {
-			buf[j] = (byte) x;
-			x >>>= 8;
-		}
+			for(int j = 0; j < 4; j++) {
+				buf[j] = (byte) x;
+				x >>>= 8;
+			}
 		return buf;
 	}
 
 	public static byte[] shortToBytes(short x) {
 		byte[] buf = new byte[2];
-		for(int j = 0; j < 2; j++) {
-			buf[j] = (byte) x;
-			x >>>= 8;
-		}
+			for(int j = 0; j < 2; j++) {
+				buf[j] = (byte) x;
+				x >>>= 8;
+			}
 		return buf;
 	}
 
@@ -722,9 +722,9 @@ public abstract class Fields {
 		 */
 		final String lower = limit.toLowerCase();
 		for(String ending :
-				new String[] {
-					"/s", "/sec", "/second", "ps", NodeL10n.getBase().getString("FirstTimeWizardToadlet.bandwidthPerSecond").toLowerCase()
-				}) {
+			new String[] {
+				"/s", "/sec", "/second", "ps", NodeL10n.getBase().getString("FirstTimeWizardToadlet.bandwidthPerSecond").toLowerCase()
+			}) {
 			if(lower.endsWith(ending)) {
 				return limit.substring(0, limit.length() - ending.length());
 			}
@@ -734,31 +734,31 @@ public abstract class Fields {
 
 	public static int parseInt(String s, Dimension dimension) throws NumberFormatException {
 		switch (dimension) {
-		case NOT:
-		case SIZE:
-			return parseInt(s);
-		case DURATION:
-			long durationInMillis = TimeUtil.toMillis(s);
-			if ((int) durationInMillis == durationInMillis) {
-				return (int) durationInMillis;
-			}
-			throw new ArithmeticException("integer overflow");
+			case NOT:
+			case SIZE:
+				return parseInt(s);
+			case DURATION:
+				long durationInMillis = TimeUtil.toMillis(s);
+				if ((int) durationInMillis == durationInMillis) {
+					return (int) durationInMillis;
+				}
+				throw new ArithmeticException("integer overflow");
 		}
 		throw new AssertionError("Unknown dimension " + dimension);
 	}
 
 	/**
 	 * Parse a human-readable string possibly including SI and ICE units into an integer.
-	 *
-	 * If it is a size (suffix b für bits or B for bytes), the size is returned as bytes.
-	 * 8b = 1, 8B = 8.
+     * 
+     * If it is a size (suffix b für bits or B for bytes), the size is returned as bytes.
+     * 8b = 1, 8B = 8.
 	 * @throws NumberFormatException
 	 *             if the string is not parseable
 	 */
 	public static int parseInt(String s) throws NumberFormatException {
-		boolean isSizeInBits = s.endsWith("b");
-		// strip bit/byte suffix
-		s = s.replaceFirst((isSizeInBits ? "(i)*b$" : "(i)*B$"), "");
+        boolean isSizeInBits = s.endsWith("b");
+        // strip bit/byte suffix
+        s = s.replaceFirst((isSizeInBits ? "(i)*b$" : "(i)*B$"), "");
 		int res = 1;
 		int x = s.length() - 1;
 		int idx;
@@ -835,12 +835,12 @@ public abstract class Fields {
 
 	public static String intToString(int val, Dimension dimension) {
 		switch (dimension) {
-		case NOT:
-			return intToString(val, false);
-		case SIZE:
-			return intToString(val, true);
-		case DURATION:
-			return TimeUtil.formatTime(val, 6, false);
+			case NOT:
+				return intToString(val, false);
+			case SIZE:
+				return intToString(val, true);
+			case DURATION:
+				return TimeUtil.formatTime(val, 6, false);
 		}
 		throw new AssertionError("Unknown dimension " + dimension);
 	}
@@ -962,12 +962,12 @@ public abstract class Fields {
 			if(i >= x.length() && j >= y.length()) return 0;
 			wantDigits = !wantDigits;
 		}
-
+		
 	}
 
 	static int getDigits(String x, int i, boolean wantDigits) {
 		int origI = i;
-		for(; i<x.length(); i++) {
+		for(;i<x.length();i++) {
 			if(Character.isDigit(x.charAt(i)) != wantDigits)
 				break;
 		}
@@ -981,14 +981,14 @@ public abstract class Fields {
 		if(id2 > id1) return -1;
 		return 0;
 	}
-
+	
 	/** Avoid issues with overflow, 2's complement. E.g. 0-Integer.MIN_VALUE = Integer.MIN_VALUE-0. */
 	public static final int compare(int x, int y) {
 		if(x > y) return 1;
 		if(y > x) return -1;
 		return 0;
 	}
-
+	
 	/** Avoid issues with overflow, 2's complement. */
 	public static final int compare(long x, long y) {
 		if(x > y) return 1;
@@ -1034,20 +1034,20 @@ public abstract class Fields {
 		return 0;
 	}
 
-	public static final int compare(Date a, Date b) {
-		// Replace null Dates with real ones so we can use Date.compareTo()
-		a = (a != null ? a : new Date(0));
-		b = (b != null ? b : new Date(0));
-		return a.compareTo(b);
-	}
+    public static final int compare(Date a, Date b) {
+        // Replace null Dates with real ones so we can use Date.compareTo()
+        a = (a != null ? a : new Date(0));
+        b = (b != null ? b : new Date(0));
+        return a.compareTo(b);
+    }
 
 	/** Copy all of the remaining bytes in the buffer to a byte array.
 	 * @param buf The input buffer. Position will be at the limit when returning.
 	 */
 	public static byte[] copyToArray(ByteBuffer buf) {
-		byte[] ret = new byte[buf.remaining()];
-		buf.get(ret);
-		return ret;
+	    byte[] ret = new byte[buf.remaining()];
+	    buf.get(ret);
+	    return ret;
 	}
 
 }

@@ -14,7 +14,7 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * load a plugin
- *
+ * 
  */
 public class LoadPlugin extends FCPMessage {
 
@@ -67,7 +67,7 @@ public class LoadPlugin extends FCPMessage {
 		if(!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "LoadPlugin requires full access", identifier, false);
 		}
-
+		
 		if(!node.pluginManager.isEnabled()) {
 			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.PLUGINS_DISABLED, false, "Plugins disabled", identifier, false));
 			return;
@@ -88,7 +88,7 @@ public class LoadPlugin extends FCPMessage {
 							type = TYPENAME_FREENET;
 						} catch (MalformedURLException e) {
 							// FIXME currently i have no idea how to auto detect a proper url,
-							// especially distinguish it from typos/mistakes.
+							// especially distinguish it from typos/mistakes. 
 							// so it is disabled for now. saces.
 //							try {
 //								URL url = new URL(pluginURL);
@@ -107,22 +107,22 @@ public class LoadPlugin extends FCPMessage {
 				}
 				PluginInfoWrapper pi;
 				switch (type) {
-				case TYPENAME_OFFICIAL:
-					pi = node.pluginManager.startPluginOfficial(pluginURL, store);
-					break;
-				case TYPENAME_FILE:
-					pi = node.pluginManager.startPluginFile(pluginURL, store);
-					break;
-				case TYPENAME_FREENET:
-					pi = node.pluginManager.startPluginFreenet(pluginURL, store);
-					break;
-				case TYPENAME_URL:
-					pi = node.pluginManager.startPluginURL(pluginURL, store);
-					break;
-				default:
-					Logger.error(this, "This should really not happen!", new Exception("FIXME"));
-					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INTERNAL_ERROR, false, "This should really not happen! See logs for details.", identifier, false));
-					return;
+					case TYPENAME_OFFICIAL:
+						pi = node.pluginManager.startPluginOfficial(pluginURL, store);
+						break;
+					case TYPENAME_FILE:
+						pi = node.pluginManager.startPluginFile(pluginURL, store);
+						break;
+					case TYPENAME_FREENET:
+						pi = node.pluginManager.startPluginFreenet(pluginURL, store);
+						break;
+					case TYPENAME_URL:
+						pi = node.pluginManager.startPluginURL(pluginURL, store);
+						break;
+					default:
+						Logger.error(this, "This should really not happen!", new Exception("FIXME"));
+						handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.INTERNAL_ERROR, false, "This should really not happen! See logs for details.", identifier, false));
+						return;
 				}
 				if (pi == null) {
 					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '"+ pluginURL + "' does not exist or is not a FCP plugin", identifier, false));
