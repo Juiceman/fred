@@ -31,7 +31,7 @@ jobs:
         run: |
           files=$(git diff --name-only origin/next ${{ github.sha }} | grep '.java')
           for file in $files; do
-            astyle --style=1tbs --indent=force-tab=4 --suffix=none "$file"
+            astyle --style=java --pad-oper --add-braces --indent=force-tab=4 --suffix=none "$file"
           done
 
       - name: Create commit
