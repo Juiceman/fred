@@ -18,7 +18,7 @@ jobs:
 
       - name: Get modified files
         run: |
-          files=$(git diff --name-only origin/next ${{ github.sha }})
+          files=$(git diff --name-only origin/next ${{ github.sha }} | grep '.java')
           echo "Modified files:"
           echo "$files"
 
@@ -30,7 +30,7 @@ jobs:
       - name: Format modified files
         run: |
           for file in $files; do
-            astyle --indent=force-tab=4 --suffix=none "$file"
+            astyle --style=java --indent=force-tab=4 --suffix=none "$file"
           done
 
       - name: Create commit
