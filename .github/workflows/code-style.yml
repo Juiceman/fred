@@ -12,8 +12,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4.1.1
-        with:
-          ref: next
+
+      - name: Fetch 'next' branch
+        run: git fetch origin next:next
+
+      - name: Switch to 'next' branch
+        run: git checkout next
 
       - name: Install Astyle
         run: |
@@ -27,8 +31,8 @@ jobs:
           after=$(git rev-parse HEAD)
           echo "::set-output name=before::$before"
           echo "::set-output name=after::$after"
-          echo "Before: $before"
-          echo "After: $after"
+          echo "Before: " $before
+          echo "After: " $after
 
       - name: Get modified files
         id: get_files
