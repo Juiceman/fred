@@ -16,7 +16,7 @@ jobs:
       - name: Get modified files
         id: get_files
         run: |
-          files=$(git diff --name-only ${{ github.base_ref }} ${{ github.sha }})
+          files=$(git diff --name-only next ${{ github.sha }})
           echo "::set-output name=files::$files"
           echo "Modified files:"
           echo "$files"
