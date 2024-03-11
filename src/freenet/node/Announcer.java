@@ -504,11 +504,10 @@ public class Announcer {
 			if(runningAnnouncements > WANT_ANNOUNCEMENTS) {
 				if(logMINOR)
 					Logger.minor(this, "Running announcements already");
-				return;
-			}
+				return;}
 			// In cooling-off period?
 			if(System.currentTimeMillis() < startTime) {
-				if(logMINOR)
+				  if(logMINOR)
 					Logger.minor(this, "In cooling-off period for next "+TimeUtil.formatTime(startTime - System.currentTimeMillis()));
 				return;
 			}
