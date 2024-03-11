@@ -511,7 +511,7 @@ public class Announcer {
 					Logger.minor(this, "In cooling-off period for next "+TimeUtil.formatTime(startTime - System.currentTimeMillis()));
 				return;
 			}
-			if(sentAnnouncements >= WANT_ANNOUNCEMENTS) {
+			  if(sentAnnouncements >= WANT_ANNOUNCEMENTS) {
 				if(logMINOR)
 					Logger.minor(this, "Sent enough announcements");
 				return;
