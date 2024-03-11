@@ -29,6 +29,7 @@ jobs:
 
       - name: Format modified files
         run: |
+          files=$(git diff --name-only origin/next ${{ github.sha }} | grep '.java')
           for file in $files; do
             astyle --style=java --indent=force-tab=4 --suffix=none "$file"
           done
