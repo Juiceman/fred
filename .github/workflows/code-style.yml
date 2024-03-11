@@ -31,11 +31,11 @@ jobs:
 
       - name: Format modified files
         run: |
-          IFS=$'\n' read -r -d '' -a files2 <<< "$files"
-          for file in "${files2[@]}"; do
-            astyle --indent=force-tab=4 --suffix=none "$file"
+          IFS=$'\n' read -r -d '' -a files <<< "$files"
+          for file in "${files[@]}"; do
             echo "$file"
           done
+        #astyle --indent=force-tab=4 --suffix=none "$file"
           
       - name: Create commit
         uses: stefanzweifel/git-auto-commit-action@v5.0.0
