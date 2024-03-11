@@ -12,9 +12,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4.1.1
-      
-      - name: Fetch 'next' branch
-        run: git fetch origin next
+        with:
+          ref: next
 
       - name: Install Astyle
         run: |
@@ -25,7 +24,7 @@ jobs:
         id: commit_hashes
         run: |
           before=$(git rev-parse origin/next)
-          after=$(git rev-parse HEAD^2)
+          after=$(git rev-parse HEAD)
           echo "::set-output name=before::$before"
           echo "::set-output name=after::$after"
           echo "Before: $before"
