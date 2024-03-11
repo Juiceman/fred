@@ -17,7 +17,6 @@ jobs:
         run: git fetch origin next
 
       - name: Get modified files
-        id: get_files
         run: |
           files=$(git diff --name-only origin/next ${{ github.sha }})
           echo "::set-output name=files::$files"
@@ -31,12 +30,13 @@ jobs:
 
       - name: Format modified files
         run: |
-          IFS=$'\n' read -r -d '' -a files <<< "$files"
-          for file in "${files[@]}"; do
-            echo "$file"
+          files=$(git diff --name-only origin/next ${{ github.sha }})
+          echo "Modified files:"
+          echo "$files"
+          for file in $files; do
+            astyle --indent=force-tab=4 --suffix=none "$file"
           done
-        #astyle --indent=force-tab=4 --suffix=none "$file"
-          
+
       - name: Create commit
         uses: stefanzweifel/git-auto-commit-action@v5.0.0
         with:
