@@ -33,7 +33,7 @@ jobs:
         run: |
           IFS=$'\n' read -r -d '' -a files <<< "${{ steps.get_files.outputs.files }}"
           for file in "${files[@]}"; do
-            astyle --indent=force-tab=4 --suffix=none "$file"
+            astyle --indent=force-tab=4 --suffix=none --recursive "$file"
           done
 
       - name: Create commit
