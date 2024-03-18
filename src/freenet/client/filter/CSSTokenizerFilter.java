@@ -2896,16 +2896,12 @@ class CSSTokenizerFilter {
 				charsetPossible=false;
 				if(stopAtDetectedCharset)
 					return;
-				switch(c)
-				{
-				case '/':
-					if(prevc=='*')
-					{
-						currentState=stateBeforeComment;
+				if (c == '/') {
+					if (prevc == '*') {
+						currentState = stateBeforeComment;
 						c = 0;
-						if(logDEBUG) Logger.debug(this, "Exiting the comment state "+currentState);
+						if (logDEBUG) Logger.debug(this, "Exiting the comment state " + currentState);
 					}
-					break;
 				}
 				break;
 			}

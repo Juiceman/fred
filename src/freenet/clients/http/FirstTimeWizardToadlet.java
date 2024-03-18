@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumMap;
+import java.util.Objects;
 
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.wizardsteps.BANDWIDTH;
@@ -347,12 +348,9 @@ public class FirstTimeWizardToadlet extends Toadlet {
 					//do nothing
 			}
 		} else  if (preset == WIZARD_PRESET.LOW) {
-			switch (currentStep) {
-				case DATASTORE_SIZE:
-					//Go back to the beginning from the datastore page.
-					return WIZARD_STEP.WELCOME;
-				default:
-					//do nothing
+			//do nothing
+			if (Objects.requireNonNull(currentStep) == WIZARD_STEP.DATASTORE_SIZE) {//Go back to the beginning from the datastore page.
+				return WIZARD_STEP.WELCOME;
 			}
 		}
 
