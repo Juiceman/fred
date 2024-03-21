@@ -339,9 +339,10 @@ public class AddressTracker {
 		InetAddressAddressTrackerItem[] inetItems = getInetAddressTrackerItems();
 		items = new SimpleFieldSet(true);
 		if(inetItems.length > 0) {
-		    for(int i = 0; i < inetItems.length; i++)
-			items.put(Integer.toString(i), inetItems[i].toFieldSet());
-		    sfs.put("IPs", items);
+		    for(int i = 0; i < inetItems.length; i++) {
+				items.put(Integer.toString(i), inetItems[i].toFieldSet());
+				sfs.put("IPs", items);
+			}
 		}
 		return sfs;
 	}

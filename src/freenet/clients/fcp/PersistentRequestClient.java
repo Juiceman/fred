@@ -377,15 +377,16 @@ public class PersistentRequestClient {
 		PersistentRequestClient[] clients;
 		if(isGlobalQueue) {
 			synchronized(clientsWatchingLock) {
-				if(clientsWatching != null)
-				clients = clientsWatching.toArray(new PersistentRequestClient[clientsWatching.size()]);
-				else
+				if(clientsWatching != null) {
+					clients = clientsWatching.toArray(new PersistentRequestClient[clientsWatching.size()]);
+				} else
 					clients = null;
 			}
-			if(clients != null)
-			for(PersistentRequestClient client: clients) {
-				if(client.persistence != persistence) continue;
-				client.queueClientRequestMessage(msg, verbosityLevel, true);
+			if(clients != null) {
+				for(PersistentRequestClient client: clients) {
+					if(client.persistence != persistence) continue;
+					client.queueClientRequestMessage(msg, verbosityLevel, true);
+				}
 			}
 		}
 	}
@@ -393,8 +394,9 @@ public class PersistentRequestClient {
 	private void unwatch(PersistentRequestClient client) {
 		if(!isGlobalQueue) return;
 		synchronized(clientsWatchingLock) {
-			if(clientsWatching != null)
-			clientsWatching.remove(client);
+			if(clientsWatching != null) {
+				clientsWatching.remove(client);
+			}
 		}
 	}
 

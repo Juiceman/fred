@@ -1197,11 +1197,13 @@ public class SimpleFieldSet {
      */
 	public char getChar(String key, char def) {
 		String s = get(key);
-		if(s == null) return def;
-			if (s.length() == 1)
-				return s.charAt(0);
-			else
-				return def;
+		if(s == null) {
+			return def;
+		}
+		if (s.length() == 1) {
+			return s.charAt(0);
+		} else
+			return def;
 	}
 
 	public boolean getBoolean(String key, boolean def) {

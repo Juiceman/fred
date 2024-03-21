@@ -357,8 +357,12 @@ class NPFPacket {
 	}
 
 	public boolean addAck(int ack, int maxPacketSize) {
-		if(ack < 0) throw new IllegalArgumentException("Got negative ack: " + ack);
-		if(acks.contains(ack)) return true;
+		if(ack < 0) {
+			throw new IllegalArgumentException("Got negative ack: " + ack);
+		}
+		if(acks.contains(ack)) {
+			return true;
+		}
 		
 			acks.add(ack);
 			int nearRangeCount = 0, farRangeCount = 0;

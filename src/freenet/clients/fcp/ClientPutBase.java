@@ -260,9 +260,9 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		}
 		// notify client that request was removed
 		FCPMessage msg = new PersistentRequestRemovedMessage(getIdentifier(), global);
-		if(persistence == Persistence.CONNECTION)
+		if(persistence == Persistence.CONNECTION) {
 			origHandler.send(msg);
-		else
+		} else
 		client.queueClientRequestMessage(msg, 0);
 
 		freeData();

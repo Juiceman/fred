@@ -399,12 +399,14 @@ public class NodeIPDetector {
 	 */
         public void reportMTU(int mtu, boolean forIPv6) {
 	    boolean mtuChanged = false;
-	    if(forIPv6)
-		mtuChanged |= minimumMTUIPv6.report(mtu);
-	    else	
+	    if(forIPv6) {
+			mtuChanged |= minimumMTUIPv6.report(mtu);
+		} else
 		mtuChanged |= minimumMTUIPv4.report(mtu);
 
-	    if (mtuChanged) node.updateMTU();
+	    if (mtuChanged) {
+			node.updateMTU();
+			}
         }
 
 	public void redetectAddress() {

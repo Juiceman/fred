@@ -420,8 +420,9 @@ class KeyListenerTracker implements KeySalter {
 		assert(key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
 		List<KeyListener> matches = probablyWantKey(key, saltedKey);
-    if(matches == null)
-      return null;
+    if(matches == null) {
+		return null;
+	}
 		for (KeyListener listener : matches) {
 			SendableGet[] reqs;
 			try {

@@ -117,8 +117,9 @@ public class SeedClientPeerNode extends PeerNode {
 			// Synchronize to avoid messy races.
 			synchronized(this) {
 				if(timeLastConnectionCompleted() > 0 &&
-						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60))
-				return true;
+						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60)) {
+					return true;
+				}
 			}
 		} else {
 			// Disconnect after an hour in any event.

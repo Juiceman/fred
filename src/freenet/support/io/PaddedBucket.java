@@ -191,8 +191,9 @@ public class PaddedBucket implements Bucket, Serializable {
             }
             int ret = in.read(buf, offset, length);
             synchronized(PaddedBucket.this) {
-                if(ret > 0)
-                counter += ret;
+                if(ret > 0) {
+					counter += ret;
+				}
             }
             return ret;
         }

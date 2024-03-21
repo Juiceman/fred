@@ -198,8 +198,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
             }
             int ret = in.read(buf, offset, length);
             synchronized(PaddedRandomAccessBucket.this) {
-                if(ret > 0)
-                counter += ret;
+                if(ret > 0) {
+					counter += ret;
+				}
             }
             return ret;
         }

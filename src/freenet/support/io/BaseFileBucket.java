@@ -70,8 +70,9 @@ public abstract class BaseFileBucket implements RandomAccessBucket {
 	}
 
         private void maybeSetDeleteOnExit(boolean deleteOnExit, File file) {
-        	if(deleteOnExit)
-			setDeleteOnExit(file);
+        	if(deleteOnExit) {
+				setDeleteOnExit(file);
+			}
         }
 	
 	protected void setDeleteOnExit(File file) {

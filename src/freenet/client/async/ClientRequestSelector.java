@@ -749,8 +749,9 @@ outer:	for(;choosenPriorityClass <= RequestStarter.MINIMUM_FETCHABLE_PRIORITY_CL
         if(isInsertScheduler) return;
         if(succeeded.isCancelled()) return;
         // Don't bother with getCooldownTime at this point.
-            if(logMINOR)
-                Logger.minor(this, "Recording successful fetch from "+succeeded);
+            if(logMINOR) {
+				Logger.minor(this, "Recording successful fetch from "+succeeded);
+			}
         synchronized(recentSuccesses) {
             while(recentSuccesses.size() >= 8)
                 recentSuccesses.pollFirst();

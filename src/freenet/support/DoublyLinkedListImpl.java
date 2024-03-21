@@ -456,9 +456,11 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 			if (next == null)
                 throw new NoSuchElementException();
 			T result = next;
-	    if(next == null) throw new IllegalStateException("next==null");
-            next = next.getPrev();
-			return result;
+	    if(next == null) {
+			throw new IllegalStateException("next==null");
+		}
+		next = next.getPrev();
+		return result;
         }
     }
 

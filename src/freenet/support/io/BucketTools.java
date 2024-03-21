@@ -389,8 +389,9 @@ public class BucketTools {
 				Logger.error(BucketTools.class, "Asked to free data when splitting a FileBucket ?!?!? Not freeing as this would clobber the split result...");
 			}
 			Bucket[] buckets = ((FileBucket)origData).split(splitSize);
-			if(persistent)
-			return buckets;
+			if(persistent) {
+				return buckets;
+			}
 		}
 		long length = origData.size();
 		if(length > ((long)Integer.MAX_VALUE) * splitSize)

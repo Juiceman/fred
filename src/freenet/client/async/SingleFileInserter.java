@@ -658,8 +658,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			}
 			// fail() will cancel the other one, so we don't need to.
 			// When it does, it will come back here, and we won't call fail(), because fail() has already set finished = true.
-			if(toFail)
-			fail(e, context);
+			if(toFail) {
+				fail(e, context);
+			}
 		}
 
 		@Override
