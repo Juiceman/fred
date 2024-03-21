@@ -30,7 +30,7 @@ public class SendBookmarkMessage extends SendPeerMessage {
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(
 					ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e
-							.getMessage(), identifier, false);
+					.getMessage(), identifier, false);
 		}
 	}
 
@@ -51,11 +51,10 @@ public class SendBookmarkMessage extends SendPeerMessage {
 	@Override
 	protected int handleFeed(DarknetPeerNode pn) throws MessageInvalidException {
 		try {
-			if(dataLength() > 0) {
+			if (dataLength() > 0) {
 				byte[] description = BucketTools.toByteArray(bucket);
 				return pn.sendBookmarkFeed(uri, name, new String(description, StandardCharsets.UTF_8), hasAnAnActiveLink);
-			}
-			else
+			} else
 				return pn.sendBookmarkFeed(uri, name, null, hasAnAnActiveLink);
 		} catch (IOException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "", null, false);

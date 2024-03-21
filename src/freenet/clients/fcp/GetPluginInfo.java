@@ -9,7 +9,6 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * can find a plugin that implements FredPluginFCP
- * 
  */
 public class GetPluginInfo extends FCPMessage {
 
@@ -21,10 +20,10 @@ public class GetPluginInfo extends FCPMessage {
 
 	public GetPluginInfo(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if(identifier == null)
+		if (identifier == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "GetPluginInfo must contain an Identifier field", null, false);
 		plugname = fs.get("PluginName");
-		if(plugname == null)
+		if (plugname == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "GetPluginInfo must contain a PluginName field", identifier, false);
 		detailed = fs.getBoolean("Detailed", false);
 	}
@@ -42,13 +41,13 @@ public class GetPluginInfo extends FCPMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 			throws MessageInvalidException {
-		if(detailed && !handler.hasFullAccess()) {
+		if (detailed && !handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "GetPluginInfo detailed requires full access", identifier, false);
 		}
 
 		PluginInfoWrapper pi = node.getPluginManager().getPluginInfo(plugname);
 		if (pi == null) {
-			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '"+ plugname + "' does not exist or is not a FCP plugin", identifier, false));
+			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '" + plugname + "' does not exist or is not a FCP plugin", identifier, false));
 		} else {
 			handler.send(new PluginInfoMessage(pi, identifier, detailed));
 		}

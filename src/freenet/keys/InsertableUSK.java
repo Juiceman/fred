@@ -13,7 +13,7 @@ import freenet.support.Logger;
 
 /**
  * An insertable USK.
- * 
+ * <p>
  * Changes from an ordinary USK:
  * - It has a private key
  * - getURI() doesn't include ,extra
@@ -21,22 +21,22 @@ import freenet.support.Logger;
  * - It has a getUSK() method which gets the public USK
  */
 public class InsertableUSK extends USK {
-	
-    private static final long serialVersionUID = 1L;
-    public final DSAPrivateKey privKey;
-	
+
+	private static final long serialVersionUID = 1L;
+	public final DSAPrivateKey privKey;
+
 	public static InsertableUSK createInsertable(FreenetURI uri, boolean persistent) throws MalformedURLException {
-		if(!uri.getKeyType().equalsIgnoreCase("USK"))
+		if (!uri.getKeyType().equalsIgnoreCase("USK"))
 			throw new MalformedURLException();
 		InsertableClientSSK ssk =
-			InsertableClientSSK.create(uri.setKeyType("SSK"));
+				InsertableClientSSK.create(uri.setKeyType("SSK"));
 		return new InsertableUSK(ssk.docName, ssk.pubKeyHash, ssk.cryptoKey, ssk.privKey, uri.getSuggestedEdition(), ssk.cryptoAlgorithm);
 	}
-	
+
 	InsertableUSK(String docName, byte[] pubKeyHash, byte[] cryptoKey, DSAPrivateKey key, long suggestedEdition, byte cryptoAlgorithm) throws MalformedURLException {
 		super(pubKeyHash, cryptoKey, docName, suggestedEdition, cryptoAlgorithm);
-		if(cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH)
-			throw new MalformedURLException("Decryption key wrong length: "+cryptoKey.length+" should be "+ClientSSK.CRYPTO_KEY_LENGTH);
+		if (cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH)
+			throw new MalformedURLException("Decryption key wrong length: " + cryptoKey.length + " should be " + ClientSSK.CRYPTO_KEY_LENGTH);
 		this.privKey = key;
 	}
 
@@ -47,19 +47,19 @@ public class InsertableUSK extends USK {
 	public InsertableClientSSK getInsertableSSK(long ver) {
 		return getInsertableSSK(siteName + SEPARATOR + ver);
 	}
-	
+
 	public InsertableClientSSK getInsertableSSK(String string) {
 		try {
-			return new InsertableClientSSK(string, pubKeyHash, 
+			return new InsertableClientSSK(string, pubKeyHash,
 					new DSAPublicKey(getCryptoGroup(), privKey), privKey, cryptoKey, cryptoAlgorithm);
 		} catch (MalformedURLException e) {
-			Logger.error(this, "Caught "+e+" should not be possible in USK.getSSK", e);
+			Logger.error(this, "Caught " + e + " should not be possible in USK.getSSK", e);
 			throw new Error(e);
 		}
 	}
 
 	public InsertableUSK privCopy(long edition) {
-		if(edition == suggestedEdition) return this;
+		if (edition == suggestedEdition) return this;
 		try {
 			return new InsertableUSK(siteName, pubKeyHash, cryptoKey, privKey, edition, cryptoAlgorithm);
 		} catch (MalformedURLException e) {

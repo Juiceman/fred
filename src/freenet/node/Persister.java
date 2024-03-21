@@ -14,12 +14,13 @@ import freenet.support.io.Closer;
 import freenet.support.io.FileUtil;
 
 class Persister implements Runnable {
-        private static volatile boolean logMINOR;
-        static {
-            Logger.registerClass(Persister.class);
-        }
+	private static volatile boolean logMINOR;
 
-        static final long PERIOD = MINUTES.toMillis(15);
+	static {
+		Logger.registerClass(Persister.class);
+	}
+
+	static final long PERIOD = MINUTES.toMillis(15);
 
 	Persister(Persistable t, File persistTemp, File persistTarget, Ticker ps) {
 		this.persistable = t;
@@ -27,21 +28,21 @@ class Persister implements Runnable {
 		this.persistTarget = persistTarget;
 		this.ps = ps;
 	}
-	
+
 	// Subclass must set the others later
 	protected Persister(Persistable t, Ticker ps) {
 		this.persistable = t;
 		this.ps = ps;
 	}
-	
+
 	final Persistable persistable;
 	private final Ticker ps;
 	File persistTemp;
 	File persistTarget;
 	private boolean started;
-	
+
 	void interrupt() {
-		synchronized(this) {
+		synchronized (this) {
 			notifyAll();
 		}
 	}
@@ -52,14 +53,14 @@ class Persister implements Runnable {
 		try {
 			persistThrottle();
 		} catch (Throwable t) {
-			Logger.error(this, "Caught in ThrottlePersister: "+t, t);
-			System.err.println("Caught in ThrottlePersister: "+t);
+			Logger.error(this, "Caught in ThrottlePersister: " + t, t);
+			System.err.println("Caught in ThrottlePersister: " + t);
 			t.printStackTrace();
 			System.err.println("Will restart ThrottlePersister...");
 		}
 		ps.queueTimedJob(this, PERIOD);
 	}
-	
+
 	private void persistThrottle() {
 		if (logMINOR) {
 			Logger.minor(this, "Trying to persist throttles...");
@@ -90,28 +91,28 @@ class Persister implements Runnable {
 			} catch (FileNotFoundException e1) {
 				// Ignore
 			} catch (IOException e1) {
-				if(persistTarget.length() > 0 || persistTemp.length() > 0)
-					Logger.error(this, "Could not read "+persistTarget+" ("+e+") and could not read "+persistTemp+" either ("+e1+ ')');
+				if (persistTarget.length() > 0 || persistTemp.length() > 0)
+					Logger.error(this, "Could not read " + persistTarget + " (" + e + ") and could not read " + persistTemp + " either (" + e1 + ')');
 			}
 		}
 		return throttleFS;
 	}
 
 	public void start() {
-		synchronized(this) {
-			if(started) {
-				Logger.error(this, "Already started: "+this, new Exception("debug"));
+		synchronized (this) {
+			if (started) {
+				Logger.error(this, "Already started: " + this, new Exception("debug"));
 				return;
 			}
 			started = true;
 		}
 		SemiOrderedShutdownHook.get().addEarlyJob(new Thread() {
-			
+
 			public void run() {
-				System.out.println("Writing "+persistTarget+" on shutdown");
+				System.out.println("Writing " + persistTarget + " on shutdown");
 				persistThrottle();
 			}
-			
+
 		});
 		run();
 	}

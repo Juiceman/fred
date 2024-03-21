@@ -5,8 +5,8 @@ package freenet.clients.fcp;
  */
 public class ProbeIdentifier extends FCPResponse {
 	/**
-	 * @param fcpIdentifier FCP-level identifier for pairing requests and responses
-	 * @param probeIdentifier probe endpoint identifier
+	 * @param fcpIdentifier    FCP-level identifier for pairing requests and responses
+	 * @param probeIdentifier  probe endpoint identifier
 	 * @param uptimePercentage 7-day uptime percentage
 	 */
 	public ProbeIdentifier(String fcpIdentifier, long probeIdentifier, long uptimePercentage) {

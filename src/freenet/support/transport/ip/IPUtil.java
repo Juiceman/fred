@@ -10,14 +10,15 @@ public class IPUtil {
 
 	static final boolean strict = true;
 
-	/** Check if address is in site-local range.
+	/**
+	 * Check if address is in site-local range.
 	 * [Oracle|Open]JDK up to 8 contains obsolete check for site-local ipv6
 	 * addresses, this repaces it with correct one.
 	 */
 	public static boolean isSiteLocalAddress(InetAddress i) {
-	    if(i instanceof Inet6Address) {
-			byte [] addr = i.getAddress();
-			assert(addr.length == 128/8);
+		if (i instanceof Inet6Address) {
+			byte[] addr = i.getAddress();
+			assert (addr.length == 128 / 8);
 			// XXX what about ipv6-mapped ipv4 site-local addresses?
 			// (weird/insane/not-sure-if-possible-but)
 			/*
@@ -43,34 +44,34 @@ public class IPUtil {
 			}
 			*/
 			return
-				((addr[0] & (byte)0xfe) == (byte)0xfc
-				 /* unique local: fc00::/7 */) ||
-				(addr[0] == (byte)0xfe && (addr[1] & (byte)0xc0) == (byte)0xc0
-				 /* DEPRECATED site local: 0xfec0::/10 */);
-	    }
-	    return i.isSiteLocalAddress();
+					((addr[0] & (byte) 0xfe) == (byte) 0xfc
+							/* unique local: fc00::/7 */) ||
+							(addr[0] == (byte) 0xfe && (addr[1] & (byte) 0xc0) == (byte) 0xc0
+									/* DEPRECATED site local: 0xfec0::/10 */);
+		}
+		return i.isSiteLocalAddress();
 	}
-        /**
-         *
-         * @param i
-         * @param includeLocalAddressesInNoderefs
-         * @return
-         */
-        public static boolean isValidAddress(InetAddress i, boolean includeLocalAddressesInNoderefs) {
-		if(i.isAnyLocalAddress()) {
+
+	/**
+	 * @param i
+	 * @param includeLocalAddressesInNoderefs
+	 * @return
+	 */
+	public static boolean isValidAddress(InetAddress i, boolean includeLocalAddressesInNoderefs) {
+		if (i.isAnyLocalAddress()) {
 			// Wildcard address, 0.0.0.0, ignore.
 			return false;
-		} else if(i.isLinkLocalAddress() || i.isLoopbackAddress() ||
+		} else if (i.isLinkLocalAddress() || i.isLoopbackAddress() ||
 				isSiteLocalAddress(i)) {
-			if(includeLocalAddressesInNoderefs) {
+			if (includeLocalAddressesInNoderefs) {
 				return true;
 			} else return false;
-		} else if(i.isMulticastAddress()) {
+		} else if (i.isMulticastAddress()) {
 			// Ignore
 			return false;
 		} else {
 			byte[] ipAddressBytes = i.getAddress();
-			if(ipAddressBytes.length == 4 && ipAddressBytes[0] == 0) {
+			if (ipAddressBytes.length == 4 && ipAddressBytes[0] == 0) {
 				return false;  // First octet of IPv4 address cannot be zero as 0.0.0.0/8 has been reserved since at least RFC790 (also, Java throws an IOException when they're used)
 			}
 			return true;

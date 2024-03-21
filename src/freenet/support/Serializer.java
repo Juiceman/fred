@@ -34,17 +34,17 @@ import freenet.node.NewPacketFormat;
 
 /**
  * @author ian
- *
+ * <p>
  * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and
  * Comments
  */
 public class Serializer {
 
-    public static final String VERSION = "$Id: Serializer.java,v 1.5 2005/09/15 18:16:04 amphibian Exp $";
+	public static final String VERSION = "$Id: Serializer.java,v 1.5 2005/09/15 18:16:04 amphibian Exp $";
 	/**
 	 * Maximum bit array size in bits.
 	 */
-	public static final int MAX_BITARRAY_SIZE = 2048*8;
+	public static final int MAX_BITARRAY_SIZE = 2048 * 8;
 	/**
 	 * Maximum incoming array length in bytes.
 	 */
@@ -62,8 +62,9 @@ public class Serializer {
 
 	/**
 	 * Attempts to read an object of the specified type from the input.
+	 *
 	 * @param type type to read.
-	 * @param dis input to read from.
+	 * @param dis  input to read from.
 	 * @return object read.
 	 * @throws IOException if a read operation result in an IO error or an unexpected value is encountered.
 	 */
@@ -74,9 +75,12 @@ public class Serializer {
 			 * problems: only 0 and 1 are written.
 			 */
 			switch (bool) {
-				case 1: return Boolean.TRUE;
-				case 0: return Boolean.FALSE;
-				default: throw new IOException("Boolean is non boolean value: " + bool);
+				case 1:
+					return Boolean.TRUE;
+				case 0:
+					return Boolean.FALSE;
+				default:
+					throw new IOException("Boolean is non boolean value: " + bool);
 			}
 		} else if (type.equals(Byte.class)) {
 			return dis.readByte();
@@ -87,7 +91,7 @@ public class Serializer {
 		} else if (type.equals(Long.class)) {
 			return dis.readLong();
 		} else if (type.equals(Double.class)) {
-		    return dis.readDouble();
+			return dis.readDouble();
 		} else if (type.equals(Float.class)) {
 			return dis.readFloat();
 		} else if (type.equals(String.class)) {
@@ -105,7 +109,7 @@ public class Serializer {
 		} else if (type.equals(Buffer.class)) {
 			return new Buffer(dis);
 		} else if (type.equals(ShortBuffer.class)) {
-		    return new ShortBuffer(dis);
+			return new ShortBuffer(dis);
 		} else if (type.equals(Peer.class)) {
 			return new Peer(dis);
 		} else if (type.equals(BitArray.class)) {
@@ -117,7 +121,7 @@ public class Serializer {
 			// Use Key.read(...) rather than NodeSSK-specific method because write(...) writes the TYPE field.
 			return Key.read(dis);
 		} else if (type.equals(Key.class)) {
-		    return Key.read(dis);
+			return Key.read(dis);
 		} else if (type.equals(double[].class)) {
 			// & 0xFF for unsigned byte. Can be up to 255, no negatives.
 			double[] array = new double[dis.readByte() & 0xFF];
@@ -125,7 +129,7 @@ public class Serializer {
 			return array;
 		} else if (type.equals(float[].class)) {
 			final short length = dis.readShort();
-			if (length < 0 || length > MAX_ARRAY_LENGTH/4) {
+			if (length < 0 || length > MAX_ARRAY_LENGTH / 4) {
 				throw new IOException("Invalid flat array length: " + length);
 			}
 			float[] array = new float[length];
@@ -136,7 +140,7 @@ public class Serializer {
 		}
 	}
 
-	public static void writeToDataOutputStream(Object object, DataOutputStream dos) throws IOException {	
+	public static void writeToDataOutputStream(Object object, DataOutputStream dos) throws IOException {
 		Class<?> type = object.getClass();
 		if (type.equals(Long.class)) {
 			dos.writeLong((Long) object);
@@ -149,7 +153,7 @@ public class Serializer {
 		} else if (type.equals(Double.class)) {
 			dos.writeDouble((Double) object);
 		} else if (type.equals(Float.class)) {
-			dos.writeFloat((Float)object);
+			dos.writeFloat((Float) object);
 		} else if (WritableToDataOutputStream.class.isAssignableFrom(type)) {
 			((WritableToDataOutputStream) object).writeToDataOutputStream(dos);
 		} else if (type.equals(String.class)) {
@@ -168,24 +172,26 @@ public class Serializer {
 			}
 		} else if (type.equals(Byte.class)) {
 			dos.write((Byte) object);
-		} else if (type.equals(double[].class))  {
+		} else if (type.equals(double[].class)) {
 			// writeByte() takes the eight lower-order bits - length capped to 255.
-			final double[] array = (double[])object;
+			final double[] array = (double[]) object;
 			if (array.length > 255) {
 				throw new IllegalArgumentException("Cannot serialize an array of more than 255 doubles; attempted to " +
-				                                   "serialize " + array.length + ".");
+						"serialize " + array.length + ".");
 			}
 			dos.writeByte(array.length);
 			for (double element : array) dos.writeDouble(element);
 		} else if (type.equals(float[].class)) {
-			dos.writeShort(((float[])object).length);
-			for (float element : (float[])object) dos.writeFloat(element);
+			dos.writeShort(((float[]) object).length);
+			for (float element : (float[]) object) dos.writeFloat(element);
 		} else {
 			throw new RuntimeException("Unrecognised field type: " + type);
 		}
 	}
 
-	/** Only works for simple messages!! */
+	/**
+	 * Only works for simple messages!!
+	 */
 	public static int length(Class<?> type, int maxStringLength) {
 		if (type.equals(Long.class)) {
 			return 8;
@@ -198,7 +204,7 @@ public class Serializer {
 		} else if (type.equals(Double.class)) {
 			return 8;
 		} else if (WritableToDataOutputStream.class.isAssignableFrom(type)) {
-			throw new IllegalArgumentException("Unknown length for "+type);
+			throw new IllegalArgumentException("Unknown length for " + type);
 		} else if (type.equals(String.class)) {
 			return 4 + maxStringLength * 2; // Written as chars
 		} else if (type.equals(LinkedList.class)) {

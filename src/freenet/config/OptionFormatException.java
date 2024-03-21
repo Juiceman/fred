@@ -6,6 +6,7 @@ package freenet.config;
  */
 public class OptionFormatException extends InvalidConfigValueException {
 	private static final long serialVersionUID = -1;
+
 	public OptionFormatException(String msg) {
 		super(msg);
 	}

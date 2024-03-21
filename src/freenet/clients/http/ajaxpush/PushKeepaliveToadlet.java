@@ -13,10 +13,12 @@ import freenet.clients.http.updateableelements.UpdaterConstants;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** This toadlet receives keepalives. It requires the requestId parameter. If the keepalive is failed, the request is already deleted. */
+/**
+ * This toadlet receives keepalives. It requires the requestId parameter. If the keepalive is failed, the request is already deleted.
+ */
 public class PushKeepaliveToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushKeepaliveToadlet.class);

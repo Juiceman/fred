@@ -26,11 +26,10 @@ public class SendTextMessage extends SendPeerMessage {
 	@Override
 	protected int handleFeed(DarknetPeerNode pn) throws MessageInvalidException {
 		try {
-			if(dataLength() > 0) {
+			if (dataLength() > 0) {
 				byte[] text = BucketTools.toByteArray(bucket);
 				return pn.sendTextFeed(new String(text, StandardCharsets.UTF_8));
-			}
-			else {
+			} else {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid data length", null, false);
 			}
 		} catch (IOException e) {

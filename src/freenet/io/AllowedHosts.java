@@ -23,11 +23,13 @@ import java.util.StringTokenizer;
 import freenet.io.AddressIdentifier.AddressType;
 import freenet.support.Logger;
 
-/** Implementation of allowedHosts */
+/**
+ * Implementation of allowedHosts
+ */
 public class AllowedHosts {
-	
+
 	protected final List<AddressMatcher> addressMatchers = new ArrayList<AddressMatcher>();
-	
+
 	public AllowedHosts(String allowedHosts) {
 		setAllowedHosts(allowedHosts);
 	}
@@ -35,12 +37,11 @@ public class AllowedHosts {
 	/**
 	 * Sets the list of allowed hosts to <code>allowedHosts</code>. The new
 	 * list is in effect immediately after this method has finished.
-	 * 
-	 * @param allowedHosts
-	 *            The new list of allowed hosts s
+	 *
+	 * @param allowedHosts The new list of allowed hosts s
 	 */
 	public void setAllowedHosts(String allowedHosts) {
-                if(allowedHosts == null || allowedHosts.isEmpty()) allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
+		if (allowedHosts == null || allowedHosts.isEmpty()) allowedHosts = NetworkInterface.DEFAULT_BIND_TO;
 		StringTokenizer allowedHostsTokens = new StringTokenizer(allowedHosts, ",");
 		List<AddressMatcher> newAddressMatchers = new ArrayList<AddressMatcher>();
 		while (allowedHostsTokens.hasMoreTokens()) {
@@ -72,18 +73,18 @@ public class AllowedHosts {
 	}
 
 	public synchronized boolean allowed(AddressType clientAddressType, InetAddress clientAddress) {
-		for(AddressMatcher matcher: addressMatchers) {
-			if(matcher.matches(clientAddress)) return true;
+		for (AddressMatcher matcher : addressMatchers) {
+			if (matcher.matches(clientAddress)) return true;
 		}
 		return false;
 	}
 
 	public synchronized String getAllowedHosts() {
 		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<addressMatchers.size();i++) {
+		for (int i = 0; i < addressMatchers.size(); i++) {
 			AddressMatcher matcher = addressMatchers.get(i);
-			if(matcher instanceof EverythingMatcher) return "*";
-			if(i != 0) sb.append(',');
+			if (matcher instanceof EverythingMatcher) return "*";
+			if (i != 0) sb.append(',');
 			sb.append(matcher.getHumanRepresentation());
 		}
 		return sb.toString();

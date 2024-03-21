@@ -4,18 +4,22 @@
 package freenet.client.async;
 
 import freenet.node.RequestClient;
+
 import java.io.Serializable;
 
-/** Base class for inserts, including site inserts, at the level of a ClientRequester.
- * 
- * WARNING: Changing non-transient members on classes that are Serializable can result in 
+/**
+ * Base class for inserts, including site inserts, at the level of a ClientRequester.
+ * <p>
+ * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
 public abstract class BaseClientPutter extends ClientRequester {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-	/** Required because {@link Serializable} is implemented by the parent class. */
+	/**
+	 * Required because {@link Serializable} is implemented by the parent class.
+	 */
 	protected BaseClientPutter() {
 	}
 

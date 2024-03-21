@@ -4,7 +4,7 @@ public class RssSniffer {
 
 	/**
 	 * Look for any of the following strings as top-level XML tags: &lt;rss &lt;feed &lt;rdf:RDF
-	 *
+	 * <p>
 	 * If they start at the beginning of the file, or are preceded by one or more &lt;! or &lt;?
 	 * tags, then firefox will read it as RSS. In which case we must force it to be downloaded to
 	 * disk.
@@ -15,8 +15,8 @@ public class RssSniffer {
 			return false;
 		}
 		return startsWithString(prefix, "<rss", tlt) ||
-				       startsWithString(prefix, "<feed", tlt) ||
-				       startsWithString(prefix, "<rdf:RDF", tlt);
+				startsWithString(prefix, "<feed", tlt) ||
+				startsWithString(prefix, "<rdf:RDF", tlt);
 	}
 
 	/**

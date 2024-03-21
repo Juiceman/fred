@@ -7,7 +7,9 @@ import freenet.l10n.NodeL10n;
 import freenet.support.Fields;
 import freenet.support.api.IntCallback;
 
-/** Integer config variable */
+/**
+ * Integer config variable
+ */
 public class IntOption extends Option<Integer> {
 	private final Dimension dimension;
 
@@ -22,7 +24,7 @@ public class IntOption extends Option<Integer> {
 	 */
 	@Deprecated
 	public IntOption(SubConfig conf, String optionName, String defaultValueString, int sortOrder, boolean expert,
-	        boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
+					 boolean forceWrite, String shortDesc, String longDesc, IntCallback cb, boolean isSize) {
 		this(conf, optionName, defaultValueString, sortOrder, expert, forceWrite, shortDesc, longDesc, cb,
 				isSize ? Dimension.SIZE : Dimension.NOT);
 	}

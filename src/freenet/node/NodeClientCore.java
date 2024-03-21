@@ -144,6 +144,7 @@ public class NodeClientCore implements Persistable {
 	 * In particular, you must NOT modify anything.</p>
 	 * <p>To produce a form which already contains the password, use {@link PluginRespirator#addFormChild(freenet.support.HTMLNode, String, String)}.</p>
 	 * <p>To validate that the right password was received, use {@link WebInterfaceToadlet#isFormPassword(HTTPRequest)}.</p>
+	 *
 	 * @deprecated Use {@link #getFormPassword()} instead of accessing this directly
 	 */
 	@Deprecated
@@ -215,7 +216,7 @@ public class NodeClientCore implements Persistable {
 	@Deprecated
 	/* It’s not the field that is deprecated but directly accessing it is. */
 	public final RandomSource random;
-	final ProgramDirectory tempDir;	// Persistent temporary buckets
+	final ProgramDirectory tempDir;    // Persistent temporary buckets
 	final ProgramDirectory persistentTempDir;
 
 	/**
@@ -231,13 +232,15 @@ public class NodeClientCore implements Persistable {
 	 */
 	@Deprecated
 	/* It’s not the field that is deprecated but directly accessing it is. */
-	TextModeClientInterface directTMCI;
+			TextModeClientInterface directTMCI;
 	private final PersistentRequestRoot fcpPersistentRoot;
 	final FCPServer fcpServer;
 	FProxyToadlet fproxyServlet;
 	final SimpleToadletServer toadletContainer;
 	public final RealCompressor compressor;
-	/** If true, requests are resumed lazily i.e. startup does not block waiting for them. */
+	/**
+	 * If true, requests are resumed lazily i.e. startup does not block waiting for them.
+	 */
 	protected final Persister persister;
 
 	/**
@@ -246,11 +249,15 @@ public class NodeClientCore implements Persistable {
 	@Deprecated
 	/* It’s not the field that is deprecated but directly accessing it is. */
 	public final DatastoreChecker storeChecker;
-	/** How much disk space must be free when starting a long-term, unpredictable duration job such
-	 * as a big download? */
+	/**
+	 * How much disk space must be free when starting a long-term, unpredictable duration job such
+	 * as a big download?
+	 */
 	private long minDiskFreeLongTerm;
-	/** How much disk space must be free when starting a quick but disk-heavy job such as
-	 * completing a download? */
+	/**
+	 * How much disk space must be free when starting a quick but disk-heavy job such as
+	 * completing a download?
+	 */
 	private long minDiskFreeShortTerm;
 	private final MasterSecret cryptoSecretTransient;
 
@@ -261,7 +268,7 @@ public class NodeClientCore implements Persistable {
 	/* It’s not the field that is deprecated but directly accessing it is. */
 	public transient final ClientContext clientContext;
 
-	private static int maxBackgroundUSKFetchers;	// Client stuff that needs to be configged - FIXME
+	private static int maxBackgroundUSKFetchers;    // Client stuff that needs to be configged - FIXME
 	static final int MAX_ARCHIVE_HANDLERS = 200; // don't take up much RAM... FIXME
 	static final long MAX_CACHED_ARCHIVE_DATA = 32 * 1024 * 1024; // make a fixed fraction of the store by default? FIXME
 	static final long MAX_ARCHIVED_FILE_SIZE = 1024 * 1024; // arbitrary... FIXME
@@ -282,36 +289,36 @@ public class NodeClientCore implements Persistable {
 		this.pluginStores = new PluginStores(node, installConfig);
 
 		nodeConfig.register("lazyStartDatastoreChecker", false, sortOrder++, true, false,
-				    "NodeClientCore.lazyStartDatastoreChecker",
-				    "NodeClientCore.lazyStartDatastoreCheckerLong",
-				    new BooleanCallback() {
+				"NodeClientCore.lazyStartDatastoreChecker",
+				"NodeClientCore.lazyStartDatastoreCheckerLong",
+				new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    synchronized (NodeClientCore.this) {
-							    return lazyStartDatastoreChecker;
-						    }
-					    }
+					@Override
+					public Boolean get() {
+						synchronized (NodeClientCore.this) {
+							return lazyStartDatastoreChecker;
+						}
+					}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException,
-								   NodeNeedRestartException {
-						    synchronized (NodeClientCore.this) {
-							    if (val != lazyStartDatastoreChecker) {
-								    lazyStartDatastoreChecker = val;
-								    throw new NodeNeedRestartException(
-										    l10n("lazyStartDatastoreCheckerMustRestartNode"));
-							    }
-						    }
-					    }
+					@Override
+					public void set(Boolean val)
+							throws InvalidConfigValueException,
+							NodeNeedRestartException {
+						synchronized (NodeClientCore.this) {
+							if (val != lazyStartDatastoreChecker) {
+								lazyStartDatastoreChecker = val;
+								throw new NodeNeedRestartException(
+										l10n("lazyStartDatastoreCheckerMustRestartNode"));
+							}
+						}
+					}
 
-				    });
+				});
 		lazyStartDatastoreChecker = nodeConfig.getBoolean("lazyStartDatastoreChecker");
 
 		storeChecker =
 				new DatastoreChecker(node, lazyStartDatastoreChecker, node.getExecutor(),
-						     "Datastore checker");
+						"Datastore checker");
 		byte[] pwdBuf = new byte[16];
 		random.nextBytes(pwdBuf);
 		compressor = new RealCompressor();
@@ -319,11 +326,11 @@ public class NodeClientCore implements Persistable {
 		alerts = new UserAlertManager(this);
 		persister =
 				new ConfigurablePersister(this, nodeConfig, "clientThrottleFile",
-							  "client-throttle.dat", sortOrder++, true,
-							  false,
-							  "NodeClientCore.fileForClientStats",
-							  "NodeClientCore.fileForClientStatsLong",
-							  node.getTicker(), node.getRunDir());
+						"client-throttle.dat", sortOrder++, true,
+						false,
+						"NodeClientCore.fileForClientStats",
+						"NodeClientCore.fileForClientStatsLong",
+						node.getTicker(), node.getRunDir());
 
 		SimpleFieldSet throttleFS = persister.read();
 		if (logMINOR)
@@ -336,9 +343,9 @@ public class NodeClientCore implements Persistable {
 
 		this.tempDir =
 				node.setupProgramDir(installConfig, "tempDir",
-						     node.runDir().file("temp").toString(),
-						     "NodeClientCore.tempDir",
-						     "NodeClientCore.tempDirLong", nodeConfig);
+						node.runDir().file("temp").toString(),
+						"NodeClientCore.tempDir",
+						"NodeClientCore.tempDirLong", nodeConfig);
 
 		// FIXME remove back compatibility hack.
 		File oldTemp = node.runDir().file("temp-" + node.getDarknetPortNumber());
@@ -368,52 +375,52 @@ public class NodeClientCore implements Persistable {
 
 		// Persistent temp files
 		nodeConfig.register("encryptPersistentTempBuckets", true, sortOrder++, true, false,
-				    "NodeClientCore.encryptPersistentTempBuckets",
-				    "NodeClientCore.encryptPersistentTempBucketsLong",
-				    new BooleanCallback() {
+				"NodeClientCore.encryptPersistentTempBuckets",
+				"NodeClientCore.encryptPersistentTempBucketsLong",
+				new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    return (persistentTempBucketFactory == null
-							    ? true : persistentTempBucketFactory
-									    .isEncrypting());
-					    }
+					@Override
+					public Boolean get() {
+						return (persistentTempBucketFactory == null
+								? true : persistentTempBucketFactory
+								.isEncrypting());
+					}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException {
-						    if (get().equals(val) || (
-								    persistentTempBucketFactory
-								    == null))
-							    return;
-						    persistentTempBucketFactory.setEncryption(val);
-						    persistentRAFFactory.setEncryption(val);
-					    }
-				    });
+					@Override
+					public void set(Boolean val)
+							throws InvalidConfigValueException {
+						if (get().equals(val) || (
+								persistentTempBucketFactory
+										== null))
+							return;
+						persistentTempBucketFactory.setEncryption(val);
+						persistentRAFFactory.setEncryption(val);
+					}
+				});
 
 		this.persistentTempDir =
 				node.setupProgramDir(installConfig, "persistentTempDir",
-						     node.userDir().file("persistent-temp")
-								     .toString(),
-						     "NodeClientCore.persistentTempDir",
-						     "NodeClientCore.persistentTempDirLong",
-						     nodeConfig);
+						node.userDir().file("persistent-temp")
+								.toString(),
+						"NodeClientCore.persistentTempDir",
+						"NodeClientCore.persistentTempDirLong",
+						nodeConfig);
 
 		fcpPersistentRoot = new PersistentRequestRoot();
 		try {
 			this.persistentTempBucketFactory =
 					new PersistentTempBucketFactory(persistentTempDir.dir(),
-									"freenet-temp-",
-									node.getRandom(),
-									node.getFastWeakRandom(),
-									nodeConfig.getBoolean(
-											"encryptPersistentTempBuckets"));
+							"freenet-temp-",
+							node.getRandom(),
+							node.getFastWeakRandom(),
+							nodeConfig.getBoolean(
+									"encryptPersistentTempBuckets"));
 			this.persistentFilenameGenerator = persistentTempBucketFactory.fg;
 		} catch (IOException e) {
 			String
 					msg =
 					"Could not find or create persistent temporary directory: "
-					+ e;
+							+ e;
 			e.printStackTrace();
 			throw new NodeInitException(NodeInitException.EXIT_BAD_DIR, msg);
 		}
@@ -428,9 +435,9 @@ public class NodeClientCore implements Persistable {
 					FileUtil.secureDelete(oldBlobFile);
 				} catch (IOException e) {
 					System.err.println("Unable to delete old blob file "
-							   + oldBlobFile + " : error: " + e);
+							+ oldBlobFile + " : error: " + e);
 					System.err.println("Please delete " + oldBlobFile
-							   + " yourself.");
+							+ " yourself.");
 				}
 			} else {
 				oldBlobFile.delete();
@@ -454,43 +461,43 @@ public class NodeClientCore implements Persistable {
 		long maxBucketSize = Math.max(32768, (defaultRamBucketPoolSize * 1024 * 1024) / 20);
 
 		nodeConfig.register("maxRAMBucketSize",
-				    SizeUtil.formatSizeWithoutSpace(maxBucketSize), sortOrder++,
-				    true, false, "NodeClientCore.maxRAMBucketSize",
-				    "NodeClientCore.maxRAMBucketSizeLong", new LongCallback() {
+				SizeUtil.formatSizeWithoutSpace(maxBucketSize), sortOrder++,
+				true, false, "NodeClientCore.maxRAMBucketSize",
+				"NodeClientCore.maxRAMBucketSizeLong", new LongCallback() {
 
 					@Override
 					public Long get() {
 						return (tempBucketFactory == null ? 0
-										  : tempBucketFactory
-									.getMaxRAMBucketSize());
+								: tempBucketFactory
+								.getMaxRAMBucketSize());
 					}
 
 					@Override
 					public void set(Long val)
 							throws InvalidConfigValueException {
 						if (get().equals(val) || (tempBucketFactory
-									  == null))
+								== null))
 							return;
 						tempBucketFactory.setMaxRAMBucketSize(val);
 					}
 				}, true);
 
 		nodeConfig.register("RAMBucketPoolSize", defaultRamBucketPoolSize + "MiB",
-				    sortOrder++, true, false, "NodeClientCore.ramBucketPoolSize",
-				    "NodeClientCore.ramBucketPoolSizeLong", new LongCallback() {
+				sortOrder++, true, false, "NodeClientCore.ramBucketPoolSize",
+				"NodeClientCore.ramBucketPoolSizeLong", new LongCallback() {
 
 					@Override
 					public Long get() {
 						return (tempBucketFactory == null ? 0
-										  : tempBucketFactory
-									.getMaxRamUsed());
+								: tempBucketFactory
+								.getMaxRamUsed());
 					}
 
 					@Override
 					public void set(Long val)
 							throws InvalidConfigValueException {
 						if (get().equals(val) || (tempBucketFactory
-									  == null))
+								== null))
 							return;
 						tempBucketFactory.setMaxRamUsed(val);
 						updatePersistentRAFSpaceLimit();
@@ -498,21 +505,21 @@ public class NodeClientCore implements Persistable {
 				}, true);
 
 		nodeConfig.register("encryptTempBuckets", true, sortOrder++, true, false,
-				    "NodeClientCore.encryptTempBuckets",
-				    "NodeClientCore.encryptTempBucketsLong", new BooleanCallback() {
+				"NodeClientCore.encryptTempBuckets",
+				"NodeClientCore.encryptTempBucketsLong", new BooleanCallback() {
 
 					@Override
 					public Boolean get() {
 						return (tempBucketFactory == null ? true
-										  : tempBucketFactory
-									.isEncrypting());
+								: tempBucketFactory
+								.isEncrypting());
 					}
 
 					@Override
 					public void set(Boolean val)
 							throws InvalidConfigValueException {
 						if (get().equals(val) || (tempBucketFactory
-									  == null))
+								== null))
 							return;
 						tempBucketFactory.setEncryption(val);
 					}
@@ -523,24 +530,24 @@ public class NodeClientCore implements Persistable {
 		cryptoSecretTransient = new MasterSecret();
 		tempBucketFactory =
 				new TempBucketFactory(node.getExecutor(), tempFilenameGenerator,
-						      nodeConfig.getLong("maxRAMBucketSize"),
-						      nodeConfig.getLong("RAMBucketPoolSize"),
-						      node.getFastWeakRandom(),
-						      nodeConfig.getBoolean("encryptTempBuckets"),
-						      minDiskFreeShortTerm, cryptoSecretTransient);
+						nodeConfig.getLong("maxRAMBucketSize"),
+						nodeConfig.getLong("RAMBucketPoolSize"),
+						node.getFastWeakRandom(),
+						nodeConfig.getBoolean("encryptTempBuckets"),
+						minDiskFreeShortTerm, cryptoSecretTransient);
 
 		bandwidthStatsPutter = new PersistentStatsPutter();
 
 		clientLayerPersister = new ClientLayerPersister(node.getExecutor(), node.getTicker(),
-								node, this,
-								persistentTempBucketFactory,
-								tempBucketFactory,
-								bandwidthStatsPutter);
+				node, this,
+				persistentTempBucketFactory,
+				tempBucketFactory,
+				bandwidthStatsPutter);
 
 		SemiOrderedShutdownHook shutdownHook = SemiOrderedShutdownHook.get();
 
 		shutdownHook.addEarlyJob(new NativeThread("Shutdown RealCompressor",
-							  NativeThread.HIGH_PRIORITY, true) {
+				NativeThread.HIGH_PRIORITY, true) {
 			@Override
 			public void realRun() {
 				compressor.shutdown();
@@ -549,7 +556,7 @@ public class NodeClientCore implements Persistable {
 
 		shutdownHook.addEarlyJob(
 				new NativeThread("Shutdown database", NativeThread.HIGH_PRIORITY,
-						 true) {
+						true) {
 
 					@Override
 					public void realRun() {
@@ -561,7 +568,7 @@ public class NodeClientCore implements Persistable {
 
 		shutdownHook.addLateJob(
 				new NativeThread("Close database", NativeThread.HIGH_PRIORITY,
-						 true) {
+						true) {
 
 					@Override
 					public void realRun() {
@@ -577,8 +584,8 @@ public class NodeClientCore implements Persistable {
 
 		archiveManager =
 				new ArchiveManager(MAX_ARCHIVE_HANDLERS, MAX_CACHED_ARCHIVE_DATA,
-						   MAX_ARCHIVED_FILE_SIZE, MAX_CACHED_ELEMENTS,
-						   tempBucketFactory);
+						MAX_ARCHIVED_FILE_SIZE, MAX_CACHED_ELEMENTS,
+						tempBucketFactory);
 
 		healingQueue = new SimpleHealingQueue(
 				new InsertContext(
@@ -591,18 +598,18 @@ public class NodeClientCore implements Persistable {
 
 		PooledFileRandomAccessBufferFactory raff =
 				new PooledFileRandomAccessBufferFactory(persistentFilenameGenerator,
-									node.getFastWeakRandom());
+						node.getFastWeakRandom());
 		persistentDiskChecker =
 				new DiskSpaceCheckingRandomAccessBufferFactory(raff,
-									       persistentTempDir
-											       .dir(),
-									       minDiskFreeLongTerm
-									       + tempBucketFactory
-											       .getMaxRamUsed());
+						persistentTempDir
+								.dir(),
+						minDiskFreeLongTerm
+								+ tempBucketFactory
+								.getMaxRamUsed());
 		persistentRAFFactory =
 				new MaybeEncryptedRandomAccessBufferFactory(persistentDiskChecker,
-									    nodeConfig.getBoolean(
-											    "encryptPersistentTempBuckets"));
+						nodeConfig.getBoolean(
+								"encryptPersistentTempBuckets"));
 		persistentTempBucketFactory.setDiskSpaceChecker(persistentDiskChecker);
 		HighLevelSimpleClient client = makeClient((short) 0, false, false);
 		FetchContext defaultFetchContext = client.getFetchContext();
@@ -610,35 +617,35 @@ public class NodeClientCore implements Persistable {
 		int
 				maxMemoryLimitedJobThreads =
 				Runtime.getRuntime().availableProcessors()
-				/ 2; // Some disk I/O ... tunable REDFLAG
+						/ 2; // Some disk I/O ... tunable REDFLAG
 		maxMemoryLimitedJobThreads =
 				Math.min(maxMemoryLimitedJobThreads,
-					 node.getNodeStats().getThreadLimit() / 20);
+						node.getNodeStats().getThreadLimit() / 20);
 		maxMemoryLimitedJobThreads = Math.max(1, maxMemoryLimitedJobThreads);
 		// FIXME review thread limits. This isn't just memory, it's CPU and disk as well, so we don't want it too big??
 		// FIXME l10n the errors?
 		nodeConfig.register("memoryLimitedJobThreadLimit", maxMemoryLimitedJobThreads,
-				    sortOrder++, true, false,
-				    "NodeClientCore.memoryLimitedJobThreadLimit",
-				    "NodeClientCore.memoryLimitedJobThreadLimitLong",
-				    new IntCallback() {
+				sortOrder++, true, false,
+				"NodeClientCore.memoryLimitedJobThreadLimit",
+				"NodeClientCore.memoryLimitedJobThreadLimitLong",
+				new IntCallback() {
 
-					    @Override
-					    public Integer get() {
-						    return memoryLimitedJobRunner.getMaxThreads();
-					    }
+					@Override
+					public Integer get() {
+						return memoryLimitedJobRunner.getMaxThreads();
+					}
 
-					    @Override
-					    public void set(Integer val)
-							    throws InvalidConfigValueException,
-								   NodeNeedRestartException {
-						    if (val < 1)
-							    throw new InvalidConfigValueException(
-									    l10n("memoryLimitedJobThreadLimitMustBe1Plus"));
-						    memoryLimitedJobRunner.setMaxThreads(val);
-					    }
+					@Override
+					public void set(Integer val)
+							throws InvalidConfigValueException,
+							NodeNeedRestartException {
+						if (val < 1)
+							throw new InvalidConfigValueException(
+									l10n("memoryLimitedJobThreadLimitMustBe1Plus"));
+						memoryLimitedJobRunner.setMaxThreads(val);
+					}
 
-				    }, false);
+				}, false);
 		long defaultMemoryLimitedJobMemoryLimit = FECCodec.MIN_MEMORY_ALLOCATION;
 		long overallMemoryLimit = NodeStarter.getMemoryLimitBytes();
 		if (overallMemoryLimit > 512 * 1024 * 1024) {
@@ -647,30 +654,30 @@ public class NodeClientCore implements Persistable {
 					(overallMemoryLimit - 512 * 1024 * 1024) / 20;
 		}
 		nodeConfig.register("memoryLimitedJobMemoryLimit",
-				    defaultMemoryLimitedJobMemoryLimit, sortOrder++, true, false,
-				    "NodeClientCore.memoryLimitedJobMemoryLimit",
-				    "NodeClientCore.memoryLimitedJobMemoryLimitLong",
-				    new LongCallback() {
+				defaultMemoryLimitedJobMemoryLimit, sortOrder++, true, false,
+				"NodeClientCore.memoryLimitedJobMemoryLimit",
+				"NodeClientCore.memoryLimitedJobMemoryLimitLong",
+				new LongCallback() {
 
-					    @Override
-					    public Long get() {
-						    return memoryLimitedJobRunner.getCapacity();
-					    }
+					@Override
+					public Long get() {
+						return memoryLimitedJobRunner.getCapacity();
+					}
 
-					    @Override
-					    public void set(Long val)
-							    throws InvalidConfigValueException,
-								   NodeNeedRestartException {
-						    if (val < FECCodec.MIN_MEMORY_ALLOCATION)
-							    throw new InvalidConfigValueException(
-									    l10n("memoryLimitedJobMemoryLimitMustBeAtLeast",
-										 "min",
-										 SizeUtil.formatSize(
-												 FECCodec.MIN_MEMORY_ALLOCATION)));
-						    memoryLimitedJobRunner.setCapacity(val);
-					    }
+					@Override
+					public void set(Long val)
+							throws InvalidConfigValueException,
+							NodeNeedRestartException {
+						if (val < FECCodec.MIN_MEMORY_ALLOCATION)
+							throw new InvalidConfigValueException(
+									l10n("memoryLimitedJobMemoryLimitMustBeAtLeast",
+											"min",
+											SizeUtil.formatSize(
+													FECCodec.MIN_MEMORY_ALLOCATION)));
+						memoryLimitedJobRunner.setCapacity(val);
+					}
 
-				    }, true);
+				}, true);
 		memoryLimitedJobRunner =
 				new MemoryLimitedJobRunner(
 						nodeConfig.getLong("memoryLimitedJobMemoryLimit"),
@@ -698,19 +705,19 @@ public class NodeClientCore implements Persistable {
 
 				});
 		clientContext = new ClientContext(node.getBootId(), clientLayerPersister, node.getExecutor(),
-						  archiveManager, persistentTempBucketFactory,
-						  tempBucketFactory,
-						  persistentTempBucketFactory, healingQueue,
-						  uskManager, random, node.getFastWeakRandom(),
-						  node.getTicker(), memoryLimitedJobRunner,
-						  tempFilenameGenerator,
-						  persistentFilenameGenerator, tempBucketFactory,
-						  persistentRAFFactory,
-						  tempBucketFactory.getUnderlyingRAFFactory(),
-						  persistentDiskChecker,
-						  compressor, storeChecker, fcpPersistentRoot,
-						  cryptoSecretTransient, toadlets,
-						  defaultFetchContext, defaultInsertContext, config);
+				archiveManager, persistentTempBucketFactory,
+				tempBucketFactory,
+				persistentTempBucketFactory, healingQueue,
+				uskManager, random, node.getFastWeakRandom(),
+				node.getTicker(), memoryLimitedJobRunner,
+				tempFilenameGenerator,
+				persistentFilenameGenerator, tempBucketFactory,
+				persistentRAFFactory,
+				tempBucketFactory.getUnderlyingRAFFactory(),
+				persistentDiskChecker,
+				compressor, storeChecker, fcpPersistentRoot,
+				cryptoSecretTransient, toadlets,
+				defaultFetchContext, defaultInsertContext, config);
 		compressor.setClientContext(clientContext);
 		storeChecker.setContext(clientContext);
 		clientLayerPersister.start(clientContext);
@@ -718,10 +725,10 @@ public class NodeClientCore implements Persistable {
 		try {
 			requestStarters =
 					new RequestStarterGroup(node, this, portNumber, random,
-								config, throttleFS, clientContext);
+							config, throttleFS, clientContext);
 		} catch (InvalidConfigValueException e1) {
 			throw new NodeInitException(NodeInitException.EXIT_BAD_CONFIG,
-						    e1.toString());
+					e1.toString());
 		}
 
 		clientContext.init(requestStarters, alerts);
@@ -743,7 +750,7 @@ public class NodeClientCore implements Persistable {
 
 					@Override
 					public void onChange(PHYSICAL_THREAT_LEVEL oldLevel,
-							     PHYSICAL_THREAT_LEVEL newLevel) {
+										 PHYSICAL_THREAT_LEVEL newLevel) {
 						if (newLevel == PHYSICAL_THREAT_LEVEL.LOW) {
 							if (tempBucketFactory.isEncrypting()) {
 								tempBucketFactory
@@ -775,7 +782,7 @@ public class NodeClientCore implements Persistable {
 							// May need to change filenames for client.dat* or even create them.
 							try {
 								initStorage(NodeClientCore.this.node
-											    .getDatabaseKey());
+										.getDatabaseKey());
 							} catch (MasterKeysWrongPasswordException e) {
 								NodeClientCore.this.node
 										.setDatabaseAwaitingPassword();
@@ -789,78 +796,78 @@ public class NodeClientCore implements Persistable {
 
 		this.downloadsDir =
 				node.setupProgramDir(nodeConfig, "downloadsDir",
-						     node.userDir().file("downloads").getPath(),
-						     "NodeClientCore.downloadsDir",
-						     "NodeClientCore.downloadsDirLong",
-						     l10n("couldNotFindOrCreateDir"),
-						     (SubConfig) null);
+						node.userDir().file("downloads").getPath(),
+						"NodeClientCore.downloadsDir",
+						"NodeClientCore.downloadsDirLong",
+						l10n("couldNotFindOrCreateDir"),
+						(SubConfig) null);
 
 		// Downloads allowed, uploads allowed
 
 		nodeConfig.register("downloadAllowedDirs", new String[]{"all"}, sortOrder++, true,
-				    true, "NodeClientCore.downloadAllowedDirs",
-				    "NodeClientCore.downloadAllowedDirsLong",
-				    new StringArrCallback() {
+				true, "NodeClientCore.downloadAllowedDirs",
+				"NodeClientCore.downloadAllowedDirsLong",
+				new StringArrCallback() {
 
-					    @Override
-					    public String[] get() {
-						    synchronized (NodeClientCore.this) {
-							    if (downloadAllowedEverywhere)
-								    return new String[]{"all"};
-							    String[]
-									    dirs =
-									    new String[downloadAllowedDirs.length
-										       + (includeDownloadDir
-											  ? 1 : 0)];
-							    for (int i = 0;
+					@Override
+					public String[] get() {
+						synchronized (NodeClientCore.this) {
+							if (downloadAllowedEverywhere)
+								return new String[]{"all"};
+							String[]
+									dirs =
+									new String[downloadAllowedDirs.length
+											+ (includeDownloadDir
+											? 1 : 0)];
+							for (int i = 0;
 								 i < downloadAllowedDirs.length;
 								 i++)
-								    dirs[i] =
-										    downloadAllowedDirs[i]
-												    .getPath();
-							    if (includeDownloadDir)
-								    dirs[downloadAllowedDirs.length] =
-										    "downloads";
-							    return dirs;
-						    }
-					    }
+								dirs[i] =
+										downloadAllowedDirs[i]
+												.getPath();
+							if (includeDownloadDir)
+								dirs[downloadAllowedDirs.length] =
+										"downloads";
+							return dirs;
+						}
+					}
 
-					    @Override
-					    public void set(String[] val)
-							    throws InvalidConfigValueException {
-						    setDownloadAllowedDirs(val);
-					    }
-				    });
+					@Override
+					public void set(String[] val)
+							throws InvalidConfigValueException {
+						setDownloadAllowedDirs(val);
+					}
+				});
 		setDownloadAllowedDirs(nodeConfig.getStringArr("downloadAllowedDirs"));
 
 		nodeConfig.register("uploadAllowedDirs", new String[]{"all"}, sortOrder++, true,
-				    true, "NodeClientCore.uploadAllowedDirs",
-				    "NodeClientCore.uploadAllowedDirsLong",
-				    new StringArrCallback() {
+				true, "NodeClientCore.uploadAllowedDirs",
+				"NodeClientCore.uploadAllowedDirsLong",
+				new StringArrCallback() {
 
-					    @Override
-					    public String[] get() {
-						    synchronized (NodeClientCore.this) {
-							    if (uploadAllowedEverywhere)
-								    return new String[]{"all"};
-							    String[]
-									    dirs =
-									    new String[uploadAllowedDirs.length];
-							    for (int i = 0;
+					@Override
+					public String[] get() {
+						synchronized (NodeClientCore.this) {
+							if (uploadAllowedEverywhere)
+								return new String[]{"all"};
+							String[]
+									dirs =
+									new String[uploadAllowedDirs.length];
+							for (int i = 0;
 								 i < uploadAllowedDirs.length; i++)
-								    dirs[i] =
-										    uploadAllowedDirs[i]
-												    .getPath();
-							    return dirs;
-						    }
-					    }
+								dirs[i] =
+										uploadAllowedDirs[i]
+												.getPath();
+							return dirs;
+						}
+					}
 
-					    @Override
-					    public void set(String[] val)
-							    throws InvalidConfigValueException {
-						    setUploadAllowedDirs(val);
-					    }
-				    });
+					@Override
+					public void set(String[] val)
+							throws InvalidConfigValueException {
+						setUploadAllowedDirs(val);
+					}
+				});
 		setUploadAllowedDirs(nodeConfig.getStringArr("uploadAllowedDirs"));
 
 		Logger.normal(this, "Initializing USK Manager");
@@ -868,8 +875,8 @@ public class NodeClientCore implements Persistable {
 		uskManager.init(clientContext);
 
 		nodeConfig.register("maxBackgroundUSKFetchers", "64", sortOrder++, true, false,
-				    "NodeClientCore.maxUSKFetchers",
-				    "NodeClientCore.maxUSKFetchersLong", new IntCallback() {
+				"NodeClientCore.maxUSKFetchers",
+				"NodeClientCore.maxUSKFetchersLong", new IntCallback() {
 
 					@Override
 					public Integer get() {
@@ -897,23 +904,23 @@ public class NodeClientCore implements Persistable {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_TMCI,
-						    "Could not start TMCI: " + e);
+					"Could not start TMCI: " + e);
 		}
 
 		// FCP (including persistent requests so needs to start before FProxy)
 		try {
 			fcpServer =
 					FCPServer.maybeCreate(node, this, node.getConfig(),
-							      fcpPersistentRoot);
+							fcpPersistentRoot);
 			clientContext.setDownloadCache(fcpServer);
 			if (!killedDatabase())
 				fcpServer.load();
 		} catch (IOException e) {
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_FCP,
-						    "Could not start FCP: " + e);
+					"Could not start FCP: " + e);
 		} catch (InvalidConfigValueException e) {
 			throw new NodeInitException(NodeInitException.EXIT_COULD_NOT_START_FCP,
-						    "Could not start FCP: " + e);
+					"Could not start FCP: " + e);
 		}
 
 		// FProxy
@@ -921,25 +928,25 @@ public class NodeClientCore implements Persistable {
 		this.alerts.register(
 				startingUpAlert =
 						new SimpleUserAlert(true, l10n("startingUpTitle"),
-								    l10n("startingUp"),
-								    l10n("startingUpShort"),
-								    UserAlert.ERROR));
+								l10n("startingUp"),
+								l10n("startingUpShort"),
+								UserAlert.ERROR));
 		this.alerts.register(new SimpleUserAlert(true, NodeL10n.getBase()
 				.getString("QueueToadlet.persistenceBrokenTitle"),
-							 NodeL10n.getBase()
-									 .getString("QueueToadlet.persistenceBroken",
-										    new String[]{"TEMPDIR",
-												 "DBFILE"},
-										    new String[]{new File(
-												    FileUtil.getCanonicalFile(
-														    getPersistentTempDir()),
-												    File.separator).toString(),
-												 new File(FileUtil.getCanonicalFile(
-														 node.getUserDir()),
-													  "client.dat").toString()}
-									 ), NodeL10n.getBase()
-									 .getString("QueueToadlet.persistenceBrokenShortAlert"),
-							 UserAlert.CRITICAL_ERROR) {
+				NodeL10n.getBase()
+						.getString("QueueToadlet.persistenceBroken",
+								new String[]{"TEMPDIR",
+										"DBFILE"},
+								new String[]{new File(
+										FileUtil.getCanonicalFile(
+												getPersistentTempDir()),
+										File.separator).toString(),
+										new File(FileUtil.getCanonicalFile(
+												node.getUserDir()),
+												"client.dat").toString()}
+						), NodeL10n.getBase()
+				.getString("QueueToadlet.persistenceBrokenShortAlert"),
+				UserAlert.CRITICAL_ERROR) {
 			@Override
 			public boolean isValid() {
 				synchronized (NodeClientCore.this) {
@@ -963,93 +970,93 @@ public class NodeClientCore implements Persistable {
 		toadletContainer.setBucketFactory(tempBucketFactory);
 
 		nodeConfig.register("alwaysCommit", false, sortOrder++, true, false,
-				    "NodeClientCore.alwaysCommit",
-				    "NodeClientCore.alwaysCommitLong",
-				    new BooleanCallback() {
+				"NodeClientCore.alwaysCommit",
+				"NodeClientCore.alwaysCommitLong",
+				new BooleanCallback() {
 
-					    @Override
-					    public Boolean get() {
-						    return alwaysCommit;
-					    }
+					@Override
+					public Boolean get() {
+						return alwaysCommit;
+					}
 
-					    @Override
-					    public void set(Boolean val)
-							    throws InvalidConfigValueException,
-								   NodeNeedRestartException {
-						    alwaysCommit = val;
-					    }
+					@Override
+					public void set(Boolean val)
+							throws InvalidConfigValueException,
+							NodeNeedRestartException {
+						alwaysCommit = val;
+					}
 
-				    });
+				});
 		alwaysCommit = nodeConfig.getBoolean("alwaysCommit");
 		alerts.register(new DiskSpaceUserAlert(this));
 		alerts.register(new DatastoreTooSmallAlert(this));
 	}
 
 	protected void updatePersistentRAFSpaceLimit() {
-	    // The temp bucket factory may have to migrate everything to disk.
-	    // So we add the RAM limit for the temp factory to the disk limit for the persistent one.
-        if(persistentRAFFactory != null) {
-            long size;
-            synchronized(this) {
-                size = minDiskFreeLongTerm;
-            }
-            size += tempBucketFactory.getMaxRamUsed();
-            persistentDiskChecker.setMinDiskSpace(size);
-        }
-    }
+		// The temp bucket factory may have to migrate everything to disk.
+		// So we add the RAM limit for the temp factory to the disk limit for the persistent one.
+		if (persistentRAFFactory != null) {
+			long size;
+			synchronized (this) {
+				size = minDiskFreeLongTerm;
+			}
+			size += tempBucketFactory.getMaxRamUsed();
+			persistentDiskChecker.setMinDiskSpace(size);
+		}
+	}
 
-    private void initDiskSpaceLimits(SubConfig nodeConfig, int sortOrder) {
-        nodeConfig.register("minDiskFreeLongTerm", "1G", sortOrder++, true, true, "NodeClientCore.minDiskFreeLongTerm", "NodeClientCore.minDiskFreeLongTermLong", new LongCallback() {
+	private void initDiskSpaceLimits(SubConfig nodeConfig, int sortOrder) {
+		nodeConfig.register("minDiskFreeLongTerm", "1G", sortOrder++, true, true, "NodeClientCore.minDiskFreeLongTerm", "NodeClientCore.minDiskFreeLongTermLong", new LongCallback() {
 
-            @Override
-            public Long get() {
-                synchronized(NodeClientCore.this) {
-                    return minDiskFreeLongTerm;
-                }
-            }
+			@Override
+			public Long get() {
+				synchronized (NodeClientCore.this) {
+					return minDiskFreeLongTerm;
+				}
+			}
 
-            @Override
-            public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
-                synchronized(NodeClientCore.this) {
-                    if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
-                    minDiskFreeLongTerm = val;
-                }
-                updatePersistentRAFSpaceLimit();
-            }
+			@Override
+			public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
+				synchronized (NodeClientCore.this) {
+					if (val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
+					minDiskFreeLongTerm = val;
+				}
+				updatePersistentRAFSpaceLimit();
+			}
 
-        }, true);
-        minDiskFreeLongTerm = nodeConfig.getLong("minDiskFreeLongTerm");
+		}, true);
+		minDiskFreeLongTerm = nodeConfig.getLong("minDiskFreeLongTerm");
 
-        nodeConfig.register("minDiskFreeShortTerm", "512M", sortOrder++, true, true, "NodeClientCore.minDiskFreeShortTerm", "NodeClientCore.minDiskFreeShortTermLong", new LongCallback() {
+		nodeConfig.register("minDiskFreeShortTerm", "512M", sortOrder++, true, true, "NodeClientCore.minDiskFreeShortTerm", "NodeClientCore.minDiskFreeShortTermLong", new LongCallback() {
 
-            @Override
-            public Long get() {
-                synchronized(NodeClientCore.this) {
-                    return minDiskFreeShortTerm;
-                }
-            }
+			@Override
+			public Long get() {
+				synchronized (NodeClientCore.this) {
+					return minDiskFreeShortTerm;
+				}
+			}
 
-            @Override
-            public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
-                synchronized(NodeClientCore.this) {
-                    if(val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
-                    minDiskFreeShortTerm = val;
-                }
-                tempBucketFactory.setMinDiskSpace(val);
-            }
+			@Override
+			public void set(Long val) throws InvalidConfigValueException, NodeNeedRestartException {
+				synchronized (NodeClientCore.this) {
+					if (val < 0) throw new InvalidConfigValueException(l10n("minDiskFreeMustBePositive"));
+					minDiskFreeShortTerm = val;
+				}
+				tempBucketFactory.setMinDiskSpace(val);
+			}
 
-        }, true);
-        minDiskFreeShortTerm = nodeConfig.getLong("minDiskFreeShortTerm");
-        // Do not register the UserAlert yet, since we haven't finished constructing stuff it uses.
-    }
+		}, true);
+		minDiskFreeShortTerm = nodeConfig.getLong("minDiskFreeShortTerm");
+		// Do not register the UserAlert yet, since we haven't finished constructing stuff it uses.
+	}
 
 	boolean lateInitDatabase(DatabaseKey databaseKey) throws NodeInitException {
 		System.out.println("Late database initialisation: starting middle phase");
 		try {
-		    initStorage(databaseKey);
+			initStorage(databaseKey);
 		} catch (MasterKeysWrongPasswordException e) {
-		    Logger.error(this, "Impossible: can't load even though have key? "+(databaseKey != null));
-		    return true;
+			Logger.error(this, "Impossible: can't load even though have key? " + (databaseKey != null));
+			return true;
 		}
 		// Don't actually start the database thread yet, messy concurrency issues.
 		fcpServer.load();
@@ -1057,42 +1064,46 @@ public class NodeClientCore implements Persistable {
 		return true;
 	}
 
-	/** Give ClientLayerPersister a filename and possibly an encryption key. May cause it to load,
+	/**
+	 * Give ClientLayerPersister a filename and possibly an encryption key. May cause it to load,
 	 * but can also be called afterwards to change where to write to.
+	 *
 	 * @param databaseKey The encryption key.
 	 * @throws MasterKeysWrongPasswordException If it needs an encryption key.
 	 */
 	private void initStorage(DatabaseKey databaseKey) throws MasterKeysWrongPasswordException {
-	    clientLayerPersister.setFilesAndLoad(node.getNodeDir(), "client.dat",
-	            node.wantEncryptedDatabase(), node.wantNoPersistentDatabase(), databaseKey, clientContext, requestStarters, random);
+		clientLayerPersister.setFilesAndLoad(node.getNodeDir(), "client.dat",
+				node.wantEncryptedDatabase(), node.wantNoPersistentDatabase(), databaseKey, clientContext, requestStarters, random);
 	}
 
-	/** Must only be called after we have loaded master.keys */
+	/**
+	 * Must only be called after we have loaded master.keys
+	 */
 	private void finishInitStorage() {
-	    boolean success = false;
-	    synchronized(this) {
-	        if(finishedInitStorage || finishingInitStorage) return;
-	        finishingInitStorage = true;
-	    }
-	    try {
-	        persistentTempBucketFactory.completedInit(); // Only GC persistent-temp after a successful load.
-	        success = true;
-	    } finally {
-	        synchronized(this) {
-	            finishingInitStorage = false;
-	            if(success)
-	                finishedInitStorage = true;
-	        }
-	    }
-    }
+		boolean success = false;
+		synchronized (this) {
+			if (finishedInitStorage || finishingInitStorage) return;
+			finishingInitStorage = true;
+		}
+		try {
+			persistentTempBucketFactory.completedInit(); // Only GC persistent-temp after a successful load.
+			success = true;
+		} finally {
+			synchronized (this) {
+				finishingInitStorage = false;
+				if (success)
+					finishedInitStorage = true;
+			}
+		}
+	}
 
-    private static String l10n(String key) {
+	private static String l10n(String key) {
 		return NodeL10n.getBase().getString("NodeClientCore." + key);
 	}
 
-    private static String l10n(String key, String pattern, String value) {
-        return NodeL10n.getBase().getString("NodeClientCore." + key, pattern, value);
-    }
+	private static String l10n(String key, String pattern, String value) {
+		return NodeL10n.getBase().getString("NodeClientCore." + key, pattern, value);
+	}
 
 	public boolean isDownloadDisabled() {
 		return downloadDisabled;
@@ -1105,16 +1116,16 @@ public class NodeClientCore implements Persistable {
 		downloadDisabled = false;
 		int i = 0;
 		downloadAllowedDirs = new File[val.length];
-		for(i = 0; i < downloadAllowedDirs.length; i++) {
+		for (i = 0; i < downloadAllowedDirs.length; i++) {
 			String s = val[i];
-			if(s.equals("downloads")) includeDownloadDir = true;
-			else if(s.equals("all")) downloadAllowedEverywhere = true;
+			if (s.equals("downloads")) includeDownloadDir = true;
+			else if (s.equals("all")) downloadAllowedEverywhere = true;
 			else downloadAllowedDirs[x++] = new File(val[i]);
 		}
-		if(x != i) {
+		if (x != i) {
 			downloadAllowedDirs = Arrays.copyOf(downloadAllowedDirs, x);
 		}
-		if(i == 0) {
+		if (i == 0) {
 			downloadDisabled = true;
 		}
 	}
@@ -1124,14 +1135,14 @@ public class NodeClientCore implements Persistable {
 		int i = 0;
 		uploadAllowedEverywhere = false;
 		uploadAllowedDirs = new File[val.length];
-		for(i = 0; i < uploadAllowedDirs.length; i++) {
+		for (i = 0; i < uploadAllowedDirs.length; i++) {
 			String s = val[i];
-			if(s.equals("all"))
+			if (s.equals("all"))
 				uploadAllowedEverywhere = true;
 			else
 				uploadAllowedDirs[x++] = new File(val[i]);
 		}
-		if(x != i) {
+		if (x != i) {
 			uploadAllowedDirs = Arrays.copyOf(uploadAllowedDirs, x);
 		}
 	}
@@ -1143,11 +1154,11 @@ public class NodeClientCore implements Persistable {
 		requestStarters.start();
 
 		storeChecker.start();
-		if(fcpServer != null)
+		if (fcpServer != null)
 			fcpServer.maybeStart();
-        node.getPluginManager().start();
-        node.getIpDetector().ipDetectorManager.start();
-		if(tmci != null)
+		node.getPluginManager().start();
+		node.getIpDetector().ipDetectorManager.start();
+		if (tmci != null)
 			tmci.start();
 
 		node.getExecutor().execute(new PrioRunnable() {
@@ -1155,15 +1166,15 @@ public class NodeClientCore implements Persistable {
 			@Override
 			public void run() {
 				Logger.normal(this, "Resuming persistent requests");
-				if(node.getDatabaseKey() != null) {
-				    try {
-				        finishInitStorage();
-				    } catch (Throwable t) {
-				        Logger.error(this, "Failed to migrate and/or cleanup persistent temp buckets: "+t, t);
-				        System.err.println("Failed to migrate and/or cleanup persistent temp buckets: "+t);
-				        t.printStackTrace();
-				        // Start the rest of the node anyway ...
-				    }
+				if (node.getDatabaseKey() != null) {
+					try {
+						finishInitStorage();
+					} catch (Throwable t) {
+						Logger.error(this, "Failed to migrate and/or cleanup persistent temp buckets: " + t, t);
+						System.err.println("Failed to migrate and/or cleanup persistent temp buckets: " + t);
+						t.printStackTrace();
+						// Start the rest of the node anyway ...
+					}
 				}
 				Logger.normal(this, "Completed startup: All persistent requests resumed or restarted");
 				alerts.unregister(startingUpAlert);
@@ -1182,36 +1193,40 @@ public class NodeClientCore implements Persistable {
 		public void completed(boolean success);
 	}
 
-	/** UID -1 is used internally, so never generate it.
+	/**
+	 * UID -1 is used internally, so never generate it.
 	 * It is not however a problem if a node does use it; it will slow its messages down
 	 * by them being round-robin'ed in PeerMessageQueue with messages with no UID, that's
-	 * all. */
+	 * all.
+	 */
 	long makeUID() {
-		while(true) {
+		while (true) {
 			long uid = random.nextLong();
-			if(uid != -1) return uid;
+			if (uid != -1) return uid;
 		}
 	}
 
-	/** Start an asynchronous fetch for the key, which will complete by calling
+	/**
+	 * Start an asynchronous fetch for the key, which will complete by calling
 	 * tripPendingKey() if successful, as well as calling the listener in most cases.
-	 * @param key The key to fetch.
-	 * @param offersOnly If true, only fetch the key from nodes that have offered it, using GetOfferedKeys,
-	 * don't do a normal fetch for it.
-	 * @param listener The listener is called if we start a request and fail to fetch, and also in most
-	 * cases on success or on not starting one. FIXME it may not always be called e.g. on fetching the data
-	 * from the datastore - is this a problem?
-	 * @param canReadClientCache Can this request read the client-cache?
+	 *
+	 * @param key                 The key to fetch.
+	 * @param offersOnly          If true, only fetch the key from nodes that have offered it, using GetOfferedKeys,
+	 *                            don't do a normal fetch for it.
+	 * @param listener            The listener is called if we start a request and fail to fetch, and also in most
+	 *                            cases on success or on not starting one. FIXME it may not always be called e.g. on fetching the data
+	 *                            from the datastore - is this a problem?
+	 * @param canReadClientCache  Can this request read the client-cache?
 	 * @param canWriteClientCache Can this request write the client-cache?
-	 * @param realTimeFlag Is this a real-time request? False = this is a bulk request.
-	 * @param localOnly If true, only check the datastore, don't create a request if nothing is found.
-	 * @param ignoreStore If true, don't check the datastore, create a request immediately.
+	 * @param realTimeFlag        Is this a real-time request? False = this is a bulk request.
+	 * @param localOnly           If true, only check the datastore, don't create a request if nothing is found.
+	 * @param ignoreStore         If true, don't check the datastore, create a request immediately.
 	 */
 	public void asyncGet(final Key key, boolean offersOnly, final RequestCompletionListener listener, boolean canReadClientCache, boolean canWriteClientCache, final boolean realTimeFlag, boolean localOnly, boolean ignoreStore) {
 		final long uid = makeUID();
 		final boolean isSSK = key instanceof NodeSSK;
 		final RequestTag tag = new RequestTag(isSSK, RequestTag.START.ASYNC_GET, null, realTimeFlag, uid, node);
-		if(!tracker.lockUID(uid, isSSK, false, false, true, realTimeFlag, tag)) {
+		if (!tracker.lockUID(uid, isSSK, false, false, true, realTimeFlag, tag)) {
 			Logger.error(this, "Could not lock UID just randomly generated: " + uid + " - probably indicates broken PRNG");
 			listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR, "Could not lock random UID - serious PRNG problem???"));
 			return;
@@ -1221,9 +1236,9 @@ public class NodeClientCore implements Persistable {
 		// If another node requested it within the ULPR period at a lower HTL, that may allow
 		// us to cache it in the datastore. Find the lowest HTL fetching the key in that period,
 		// and use that for purposes of deciding whether to cache it in the store.
-		if(offersOnly) {
+		if (offersOnly) {
 			htl = node.getFailureTable().minOfferedHTL(key, htl);
-			if(logMINOR) Logger.minor(this, "Using old HTL for GetOfferedKey: "+htl);
+			if (logMINOR) Logger.minor(this, "Using old HTL for GetOfferedKey: " + htl);
 		}
 		final long startTime = System.currentTimeMillis();
 		asyncGet(key, offersOnly, uid, new RequestSenderListener() {
@@ -1237,8 +1252,8 @@ public class NodeClientCore implements Persistable {
 
 			@Override
 			public void onReceivedRejectOverload() {
-				synchronized(this) {
-					if(rejectedOverload) return;
+				synchronized (this) {
+					if (rejectedOverload) return;
 					rejectedOverload = true;
 				}
 				requestStarters.rejectedOverload(isSSK, false, realTimeFlag);
@@ -1258,73 +1273,72 @@ public class NodeClientCore implements Persistable {
 			public void onRequestSenderFinished(int status, boolean fromOfferedKey, RequestSender rs) {
 				tag.unlockHandler();
 
-				if(status == RequestSender.NOT_FINISHED) {
-					Logger.error(this, "Bogus status in onRequestSenderFinished for "+rs, new Exception("error"));
+				if (status == RequestSender.NOT_FINISHED) {
+					Logger.error(this, "Bogus status in onRequestSenderFinished for " + rs, new Exception("error"));
 					listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
 					return;
 				}
 
 				boolean rejectedOverload;
-				synchronized(this) {
+				synchronized (this) {
 					rejectedOverload = this.rejectedOverload;
 				}
 
-				if(status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
-					if(logMINOR)
+				if (status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
+					if (logMINOR)
 						Logger.minor(this, (isSSK ? "SSK" : "CHK") + " fetch cost " + rs.getTotalSentBytes() + '/' + rs.getTotalReceivedBytes() + " bytes (" + status + ')');
 					(isSSK ? nodeStats.localSskFetchBytesSentAverage : nodeStats.localChkFetchBytesSentAverage).report(rs.getTotalSentBytes());
 					(isSSK ? nodeStats.localSskFetchBytesReceivedAverage : nodeStats.localChkFetchBytesReceivedAverage).report(rs.getTotalReceivedBytes());
-					if(status == RequestSender.SUCCESS)
+					if (status == RequestSender.SUCCESS)
 						// See comments above declaration of successful* : We don't report sent bytes here.
 						//nodeStats.successfulChkFetchBytesSentAverage.report(rs.getTotalSentBytes());
 						(isSSK ? nodeStats.successfulSskFetchBytesReceivedAverage : nodeStats.successfulChkFetchBytesReceivedAverage).report(rs.getTotalReceivedBytes());
 				}
 
-				if((status == RequestSender.TIMED_OUT) ||
-					(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
-					if(!rejectedOverload) {
+				if ((status == RequestSender.TIMED_OUT) ||
+						(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
+					if (!rejectedOverload) {
 						// If onRejectedOverload() is going to happen,
 						// it should have happened before this callback is called, so
 						// we don't need to check again here.
 						requestStarters.rejectedOverload(isSSK, false, realTimeFlag);
 						rejectedOverload = true;
 						long rtt = System.currentTimeMillis() - startTime;
-						double targetLocation=key.toNormalizedDouble();
-						if(isSSK) {
+						double targetLocation = key.toNormalizedDouble();
+						if (isSSK) {
 							node.getNodeStats().reportSSKOutcome(rtt, false, realTimeFlag);
 						} else {
 							node.getNodeStats().reportCHKOutcome(rtt, false, targetLocation, realTimeFlag);
 						}
 					}
-				} else
-					if(rs.hasForwarded() &&
+				} else if (rs.hasForwarded() &&
 						((status == RequestSender.DATA_NOT_FOUND) ||
-						(status == RequestSender.RECENTLY_FAILED) ||
-						(status == RequestSender.SUCCESS) ||
-						(status == RequestSender.ROUTE_NOT_FOUND) ||
-						(status == RequestSender.VERIFY_FAILURE) ||
-						(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
-						long rtt = System.currentTimeMillis() - startTime;
-						double targetLocation=key.toNormalizedDouble();
-						if(!rejectedOverload)
-							requestStarters.requestCompleted(isSSK, false, key, realTimeFlag);
-						// Count towards RTT even if got a RejectedOverload - but not if timed out.
-						requestStarters.getThrottle(isSSK, false, realTimeFlag).successfulCompletion(rtt);
-						if(isSSK) {
-							node.getNodeStats().reportSSKOutcome(rtt, status == RequestSender.SUCCESS, realTimeFlag);
-						} else {
-							node.getNodeStats().reportCHKOutcome(rtt, status == RequestSender.SUCCESS, targetLocation, realTimeFlag);
-						}
-						if(status == RequestSender.SUCCESS) {
-							Logger.minor(this, "Successful " + (isSSK ? "SSK" : "CHK") + " fetch took "+rtt);
-						}
+								(status == RequestSender.RECENTLY_FAILED) ||
+								(status == RequestSender.SUCCESS) ||
+								(status == RequestSender.ROUTE_NOT_FOUND) ||
+								(status == RequestSender.VERIFY_FAILURE) ||
+								(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
+					long rtt = System.currentTimeMillis() - startTime;
+					double targetLocation = key.toNormalizedDouble();
+					if (!rejectedOverload)
+						requestStarters.requestCompleted(isSSK, false, key, realTimeFlag);
+					// Count towards RTT even if got a RejectedOverload - but not if timed out.
+					requestStarters.getThrottle(isSSK, false, realTimeFlag).successfulCompletion(rtt);
+					if (isSSK) {
+						node.getNodeStats().reportSSKOutcome(rtt, status == RequestSender.SUCCESS, realTimeFlag);
+					} else {
+						node.getNodeStats().reportCHKOutcome(rtt, status == RequestSender.SUCCESS, targetLocation, realTimeFlag);
 					}
+					if (status == RequestSender.SUCCESS) {
+						Logger.minor(this, "Successful " + (isSSK ? "SSK" : "CHK") + " fetch took " + rtt);
+					}
+				}
 
-				if(status == RequestSender.SUCCESS)
+				if (status == RequestSender.SUCCESS)
 					// FIXME how to identify failed to decode and report it back to the client layer??? do we even need to???
 					listener.onSucceeded();
 				else {
-					switch(status) {
+					switch (status) {
 						case RequestSender.NOT_FINISHED:
 							Logger.error(this, "RS still running in get" + (isSSK ? "SSK" : "CHK") + "!: " + rs);
 							listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
@@ -1354,7 +1368,7 @@ public class NodeClientCore implements Persistable {
 							listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
 							return;
 						default:
-							Logger.error(this, "Unknown RequestSender code in get"+ (isSSK ? "SSK" : "CHK") +": " + status + " on " + rs);
+							Logger.error(this, "Unknown RequestSender code in get" + (isSSK ? "SSK" : "CHK") + ": " + status + " on " + rs);
 							listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
 							return;
 					}
@@ -1363,7 +1377,7 @@ public class NodeClientCore implements Persistable {
 
 			@Override
 			public void onNotStarted(boolean internalError) {
-				if(internalError)
+				if (internalError)
 					listener.onFailed(new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR));
 				else
 					listener.onFailed(new LowLevelGetException(LowLevelGetException.DATA_NOT_FOUND_IN_STORE));
@@ -1375,56 +1389,57 @@ public class NodeClientCore implements Persistable {
 	 * Start an asynchronous fetch of the key in question, which will complete to the datastore.
 	 * It will not decode the data because we don't provide a ClientKey. It will not return
 	 * anything and will run asynchronously. Caller is responsible for unlocking the UID.
-	 * @param key The key being fetched.
-	 * @param offersOnly If true, only fetch the key from nodes that have offered it, using GetOfferedKeys,
-	 * don't do a normal fetch for it.
-	 * @param uid The UID of the request. This should already be locked, see the tag.
-	 * @param tag The RequestTag for the request. In case of an error when starting it we will unlock it,
-	 * but in other cases the listener should unlock it.
-	 * @param listener Will be called by the request sender, if a request is started.
-	 * However, for example, if we fetch it from the store, it will be returned via the
-	 * tripPendingKeys mechanism.
-	 * @param canReadClientCache Can this request read the client-cache?
+	 *
+	 * @param key                 The key being fetched.
+	 * @param offersOnly          If true, only fetch the key from nodes that have offered it, using GetOfferedKeys,
+	 *                            don't do a normal fetch for it.
+	 * @param uid                 The UID of the request. This should already be locked, see the tag.
+	 * @param tag                 The RequestTag for the request. In case of an error when starting it we will unlock it,
+	 *                            but in other cases the listener should unlock it.
+	 * @param listener            Will be called by the request sender, if a request is started.
+	 *                            However, for example, if we fetch it from the store, it will be returned via the
+	 *                            tripPendingKeys mechanism.
+	 * @param canReadClientCache  Can this request read the client-cache?
 	 * @param canWriteClientCache Can this request write the client-cache?
-	 * @param htl The HTL to start the request at. See the caller, this can be modified in the case of
-	 * fetching an offered key.
-	 * @param realTimeFlag Is this a real-time request? False = this is a bulk request.
-	 * @param localOnly If true, only check the datastore, don't create a request if nothing is found.
-	 * @param ignoreStore If true, don't check the datastore, create a request immediately.
+	 * @param htl                 The HTL to start the request at. See the caller, this can be modified in the case of
+	 *                            fetching an offered key.
+	 * @param realTimeFlag        Is this a real-time request? False = this is a bulk request.
+	 * @param localOnly           If true, only check the datastore, don't create a request if nothing is found.
+	 * @param ignoreStore         If true, don't check the datastore, create a request immediately.
 	 */
 	void asyncGet(Key key, boolean offersOnly, long uid, RequestSenderListener listener, RequestTag tag, boolean canReadClientCache, boolean canWriteClientCache, short htl, boolean realTimeFlag, boolean localOnly, boolean ignoreStore) {
 		try {
 			Object o = node.makeRequestSender(key, htl, uid, tag, null, localOnly, ignoreStore, offersOnly, canReadClientCache, canWriteClientCache, realTimeFlag);
-			if(o instanceof KeyBlock) {
+			if (o instanceof KeyBlock) {
 				tag.setServedFromDatastore();
 				listener.onDataFoundLocally();
 				return; // Already have it.
 			}
-			if(o == null) {
+			if (o == null) {
 				listener.onNotStarted(false);
 				tag.unlockHandler();
 				return;
 			}
 			RequestSender rs = (RequestSender) o;
 			rs.addListener(listener);
-			if(rs.uid != uid)
+			if (rs.uid != uid)
 				tag.unlockHandler();
 			// Else it has started a request.
-			if(logMINOR)
+			if (logMINOR)
 				Logger.minor(this, "Started " + o + " for " + uid + " for " + key);
-		} catch(RuntimeException e) {
+		} catch (RuntimeException e) {
 			Logger.error(this, "Caught error trying to start request: " + e, e);
 			listener.onNotStarted(true);
-		} catch(Error e) {
+		} catch (Error e) {
 			Logger.error(this, "Caught error trying to start request: " + e, e);
 			listener.onNotStarted(true);
 		}
 	}
 
 	public ClientKeyBlock realGetKey(ClientKey key, boolean localOnly, boolean ignoreStore, boolean canWriteClientCache, boolean realTimeFlag) throws LowLevelGetException {
-		if(key instanceof ClientCHK)
+		if (key instanceof ClientCHK)
 			return realGetCHK((ClientCHK) key, localOnly, ignoreStore, canWriteClientCache, realTimeFlag);
-		else if(key instanceof ClientSSK)
+		else if (key instanceof ClientSSK)
 			return realGetSSK((ClientSSK) key, localOnly, ignoreStore, canWriteClientCache, realTimeFlag);
 		else
 			throw new IllegalArgumentException("Not a CHK or SSK: " + key);
@@ -1432,11 +1447,12 @@ public class NodeClientCore implements Persistable {
 
 	/**
 	 * Fetch a CHK.
+	 *
 	 * @param key
 	 * @param localOnly
 	 * @param ignoreStore
 	 * @param canWriteClientCache Can we write to the client cache? This is a local request, so
-	 * we can always read from it, but some clients will want to override to avoid polluting it.
+	 *                            we can always read from it, but some clients will want to override to avoid polluting it.
 	 * @return The fetched block.
 	 * @throws LowLevelGetException
 	 */
@@ -1444,7 +1460,7 @@ public class NodeClientCore implements Persistable {
 		long startTime = System.currentTimeMillis();
 		long uid = makeUID();
 		RequestTag tag = new RequestTag(false, RequestTag.START.LOCAL, null, realTimeFlag, uid, node);
-		if(!tracker.lockUID(uid, false, false, false, true, realTimeFlag, tag)) {
+		if (!tracker.lockUID(uid, false, false, false, true, realTimeFlag, tag)) {
 			Logger.error(this, "Could not lock UID just randomly generated: " + uid + " - probably indicates broken PRNG");
 			throw new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR);
 		}
@@ -1452,22 +1468,22 @@ public class NodeClientCore implements Persistable {
 		RequestSender rs = null;
 		try {
 			Object o = node.makeRequestSender(key.getNodeCHK(), node.maxHTL(), uid, tag, null, localOnly, ignoreStore, false, true, canWriteClientCache, realTimeFlag);
-			if(o instanceof CHKBlock)
+			if (o instanceof CHKBlock)
 				try {
 					tag.setServedFromDatastore();
 					return new ClientCHKBlock((CHKBlock) o, key);
-				} catch(CHKVerifyException e) {
+				} catch (CHKVerifyException e) {
 					Logger.error(this, "Does not verify: " + e, e);
 					throw new LowLevelGetException(LowLevelGetException.DECODE_FAILED);
 				}
-			if(o == null)
+			if (o == null)
 				throw new LowLevelGetException(LowLevelGetException.DATA_NOT_FOUND_IN_STORE);
 			rs = (RequestSender) o;
 			boolean rejectedOverload = false;
 			short waitStatus = 0;
-			while(true) {
+			while (true) {
 				waitStatus = rs.waitUntilStatusChange(waitStatus);
-				if((!rejectedOverload) && (waitStatus & RequestSender.WAIT_REJECTED_OVERLOAD) != 0) {
+				if ((!rejectedOverload) && (waitStatus & RequestSender.WAIT_REJECTED_OVERLOAD) != 0) {
 					// See below; inserts count both
 					requestStarters.rejectedOverload(false, false, realTimeFlag);
 					rejectedOverload = true;
@@ -1475,62 +1491,61 @@ public class NodeClientCore implements Persistable {
 
 				int status = rs.getStatus();
 
-				if(status == RequestSender.NOT_FINISHED)
+				if (status == RequestSender.NOT_FINISHED)
 					continue;
 
-				if(status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
-					if(logMINOR)
+				if (status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
+					if (logMINOR)
 						Logger.minor(this, "CHK fetch cost " + rs.getTotalSentBytes() + '/' + rs.getTotalReceivedBytes() + " bytes (" + status + ')');
 					nodeStats.localChkFetchBytesSentAverage.report(rs.getTotalSentBytes());
 					nodeStats.localChkFetchBytesReceivedAverage.report(rs.getTotalReceivedBytes());
-					if(status == RequestSender.SUCCESS)
+					if (status == RequestSender.SUCCESS)
 						// See comments above declaration of successful* : We don't report sent bytes here.
 						//nodeStats.successfulChkFetchBytesSentAverage.report(rs.getTotalSentBytes());
 						nodeStats.successfulChkFetchBytesReceivedAverage.report(rs.getTotalReceivedBytes());
 				}
 
-				if((status == RequestSender.TIMED_OUT) ||
-					(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
-					if(!rejectedOverload) {
+				if ((status == RequestSender.TIMED_OUT) ||
+						(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
+					if (!rejectedOverload) {
 						// See below
 						requestStarters.rejectedOverload(false, false, realTimeFlag);
 						rejectedOverload = true;
 						long rtt = System.currentTimeMillis() - startTime;
-						double targetLocation=key.getNodeCHK().toNormalizedDouble();
+						double targetLocation = key.getNodeCHK().toNormalizedDouble();
 						node.getNodeStats().reportCHKOutcome(rtt, false, targetLocation, realTimeFlag);
 					}
-				} else
-					if(rs.hasForwarded() &&
+				} else if (rs.hasForwarded() &&
 						((status == RequestSender.DATA_NOT_FOUND) ||
-						(status == RequestSender.RECENTLY_FAILED) ||
-						(status == RequestSender.SUCCESS) ||
-						(status == RequestSender.ROUTE_NOT_FOUND) ||
-						(status == RequestSender.VERIFY_FAILURE) ||
-						(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
-						long rtt = System.currentTimeMillis() - startTime;
-						double targetLocation=key.getNodeCHK().toNormalizedDouble();
-						if(!rejectedOverload)
-							requestStarters.requestCompleted(false, false, key.getNodeKey(true), realTimeFlag);
-						// Count towards RTT even if got a RejectedOverload - but not if timed out.
-						requestStarters.getThrottle(false, false, realTimeFlag).successfulCompletion(rtt);
-						node.getNodeStats().reportCHKOutcome(rtt, status == RequestSender.SUCCESS, targetLocation, realTimeFlag);
-						if(status == RequestSender.SUCCESS) {
-							Logger.minor(this, "Successful CHK fetch took "+rtt);
-						}
+								(status == RequestSender.RECENTLY_FAILED) ||
+								(status == RequestSender.SUCCESS) ||
+								(status == RequestSender.ROUTE_NOT_FOUND) ||
+								(status == RequestSender.VERIFY_FAILURE) ||
+								(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
+					long rtt = System.currentTimeMillis() - startTime;
+					double targetLocation = key.getNodeCHK().toNormalizedDouble();
+					if (!rejectedOverload)
+						requestStarters.requestCompleted(false, false, key.getNodeKey(true), realTimeFlag);
+					// Count towards RTT even if got a RejectedOverload - but not if timed out.
+					requestStarters.getThrottle(false, false, realTimeFlag).successfulCompletion(rtt);
+					node.getNodeStats().reportCHKOutcome(rtt, status == RequestSender.SUCCESS, targetLocation, realTimeFlag);
+					if (status == RequestSender.SUCCESS) {
+						Logger.minor(this, "Successful CHK fetch took " + rtt);
 					}
+				}
 
-				if(status == RequestSender.SUCCESS)
+				if (status == RequestSender.SUCCESS)
 					try {
 						return new ClientCHKBlock(rs.getPRB().getBlock(), rs.getHeaders(), key, true);
-					} catch(CHKVerifyException e) {
+					} catch (CHKVerifyException e) {
 						Logger.error(this, "Does not verify: " + e, e);
 						throw new LowLevelGetException(LowLevelGetException.DECODE_FAILED);
-					} catch(AbortedException e) {
+					} catch (AbortedException e) {
 						Logger.error(this, "Impossible: " + e, e);
 						throw new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR);
 					}
 				else {
-					switch(status) {
+					switch (status) {
 						case RequestSender.NOT_FINISHED:
 							Logger.error(this, "RS still running in getCHK!: " + rs);
 							throw new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR);
@@ -1566,7 +1581,7 @@ public class NodeClientCore implements Persistable {
 		long startTime = System.currentTimeMillis();
 		long uid = makeUID();
 		RequestTag tag = new RequestTag(true, RequestTag.START.LOCAL, null, realTimeFlag, uid, node);
-		if(!tracker.lockUID(uid, true, false, false, true, realTimeFlag, tag)) {
+		if (!tracker.lockUID(uid, true, false, false, true, realTimeFlag, tag)) {
 			Logger.error(this, "Could not lock UID just randomly generated: " + uid + " - probably indicates broken PRNG");
 			throw new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR);
 		}
@@ -1574,39 +1589,39 @@ public class NodeClientCore implements Persistable {
 		RequestSender rs = null;
 		try {
 			Object o = node.makeRequestSender(key.getNodeKey(true), node.maxHTL(), uid, tag, null, localOnly, ignoreStore, false, true, canWriteClientCache, realTimeFlag);
-			if(o instanceof SSKBlock)
+			if (o instanceof SSKBlock)
 				try {
 					tag.setServedFromDatastore();
 					SSKBlock block = (SSKBlock) o;
 					key.setPublicKey(block.getPubKey());
 					return ClientSSKBlock.construct(block, key);
-				} catch(SSKVerifyException e) {
+				} catch (SSKVerifyException e) {
 					Logger.error(this, "Does not verify: " + e, e);
 					throw new LowLevelGetException(LowLevelGetException.DECODE_FAILED);
 				}
-			if(o == null)
+			if (o == null)
 				throw new LowLevelGetException(LowLevelGetException.DATA_NOT_FOUND_IN_STORE);
 			rs = (RequestSender) o;
 			boolean rejectedOverload = false;
 			short waitStatus = 0;
-			while(true) {
+			while (true) {
 				waitStatus = rs.waitUntilStatusChange(waitStatus);
-				if((!rejectedOverload) && (waitStatus & RequestSender.WAIT_REJECTED_OVERLOAD) != 0) {
+				if ((!rejectedOverload) && (waitStatus & RequestSender.WAIT_REJECTED_OVERLOAD) != 0) {
 					requestStarters.rejectedOverload(true, false, realTimeFlag);
 					rejectedOverload = true;
 				}
 
 				int status = rs.getStatus();
 
-				if(status == RequestSender.NOT_FINISHED)
+				if (status == RequestSender.NOT_FINISHED)
 					continue;
 
-				if(status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
-					if(logMINOR)
+				if (status != RequestSender.TIMED_OUT && status != RequestSender.GENERATED_REJECTED_OVERLOAD && status != RequestSender.INTERNAL_ERROR) {
+					if (logMINOR)
 						Logger.minor(this, "SSK fetch cost " + rs.getTotalSentBytes() + '/' + rs.getTotalReceivedBytes() + " bytes (" + status + ')');
 					nodeStats.localSskFetchBytesSentAverage.report(rs.getTotalSentBytes());
 					nodeStats.localSskFetchBytesReceivedAverage.report(rs.getTotalReceivedBytes());
-					if(status == RequestSender.SUCCESS)
+					if (status == RequestSender.SUCCESS)
 						// See comments above successfulSskFetchBytesSentAverage : we don't relay the data, so
 						// reporting the sent bytes would be inaccurate.
 						//nodeStats.successfulSskFetchBytesSentAverage.report(rs.getTotalSentBytes());
@@ -1614,40 +1629,39 @@ public class NodeClientCore implements Persistable {
 				}
 
 				long rtt = System.currentTimeMillis() - startTime;
-				if((status == RequestSender.TIMED_OUT) ||
-					(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
-					if(!rejectedOverload) {
+				if ((status == RequestSender.TIMED_OUT) ||
+						(status == RequestSender.GENERATED_REJECTED_OVERLOAD)) {
+					if (!rejectedOverload) {
 						requestStarters.rejectedOverload(true, false, realTimeFlag);
 						rejectedOverload = true;
 					}
 					node.getNodeStats().reportSSKOutcome(rtt, false, realTimeFlag);
-				} else
-					if(rs.hasForwarded() &&
+				} else if (rs.hasForwarded() &&
 						((status == RequestSender.DATA_NOT_FOUND) ||
-						(status == RequestSender.RECENTLY_FAILED) ||
-						(status == RequestSender.SUCCESS) ||
-						(status == RequestSender.ROUTE_NOT_FOUND) ||
-						(status == RequestSender.VERIFY_FAILURE) ||
-						(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
+								(status == RequestSender.RECENTLY_FAILED) ||
+								(status == RequestSender.SUCCESS) ||
+								(status == RequestSender.ROUTE_NOT_FOUND) ||
+								(status == RequestSender.VERIFY_FAILURE) ||
+								(status == RequestSender.GET_OFFER_VERIFY_FAILURE))) {
 
-						if(!rejectedOverload)
-							requestStarters.requestCompleted(true, false, key.getNodeKey(true), realTimeFlag);
-						// Count towards RTT even if got a RejectedOverload - but not if timed out.
-						requestStarters.getThrottle(true, false, realTimeFlag).successfulCompletion(rtt);
-						node.getNodeStats().reportSSKOutcome(rtt, status == RequestSender.SUCCESS, realTimeFlag);
-					}
+					if (!rejectedOverload)
+						requestStarters.requestCompleted(true, false, key.getNodeKey(true), realTimeFlag);
+					// Count towards RTT even if got a RejectedOverload - but not if timed out.
+					requestStarters.getThrottle(true, false, realTimeFlag).successfulCompletion(rtt);
+					node.getNodeStats().reportSSKOutcome(rtt, status == RequestSender.SUCCESS, realTimeFlag);
+				}
 
-				if(rs.getStatus() == RequestSender.SUCCESS)
+				if (rs.getStatus() == RequestSender.SUCCESS)
 					try {
 						SSKBlock block = rs.getSSKBlock();
 						key.setPublicKey(block.getPubKey());
 						return ClientSSKBlock.construct(block, key);
-					} catch(SSKVerifyException e) {
+					} catch (SSKVerifyException e) {
 						Logger.error(this, "Does not verify: " + e, e);
 						throw new LowLevelGetException(LowLevelGetException.DECODE_FAILED);
 					}
 				else
-					switch(rs.getStatus()) {
+					switch (rs.getStatus()) {
 						case RequestSender.NOT_FINISHED:
 							Logger.error(this, "RS still running in getCHK!: " + rs);
 							throw new LowLevelGetException(LowLevelGetException.INTERNAL_ERROR);
@@ -1681,14 +1695,15 @@ public class NodeClientCore implements Persistable {
 	/**
 	 * Start a local request to insert a block. Note that this is a KeyBlock not a ClientKeyBlock
 	 * mainly because of random reinserts.
+	 *
 	 * @param block
 	 * @param canWriteClientCache
 	 * @throws LowLevelPutException
 	 */
 	public void realPut(KeyBlock block, boolean canWriteClientCache, boolean forkOnCacheable, boolean preferInsert, boolean ignoreLowBackoff, boolean realTimeFlag) throws LowLevelPutException {
-		if(block instanceof CHKBlock)
+		if (block instanceof CHKBlock)
 			realPutCHK((CHKBlock) block, canWriteClientCache, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-		else if(block instanceof SSKBlock)
+		else if (block instanceof SSKBlock)
 			realPutSSK((SSKBlock) block, canWriteClientCache, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
 		else
 			throw new IllegalArgumentException("Unknown put type " + block.getClass());
@@ -1701,7 +1716,7 @@ public class NodeClientCore implements Persistable {
 		CHKInsertSender is;
 		long uid = makeUID();
 		InsertTag tag = new InsertTag(false, InsertTag.START.LOCAL, null, realTimeFlag, uid, node);
-		if(!tracker.lockUID(uid, false, true, false, true, realTimeFlag, tag)) {
+		if (!tracker.lockUID(uid, false, true, false, true, realTimeFlag, tag)) {
 			Logger.error(this, "Could not lock UID just randomly generated: " + uid + " - probably indicates broken PRNG");
 			throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR);
 		}
@@ -1709,50 +1724,50 @@ public class NodeClientCore implements Persistable {
 		try {
 			long startTime = System.currentTimeMillis();
 			is = node.makeInsertSender(block.getKey(),
-				node.maxHTL(), uid, tag, null, headers, prb, false, canWriteClientCache, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
+					node.maxHTL(), uid, tag, null, headers, prb, false, canWriteClientCache, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
 			boolean hasReceivedRejectedOverload = false;
 			// Wait for status
-			while(true) {
-				synchronized(is) {
-					if(is.getStatus() == CHKInsertSender.NOT_FINISHED)
+			while (true) {
+				synchronized (is) {
+					if (is.getStatus() == CHKInsertSender.NOT_FINISHED)
 						try {
 							is.wait(SECONDS.toMillis(5));
-						} catch(InterruptedException e) {
+						} catch (InterruptedException e) {
 							// Ignore
 						}
-					if(is.getStatus() != CHKInsertSender.NOT_FINISHED)
+					if (is.getStatus() != CHKInsertSender.NOT_FINISHED)
 						break;
 				}
-				if((!hasReceivedRejectedOverload) && is.receivedRejectedOverload()) {
+				if ((!hasReceivedRejectedOverload) && is.receivedRejectedOverload()) {
 					hasReceivedRejectedOverload = true;
 					requestStarters.rejectedOverload(false, true, realTimeFlag);
 				}
 			}
 
 			// Wait for completion
-			while(true) {
-				synchronized(is) {
-					if(is.completed())
+			while (true) {
+				synchronized (is) {
+					if (is.completed())
 						break;
 					try {
 						is.wait(SECONDS.toMillis(10));
-					} catch(InterruptedException e) {
+					} catch (InterruptedException e) {
 						// Go around again
 					}
 				}
-				if(is.anyTransfersFailed() && (!hasReceivedRejectedOverload)) {
+				if (is.anyTransfersFailed() && (!hasReceivedRejectedOverload)) {
 					hasReceivedRejectedOverload = true; // not strictly true but same effect
 					requestStarters.rejectedOverload(false, true, realTimeFlag);
 				}
 			}
 
-			if(logMINOR)
+			if (logMINOR)
 				Logger.minor(this, "Completed " + uid + " overload=" + hasReceivedRejectedOverload + ' ' + is.getStatusString());
 
 			// Finished?
-			if(!hasReceivedRejectedOverload)
+			if (!hasReceivedRejectedOverload)
 				// Is it ours? Did we send a request?
-				if(is.sentRequest() && (is.uid == uid) && ((is.getStatus() == CHKInsertSender.ROUTE_NOT_FOUND) || (is.getStatus() == CHKInsertSender.SUCCESS))) {
+				if (is.sentRequest() && (is.uid == uid) && ((is.getStatus() == CHKInsertSender.ROUTE_NOT_FOUND) || (is.getStatus() == CHKInsertSender.SUCCESS))) {
 					// It worked!
 					long endTime = System.currentTimeMillis();
 					long len = endTime - startTime;
@@ -1764,14 +1779,14 @@ public class NodeClientCore implements Persistable {
 
 			// Get status explicitly, *after* completed(), so that it will be RECEIVE_FAILED if the receive failed.
 			int status = is.getStatus();
-			if(status != CHKInsertSender.TIMED_OUT && status != CHKInsertSender.GENERATED_REJECTED_OVERLOAD && status != CHKInsertSender.INTERNAL_ERROR && status != CHKInsertSender.ROUTE_REALLY_NOT_FOUND) {
+			if (status != CHKInsertSender.TIMED_OUT && status != CHKInsertSender.GENERATED_REJECTED_OVERLOAD && status != CHKInsertSender.INTERNAL_ERROR && status != CHKInsertSender.ROUTE_REALLY_NOT_FOUND) {
 				int sent = is.getTotalSentBytes();
 				int received = is.getTotalReceivedBytes();
-				if(logMINOR)
+				if (logMINOR)
 					Logger.minor(this, "Local CHK insert cost " + sent + '/' + received + " bytes (" + status + ')');
 				nodeStats.localChkInsertBytesSentAverage.report(sent);
 				nodeStats.localChkInsertBytesReceivedAverage.report(received);
-				if(status == CHKInsertSender.SUCCESS)
+				if (status == CHKInsertSender.SUCCESS)
 					// Only report Sent bytes because we did not receive the data.
 					nodeStats.successfulChkInsertBytesSentAverage.report(sent);
 			}
@@ -1783,18 +1798,18 @@ public class NodeClientCore implements Persistable {
 				// CHKs don't collide
 			}
 
-			if(status == CHKInsertSender.SUCCESS) {
+			if (status == CHKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
 				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
-				if(status == CHKInsertSender.ROUTE_NOT_FOUND)
+				if (status == CHKInsertSender.ROUTE_NOT_FOUND)
 					msg += " - this is normal on small networks; the data will still be propagated, but it can't find the 20+ nodes needed for full success";
-				if(is.getStatus() != CHKInsertSender.ROUTE_NOT_FOUND)
+				if (is.getStatus() != CHKInsertSender.ROUTE_NOT_FOUND)
 					Logger.error(this, msg);
 				else
 					Logger.normal(this, msg);
-				switch(is.getStatus()) {
+				switch (is.getStatus()) {
 					case CHKInsertSender.NOT_FINISHED:
 						Logger.error(this, "IS still running in putCHK!: " + is);
 						throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR);
@@ -1821,7 +1836,7 @@ public class NodeClientCore implements Persistable {
 		SSKInsertSender is;
 		long uid = makeUID();
 		InsertTag tag = new InsertTag(true, InsertTag.START.LOCAL, null, realTimeFlag, uid, node);
-		if(!tracker.lockUID(uid, true, true, false, true, realTimeFlag, tag)) {
+		if (!tracker.lockUID(uid, true, true, false, true, realTimeFlag, tag)) {
 			Logger.error(this, "Could not lock UID just randomly generated: " + uid + " - probably indicates broken PRNG");
 			throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR);
 		}
@@ -1830,49 +1845,49 @@ public class NodeClientCore implements Persistable {
 			long startTime = System.currentTimeMillis();
 			// Be consistent: use the client cache to check for collisions as this is a local insert.
 			SSKBlock altBlock = node.fetch(block.getKey(), false, true, canWriteClientCache, false, false, null);
-			if(altBlock != null && !altBlock.equals(block))
+			if (altBlock != null && !altBlock.equals(block))
 				throw new LowLevelPutException(altBlock);
 			is = node.makeInsertSender(block,
-				node.maxHTL(), uid, tag, null, false, canWriteClientCache, false, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
+					node.maxHTL(), uid, tag, null, false, canWriteClientCache, false, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
 			boolean hasReceivedRejectedOverload = false;
 			// Wait for status
-			while(true) {
-				synchronized(is) {
-					if(is.getStatus() == SSKInsertSender.NOT_FINISHED)
+			while (true) {
+				synchronized (is) {
+					if (is.getStatus() == SSKInsertSender.NOT_FINISHED)
 						try {
 							is.wait(SECONDS.toMillis(5));
-						} catch(InterruptedException e) {
+						} catch (InterruptedException e) {
 							// Ignore
 						}
-					if(is.getStatus() != SSKInsertSender.NOT_FINISHED)
+					if (is.getStatus() != SSKInsertSender.NOT_FINISHED)
 						break;
 				}
-				if((!hasReceivedRejectedOverload) && is.receivedRejectedOverload()) {
+				if ((!hasReceivedRejectedOverload) && is.receivedRejectedOverload()) {
 					hasReceivedRejectedOverload = true;
 					requestStarters.rejectedOverload(true, true, realTimeFlag);
 				}
 			}
 
 			// Wait for completion
-			while(true) {
-				synchronized(is) {
-					if(is.getStatus() != SSKInsertSender.NOT_FINISHED)
+			while (true) {
+				synchronized (is) {
+					if (is.getStatus() != SSKInsertSender.NOT_FINISHED)
 						break;
 					try {
 						is.wait(SECONDS.toMillis(10));
-					} catch(InterruptedException e) {
+					} catch (InterruptedException e) {
 						// Go around again
 					}
 				}
 			}
 
-			if(logMINOR)
+			if (logMINOR)
 				Logger.minor(this, "Completed " + uid + " overload=" + hasReceivedRejectedOverload + ' ' + is.getStatusString());
 
 			// Finished?
-			if(!hasReceivedRejectedOverload)
+			if (!hasReceivedRejectedOverload)
 				// Is it ours? Did we send a request?
-				if(is.sentRequest() && (is.uid == uid) && ((is.getStatus() == SSKInsertSender.ROUTE_NOT_FOUND) || (is.getStatus() == SSKInsertSender.SUCCESS))) {
+				if (is.sentRequest() && (is.uid == uid) && ((is.getStatus() == SSKInsertSender.ROUTE_NOT_FOUND) || (is.getStatus() == SSKInsertSender.SUCCESS))) {
 					// It worked!
 					long endTime = System.currentTimeMillis();
 					long rtt = endTime - startTime;
@@ -1882,40 +1897,40 @@ public class NodeClientCore implements Persistable {
 
 			int status = is.getStatus();
 
-			if(status != CHKInsertSender.TIMED_OUT && status != CHKInsertSender.GENERATED_REJECTED_OVERLOAD && status != CHKInsertSender.INTERNAL_ERROR && status != CHKInsertSender.ROUTE_REALLY_NOT_FOUND) {
+			if (status != CHKInsertSender.TIMED_OUT && status != CHKInsertSender.GENERATED_REJECTED_OVERLOAD && status != CHKInsertSender.INTERNAL_ERROR && status != CHKInsertSender.ROUTE_REALLY_NOT_FOUND) {
 				int sent = is.getTotalSentBytes();
 				int received = is.getTotalReceivedBytes();
-				if(logMINOR)
+				if (logMINOR)
 					Logger.minor(this, "Local SSK insert cost " + sent + '/' + received + " bytes (" + status + ')');
 				nodeStats.localSskInsertBytesSentAverage.report(sent);
 				nodeStats.localSskInsertBytesReceivedAverage.report(received);
-				if(status == SSKInsertSender.SUCCESS)
+				if (status == SSKInsertSender.SUCCESS)
 					// Only report Sent bytes as we haven't received anything.
 					nodeStats.successfulSskInsertBytesSentAverage.report(sent);
 			}
 
 			boolean deep = node.shouldStoreDeep(block.getKey(), null, is == null ? new PeerNode[0] : is.getRoutedTo());
 
-			if(is.hasCollided()) {
+			if (is.hasCollided()) {
 				SSKBlock collided = is.getBlock();
 				// Store it locally so it can be fetched immediately, and overwrites any locally inserted.
 				try {
 					// Has collided *on the network*, not locally.
 					node.storeInsert(collided, deep, true, canWriteClientCache, false);
-				} catch(KeyCollisionException e) {
+				} catch (KeyCollisionException e) {
 					// collision race?
 					// should be impossible.
-					Logger.normal(this, "collision race? is="+is, e);
+					Logger.normal(this, "collision race? is=" + is, e);
 				}
 				throw new LowLevelPutException(collided);
 			} else
 				try {
 					node.storeInsert(block, deep, false, canWriteClientCache, false);
-				} catch(KeyCollisionException e) {
+				} catch (KeyCollisionException e) {
 					LowLevelPutException failed = new LowLevelPutException(LowLevelPutException.COLLISION);
 					NodeSSK key = block.getKey();
 					KeyBlock collided = node.fetch(key, true, canWriteClientCache, false, false, null);
-					if(collided == null) {
+					if (collided == null) {
 						Logger.error(this, "Collided but no key?!");
 						// Could be a race condition.
 						try {
@@ -1931,18 +1946,18 @@ public class NodeClientCore implements Persistable {
 				}
 
 
-			if(status == SSKInsertSender.SUCCESS) {
+			if (status == SSKInsertSender.SUCCESS) {
 				Logger.normal(this, "Succeeded inserting " + block);
 				return;
 			} else {
 				String msg = "Failed inserting " + block + " : " + is.getStatusString();
-				if(status == CHKInsertSender.ROUTE_NOT_FOUND)
+				if (status == CHKInsertSender.ROUTE_NOT_FOUND)
 					msg += " - this is normal on small networks; the data will still be propagated, but it can't find the 20+ nodes needed for full success";
-				if(is.getStatus() != SSKInsertSender.ROUTE_NOT_FOUND)
+				if (is.getStatus() != SSKInsertSender.ROUTE_NOT_FOUND)
 					Logger.error(this, msg);
 				else
 					Logger.normal(this, msg);
-				switch(is.getStatus()) {
+				switch (is.getStatus()) {
 					case SSKInsertSender.NOT_FINISHED:
 						Logger.error(this, "IS still running in putCHK!: " + is);
 						throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR);
@@ -1965,24 +1980,28 @@ public class NodeClientCore implements Persistable {
 		}
 	}
 
-	/** @deprecated Only provided for compatibility with old plugins! Plugins must specify! */
+	/**
+	 * @deprecated Only provided for compatibility with old plugins! Plugins must specify!
+	 */
 	@Deprecated
 	public HighLevelSimpleClient makeClient(short prioClass) {
 		return makeClient(prioClass, false, false);
 	}
 
-	/** @deprecated Only provided for compatibility with old plugins! Plugins must specify! */
+	/**
+	 * @deprecated Only provided for compatibility with old plugins! Plugins must specify!
+	 */
 	@Deprecated
 	public HighLevelSimpleClient makeClient(short prioClass, boolean forceDontIgnoreTooManyPathComponents) {
 		return makeClient(prioClass, forceDontIgnoreTooManyPathComponents, false);
 	}
 
 	/**
-	 * @param prioClass The priority to run requests at.
+	 * @param prioClass    The priority to run requests at.
 	 * @param realTimeFlag If true, requests are latency-optimised. If false, they are
-	 * throughput-optimised. Fewer latency-optimised ("real time") requests are accepted
-	 * but their transfers are faster. Latency-optimised requests are expected to be bursty,
-	 * whereas throughput-optimised (bulk) requests can be constant.
+	 *                     throughput-optimised. Fewer latency-optimised ("real time") requests are accepted
+	 *                     but their transfers are faster. Latency-optimised requests are expected to be bursty,
+	 *                     whereas throughput-optimised (bulk) requests can be constant.
 	 */
 	public HighLevelSimpleClient makeClient(short prioClass, boolean forceDontIgnoreTooManyPathComponents, boolean realTimeFlag) {
 		return new HighLevelSimpleClientImpl(this, tempBucketFactory, random, prioClass, forceDontIgnoreTooManyPathComponents, realTimeFlag);
@@ -2040,7 +2059,7 @@ public class NodeClientCore implements Persistable {
 
 	public void queueRandomReinsert(KeyBlock block) {
 		SimpleSendableInsert ssi = new SimpleSendableInsert(this, block, RequestStarter.MAXIMUM_PRIORITY_CLASS);
-		if(logMINOR)
+		if (logMINOR)
 			Logger.minor(this, "Queueing random reinsert for " + block + " : " + ssi);
 		ssi.schedule();
 	}
@@ -2056,12 +2075,12 @@ public class NodeClientCore implements Persistable {
 
 	public boolean isAdvancedModeEnabled() {
 		return (getToadletContainer() != null) &&
-			getToadletContainer().isAdvancedModeEnabled();
+				getToadletContainer().isAdvancedModeEnabled();
 	}
 
 	public boolean isFProxyJavascriptEnabled() {
 		return (getToadletContainer() != null) &&
-			getToadletContainer().isFProxyJavascriptEnabled();
+				getToadletContainer().isFProxyJavascriptEnabled();
 	}
 
 	public String getMyName() {
@@ -2069,7 +2088,7 @@ public class NodeClientCore implements Persistable {
 	}
 
 	public FilterCallback createFilterCallback(URI uri, FoundURICallback cb) {
-		if(logMINOR)
+		if (logMINOR)
 			Logger.minor(this, "Creating filter callback: " + uri + ", " + cb);
 		return new GenericReadFilterCallback(uri, cb, null, toadletContainer);
 	}
@@ -2080,31 +2099,31 @@ public class NodeClientCore implements Persistable {
 
 	public boolean allowDownloadTo(File filename) {
 		PHYSICAL_THREAT_LEVEL physicalThreatLevel = node.getSecurityLevels().getPhysicalThreatLevel();
-		if(physicalThreatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM) return false;
-		synchronized(this) {
-			if(downloadAllowedEverywhere) return true;
-			if(includeDownloadDir && FileUtil.isParent(getDownloadsDir(), filename)) return true;
-			for(File dir : downloadAllowedDirs) {
-				if(dir == null) {
+		if (physicalThreatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM) return false;
+		synchronized (this) {
+			if (downloadAllowedEverywhere) return true;
+			if (includeDownloadDir && FileUtil.isParent(getDownloadsDir(), filename)) return true;
+			for (File dir : downloadAllowedDirs) {
+				if (dir == null) {
 					// Debug mysterious NPE...
 					Logger.error(this, "Null in upload allowed dirs???");
 					continue;
 				}
-				if(FileUtil.isParent(dir, filename)) return true;
+				if (FileUtil.isParent(dir, filename)) return true;
 			}
 			return false;
 		}
 	}
 
 	public synchronized boolean allowUploadFrom(File filename) {
-		if(uploadAllowedEverywhere) return true;
-		for(File dir : uploadAllowedDirs) {
-			if(dir == null) {
+		if (uploadAllowedEverywhere) return true;
+		for (File dir : uploadAllowedDirs) {
+			if (dir == null) {
 				// Debug mysterious NPE...
 				Logger.error(this, "Null in upload allowed dirs???");
 				continue;
 			}
-			if(FileUtil.isParent(dir, filename)) return true;
+			if (FileUtil.isParent(dir, filename)) return true;
 		}
 		return false;
 	}
@@ -2138,7 +2157,9 @@ public class NodeClientCore implements Persistable {
 		return tempDir.dir();
 	}
 
-	/** Queue the offered key. */
+	/**
+	 * Queue the offered key.
+	 */
 	public void queueOfferedKey(Key key, boolean realTime) {
 		ClientRequestScheduler sched = requestStarters.getScheduler(key instanceof NodeSSK, false, realTime);
 		sched.queueOfferedKey(key, realTime);
@@ -2172,8 +2193,8 @@ public class NodeClientCore implements Persistable {
 	 * RequestHandler (onAbort() handler). */
 	public boolean wantKey(Key key) {
 		boolean isSSK = key instanceof NodeSSK;
-		if(this.clientContext.getFetchScheduler(isSSK, true).wantKey(key)) return true;
-		if(this.clientContext.getFetchScheduler(isSSK, false).wantKey(key)) return true;
+		if (this.clientContext.getFetchScheduler(isSSK, true).wantKey(key)) return true;
+		if (this.clientContext.getFetchScheduler(isSSK, false).wantKey(key)) return true;
 		return false;
 	}
 
@@ -2191,95 +2212,95 @@ public class NodeClientCore implements Persistable {
 		return r.recentlyFailed();
 	}
 
-    public PluginStores getPluginStores() {
-        return pluginStores;
-    }
+	public PluginStores getPluginStores() {
+		return pluginStores;
+	}
 
-    public synchronized long getMinDiskFreeLongTerm() {
-        return minDiskFreeLongTerm;
-    }
+	public synchronized long getMinDiskFreeLongTerm() {
+		return minDiskFreeLongTerm;
+	}
 
-    public synchronized long getMinDiskFreeShortTerm() {
-        return minDiskFreeShortTerm;
-    }
+	public synchronized long getMinDiskFreeShortTerm() {
+		return minDiskFreeShortTerm;
+	}
 
-    public boolean killedDatabase() {
-        return this.clientLayerPersister.isKilledOrNotLoaded();
-    }
+	public boolean killedDatabase() {
+		return this.clientLayerPersister.isKilledOrNotLoaded();
+	}
 
-    public ClientRequest[] getPersistentRequests() {
-        return fcpPersistentRoot.getPersistentRequests();
-    }
+	public ClientRequest[] getPersistentRequests() {
+		return fcpPersistentRoot.getPersistentRequests();
+	}
 
-    public void setupMasterSecret(MasterSecret persistentSecret) {
-        if(clientContext.getPersistentMasterSecret() == null)
-            clientContext.setPersistentMasterSecret(persistentSecret);
-        persistentTempBucketFactory.setMasterSecret(persistentSecret);
-        persistentRAFFactory.setMasterSecret(persistentSecret);
-    }
+	public void setupMasterSecret(MasterSecret persistentSecret) {
+		if (clientContext.getPersistentMasterSecret() == null)
+			clientContext.setPersistentMasterSecret(persistentSecret);
+		persistentTempBucketFactory.setMasterSecret(persistentSecret);
+		persistentRAFFactory.setMasterSecret(persistentSecret);
+	}
 
-    public boolean loadedDatabase() {
-        return clientLayerPersister.hasLoaded();
-    }
+	public boolean loadedDatabase() {
+		return clientLayerPersister.hasLoaded();
+	}
 
-    public PersistentStatsPutter getBandwidthStatsPutter() {
-        return bandwidthStatsPutter;
-    }
+	public PersistentStatsPutter getBandwidthStatsPutter() {
+		return bandwidthStatsPutter;
+	}
 
-    public USKManager getUskManager() {
-        return uskManager;
-    }
+	public USKManager getUskManager() {
+		return uskManager;
+	}
 
-    public RequestStarterGroup getRequestStarters() {
-        return requestStarters;
-    }
+	public RequestStarterGroup getRequestStarters() {
+		return requestStarters;
+	}
 
-    public String getFormPassword() {
-        return formPassword;
-    }
+	public String getFormPassword() {
+		return formPassword;
+	}
 
-    public FilenameGenerator getTempFilenameGenerator() {
-        return tempFilenameGenerator;
-    }
+	public FilenameGenerator getTempFilenameGenerator() {
+		return tempFilenameGenerator;
+	}
 
-    public FilenameGenerator getPersistentFilenameGenerator() {
-        return persistentFilenameGenerator;
-    }
+	public FilenameGenerator getPersistentFilenameGenerator() {
+		return persistentFilenameGenerator;
+	}
 
-    public TempBucketFactory getTempBucketFactory() {
-        return tempBucketFactory;
-    }
+	public TempBucketFactory getTempBucketFactory() {
+		return tempBucketFactory;
+	}
 
-    public PersistentTempBucketFactory getPersistentTempBucketFactory() {
-        return persistentTempBucketFactory;
-    }
+	public PersistentTempBucketFactory getPersistentTempBucketFactory() {
+		return persistentTempBucketFactory;
+	}
 
-    public ClientLayerPersister getClientLayerPersister() {
-        return clientLayerPersister;
-    }
+	public ClientLayerPersister getClientLayerPersister() {
+		return clientLayerPersister;
+	}
 
-    public Node getNode() {
-        return node;
-    }
+	public Node getNode() {
+		return node;
+	}
 
-    public NodeStats getNodeStats() {
-        return nodeStats;
-    }
+	public NodeStats getNodeStats() {
+		return nodeStats;
+	}
 
-    public RandomSource getRandom() {
-        return random;
-    }
+	public RandomSource getRandom() {
+		return random;
+	}
 
-    public UserAlertManager getAlerts() {
-        return alerts;
-    }
+	public UserAlertManager getAlerts() {
+		return alerts;
+	}
 
-    public DatastoreChecker getStoreChecker() {
-        return storeChecker;
-    }
+	public DatastoreChecker getStoreChecker() {
+		return storeChecker;
+	}
 
-    public ClientContext getClientContext() {
-        return clientContext;
-    }
+	public ClientContext getClientContext() {
+		return clientContext;
+	}
 
 }

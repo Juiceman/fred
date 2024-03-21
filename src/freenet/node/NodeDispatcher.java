@@ -34,30 +34,30 @@ import freenet.support.io.NativeThread;
 
 /**
  * @author amphibian
- * 
+ * <p>
  * Dispatcher for unmatched FNP messages.
- * 
+ * <p>
  * What can we get?
- * 
+ * <p>
  * SwapRequests
- * 
+ * <p>
  * DataRequests
- * 
+ * <p>
  * InsertRequests
- * 
+ * <p>
  * Probably a few others; those are the important bits.
- * 
+ * <p>
  * Requests:
  * - Loop detection only works when the request is actually running. We do
  * NOT remember what UID's we have routed in the past. Hence there is no
  * possibility of an attacker probing for old UID's. Also, even in the rare-ish
  * case where a request forks because an Accepted is delayed, this isn't a
  * big problem: Since we moved on, we're not waiting for it, there will be
- * no timeout/snarl-up beyond what has already happened. 
- * - We should parse the message completely before checking the UID, 
+ * no timeout/snarl-up beyond what has already happened.
+ * - We should parse the message completely before checking the UID,
  * overload, and passing it to the handler. Invalid requests should never
  * be accepted. However, because of inserts, we cannot guarantee that we
- * never check the UID before we know the request is fully routable.  
+ * never check the UID before we know the request is fully routable.
  */
 public class NodeDispatcher implements Dispatcher, Runnable {
 
@@ -65,9 +65,9 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	private static volatile boolean logDEBUG;
 
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
@@ -79,9 +79,9 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	private NodeStats nodeStats;
 	private NodeDispatcherCallback callback;
 	final Probe probe;
-	
-	private static final long STALE_CONTEXT=20000;
-	private static final long STALE_CONTEXT_CHECK=20000;
+
+	private static final long STALE_CONTEXT = 20000;
+	private static final long STALE_CONTEXT_CHECK = 20000;
 
 	NodeDispatcher(Node node) {
 		this.node = node;
@@ -107,129 +107,129 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		public void sentPayload(int x) {
 			// Ignore
 		}
-		
+
 	};
-	
+
 	public interface NodeDispatcherCallback {
 		public void snoop(Message m, Node n);
 	}
-	
+
 	@Override
 	public boolean handleMessage(Message m) {
-		PeerNode source = (PeerNode)m.getSource();
-		if(source == null) {
+		PeerNode source = (PeerNode) m.getSource();
+		if (source == null) {
 			// Node has been disconnected and garbage collected already! Ouch.
 			return true;
 		}
-		if(logMINOR) Logger.minor(this, "Dispatching "+m+" from "+source);
-		if(callback != null) {
+		if (logMINOR) Logger.minor(this, "Dispatching " + m + " from " + source);
+		if (callback != null) {
 			try {
 				callback.snoop(m, node);
 			} catch (Throwable t) {
-				Logger.error(this, "Callback threw "+t, t);
+				Logger.error(this, "Callback threw " + t, t);
 			}
 		}
 		MessageType spec = m.getSpec();
-		if(spec == DMT.FNPPing) {
+		if (spec == DMT.FNPPing) {
 			// Send an FNPPong
 			Message reply = DMT.createFNPPong(m.getInt(DMT.PING_SEQNO));
 			try {
 				source.sendAsync(reply, null, pingCounter); // nothing we can do if can't contact source
 			} catch (NotConnectedException e) {
-				if(logMINOR) Logger.minor(this, "Lost connection replying to "+m);
+				if (logMINOR) Logger.minor(this, "Lost connection replying to " + m);
 			}
 			return true;
-		} else if(spec == DMT.FNPDetectedIPAddress) {
+		} else if (spec == DMT.FNPDetectedIPAddress) {
 			Peer p = (Peer) m.getObject(DMT.EXTERNAL_ADDRESS);
 			source.setRemoteDetectedPeer(p);
 			node.getIpDetector().redetectAddress();
 			return true;
-		} else if(spec == DMT.FNPTime) {
+		} else if (spec == DMT.FNPTime) {
 			return handleTime(m, source);
-		} else if(spec == DMT.FNPUptime) {
+		} else if (spec == DMT.FNPUptime) {
 			return handleUptime(m, source);
-		} else if(spec == DMT.FNPVisibility && source instanceof DarknetPeerNode) {
-			((DarknetPeerNode)source).handleVisibility(m);
+		} else if (spec == DMT.FNPVisibility && source instanceof DarknetPeerNode) {
+			((DarknetPeerNode) source).handleVisibility(m);
 			return true;
-		} else if(spec == DMT.FNPVoid) {
+		} else if (spec == DMT.FNPVoid) {
 			return true;
-		} else if(spec == DMT.FNPDisconnect) {
+		} else if (spec == DMT.FNPDisconnect) {
 			handleDisconnect(m, source);
 			return true;
-		} else if(spec == DMT.nodeToNodeMessage) {
+		} else if (spec == DMT.nodeToNodeMessage) {
 			node.receivedNodeToNodeMessage(m, source);
 			return true;
-		} else if(spec == DMT.UOMAnnouncement && source.isRealConnection()) {
+		} else if (spec == DMT.UOMAnnouncement && source.isRealConnection()) {
 			return node.getNodeUpdater().getUpdateOverMandatory().handleAnnounce(m, source);
-		} else if(spec == DMT.UOMRequestRevocation && source.isRealConnection()) {
+		} else if (spec == DMT.UOMRequestRevocation && source.isRealConnection()) {
 			return node.getNodeUpdater().getUpdateOverMandatory().handleRequestRevocation(m, source);
-		} else if(spec == DMT.UOMSendingRevocation && source.isRealConnection()) {
+		} else if (spec == DMT.UOMSendingRevocation && source.isRealConnection()) {
 			return node.getNodeUpdater().getUpdateOverMandatory().handleSendingRevocation(m, source);
-		} else if(spec == DMT.UOMRequestMainJar && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
+		} else if (spec == DMT.UOMRequestMainJar && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
 			node.getNodeUpdater().getUpdateOverMandatory().handleRequestJar(m, source);
 			return true;
-		} else if(spec == DMT.UOMSendingMainJar && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
+		} else if (spec == DMT.UOMSendingMainJar && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
 			return node.getNodeUpdater().getUpdateOverMandatory().handleSendingMain(m, source);
-		} else if(spec == DMT.UOMFetchDependency && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
+		} else if (spec == DMT.UOMFetchDependency && node.getNodeUpdater().isEnabled() && source.isRealConnection()) {
 			node.getNodeUpdater().getUpdateOverMandatory().handleFetchDependency(m, source);
 			return true;
-		} else if(spec == DMT.FNPOpennetAnnounceRequest) {
+		} else if (spec == DMT.FNPOpennetAnnounceRequest) {
 			return handleAnnounceRequest(m, source);
-		} else if(spec == DMT.FNPRoutingStatus) {
-			if(source instanceof DarknetPeerNode) {
+		} else if (spec == DMT.FNPRoutingStatus) {
+			if (source instanceof DarknetPeerNode) {
 				boolean value = m.getBoolean(DMT.ROUTING_ENABLED);
-				if(logMINOR)
-					Logger.minor(this, "The peer ("+source+") asked us to set routing="+value);
-				((DarknetPeerNode)source).setRoutingStatus(value, false);
+				if (logMINOR)
+					Logger.minor(this, "The peer (" + source + ") asked us to set routing=" + value);
+				((DarknetPeerNode) source).setRoutingStatus(value, false);
 			}
 			// We claim it in any case
 			return true;
-		} else if(source.isRealConnection() && spec == DMT.FNPLocChangeNotificationNew) {
+		} else if (source.isRealConnection() && spec == DMT.FNPLocChangeNotificationNew) {
 			double newLoc = m.getDouble(DMT.LOCATION);
 			ShortBuffer buffer = ((ShortBuffer) m.getObject(DMT.PEER_LOCATIONS));
 			double[] locs = Fields.bytesToDoubles(buffer.getData());
-			
+
 			/**
 			 * Do *NOT* remove the sanity check below! 
 			 * @see http://archives.freenetproject.org/message/20080718.144240.359e16d3.en.html
 			 */
-			if((OpennetManager.MAX_PEERS_FOR_SCALING < locs.length) && (source.isOpennet())) {
-				if(locs.length > OpennetManager.PANIC_MAX_PEERS) {
+			if ((OpennetManager.MAX_PEERS_FOR_SCALING < locs.length) && (source.isOpennet())) {
+				if (locs.length > OpennetManager.PANIC_MAX_PEERS) {
 					// This can't happen by accident
-					Logger.error(this, "We received "+locs.length+ " locations from "+source.toString()+"! That should *NOT* happen! Possible attack!");
+					Logger.error(this, "We received " + locs.length + " locations from " + source.toString() + "! That should *NOT* happen! Possible attack!");
 					source.forceDisconnect();
 					return true;
 				} else {
 					// A few extra can happen by accident. Just use the first 20.
-					Logger.normal(this, "Too many locations from "+source.toString()+" : "+locs.length+" could be an accident, using the first "+OpennetManager.MAX_PEERS_FOR_SCALING);
+					Logger.normal(this, "Too many locations from " + source.toString() + " : " + locs.length + " could be an accident, using the first " + OpennetManager.MAX_PEERS_FOR_SCALING);
 					locs = Arrays.copyOf(locs, OpennetManager.MAX_PEERS_FOR_SCALING);
 				}
 			}
 			// We are on darknet and we trust our peers OR we are on opennet
 			// and the amount of locations sent to us seems reasonable
 			source.updateLocation(newLoc, locs);
-			
+
 			return true;
-		} else if(spec == DMT.FNPPeerLoadStatusByte || spec == DMT.FNPPeerLoadStatusShort || spec == DMT.FNPPeerLoadStatusInt) {
+		} else if (spec == DMT.FNPPeerLoadStatusByte || spec == DMT.FNPPeerLoadStatusShort || spec == DMT.FNPPeerLoadStatusInt) {
 			// Must be handled before doing the routable check!
 			// We may not have received the Location yet, etc.
 			return handlePeerLoadStatus(m, source);
 		}
-		
-		if(!source.isRoutable()) {
-			if(logDEBUG) Logger.debug(this, "Not routable");
 
-			if(spec == DMT.FNPCHKDataRequest) {
+		if (!source.isRoutable()) {
+			if (logDEBUG) Logger.debug(this, "Not routable");
+
+			if (spec == DMT.FNPCHKDataRequest) {
 				rejectRequest(m, node.getNodeStats().chkRequestCtr);
-			} else if(spec == DMT.FNPSSKDataRequest) {
+			} else if (spec == DMT.FNPSSKDataRequest) {
 				rejectRequest(m, node.getNodeStats().sskRequestCtr);
-			} else if(spec == DMT.FNPInsertRequest) {
+			} else if (spec == DMT.FNPInsertRequest) {
 				rejectRequest(m, node.getNodeStats().chkInsertCtr);
-			} else if(spec == DMT.FNPSSKInsertRequest) {
+			} else if (spec == DMT.FNPSSKInsertRequest) {
 				rejectRequest(m, node.getNodeStats().sskInsertCtr);
-			} else if(spec == DMT.FNPSSKInsertRequestNew) {
+			} else if (spec == DMT.FNPSSKInsertRequestNew) {
 				rejectRequest(m, node.getNodeStats().sskInsertCtr);
-			} else if(spec == DMT.FNPGetOfferedKey) {
+			} else if (spec == DMT.FNPGetOfferedKey) {
 				rejectRequest(m, node.getFailureTable().senderCounter);
 			} else {
 				return false;
@@ -237,48 +237,48 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			return true;
 		}
 
-		if(spec == DMT.FNPSwapRequest) {
+		if (spec == DMT.FNPSwapRequest) {
 			return node.getLocationManager().handleSwapRequest(m, source);
-		} else if(spec == DMT.FNPSwapReply) {
+		} else if (spec == DMT.FNPSwapReply) {
 			return node.getLocationManager().handleSwapReply(m, source);
-		} else if(spec == DMT.FNPSwapRejected) {
+		} else if (spec == DMT.FNPSwapRejected) {
 			return node.getLocationManager().handleSwapRejected(m, source);
-		} else if(spec == DMT.FNPSwapCommit) {
+		} else if (spec == DMT.FNPSwapCommit) {
 			return node.getLocationManager().handleSwapCommit(m, source);
-		} else if(spec == DMT.FNPSwapComplete) {
+		} else if (spec == DMT.FNPSwapComplete) {
 			return node.getLocationManager().handleSwapComplete(m, source);
-		} else if(spec == DMT.FNPCHKDataRequest) {
+		} else if (spec == DMT.FNPCHKDataRequest) {
 			handleDataRequest(m, source, false);
 			return true;
-		} else if(spec == DMT.FNPSSKDataRequest) {
+		} else if (spec == DMT.FNPSSKDataRequest) {
 			handleDataRequest(m, source, true);
 			return true;
-		} else if(spec == DMT.FNPInsertRequest) {
+		} else if (spec == DMT.FNPInsertRequest) {
 			handleInsertRequest(m, source, false);
 			return true;
-		} else if(spec == DMT.FNPSSKInsertRequest) {
+		} else if (spec == DMT.FNPSSKInsertRequest) {
 			handleInsertRequest(m, source, true);
 			return true;
-		} else if(spec == DMT.FNPSSKInsertRequestNew) {
+		} else if (spec == DMT.FNPSSKInsertRequestNew) {
 			handleInsertRequest(m, source, true);
 			return true;
-		} else if(spec == DMT.FNPRoutedPing) {
+		} else if (spec == DMT.FNPRoutedPing) {
 			return handleRouted(m, source);
-		} else if(spec == DMT.FNPRoutedPong) {
+		} else if (spec == DMT.FNPRoutedPong) {
 			return handleRoutedReply(m);
-		} else if(spec == DMT.FNPRoutedRejected) {
+		} else if (spec == DMT.FNPRoutedRejected) {
 			return handleRoutedRejected(m);
-		} else if(spec == DMT.FNPOfferKey) {
+		} else if (spec == DMT.FNPOfferKey) {
 			return handleOfferKey(m, source);
-		} else if(spec == DMT.FNPGetOfferedKey) {
+		} else if (spec == DMT.FNPGetOfferedKey) {
 			return handleGetOfferedKey(m, source);
-		} else if(spec == DMT.FNPGetYourFullNoderef && source instanceof DarknetPeerNode) {
-			((DarknetPeerNode)source).sendFullNoderef();
+		} else if (spec == DMT.FNPGetYourFullNoderef && source instanceof DarknetPeerNode) {
+			((DarknetPeerNode) source).sendFullNoderef();
 			return true;
-		} else if(spec == DMT.FNPMyFullNoderef && source instanceof DarknetPeerNode) {
-			((DarknetPeerNode)source).handleFullNoderef(m);
+		} else if (spec == DMT.FNPMyFullNoderef && source instanceof DarknetPeerNode) {
+			((DarknetPeerNode) source).handleFullNoderef(m);
 			return true;
-		} else if(spec == DMT.ProbeRequest) {
+		} else if (spec == DMT.ProbeRequest) {
 			//Response is handled by callbacks within probe.
 			probe.request(m, source);
 			return true;
@@ -322,8 +322,8 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		Key key = (Key) m.getObject(DMT.KEY);
 		byte[] authenticator = ((ShortBuffer) m.getObject(DMT.OFFER_AUTHENTICATOR)).getData();
 		long uid = m.getLong(DMT.UID);
-		if(!HMAC.verifyWithSHA256(node.getFailureTable().offerAuthenticatorKey, key.getFullKey(), authenticator)) {
-			Logger.error(this, "Invalid offer request from "+source+" : authenticator did not verify");
+		if (!HMAC.verifyWithSHA256(node.getFailureTable().offerAuthenticatorKey, key.getFullKey(), authenticator)) {
+			Logger.error(this, "Invalid offer request from " + source + " : authenticator did not verify");
 			try {
 				source.sendAsync(DMT.createFNPGetOfferedKeyInvalid(uid, DMT.GET_OFFERED_KEY_REJECTED_BAD_AUTHENTICATOR), null, node.getFailureTable().senderCounter);
 			} catch (NotConnectedException e) {
@@ -331,44 +331,44 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			}
 			return true;
 		}
-		if(logMINOR) Logger.minor(this, "Valid GetOfferedKey for "+key+" from "+source);
-		
+		if (logMINOR) Logger.minor(this, "Valid GetOfferedKey for " + key + " from " + source);
+
 		// Do we want it? We can RejectOverload if we don't have the bandwidth...
 		boolean isSSK = key instanceof NodeSSK;
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
 		OfferReplyTag tag = new OfferReplyTag(isSSK, source, realTimeFlag, uid, node);
-		
-		if(!tracker.lockUID(uid, isSSK, false, true, false, realTimeFlag, tag)) {
-			if(logMINOR) Logger.minor(this, "Could not lock ID "+uid+" -> rejecting (already running)");
+
+		if (!tracker.lockUID(uid, isSSK, false, true, false, realTimeFlag, tag)) {
+			if (logMINOR) Logger.minor(this, "Could not lock ID " + uid + " -> rejecting (already running)");
 			Message rejected = DMT.createFNPRejectedLoop(uid);
 			try {
 				source.sendAsync(rejected, null, node.getFailureTable().senderCounter);
 			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting request from "+source.getPeer()+": "+e);
+				Logger.normal(this, "Rejecting request from " + source.getPeer() + ": " + e);
 			}
 			return true;
 		} else {
-			if(logMINOR) Logger.minor(this, "Locked "+uid);
+			if (logMINOR) Logger.minor(this, "Locked " + uid);
 		}
 		boolean needPubKey;
 		try {
-		needPubKey = m.getBoolean(DMT.NEED_PUB_KEY);
-		RejectReason reject = 
-			nodeStats.shouldRejectRequest(true, false, isSSK, false, true, source, false, false, realTimeFlag, tag);
-		if(reject != null) {
-			Logger.normal(this, "Rejecting FNPGetOfferedKey from "+source+" for "+key+" : "+reject);
-			Message rejected = DMT.createFNPRejectedOverload(uid, true, true, realTimeFlag);
-			if(reject.soft)
-				rejected.addSubMessage(DMT.createFNPRejectIsSoft());
-			try {
-				source.sendAsync(rejected, null, node.getFailureTable().senderCounter);
-			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting (overload) data request from "+source.getPeer()+": "+e);
+			needPubKey = m.getBoolean(DMT.NEED_PUB_KEY);
+			RejectReason reject =
+					nodeStats.shouldRejectRequest(true, false, isSSK, false, true, source, false, false, realTimeFlag, tag);
+			if (reject != null) {
+				Logger.normal(this, "Rejecting FNPGetOfferedKey from " + source + " for " + key + " : " + reject);
+				Message rejected = DMT.createFNPRejectedOverload(uid, true, true, realTimeFlag);
+				if (reject.soft)
+					rejected.addSubMessage(DMT.createFNPRejectIsSoft());
+				try {
+					source.sendAsync(rejected, null, node.getFailureTable().senderCounter);
+				} catch (NotConnectedException e) {
+					Logger.normal(this, "Rejecting (overload) data request from " + source.getPeer() + ": " + e);
+				}
+				tag.unlockHandler(reject.soft);
+				return true;
 			}
-			tag.unlockHandler(reject.soft);
-			return true;
-		}
-		
+
 		} catch (Error e) {
 			tag.unlockHandler();
 			throw e;
@@ -376,11 +376,11 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			tag.unlockHandler();
 			throw e;
 		} // Otherwise, sendOfferedKey is responsible for unlocking. 
-		
+
 		// Accept it.
-		
+
 		try {
-			node.getFailureTable().sendOfferedKey(key, isSSK, needPubKey, uid, source, tag,realTimeFlag);
+			node.getFailureTable().sendOfferedKey(key, isSSK, needPubKey, uid, source, tag, realTimeFlag);
 		} catch (NotConnectedException e) {
 			// Too bad.
 		}
@@ -396,32 +396,32 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			}
 		}, 1000);
 	}
-	
+
 	private void finishDisconnect(final Message m, final PeerNode source) {
 		source.disconnected(true, true);
 		// If true, remove from active routing table, likely to be down for a while.
 		// Otherwise just dump all current connection state and keep trying to connect.
 		boolean remove = m.getBoolean(DMT.REMOVE);
-		if(remove) {
+		if (remove) {
 			node.getPeers().disconnectAndRemove(source, false, false, false);
-			if(source instanceof DarknetPeerNode)
+			if (source instanceof DarknetPeerNode)
 				// FIXME remove, dirty logs.
 				// FIXME add a useralert?
-				System.out.println("Disconnecting permanently from your friend \""+((DarknetPeerNode)source).getName()+"\" because they asked us to remove them.");
+				System.out.println("Disconnecting permanently from your friend \"" + ((DarknetPeerNode) source).getName() + "\" because they asked us to remove them.");
 		}
 		// If true, purge all references to this node. Otherwise, we can keep the node
 		// around in secondary tables etc in order to more easily reconnect later. 
 		// (Mostly used on opennet)
 		boolean purge = m.getBoolean(DMT.PURGE);
-		if(purge) {
+		if (purge) {
 			OpennetManager om = node.getOpennet();
-			if(om != null && source instanceof OpennetPeerNode)
-				om.purgeOldOpennetPeer((OpennetPeerNode)source);
+			if (om != null && source instanceof OpennetPeerNode)
+				om.purgeOldOpennetPeer((OpennetPeerNode) source);
 		}
 		// Process parting message
 		int type = m.getInt(DMT.NODE_TO_NODE_MESSAGE_TYPE);
 		ShortBuffer messageData = (ShortBuffer) m.getObject(DMT.NODE_TO_NODE_MESSAGE_DATA);
-		if(messageData.getLength() == 0) return;
+		if (messageData.getLength() == 0) return;
 		node.receivedNodeToNodeMessage(source, type, messageData, true);
 	}
 
@@ -434,16 +434,16 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	// We need to check the datastore before deciding whether to accept a request.
 	// This can block - in bad cases, for a long time.
 	// So we need to run it on a separate thread.
-	
+
 	private final PrioRunnable queueRunner = new PrioRunnable() {
 
 		@Override
 		public void run() {
-			while(true) {
+			while (true) {
 				try {
 					Message msg = requestQueue.take();
 					boolean isSSK = msg.getSpec() == DMT.FNPSSKDataRequest;
-					innerHandleDataRequest(msg, (PeerNode)msg.getSource(), isSSK);
+					innerHandleDataRequest(msg, (PeerNode) msg.getSource(), isSSK);
 				} catch (InterruptedException e) {
 					// Ignore
 				}
@@ -453,77 +453,79 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		@Override
 		public int getPriority() {
 			// Slightly less than the actual requests themselves because accepting requests increases load.
-			return NativeThread.HIGH_PRIORITY-1;
+			return NativeThread.HIGH_PRIORITY - 1;
 		}
-		
+
 	};
-	
+
 	private final ArrayBlockingQueue<Message> requestQueue = new ArrayBlockingQueue<Message>(100);
-	
+
 	private void handleDataRequest(Message m, PeerNode source, boolean isSSK) {
 		// FIXME check probablyInStore and if not, we can handle it inline.
 		// This and DatastoreChecker require that method be implemented...
 		// For now just handle everything on the thread...
-		if(!requestQueue.offer(m)) {
+		if (!requestQueue.offer(m)) {
 			rejectRequest(m, isSSK ? node.getNodeStats().sskRequestCtr : node.getNodeStats().chkRequestCtr);
 		}
 	}
-	
+
 	/**
-	 * Handle an incoming FNPDataRequest. We should parse it and determine 
+	 * Handle an incoming FNPDataRequest. We should parse it and determine
 	 * whether it is valid before we accept it.
 	 */
 	private void innerHandleDataRequest(Message m, PeerNode source, boolean isSSK) {
-		if(!source.isConnected()) {
-			if(logMINOR) Logger.minor(this, "Handling request off thread, source disconnected: "+source+" for "+m);
+		if (!source.isConnected()) {
+			if (logMINOR)
+				Logger.minor(this, "Handling request off thread, source disconnected: " + source + " for " + m);
 			return;
 		}
-		if(!source.isRoutable()) {
-			if(logMINOR) Logger.minor(this, "Handling request off thread, source no longer routable: "+source+" for "+m);
+		if (!source.isRoutable()) {
+			if (logMINOR)
+				Logger.minor(this, "Handling request off thread, source no longer routable: " + source + " for " + m);
 			rejectRequest(m, isSSK ? node.getNodeStats().sskRequestCtr : node.getNodeStats().chkRequestCtr);
 			return;
 		}
 		long id = m.getLong(DMT.UID);
 		ByteCounter ctr = isSSK ? node.getNodeStats().sskRequestCtr : node.getNodeStats().chkRequestCtr;
-        short htl = m.getShort(DMT.HTL);
-		if(htl <= 0) htl = 1;
-        Key key = (Key) m.getObject(DMT.FREENET_ROUTING_KEY);
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
-        final RequestTag tag = new RequestTag(isSSK, RequestTag.START.REMOTE, source, realTimeFlag, id, node);
-		if(!tracker.lockUID(id, isSSK, false, false, false, realTimeFlag, tag)) {
-			if(logMINOR) Logger.minor(this, "Could not lock ID "+id+" -> rejecting (already running)");
+		short htl = m.getShort(DMT.HTL);
+		if (htl <= 0) htl = 1;
+		Key key = (Key) m.getObject(DMT.FREENET_ROUTING_KEY);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		final RequestTag tag = new RequestTag(isSSK, RequestTag.START.REMOTE, source, realTimeFlag, id, node);
+		if (!tracker.lockUID(id, isSSK, false, false, false, realTimeFlag, tag)) {
+			if (logMINOR) Logger.minor(this, "Could not lock ID " + id + " -> rejecting (already running)");
 			Message rejected = DMT.createFNPRejectedLoop(id);
 			try {
 				source.sendAsync(rejected, null, ctr);
 			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting request from "+source.getPeer()+": "+e);
+				Logger.normal(this, "Rejecting request from " + source.getPeer() + ": " + e);
 			}
 			node.getFailureTable().onFinalFailure(key, null, htl, htl, -1, -1, source);
 			return;
 		} else {
-			if(logMINOR) Logger.minor(this, "Locked "+id);
+			if (logMINOR) Logger.minor(this, "Locked " + id);
 		}
-		
+
 		// There are at least 2 threads that call this function.
 		// DO NOT reuse the meta object, unless on a per-thread basis.
 		// Object allocation is pretty cheap in modern Java anyway...
 		// If we do reuse it, call reset().
 		BlockMetadata meta = new BlockMetadata();
 		KeyBlock block = node.fetch(key, false, false, false, false, meta);
-		if(block != null)
+		if (block != null)
 			tag.setNotRoutedOnwards();
-		
+
 		RejectReason rejectReason = nodeStats.shouldRejectRequest(!isSSK, false, isSSK, false, false, source, block != null, false, realTimeFlag, tag);
-		if(rejectReason != null) {
+		if (rejectReason != null) {
 			// can accept 1 CHK request every so often, but not with SSKs because they aren't throttled so won't sort out bwlimitDelayTime, which was the whole reason for accepting them when overloaded...
-			Logger.normal(this, "Rejecting "+(isSSK ? "SSK" : "CHK")+" request from "+source.getPeer()+" preemptively because "+rejectReason);
+			Logger.normal(this, "Rejecting " + (isSSK ? "SSK" : "CHK") + " request from " + source.getPeer() + " preemptively because " + rejectReason);
 			Message rejected = DMT.createFNPRejectedOverload(id, true, true, realTimeFlag);
-			if(rejectReason.soft)
+			if (rejectReason.soft)
 				rejected.addSubMessage(DMT.createFNPRejectIsSoft());
 			try {
 				source.sendAsync(rejected, null, ctr);
 			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting (overload) data request from "+source.getPeer()+": "+e);
+				Logger.normal(this, "Rejecting (overload) data request from " + source.getPeer() + ": " + e);
 			}
 			tag.setRejected();
 			tag.unlockHandler(rejectReason.soft);
@@ -535,34 +537,35 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		nodeStats.reportIncomingRequestLocation(key.toNormalizedDouble());
 		//if(!node.lockUID(id)) return false;
 		boolean needsPubKey = false;
-		if(key instanceof NodeSSK)
+		if (key instanceof NodeSSK)
 			needsPubKey = m.getBoolean(DMT.NEED_PUB_KEY);
 		RequestHandler rh = new RequestHandler(source, id, node, htl, key, tag, block, realTimeFlag, needsPubKey);
 		rh.receivedBytes(m.receivedByteCount());
-		node.getExecutor().execute(rh, "RequestHandler for UID "+id+" on "+node.getDarknetPortNumber());
+		node.getExecutor().execute(rh, "RequestHandler for UID " + id + " on " + node.getDarknetPortNumber());
 	}
 
 	/**
 	 * Handle an incoming insert. We should parse it and determine whether it
-	 * is valid before we accept it. However in the case of inserts it *IS* 
-	 * possible for the request sender to cause it to fail later during the 
+	 * is valid before we accept it. However in the case of inserts it *IS*
+	 * possible for the request sender to cause it to fail later during the
 	 * receive of the data or the DataInsert.
-	 * @param m The incoming message.
+	 *
+	 * @param m      The incoming message.
 	 * @param source The node that sent the message.
-	 * @param isSSK True if it is an SSK insert, false if it is a CHK insert.
+	 * @param isSSK  True if it is an SSK insert, false if it is a CHK insert.
 	 */
 	private void handleInsertRequest(Message m, PeerNode source, boolean isSSK) {
 		ByteCounter ctr = isSSK ? node.getNodeStats().sskInsertCtr : node.getNodeStats().chkInsertCtr;
 		long id = m.getLong(DMT.UID);
-        boolean realTimeFlag = DMT.getRealTimeFlag(m);
+		boolean realTimeFlag = DMT.getRealTimeFlag(m);
 		InsertTag tag = new InsertTag(isSSK, InsertTag.START.REMOTE, source, realTimeFlag, id, node);
-		if(!tracker.lockUID(id, isSSK, true, false, false, realTimeFlag, tag)) {
-			if(logMINOR) Logger.minor(this, "Could not lock ID "+id+" -> rejecting (already running)");
+		if (!tracker.lockUID(id, isSSK, true, false, false, realTimeFlag, tag)) {
+			if (logMINOR) Logger.minor(this, "Could not lock ID " + id + " -> rejecting (already running)");
 			Message rejected = DMT.createFNPRejectedLoop(id);
 			try {
 				source.sendAsync(rejected, null, ctr);
 			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting insert request from "+source.getPeer()+": "+e);
+				Logger.normal(this, "Rejecting insert request from " + source.getPeer() + ": " + e);
 			}
 			return;
 		}
@@ -570,57 +573,57 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		boolean ignoreLowBackoff = Node.IGNORE_LOW_BACKOFF_DEFAULT;
 		boolean forkOnCacheable = Node.FORK_ON_CACHEABLE_DEFAULT;
 		Message forkControl = m.getSubMessage(DMT.FNPSubInsertForkControl);
-		if(forkControl != null)
+		if (forkControl != null)
 			forkOnCacheable = forkControl.getBoolean(DMT.ENABLE_INSERT_FORK_WHEN_CACHEABLE);
 		Message lowBackoff = m.getSubMessage(DMT.FNPSubInsertIgnoreLowBackoff);
-		if(lowBackoff != null)
+		if (lowBackoff != null)
 			ignoreLowBackoff = lowBackoff.getBoolean(DMT.IGNORE_LOW_BACKOFF);
 		Message preference = m.getSubMessage(DMT.FNPSubInsertPreferInsert);
-		if(preference != null)
+		if (preference != null)
 			preferInsert = preference.getBoolean(DMT.PREFER_INSERT);
 		// SSKs don't fix bwlimitDelayTime so shouldn't be accepted when overloaded.
 		RejectReason rejectReason = nodeStats.shouldRejectRequest(!isSSK, true, isSSK, false, false, source, false, preferInsert, realTimeFlag, tag);
-		if(rejectReason != null) {
-			Logger.normal(this, "Rejecting insert from "+source.getPeer()+" preemptively because "+rejectReason);
+		if (rejectReason != null) {
+			Logger.normal(this, "Rejecting insert from " + source.getPeer() + " preemptively because " + rejectReason);
 			Message rejected = DMT.createFNPRejectedOverload(id, true, true, realTimeFlag);
-			if(rejectReason.soft)
+			if (rejectReason.soft)
 				rejected.addSubMessage(DMT.createFNPRejectIsSoft());
 			try {
 				source.sendAsync(rejected, null, ctr);
 			} catch (NotConnectedException e) {
-				Logger.normal(this, "Rejecting (overload) insert request from "+source.getPeer()+": "+e);
+				Logger.normal(this, "Rejecting (overload) insert request from " + source.getPeer() + ": " + e);
 			}
 			tag.unlockHandler(rejectReason.soft);
 			return;
 		}
 		long now = System.currentTimeMillis();
-		if(m.getSpec().equals(DMT.FNPSSKInsertRequest)) {
+		if (m.getSpec().equals(DMT.FNPSSKInsertRequest)) {
 			NodeSSK key = (NodeSSK) m.getObject(DMT.FREENET_ROUTING_KEY);
-	        byte[] data = ((ShortBuffer) m.getObject(DMT.DATA)).getData();
-	        byte[] headers = ((ShortBuffer) m.getObject(DMT.BLOCK_HEADERS)).getData();
-	        short htl = m.getShort(DMT.HTL);
-			if(htl <= 0) htl = 1;
+			byte[] data = ((ShortBuffer) m.getObject(DMT.DATA)).getData();
+			byte[] headers = ((ShortBuffer) m.getObject(DMT.BLOCK_HEADERS)).getData();
+			short htl = m.getShort(DMT.HTL);
+			if (htl <= 0) htl = 1;
 			SSKInsertHandler rh = new SSKInsertHandler(key, data, headers, htl, source, id, node, now, tag, node.canWriteDatastoreInsert(htl), forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
-			node.getExecutor().execute(rh, "SSKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
-		} else if(m.getSpec().equals(DMT.FNPSSKInsertRequestNew)) {
+			rh.receivedBytes(m.receivedByteCount());
+			node.getExecutor().execute(rh, "SSKInsertHandler for " + id + " on " + node.getDarknetPortNumber());
+		} else if (m.getSpec().equals(DMT.FNPSSKInsertRequestNew)) {
 			NodeSSK key = (NodeSSK) m.getObject(DMT.FREENET_ROUTING_KEY);
 			short htl = m.getShort(DMT.HTL);
-			if(htl <= 0) htl = 1;
+			if (htl <= 0) htl = 1;
 			SSKInsertHandler rh = new SSKInsertHandler(key, null, null, htl, source, id, node, now, tag, node.canWriteDatastoreInsert(htl), forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
-			node.getExecutor().execute(rh, "SSKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
+			rh.receivedBytes(m.receivedByteCount());
+			node.getExecutor().execute(rh, "SSKInsertHandler for " + id + " on " + node.getDarknetPortNumber());
 		} else {
-	        NodeCHK key = (NodeCHK) m.getObject(DMT.FREENET_ROUTING_KEY);
-	        short htl = m.getShort(DMT.HTL);
-			if(htl <= 0) htl = 1;
+			NodeCHK key = (NodeCHK) m.getObject(DMT.FREENET_ROUTING_KEY);
+			short htl = m.getShort(DMT.HTL);
+			if (htl <= 0) htl = 1;
 			CHKInsertHandler rh = new CHKInsertHandler(key, htl, source, id, node, now, tag, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
-	        rh.receivedBytes(m.receivedByteCount());
-			node.getExecutor().execute(rh, "CHKInsertHandler for "+id+" on "+node.getDarknetPortNumber());
+			rh.receivedBytes(m.receivedByteCount());
+			node.getExecutor().execute(rh, "CHKInsertHandler for " + id + " on " + node.getDarknetPortNumber());
 		}
-		if(logMINOR) Logger.minor(this, "Started InsertHandler for "+id);
+		if (logMINOR) Logger.minor(this, "Started InsertHandler for " + id);
 	}
-	
+
 	private boolean handleAnnounceRequest(Message m, PeerNode source) {
 		long uid = m.getLong(DMT.UID);
 		double target = m.getDouble(DMT.TARGET_LOCATION); // FIXME validate
@@ -630,7 +633,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		int paddedLength = m.getInt(DMT.PADDED_LENGTH);
 
 		// Only accept a valid message. See comments at top of NodeDispatcher, but it's a good idea anyway.
-		if(target < 0.0 || target >= 1.0 || htl <= 0 || 
+		if (target < 0.0 || target >= 1.0 || htl <= 0 ||
 				paddedLength < 0 || paddedLength > OpennetManager.MAX_OPENNET_NODEREF_LENGTH ||
 				noderefLength > paddedLength) {
 			Message msg = DMT.createFNPRejectedOverload(uid, true, false, false);
@@ -639,21 +642,21 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			} catch (NotConnectedException e) {
 				// OK
 			}
-			if(logMINOR) Logger.minor(this, "Got bogus announcement message from "+source);
+			if (logMINOR) Logger.minor(this, "Got bogus announcement message from " + source);
 			return true;
 		}
-		
+
 		OpennetManager om = node.getOpennet();
-		if(om == null || !source.canAcceptAnnouncements()) {
-			if(om != null && source instanceof SeedClientPeerNode)
-				om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode)source);
+		if (om == null || !source.canAcceptAnnouncements()) {
+			if (om != null && source instanceof SeedClientPeerNode)
+				om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode) source);
 			Message msg = DMT.createFNPOpennetDisabled(uid);
 			try {
 				source.sendAsync(msg, null, node.getNodeStats().announceByteCounter);
 			} catch (NotConnectedException e) {
 				// OK
 			}
-			if(logMINOR) Logger.minor(this, "Rejected announcement (opennet or announcement disabled) from "+source);
+			if (logMINOR) Logger.minor(this, "Rejected announcement (opennet or announcement disabled) from " + source);
 			return true;
 		}
 		boolean success = false;
@@ -663,20 +666,20 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			NodeStats.AnnouncementDecision shouldAcceptAnnouncement = node.getNodeStats().shouldAcceptAnnouncement(uid);
 			if (!(NodeStats.AnnouncementDecision.ACCEPT == shouldAcceptAnnouncement)) {
 				if (om != null && source instanceof SeedClientPeerNode)
-					om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode)source);
+					om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode) source);
 				Message msg = null;
 				if (NodeStats.AnnouncementDecision.OVERLOAD == shouldAcceptAnnouncement) {
 					msg = DMT.createFNPRejectedOverload(uid, true, false, false);
 					if (logMINOR)
 						Logger.minor(this,
-							     "Rejected announcement (overall overload) from "
-							     + source);
+								"Rejected announcement (overall overload) from "
+										+ source);
 				} else if (NodeStats.AnnouncementDecision.LOOP == shouldAcceptAnnouncement) {
 					msg = DMT.createFNPRejectedLoop(uid);
 					if (logMINOR)
 						Logger.minor(this,
-							     "Rejected announcement (loop) from "+
-							     source);
+								"Rejected announcement (loop) from " +
+										source);
 				} else {
 					throw new Error("This shouldn't happen. Please report");
 				}
@@ -688,9 +691,9 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 				}
 				return true;
 			}
-			if(!source.shouldAcceptAnnounce(uid)) {
-				if(om != null && source instanceof SeedClientPeerNode)
-					om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode)source);
+			if (!source.shouldAcceptAnnounce(uid)) {
+				if (om != null && source instanceof SeedClientPeerNode)
+					om.getSeedTracker().rejectedAnnounce((SeedClientPeerNode) source);
 				node.getNodeStats().endAnnouncement(uid);
 				Message msg = DMT.createFNPRejectedOverload(uid, true, false, false);
 				try {
@@ -698,11 +701,11 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 				} catch (NotConnectedException e) {
 					// OK
 				}
-				if(logMINOR) Logger.minor(this, "Rejected announcement (peer limit) from "+source);
+				if (logMINOR) Logger.minor(this, "Rejected announcement (peer limit) from " + source);
 				return true;
 			}
-			if(om != null && source instanceof SeedClientPeerNode) {
-				if(!om.getSeedTracker().acceptAnnounce((SeedClientPeerNode)source, node.getFastWeakRandom())) {
+			if (om != null && source instanceof SeedClientPeerNode) {
+				if (!om.getSeedTracker().acceptAnnounce((SeedClientPeerNode) source, node.getFastWeakRandom())) {
 					node.getNodeStats().endAnnouncement(uid);
 					Message msg = DMT.createFNPRejectedOverload(uid, true, false, false);
 					try {
@@ -710,89 +713,97 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 					} catch (NotConnectedException e) {
 						// OK
 					}
-					if(logMINOR) Logger.minor(this, "Rejected announcement (seednode limit) from "+source);
+					if (logMINOR) Logger.minor(this, "Rejected announcement (seednode limit) from " + source);
 					return true;
 				}
 			}
-			if(source instanceof SeedClientPeerNode) {
+			if (source instanceof SeedClientPeerNode) {
 				short maxHTL = node.maxHTL();
-				if(htl < maxHTL-1) {
-					Logger.error(this, "Announcement from seed client not at max HTL: "+htl+" for "+source);
+				if (htl < maxHTL - 1) {
+					Logger.error(this, "Announcement from seed client not at max HTL: " + htl + " for " + source);
 					htl = maxHTL;
 				}
 			}
 			AnnouncementCallback cb = null;
-			if(logMINOR) {
-				final String origin = source.toString()+" (htl "+htl+")";
+			if (logMINOR) {
+				final String origin = source.toString() + " (htl " + htl + ")";
 				// Log the progress of the announcement.
 				// This is similar to Announcer's logging.
 				cb = new AnnouncementCallback() {
 					private int totalAdded;
 					private int totalNotWanted;
 					private boolean acceptedSomewhere;
+
 					@Override
 					public synchronized void acceptedSomewhere() {
 						acceptedSomewhere = true;
 					}
+
 					@Override
 					public void addedNode(PeerNode pn) {
-						synchronized(this) {
+						synchronized (this) {
 							totalAdded++;
 						}
-						Logger.minor(this, "Announcement from "+origin+" added node "+pn+(pn instanceof SeedClientPeerNode ? " (seed server added the peer directly)" : ""));
+						Logger.minor(this, "Announcement from " + origin + " added node " + pn + (pn instanceof SeedClientPeerNode ? " (seed server added the peer directly)" : ""));
 						return;
 					}
+
 					@Override
 					public void bogusNoderef(String reason) {
-						Logger.minor(this, "Announcement from "+origin+" got bogus noderef: "+reason, new Exception("debug"));
+						Logger.minor(this, "Announcement from " + origin + " got bogus noderef: " + reason, new Exception("debug"));
 					}
+
 					@Override
 					public void completed() {
-						synchronized(this) {
-							Logger.minor(this, "Announcement from "+origin+" completed");
+						synchronized (this) {
+							Logger.minor(this, "Announcement from " + origin + " completed");
 						}
-						int shallow=node.maxHTL()-(totalAdded+totalNotWanted);
-						if(acceptedSomewhere)
-							Logger.minor(this, "Announcement from "+origin+" completed ("+totalAdded+" added, "+totalNotWanted+" not wanted, "+shallow+" shallow)");
+						int shallow = node.maxHTL() - (totalAdded + totalNotWanted);
+						if (acceptedSomewhere)
+							Logger.minor(this, "Announcement from " + origin + " completed (" + totalAdded + " added, " + totalNotWanted + " not wanted, " + shallow + " shallow)");
 						else
-							Logger.minor(this, "Announcement from "+origin+" not accepted anywhere.");
+							Logger.minor(this, "Announcement from " + origin + " not accepted anywhere.");
 					}
 
 					@Override
 					public void nodeFailed(PeerNode pn, String reason) {
-						Logger.minor(this, "Announcement from "+origin+" failed: "+reason);
+						Logger.minor(this, "Announcement from " + origin + " failed: " + reason);
 					}
+
 					@Override
 					public void noMoreNodes() {
-						Logger.minor(this, "Announcement from "+origin+" ran out of nodes (route not found)");
+						Logger.minor(this, "Announcement from " + origin + " ran out of nodes (route not found)");
 					}
+
 					@Override
 					public void nodeNotWanted() {
-						synchronized(this) {
+						synchronized (this) {
 							totalNotWanted++;
 						}
-						Logger.minor(this, "Announcement from "+origin+" returned node not wanted for a total of "+totalNotWanted+" from this announcement)");
+						Logger.minor(this, "Announcement from " + origin + " returned node not wanted for a total of " + totalNotWanted + " from this announcement)");
 					}
+
 					@Override
 					public void nodeNotAdded() {
-						Logger.minor(this, "Announcement from "+origin+" : node not wanted (maybe already have it, opennet just turned off, etc)");
+						Logger.minor(this, "Announcement from " + origin + " : node not wanted (maybe already have it, opennet just turned off, etc)");
 					}
+
 					@Override
 					public void relayedNoderef() {
-						synchronized(this) {
+						synchronized (this) {
 							totalAdded++;
-							Logger.minor(this, "Announcement from "+origin+" accepted by a downstream node, relaying noderef for a total of "+totalAdded+" from this announcement)");
+							Logger.minor(this, "Announcement from " + origin + " accepted by a downstream node, relaying noderef for a total of " + totalAdded + " from this announcement)");
 						}
 					}
 				};
 			}
 			AnnounceSender sender = new AnnounceSender(target, htl, uid, source, om, node, xferUID, noderefLength, paddedLength, cb);
-			node.getExecutor().execute(sender, "Announcement sender for "+uid);
+			node.getExecutor().execute(sender, "Announcement sender for " + uid);
 			success = true;
-			if(logMINOR) Logger.minor(this, "Accepted announcement from "+source);
+			if (logMINOR) Logger.minor(this, "Accepted announcement from " + source);
 			return true;
 		} finally {
-			if(!success)
+			if (!success)
 				source.completedAnnounce(uid);
 		}
 	}
@@ -821,18 +832,18 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 			routedTo.add(n);
 		}
 	}
-	
+
 	/**
 	 * Cleanup any old/stale routing contexts and reschedule execution.
 	 */
 	@Override
 	public void run() {
-		long now=System.currentTimeMillis();
+		long now = System.currentTimeMillis();
 		synchronized (routedContexts) {
 			Iterator<RoutedContext> i = routedContexts.values().iterator();
 			while (i.hasNext()) {
 				RoutedContext rc = i.next();
-				if (now-rc.createdTime > STALE_CONTEXT) {
+				if (now - rc.createdTime > STALE_CONTEXT) {
 					i.remove();
 				}
 			}
@@ -844,29 +855,29 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	 * Handle an FNPRoutedRejected message.
 	 */
 	private boolean handleRoutedRejected(Message m) {
-		if(!node.enableRoutedPing()) return true;
+		if (!node.enableRoutedPing()) return true;
 		long id = m.getLong(DMT.UID);
 		Long lid = Long.valueOf(id);
 		RoutedContext rc = routedContexts.get(lid);
-		if(rc == null) {
+		if (rc == null) {
 			// Gah
 			Logger.error(this, "Unrecognized FNPRoutedRejected");
 			return false; // locally originated??
 		}
 		short htl = rc.lastHtl;
-		if(rc.source != null)
+		if (rc.source != null)
 			htl = rc.source.decrementHTL(htl);
 		short ohtl = m.getShort(DMT.HTL);
-		if(ohtl < htl) htl = ohtl;
-		if(htl == 0) {
+		if (ohtl < htl) htl = ohtl;
+		if (htl == 0) {
 			// Equivalent to DNF.
 			// Relay.
-			if(rc.source != null) {
+			if (rc.source != null) {
 				try {
-					rc.source.sendAsync(DMT.createFNPRoutedRejected(id, (short)0), null, nodeStats.routedMessageCtr);
+					rc.source.sendAsync(DMT.createFNPRoutedRejected(id, (short) 0), null, nodeStats.routedMessageCtr);
 				} catch (NotConnectedException e) {
 					// Ouch.
-					Logger.error(this, "Unable to relay probe DNF: peer disconnected: "+rc.source);
+					Logger.error(this, "Unable to relay probe DNF: peer disconnected: " + rc.source);
 				}
 			}
 		} else {
@@ -878,25 +889,26 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 
 	/**
 	 * Handle a routed-to-a-specific-node message.
+	 *
 	 * @param m
 	 * @return False if we want the message put back on the queue.
 	 */
 	boolean handleRouted(Message m, PeerNode source) {
-		if(!node.enableRoutedPing()) return true;
-		if(logMINOR) Logger.minor(this, "handleRouted("+m+ ')');
+		if (!node.enableRoutedPing()) return true;
+		if (logMINOR) Logger.minor(this, "handleRouted(" + m + ')');
 
 		long id = m.getLong(DMT.UID);
 		Long lid = Long.valueOf(id);
 		short htl = m.getShort(DMT.HTL);
 		byte[] identity = ((ShortBuffer) m.getObject(DMT.NODE_IDENTITY)).getData();
-		if(source != null) htl = source.decrementHTL(htl);
+		if (source != null) htl = source.decrementHTL(htl);
 		RoutedContext ctx;
 		ctx = routedContexts.get(lid);
-		if(ctx != null) {
+		if (ctx != null) {
 			try {
 				source.sendAsync(DMT.createFNPRoutedRejected(id, htl), null, nodeStats.routedMessageCtr);
 			} catch (NotConnectedException e) {
-				if(logMINOR) Logger.minor(this, "Lost connection rejecting "+m);
+				if (logMINOR) Logger.minor(this, "Lost connection rejecting " + m);
 			}
 			return true;
 		}
@@ -906,19 +918,19 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 		}
 		// source == null => originated locally, keep full htl
 		double target = m.getDouble(DMT.TARGET_LOCATION);
-		if(logMINOR) Logger.minor(this, "id "+id+" from "+source+" htl "+htl+" target "+target);
-		if(Math.abs(node.getLocationManager().getLocation() - target) <= Double.MIN_VALUE) {
-			if(logMINOR) Logger.minor(this, "Dispatching "+m.getSpec()+" on "+node.getDarknetPortNumber());
+		if (logMINOR) Logger.minor(this, "id " + id + " from " + source + " htl " + htl + " target " + target);
+		if (Math.abs(node.getLocationManager().getLocation() - target) <= Double.MIN_VALUE) {
+			if (logMINOR) Logger.minor(this, "Dispatching " + m.getSpec() + " on " + node.getDarknetPortNumber());
 			// Handle locally
 			// Message type specific processing
 			dispatchRoutedMessage(m, source, id);
 			return true;
-		} else if(htl == 0) {
-			Message reject = DMT.createFNPRoutedRejected(id, (short)0);
-			if(source != null) try {
+		} else if (htl == 0) {
+			Message reject = DMT.createFNPRoutedRejected(id, (short) 0);
+			if (source != null) try {
 				source.sendAsync(reject, null, nodeStats.routedMessageCtr);
 			} catch (NotConnectedException e) {
-				if(logMINOR) Logger.minor(this, "Lost connection rejecting "+m);
+				if (logMINOR) Logger.minor(this, "Lost connection rejecting " + m);
 			}
 			return true;
 		} else {
@@ -927,42 +939,42 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	}
 
 	boolean handleRoutedReply(Message m) {
-		if(!node.enableRoutedPing()) return true;
+		if (!node.enableRoutedPing()) return true;
 		long id = m.getLong(DMT.UID);
-		if(logMINOR) Logger.minor(this, "Got reply: "+m);
+		if (logMINOR) Logger.minor(this, "Got reply: " + m);
 		Long lid = Long.valueOf(id);
 		RoutedContext ctx = routedContexts.get(lid);
-		if(ctx == null) {
-			Logger.error(this, "Unrecognized routed reply: "+m);
+		if (ctx == null) {
+			Logger.error(this, "Unrecognized routed reply: " + m);
 			return false;
 		}
 		PeerNode pn = ctx.source;
-		if(pn == null) return false;
+		if (pn == null) return false;
 		try {
 			pn.sendAsync(m.cloneAndDropSubMessages(), null, nodeStats.routedMessageCtr);
 		} catch (NotConnectedException e) {
-			if(logMINOR) Logger.minor(this, "Lost connection forwarding "+m+" to "+pn);
+			if (logMINOR) Logger.minor(this, "Lost connection forwarding " + m + " to " + pn);
 		}
 		return true;
 	}
 
 	private boolean forward(Message m, long id, PeerNode pn, short htl, double target, RoutedContext ctx, byte[] targetIdentity) {
-		if(logMINOR) Logger.minor(this, "Should forward");
+		if (logMINOR) Logger.minor(this, "Should forward");
 		// Forward
 		m = preForward(m, htl);
-		while(true) {
+		while (true) {
 			PeerNode next = node.getPeers().getByPubKeyHash(targetIdentity);
-			if(next != null && !next.isConnected()) {
-				Logger.error(this, "Found target but disconnected!: "+next);
+			if (next != null && !next.isConnected()) {
+				Logger.error(this, "Found target but disconnected!: " + next);
 				next = null;
 			}
-			if(next == null)
-			next = node.getPeers().closerPeer(pn, ctx.routedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
-				        null, htl, 0, pn == null, false, false);
-			if(logMINOR) Logger.minor(this, "Next: "+next+" message: "+m);
-			if(next != null) {
+			if (next == null)
+				next = node.getPeers().closerPeer(pn, ctx.routedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
+						null, htl, 0, pn == null, false, false);
+			if (logMINOR) Logger.minor(this, "Next: " + next + " message: " + m);
+			if (next != null) {
 				// next is connected, or at least has been => next.getPeer() CANNOT be null.
-				if(logMINOR) Logger.minor(this, "Forwarding "+m.getSpec()+" to "+next.getPeer().getPort());
+				if (logMINOR) Logger.minor(this, "Forwarding " + m.getSpec() + " to " + next.getPeer().getPort());
 				ctx.addSent(next);
 				try {
 					next.sendAsync(m, null, nodeStats.routedMessageCtr);
@@ -970,13 +982,14 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 					continue;
 				}
 			} else {
-				if(logMINOR) Logger.minor(this, "Reached dead end for "+m.getSpec()+" on "+node.getDarknetPortNumber());
+				if (logMINOR)
+					Logger.minor(this, "Reached dead end for " + m.getSpec() + " on " + node.getDarknetPortNumber());
 				// Reached a dead end...
 				Message reject = DMT.createFNPRoutedRejected(id, htl);
-				if(pn != null) try {
+				if (pn != null) try {
 					pn.sendAsync(reject, null, nodeStats.routedMessageCtr);
 				} catch (NotConnectedException e) {
-					Logger.error(this, "Cannot send reject message back to source "+pn);
+					Logger.error(this, "Cannot send reject message back to source " + pn);
 					return true;
 				}
 			}
@@ -990,7 +1003,7 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	private Message preForward(Message m, short newHTL) {
 		m = m.cloneAndDropSubMessages();
 		m.set(DMT.HTL, newHTL); // update htl
-		if(m.getSpec() == DMT.FNPRoutedPing) {
+		if (m.getSpec() == DMT.FNPRoutedPing) {
 			int x = m.getInt(DMT.COUNTER);
 			x++;
 			m.set(DMT.COUNTER, x);
@@ -1000,20 +1013,21 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 
 	/**
 	 * Deal with a routed-to-node message that landed on this node.
-	 * This is where message-type-specific code executes. 
+	 * This is where message-type-specific code executes.
+	 *
 	 * @param m
 	 * @return
 	 */
 	private boolean dispatchRoutedMessage(Message m, PeerNode src, long id) {
-		if(m.getSpec() == DMT.FNPRoutedPing) {
-			if(logMINOR) Logger.minor(this, "RoutedPing reached other side! ("+id+")");
+		if (m.getSpec() == DMT.FNPRoutedPing) {
+			if (logMINOR) Logger.minor(this, "RoutedPing reached other side! (" + id + ")");
 			int x = m.getInt(DMT.COUNTER);
 			Message reply = DMT.createFNPRoutedPong(id, x);
-			if(logMINOR) Logger.minor(this, "Replying - counter = "+x+" for "+id);
+			if (logMINOR) Logger.minor(this, "Replying - counter = " + x + " for " + id);
 			try {
 				src.sendAsync(reply, null, nodeStats.routedMessageCtr);
 			} catch (NotConnectedException e) {
-				if(logMINOR) Logger.minor(this, "Lost connection replying to "+m+" in dispatchRoutedMessage");
+				if (logMINOR) Logger.minor(this, "Lost connection replying to " + m + " in dispatchRoutedMessage");
 			}
 			return true;
 		}
@@ -1026,31 +1040,31 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	}
 
 	public static String peersUIDsToString(long[] peerUIDs, double[] peerLocs) {
-		StringBuilder sb = new StringBuilder(peerUIDs.length*23+peerLocs.length*26);
-		int min=Math.min(peerUIDs.length, peerLocs.length);
-		for(int i=0;i<min;i++) {
+		StringBuilder sb = new StringBuilder(peerUIDs.length * 23 + peerLocs.length * 26);
+		int min = Math.min(peerUIDs.length, peerLocs.length);
+		for (int i = 0; i < min; i++) {
 			double loc = peerLocs[i];
 			long uid = peerUIDs[i];
 			sb.append(loc);
 			sb.append('=');
 			sb.append(uid);
-			if(i != min-1)
+			if (i != min - 1)
 				sb.append('|');
 		}
-		if(peerUIDs.length > min) {
-			for(int i=min;i<peerUIDs.length;i++) {
+		if (peerUIDs.length > min) {
+			for (int i = min; i < peerUIDs.length; i++) {
 				sb.append("|U:");
 				sb.append(peerUIDs[i]);
 			}
-		} else if(peerLocs.length > min) {
-			for(int i=min;i<peerLocs.length;i++) {
+		} else if (peerLocs.length > min) {
+			for (int i = min; i < peerLocs.length; i++) {
 				sb.append("|L:");
 				sb.append(peerLocs[i]);
 			}
 		}
 		return sb.toString();
 	}
-	
+
 	public void setHook(NodeDispatcherCallback cb) {
 		this.callback = cb;
 	}

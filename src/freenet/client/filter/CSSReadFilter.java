@@ -25,28 +25,29 @@ import freenet.support.io.NullWriter;
 
 public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 
-        private static volatile boolean logDEBUG;
-        private static volatile boolean logMINOR;
+	private static volatile boolean logDEBUG;
+	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-                                logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
+				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
 	}
 
 	@Override
 	public void readFilter(
-      InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
-      String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
+			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
+			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
 		if (logDEBUG)
 			Logger.debug(
-				this,
-				"running "
-					+ this
-					+ "with charset"+charset);
+					this,
+					"running "
+							+ this
+							+ "with charset" + charset);
 		Reader r = null;
 		Writer w = null;
 		try {
@@ -56,23 +57,22 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 				r = new BufferedReader(isr, 32768);
 				w = new BufferedWriter(osw, 32768);
 
-			} catch(UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException e) {
 				throw UnknownCharsetException.create(e, charset);
 			}
 			CSSParser parser = new CSSParser(r, w, false, cb, charset, false, false);
 			parser.parse();
-		}
-		finally {
+		} finally {
 			w.flush();
 		}
 
 	}
 
 	@Override
-	public String getCharset(byte [] input, int length, String charset) throws DataFilterException, IOException {
-		if(logDEBUG)
-			Logger.debug(this, "Fetching charset for CSS with initial charset "+charset);
-		if(input.length > getCharsetBufferSize() && logMINOR) {
+	public String getCharset(byte[] input, int length, String charset) throws DataFilterException, IOException {
+		if (logDEBUG)
+			Logger.debug(this, "Fetching charset for CSS with initial charset " + charset);
+		if (input.length > getCharsetBufferSize() && logMINOR) {
 			Logger.minor(this, "More data than was strictly needed was passed to the charset extractor for extraction");
 		}
 		InputStream strm = new ByteArrayInputStream(input, 0, length);
@@ -83,7 +83,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 			try {
 				isr = new InputStreamReader(strm, charset);
 				r = new BufferedReader(isr, 32768);
-			} catch(UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException e) {
 				throw UnknownCharsetException.create(e, charset);
 			}
 			CSSParser parser = new CSSParser(r, w, false, new NullFilterCallback(), null, true, false);
@@ -91,8 +91,7 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 			r.close();
 			r = null;
 			return parser.detectedCharset();
-		}
-		finally {
+		} finally {
 			Closer.close(strm);
 			Closer.close(r);
 			Closer.close(w);
@@ -127,28 +126,28 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 
 	@Override
 	public BOMDetection getCharsetByBOM(byte[] input, int length) throws DataFilterException, IOException {
-		if(ContentFilter.startsWith(input, ascii, length))
+		if (ContentFilter.startsWith(input, ascii, length))
 			return new BOMDetection("UTF-8", true);
-		if(ContentFilter.startsWith(input, utf16be, length))
+		if (ContentFilter.startsWith(input, utf16be, length))
 			return new BOMDetection("UTF-16BE", true);
-		if(ContentFilter.startsWith(input, utf16le, length))
+		if (ContentFilter.startsWith(input, utf16le, length))
 			return new BOMDetection("UTF-16LE", true);
-		if(ContentFilter.startsWith(input, utf32_be, length))
+		if (ContentFilter.startsWith(input, utf32_be, length))
 			return new BOMDetection("UTF-32BE", true);
-		if(ContentFilter.startsWith(input, utf32_le, length))
+		if (ContentFilter.startsWith(input, utf32_le, length))
 			return new BOMDetection("UTF-32LE", true);
-		if(ContentFilter.startsWith(input, ebcdic, length))
+		if (ContentFilter.startsWith(input, ebcdic, length))
 			return new BOMDetection("IBM01140", true);
-		if(ContentFilter.startsWith(input, ibm1026, length))
+		if (ContentFilter.startsWith(input, ibm1026, length))
 			return new BOMDetection("IBM1026", true);
 
 		// Unsupported BOMs
 
-		if(ContentFilter.startsWith(input, utf32_2143, length))
+		if (ContentFilter.startsWith(input, utf32_2143, length))
 			throw new UnsupportedCharsetInFilterException("UTF-32-2143");
-		if(ContentFilter.startsWith(input, utf32_3412, length))
+		if (ContentFilter.startsWith(input, utf32_3412, length))
 			throw new UnsupportedCharsetInFilterException("UTF-32-3412");
-		if(ContentFilter.startsWith(input, gsm, length))
+		if (ContentFilter.startsWith(input, gsm, length))
 			throw new UnsupportedCharsetInFilterException("GSM 03.38");
 		return null;
 	}
@@ -157,22 +156,22 @@ public class CSSReadFilter implements ContentDataFilter, CharsetExtractor {
 		String[] split = media.split(",");
 		boolean first = true;
 		StringBuffer sb = new StringBuffer();
-		for(String m : split) {
+		for (String m : split) {
 			m = m.trim();
 			int i;
-			for(i=0;i<m.length();i++) {
+			for (i = 0; i < m.length(); i++) {
 				char c = m.charAt(i);
-				if(!('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c) || c == '-')
+				if (!('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c) || ('0' <= c && '9' >= c) || c == '-')
 					break;
 			}
 			m = m.substring(0, i);
-			if(FilterUtils.isMedia(m)) {
-				if(!first) sb.append(", ");
+			if (FilterUtils.isMedia(m)) {
+				if (!first) sb.append(", ");
 				sb.append(m);
 				first = false;
 			}
 		}
-		if(sb.length() != 0) return sb.toString();
+		if (sb.length() != 0) return sb.toString();
 		else return null;
 	}
 

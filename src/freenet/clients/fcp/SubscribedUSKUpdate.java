@@ -14,9 +14,9 @@ public class SubscribedUSKUpdate extends FCPMessage {
 	final USK key;
 	final boolean newKnownGood;
 	final boolean newSlotToo;
-	
+
 	static final String name = "SubscribedUSKUpdate";
-	
+
 	public SubscribedUSKUpdate(String identifier, long l, USK key, boolean newKnownGood, boolean newSlotToo) {
 		this.identifier = identifier;
 		this.edition = l;

@@ -16,23 +16,23 @@ import freenet.config.NodeNeedRestartException;
  */
 public abstract class BooleanCallback extends ConfigCallback<Boolean> {
 
-  /**
-   * Create a config callback from lambdas.
-   *
-   * @param set accepts the new value.
-   */
-  public static BooleanCallback from(Supplier<Boolean> get, ConfigConsumer<Boolean> set) {
-    return new BooleanCallback() {
+	/**
+	 * Create a config callback from lambdas.
+	 *
+	 * @param set accepts the new value.
+	 */
+	public static BooleanCallback from(Supplier<Boolean> get, ConfigConsumer<Boolean> set) {
+		return new BooleanCallback() {
 
-      @Override
-      public Boolean get() {
-        return get.get();
-      }
+			@Override
+			public Boolean get() {
+				return get.get();
+			}
 
-      @Override
-      public void set(Boolean value) throws InvalidConfigValueException, NodeNeedRestartException {
-        set.accept(value);
-      }
-    };
-  }
+			@Override
+			public void set(Boolean value) throws InvalidConfigValueException, NodeNeedRestartException {
+				set.accept(value);
+			}
+		};
+	}
 }

@@ -8,6 +8,7 @@ package freenet.keys;
  */
 public class KeyDecodeException extends Exception {
 	private static final long serialVersionUID = -1;
+
 	public KeyDecodeException(String message) {
 		super(message);
 	}

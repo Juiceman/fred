@@ -11,17 +11,17 @@ import freenet.support.api.BucketFactory;
 import freenet.support.io.BucketTools;
 
 public class GeneratedMetadataMessage extends BaseDataCarryingMessage {
-	
+
 	GeneratedMetadataMessage(String identifier, boolean global, Bucket data) {
 		this.identifier = identifier;
 		this.global = global;
 		this.data = data;
 	}
-	
+
 	private final Bucket data;
 	final String identifier;
 	final boolean global;
-	
+
 	static final String NAME = "GeneratedMetadata";
 
 	@Override

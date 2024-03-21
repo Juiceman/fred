@@ -50,14 +50,14 @@ import freenet.support.io.ResumeFailedException;
 
 /**
  * Insert a single block.
- *
+ * <p>
  * WARNING: Changing non-transient members on classes that are Serializable can result in
  * restarting downloads or losing uploads.
  */
 public class SingleBlockInserter extends SendableInsert implements ClientPutState, Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static volatile boolean logMINOR;
+	private static final long serialVersionUID = 1L;
+	private static volatile boolean logMINOR;
 	private static volatile boolean logDEBUG;
 
 	static {
@@ -96,7 +96,8 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 
 	/**
 	 * Create a SingleBlockInserter.
-	 * @param parent The parent. Must be activated.
+	 *
+	 * @param parent           The parent. Must be activated.
 	 * @param data
 	 * @param compressionCodec The compression codec.
 	 * @param uri
@@ -104,7 +105,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	 * @param realTimeFlag
 	 * @param cb
 	 * @param isMetadata
-	 * @param sourceLength The length of the original, uncompressed data.
+	 * @param sourceLength     The length of the original, uncompressed data.
 	 * @param token
 	 * @param addToParent
 	 * @param dontSendEncoded
@@ -132,11 +133,11 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		this.uri = uri;
 		this.compressionCodec = compressionCodec;
 		this.sourceData = data;
-		if(sourceData == null) throw new NullPointerException();
+		if (sourceData == null) throw new NullPointerException();
 		this.isMetadata = isMetadata;
 		this.sourceLength = sourceLength;
 		isSSK = uri.getKeyType().toUpperCase().equals("SSK");
-		if(addToParent) {
+		if (addToParent) {
 			parent.addMustSucceedBlocks(1);
 			parent.notifyClients(context);
 		}
@@ -150,12 +151,12 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			return innerEncode(random, uri, sourceData, isMetadata, compressionCodec, sourceLength, ctx.compressorDescriptor,
 					cryptoAlgorithm, cryptoKey);
 		} catch (KeyEncodeException e) {
-			Logger.error(SingleBlockInserter.class, "Caught "+e, e);
+			Logger.error(SingleBlockInserter.class, "Caught " + e, e);
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null);
 		} catch (MalformedURLException e) {
 			throw new InsertException(InsertExceptionMode.INVALID_URI, e, null);
 		} catch (IOException e) {
-			Logger.error(SingleBlockInserter.class, "Caught "+e+" encoding data "+sourceData, e);
+			Logger.error(SingleBlockInserter.class, "Caught " + e + " encoding data " + sourceData, e);
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		} catch (InvalidCompressionCodecException e) {
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null);
@@ -174,65 +175,65 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			byte cryptoAlgorithm,
 			byte[] cryptoKey) throws InsertException, CHKEncodeException, IOException, SSKEncodeException, MalformedURLException, InvalidCompressionCodecException {
 		String uriType = uri.getKeyType();
-		if(uriType.equals("CHK")) {
+		if (uriType.equals("CHK")) {
 			return ClientCHKBlock.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, compressorDescriptor,
-          cryptoKey, cryptoAlgorithm);
-		} else if(uriType.equals("SSK") || uriType.equals("KSK")) {
+					cryptoKey, cryptoAlgorithm);
+		} else if (uriType.equals("SSK") || uriType.equals("KSK")) {
 			InsertableClientSSK ik = InsertableClientSSK.create(uri);
 			return ik.encode(sourceData, isMetadata, compressionCodec == -1, compressionCodec, sourceLength, random, compressorDescriptor);
 		} else {
-			throw new InsertException(InsertExceptionMode.INVALID_URI, "Unknown keytype "+uriType, null);
+			throw new InsertException(InsertExceptionMode.INVALID_URI, "Unknown keytype " + uriType, null);
 		}
 	}
 
 	protected void onEncode(final ClientKey key, final ClientContext context) {
-		synchronized(this) {
-			if(finished) return;
-			if(resultingKey != null) return;
+		synchronized (this) {
+			if (finished) return;
+			if (resultingKey != null) return;
 			resultingKey = key;
 		}
-		if(!persistent) {
+		if (!persistent) {
 			context.mainExecutor.execute(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					cb.onEncode(key, SingleBlockInserter.this, context);
 				}
 			}, "Got URI");
 		} else {
-		    context.jobRunner.queueNormalOrDrop(new PersistentJob() { 
-		        // Will be reported on restart in innerOnResume() if necessary.
-		        
-                @Override
-                public boolean run(ClientContext context) {
-                    cb.onEncode(key, SingleBlockInserter.this, context);
-                    return false;
-                }
-		        
-		    });
+			context.jobRunner.queueNormalOrDrop(new PersistentJob() {
+				// Will be reported on restart in innerOnResume() if necessary.
+
+				@Override
+				public boolean run(ClientContext context) {
+					cb.onEncode(key, SingleBlockInserter.this, context);
+					return false;
+				}
+
+			});
 		}
 	}
-	
+
 	protected ClientKeyBlock encode(ClientContext context, boolean calledByCB) throws InsertException {
 		ClientKeyBlock block;
 		boolean shouldSend;
-		synchronized(this) {
-			if(finished) return null;
-			if(sourceData == null) {
-				Logger.error(this, "Source data is null on "+this+" but not finished!");
+		synchronized (this) {
+			if (finished) return null;
+			if (sourceData == null) {
+				Logger.error(this, "Source data is null on " + this + " but not finished!");
 				return null;
 			}
 			block = innerEncode(context.random);
 			shouldSend = (resultingKey == null);
 			resultingKey = block.getClientKey();
 		}
-		if(logMINOR)
-			Logger.minor(this, "Encoded "+resultingKey.getURI()+" for "+this+" shouldSend="+shouldSend+" dontSendEncoded="+dontSendEncoded);
-		if(shouldSend && !dontSendEncoded)
+		if (logMINOR)
+			Logger.minor(this, "Encoded " + resultingKey.getURI() + " for " + this + " shouldSend=" + shouldSend + " dontSendEncoded=" + dontSendEncoded);
+		if (shouldSend && !dontSendEncoded)
 			cb.onEncode(block.getClientKey(), this, context);
 		return block;
 	}
-	
+
 	@Override
 	public short getPriorityClass() {
 		return parent.getPriorityClass(); // Not much point deactivating
@@ -240,49 +241,50 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 
 	@Override
 	public void onFailure(LowLevelPutException e, SendableRequestItem keyNum, ClientContext context) {
-		synchronized(this) {
-			if(finished) return;
+		synchronized (this) {
+			if (finished) return;
 		}
-		if(parent.isCancelled()) {
+		if (parent.isCancelled()) {
 			fail(new InsertException(InsertExceptionMode.CANCELLED), context);
 			return;
 		}
-		if(logMINOR) Logger.minor(this, "onFailure() on "+e+" for "+this);
-		
-		switch(e.code) {
-		case LowLevelPutException.COLLISION:
-			fail(new InsertException(InsertExceptionMode.COLLISION), context);
-			return;
-		case LowLevelPutException.INTERNAL_ERROR:
-			fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR), context);
-			return;
-		case LowLevelPutException.REJECTED_OVERLOAD:
-			errors.inc(InsertExceptionMode.REJECTED_OVERLOAD);
-			break;
-		case LowLevelPutException.ROUTE_NOT_FOUND:
-			errors.inc(InsertExceptionMode.ROUTE_NOT_FOUND);
-			break;
-		case LowLevelPutException.ROUTE_REALLY_NOT_FOUND:
-			errors.inc(InsertExceptionMode.ROUTE_REALLY_NOT_FOUND);
-			break;
-		default:
-			Logger.error(this, "Unknown LowLevelPutException code: "+e.code);
-			errors.inc(InsertExceptionMode.INTERNAL_ERROR);
+		if (logMINOR) Logger.minor(this, "onFailure() on " + e + " for " + this);
+
+		switch (e.code) {
+			case LowLevelPutException.COLLISION:
+				fail(new InsertException(InsertExceptionMode.COLLISION), context);
+				return;
+			case LowLevelPutException.INTERNAL_ERROR:
+				fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR), context);
+				return;
+			case LowLevelPutException.REJECTED_OVERLOAD:
+				errors.inc(InsertExceptionMode.REJECTED_OVERLOAD);
+				break;
+			case LowLevelPutException.ROUTE_NOT_FOUND:
+				errors.inc(InsertExceptionMode.ROUTE_NOT_FOUND);
+				break;
+			case LowLevelPutException.ROUTE_REALLY_NOT_FOUND:
+				errors.inc(InsertExceptionMode.ROUTE_REALLY_NOT_FOUND);
+				break;
+			default:
+				Logger.error(this, "Unknown LowLevelPutException code: " + e.code);
+				errors.inc(InsertExceptionMode.INTERNAL_ERROR);
 		}
-		if(e.code == LowLevelPutException.ROUTE_NOT_FOUND || e.code == LowLevelPutException.ROUTE_REALLY_NOT_FOUND) {
+		if (e.code == LowLevelPutException.ROUTE_NOT_FOUND || e.code == LowLevelPutException.ROUTE_REALLY_NOT_FOUND) {
 			consecutiveRNFs++;
-			if(logMINOR) Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" / "+ctx.consecutiveRNFsCountAsSuccess);
+			if (logMINOR)
+				Logger.minor(this, "Consecutive RNFs: " + consecutiveRNFs + " / " + ctx.consecutiveRNFsCountAsSuccess);
 			// Use >= so that extra inserts see this as a success.
-			if(consecutiveRNFs >= ctx.consecutiveRNFsCountAsSuccess) {
-				if(logMINOR) Logger.minor(this, "Consecutive RNFs: "+consecutiveRNFs+" - counting as success");
+			if (consecutiveRNFs >= ctx.consecutiveRNFsCountAsSuccess) {
+				if (logMINOR) Logger.minor(this, "Consecutive RNFs: " + consecutiveRNFs + " - counting as success");
 				onSuccess(keyNum, getKeyNoEncode(), context);
 				return;
 			}
 		} else
 			consecutiveRNFs = 0;
-		if(logMINOR) Logger.minor(this, "Failed: "+e);
+		if (logMINOR) Logger.minor(this, "Failed: " + e);
 		retries++;
-		if((retries > ctx.maxInsertRetries) && (ctx.maxInsertRetries != -1)) {
+		if ((retries > ctx.maxInsertRetries) && (ctx.maxInsertRetries != -1)) {
 			fail(InsertException.construct(persistent ? errors.clone() : errors), context);
 			return;
 		}
@@ -292,18 +294,18 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	private void fail(InsertException e, ClientContext context) {
 		fail(e, false, context);
 	}
-	
+
 	private void fail(InsertException e, boolean forceFatal, ClientContext context) {
-		synchronized(this) {
-			if(finished) return;
+		synchronized (this) {
+			if (finished) return;
 			finished = true;
 		}
-		if(e.isFatal() || forceFatal)
+		if (e.isFatal() || forceFatal)
 			parent.fatallyFailedBlock(context);
 		else
 			parent.failedBlock(context);
 		unregister(context, getPriorityClass());
-		if(freeData) {
+		if (freeData) {
 			sourceData.free();
 			sourceData = null;
 		}
@@ -313,14 +315,14 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	public ClientKeyBlock getBlock(ClientContext context, boolean calledByCB) {
 		try {
 			synchronized (this) {
-				if(finished) return null;
+				if (finished) return null;
 			}
 			return encode(context, calledByCB);
 		} catch (InsertException e) {
 			cb.onFailure(e, this, context);
 			return null;
 		} catch (Throwable t) {
-			Logger.error(this, "Caught "+t, t);
+			Logger.error(this, "Caught " + t, t);
 			cb.onFailure(new InsertException(InsertExceptionMode.INTERNAL_ERROR, t, null), this, context);
 			return null;
 		}
@@ -328,17 +330,17 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 
 	@Override
 	public void schedule(ClientContext context) throws InsertException {
-		synchronized(this) {
-			if(finished) {
-				if(logMINOR)
-					Logger.minor(this, "Finished already: "+this);
+		synchronized (this) {
+			if (finished) {
+				if (logMINOR)
+					Logger.minor(this, "Finished already: " + this);
 				return;
 			}
 		}
-		if(ctx.getCHKOnly || ctx.earlyEncode) {
+		if (ctx.getCHKOnly || ctx.earlyEncode) {
 			tryEncode(context);
 		}
-		if(ctx.getCHKOnly) { 
+		if (ctx.getCHKOnly) {
 			onSuccess(null, getKeyNoEncode(), context);
 		} else {
 			getScheduler(context).registerInsert(this, persistent);
@@ -351,65 +353,66 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	}
 
 	public FreenetURI getURI(ClientContext context) {
-		synchronized(this) {
-			if(resultingKey != null) {
+		synchronized (this) {
+			if (resultingKey != null) {
 				return resultingKey.getURI();
 			}
 		}
 		getBlock(context, true);
-		synchronized(this) {
+		synchronized (this) {
 			// FIXME not really necessary? resultingKey is never dropped, only set.
-		    return resultingKey.getURI();
+			return resultingKey.getURI();
 		}
 	}
 
 	public synchronized FreenetURI getURINoEncode() {
 		return resultingKey == null ? null : resultingKey.getURI();
 	}
-	
+
 	public synchronized ClientKey getKeyNoEncode() {
-	    return resultingKey;
+		return resultingKey;
 	}
 
 	@Override
 	public void onSuccess(SendableRequestItem keyNum, ClientKey key, ClientContext context) {
-	    onEncode(key, context);
-		if(logMINOR) Logger.minor(this, "Succeeded ("+this+"): "+token);
-		if(parent.isCancelled()) {
+		onEncode(key, context);
+		if (logMINOR) Logger.minor(this, "Succeeded (" + this + "): " + token);
+		if (parent.isCancelled()) {
 			fail(new InsertException(InsertExceptionMode.CANCELLED), context);
 			return;
 		}
 		boolean shouldSendKey = false;
-		synchronized(this) {
-			if(extraInserts > 0 && !ctx.getCHKOnly) {
-				if(++completedInserts <= extraInserts) {
-					if(logMINOR) Logger.minor(this, "Completed inserts "+completedInserts+" of extra inserts "+extraInserts+" on "+this);
+		synchronized (this) {
+			if (extraInserts > 0 && !ctx.getCHKOnly) {
+				if (++completedInserts <= extraInserts) {
+					if (logMINOR)
+						Logger.minor(this, "Completed inserts " + completedInserts + " of extra inserts " + extraInserts + " on " + this);
 					return; // Let it repeat until we've done enough inserts. It hasn't been unregistered yet.
 				}
 			}
-			if(finished) {
+			if (finished) {
 				// Normal with persistence.
-				Logger.normal(this, "Block already completed: "+this);
+				Logger.normal(this, "Block already completed: " + this);
 				return;
 			}
 			finished = true;
-			if(resultingKey == null) {
-			    shouldSendKey = true;
-			    resultingKey = key;
+			if (resultingKey == null) {
+				shouldSendKey = true;
+				resultingKey = key;
 			} else {
-			    if(!resultingKey.equals(key))
-			        Logger.error(this, "Different key: "+resultingKey+" -> "+key+" for "+this);
+				if (!resultingKey.equals(key))
+					Logger.error(this, "Different key: " + resultingKey + " -> " + key + " for " + this);
 			}
 		}
-		if(freeData) {
+		if (freeData) {
 			sourceData.free();
 			sourceData = null;
 		}
 		parent.completedBlock(false, context);
 		unregister(context, getPriorityClass());
-		if(logMINOR) Logger.minor(this, "Calling onSuccess for "+cb);
-		if(shouldSendKey)
-		    cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
+		if (logMINOR) Logger.minor(this, "Calling onSuccess for " + cb);
+		if (shouldSendKey)
+			cb.onEncode(key, this, context); // In case of race conditions etc, especially for LocalRequestOnly.
 		cb.onSuccess(this, context);
 	}
 
@@ -420,11 +423,11 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 
 	@Override
 	public void cancel(ClientContext context) {
-		synchronized(this) {
-			if(finished) return;
+		synchronized (this) {
+			if (finished) return;
 			finished = true;
 		}
-		if(freeData) {
+		if (freeData) {
 			sourceData.free();
 			sourceData = null;
 		}
@@ -436,7 +439,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	public synchronized boolean isEmpty() {
 		return finished;
 	}
-	
+
 	@Override
 	public synchronized boolean isCancelled() {
 		return finished;
@@ -460,7 +463,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			KeyBlock b;
 			final ClientKey key;
 			ClientKey k = null;
-			if(SingleBlockInserter.logMINOR) Logger.minor(this, "Starting request");
+			if (SingleBlockInserter.logMINOR) Logger.minor(this, "Starting request");
 			BlockItem block = (BlockItem) req.token;
 			try {
 				try {
@@ -480,28 +483,28 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 				} catch (InvalidCompressionCodecException e) {
 					throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, e.toString() + ":" + e.getMessage(), e);
 				}
-				if (b==null) {
+				if (b == null) {
 					Logger.error(this, "Asked to send empty block", new Exception("error"));
 					return false;
 				}
 				key = encodedBlock.getClientKey();
 				k = key;
 				context.getJobRunner(block.persistent).queueNormalOrDrop(new PersistentJob() {
-				    
-				    @Override
-				    public boolean run(ClientContext context) {
-				        orig.onEncode(key, context);
-				        return true;
-				    }
-				    
+
+					@Override
+					public boolean run(ClientContext context) {
+						orig.onEncode(key, context);
+						return true;
+					}
+
 				});
-				if(req.localRequestOnly)
+				if (req.localRequestOnly)
 					try {
 						core.getNode().store(b, false, req.canWriteClientCache, true, false);
 					} catch (KeyCollisionException e) {
 						LowLevelPutException failed = new LowLevelPutException(LowLevelPutException.COLLISION);
 						KeyBlock collided = core.getNode().fetch(k.getNodeKey(), true, req.canWriteClientCache, false, false, null);
-						if(collided == null) {
+						if (collided == null) {
 							Logger.error(this, "Collided but no key?!");
 							// Could be a race condition.
 							try {
@@ -511,44 +514,45 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 								throw new LowLevelPutException(LowLevelPutException.INTERNAL_ERROR, "Collided, can't find block, but still collides!", e);
 							}
 						}
-						
+
 						failed.setCollidedBlock(collided);
 						throw failed;
 					}
 				else
 					core.realPut(b, req.canWriteClientCache, req.forkOnCacheable, Node.PREFER_INSERT_DEFAULT, Node.IGNORE_LOW_BACKOFF_DEFAULT, req.realTimeFlag);
 			} catch (LowLevelPutException e) {
-				if(logMINOR) Logger.minor(this, "Caught "+e, e);
-				if(e.code == LowLevelPutException.COLLISION) {
+				if (logMINOR) Logger.minor(this, "Caught " + e, e);
+				if (e.code == LowLevelPutException.COLLISION) {
 					// Collision
 					try {
-						ClientSSKBlock collided = ClientSSKBlock.construct(((SSKBlock)e.getCollidedBlock()), (ClientSSK)k);
+						ClientSSKBlock collided = ClientSSKBlock.construct(((SSKBlock) e.getCollidedBlock()), (ClientSSK) k);
 						byte[] data = collided.memoryDecode(true);
 						byte[] inserting = BucketTools.toByteArray(block.copyBucket);
-						if(collided.isMetadata() == block.isMetadata && collided.getCompressionCodec() == block.compressionCodec && Arrays.equals(data, inserting)) {
-							if(SingleBlockInserter.logMINOR) Logger.minor(this, "Collided with identical data");
+						if (collided.isMetadata() == block.isMetadata && collided.getCompressionCodec() == block.compressionCodec && Arrays.equals(data, inserting)) {
+							if (SingleBlockInserter.logMINOR) Logger.minor(this, "Collided with identical data");
 							req.onInsertSuccess(k, context);
 							return true;
 						} else {
-							if(SingleBlockInserter.logMINOR) Logger.minor(this, "Apparently real collision: collided.isMetadata="+collided.isMetadata()+" block.isMetadata="+block.isMetadata+
-									" collided.codec="+collided.getCompressionCodec()+" block.codec="+block.compressionCodec+
-									" collided.datalength="+data.length+" block.datalength="+inserting.length+" H(collided)="+Fields.hashCode(data)+" H(inserting)="+Fields.hashCode(inserting));
+							if (SingleBlockInserter.logMINOR)
+								Logger.minor(this, "Apparently real collision: collided.isMetadata=" + collided.isMetadata() + " block.isMetadata=" + block.isMetadata +
+										" collided.codec=" + collided.getCompressionCodec() + " block.codec=" + block.compressionCodec +
+										" collided.datalength=" + data.length + " block.datalength=" + inserting.length + " H(collided)=" + Fields.hashCode(data) + " H(inserting)=" + Fields.hashCode(inserting));
 						}
 					} catch (KeyVerifyException e1) {
-						Logger.error(this, "Caught "+e1+" when checking collision!", e1);
+						Logger.error(this, "Caught " + e1 + " when checking collision!", e1);
 					} catch (KeyDecodeException e1) {
-						Logger.error(this, "Caught "+e1+" when checking collision!", e1);
+						Logger.error(this, "Caught " + e1 + " when checking collision!", e1);
 					} catch (IOException e1) {
-						Logger.error(this, "Caught "+e1+" when checking collision!", e1);
+						Logger.error(this, "Caught " + e1 + " when checking collision!", e1);
 					}
 				}
 				req.onFailure(e, context);
-				if(SingleBlockInserter.logMINOR) Logger.minor(this, "Request failed for "+e);
+				if (SingleBlockInserter.logMINOR) Logger.minor(this, "Request failed for " + e);
 				return true;
 			} finally {
 				block.copyBucket.free();
 			}
-			if(SingleBlockInserter.logMINOR) Logger.minor(this, "Request succeeded");
+			if (SingleBlockInserter.logMINOR) Logger.minor(this, "Request succeeded");
 			req.onInsertSuccess(k, context);
 			return true;
 		}
@@ -559,7 +563,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		}
 	}
 
-	
+
 	@Override
 	public SendableRequestSender getSender(ClientContext context) {
 		String compress;
@@ -582,18 +586,20 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		return tokenObject;
 	}
 
-	/** Attempt to encode the block, if necessary */
+	/**
+	 * Attempt to encode the block, if necessary
+	 */
 	public void tryEncode(ClientContext context) {
-		synchronized(this) {
-			if(resultingKey != null) return;
-			if(finished) return;
+		synchronized (this) {
+			if (resultingKey != null) return;
+			if (finished) return;
 		}
 		try {
 			encode(context, false);
 		} catch (InsertException e) {
 			fail(e, context);
 		} catch (Throwable t) {
-			Logger.error(this, "Caught "+t, t);
+			Logger.error(this, "Caught " + t, t);
 			// Don't requeue on BackgroundBlockEncoder.
 			// Not necessary to do so (we'll ask again when we need it), and it'll probably just break again.
 		}
@@ -601,7 +607,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 
 	@Override
 	public synchronized long countSendableKeys(ClientContext context) {
-		if(finished)
+		if (finished)
 			return 0;
 		else
 			return 1;
@@ -616,11 +622,11 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 	public SendableRequestItem chooseKey(KeysFetchingLocally ignored, ClientContext context) {
 		try {
 			BlockItemKey key;
-			synchronized(this) {
-				if(finished) return null;
+			synchronized (this) {
+				if (finished) return null;
 				key = new BlockItemKey(this, hashCode());
-				if(ignored.hasInsert(key))
-				    return null;
+				if (ignored.hasInsert(key))
+					return null;
 				return getBlockItem(key, context);
 			}
 		} catch (InsertException e) {
@@ -628,26 +634,26 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			return null;
 		}
 	}
-	
+
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
-	    KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
-	    synchronized(this) {
-	        if(finished) return -1;
-            BlockItemKey key = new BlockItemKey(this, hashCode());
-            if(keysFetching.hasInsert(key))
-                return Long.MAX_VALUE;
-            return 0;
-	    }
+		KeysFetchingLocally keysFetching = getScheduler(context).fetchingKeys();
+		synchronized (this) {
+			if (finished) return -1;
+			BlockItemKey key = new BlockItemKey(this, hashCode());
+			if (keysFetching.hasInsert(key))
+				return Long.MAX_VALUE;
+			return 0;
+		}
 	}
 
 	private BlockItem getBlockItem(BlockItemKey key, ClientContext context) throws InsertException {
 		try {
-			synchronized(this) {
-				if(finished) return null;
+			synchronized (this) {
+				if (finished) return null;
 			}
-			if(persistent) {
-				if(sourceData == null) {
+			if (persistent) {
+				if (sourceData == null) {
 					Logger.error(this, "getBlockItem(): sourceData = null", new Exception("error"));
 					fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR), context);
 					return null;
@@ -655,8 +661,8 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			}
 			Bucket data = sourceData.createShadow();
 			FreenetURI u = uri;
-			if(u.getKeyType().equals("CHK")) u = FreenetURI.EMPTY_CHK_URI;
-			if(data == null) {
+			if (u.getKeyType().equals("CHK")) u = FreenetURI.EMPTY_CHK_URI;
+			if (data == null) {
 				data = context.tempBucketFactory.makeBucket(sourceData.size());
 				BucketTools.copy(sourceData, data);
 			}
@@ -667,35 +673,41 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			throw new InsertException(InsertExceptionMode.BUCKET_ERROR, e, null);
 		}
 	}
-	
-	/** Everything needed to check whether we are already running a request */
+
+	/**
+	 * Everything needed to check whether we are already running a request
+	 */
 	private static class BlockItemKey implements SendableRequestItemKey {
 		private final int hashCode;
-		/** STRICTLY for purposes of equals() !!! */
+		/**
+		 * STRICTLY for purposes of equals() !!!
+		 */
 		private final SingleBlockInserter parent;
-		
+
 		BlockItemKey(SingleBlockInserter parent, int hashCode) {
 			this.parent = parent;
 			this.hashCode = hashCode;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return hashCode;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
-			if(o instanceof BlockItemKey) {
-				if(((BlockItemKey)o).parent == parent) return true;
+			if (o instanceof BlockItemKey) {
+				if (((BlockItemKey) o).parent == parent) return true;
 			}
 			return false;
 		}
-		
+
 	}
 
-	/** Everything needed to actually run a request, without access to the SingleBlockInserter (this is
-	 * why we copy the Bucket). */
+	/**
+	 * Everything needed to actually run a request, without access to the SingleBlockInserter (this is
+	 * why we copy the Bucket).
+	 */
 	private static class BlockItem implements SendableRequestItem {
 
 		private final Bucket copyBucket;
@@ -728,7 +740,7 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 			this.cryptoAlgorithm = cryptoAlgorithm;
 			this.cryptoKey = cryptoKey;
 		}
-		
+
 		@Override
 		public void dump() {
 			copyBucket.free();
@@ -738,44 +750,44 @@ public class SingleBlockInserter extends SendableInsert implements ClientPutStat
 		public SendableRequestItemKey getKey() {
 			return key;
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean canWriteClientCache() {
 		boolean retval = ctx.canWriteClientCache;
 		return retval;
 	}
-	
+
 	@Override
 	public boolean localRequestOnly() {
 		boolean retval = ctx.localRequestOnly;
 		return retval;
 	}
-	
+
 	@Override
 	public boolean forkOnCacheable() {
 		boolean retval = ctx.forkOnCacheable;
 		return retval;
 	}
-	
+
 	@Override
 	public void onEncode(SendableRequestItem token, ClientKey key, ClientContext context) {
 		onEncode(key, context);
 	}
 
-    @Override
-    public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
-        sourceData.onResume(context);
-        if(cb != parent) cb.onResume(context);
-        if(resultingKey != null)
-            cb.onEncode(resultingKey, SingleBlockInserter.this, context);
-        this.schedule(context);
-    }
+	@Override
+	public void innerOnResume(ClientContext context) throws InsertException, ResumeFailedException {
+		sourceData.onResume(context);
+		if (cb != parent) cb.onResume(context);
+		if (resultingKey != null)
+			cb.onEncode(resultingKey, SingleBlockInserter.this, context);
+		this.schedule(context);
+	}
 
-    @Override
-    public void onShutdown(ClientContext context) {
-        // Ignore.
-    }
+	@Override
+	public void onShutdown(ClientContext context) {
+		// Ignore.
+	}
 
 }

@@ -34,10 +34,10 @@ public class BROWSER_WARNING implements Step {
 		boolean isFirefox = false;
 		boolean isOldFirefox = false;
 		boolean showTabWarning = false;
-		if(ua != null) {
+		if (ua != null) {
 			isFirefox = ua.contains("Firefox/");
 			//Firefox 3.6 can destroy tabs, see https://bugs.freenetproject.org/view.php?id=5209
-			if(ua.contains("Firefox/3.6") && incognito) {
+			if (ua.contains("Firefox/3.6") && incognito) {
 				showTabWarning = true;
 			} else if (isFirefox) {
 				//Versions of Firefox other than 3.6 do not behave properly when going into
@@ -45,10 +45,10 @@ public class BROWSER_WARNING implements Step {
 				//being in privacy mode.
 				incognito = false;
 			}
-			if(ua.contains("Firefox/0.") ||
-			   ua.contains("Firefox/1.") ||
-			   ua.contains("Firefox/2.") ||
-			   ua.contains("Firefox/3.")) {
+			if (ua.contains("Firefox/0.") ||
+					ua.contains("Firefox/1.") ||
+					ua.contains("Firefox/2.") ||
+					ua.contains("Firefox/3.")) {
 				isOldFirefox = true;
 			}
 		}
@@ -63,40 +63,40 @@ public class BROWSER_WARNING implements Step {
 				incognito,
 				isOldFirefox,
 				showTabWarning);
-		if(!oldBrowserWarnings.isEmpty()) {
+		if (!oldBrowserWarnings.isEmpty()) {
 			HTMLNode p = infoboxContent.addChild("p");
 			p.addChild("#", oldBrowserWarnings.remove(0));
 			oldBrowserWarnings.forEach(s -> p.addChild("#", " " + s));
 		}
 
-		if(isRelativelySafe) {
+		if (isRelativelySafe) {
 			infoboxContent.addChild("p", incognito ?
-			        WizardL10n.l10n("browserWarningIncognitoMaybeSafe") :
-			        WizardL10n.l10n("browserWarningMaybeSafe"));
+					WizardL10n.l10n("browserWarningIncognitoMaybeSafe") :
+					WizardL10n.l10n("browserWarningMaybeSafe"));
 		} else {
 			NodeL10n.getBase().addL10nSubstitution(infoboxContent, incognito ?
-			        "FirstTimeWizardToadlet.browserWarningIncognito" :
-			        "FirstTimeWizardToadlet.browserWarning",
-			        new String[] { "bold" },
-			        new HTMLNode[] { HTMLNode.STRONG });
+							"FirstTimeWizardToadlet.browserWarningIncognito" :
+							"FirstTimeWizardToadlet.browserWarning",
+					new String[]{"bold"},
+					new HTMLNode[]{HTMLNode.STRONG});
 		}
 
-		if(incognito) {
+		if (incognito) {
 			infoboxContent.addChild("p", WizardL10n.l10n("browserWarningIncognitoSuggestion"));
 		} else {
 			infoboxContent.addChild("p", WizardL10n.l10n("browserWarningSuggestion"));
 		}
 		infoboxContent.addChild("p", WizardL10n.l10n("browserImeWarning"));
-        // voice recognition also used for surveillance
+		// voice recognition also used for surveillance
 		infoboxContent.addChild("p", WizardL10n.l10n("browserVoiceRecognitionWarning"));
 
 		HTMLNode form = helper.addFormChild(infoboxContent.addChild("p"), ".", "continueForm");
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
+				new String[]{"type", "name", "value"},
+				new String[]{"submit", "back", NodeL10n.getBase().getString("Toadlet.back")});
 		form.addChild("input",
-		        new String[] { "type", "name", "value" },
-		        new String[] { "submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
+				new String[]{"type", "name", "value"},
+				new String[]{"submit", "next", NodeL10n.getBase().getString("Toadlet.next")});
 	}
 
 	public List<String> oldBrowserWarnings(
@@ -104,11 +104,11 @@ public class BROWSER_WARNING implements Step {
 			boolean isOldFirefox,
 			boolean showTabWarning) {
 		ArrayList<String> oldBrowserWarnings = new ArrayList<>();
-		if(isOldFirefox) {
+		if (isOldFirefox) {
 			oldBrowserWarnings.add(WizardL10n.l10n("browserWarningOldFirefox"));
 			if (showTabWarning) {
 				oldBrowserWarnings.add(WizardL10n.l10n("browserWarningFirefoxMightHaveClobberedTabs"));
-			} else if(!incognito) {
+			} else if (!incognito) {
 				oldBrowserWarnings.add(WizardL10n.l10n("browserWarningOldFirefoxNewerHasPrivacyMode"));
 			}
 		}
@@ -116,17 +116,18 @@ public class BROWSER_WARNING implements Step {
 	}
 
 	public String infoBoxHeaderText(boolean incognito, boolean isRelativelySafe) {
-		if(incognito) {
+		if (incognito) {
 			return WizardL10n.l10n("browserWarningIncognitoShort");
 		}
-        if (isRelativelySafe) {
+		if (isRelativelySafe) {
 			return WizardL10n.l10n("browserWarningShortRelativelySafe");
 		}
-        return WizardL10n.l10n("browserWarningShort");
+		return WizardL10n.l10n("browserWarningShort");
 	}
 
 	/**
 	 * This POST side just continues to the next step.
+	 *
 	 * @param request Unused.
 	 */
 	@Override

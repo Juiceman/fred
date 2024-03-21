@@ -6,7 +6,7 @@ package freenet.clients.fcp;
 public class ProbeStoreSize extends FCPResponse {
 	/**
 	 * @param fcpIdentifier FCP-level identifier for pairing requests and responses
-	 * @param storeSize reported endpoint store size in GiB multiplied by Gaussian noise.
+	 * @param storeSize     reported endpoint store size in GiB multiplied by Gaussian noise.
 	 */
 	public ProbeStoreSize(String fcpIdentifier, float storeSize) {
 		super(fcpIdentifier);

@@ -23,22 +23,22 @@ import freenet.support.io.InetAddressComparator;
  */
 
 public class IPAddressDetector implements Runnable {
-	
+
 	private static volatile boolean logDEBUG;
 
 	static {
 		Logger.registerClass(IPAddressDetector.class);
 	}
-	
+
 	//private String preferedAddressString = null;
 	private final long interval;
 	private final NodeIPDetector detector;
-        /**
-         * 
-         * @param interval
-         * @param detector
-         */
-        public IPAddressDetector(long interval, NodeIPDetector detector) {
+
+	/**
+	 * @param interval
+	 * @param detector
+	 */
+	public IPAddressDetector(long interval, NodeIPDetector detector) {
 		this.interval = interval;
 		this.detector = detector;
 	}
@@ -50,7 +50,7 @@ public class IPAddressDetector implements Runnable {
 		return "Autodetection of IP addresses";
 	}
 
-	/** 
+	/**
 	 * @return next scheduling point
 	 */
 	public long nextCheckpoint() {
@@ -59,42 +59,45 @@ public class IPAddressDetector implements Runnable {
 
 	InetAddress[] lastAddressList = null;
 	long lastDetectedTime = -1;
-	
-	/** Fetch the currently detected IP address. If not detected yet, run the
+
+	/**
+	 * Fetch the currently detected IP address. If not detected yet, run the
 	 * detection. DO NOT callback to detector.redetectAddresses().
+	 *
 	 * @return
 	 */
 	public InetAddress[] getAddressNoCallback() {
-		if(System.currentTimeMillis() > (lastDetectedTime + interval)) {
+		if (System.currentTimeMillis() > (lastDetectedTime + interval)) {
 			checkpoint();
 		}
 		return lastAddressList == null ? new InetAddress[0] : lastAddressList;
 	}
 
-	/** 
+	/**
 	 * Fetches the currently detected IP address. If not detected yet a detection is forced.
 	 * If the IP address list changes, call the callback on the detector, off-thread, using the
-	 * given Executor. This method is intended to be called by code other than the detector 
+	 * given Executor. This method is intended to be called by code other than the detector
 	 * itself.
+	 *
 	 * @return Detected ip addresses
 	 */
 	public InetAddress[] getAddress(Executor executor) {
-		assert(executor != null);
-		if(System.currentTimeMillis() > (lastDetectedTime + interval)) {
-			if(checkpoint()) {
+		assert (executor != null);
+		if (System.currentTimeMillis() > (lastDetectedTime + interval)) {
+			if (checkpoint()) {
 				executor.execute(new Runnable() {
 
 					@Override
 					public void run() {
 						detector.redetectAddress();
 					}
-					
+
 				});
 			}
 		}
 		return lastAddressList == null ? new InetAddress[0] : lastAddressList;
 	}
-	
+
 	boolean old = false;
 
 	/**
@@ -109,9 +112,9 @@ public class IPAddressDetector implements Runnable {
 			interfaces = java.net.NetworkInterface.getNetworkInterfaces();
 		} catch (SocketException e) {
 			Logger.error(
-				this,
-				"SocketException trying to detect NetworkInterfaces: "+e,
-				e);
+					this,
+					"SocketException trying to detect NetworkInterfaces: " + e,
+					e);
 			addrs.add(oldDetect());
 			old = true;
 		}
@@ -121,61 +124,61 @@ public class IPAddressDetector implements Runnable {
 				java.net.NetworkInterface iface = interfaces.nextElement();
 				if (logDEBUG)
 					Logger.debug(
-						this,
-						"Scanning NetworkInterface " + iface.getDisplayName());
+							this,
+							"Scanning NetworkInterface " + iface.getDisplayName());
 				int ifaceMTU = 0;
-                try {
-                    if (!iface.isLoopback()) {
-                        ifaceMTU = iface.getMTU(); //MTU is retrieved directly instead of using
-                        //a plugin
-                        if (logDEBUG)
-                            Logger.debug(
-                                         this,
-                                         "MTU = " + ifaceMTU);
-                    }
-                } catch (SocketException e) {
-                    Logger.error(
-                                this,
-                                 "SocketException trying to retrieve the MTU NetworkInterfaces: "+e,
-                                 e);
-                    ifaceMTU = 0; //code for ignoring this MTU
-                }
+				try {
+					if (!iface.isLoopback()) {
+						ifaceMTU = iface.getMTU(); //MTU is retrieved directly instead of using
+						//a plugin
+						if (logDEBUG)
+							Logger.debug(
+									this,
+									"MTU = " + ifaceMTU);
+					}
+				} catch (SocketException e) {
+					Logger.error(
+							this,
+							"SocketException trying to retrieve the MTU NetworkInterfaces: " + e,
+							e);
+					ifaceMTU = 0; //code for ignoring this MTU
+				}
 				Enumeration<InetAddress> ee = iface.getInetAddresses();
 				while (ee.hasMoreElements()) {
-				    
+
 					InetAddress addr = ee.nextElement();
 					//telling the NodeIPDetector object about the MTU only if MTU != 0
 					// MTU = 0 means error in retrieving it
 					//FIXME: We should(n't) report MTU for local IPs
 					if (ifaceMTU > 0)
-					    detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
+						detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
 
 					if ((addr instanceof Inet6Address) && !(addr.isLinkLocalAddress() || IPUtil.isSiteLocalAddress(addr))) {
 						try {
 							// strip scope_id from global addresses
 							addr = InetAddress.getByAddress(addr.getAddress());
-						} catch(UnknownHostException e) {
+						} catch (UnknownHostException e) {
 							// ignore/impossible
 						}
 					}
 					addrs.add(addr);
 					if (logDEBUG)
 						Logger.debug(
-							this,
-							"Adding address "
-								+ addr
-								+ " from "
-								+ iface.getDisplayName());
+								this,
+								"Adding address "
+										+ addr
+										+ " from "
+										+ iface.getDisplayName());
 				}
 				if (logDEBUG)
 					Logger.debug(
-						this,
-						"Finished scanning interface " + iface.getDisplayName());
+							this,
+							"Finished scanning interface " + iface.getDisplayName());
 			}
 			if (logDEBUG)
 				Logger.debug(
-					this,
-					"Finished scanning interfaces");
+						this,
+						"Finished scanning interfaces");
 		}
 
 		InetAddress[] oldAddressList = lastAddressList;
@@ -185,10 +188,10 @@ public class IPAddressDetector implements Runnable {
 	}
 
 	private boolean addressListChanged(InetAddress[] oldList,
-			InetAddress[] newList) {
-		if(oldList == null) return newList != null;
-		if(oldList == newList) return false;
-		if(oldList.length != newList.length) return true;
+									   InetAddress[] newList) {
+		if (oldList == null) return newList != null;
+		if (oldList == newList) return false;
+		if (oldList.length != newList.length) return true;
 		InetAddress[] a = Arrays.copyOf(oldList, oldList.length);
 		InetAddress[] b = Arrays.copyOf(newList, newList.length);
 		Arrays.sort(a, InetAddressComparator.COMPARATOR);
@@ -196,16 +199,15 @@ public class IPAddressDetector implements Runnable {
 		return !Arrays.deepEquals(a, b);
 	}
 
-		/**
-         *
-         * @return
-         */
-        protected InetAddress oldDetect() {
+	/**
+	 * @return
+	 */
+	protected InetAddress oldDetect() {
 		boolean shouldLog = Logger.shouldLog(LogLevel.DEBUG, this);
 		if (shouldLog)
 			Logger.debug(
-				this,
-				"Running old style detection code");
+					this,
+					"Running old style detection code");
 		DatagramSocket ds = null;
 		try {
 			try {
@@ -233,17 +235,16 @@ public class IPAddressDetector implements Runnable {
 
 	/**
 	 * Do something with the list of detected IP addresses.
-	 * 
-	 * @param addrs
-	 *            Vector of InetAddresses
+	 *
+	 * @param addrs Vector of InetAddresses
 	 */
 	protected void onGetAddresses(List<InetAddress> addrs) {
 		final boolean logDEBUG = IPAddressDetector.logDEBUG;
 		List<InetAddress> output = new ArrayList<InetAddress>();
 		if (logDEBUG)
 			Logger.debug(
-				this,
-				"onGetAddresses found " + addrs.size() + " potential addresses)");
+					this,
+					"onGetAddresses found " + addrs.size() + " potential addresses)");
 		if (addrs.size() == 0) {
 			Logger.error(this, "No addresses found!");
 			lastAddressList = null;
@@ -255,20 +256,20 @@ public class IPAddressDetector implements Runnable {
 					InetAddress i = addrs.get(x);
 					if (logDEBUG)
 						Logger.debug(
-							this,
-							"Address " + x + ": " + i);
-					if(i.isAnyLocalAddress()) {
+								this,
+								"Address " + x + ": " + i);
+					if (i.isAnyLocalAddress()) {
 						// Wildcard address, 0.0.0.0, ignore.
-					} else if(i.isLinkLocalAddress() || i.isLoopbackAddress() ||
+					} else if (i.isLinkLocalAddress() || i.isLoopbackAddress() ||
 							i.isSiteLocalAddress()) {
 						// Will be filtered out later if necessary.
 						output.add(i);
-					} else if(i.isMulticastAddress()) {
+					} else if (i.isMulticastAddress()) {
 						// Ignore
 					} else {
 						// Ignore ISATAP addresses
 						// @see http://archives.freenetproject.org/message/20071129.220955.ac2a2a36.en.html
-						if(!AddressIdentifier.isAnISATAPIPv6Address(i.toString()))
+						if (!AddressIdentifier.isAnISATAPIPv6Address(i.toString()))
 							output.add(i);
 					}
 				}
@@ -280,26 +281,26 @@ public class IPAddressDetector implements Runnable {
 	@Override
 	public void run() {
 		freenet.support.Logger.OSThread.logPID(this);
-		while(true) {
+		while (true) {
 			try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				// Ignore
 			}
 			try {
-				if(checkpoint()) {
+				if (checkpoint()) {
 					detector.redetectAddress();
 				}
 			} catch (Throwable t) {
-				Logger.error(this, "Caught "+t, t);
+				Logger.error(this, "Caught " + t, t);
 			}
 		}
 	}
 
-        /**
-         *
-         */
-        public void clearCached() {
+	/**
+	 *
+	 */
+	public void clearCached() {
 		lastAddressList = null;
 		lastDetectedTime = -1;
 	}

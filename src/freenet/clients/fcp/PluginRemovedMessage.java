@@ -8,7 +8,6 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * @author saces
- *
  */
 public class PluginRemovedMessage extends FCPMessage {
 

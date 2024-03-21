@@ -9,16 +9,19 @@ import java.util.Comparator;
 import freenet.support.Fields;
 import freenet.support.LRUCache;
 
-/** Comparator for IP addresses that sorts IPv6 before IPv4 to enable
+/**
+ * Comparator for IP addresses that sorts IPv6 before IPv4 to enable
  * selecting the first.
- * @author toad */
+ *
+ * @author toad
+ */
 public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 
 	// need a cache for reachability to avoid doing NlogN issReachable checks in worst case.
 	public LRUCache<Integer, Boolean> reachabilityCache = new LRUCache<>(1000, 300000);
 
 	public static final InetAddressIpv6FirstComparator COMPARATOR =
-		new InetAddressIpv6FirstComparator();
+			new InetAddressIpv6FirstComparator();
 
 	@Override
 	public int compare(InetAddress arg0, InetAddress arg1) {
@@ -26,7 +29,7 @@ public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 		// prefer non-null over null
 		if (arg0 == null) return 1;
 		if (arg1 == null) return -1;
-		if(arg0.equals(arg1)) return 0;
+		if (arg0.equals(arg1)) return 0;
 		// prefer everything to broadcast
 		if (!arg0.isAnyLocalAddress() && arg1.isAnyLocalAddress()) {
 			return -1;
@@ -80,15 +83,15 @@ public class InetAddressIpv6FirstComparator implements Comparator<InetAddress> {
 		byte[] bytes0 = arg0.getAddress();
 		byte[] bytes1 = arg1.getAddress();
 		// prefer IPv6 over IPv4
-		if(bytes0.length > bytes1.length) {
+		if (bytes0.length > bytes1.length) {
 			return -1;
-		} else if(bytes1.length > bytes0.length) {
+		} else if (bytes1.length > bytes0.length) {
 			return 1;
 		}
 
 		// Sort by hash code as fallback. This is fast.
-		if(a > b) return 1;
-		else if(b > a) return -1;
+		if (a > b) return 1;
+		else if (b > a) return -1;
 		return Fields.compareBytes(bytes0, bytes1);
 		// Hostnames in InetAddress are merely cached, equals() only operates on the byte[].
 	}

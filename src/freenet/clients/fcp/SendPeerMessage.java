@@ -15,11 +15,11 @@ public abstract class SendPeerMessage extends DataCarryingMessage {
 		identifier = fs.get("Identifier");
 		nodeIdentifier = fs.get("NodeIdentifier");
 		String dataLengthString = fs.get("DataLength");
-		if(dataLengthString != null)
+		if (dataLengthString != null)
 			try {
 				//May throw NumberFormatException
 				dataLength = Long.parseLong(dataLengthString, 10);
-				if(dataLength < 0)
+				if (dataLength < 0)
 					throw new Exception();
 			} catch (Exception e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid DataLength field", identifier, false);
@@ -33,7 +33,7 @@ public abstract class SendPeerMessage extends DataCarryingMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", identifier);
 		fs.putSingle("NodeIdentifier", nodeIdentifier);
-		if(dataLength >= 0)
+		if (dataLength >= 0)
 			fs.put("DataLength", dataLength);
 		return fs;
 	}
@@ -69,5 +69,5 @@ public abstract class SendPeerMessage extends DataCarryingMessage {
 	long dataLength() {
 		return dataLength;
 	}
-	
+
 }

@@ -15,7 +15,7 @@ public class FilterResultMessage extends DataCarryingMessage {
 	private final String mimeType;
 	private final boolean unsafeContentType;
 	private final long dataLength;
-	
+
 	public FilterResultMessage(String identifier, String charset, String mimeType, boolean unsafeContentType, Bucket bucket) {
 		this.identifier = identifier;
 		this.charset = charset;

@@ -37,20 +37,20 @@ public class ModifyPeerNote extends FCPMessage {
 
 	@Override
 	public void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		if(!handler.hasFullAccess()) {
+		if (!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "ModifyPeerNote requires full access", identifier, false);
 		}
 		String nodeIdentifier = fs.get("NodeIdentifier");
-		if( nodeIdentifier == null ) {
+		if (nodeIdentifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NodeIdentifier field missing", identifier, false);
 		}
 		PeerNode pn = node.getPeerNode(nodeIdentifier);
-		if(pn == null) {
+		if (pn == null) {
 			FCPMessage msg = new UnknownNodeIdentifierMessage(nodeIdentifier, identifier);
 			handler.send(msg);
 			return;
 		}
-		if(!(pn instanceof DarknetPeerNode)) {
+		if (!(pn instanceof DarknetPeerNode)) {
 			throw new MessageInvalidException(ProtocolErrorMessage.DARKNET_ONLY, "ModifyPeerNote only available for darknet peers", identifier, false);
 		}
 		DarknetPeerNode dpn = (DarknetPeerNode) pn;
@@ -58,10 +58,10 @@ public class ModifyPeerNote extends FCPMessage {
 		try {
 			peerNoteType = fs.getInt("PeerNoteType");
 		} catch (FSParseException e) {
-			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Error parsing PeerNoteType field: "+e.getMessage(), identifier, false);
+			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Error parsing PeerNoteType field: " + e.getMessage(), identifier, false);
 		}
 		String encodedNoteText = fs.get("NoteText");
-		if( encodedNoteText == null ) {
+		if (encodedNoteText == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Error: NoteText field missing", identifier, false);
 		}
 		String noteText;
@@ -72,7 +72,7 @@ public class ModifyPeerNote extends FCPMessage {
 			Logger.error(this, "Bad Base64 encoding when decoding a FCP-received private darknet comment SimpleFieldSet", e);
 			return;
 		}
-		if(peerNoteType == Node.PEER_NOTE_TYPE_PRIVATE_DARKNET_COMMENT) {
+		if (peerNoteType == Node.PEER_NOTE_TYPE_PRIVATE_DARKNET_COMMENT) {
 			dpn.setPrivateDarknetCommentNote(noteText);
 		} else {
 			FCPMessage msg = new UnknownPeerNoteTypeMessage(peerNoteType, identifier);

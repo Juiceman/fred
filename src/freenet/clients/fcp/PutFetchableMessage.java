@@ -14,17 +14,17 @@ public class PutFetchableMessage extends FCPMessage {
 		this.global = global;
 		this.uri = uri;
 	}
-	
+
 	final String identifier;
 	final boolean global;
 	final FreenetURI uri;
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", identifier);
 		fs.put("Global", global);
-		if(uri != null)
+		if (uri != null)
 			fs.putSingle("URI", uri.toString(false, false));
 		return fs;
 	}

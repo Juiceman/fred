@@ -16,14 +16,14 @@ import freenet.support.SimpleFieldSet;
 public class PersistentPut extends FCPMessage {
 
 	static final String name = "PersistentPut";
-	
+
 	final String identifier;
 	final FreenetURI uri;
 	final FreenetURI privateURI;
-	final int verbosity; 
+	final int verbosity;
 	final short priorityClass;
 	final UploadFrom uploadFrom;
-	final Persistence persistence; 
+	final Persistence persistence;
 	final File origFilename;
 	final String mimeType;
 	final boolean global;
@@ -39,12 +39,12 @@ public class PersistentPut extends FCPMessage {
 	final boolean realTime;
 	final byte[] splitfileCryptoKey;
 	final String compressorDescriptor;
-	
-	public PersistentPut(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity, 
-			short priorityClass, UploadFrom uploadFrom, FreenetURI targetURI, 
-			Persistence persistence, File origFilename, String mimeType, 
-			boolean global, long size, String clientToken, boolean started, 
-			int maxRetries, String targetFilename, boolean binaryBlob, InsertContext.CompatibilityMode compatMode, boolean dontCompress, String compressorDescriptor, boolean realTime, byte[] splitfileCryptoKey) {
+
+	public PersistentPut(String identifier, FreenetURI publicURI, FreenetURI privateURI, int verbosity,
+						 short priorityClass, UploadFrom uploadFrom, FreenetURI targetURI,
+						 Persistence persistence, File origFilename, String mimeType,
+						 boolean global, long size, String clientToken, boolean started,
+						 int maxRetries, String targetFilename, boolean binaryBlob, InsertContext.CompatibilityMode compatMode, boolean dontCompress, String compressorDescriptor, boolean realTime, byte[] splitfileCryptoKey) {
 		this.identifier = identifier;
 		this.uri = publicURI;
 		this.privateURI = privateURI;
@@ -74,35 +74,35 @@ public class PersistentPut extends FCPMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", identifier);
 		fs.putSingle("URI", uri.toString(false, false));
-		if(privateURI != null)
+		if (privateURI != null)
 			fs.putSingle("PrivateURI", privateURI.toString(false, false));
 		fs.put("Verbosity", verbosity);
 		fs.put("PriorityClass", priorityClass);
 		fs.putSingle("UploadFrom", uploadFrom.toString().toLowerCase());
 		fs.putSingle("Persistence", persistence.toString().toLowerCase());
-		if(origFilename != null)
+		if (origFilename != null)
 			fs.putSingle("Filename", origFilename.getAbsolutePath());
-		if(targetURI != null)
+		if (targetURI != null)
 			fs.putSingle("TargetURI", targetURI.toString());
-		if(mimeType != null)
+		if (mimeType != null)
 			fs.putSingle("Metadata.ContentType", mimeType);
 		fs.put("Global", global);
-		if(size != -1)
+		if (size != -1)
 			fs.put("DataLength", size);
-		if(token != null)
+		if (token != null)
 			fs.putSingle("ClientToken", token);
 		fs.put("Started", started);
 		fs.put("MaxRetries", maxRetries);
-		if(targetFilename != null)
+		if (targetFilename != null)
 			fs.putSingle("TargetFilename", targetFilename);
-		if(binaryBlob)
+		if (binaryBlob)
 			fs.put("BinaryBlob", binaryBlob);
 		fs.putOverwrite("CompatibilityMode", compatMode.name());
 		fs.put("DontCompress", dontCompress);
-		if(compressorDescriptor != null)
+		if (compressorDescriptor != null)
 			fs.putSingle("Codecs", compressorDescriptor);
 		fs.put("RealTime", realTime);
-		if(splitfileCryptoKey != null)
+		if (splitfileCryptoKey != null)
 			fs.putSingle("SplitfileCryptoKey", HexUtil.bytesToHex(splitfileCryptoKey));
 		return fs;
 	}

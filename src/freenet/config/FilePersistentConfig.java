@@ -4,6 +4,7 @@
 package freenet.config;
 
 import freenet.support.LogThresholdCallback;
+
 import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -21,7 +22,7 @@ import freenet.support.io.LineReadingInputStream;
 
 /**
  * Global Config object which persists to a file.
- *
+ * <p>
  * Reads the config file into a SimpleFieldSet when created.
  * During init, SubConfig's are registered, and fed the relevant parts of the SFS.
  * Once initialization has finished, we check whether there are any options remaining.
@@ -36,11 +37,12 @@ public class FilePersistentConfig extends PersistentConfig {
 	protected final Object storeSync = new Object();
 	protected boolean writeOnFinished;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -52,49 +54,49 @@ public class FilePersistentConfig extends PersistentConfig {
 
 	public static FilePersistentConfig constructFilePersistentConfig(File f, String header) throws IOException {
 		File filename = f;
-		File tempFilename = new File(f.getPath()+".tmp");
+		File tempFilename = new File(f.getPath() + ".tmp");
 		return new FilePersistentConfig(load(filename, tempFilename), filename, tempFilename, header);
 	}
 
 	static SimpleFieldSet load(File filename, File tempFilename) throws IOException {
 		boolean filenameExists = filename.exists();
 		boolean tempFilenameExists = tempFilename.exists();
-		if(filenameExists && !filename.canWrite()) {
-			Logger.error(FilePersistentConfig.class, "Warning: Cannot write to config file: "+filename);
-			System.err.println("Warning: Cannot write to config file: "+filename);
+		if (filenameExists && !filename.canWrite()) {
+			Logger.error(FilePersistentConfig.class, "Warning: Cannot write to config file: " + filename);
+			System.err.println("Warning: Cannot write to config file: " + filename);
 		}
-		if(tempFilenameExists && !tempFilename.canWrite()) {
-			Logger.error(FilePersistentConfig.class, "Warning: Cannot write to config tempfile: "+tempFilename);
-			System.err.println("Warning: Cannot write to config tempfile: "+tempFilename);
+		if (tempFilenameExists && !tempFilename.canWrite()) {
+			Logger.error(FilePersistentConfig.class, "Warning: Cannot write to config tempfile: " + tempFilename);
+			System.err.println("Warning: Cannot write to config tempfile: " + tempFilename);
 		}
-		if(filenameExists) {
-			if(filename.canRead() && filename.length() > 0) {
+		if (filenameExists) {
+			if (filename.canRead() && filename.length() > 0) {
 				try {
 					return initialLoad(filename);
 				} catch (FileNotFoundException e) {
-					System.err.println("Cannot open config file "+filename+" : "+e+" - checking for temp file "+tempFilename);
+					System.err.println("Cannot open config file " + filename + " : " + e + " - checking for temp file " + tempFilename);
 				} catch (EOFException e) {
-					System.err.println("Empty config file "+filename+" (end of file)");
+					System.err.println("Empty config file " + filename + " (end of file)");
 				}
 				// Other IOE's indicate a more serious problem.
 			} else {
 				// We probably won't be able to write it either.
-				System.err.println("Cannot read config file "+filename);
+				System.err.println("Cannot read config file " + filename);
 			}
 		}
-		if(tempFilename.exists()) {
-			if(tempFilename.canRead() && tempFilename.length() > 0) {
+		if (tempFilename.exists()) {
+			if (tempFilename.canRead() && tempFilename.length() > 0) {
 				try {
 					return initialLoad(tempFilename);
 				} catch (FileNotFoundException e) {
-					System.err.println("Cannot open temp config file either: "+tempFilename+" : "+e);
+					System.err.println("Cannot open temp config file either: " + tempFilename + " : " + e);
 				} // Other IOE's indicate a more serious problem.
 			} else {
-				System.err.println("Cannot read (temp) config file "+tempFilename);
-				throw new IOException("Cannot read (temp) config file "+tempFilename);
+				System.err.println("Cannot read (temp) config file " + tempFilename);
+				throw new IOException("Cannot read (temp) config file " + tempFilename);
 			}
 		}
-		System.err.println("No config file found, creating new: "+filename);
+		System.err.println("No config file found, creating new: " + filename);
 		return null;
 	}
 
@@ -109,10 +111,13 @@ public class FilePersistentConfig extends PersistentConfig {
 		this.header = header;
 	}
 
-	/** Load the config file into a SimpleFieldSet.
-	 * @throws IOException */
+	/**
+	 * Load the config file into a SimpleFieldSet.
+	 *
+	 * @throws IOException
+	 */
 	private static SimpleFieldSet initialLoad(File toRead) throws IOException {
-		if(toRead == null) return null;
+		if (toRead == null) return null;
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		LineReadingInputStream lis = null;
@@ -121,7 +126,7 @@ public class FilePersistentConfig extends PersistentConfig {
 			bis = new BufferedInputStream(fis);
 			lis = new LineReadingInputStream(bis);
 			// Config file is UTF-8 too!
-			return new SimpleFieldSet(lis, 1024*1024, 128, true, true, true); // FIXME? advanced users may edit the config file, hence true?
+			return new SimpleFieldSet(lis, 1024 * 1024, 128, true, true, true); // FIXME? advanced users may edit the config file, hence true?
 		} finally {
 			Closer.close(lis);
 			Closer.close(bis);
@@ -136,49 +141,50 @@ public class FilePersistentConfig extends PersistentConfig {
 
 	@Override
 	public void store() {
-		if(!finishedInit) {
+		if (!finishedInit) {
 			writeOnFinished = true;
 			return;
 		}
 		try {
-			synchronized(storeSync) {
+			synchronized (storeSync) {
 				innerStore();
 			}
 		} catch (IOException e) {
-			String err = "Cannot store config: "+e;
+			String err = "Cannot store config: " + e;
 			Logger.error(this, err, e);
 			System.err.println(err);
 			e.printStackTrace();
 		}
 	}
 
-	/** Don't call without taking storeSync first */
+	/**
+	 * Don't call without taking storeSync first
+	 */
 	protected final void innerStore() throws IOException {
-		if(!finishedInit)
+		if (!finishedInit)
 			throw new IllegalStateException("SHOULD NOT HAPPEN!!");
 
 		SimpleFieldSet fs = exportFieldSet();
-		if(logMINOR)
+		if (logMINOR)
 			Logger.minor(this, "fs = " + fs);
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(tempFilename);
-			synchronized(this) {
+			synchronized (this) {
 				fs.setHeader(header);
 				fs.writeToBigBuffer(fos);
 			}
 			fos.close();
 			fos = null;
 			FileUtil.renameTo(tempFilename, filename);
-		}
-		finally {
+		} finally {
 			Closer.close(fos);
 		}
 	}
-	
+
 	public void finishedInit() {
 		super.finishedInit();
-		if(writeOnFinished) {
+		if (writeOnFinished) {
 			writeOnFinished = false;
 			store();
 		}

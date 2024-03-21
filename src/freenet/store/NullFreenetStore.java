@@ -14,8 +14,8 @@ public class NullFreenetStore<T extends StorableBlock> implements FreenetStore<T
 
 	@Override
 	public T fetch(byte[] routingKey, byte[] fullKey,
-			boolean dontPromote, boolean canReadClientCache,
-			boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+				   boolean dontPromote, boolean canReadClientCache,
+				   boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
 		// No block returned so don't set meta.
 		return null;
 	}
@@ -52,7 +52,7 @@ public class NullFreenetStore<T extends StorableBlock> implements FreenetStore<T
 
 	@Override
 	public void put(T block, byte[] data, byte[] header,
-			boolean overwrite, boolean oldBlock) throws IOException,
+					boolean overwrite, boolean oldBlock) throws IOException,
 			KeyCollisionException {
 		// Do nothing
 	}
@@ -91,7 +91,7 @@ public class NullFreenetStore<T extends StorableBlock> implements FreenetStore<T
 			public long writes() {
 				return 0;
 			}
-			
+
 		};
 	}
 
@@ -109,7 +109,7 @@ public class NullFreenetStore<T extends StorableBlock> implements FreenetStore<T
 	public void setUserAlertManager(UserAlertManager userAlertManager) {
 		// Do nothing
 	}
-	
+
 	@Override
 	public FreenetStore<T> getUnderlyingStore() {
 		return this;

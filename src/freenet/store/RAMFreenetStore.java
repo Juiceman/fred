@@ -14,7 +14,7 @@ import freenet.support.Ticker;
 
 /**
  * LRU in memory store.
- * 
+ * <p>
  * For debugging / simulation only
  */
 public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T> {
@@ -25,44 +25,44 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 		byte[] fullKey;
 		boolean oldBlock;
 	}
-	
+
 	private final LRUMap<ByteArrayWrapper, Block> blocksByRoutingKey;
-	
+
 	private final StoreCallback<T> callback;
-	
+
 	private int maxKeys;
-	
+
 	private long hits;
 	private long misses;
 	private long writes;
-	
+
 	public RAMFreenetStore(StoreCallback<T> callback, int maxKeys) {
 		this.callback = callback;
 		this.blocksByRoutingKey = LRUMap.createSafeMap(ByteArrayWrapper.FAST_COMPARATOR);
 		this.maxKeys = maxKeys;
 		callback.setStore(this);
 	}
-	
+
 	@Override
 	public synchronized T fetch(byte[] routingKey, byte[] fullKey,
-			boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
+								boolean dontPromote, boolean canReadClientCache, boolean canReadSlashdotCache, boolean ignoreOldBlocks, BlockMetadata meta) throws IOException {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
 		Block block = blocksByRoutingKey.get(key);
-		if(block == null) {
+		if (block == null) {
 			misses++;
 			return null;
 		}
-		if(ignoreOldBlocks && block.oldBlock) {
+		if (ignoreOldBlocks && block.oldBlock) {
 			Logger.normal(this, "Ignoring old block");
 			return null;
 		}
 		try {
 			T ret =
-				callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, canReadSlashdotCache, meta, null);
+					callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, canReadSlashdotCache, meta, null);
 			hits++;
-			if(!dontPromote)
+			if (!dontPromote)
 				blocksByRoutingKey.push(key, block);
-			if(meta != null && block.oldBlock)
+			if (meta != null && block.oldBlock)
 				meta.setOldBlock();
 			return ret;
 		} catch (KeyVerifyException e) {
@@ -96,25 +96,25 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 	public synchronized void put(T block, byte[] data, byte[] header, boolean overwrite, boolean isOldBlock) throws KeyCollisionException {
 		byte[] routingkey = block.getRoutingKey();
 		byte[] fullKey = block.getFullKey();
-		
+
 		writes++;
 		ByteArrayWrapper key = new ByteArrayWrapper(routingkey);
 		Block oldBlock = blocksByRoutingKey.get(key);
 		boolean storeFullKeys = callback.storeFullKeys();
-		if(oldBlock != null) {
-			if(callback.collisionPossible()) {
+		if (oldBlock != null) {
+			if (callback.collisionPossible()) {
 				boolean equals = Arrays.equals(oldBlock.data, data) &&
-					Arrays.equals(oldBlock.header, header) &&
-					(storeFullKeys ? Arrays.equals(oldBlock.fullKey, fullKey) : true);
-				if(equals) {
-					if(!isOldBlock)
+						Arrays.equals(oldBlock.header, header) &&
+						(storeFullKeys ? Arrays.equals(oldBlock.fullKey, fullKey) : true);
+				if (equals) {
+					if (!isOldBlock)
 						oldBlock.oldBlock = false;
 					return;
 				}
-				if(overwrite) {
+				if (overwrite) {
 					oldBlock.data = data;
 					oldBlock.header = header;
-					if(storeFullKeys)
+					if (storeFullKeys)
 						oldBlock.fullKey = fullKey;
 					oldBlock.oldBlock = isOldBlock;
 				} else {
@@ -122,7 +122,7 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 				}
 				return;
 			} else {
-				if(!isOldBlock)
+				if (!isOldBlock)
 					oldBlock.oldBlock = false;
 				return;
 			}
@@ -130,11 +130,11 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 		Block storeBlock = new Block();
 		storeBlock.data = data;
 		storeBlock.header = header;
-		if(storeFullKeys)
+		if (storeFullKeys)
 			storeBlock.fullKey = fullKey;
 		storeBlock.oldBlock = isOldBlock;
 		blocksByRoutingKey.push(key, storeBlock);
-		while(blocksByRoutingKey.size() > maxKeys) {
+		while (blocksByRoutingKey.size() > maxKeys) {
 			blocksByRoutingKey.popKey();
 		}
 	}
@@ -142,9 +142,9 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 	@Override
 	public synchronized void setMaxKeys(long maxStoreKeys, boolean shrinkNow)
 			throws IOException {
-		this.maxKeys = (int)Math.min(Integer.MAX_VALUE, maxStoreKeys);
+		this.maxKeys = (int) Math.min(Integer.MAX_VALUE, maxStoreKeys);
 		// Always shrink now regardless of parameter as we will shrink on the next put() anyway.
-		while(blocksByRoutingKey.size() > maxKeys) {
+		while (blocksByRoutingKey.size() > maxKeys) {
 			blocksByRoutingKey.popKey();
 		}
 	}
@@ -158,7 +158,7 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 	public long getBloomFalsePositive() {
 		return -1;
 	}
-	
+
 	@Override
 	public boolean probablyInStore(byte[] routingKey) {
 		ByteArrayWrapper key = new ByteArrayWrapper(routingKey);
@@ -171,16 +171,16 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 
 	public void migrateTo(StoreCallback<T> target, boolean canReadClientCache) throws IOException {
 		Enumeration<ByteArrayWrapper> keys = blocksByRoutingKey.keys();
-		while(keys.hasMoreElements()) {
+		while (keys.hasMoreElements()) {
 			ByteArrayWrapper routingKeyWrapped = keys.nextElement();
 			byte[] routingKey = routingKeyWrapped.get();
 			Block block = blocksByRoutingKey.get(routingKeyWrapped);
-			
+
 			T ret;
 			try {
 				ret = callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, false, null, null);
 			} catch (KeyVerifyException e) {
-				Logger.error(this, "Caught while migrating: "+e, e);
+				Logger.error(this, "Caught while migrating: " + e, e);
 				continue;
 			}
 			try {
@@ -190,7 +190,7 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 			}
 		}
 	}
-	
+
 	@Override
 	public StoreAccessStats getSessionAccessStats() {
 		return new StoreAccessStats() {
@@ -214,7 +214,7 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 			public long writes() {
 				return writes;
 			}
-			
+
 		};
 	}
 
@@ -232,12 +232,12 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 	public void setUserAlertManager(UserAlertManager userAlertManager) {
 		// Do nothing
 	}
-	
+
 	@Override
 	public FreenetStore<T> getUnderlyingStore() {
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		// Do nothing

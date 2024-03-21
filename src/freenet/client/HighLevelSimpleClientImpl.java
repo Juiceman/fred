@@ -45,7 +45,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	private final BucketFactory persistentBucketFactory;
 	private final PersistentFileTracker persistentFileTracker;
 	private final NodeClientCore core;
-	/** One CEP for all requests and inserts */
+	/**
+	 * One CEP for all requests and inserts
+	 */
 	private final ClientEventProducer eventProducer;
 	private long curMaxLength;
 	private long curMaxTempLength;
@@ -58,26 +60,44 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	static final boolean DONT_ENTER_IMPLICIT_ARCHIVES = true;
 	// COOLDOWN_RETRIES-1 so we don't have to wait on the cooldown queue; HLSC is designed
 	// for interactive requests mostly.
-	/** Number of retries allowed per block in a splitfile. */
-	static final int SPLITFILE_BLOCK_RETRIES = Math.min(3, RequestScheduler.COOLDOWN_RETRIES-1);
-	/** Number of retries allowed on non-splitfile fetches. */
-	static final int NON_SPLITFILE_RETRIES = Math.min(3, RequestScheduler.COOLDOWN_RETRIES-1);
+	/**
+	 * Number of retries allowed per block in a splitfile.
+	 */
+	static final int SPLITFILE_BLOCK_RETRIES = Math.min(3, RequestScheduler.COOLDOWN_RETRIES - 1);
+	/**
+	 * Number of retries allowed on non-splitfile fetches.
+	 */
+	static final int NON_SPLITFILE_RETRIES = Math.min(3, RequestScheduler.COOLDOWN_RETRIES - 1);
 	static final int USK_RETRIES = RequestScheduler.COOLDOWN_RETRIES - 1;
-	/** Whether to fetch splitfiles. Don't turn this off! */
+	/**
+	 * Whether to fetch splitfiles. Don't turn this off!
+	 */
 	static final boolean FETCH_SPLITFILES = true;
-	/** Whether to follow redirects etc. If false, we only fetch a plain block of data.
-	 * Don't turn this off either! */
+	/**
+	 * Whether to follow redirects etc. If false, we only fetch a plain block of data.
+	 * Don't turn this off either!
+	 */
 	static final boolean FOLLOW_REDIRECTS = true;
-	/** If set, only check the local datastore, don't send an actual request out.
-	 * Don't turn this off either. */
+	/**
+	 * If set, only check the local datastore, don't send an actual request out.
+	 * Don't turn this off either.
+	 */
 	static final boolean LOCAL_REQUESTS_ONLY = false;
-	/** By default, write to the client cache. Turn this off if you are fetching big stuff. */
+	/**
+	 * By default, write to the client cache. Turn this off if you are fetching big stuff.
+	 */
 	static final boolean CAN_WRITE_CLIENT_CACHE = true;
-	/** By default, don't write local inserts to the client cache. */
+	/**
+	 * By default, don't write local inserts to the client cache.
+	 */
 	static final boolean CAN_WRITE_CLIENT_CACHE_INSERTS = false;
-	/** Number of retries on inserts */
+	/**
+	 * Number of retries on inserts
+	 */
 	static final int INSERT_RETRIES = 10;
-	/** Number of RNFs on insert that make a success, or -1 on large networks */
+	/**
+	 * Number of RNFs on insert that make a success, or -1 on large networks
+	 */
 	static final int CONSECUTIVE_RNFS_ASSUME_SUCCESS = 2;
 	// going by memory usage only; 4kB per stripe
 	static final int MAX_SPLITFILE_BLOCKS_PER_SEGMENT = 256;
@@ -143,7 +163,7 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	 */
 	@Override
 	public FetchResult fetch(FreenetURI uri) throws FetchException {
-		if(uri == null) throw new NullPointerException();
+		if (uri == null) throw new NullPointerException();
 		FetchContext context = getFetchContext();
 		FetchWaiter fw = new FetchWaiter(this);
 		ClientGetter get = new ClientGetter(fw, uri, context, priorityClass, null, null, null);
@@ -160,7 +180,7 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	 */
 	@Override
 	public FetchResult fetchFromMetadata(Bucket initialMetadata) throws FetchException {
-		if(initialMetadata == null) throw new NullPointerException();
+		if (initialMetadata == null) throw new NullPointerException();
 		FetchContext context = getFetchContext();
 		FetchWaiter fw = new FetchWaiter(this);
 		ClientGetter get = new ClientGetter(fw, FreenetURI.EMPTY_CHK_URI, context, priorityClass, null, null, initialMetadata);
@@ -179,7 +199,7 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 
 	@Override
 	public FetchResult fetch(FreenetURI uri, long overrideMaxSize, RequestClient clientContext) throws FetchException {
-		if(uri == null) throw new NullPointerException();
+		if (uri == null) throw new NullPointerException();
 		FetchWaiter fw = new FetchWaiter(clientContext);
 		FetchContext context = getFetchContext(overrideMaxSize);
 		ClientGetter get = new ClientGetter(fw, uri, context, priorityClass, null, null, null);
@@ -202,13 +222,13 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 			fctx.maxOutputLength = maxSize;
 			fctx.maxTempLength = maxSize;
 		}
-		
+
 		return fetch(uri, callback, fctx, prio);
 	}
 
 	@Override
 	public ClientGetter fetch(FreenetURI uri, ClientGetCallback callback, FetchContext fctx, short prio) throws FetchException {
-		if(uri == null) throw new NullPointerException();
+		if (uri == null) throw new NullPointerException();
 		ClientGetter get = new ClientGetter(callback, uri, fctx, prio, null, null, null);
 		try {
 			core.getClientContext().start(get);
@@ -220,7 +240,7 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 
 	@Override
 	public ClientGetter fetchFromMetadata(Bucket initialMetadata, ClientGetCallback callback, FetchContext fctx, short prio) throws FetchException {
-		if(initialMetadata == null) throw new NullPointerException();
+		if (initialMetadata == null) throw new NullPointerException();
 		ClientGetter get = new ClientGetter(callback, FreenetURI.EMPTY_CHK_URI, fctx, prio, null, null, initialMetadata);
 		try {
 			core.getClientContext().start(get);
@@ -293,10 +313,10 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 		try {
 			b = m.toBucket(bucketFactory);
 		} catch (IOException e) {
-			Logger.error(this, "Bucket error: "+e, e);
+			Logger.error(this, "Bucket error: " + e, e);
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null);
 		} catch (MetadataUnresolvedException e) {
-			Logger.error(this, "Impossible error: "+e, e);
+			Logger.error(this, "Impossible error: " + e, e);
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null);
 		}
 
@@ -320,11 +340,11 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	public FreenetURI insertManifest(FreenetURI insertURI, HashMap<String, Object> bucketsByName, String defaultName, short priorityClass, byte[] forceCryptoKey) throws InsertException {
 		PutWaiter pw = new PutWaiter(this);
 		DefaultManifestPutter putter;
-        try {
-            putter = new DefaultManifestPutter(pw, BaseManifestPutter.bucketsByNameToManifestEntries(bucketsByName), priorityClass, insertURI, defaultName, getInsertContext(true), false, forceCryptoKey, core.getClientContext());
-        } catch (TooManyFilesInsertException e1) {
-            throw new InsertException(InsertExceptionMode.TOO_MANY_FILES);
-        }
+		try {
+			putter = new DefaultManifestPutter(pw, BaseManifestPutter.bucketsByNameToManifestEntries(bucketsByName), priorityClass, insertURI, defaultName, getInsertContext(true), false, forceCryptoKey, core.getClientContext());
+		} catch (TooManyFilesInsertException e1) {
+			throw new InsertException(InsertExceptionMode.TOO_MANY_FILES);
+		}
 		try {
 			core.getClientContext().start(putter);
 		} catch (PersistenceDisabledException e) {
@@ -352,30 +372,30 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	public FetchContext getFetchContext(long overrideMaxSize, String schemeHostAndPort) {
 		long maxLength = curMaxLength;
 		long maxTempLength = curMaxTempLength;
-		if(overrideMaxSize >= 0) {
+		if (overrideMaxSize >= 0) {
 			maxLength = overrideMaxSize;
 			maxTempLength = overrideMaxSize;
 		}
 		return
-			new FetchContext(maxLength, maxTempLength, curMaxMetadataLength,
-				MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
-				SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
-				FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
-				FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
-				bucketFactory, eventProducer,
-				false, CAN_WRITE_CLIENT_CACHE, null, null, schemeHostAndPort);
+				new FetchContext(maxLength, maxTempLength, curMaxMetadataLength,
+						MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
+						SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
+						FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
+						FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
+						bucketFactory, eventProducer,
+						false, CAN_WRITE_CLIENT_CACHE, null, null, schemeHostAndPort);
 	}
 
 	public static FetchContext makeDefaultFetchContext(long maxLength, long maxTempLength,
-	        BucketFactory bucketFactory, SimpleEventProducer eventProducer) {
-        return
-        new FetchContext(maxLength, maxTempLength, 1024*1024,
-            MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
-            SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
-            FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
-            FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
-            bucketFactory, eventProducer,
-            false, CAN_WRITE_CLIENT_CACHE, null, null, null);
+													   BucketFactory bucketFactory, SimpleEventProducer eventProducer) {
+		return
+				new FetchContext(maxLength, maxTempLength, 1024 * 1024,
+						MAX_RECURSION, MAX_ARCHIVE_RESTARTS, MAX_ARCHIVE_LEVELS, DONT_ENTER_IMPLICIT_ARCHIVES,
+						SPLITFILE_BLOCK_RETRIES, NON_SPLITFILE_RETRIES, USK_RETRIES,
+						FETCH_SPLITFILES, FOLLOW_REDIRECTS, LOCAL_REQUESTS_ONLY,
+						FILTER_DATA, MAX_SPLITFILE_BLOCKS_PER_SEGMENT, MAX_SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
+						bucketFactory, eventProducer,
+						false, CAN_WRITE_CLIENT_CACHE, null, null, null);
 	}
 
 	@Override
@@ -388,20 +408,20 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 				EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
 	}
 
-    public static InsertContext makeDefaultInsertContext(BucketFactory bucketFactory,
-            SimpleEventProducer eventProducer) {
-        return new InsertContext(
-                INSERT_RETRIES, CONSECUTIVE_RNFS_ASSUME_SUCCESS,
-                SPLITFILE_BLOCKS_PER_SEGMENT, SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
-                eventProducer, CAN_WRITE_CLIENT_CACHE_INSERTS, Node.FORK_ON_CACHEABLE_DEFAULT, false,
-                Compressor.DEFAULT_COMPRESSORDESCRIPTOR, EXTRA_INSERTS_SINGLE_BLOCK,
-                EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
-    }
+	public static InsertContext makeDefaultInsertContext(BucketFactory bucketFactory,
+														 SimpleEventProducer eventProducer) {
+		return new InsertContext(
+				INSERT_RETRIES, CONSECUTIVE_RNFS_ASSUME_SUCCESS,
+				SPLITFILE_BLOCKS_PER_SEGMENT, SPLITFILE_CHECK_BLOCKS_PER_SEGMENT,
+				eventProducer, CAN_WRITE_CLIENT_CACHE_INSERTS, Node.FORK_ON_CACHEABLE_DEFAULT, false,
+				Compressor.DEFAULT_COMPRESSORDESCRIPTOR, EXTRA_INSERTS_SINGLE_BLOCK,
+				EXTRA_INSERTS_SPLITFILE_HEADER, InsertContext.CompatibilityMode.COMPAT_DEFAULT);
+	}
 
 	@Override
 	public FreenetURI[] generateKeyPair(String docName) {
 		InsertableClientSSK key = InsertableClientSSK.createRandom(random, docName);
-		return new FreenetURI[] { key.getInsertURI(), key.getURI() };
+		return new FreenetURI[]{key.getInsertURI(), key.getURI()};
 	}
 
 	private final ClientGetCallback nullCallback = new NullClientCallback(this);

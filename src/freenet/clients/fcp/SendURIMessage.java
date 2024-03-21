@@ -39,11 +39,10 @@ public class SendURIMessage extends SendPeerMessage {
 	@Override
 	protected int handleFeed(DarknetPeerNode pn) throws MessageInvalidException {
 		try {
-			if(dataLength() > 0) {
+			if (dataLength() > 0) {
 				byte[] description = BucketTools.toByteArray(bucket);
 				return pn.sendDownloadFeed(uri, new String(description, StandardCharsets.UTF_8));
-			}
-			else
+			} else
 				return pn.sendDownloadFeed(uri, null);
 		} catch (IOException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "", null, false);

@@ -13,10 +13,12 @@ import freenet.support.HTMLDecoder;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** This toadlet is used to dismiss alerts from the client side */
+/**
+ * This toadlet is used to dismiss alerts from the client side
+ */
 public class DismissAlertToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(DismissAlertToadlet.class);

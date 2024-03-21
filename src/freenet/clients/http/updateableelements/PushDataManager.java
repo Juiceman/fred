@@ -9,37 +9,53 @@ import java.util.Map.Entry;
 import freenet.support.Logger;
 import freenet.support.Ticker;
 
-/** A manager class that manages all the pushing. All it's public method must be synchronized to maintain consistency. */
+/**
+ * A manager class that manages all the pushing. All it's public method must be synchronized to maintain consistency.
+ */
 public class PushDataManager {
 
-	private static volatile boolean						logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushDataManager.class);
 	}
 
-	/** What notifications are waiting for the leader */
-	private Map<String, List<UpdateEvent>>				awaitingNotifications	= new HashMap<String, List<UpdateEvent>>();
+	/**
+	 * What notifications are waiting for the leader
+	 */
+	private Map<String, List<UpdateEvent>> awaitingNotifications = new HashMap<String, List<UpdateEvent>>();
 
-	/** What elements are on the page */
-	private Map<String, List<BaseUpdateableElement>>	pages					= new HashMap<String, List<BaseUpdateableElement>>();
+	/**
+	 * What elements are on the page
+	 */
+	private Map<String, List<BaseUpdateableElement>> pages = new HashMap<String, List<BaseUpdateableElement>>();
 
-	/** What pages are on the element. It is redundant with the pages map. */
-	private Map<String, List<String>>					elements				= new HashMap<String, List<String>>();
+	/**
+	 * What pages are on the element. It is redundant with the pages map.
+	 */
+	private Map<String, List<String>> elements = new HashMap<String, List<String>>();
 
-	/** Stores whether a keepalive was received for a request since the Cleaner last run */
-	private Map<String, Boolean>						isKeepaliveReceived		= new HashMap<String, Boolean>();
-	
-	private Map<String, Boolean>						isFirstKeepaliveReceived		= new HashMap<String, Boolean>();
+	/**
+	 * Stores whether a keepalive was received for a request since the Cleaner last run
+	 */
+	private Map<String, Boolean> isKeepaliveReceived = new HashMap<String, Boolean>();
 
-	/** The Cleaner that runs periodically and cleanes the failing requests */
-	private Ticker										cleaner;
+	private Map<String, Boolean> isFirstKeepaliveReceived = new HashMap<String, Boolean>();
 
-	/** A task for the Cleaner that the Cleaner invokes */
-	private CleanerTimerTask							cleanerTask				= new CleanerTimerTask();
+	/**
+	 * The Cleaner that runs periodically and cleanes the failing requests
+	 */
+	private Ticker cleaner;
 
-	/** The Cleaner only runs when needed. If this field is true, then the Cleaner is scheduled to run */
-	private boolean										isScheduled				= false;
+	/**
+	 * A task for the Cleaner that the Cleaner invokes
+	 */
+	private CleanerTimerTask cleanerTask = new CleanerTimerTask();
+
+	/**
+	 * The Cleaner only runs when needed. If this field is true, then the Cleaner is scheduled to run
+	 */
+	private boolean isScheduled = false;
 
 	public PushDataManager(Ticker ticker) {
 		cleaner = ticker;
@@ -47,42 +63,41 @@ public class PushDataManager {
 
 	/**
 	 * An element is updated and needs to be pushed to all requests.
-	 * 
-	 * @param id
-	 *            - The id of the element that changed
+	 *
+	 * @param id - The id of the element that changed
 	 */
 	public synchronized void updateElement(String id) {
 		if (logMINOR) {
 			Logger.minor(this, "Element updated id:" + id);
 		}
 		boolean needsUpdate = false;
-		if(elements.containsKey(id)==false){
-			if(logMINOR){
-				Logger.minor(this, "Element is updating, but not present on elements! elements:"+elements+" pages:"+pages+" awaitingNotifications:"+awaitingNotifications);
+		if (elements.containsKey(id) == false) {
+			if (logMINOR) {
+				Logger.minor(this, "Element is updating, but not present on elements! elements:" + elements + " pages:" + pages + " awaitingNotifications:" + awaitingNotifications);
 			}
 		}
 		if (elements.containsKey(id)) for (String reqId : elements.get(id)) {
-			if(logMINOR){
-				Logger.minor(this, "Element is present on page:"+reqId+". Adding an UpdateEvent for all notification list.");
+			if (logMINOR) {
+				Logger.minor(this, "Element is present on page:" + reqId + ". Adding an UpdateEvent for all notification list.");
 			}
-			for(Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
+			for (Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
 //			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
 				List<UpdateEvent> notificationList = entry.getValue();
 				UpdateEvent updateEvent = new UpdateEvent(reqId, id);
 				if (notificationList.contains(updateEvent) == false) {
 					notificationList.add(updateEvent);
 					if (logMINOR) {
-						Logger.minor(this, "Notification("+updateEvent+") added to a notification list for "+entry.getKey());
+						Logger.minor(this, "Notification(" + updateEvent + ") added to a notification list for " + entry.getKey());
 					}
 				} else {
 					if (logMINOR)
-						Logger.minor(this, "Not notifying "+entry.getKey()+" because already on list");
+						Logger.minor(this, "Not notifying " + entry.getKey() + " because already on list");
 				}
 			}
 			needsUpdate = true;
 		}
 		if (needsUpdate) {
-			if(logMINOR){
+			if (logMINOR) {
 				Logger.minor(this, "Waking up notification polls");
 			}
 			notifyAll();
@@ -91,15 +106,13 @@ public class PushDataManager {
 
 	/**
 	 * A pushed element is rendered and needs to be tracked.
-	 * 
-	 * @param requestUniqueId
-	 *            - The requestId that rendered the element
-	 * @param element
-	 *            - The element that is rendered
+	 *
+	 * @param requestUniqueId - The requestId that rendered the element
+	 * @param element         - The element that is rendered
 	 */
 	public synchronized void elementRendered(String requestUniqueId, BaseUpdateableElement element) {
-		if(logMINOR){
-			Logger.minor(this, "Element is rendered in page:"+requestUniqueId+" element:"+element);
+		if (logMINOR) {
+			Logger.minor(this, "Element is rendered in page:" + requestUniqueId + " element:" + element);
 		}
 		// Add to the pages
 		if (pages.containsKey(requestUniqueId) == false) {
@@ -130,15 +143,13 @@ public class PushDataManager {
 
 	/**
 	 * Returns the element's current state.
-	 * 
-	 * @param requestId
-	 *            - The requestId that needs the element.
-	 * @param id
-	 *            - The element's id
+	 *
+	 * @param requestId - The requestId that needs the element.
+	 * @param id        - The element's id
 	 */
 	public synchronized BaseUpdateableElement getRenderedElement(String requestId, String id) {
-		if(logMINOR){
-			Logger.minor(this, "Getting element data for element:"+id+" in page:"+requestId);
+		if (logMINOR) {
+			Logger.minor(this, "Getting element data for element:" + id + " in page:" + requestId);
 		}
 		if (pages.get(requestId) != null) for (BaseUpdateableElement element : pages.get(requestId)) {
 			if (element.getUpdaterId(requestId).compareTo(id) == 0) {
@@ -146,17 +157,15 @@ public class PushDataManager {
 				return element;
 			}
 		}
-		Logger.error(this, "Could not find data for the element requested. requestId:"+requestId+" id:"+id+" pages:"+pages+" keepaliveReceived:"+isKeepaliveReceived);
+		Logger.error(this, "Could not find data for the element requested. requestId:" + requestId + " id:" + id + " pages:" + pages + " keepaliveReceived:" + isKeepaliveReceived);
 		return null;
 	}
 
 	/**
 	 * Fails a request and copies all notifications directed to it to another request. It is invoked when a leadership change occurs.
-	 * 
-	 * @param originalRequestId
-	 *            - The failing leader's id
-	 * @param newRequestId
-	 *            - The new leader's id
+	 *
+	 * @param originalRequestId - The failing leader's id
+	 * @param newRequestId      - The new leader's id
 	 * @return Was the failover successful?
 	 */
 	public synchronized boolean failover(String originalRequestId, String newRequestId) {
@@ -180,9 +189,8 @@ public class PushDataManager {
 
 	/**
 	 * The request leaves, so it needs to be deleted
-	 * 
-	 * @param requestId
-	 *            - The id of the request that is leaving
+	 *
+	 * @param requestId - The id of the request that is leaving
 	 * @return Was a request deleted?
 	 */
 	public synchronized boolean leaving(String requestId) {
@@ -191,18 +199,17 @@ public class PushDataManager {
 
 	/**
 	 * A keepalive received.
-	 * 
-	 * @param requestId
-	 *            - The id of the request that sent the keepalive
+	 *
+	 * @param requestId - The id of the request that sent the keepalive
 	 * @return Was it successful?
 	 */
 	public synchronized boolean keepAliveReceived(String requestId) {
-		if(logMINOR){
-			Logger.minor(this, "Keepalive is received for page:"+requestId);
+		if (logMINOR) {
+			Logger.minor(this, "Keepalive is received for page:" + requestId);
 		}
 		// If the request is already deleted, then fail
 		if (isKeepaliveReceived.containsKey(requestId) == false) {
-			if(logMINOR){
+			if (logMINOR) {
 				Logger.minor(this, "Keepalive failed");
 			}
 			return false;
@@ -215,9 +222,8 @@ public class PushDataManager {
 
 	/**
 	 * Waits and return the next notification. Calling this method setup the notification list.
-	 * 
-	 * @param requestId
-	 *            - The id of the request
+	 *
+	 * @param requestId - The id of the request
 	 * @return The next notification when present
 	 */
 	public synchronized UpdateEvent getNextNotification(String requestId) {
@@ -225,7 +231,7 @@ public class PushDataManager {
 			Logger.minor(this, "Polling for notification:" + requestId);
 		}
 		while (awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() == 0 || // No notifications 
-				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId)==false)) { // Not asked us yet
+				(awaitingNotifications.get(requestId) != null && awaitingNotifications.get(requestId).size() != 0 && isFirstKeepaliveReceived.containsKey(awaitingNotifications.get(requestId).get(0).requestId) == false)) { // Not asked us yet
 			try {
 				wait();
 			} catch (InterruptedException ie) {
@@ -241,16 +247,17 @@ public class PushDataManager {
 		return awaitingNotifications.get(requestId).remove(0);
 	}
 
-	/** Returns the cleaner's delay in ms */
+	/**
+	 * Returns the cleaner's delay in ms
+	 */
 	private int getDelayInMs() {
 		return (int) (UpdaterConstants.KEEPALIVE_INTERVAL_SECONDS * 1000 * 2.1);
 	}
 
 	/**
 	 * Deletes a request either because of failing or leaving
-	 * 
-	 * @param requestId
-	 *            - The id of the request
+	 *
+	 * @param requestId - The id of the request
 	 * @return Was a request deleted?
 	 */
 	private synchronized boolean deleteRequest(String requestId) {
@@ -260,7 +267,7 @@ public class PushDataManager {
 		if (isKeepaliveReceived.containsKey(requestId) == false) {
 			if (logMINOR) {
 				Logger.minor(this, "Request already cleaned, doing nothing");
-			}			
+			}
 			return false;
 		}
 		isKeepaliveReceived.remove(requestId);
@@ -291,10 +298,12 @@ public class PushDataManager {
 		return true;
 	}
 
-	/** An event that tells the client what and how it should be updated */
+	/**
+	 * An event that tells the client what and how it should be updated
+	 */
 	public class UpdateEvent {
-		private String	requestId;
-		private String	elementId;
+		private String requestId;
+		private String elementId;
 
 		private UpdateEvent(String requestId, String elementId) {
 			this.requestId = requestId;
@@ -320,7 +329,7 @@ public class PushDataManager {
 			}
 			return false;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return requestId.hashCode() + elementId.hashCode();
@@ -332,7 +341,9 @@ public class PushDataManager {
 		}
 	}
 
-	/** A task for the Cleaner, that periodically checks for failed requests. */
+	/**
+	 * A task for the Cleaner, that periodically checks for failed requests.
+	 */
 	private class CleanerTimerTask implements Runnable {
 		@Override
 		public void run() {

@@ -10,8 +10,8 @@ import freenet.support.JVMVersion;
 public class JVMVersionAlert extends AbstractUserAlert {
 
 	public JVMVersionAlert() {
-        super(true, null, null, null, null, UserAlert.WARNING, true,
-              NodeL10n.getBase().getString("UserAlert.hide"), true, null);
+		super(true, null, null, null, null, UserAlert.WARNING, true,
+				NodeL10n.getBase().getString("UserAlert.hide"), true, null);
 	}
 
 	@Override
@@ -22,9 +22,9 @@ public class JVMVersionAlert extends AbstractUserAlert {
 	@Override
 	public String getText() {
 		return NodeL10n.getBase().getString("JavaEOLAlert.body",
-		                                    new String[] {"current", "new"},
-		                                    new String[] {JVMVersion.getCurrent(),
-		                                                  JVMVersion.EOL_THRESHOLD});
+				new String[]{"current", "new"},
+				new String[]{JVMVersion.getCurrent(),
+						JVMVersion.EOL_THRESHOLD});
 	}
 
 	@Override

@@ -42,14 +42,14 @@ public class ProbeRequest extends FCPMessage {
 		this.identifier = fs.get(IDENTIFIER);
 
 		try {
-			this.type =  Type.valueOf(fs.get(TYPE));
+			this.type = Type.valueOf(fs.get(TYPE));
 
 			//If HTL is not specified default to MAX_HTL.
 			this.htl = fs.get(HTL) == null ? Probe.MAX_HTL : fs.getByte(HTL);
 
 			if (this.htl < 0) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE,
-				                                  "hopsToLive cannot be negative.", null, false);
+						"hopsToLive cannot be negative.", null, false);
 			}
 
 		} catch (IllegalArgumentException e) {
@@ -72,7 +72,7 @@ public class ProbeRequest extends FCPMessage {
 
 	@Override
 	public void run(final FCPConnectionHandler handler, Node node) throws MessageInvalidException {
-		if(!handler.hasFullAccess()) {
+		if (!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Probe requires full access.", identifier, false);
 		}
 

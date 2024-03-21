@@ -27,7 +27,7 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	private String sourcePeer;
 
 	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber, long composedTime,
-			long sentTime, long receivedTime, long msgid) {
+						  long sentTime, long receivedTime, long msgid) {
 		super(true, null, null, null, null, UserAlert.MINOR, true, null, true, null);
 		this.messageText = message;
 		this.fileNumber = fileNumber;
@@ -41,22 +41,22 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	}
 
 	public N2NTMUserAlert(DarknetPeerNode sourcePeerNode, String message, int fileNumber, long composedTime,
-			long sentTime, long receivedTime) {
-                this(sourcePeerNode, message, fileNumber, composedTime, sentTime, receivedTime, -1);
+						  long sentTime, long receivedTime) {
+		this(sourcePeerNode, message, fileNumber, composedTime, sentTime, receivedTime, -1);
 	}
 
 	@Override
 	public String getTitle() {
-		return l10n("title", new String[] { "number", "peername", "peer" },
-				new String[] { Integer.toString(fileNumber), sourceNodeName, sourcePeer });
+		return l10n("title", new String[]{"number", "peername", "peer"},
+				new String[]{Integer.toString(fileNumber), sourceNodeName, sourcePeer});
 	}
 
 	@Override
 	public String getText() {
-		return l10n("header", new String[] { "from", "composed", "sent", "received" },
-				new String[] { sourceNodeName, DateFormat.getInstance().format(new Date(composedTime)),
+		return l10n("header", new String[]{"from", "composed", "sent", "received"},
+				new String[]{sourceNodeName, DateFormat.getInstance().format(new Date(composedTime)),
 						DateFormat.getInstance().format(new Date(sentTime)),
-						DateFormat.getInstance().format(new Date(receivedTime)) })
+						DateFormat.getInstance().format(new Date(receivedTime))})
 				+ ": " + messageText;
 	}
 
@@ -69,10 +69,10 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	public HTMLNode getHTMLText() {
 		HTMLNode alertNode = new HTMLNode("div");
 		alertNode.addChild("p",
-				l10n("header", new String[] { "from", "composed", "sent", "received" },
-						new String[] { sourceNodeName, DateFormat.getInstance().format(new Date(composedTime)),
+				l10n("header", new String[]{"from", "composed", "sent", "received"},
+						new String[]{sourceNodeName, DateFormat.getInstance().format(new Date(composedTime)),
 								DateFormat.getInstance().format(new Date(sentTime)),
-								DateFormat.getInstance().format(new Date(receivedTime)) }));
+								DateFormat.getInstance().format(new Date(receivedTime))}));
 		String[] lines = messageText.split("\n");
 		for (int i = 0, c = lines.length; i < c; i++) {
 			alertNode.addChild("#", lines[i]);
@@ -145,7 +145,7 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	@Override
 	public boolean isValid() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if(pn != null) {
+		if (pn != null) {
 			sourceNodeName = pn.getName();
 			sourcePeer = pn.getPeer().toString();
 		}

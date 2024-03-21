@@ -44,14 +44,14 @@ import freenet.support.io.LineReadingInputStream;
  * Used for passing all HTTP request information to the FredPlugin that handles
  * the request. It parses the query string and has several methods for accessing
  * the request parameter values.
- * 
+ *
  * @author nacktschneck
  */
 public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * This map is used to store all parameter values.
-	 *  
+	 * <p>
 	 * Don't access this map directly, use {@link #getParameterValueList(String)} and
 	 * {@link #isParameterSet(String)} instead
 	 */
@@ -61,36 +61,39 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * the original URI as given to the constructor
 	 */
 	private URI uri;
-	
+
 	/**
 	 * The headers sent by the client
 	 */
 	private MultiValueTable<String, String> headers;
-	
+
 	/**
 	 * The data sent in the connection
 	 */
 	private Bucket data;
-	
+
 	/**
 	 * A hashmap of buckets that we use to store all the parts for a multipart/form-data request
 	 */
 	private HashMap<String, RandomAccessBucket> parts;
-	
+
 	private boolean freedParts;
-	
-	/** A map for uploaded files. */
+
+	/**
+	 * A map for uploaded files.
+	 */
 	private Map<String, HTTPUploadedFileImpl> uploadedFiles = new HashMap<String, HTTPUploadedFileImpl>();
-	
+
 	private final BucketFactory bucketfactory;
-	
+
 	private final String method;
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -99,9 +102,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 	/**
 	 * Create a new HTTPRequest for the given URI and parse its request
 	 * parameters.
-	 * 
-	 * @param uri
-	 *            the URI being requested
+	 *
+	 * @param uri the URI being requested
 	 */
 	public HTTPRequestImpl(URI uri, String method) {
 		this.uri = uri;
@@ -114,8 +116,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Creates a new HTTPRequest for the given path and url-encoded query string
-	 * 
-	 * @param path i.e. /test/test.html
+	 *
+	 * @param path               i.e. /test/test.html
 	 * @param encodedQueryString a=some+text&b=abc%40def.de
 	 * @throws URISyntaxException if the URI is invalid
 	 */
@@ -123,21 +125,21 @@ public class HTTPRequestImpl implements HTTPRequest {
 		this.data = null;
 		this.parts = null;
 		this.bucketfactory = null;
-		if ((encodedQueryString!=null) && (encodedQueryString.length()>0)) {
-			this.uri = new URI(path+ '?' +encodedQueryString);
+		if ((encodedQueryString != null) && (encodedQueryString.length() > 0)) {
+			this.uri = new URI(path + '?' + encodedQueryString);
 		} else {
 			this.uri = new URI(path);
 		}
 		this.method = method;
 		this.parseRequestParameters(uri.getRawQuery(), true, false);
 	}
-	
+
 	/**
 	 * Creates a new HTTPRequest for the given URI and data.
-	 * 
+	 *
 	 * @param uri The URI being requested
-	 * @param h Client headers
-	 * @param d The data
+	 * @param h   Client headers
+	 * @param d   The data
 	 * @param ctx The toadlet context (for headers and bucket factory)
 	 * @throws URISyntaxException if the URI is invalid
 	 */
@@ -149,15 +151,15 @@ public class HTTPRequestImpl implements HTTPRequest {
 		this.parts = new HashMap<String, RandomAccessBucket>();
 		this.bucketfactory = ctx.getBucketFactory();
 		this.method = method;
-		if(data != null) {
+		if (data != null) {
 			try {
 				this.parseMultiPartData();
 			} catch (IOException ioe) {
-				Logger.error(this, "Temporary files error ? Could not parse: "+ioe, ioe);
+				Logger.error(this, "Temporary files error ? Could not parse: " + ioe, ioe);
 			}
 		}
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getPath()
@@ -173,7 +175,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 */
 	@Override
 	public boolean hasParameters() {
-		return ! this.parameterNameValuesMap.isEmpty();
+		return !this.parameterNameValuesMap.isEmpty();
 	}
 
 	/**
@@ -191,14 +193,13 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * the lists of values for each parameter. If this method is not called at
 	 * all, all other methods would be useless. Because they rely on the
 	 * parameter map to be filled.
-	 * 
-	 * @param queryString
-	 *            the query string in its raw form (not yet url-decoded)
+	 *
+	 * @param queryString   the query string in its raw form (not yet url-decoded)
 	 * @param doUrlDecoding TODO
 	 */
 	private void parseRequestParameters(String queryString, boolean doUrlDecoding, boolean asParts) {
 
-		if(logMINOR) Logger.minor(this, "queryString is "+queryString+", doUrlDecoding="+doUrlDecoding);
+		if (logMINOR) Logger.minor(this, "queryString is " + queryString + ", doUrlDecoding=" + doUrlDecoding);
 
 		Map<String, List<String>> parameters = parseUriParameters(queryString, doUrlDecoding);
 
@@ -209,8 +210,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 				byte[] buf = value.getBytes(StandardCharsets.UTF_8);
 				RandomAccessBucket b = new SimpleReadOnlyArrayBucket(buf);
 				parts.put(parameterValues.getKey(), b);
-				if(logMINOR)
-					Logger.minor(this, "Added as part: name="+parameterValues.getKey()+" value="+value);
+				if (logMINOR)
+					Logger.minor(this, "Added as part: name=" + parameterValues.getKey() + " value=" + value);
 			}
 		} else {
 			parameterNameValuesMap.clear();
@@ -220,11 +221,10 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Get the first value of the parameter with the given name.
-	 * 
-	 * @param name
-	 *            the name of the parameter to get
+	 *
+	 * @param name the name of the parameter to get
 	 * @return the first value or <code>null</code> if the parameter was not
-	 *         set
+	 * set
 	 */
 	private String getParameterValue(String name) {
 		if (!this.isParameterSet(name)) {
@@ -241,11 +241,10 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * {@link #parameterNameValuesMap}. This list is returned and should be
 	 * used to add parameter values. If you only want to check if a parameter is
 	 * set at all, you must use {@link #isParameterSet(String)}.
-	 * 
-	 * @param name
-	 *            the name of the parameter to get
+	 *
+	 * @param name the name of the parameter to get
 	 * @return the list of all values for this parameter that were parsed so
-	 *         far.
+	 * far.
 	 */
 	private List<String> getParameterValueList(String name) {
 		List<String> values = this.parameterNameValuesMap.get(name);
@@ -260,14 +259,13 @@ public class HTTPRequestImpl implements HTTPRequest {
 	 * Parses the parameters from the given query string, optionally decoding
 	 * the parameters using UTF-8.
 	 *
-	 * @param queryString
-	 *            The query string to decode
-	 * @param doUrlDecoding
-	 *            {@code true} to decode the parameter names and values
+	 * @param queryString   The query string to decode
+	 * @param doUrlDecoding {@code true} to decode the parameter names and values
 	 * @return The decoded parameters
 	 */
 	public static Map<String, List<String>> parseUriParameters(String queryString, boolean doUrlDecoding) {
-		if(logMINOR) Logger.minor(HTTPRequestImpl.class, "queryString is "+queryString+", doUrlDecoding="+doUrlDecoding);
+		if (logMINOR)
+			Logger.minor(HTTPRequestImpl.class, "queryString is " + queryString + ", doUrlDecoding=" + doUrlDecoding);
 
 		/* create result map. */
 		Map<String, List<String>> parameters = new HashMap<String, List<String>>();
@@ -282,7 +280,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 		while (tokenizer.hasMoreTokens()) {
 			String nameValueToken = tokenizer.nextToken();
 
-			if(logMINOR) Logger.minor(HTTPRequestImpl.class, "Token: "+nameValueToken);
+			if (logMINOR) Logger.minor(HTTPRequestImpl.class, "Token: " + nameValueToken);
 
 			// a token can be either a name, or a name value pair...
 			String name = null;
@@ -291,30 +289,30 @@ public class HTTPRequestImpl implements HTTPRequest {
 			if (indexOfEqualsChar < 0) {
 				// ...it's only a name, so the value stays emptys
 				name = nameValueToken;
-				if(logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: "+name);
+				if (logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: " + name);
 			} else if (indexOfEqualsChar == nameValueToken.length() - 1) {
 				// ...it's a name with an empty value, so remove the '='
 				// character
 				name = nameValueToken.substring(0, indexOfEqualsChar);
-				if(logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: "+name);
+				if (logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: " + name);
 			} else {
 				// ...it's a name value pair, split into name and value
 				name = nameValueToken.substring(0, indexOfEqualsChar);
 				value = nameValueToken.substring(indexOfEqualsChar + 1);
-				if(logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: "+name+" Value: "+value);
+				if (logMINOR) Logger.minor(HTTPRequestImpl.class, "Name: " + name + " Value: " + value);
 			}
 
 			// url-decode the name and value
 			if (doUrlDecoding) {
-					try {
-						name = URLDecoder.decode(name, "UTF-8");
-						value = URLDecoder.decode(value, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						throw new Error("Impossible: JVM doesn't support UTF-8: " + e, e);
-					}
-				if(logMINOR) {
-					Logger.minor(HTTPRequestImpl.class, "Decoded name: "+name);
-					Logger.minor(HTTPRequestImpl.class, "Decoded value: "+value);
+				try {
+					name = URLDecoder.decode(name, "UTF-8");
+					value = URLDecoder.decode(value, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					throw new Error("Impossible: JVM doesn't support UTF-8: " + e, e);
+				}
+				if (logMINOR) {
+					Logger.minor(HTTPRequestImpl.class, "Decoded name: " + name);
+					Logger.minor(HTTPRequestImpl.class, "Decoded value: " + value);
 				}
 			}
 
@@ -332,11 +330,9 @@ public class HTTPRequestImpl implements HTTPRequest {
 	/**
 	 * Creates a query string from the given parameters.
 	 *
-	 * @param parameterValues
-	 *            The parameters to create a query string from
-	 * @param doUrlEncoding
-	 *            {@code true} if encoding for HTTP headers, {@code false} to
-	 *            only encode unsafe characters
+	 * @param parameterValues The parameters to create a query string from
+	 * @param doUrlEncoding   {@code true} if encoding for HTTP headers, {@code false} to
+	 *                        only encode unsafe characters
 	 * @return The query string
 	 */
 	public static String createQueryString(Map<String, List<String>> parameterValues, boolean doUrlEncoding) {
@@ -462,8 +458,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 
 	// TODO: add similar methods for multiple long, boolean etc.
-	
-	
+
+
 	/**
 	 * Parse submitted data from a bucket.
 	 * Note that if this is application/x-www-form-urlencoded, it will come out as
@@ -475,42 +471,42 @@ public class HTTPRequestImpl implements HTTPRequest {
 		OutputStream bucketos = null;
 
 		try {
-			if(data == null)
+			if (data == null)
 				return;
 			String ctype = this.headers.get("content-type");
-			if(ctype == null)
+			if (ctype == null)
 				return;
-			if(logMINOR)
+			if (logMINOR)
 				Logger.minor(this, "Uploaded content-type: " + ctype);
 			String[] ctypeparts = ctype.split(";");
-			if(ctypeparts[0].equalsIgnoreCase("application/x-www-form-urlencoded")) {
+			if (ctypeparts[0].equalsIgnoreCase("application/x-www-form-urlencoded")) {
 				// Completely different encoding, but easy to handle
-				if(data.size() > 1024 * 1024)
+				if (data.size() > 1024 * 1024)
 					throw new IOException("Too big");
 				byte[] buf = BucketTools.toByteArray(data);
 				String s = new String(buf, StandardCharsets.US_ASCII);
 				parseRequestParameters(s, true, true);
 			}
-			if(!ctypeparts[0].trim().equalsIgnoreCase("multipart/form-data") || (ctypeparts.length < 2))
+			if (!ctypeparts[0].trim().equalsIgnoreCase("multipart/form-data") || (ctypeparts.length < 2))
 				return;
 
 			String boundary = null;
-			for(String ctypepart: ctypeparts) {
+			for (String ctypepart : ctypeparts) {
 				String[] subparts = ctypepart.split("=");
-				if((subparts.length == 2) && subparts[0].trim().equalsIgnoreCase("boundary"))
+				if ((subparts.length == 2) && subparts[0].trim().equalsIgnoreCase("boundary"))
 					boundary = subparts[1];
 			}
 
-			if((boundary == null) || (boundary.length() == 0))
+			if ((boundary == null) || (boundary.length() == 0))
 				return;
-			if(boundary.charAt(0) == '"')
+			if (boundary.charAt(0) == '"')
 				boundary = boundary.substring(1);
-			if(boundary.charAt(boundary.length() - 1) == '"')
+			if (boundary.charAt(boundary.length() - 1) == '"')
 				boundary = boundary.substring(0, boundary.length() - 1);
 
 			boundary = "--" + boundary;
 
-			if(logMINOR)
+			if (logMINOR)
 				Logger.minor(this, "Boundary is: " + boundary);
 
 			is = this.data.getInputStream();
@@ -518,7 +514,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 			String line;
 			line = lis.readLine(100, 100, false); // really it's US-ASCII, but ISO-8859-1 is close enough.
-			while((is.available() > 0) && !line.equals(boundary)) {
+			while ((is.available() > 0) && !line.equals(boundary)) {
 				line = lis.readLine(100, 100, false);
 			}
 
@@ -529,99 +525,95 @@ public class HTTPRequestImpl implements HTTPRequest {
 			String filename = null;
 			String contentType = null;
 
-			while(is.available() > 0) {
+			while (is.available() > 0) {
 				name = null;
 				filename = null;
 				contentType = null;
 				// chomp headers
-				while((line = lis.readLine(200, 200, true)) /* should be UTF-8 as we told the browser to send UTF-8 */ != null) {
-					if(line.length() == 0)
+				while ((line = lis.readLine(200, 200, true)) /* should be UTF-8 as we told the browser to send UTF-8 */ != null) {
+					if (line.length() == 0)
 						break;
 
 					String[] lineparts = line.split(":");
-					if(lineparts == null || lineparts.length == 0)
+					if (lineparts == null || lineparts.length == 0)
 						continue;
 					String hdrname = lineparts[0].trim();
 
-					if(hdrname.equalsIgnoreCase("Content-Disposition")) {
-						if(lineparts.length < 2)
+					if (hdrname.equalsIgnoreCase("Content-Disposition")) {
+						if (lineparts.length < 2)
 							continue;
 						String[] valueparts = lineparts[1].split(";");
 
-						for(int i = 0; i < valueparts.length; i++) {
+						for (int i = 0; i < valueparts.length; i++) {
 							String[] subparts = valueparts[i].split("=");
-							if(subparts.length != 2)
+							if (subparts.length != 2)
 								continue;
 							String fieldname = subparts[0].trim();
 							String value = subparts[1].trim();
-							if(value.startsWith("\"") && value.endsWith("\""))
+							if (value.startsWith("\"") && value.endsWith("\""))
 								value = value.substring(1, value.length() - 1);
-							if(fieldname.equalsIgnoreCase("name"))
+							if (fieldname.equalsIgnoreCase("name"))
 								name = value;
-							else if(fieldname.equalsIgnoreCase("filename"))
+							else if (fieldname.equalsIgnoreCase("filename"))
 								filename = value;
 						}
-					}
-					else if(hdrname.equalsIgnoreCase("Content-Type")) {
+					} else if (hdrname.equalsIgnoreCase("Content-Type")) {
 						contentType = lineparts[1].trim();
-						if(logMINOR)
+						if (logMINOR)
 							Logger.minor(this, "Parsed type: " + contentType);
-					}
-					else {
-					// Do nothing, irrelevant header
+					} else {
+						// Do nothing, irrelevant header
 					}
 				}
 
-				if(name == null)
+				if (name == null)
 					continue;
 
 				// we should be at the data now. Start reading it in, checking for the
-			// boundary string
+				// boundary string
 
 				// we can only give an upper bound for the size of the bucket
 				filedata = this.bucketfactory.makeBucket(is.available());
 				bucketos = filedata.getOutputStream();
 				// buffer characters that match the boundary so far
-			// FIXME use whatever charset was used
+				// FIXME use whatever charset was used
 				byte[] bbound = boundary.getBytes(StandardCharsets.UTF_8); // ISO-8859-1? boundary should be in US-ASCII
 				int offset = 0;
-				while((is.available() > 0) && (offset < bbound.length)) {
+				while ((is.available() > 0) && (offset < bbound.length)) {
 					byte b = (byte) is.read();
 
-					if(b == bbound[offset])
+					if (b == bbound[offset])
 						offset++;
-					else if((b != bbound[offset]) && (offset > 0)) {
+					else if ((b != bbound[offset]) && (offset > 0)) {
 						// offset bytes matched, but no more
-					// write the bytes that matched, then the non-matching byte
+						// write the bytes that matched, then the non-matching byte
 						bucketos.write(bbound, 0, offset);
 						offset = 0;
-						if(b == bbound[0])
+						if (b == bbound[0])
 							offset = 1;
 						else
 							bucketos.write(b);
-					}
-					else
+					} else
 						bucketos.write(b);
 				}
 
 				bucketos.close();
 				bucketos = null;
-			
+
 				parts.put(name, filedata);
-				if(logMINOR)
+				if (logMINOR)
 					Logger.minor(this, "Name = " + name + " length = " + filedata.size() + " filename = " + filename);
-				if(filename != null)
+				if (filename != null)
 					uploadedFiles.put(name, new HTTPUploadedFileImpl(filename, contentType, filedata));
 			}
-		}
-		finally {
+		} finally {
 			Closer.close(bucketos);
 			Closer.close(lis);
 			Closer.close(is);
 			Closer.close(is);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getUploadedFile(java.lang.String)
 	 */
@@ -629,23 +621,23 @@ public class HTTPRequestImpl implements HTTPRequest {
 	public HTTPUploadedFile getUploadedFile(String name) {
 		return uploadedFiles.get(name);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#getPart(java.lang.String)
 	 */
 	@Override
 	public RandomAccessBucket getPart(String name) {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		return this.parts.get(name);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#isPartSet(java.lang.String)
 	 */
 	@Override
 	public boolean isPartSet(String name) {
-		if(freedParts) throw new IllegalStateException("Already freed");
-		if(parts == null)
+		if (freedParts) throw new IllegalStateException("Already freed");
+		if (parts == null)
 			return false;
 
 		return this.parts.containsKey(name);
@@ -656,28 +648,28 @@ public class HTTPRequestImpl implements HTTPRequest {
 	public String getPartAsString(String name, int maxlength) {
 		return new String(getPartAsBytes(name, maxlength), StandardCharsets.UTF_8);
 	}
-	
+
 	@Override
 	public String getPartAsStringThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
-		
-		if(part == null)
+
+		if (part == null)
 			throw new NoSuchElementException(name);
-		
-		if(part.size() > maxLength)
+
+		if (part.size() > maxLength)
 			throw new SizeLimitExceededException();
-		
+
 		return getPartAsLimitedString(part, maxLength);
 	}
-	
+
 	@Override
 	public String getPartAsStringFailsafe(String name, int maxLength) {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		return part == null ? "" : getPartAsLimitedString(part, maxLength);
 	}
-	
+
 	private String getPartAsLimitedString(Bucket part, int maxLength) {
 		return new String(getPartAsLimitedBytes(part, maxLength), StandardCharsets.UTF_8);
 	}
@@ -688,76 +680,76 @@ public class HTTPRequestImpl implements HTTPRequest {
 	@Override
 	@Deprecated
 	public byte[] getPartAsBytes(String name, int maxlength) {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
-		if(part == null) return new byte[0];
-		
+		if (part == null) return new byte[0];
+
 		if (part.size() > maxlength) return new byte[0];
-		
+
 		InputStream is = null;
 		DataInputStream dis = null;
 		try {
 			is = part.getInputStream();
 			dis = new DataInputStream(is);
-			byte[] buf = new byte[(int)Math.min(part.size(), maxlength)];
+			byte[] buf = new byte[(int) Math.min(part.size(), maxlength)];
 			dis.readFully(buf);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			Logger.error(this, "Caught IOE:" + ioe.getMessage());
 		} finally {
 			Closer.close(dis);
-			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
+			if (dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
 		}
-		
+
 		return new byte[0];
 	}
-	
+
 	@Override
 	public byte[] getPartAsBytesThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
-		
-		if(part == null)
+
+		if (part == null)
 			throw new NoSuchElementException(name);
-		
-		if(part.size() > maxLength)
+
+		if (part.size() > maxLength)
 			throw new SizeLimitExceededException();
-		
+
 		return getPartAsLimitedBytes(part, maxLength);
 	}
-	
+
 	@Override
 	public byte[] getPartAsBytesFailsafe(String name, int maxLength) {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		return part == null ? new byte[0] : getPartAsLimitedBytes(part, maxLength);
 	}
-	
+
 	private byte[] getPartAsLimitedBytes(Bucket part, int maxLength) {
 		InputStream is = null;
 		DataInputStream dis = null;
 		try {
 			is = part.getInputStream();
 			dis = new DataInputStream(is);
-			byte[] buf = new byte[(int)Math.min(part.size(), maxLength)];
+			byte[] buf = new byte[(int) Math.min(part.size(), maxLength)];
 			dis.readFully(buf, 0, buf.length);
 			return buf;
 		} catch (IOException ioe) {
-	         Logger.error(this, "Caught IOE:" + ioe.getMessage());
-	         return new byte[0];
+			Logger.error(this, "Caught IOE:" + ioe.getMessage());
+			return new byte[0];
 		} finally {
 			Closer.close(dis);
-			if(dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
+			if (dis == null) Closer.close(is); // DataInputStream.close() does this for us normally
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freenet.clients.http.HTTPRequest#freeParts()
 	 */
 	@Override
 	public void freeParts() {
 		if (this.parts == null) return;
-		
+
 		for (Bucket b : this.parts.values()) {
 			b.free();
 		}
@@ -784,31 +776,34 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	/**
 	 * Container for uploaded files in HTTP POST requests.
-	 * 
+	 *
 	 * @author David 'Bombe' Roden &lt;bombe@freenetproject.org&gt;
 	 * @version $Id$
 	 */
 	public static class HTTPUploadedFileImpl implements HTTPUploadedFile {
 
-		/** The filename. */
+		/**
+		 * The filename.
+		 */
 		private final String filename;
 
-		/** The content type. */
+		/**
+		 * The content type.
+		 */
 		private final String contentType;
 
-		/** The data. */
+		/**
+		 * The data.
+		 */
 		private final Bucket data;
 
 		/**
 		 * Creates a new file with the specified filename, content type, and
 		 * data.
-		 * 
-		 * @param filename
-		 *            The name of the file
-		 * @param contentType
-		 *            The content type of the file
-		 * @param data
-		 *            The data of the file
+		 *
+		 * @param filename    The name of the file
+		 * @param contentType The content type of the file
+		 * @param data        The data of the file
 		 */
 		public HTTPUploadedFileImpl(String filename, String contentType, Bucket data) {
 			this.filename = filename;
@@ -854,7 +849,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	@Override
 	public String getHeader(String name) {
-		assert(name.equals(name.toLowerCase()));
+		assert (name.equals(name.toLowerCase()));
 		return this.headers.get(name.toLowerCase());
 	}
 
@@ -869,13 +864,13 @@ public class HTTPRequestImpl implements HTTPRequest {
 
 	@Override
 	public String[] getParts() {
-		if(freedParts) throw new IllegalStateException("Already freed");
+		if (freedParts) throw new IllegalStateException("Already freed");
 		return parts.keySet().toArray(new String[parts.size()]);
 	}
 
 	@Override
 	public boolean isIncognito() {
-		if(isParameterSet("incognito"))
+		if (isParameterSet("incognito"))
 			return Boolean.valueOf(getParam("incognito"));
 		return false;
 	}
@@ -883,8 +878,8 @@ public class HTTPRequestImpl implements HTTPRequest {
 	@Override
 	public boolean isChrome() {
 		String ua = getHeader("user-agent");
-		if(ua != null) {
-			if(ua.contains("Chrome")) return true;
+		if (ua != null) {
+			if (ua.contains("Chrome")) return true;
 		}
 		return false;
 	}

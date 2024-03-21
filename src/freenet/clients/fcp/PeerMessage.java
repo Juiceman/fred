@@ -9,35 +9,35 @@ import freenet.support.SimpleFieldSet;
 
 public class PeerMessage extends FCPMessage {
 	static final String name = "Peer";
-	
+
 	final PeerNode pn;
 	final boolean withMetadata;
 	final boolean withVolatile;
 	final String identifier;
-	
+
 	public PeerMessage(PeerNode pn, boolean withMetadata, boolean withVolatile, String identifier) {
 		this.pn = pn;
 		this.withMetadata = withMetadata;
 		this.withVolatile = withVolatile;
 		this.identifier = identifier;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = pn.exportFieldSet();
-		if(withMetadata) {
+		if (withMetadata) {
 			SimpleFieldSet meta = pn.exportMetadataFieldSet(System.currentTimeMillis());
-			if(!meta.isEmpty()) {
-			 	fs.put("metadata", meta);
+			if (!meta.isEmpty()) {
+				fs.put("metadata", meta);
 			}
 		}
-		if(withVolatile) {
+		if (withVolatile) {
 			SimpleFieldSet vol = pn.exportVolatileFieldSet();
-			if(!vol.isEmpty()) {
-			 	fs.put("volatile", vol);
+			if (!vol.isEmpty()) {
+				fs.put("volatile", vol);
 			}
 		}
-		if(identifier != null)
+		if (identifier != null)
 			fs.putSingle("Identifier", identifier);
 		return fs;
 	}

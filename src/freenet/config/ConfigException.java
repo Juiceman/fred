@@ -8,10 +8,11 @@ package freenet.config;
  */
 public abstract class ConfigException extends Exception {
 	private static final long serialVersionUID = -1;
-	
+
 	public ConfigException(String msg) {
 		super(msg);
 	}
+
 	public ConfigException(Throwable cause) {
 		super(cause);
 	}

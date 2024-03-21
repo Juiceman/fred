@@ -11,9 +11,9 @@ public class StartedCompressionMessage extends FCPMessage {
 
 	final String identifier;
 	final boolean global;
-	
+
 	final COMPRESSOR_TYPE codec;
-	
+
 	public StartedCompressionMessage(String identifier, boolean global, COMPRESSOR_TYPE codec) {
 		this.identifier = identifier;
 		this.codec = codec;

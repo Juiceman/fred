@@ -40,17 +40,17 @@ public class Util {
 
 	public static void fillByteArrayFromInts(int[] ints, byte[] bytes) {
 		int ic = 0;
-		for (int i: ints) {
+		for (int i : ints) {
 			bytes[ic++] = (byte) (i >> 24);
 			bytes[ic++] = (byte) (i >> 16);
 			bytes[ic++] = (byte) (i >> 8);
-			bytes[ic++] = (byte)  i;
+			bytes[ic++] = (byte) i;
 		}
 	}
 
 	public static void fillByteArrayFromLongs(long[] ints, byte[] bytes) {
 		int ic = 0;
-		for (long l: ints) {
+		for (long l : ints) {
 			bytes[ic++] = (byte) (l >> 56);
 			bytes[ic++] = (byte) (l >> 48);
 			bytes[ic++] = (byte) (l >> 40);
@@ -58,7 +58,7 @@ public class Util {
 			bytes[ic++] = (byte) (l >> 24);
 			bytes[ic++] = (byte) (l >> 16);
 			bytes[ic++] = (byte) (l >> 8);
-			bytes[ic++] = (byte)  l;
+			bytes[ic++] = (byte) l;
 		}
 	}
 
@@ -80,7 +80,7 @@ public class Util {
 	}
 
 	public static void writeMPI(BigInteger num, OutputStream out)
-		throws IOException {
+			throws IOException {
 		out.write(MPIbytes(num));
 	}
 
@@ -101,10 +101,10 @@ public class Util {
 	}
 
 	public static byte[] hashBytes(
-		MessageDigest d,
-		byte[] b,
-		int offset,
-		int length) {
+			MessageDigest d,
+			byte[] b,
+			int offset,
+			int length) {
 		d.update(b, offset, length);
 		return d.digest();
 	}
@@ -136,25 +136,29 @@ public class Util {
 		randomBytesSlowNextInt(r, buf, from, len);
 	}
 
-	/** Fill specified range of byte array with random data. */
+	/**
+	 * Fill specified range of byte array with random data.
+	 */
 	static private void randomBytesSlowNextInt(Random r, byte[] buf, int from, int len) {
-	   if (from == 0 && len == buf.length) {
-		   r.nextBytes(buf);
-		   return;
-	   }
-	   byte [] tmp = new byte[len];
-	   r.nextBytes(tmp);
-	   System.arraycopy(tmp, 0, buf, from, len);
+		if (from == 0 && len == buf.length) {
+			r.nextBytes(buf);
+			return;
+		}
+		byte[] tmp = new byte[len];
+		r.nextBytes(tmp);
+		System.arraycopy(tmp, 0, buf, from, len);
 	}
 
-	/** Fill byte array with random data.
+	/**
+	 * Fill byte array with random data.
 	 * randomBytes(random, buf) is same as random.nextBytes(buf)
 	 */
 	static public void randomBytes(Random r, byte[] buf) {
 		randomBytes(r, buf, 0, buf.length);
 	}
 
-	/** Fill specified range of byte array with random data.
+	/**
+	 * Fill specified range of byte array with random data.
 	 * Optimised version for Random with fast nextInt().
 	 * Must be same as randomBytesSlowNextInt(buf, from, len).
 	 * WARNING: full compatibility with randomBytesSlowNextInt() is *critical*!
@@ -169,22 +173,26 @@ public class Util {
 			randomBytesSlowNextInt(r, buf, from, len);
 			return;
 		}
-		assert(Integer.SIZE/Byte.SIZE == 4);
+		assert (Integer.SIZE / Byte.SIZE == 4);
 		final int to = from + len;
-		while(from + 4 <= to) {
+		while (from + 4 <= to) {
 			int rnd = r.nextInt();
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
-			buf[from++] = (byte)rnd; rnd >>= 8;
+			buf[from++] = (byte) rnd;
+			rnd >>= 8;
+			buf[from++] = (byte) rnd;
+			rnd >>= 8;
+			buf[from++] = (byte) rnd;
+			rnd >>= 8;
+			buf[from++] = (byte) rnd;
+			rnd >>= 8;
 		}
-		if(to > from) {
-			assert(to - from < Integer.SIZE/Byte.SIZE);
+		if (to > from) {
+			assert (to - from < Integer.SIZE / Byte.SIZE);
 			for (int rnd = r.nextInt(); from < to; rnd >>= 8)
-				buf[from++] = (byte)rnd;
+				buf[from++] = (byte) rnd;
 		}
 	}
-	
+
 	@Deprecated // use freenet.support.Fields instead
 	public static boolean byteArrayEqual(byte[] a, byte[] b, int offset, int length) {
 		return freenet.support.Fields.byteArrayEqual(a, b, offset, offset, length);
@@ -195,8 +203,7 @@ public class Util {
 
 	public static final Map<String, Provider> mdProviders;
 
-	static private long benchmark(MessageDigest md) throws GeneralSecurityException
-	{
+	static private long benchmark(MessageDigest md) throws GeneralSecurityException {
 		long times = Long.MAX_VALUE;
 		byte[] input = new byte[1024];
 		byte[] output = new byte[md.getDigestLength()];
@@ -204,12 +211,12 @@ public class Util {
 		for (int i = 0; i < 32; i++) {
 			md.update(input, 0, input.length);
 			md.digest(output, 0, output.length);
-			System.arraycopy(output, 0, input, (i*output.length)%(input.length-output.length), output.length);
+			System.arraycopy(output, 0, input, (i * output.length) % (input.length - output.length), output.length);
 		}
 		for (int i = 0; i < 128; i++) {
 			long startTime = System.nanoTime();
 			for (int j = 0; j < 4; j++) {
-				for (int k = 0; k < 32; k ++) {
+				for (int k = 0; k < 32; k++) {
 					md.update(input, 0, input.length);
 				}
 				md.digest(output, 0, output.length);
@@ -223,10 +230,10 @@ public class Util {
 
 	static {
 		try {
-			HashMap<String,Provider> mdProviders_internal = new HashMap<String, Provider>();
+			HashMap<String, Provider> mdProviders_internal = new HashMap<String, Provider>();
 
-			for (String algo: new String[] {
-				"SHA1", "MD5", "SHA-256", "SHA-384", "SHA-512"
+			for (String algo : new String[]{
+					"SHA1", "MD5", "SHA-256", "SHA-384", "SHA-512"
 			}) {
 				final Class<?> clazz = Util.class;
 				final Provider sun = JceLoader.SUN;
@@ -248,10 +255,10 @@ public class Util {
 								md = sun_md;
 							}
 						}
-					} catch(GeneralSecurityException e) {
+					} catch (GeneralSecurityException e) {
 						// ignore
 						Logger.warning(clazz, algo + "@" + sun + " benchmark failed", e);
-					} catch(Throwable e) {
+					} catch (Throwable e) {
 						// ignore
 						Logger.error(clazz, algo + "@" + sun + " benchmark failed", e);
 					}
@@ -265,42 +272,42 @@ public class Util {
 
 			ctx = MessageDigest.getInstance("SHA1", mdProviders.get("SHA1"));
 			ctx_length = ctx.getDigestLength();
-		} catch(NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			// impossible
 			throw new Error(e);
 		}
 	}
 
 	public static void makeKey(
-		byte[] entropy,
-		byte[] key,
-		int offset,
-		int len) {
+			byte[] entropy,
+			byte[] key,
+			int offset,
+			int len) {
 		try {
-		synchronized (ctx) {
-			ctx.digest(); // reinitialize
+			synchronized (ctx) {
+				ctx.digest(); // reinitialize
 
-			int ic = 0;
-			while (len > 0) {
-				ic++;
-				for (int i = 0; i < ic; i++)
-					ctx.update((byte) 0);
-				ctx.update(entropy, 0, entropy.length);
-				int bc;
-				if (len > ctx_length) {
-					ctx.digest(key, offset, ctx_length);
-					bc = ctx_length;
-				} else {
-					byte[] hash = ctx.digest();
-					bc = Math.min(len, hash.length);
-					System.arraycopy(hash, 0, key, offset, bc);
+				int ic = 0;
+				while (len > 0) {
+					ic++;
+					for (int i = 0; i < ic; i++)
+						ctx.update((byte) 0);
+					ctx.update(entropy, 0, entropy.length);
+					int bc;
+					if (len > ctx_length) {
+						ctx.digest(key, offset, ctx_length);
+						bc = ctx_length;
+					} else {
+						byte[] hash = ctx.digest();
+						bc = Math.min(len, hash.length);
+						System.arraycopy(hash, 0, key, offset, bc);
+					}
+					offset += bc;
+					len -= bc;
 				}
-				offset += bc;
-				len -= bc;
 			}
-		}
-		Arrays.fill(entropy, (byte) 0);
-		} catch(DigestException e) {
+			Arrays.fill(entropy, (byte) 0);
+		} catch (DigestException e) {
 			// impossible
 			throw new Error(e);
 		}
@@ -310,7 +317,7 @@ public class Util {
 		//throws UnsupportedCipherException {
 		try {
 			return (BlockCipher) Loader.getInstance(
-				"freenet.crypt.ciphers." + name);
+					"freenet.crypt.ciphers." + name);
 		} catch (Exception e) {
 			//throw new UnsupportedCipherException(""+e);
 			e.printStackTrace();
@@ -322,9 +329,9 @@ public class Util {
 		//throws UnsupportedCipherException {
 		try {
 			return (BlockCipher) Loader.getInstance(
-				"freenet.crypt.ciphers." + name,
-				new Class<?>[] { Integer.class },
-				new Object[] { Integer.valueOf(keySize)});
+					"freenet.crypt.ciphers." + name,
+					new Class<?>[]{Integer.class},
+					new Object[]{Integer.valueOf(keySize)});
 		} catch (Exception e) {
 			//throw new UnsupportedCipherException(""+e);
 			e.printStackTrace();
@@ -351,7 +358,7 @@ public class Util {
 		} else if (args[0].equals("keygen")) {
 			byte[] entropy = readMPI(System.in).toByteArray();
 			byte[] key =
-				new byte[(args.length > 1 ? Integer.parseInt(args[1]) : 16)];
+					new byte[(args.length > 1 ? Integer.parseInt(args[1]) : 16)];
 			makeKey(entropy, key, 0, key.length);
 			System.err.println(HexUtil.bytesToHex(key, 0, key.length));
 		} else if (args[0].equals("shatest")) {
@@ -380,7 +387,7 @@ public class Util {
 	}
 
 	public static void readFully(InputStream in, byte[] b, int off, int length)
-		throws IOException {
+			throws IOException {
 		int total = 0;
 		while (total < length) {
 			int got = in.read(b, off + total, length - total);
@@ -394,8 +401,8 @@ public class Util {
 	public static double keyDigestAsNormalizedDouble(byte[] digest) {
 		long asLong = Math.abs(Fields.bytesToLong(digest));
 		// Math.abs can actually return negative...
-		if(asLong == Long.MIN_VALUE)
-				asLong = Long.MAX_VALUE;
-		return ((double)asLong)/((double)Long.MAX_VALUE);
+		if (asLong == Long.MIN_VALUE)
+			asLong = Long.MAX_VALUE;
+		return ((double) asLong) / ((double) Long.MAX_VALUE);
 	}
 }

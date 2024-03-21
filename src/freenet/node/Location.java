@@ -7,7 +7,7 @@ import freenet.support.Logger;
 
 /**
  * @author amphibian
- *
+ * <p>
  * Location of a node in the circular keyspace. ~= specialization.
  * Any number between 0.0 and 1.0 (inclusive) is considered a valid location.
  */
@@ -17,6 +17,7 @@ public class Location {
 
 	/**
 	 * Parses a location.
+	 *
 	 * @param init a location string
 	 * @return the location, or LOCATION_INVALID for all invalid locations and on parse errors.
 	 */
@@ -34,9 +35,10 @@ public class Location {
 			return LOCATION_INVALID;
 		}
 	}
-	
+
 	/**
 	 * Distance between a peer and a location.
+	 *
 	 * @param p   a peer with a valid location
 	 * @param loc a valid location
 	 * @return the absolute distance between the peer and the location in the circular location space.
@@ -47,6 +49,7 @@ public class Location {
 
 	/**
 	 * Distance between two valid locations.
+	 *
 	 * @param a a valid location
 	 * @param b a valid location
 	 * @return the absolute distance between the locations in the circular location space.
@@ -57,12 +60,13 @@ public class Location {
 			Logger.error(Location.class, errMsg, new Exception("error"));
 			throw new IllegalArgumentException(errMsg);
 		}
-		return simpleDistance(a, b);	
+		return simpleDistance(a, b);
 	}
 
 	/**
 	 * Distance between two potentially invalid locations.
- 	 * @param a a valid location
+	 *
+	 * @param a a valid location
 	 * @param b a valid location
 	 * @return the absolute distance between the locations in the circular location space.
 	 * Invalid locations are considered to be at 2.0, and the result is returned accordingly.
@@ -84,6 +88,7 @@ public class Location {
 	/**
 	 * Distance between two valid locations without bounds check.
 	 * The behaviour is undefined for invalid locations.
+	 *
 	 * @param a a valid location
 	 * @param b a valid location
 	 * @return the absolute distance between the two locations in the circular location space.
@@ -96,6 +101,7 @@ public class Location {
 	 * Distance between two locations, including direction of the change (positive/negative).
 	 * When given two values on opposite ends of the keyspace, it will return +0.5.
 	 * The behaviour is undefined for invalid locations.
+	 *
 	 * @param from a valid starting location
 	 * @param to   a valid end location
 	 * @return the signed distance from the first to the second location in the circular location space
@@ -110,14 +116,15 @@ public class Location {
 		}
 		return change;
 	}
-	
+
 	/**
 	 * Normalize a location to within the valid range.
 	 * Given an arbitrary double (not bound to [0.0, 1.0)) return the normalized double [0.0, 1.0) which would result in simple
 	 * wrapping/overflowing. e.g. normalize(0.3+1.0)==0.3, normalize(0.3-1.0)==0.3, normalize(x)==x with x in [0.0, 1.0)
-	 * @bug: if given double has wrapped too many times, the return value may be not be precise.
+	 *
 	 * @param rough any location
 	 * @return the normalized location
+	 * @bug: if given double has wrapped too many times, the return value may be not be precise.
 	 */
 	public static double normalize(double rough) {
 		double normal = rough % 1.0;
@@ -125,12 +132,13 @@ public class Location {
 			return 1.0 + normal;
 		}
 		return normal;
-	}	
+	}
 
 	/**
 	 * Tests for equality of two locations.
 	 * Locations are considered equal if their distance is (almost) zero, e.g. equals(0.0, 1.0) is true,
 	 * or if both locations are invalid.
+	 *
 	 * @param a any location
 	 * @param b any location
 	 * @return whether the two locations are considered equal
@@ -141,6 +149,7 @@ public class Location {
 
 	/**
 	 * Tests whether a location is valid, e.g. within [0.0, 1.0]
+	 *
 	 * @param loc any location
 	 * @return whether the location is valid
 	 */

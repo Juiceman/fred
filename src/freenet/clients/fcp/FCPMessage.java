@@ -34,13 +34,14 @@ public abstract class FCPMessage {
 	public static final String BULK_SSK_INSERT_REJECTS = "Rejects.Bulk.Insert.SSK";
 	public static final String OUTPUT_BANDWIDTH_CLASS = "OutputBandwidthClass";
 	public static final String OVERALL_BULK_OUTPUT_CAPACITY_USAGE = "OverallBulkOutputCapacityUsage";
-	
 
-        private static volatile boolean logDEBUG;
+
+	private static volatile boolean logDEBUG;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
 			}
 		});
@@ -48,118 +49,118 @@ public abstract class FCPMessage {
 
 	public void send(OutputStream os) throws IOException {
 		SimpleFieldSet sfs = getFieldSet();
-		if(sfs == null) {
-			Logger.warning(this, "Not sending message "+this);
+		if (sfs == null) {
+			Logger.warning(this, "Not sending message " + this);
 			return;
 		}
 		sfs.setEndMarker(getEndString());
 		String msg = sfs.toString();
-		os.write((getName()+ '\n').getBytes(StandardCharsets.UTF_8));
+		os.write((getName() + '\n').getBytes(StandardCharsets.UTF_8));
 		os.write(msg.getBytes(StandardCharsets.UTF_8));
-		if(logDEBUG) {
-			Logger.debug(this, "Outgoing FCP message:\n"+getName()+'\n'+sfs.toString());
-			Logger.debug(this, "Being handled by "+this);
+		if (logDEBUG) {
+			Logger.debug(this, "Outgoing FCP message:\n" + getName() + '\n' + sfs.toString());
+			Logger.debug(this, "Being handled by " + this);
 		}
 	}
 
 	String getEndString() {
 		return "EndMessage";
 	}
-	
+
 	public abstract SimpleFieldSet getFieldSet();
 
 	public abstract String getName();
-	
+
 	/**
-	 * Create a message from a SimpleFieldSet, and the message's name, if possible. 
+	 * Create a message from a SimpleFieldSet, and the message's name, if possible.
 	 */
 	public static FCPMessage create(String name, SimpleFieldSet fs, BucketFactory bfTemp, PersistentTempBucketFactory bfPersistent) throws MessageInvalidException {
-		if(name.equals(AddPeer.NAME))
+		if (name.equals(AddPeer.NAME))
 			return new AddPeer(fs);
-		if(name.equals(ClientGetMessage.NAME))
+		if (name.equals(ClientGetMessage.NAME))
 			return new ClientGetMessage(fs);
-		if(name.equals(ClientHelloMessage.NAME))
+		if (name.equals(ClientHelloMessage.NAME))
 			return new ClientHelloMessage(fs);
-		if(name.equals(ClientPutComplexDirMessage.NAME))
+		if (name.equals(ClientPutComplexDirMessage.NAME))
 			return new ClientPutComplexDirMessage(fs, bfTemp, bfPersistent);
-		if(name.equals(ClientPutDiskDirMessage.NAME))
+		if (name.equals(ClientPutDiskDirMessage.NAME))
 			return new ClientPutDiskDirMessage(fs);
-		if(name.equals(ClientPutMessage.NAME))
+		if (name.equals(ClientPutMessage.NAME))
 			return new ClientPutMessage(fs);
-		if(name.equals(SendBookmarkMessage.NAME))
+		if (name.equals(SendBookmarkMessage.NAME))
 			return new SendBookmarkMessage(fs);
-		if(name.equals(SendURIMessage.NAME))
+		if (name.equals(SendURIMessage.NAME))
 			return new SendURIMessage(fs);
-		if(name.equals(SendTextMessage.NAME))
+		if (name.equals(SendTextMessage.NAME))
 			return new SendTextMessage(fs);
-		if(name.equals(DisconnectMessage.NAME))
+		if (name.equals(DisconnectMessage.NAME))
 			return new DisconnectMessage(fs);
-		if(name.equals(FCPPluginClientMessage.NAME))
+		if (name.equals(FCPPluginClientMessage.NAME))
 			return new FCPPluginClientMessage(fs);
-		if(name.equals(GenerateSSKMessage.NAME))
+		if (name.equals(GenerateSSKMessage.NAME))
 			return new GenerateSSKMessage(fs);
-		if(name.equals(GetConfig.NAME))
+		if (name.equals(GetConfig.NAME))
 			return new GetConfig(fs);
-		if(name.equals(GetNode.NAME))
+		if (name.equals(GetNode.NAME))
 			return new GetNode(fs);
-		if(name.equals(GetPluginInfo.NAME))
+		if (name.equals(GetPluginInfo.NAME))
 			return new GetPluginInfo(fs);
-		if(name.equals(GetRequestStatusMessage.NAME))
+		if (name.equals(GetRequestStatusMessage.NAME))
 			return new GetRequestStatusMessage(fs);
-		if(name.equals(ListPeerMessage.NAME))
+		if (name.equals(ListPeerMessage.NAME))
 			return new ListPeerMessage(fs);
-		if(name.equals(ListPeersMessage.NAME))
+		if (name.equals(ListPeersMessage.NAME))
 			return new ListPeersMessage(fs);
-		if(name.equals(ListPeerNotesMessage.NAME))
+		if (name.equals(ListPeerNotesMessage.NAME))
 			return new ListPeerNotesMessage(fs);
-		if(name.equals(ListPersistentRequestsMessage.NAME))
+		if (name.equals(ListPersistentRequestsMessage.NAME))
 			return new ListPersistentRequestsMessage(fs);
-		if(name.equals(LoadPlugin.NAME))
+		if (name.equals(LoadPlugin.NAME))
 			return new LoadPlugin(fs);
-		if(name.equals(ModifyConfig.NAME))
+		if (name.equals(ModifyConfig.NAME))
 			return new ModifyConfig(fs);
-		if(name.equals(ModifyPeer.NAME))
+		if (name.equals(ModifyPeer.NAME))
 			return new ModifyPeer(fs);
-		if(name.equals(ModifyPeerNote.NAME))
+		if (name.equals(ModifyPeerNote.NAME))
 			return new ModifyPeerNote(fs);
-		if(name.equals(ModifyPersistentRequest.NAME))
+		if (name.equals(ModifyPersistentRequest.NAME))
 			return new ModifyPersistentRequest(fs);
-		if(name.equals(ReloadPlugin.NAME))
+		if (name.equals(ReloadPlugin.NAME))
 			return new ReloadPlugin(fs);
-		if(name.equals(RemovePeer.NAME))
+		if (name.equals(RemovePeer.NAME))
 			return new RemovePeer(fs);
-		if(name.equals(RemovePersistentRequest.NAME)
+		if (name.equals(RemovePersistentRequest.NAME)
 				|| name.equals(RemovePersistentRequest.ALT_NAME))
 			return new RemovePersistentRequest(fs);
-		if(name.equals(RemovePlugin.NAME))
+		if (name.equals(RemovePlugin.NAME))
 			return new RemovePlugin(fs);
-		if(name.equals(ShutdownMessage.NAME))
+		if (name.equals(ShutdownMessage.NAME))
 			return new ShutdownMessage();
-		if(name.equals(WatchFeedsMessage.NAME))
+		if (name.equals(WatchFeedsMessage.NAME))
 			return new WatchFeedsMessage(fs);
-		if(name.equals(SubscribeUSKMessage.NAME))
+		if (name.equals(SubscribeUSKMessage.NAME))
 			return new SubscribeUSKMessage(fs);
-		if(name.equals(WatchFeedsMessage.NAME))
+		if (name.equals(WatchFeedsMessage.NAME))
 			return new WatchFeedsMessage(fs);
-		if(name.equals(UnsubscribeUSKMessage.NAME))
+		if (name.equals(UnsubscribeUSKMessage.NAME))
 			return new UnsubscribeUSKMessage(fs);
-		if(name.equals(TestDDARequestMessage.NAME))
+		if (name.equals(TestDDARequestMessage.NAME))
 			return new TestDDARequestMessage(fs);
-		if(name.equals(TestDDAResponseMessage.NAME))
+		if (name.equals(TestDDAResponseMessage.NAME))
 			return new TestDDAResponseMessage(fs);
-		if(name.equals(WatchGlobal.NAME))
+		if (name.equals(WatchGlobal.NAME))
 			return new WatchGlobal(fs);
-		if(name.equals(ProbeRequest.NAME)) return new ProbeRequest(fs);
-		if(name.equals(FilterMessage.NAME))
+		if (name.equals(ProbeRequest.NAME)) return new ProbeRequest(fs);
+		if (name.equals(FilterMessage.NAME))
 			return new FilterMessage(fs, bfTemp);
-		if(name.equals("Void"))
+		if (name.equals("Void"))
 			return null;
 
-		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unknown message name "+name, null, false);
+		throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "Unknown message name " + name, null, false);
 	}
-	
+
 	/**
-	 * Create a message from a SimpleFieldSet, and the message's name, if possible. 
+	 * Create a message from a SimpleFieldSet, and the message's name, if possible.
 	 * Useful for FCPClients
 	 */
 	public static FCPMessage create(String name, SimpleFieldSet fs) throws MessageInvalidException {
@@ -172,11 +173,9 @@ public abstract class FCPMessage {
 	 * “ListRequestIdentifier” field to the {@link SimpleFieldSet} returned by {@link
 	 * #getFieldSet()}.
 	 *
-	 * @param fcpMessage
-	 *         The FCP message to wrap
-	 * @param listRequestIdentifier
-	 *         The list request identifier to add (may be {@code null} in which case nothing is
-	 *         added)
+	 * @param fcpMessage            The FCP message to wrap
+	 * @param listRequestIdentifier The list request identifier to add (may be {@code null} in which case nothing is
+	 *                              added)
 	 * @return The new FCP message
 	 */
 	public static FCPMessage withListRequestIdentifier(final FCPMessage fcpMessage, final String listRequestIdentifier) {
@@ -213,8 +212,11 @@ public abstract class FCPMessage {
 		};
 	}
 
-	/** Do whatever it is that we do with this type of message. 
-	 * @throws MessageInvalidException */
+	/**
+	 * Do whatever it is that we do with this type of message.
+	 *
+	 * @throws MessageInvalidException
+	 */
 	public abstract void run(FCPConnectionHandler handler, Node node) throws MessageInvalidException;
 
 }

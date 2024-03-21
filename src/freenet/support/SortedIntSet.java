@@ -11,7 +11,7 @@ import java.util.SortedSet;
 
 /**
  * Sorted array of int's.
- *
+ * <p>
  * This implementation is synchronized on all operations.
  * This class does not properly respect the Set interface, and the value -1 is treated as a special
  * number for some operations.
@@ -22,14 +22,14 @@ import java.util.SortedSet;
 public class SortedIntSet extends AbstractCollection<Integer> implements SortedSet<Integer> {
 
 	private final ArrayList<Integer> data;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public SortedIntSet() {
 		this.data = new ArrayList<Integer>();
 	}
-	
+
 	public SortedIntSet(int[] input) {
 		assertSorted(input);
 		data = new ArrayList<Integer>(input.length);
@@ -37,7 +37,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 			data.add(i);
 		}
 	}
-	
+
 	@Override
 	public synchronized int size() {
 		return data.size();
@@ -45,7 +45,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get the smallest item on this set
-	 * 
+	 *
 	 * @return the smallest item, or -1 if the set is empty
 	 */
 	public synchronized Integer getFirst() {
@@ -54,7 +54,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get the largest item on this set
-	 * 
+	 *
 	 * @return the largest item, or -1 if the set is empty
 	 */
 	public synchronized Integer getLast() {
@@ -63,7 +63,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Check if this set is empty.
-	 * 
+	 *
 	 * @param num
 	 * @return <code>true</code>, if the set is empty.
 	 */
@@ -74,7 +74,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Check if <code>num</code> exist in this set.
-	 * 
+	 *
 	 * @param num
 	 * @return <code>true</code>, if <code>num</code> exist.
 	 */
@@ -85,13 +85,12 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Remove an item
-	 * 
-	 * @param item
-	 *            the item to be removed
+	 *
+	 * @param item the item to be removed
 	 */
 	public synchronized boolean remove(int item) {
 		int x = binarySearch(item);
-		if(x >= 0) {
+		if (x >= 0) {
 			return data.remove(x) != null;
 		}
 		return false;
@@ -102,7 +101,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 			return;
 		}
 		for (int i = 1; i < input.length; i++) {
-			if (input[i-1] > input[i]) {
+			if (input[i - 1] > input[i]) {
 				throw new IllegalStateException("Input must be sorted");
 			}
 		}
@@ -111,32 +110,32 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 	/**
 	 * Add the item, if it (or an item of the same number) is not already
 	 * present.
-	 * 
+	 *
 	 * @return <code>true</code>, if we added the item.
-	 */ 
+	 */
 	public synchronized boolean push(int num) {
 		int x = binarySearch(num);
-		if(x >= 0) return false;
+		if (x >= 0) return false;
 		// insertion point
-		x = -x-1;
+		x = -x - 1;
 		push(num, x);
 		return true;
 	}
 
 	/**
 	 * Add the item.
-	 * 
-	 * @throws {@link IllegalArgumentException}
-	 *             if the item already exist
+	 *
 	 * @return <code>true</code>, if we added the item.
-	 */ 
+	 * @throws {@link IllegalArgumentException}
+	 *                if the item already exist
+	 */
 	public synchronized void add(int num) {
 		int x = binarySearch(num);
-		if(x >= 0) {
+		if (x >= 0) {
 			throw new IllegalArgumentException(); // already exists
 		}
 		// insertion point
-		x = -x-1;
+		x = -x - 1;
 		push(num, x);
 	}
 
@@ -146,7 +145,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Remove and return the smallest item
-	 * 
+	 *
 	 * @return the smallest item
 	 */
 	public Integer removeFirst() {
@@ -165,7 +164,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get a sorted array of all items
-	 * 
+	 *
 	 * @return sorted array of all items
 	 */
 	public synchronized int[] toIntArray() {
@@ -178,7 +177,7 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	/**
 	 * Get a sorted array of all items
-	 * 
+	 *
 	 * @return sorted array of all items
 	 */
 	public synchronized int[] toArrayRaw() {
@@ -226,8 +225,8 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	@Override
 	public boolean contains(Object arg0) {
-		if(arg0 instanceof Integer) {
-			int x = (Integer)arg0;
+		if (arg0 instanceof Integer) {
+			int x = (Integer) arg0;
 			return contains(x);
 		}
 		return false;
@@ -240,8 +239,8 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 
 	@Override
 	public boolean remove(Object arg0) {
-		if(arg0 instanceof Integer) {
-			return remove(((Integer)arg0).intValue());
+		if (arg0 instanceof Integer) {
+			return remove(((Integer) arg0).intValue());
 		}
 		return false;
 	}

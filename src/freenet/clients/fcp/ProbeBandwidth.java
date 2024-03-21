@@ -5,7 +5,7 @@ package freenet.clients.fcp;
  */
 public class ProbeBandwidth extends FCPResponse {
 	/**
-	 * @param fcpIdentifier FCP-level identifier for pairing requests and responses
+	 * @param fcpIdentifier   FCP-level identifier for pairing requests and responses
 	 * @param outputBandwidth reported endpoint output bandwidth limit in KiB per second.
 	 */
 	public ProbeBandwidth(String fcpIdentifier, float outputBandwidth) {

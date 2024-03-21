@@ -34,7 +34,7 @@ public class PersistFields {
 	}
 
 	/**
-	 * @param preset Set manually
+	 * @param preset  Set manually
 	 * @param request Parsed for remaining fields. (opennet)
 	 */
 	public PersistFields(FirstTimeWizardToadlet.WIZARD_PRESET preset, HTTPRequest request) {
@@ -96,6 +96,7 @@ public class PersistFields {
 
 	/**
 	 * Appends any defined persistence fields to the given URL.
+	 *
 	 * @param baseURL The URL to append fields to.
 	 * @return URL with persistence fields included.
 	 */

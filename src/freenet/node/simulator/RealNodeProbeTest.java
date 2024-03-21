@@ -25,7 +25,7 @@ import java.text.NumberFormat;
 
 /**
  * Create a mesh of nodes and let them sort out their locations.
- *
+ * <p>
  * Then present a user interface to run different types of probes from random nodes.
  */
 public class RealNodeProbeTest extends RealNodeRoutingTest {
@@ -50,7 +50,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 		System.out.println();
 		String dir = "realNodeProbeTest";
 		File wd = new File(dir);
-		if(!FileUtil.removeAll(wd)) {
+		if (!FileUtil.removeAll(wd)) {
 			System.err.println("Mass delete failed, test may not be accurate.");
 			System.exit(EXIT_CANNOT_DELETE_OLD_DATA);
 		}
@@ -64,9 +64,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 		Node[] nodes = new Node[NUMBER_OF_NODES];
 		Logger.normal(RealNodeProbeTest.class, "Creating nodes...");
 		Executor executor = new PooledExecutor();
-		for(int i = 0; i < NUMBER_OF_NODES; i++) {
+		for (int i = 0; i < NUMBER_OF_NODES; i++) {
 			System.err.println("Creating node " + i);
-			nodes[i] = NodeStarter.createTestNode(DARKNET_PORT_BASE + i, 0, dir, true, MAX_HTL, 0 /* no dropped packets */, random, executor, 500 * NUMBER_OF_NODES, 256*1024, true, ENABLE_SWAPPING, false, false, false, ENABLE_SWAP_QUEUEING, true, OUTPUT_BANDWIDTH_LIMIT, ENABLE_FOAF, false, true, false, null, i == 0);
+			nodes[i] = NodeStarter.createTestNode(DARKNET_PORT_BASE + i, 0, dir, true, MAX_HTL, 0 /* no dropped packets */, random, executor, 500 * NUMBER_OF_NODES, 256 * 1024, true, ENABLE_SWAPPING, false, false, false, ENABLE_SWAP_QUEUEING, true, OUTPUT_BANDWIDTH_LIMIT, ENABLE_FOAF, false, true, false, null, i == 0);
 			Logger.normal(RealNodeProbeTest.class, "Created node " + i);
 		}
 		Logger.normal(RealNodeProbeTest.class, "Created " + NUMBER_OF_NODES + " nodes");
@@ -75,35 +75,35 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 
 		Logger.normal(RealNodeProbeTest.class, "Added random links");
 
-		for(int i = 0; i < NUMBER_OF_NODES; i++) {
+		for (int i = 0; i < NUMBER_OF_NODES; i++) {
 			System.err.println("Starting node " + i);
 			nodes[i].start(false);
 		}
 
-        System.out.println();
-        System.out.println("Ping average > 95%, lets do some inserts/requests");
-        System.out.println();
-        
-        if(DO_INSERT_TEST) {
-        	
-            waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
-            
-            RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
-            
-            waitForAllConnected(nodes);
-            
-            while(true) {
-            	try {
-            		waitForAllConnected(nodes);
-            		int status = tester.insertRequestTest();
-            		if(status == -1) continue;
-            		System.out.println("Insert test completed with status "+status);
-            		break;
-            	} catch (Throwable t) {
-            		Logger.error(RealNodeRequestInsertTest.class, "Caught "+t, t);
-            	}
-            }
-        }
+		System.out.println();
+		System.out.println("Ping average > 95%, lets do some inserts/requests");
+		System.out.println();
+
+		if (DO_INSERT_TEST) {
+
+			waitForPingAverage(0.5, nodes, new DummyRandomSource(3143), MAX_PINGS, 1000);
+
+			RealNodeRequestInsertTest tester = new RealNodeRequestInsertTest(nodes, random, 10);
+
+			waitForAllConnected(nodes);
+
+			while (true) {
+				try {
+					waitForAllConnected(nodes);
+					int status = tester.insertRequestTest();
+					if (status == -1) continue;
+					System.out.println("Insert test completed with status " + status);
+					break;
+				} catch (Throwable t) {
+					Logger.error(RealNodeRequestInsertTest.class, "Caught " + t, t);
+				}
+			}
+		}
 
 		final NumberFormat nf = NumberFormat.getInstance();
 		Listener print = new Listener() {
@@ -122,7 +122,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			@Override
 			public void onOutputBandwidth(float outputBandwidth) {
 				System.out.println("Probe got bandwidth limit " + nf.format(outputBandwidth) +
-					" KiB per second.");
+						" KiB per second.");
 			}
 
 			@Override
@@ -160,38 +160,38 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			@Override
 			public void onRejectStats(byte[] stats) {
 				System.out.println("Probe got reject stats:");
-				System.out.println("CHK request: "+stats[0]);
-				System.out.println("SSK request: "+stats[1]);
-				System.out.println("CHK insert: "+stats[2]);
-				System.out.println("SSK insert: "+stats[3]);
+				System.out.println("CHK request: " + stats[0]);
+				System.out.println("SSK request: " + stats[1]);
+				System.out.println("CHK insert: " + stats[2]);
+				System.out.println("SSK insert: " + stats[3]);
 			}
 
 			@Override
 			public void onOverallBulkOutputCapacity(
 					byte bandwidthClassForCapacityUsage, float outputBulkCapacityUsed) {
-				System.out.println("Probe got output capacity "+nf.format(outputBulkCapacityUsed)+
-						"% (bandwidth class "+bandwidthClassForCapacityUsage+")");
+				System.out.println("Probe got output capacity " + nf.format(outputBulkCapacityUsed) +
+						"% (bandwidth class " + bandwidthClassForCapacityUsage + ")");
 			}
 		};
 
 		final Type types[] = {
-			Type.BANDWIDTH,
-			Type.BUILD,
-			Type.IDENTIFIER,
-			Type.LINK_LENGTHS,
-			Type.LOCATION,
-			Type.STORE_SIZE,
-			Type.UPTIME_48H,
-			Type.UPTIME_7D,
-			Type.REJECT_STATS,
-			Type.OVERALL_BULK_OUTPUT_CAPACITY_USAGE
+				Type.BANDWIDTH,
+				Type.BUILD,
+				Type.IDENTIFIER,
+				Type.LINK_LENGTHS,
+				Type.LOCATION,
+				Type.STORE_SIZE,
+				Type.UPTIME_48H,
+				Type.UPTIME_7D,
+				Type.REJECT_STATS,
+				Type.OVERALL_BULK_OUTPUT_CAPACITY_USAGE
 		};
 
 		int index = 0;
 		byte htl = Probe.MAX_HTL;
 		BufferedReader r;
 		Console console = System.console();
-		if(console != null)
+		if (console != null)
 			r = new BufferedReader(console.reader());
 		else
 			r = new BufferedReader(new InputStreamReader(System.in)); // Use the system locale here.
@@ -210,7 +210,7 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			System.err.println("10) Pick another node");
 			System.err.println("11) Pick another HTL");
 			System.err.println("12) Pick current node's refusals");
-			
+
 			System.err.println("Anything else to exit.");
 			System.err.println("Select: ");
 			try {
@@ -218,13 +218,12 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 				if (selection == types.length) {
 					System.err.print("Enter new node index ([0-" + (NUMBER_OF_NODES - 1) + "]):");
 					index = Integer.valueOf(r.readLine());
-				}
-				else if (selection == types.length+1) {
+				} else if (selection == types.length + 1) {
 					System.err.print("Enter new HTL: ");
 					htl = Byte.valueOf(r.readLine());
-				} else if (selection == types.length+2) {
+				} else if (selection == types.length + 2) {
 					SubConfig nodeConfig = nodes[index].getConfig().get("node");
-					String[] options = { "probeBandwidth", "probeBuild", "probeIdentifier", "probeLinkLengths", "probeLinkLengths", "probeUptime" };
+					String[] options = {"probeBandwidth", "probeBuild", "probeIdentifier", "probeLinkLengths", "probeLinkLengths", "probeUptime"};
 					for (String option : options) {
 						System.err.print(option + ": ");
 						nodeConfig.set(option, Boolean.valueOf(r.readLine()));

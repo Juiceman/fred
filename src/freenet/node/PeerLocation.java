@@ -6,29 +6,37 @@ import java.util.Set;
 import freenet.support.Logger;
 
 public class PeerLocation {
-	
-	/** Current location in the keyspace, or -1 if it is unknown */
+
+	/**
+	 * Current location in the keyspace, or -1 if it is unknown
+	 */
 	private double currentLocation;
-	/** Current sorted array of locations of our peer's peers. Must not be modified,
-	 may only be replaced entirely. */
+	/**
+	 * Current sorted array of locations of our peer's peers. Must not be modified,
+	 * may only be replaced entirely.
+	 */
 	private double[] currentPeersLocation;
-	/** Time the location was set */
+	/**
+	 * Time the location was set
+	 */
 	private long locSetTime;
 
 	PeerLocation(String locationString) {
 		currentLocation = Location.getLocation(locationString);
 		locSetTime = System.currentTimeMillis();
 	}
-	
+
 	public synchronized String toString() {
 		return Double.toString(currentLocation);
 	}
 
-	/** Should only be called in the constructor */
+	/**
+	 * Should only be called in the constructor
+	 */
 	public void setPeerLocations(String[] peerLocationsString) {
-		if(peerLocationsString != null) {
+		if (peerLocationsString != null) {
 			double[] peerLocations = new double[peerLocationsString.length];
-			for(int i = 0; i < peerLocationsString.length; i++)
+			for (int i = 0; i < peerLocationsString.length; i++)
 				peerLocations[i] = Location.getLocation(peerLocationsString[i]);
 			updateLocation(currentLocation, peerLocations);
 		}
@@ -38,7 +46,9 @@ public class PeerLocation {
 		return currentLocation;
 	}
 
-	/** Returns an array copy of locations of our peer's peers, or null if we don't have them. */
+	/**
+	 * Returns an array copy of locations of our peer's peers, or null if we don't have them.
+	 */
 	public synchronized double[] getPeersLocationArray() {
 		if (currentPeersLocation == null) {
 			return null;
@@ -61,7 +71,7 @@ public class PeerLocation {
 
 	boolean updateLocation(double newLoc, double[] newLocs) {
 		if (!Location.isValid(newLoc)) {
-			Logger.error(this, "Invalid location update for " + this+ " ("+newLoc+')', new Exception("error"));
+			Logger.error(this, "Invalid location update for " + this + " (" + newLoc + ')', new Exception("error"));
 			// Ignore it
 			return false;
 		}
@@ -76,7 +86,7 @@ public class PeerLocation {
 			}
 			newPeersLocation[i] = loc;
 		}
-		
+
 		Arrays.sort(newPeersLocation);
 		boolean anythingChanged = false;
 
@@ -104,7 +114,7 @@ public class PeerLocation {
 
 	synchronized double setLocation(double newLoc) {
 		double oldLoc = currentLocation;
-		if(!Location.equals(newLoc, currentLocation)) {
+		if (!Location.equals(newLoc, currentLocation)) {
 			currentLocation = newLoc;
 			locSetTime = System.currentTimeMillis();
 		}
@@ -139,7 +149,7 @@ public class PeerLocation {
 	 * This is a binary search of logarithmic complexity.
 	 */
 	static int findClosestLocation(final double[] locs, final double l) {
-		assert(locs.length > 0);
+		assert (locs.length > 0);
 		if (locs.length == 1) {
 			return 0;
 		}
@@ -164,6 +174,7 @@ public class PeerLocation {
 	/**
 	 * Finds the closest non-excluded peer in O(log n + m) time, where n is the number of peers and
 	 * m the number of exclusions.
+	 *
 	 * @param exclude the set of locations to exclude, may be null
 	 * @return the closest non-excluded peer's location, or NaN if none is found
 	 */

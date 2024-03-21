@@ -26,7 +26,7 @@ public class StartupToadlet extends Toadlet {
 		ctx.forceDisconnect();
 
 		String path = uri.getPath();
-		if(path.startsWith(StaticToadlet.ROOT_URL) && staticToadlet != null)
+		if (path.startsWith(StaticToadlet.ROOT_URL) && staticToadlet != null)
 			staticToadlet.handleMethodGET(uri, req, ctx);
 		else {
 			String desc = NodeL10n.getBase().getString("StartupToadlet.title");
@@ -36,7 +36,7 @@ public class StartupToadlet extends Toadlet {
 			headNode.addChild("meta", new String[]{"http-equiv", "content"}, new String[]{"refresh", "1; url="});
 			HTMLNode contentNode = page.content;
 
-			if(!isPRNGReady) {
+			if (!isPRNGReady) {
 				HTMLNode prngInfoboxContent = ctx.getPageMaker().getInfobox("infobox-error", NodeL10n.getBase().getString("StartupToadlet.entropyErrorTitle"), contentNode, null, true);
 				prngInfoboxContent.addChild("#", NodeL10n.getBase().getString("StartupToadlet.entropyErrorContent"));
 			}

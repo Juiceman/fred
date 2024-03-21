@@ -28,9 +28,9 @@ public class BandwidthLimit {
 	 * Upload limit in bytes.
 	 */
 	public final long upBytes;
-	
+
 	public final String descriptionKey;
-	
+
 	public final boolean maybeDefault;
 
 	public BandwidthLimit(long downBytes, long upBytes, String descriptionKey, boolean maybeDefault) {
@@ -42,6 +42,7 @@ public class BandwidthLimit {
 
 	/**
 	 * Calculate download and upload limit
+	 *
 	 * @param bytesPerMonth monthly bandwidth limit
 	 */
 	public BandwidthLimit(long bytesPerMonth) {

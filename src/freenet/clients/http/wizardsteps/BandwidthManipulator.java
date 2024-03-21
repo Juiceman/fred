@@ -25,12 +25,13 @@ public abstract class BandwidthManipulator {
 
 	/**
 	 * Sets the selected limit type to the given limit.
-	 * @param limit To parse limit from. Can include SI or IEC units, but not /s.
+	 *
+	 * @param limit          To parse limit from. Can include SI or IEC units, but not /s.
 	 * @param setOutputLimit If true, output limit is set. If false, input limit is set.
 	 * @throws freenet.config.InvalidConfigValueException If the value is negative, a number cannot be parsed from it, or the value is too low to be usable.
 	 * @see freenet.node.Node#minimumBandwidth
 	 */
-	protected void setBandwidthLimit (String limit, boolean setOutputLimit) throws InvalidConfigValueException {
+	protected void setBandwidthLimit(String limit, boolean setOutputLimit) throws InvalidConfigValueException {
 		String limitType = setOutputLimit ? "outputBandwidthLimit" : "inputBandwidthLimit";
 		try {
 			config.get("node").set(limitType, limit);
@@ -38,7 +39,7 @@ public abstract class BandwidthManipulator {
 		} catch (ConfigException e) {
 			if (e instanceof InvalidConfigValueException) {
 				//Limit was not readable.
-				throw (InvalidConfigValueException)e;
+				throw (InvalidConfigValueException) e;
 			}
 			Logger.error(this, "Should not happen, please report!" + e, e);
 		}
@@ -47,15 +48,14 @@ public abstract class BandwidthManipulator {
 	/**
 	 * Creates a titled infobox for a bandwidth setting error.
 	 *
-	 * @param parent Node to attach warning to.
-	 * @param helper Helper to create infobox.
+	 * @param parent  Node to attach warning to.
+	 * @param helper  Helper to create infobox.
 	 * @param message Message to display in the infobox body.
-	 *
 	 * @return infobox node with the message added.
 	 */
 	protected HTMLNode parseErrorBox(HTMLNode parent, PageHelper helper, String message) {
 		HTMLNode infoBox = helper.getInfobox("infobox-warning", WizardL10n.l10n("bandwidthErrorSettingTitle"),
-		        parent, null, false);
+				parent, null, false);
 
 		infoBox.addChild("p", message);
 
@@ -68,12 +68,13 @@ public abstract class BandwidthManipulator {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Attempts to detect upstream and downstream bandwidth limits.
+	 *
 	 * @return Upstream and downstream bandwidth in bytes per second.
 	 * @throws PluginNotFoundException if the UPnP plugin is not loaded or done starting up.
-	 * @throws IllegalValueException if a limit is unavailable or nonsensically low.
+	 * @throws IllegalValueException   if a limit is unavailable or nonsensically low.
 	 */
 	public static BandwidthLimit detectBandwidthLimits(FredPluginBandwidthIndicator bwIndicator)
 			throws PluginNotFoundException, IllegalValueException {

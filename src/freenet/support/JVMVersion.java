@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * JVM version utilities.
- *
+ * <p>
  * See documentation:
  * http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html (pre-9)
  * http://openjdk.java.net/jeps/223 (post-9)
@@ -38,11 +38,11 @@ public class JVMVersion {
 	 * The regex omits leading zeroes.
 	 */
 	private static final Pattern VERSION_PATTERN =
-	    Pattern.compile("^0*(\\d+)(?:\\.0*(\\d+)(?:\\.0*(\\d+)(?:[_.]0*(\\d+))?)?)?.*$");
+			Pattern.compile("^0*(\\d+)(?:\\.0*(\\d+)(?:\\.0*(\\d+)(?:[_.]0*(\\d+))?)?)?.*$");
 
 	public static boolean isEOL() {
 		return !isAndroid() // on android the version checks are done on the App level, so we do not check here.
-			&& isEOL(getCurrent());
+				&& isEOL(getCurrent());
 	}
 
 	public static boolean needsLegacyUpdater() {
@@ -92,38 +92,39 @@ public class JVMVersion {
 	 * Missing optional components are set to 0, failed parses return all zeroes.
 	 */
 	static int[] parse(String version) {
-	    int[] parsed = new int[4];
-	    if (version == null) {
-	        return parsed;
-	    }
-	    Matcher m = VERSION_PATTERN.matcher(version);
-	    if (m.matches()) {
-	        for (int i = 0; i < 4; i++) {
-	            String component = m.group(i + 1);
-	            if (component != null) {
-	                parsed[i] = Integer.parseInt(component);
-	            }
-	        }
-	    }
-	    return parsed;
+		int[] parsed = new int[4];
+		if (version == null) {
+			return parsed;
+		}
+		Matcher m = VERSION_PATTERN.matcher(version);
+		if (m.matches()) {
+			for (int i = 0; i < 4; i++) {
+				String component = m.group(i + 1);
+				if (component != null) {
+					parsed[i] = Integer.parseInt(component);
+				}
+			}
+		}
+		return parsed;
 	}
 
 	/**
 	 * Compares two version strings, ignoring optional identifiers.
 	 * Version strings that cannot be parsed are treated as version 0.0.0_0.
+	 *
 	 * @return A value < 0 if version1 is less than version2, 0 if they are equal, > 0 otherwise.
 	 */
 	static int compareVersion(String version1, String version2) {
-	    int[] parsed1 = parse(version1);
-	    int[] parsed2 = parse(version2);
-	    for (int i = 0; i < 4; i++) {
-	        if (parsed1[i] < parsed2[i]) {
-	            return -1;
-	        }
-	        if (parsed1[i] > parsed2[i]) {
-	            return 1;
-	        }
-	    }
-	    return 0;
+		int[] parsed1 = parse(version1);
+		int[] parsed2 = parse(version2);
+		for (int i = 0; i < 4; i++) {
+			if (parsed1[i] < parsed2[i]) {
+				return -1;
+			}
+			if (parsed1[i] > parsed2[i]) {
+				return 1;
+			}
+		}
+		return 0;
 	}
 }

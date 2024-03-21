@@ -13,14 +13,14 @@ import freenet.support.HTMLNode;
 /**
  * Inform the user that their datastore is way below recommended datastore size.
  * Include link to go to datastore size step in first time wizard to reconfigure.
- *
+ * <p>
  * Use currently configured datastore size, not the current size on disk.
  * There may already be a resize datastore operation queued or in progress,
  * and this alert should be based on the final size when it is done.
- *
+ * <p>
  * In the text, recommend 20%, but only show warning below 10%, to encourage the
  * user to configure with a big margin so alert is not triggered too soon again.
- *
+ * <p>
  * If the user dismisses the warning, wait with showing it again until Freenet
  * has been upgraded to a new version, to avoid showing it too often.
  */
@@ -28,11 +28,11 @@ public class DatastoreTooSmallAlert implements UserAlert {
 	private final NodeClientCore core;
 
 	private static String l10n(String key) {
-		return NodeL10n.getBase().getString("DataStoreTooSmallAlert."+key);
+		return NodeL10n.getBase().getString("DataStoreTooSmallAlert." + key);
 	}
 
 	private static String l10n(String key, String pattern, String value) {
-		return NodeL10n.getBase().getString("DataStoreTooSmallAlert."+key, pattern, value);
+		return NodeL10n.getBase().getString("DataStoreTooSmallAlert." + key, pattern, value);
 	}
 
 	public DatastoreTooSmallAlert(NodeClientCore core) {
@@ -64,11 +64,11 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long slashdotCacheSize = config.get("node").getLong("slashdotCacheSize");
 		long totalSize = storeSize + clientCacheSize + slashdotCacheSize;
 		// And this corrective factor, since size on disk is up towards 3.6% larger.
-		totalSize = (long)((double)totalSize * 1.036);
+		totalSize = (long) ((double) totalSize * 1.036);
 		// And round it, in case manually configured and not exact multiple of GiB.
-		long currentSize = (totalSize + 512*1024*1024) / (1024*1024*1024);
+		long currentSize = (totalSize + 512 * 1024 * 1024) / (1024 * 1024 * 1024);
 		// Calculate available size the same way as in wizard, recommend at least 20% of that.
-		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024*1024*1024);
+		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024 * 1024 * 1024);
 		long minSize = availableSize / 5;
 		// Wizard never recommends sizes above 100 GiB, so claim a minimum of at most 50 GiB.
 		if (minSize > 50) minSize = 50;
@@ -91,11 +91,11 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long slashdotCacheSize = config.get("node").getLong("slashdotCacheSize");
 		long totalSize = storeSize + clientCacheSize + slashdotCacheSize;
 		// And this corrective factor, since size on disk is up towards 3.6% larger.
-		totalSize = (long)((double)totalSize * 1.036);
+		totalSize = (long) ((double) totalSize * 1.036);
 		// And round it, in case manually configured and not exact multiple of GiB.
-		long currentSize = (totalSize + 512*1024*1024) / (1024*1024*1024);
+		long currentSize = (totalSize + 512 * 1024 * 1024) / (1024 * 1024 * 1024);
 		// Calculate available size the same way as in wizard, recommend at least 20% of that.
-		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024*1024*1024);
+		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024 * 1024 * 1024);
 		long minSize = availableSize / 5;
 		// Wizard never recommends sizes above 100 GiB, so claim a minimum of at most 50 GiB.
 		if (minSize > 50) minSize = 50;
@@ -108,7 +108,7 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		sizesNode.addChild("#", l10n("available", "size", availableSize + " GiB"));
 		alertNode.addChild(sizesNode);
 		alertNode.addChild("a", "href", "/wizard/?step=DATASTORE_SIZE&singlestep=true")
-			.addChild("#", l10n("submit"));
+				.addChild("#", l10n("submit"));
 
 		return alertNode;
 	}
@@ -128,11 +128,11 @@ public class DatastoreTooSmallAlert implements UserAlert {
 		long slashdotCacheSize = config.get("node").getLong("slashdotCacheSize");
 		long totalSize = storeSize + clientCacheSize + slashdotCacheSize;
 		// And this corrective factor, since size on disk is up towards 3.6% larger.
-		totalSize = (long)((double)totalSize * 1.036);
+		totalSize = (long) ((double) totalSize * 1.036);
 		// And round it, in case manually configured and not exact multiple of GiB.
-		long currentSize = (totalSize + 512*1024*1024) / (1024*1024*1024);
+		long currentSize = (totalSize + 512 * 1024 * 1024) / (1024 * 1024 * 1024);
 		// Calculate available size the same way as in wizard, only warn if below 10% of that.
-		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024*1024*1024);
+		long availableSize = DATASTORE_SIZE.maxDatastoreSize(core.getNode()) / (1024 * 1024 * 1024);
 		long minSize = availableSize / 10;
 		// Wizard never recommends sizes above 100 GiB, so never warn if above 25 GiB.
 		if (minSize > 25) minSize = 25;

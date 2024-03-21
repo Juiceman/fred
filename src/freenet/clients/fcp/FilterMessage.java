@@ -24,12 +24,12 @@ import freenet.support.io.FileBucket;
 
 /**
  * Message for testing the content filter on a file.  Server will respond with a FilterResultMessage.
- *
+ * <p>
  * Filter
  * Identifier=filter1 // identifier
  * Operation=BOTH // READ/WRITE/BOTH (ignored for now)
  * MimeType=text/html // required if DataSource=DIRECT
- *
+ * <p>
  * DataSource=DISK // read a file from disk
  * Filename=/home/bob/file.html // path to the file
  * End
@@ -204,8 +204,7 @@ public class FilterMessage extends DataCarryingMessage {
 		return ContentFilter.filter(input, output, mimeType, fakeUri, null, null, null, null, clientContext.linkFilterExceptionProvider);
 	}
 
-	private String bestGuessMimeType(String filename)
-	{
+	private String bestGuessMimeType(String filename) {
 		String guessedMimeType = null;
 		if (filename != null) {
 			guessedMimeType = DefaultMIMETypes.guessMIMEType(filename, true);

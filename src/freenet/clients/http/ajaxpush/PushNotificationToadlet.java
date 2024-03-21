@@ -16,10 +16,12 @@ import freenet.support.Base64;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 
-/** This toadlet provides notifications for clients. It will block until one is present. It requires the requestId parameter. */
+/**
+ * This toadlet provides notifications for clients. It will block until one is present. It requires the requestId parameter.
+ */
 public class PushNotificationToadlet extends Toadlet {
 
-	private static volatile boolean	logMINOR;
+	private static volatile boolean logMINOR;
 
 	static {
 		Logger.registerClass(PushNotificationToadlet.class);

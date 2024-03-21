@@ -14,7 +14,6 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * load a plugin
- * 
  */
 public class LoadPlugin extends FCPMessage {
 
@@ -32,10 +31,10 @@ public class LoadPlugin extends FCPMessage {
 
 	public LoadPlugin(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if(identifier == null)
+		if (identifier == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain an Identifier field", null, false);
 		pluginURL = fs.get("PluginURL");
-		if(pluginURL == null)
+		if (pluginURL == null)
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain a PluginURL field", identifier, false);
 		String type = fs.get("URLType");
 		if ((type != null) && (type.trim().length() > 0))
@@ -47,7 +46,7 @@ public class LoadPlugin extends FCPMessage {
 					TYPENAME_FREENET.equalsIgnoreCase(urlType) ||
 					TYPENAME_OFFICIAL.equalsIgnoreCase(urlType) ||
 					TYPENAME_URL.equalsIgnoreCase(urlType)))
-				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unknown URL type: '"+urlType+"'", identifier, false);
+				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unknown URL type: '" + urlType + "'", identifier, false);
 		}
 		store = fs.getBoolean("Store", false);
 	}
@@ -64,11 +63,11 @@ public class LoadPlugin extends FCPMessage {
 
 	@Override
 	public void run(final FCPConnectionHandler handler, final Node node) throws MessageInvalidException {
-		if(!handler.hasFullAccess()) {
+		if (!handler.hasFullAccess()) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "LoadPlugin requires full access", identifier, false);
 		}
-		
-		if(!node.getPluginManager().isEnabled()) {
+
+		if (!node.getPluginManager().isEnabled()) {
 			handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.PLUGINS_DISABLED, false, "Plugins disabled", identifier, false));
 			return;
 		}
@@ -125,7 +124,7 @@ public class LoadPlugin extends FCPMessage {
 						return;
 				}
 				if (pi == null) {
-					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '"+ pluginURL + "' does not exist or is not a FCP plugin", identifier, false));
+					handler.send(new ProtocolErrorMessage(ProtocolErrorMessage.NO_SUCH_PLUGIN, false, "Plugin '" + pluginURL + "' does not exist or is not a FCP plugin", identifier, false));
 				} else {
 					handler.send(new PluginInfoMessage(pi, identifier, true));
 				}

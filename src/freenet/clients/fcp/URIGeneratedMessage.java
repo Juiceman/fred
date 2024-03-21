@@ -12,7 +12,7 @@ public class URIGeneratedMessage extends FCPMessage {
 	private final FreenetURI uri;
 	private final String identifier;
 	private final boolean global;
-	
+
 	public URIGeneratedMessage(FreenetURI uri, String identifier, boolean global) {
 		this.uri = uri;
 		this.identifier = identifier;

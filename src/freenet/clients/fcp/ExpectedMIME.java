@@ -8,13 +8,13 @@ public class ExpectedMIME extends FCPMessage {
 	final String identifier;
 	final boolean global;
 	final String expectedMIME;
-	
+
 	ExpectedMIME(String identifier, boolean global, String expectedMIME) {
 		this.identifier = identifier;
 		this.global = global;
 		this.expectedMIME = expectedMIME;
 	}
-	
+
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet fs = new SimpleFieldSet(false);

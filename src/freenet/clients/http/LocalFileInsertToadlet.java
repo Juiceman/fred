@@ -16,7 +16,7 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 	public static final String PATH = "/insert-browse/";
 	public static final String POST_TO = "/uploads/";
 
-	public LocalFileInsertToadlet (NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient) {
+	public LocalFileInsertToadlet(NodeClientCore core, HighLevelSimpleClient highLevelSimpleClient) {
 		super(core, highLevelSimpleClient);
 	}
 
@@ -40,8 +40,8 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 		return defaultUploadDir();
 	}
 
-    @Override
-	protected Hashtable<String, String> persistenceFields (Hashtable<String, String> set) {
+	@Override
+	protected Hashtable<String, String> persistenceFields(Hashtable<String, String> set) {
 		Hashtable<String, String> fieldPairs = new Hashtable<String, String>();
 		FreenetURI furi = null;
 		String key = set.get("key");
@@ -58,7 +58,7 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 			fieldPairs.put("compress", element);
 		}
 
-		element = set.get("compatibilityMode"); 
+		element = set.get("compatibilityMode");
 		if (element != null) {
 			fieldPairs.put("compatibilityMode", element);
 		}

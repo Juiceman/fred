@@ -9,14 +9,13 @@ import freenet.support.SimpleFieldSet;
 
 /**
  * @author saces
- *
  */
 public class PluginInfoMessage extends FCPMessage {
-	
+
 	static final String NAME = "PluginInfo";
-	
+
 	private final String identifier;
-	
+
 	private final boolean detailed;
 
 	private final String classname;
@@ -43,7 +42,7 @@ public class PluginInfoMessage extends FCPMessage {
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
-		if(identifier != null) // is optional on these two only
+		if (identifier != null) // is optional on these two only
 			sfs.putSingle("Identifier", identifier);
 		sfs.putSingle("PluginName", classname);
 		sfs.put("IsTalkable", isTalkable);

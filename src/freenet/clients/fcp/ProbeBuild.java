@@ -6,7 +6,7 @@ package freenet.clients.fcp;
 public class ProbeBuild extends FCPResponse {
 	/**
 	 * @param fcpIdentifier FCP-level identifier for pairing requests and responses
-	 * @param build build / main version of endpoint
+	 * @param build         build / main version of endpoint
 	 */
 	public ProbeBuild(String fcpIdentifier, int build) {
 		super(fcpIdentifier);

@@ -11,31 +11,29 @@ import java.nio.charset.StandardCharsets;
  * Decode encoded URLs (or parts of URLs). @see URLEncoder.
  * This class does NOT decode application/x-www-form-urlencoded
  * strings, unlike @see java.net.URLDecoder. What it does is
- * decode bits of URIs, in UTF-8. This simply means that it 
+ * decode bits of URIs, in UTF-8. This simply means that it
  * converts encoded characters (assuming a charset of UTF-8).
  * java.net.URI does similar things internally.
- * 
+ *
  * @author <a href="http://www.doc.ic.ac.uk/~twh1/">Theodore Hong</a>
  * Originally!
  **/
-public class URLDecoder
-{
-    // test harness
-    public static void main(String[] args) throws URLEncodedFormatException {
-	for (String arg: args) {
-	    System.out.println(arg + " -> " + decode(arg, false));
+public class URLDecoder {
+	// test harness
+	public static void main(String[] args) throws URLEncodedFormatException {
+		for (String arg : args) {
+			System.out.println(arg + " -> " + decode(arg, false));
+		}
 	}
-    }
 
-    /**
+	/**
 	 * Decodes a URLEncoder format string.
 	 *
-	 * @param s String to be translated.
+	 * @param s        String to be translated.
 	 * @param tolerant If true, be tolerant of bogus escapes; bogus escapes are treated as
-	 * just plain characters. Not recommended; a hack to allow users to paste in URLs 
-	 * containing %'s.
+	 *                 just plain characters. Not recommended; a hack to allow users to paste in URLs
+	 *                 containing %'s.
 	 * @return the translated String.
-	 *
 	 **/
 	public static String decode(String s, boolean tolerant) throws URLEncodedFormatException {
 		if (s.length() == 0)
@@ -64,13 +62,13 @@ public class URLDecoder
 					hasDecodedSomething = true;
 				} catch (NumberFormatException nfe) {
 					// Not encoded?
-					if(tolerant && !hasDecodedSomething) {
-						byte[] buf = ('%'+hexval).getBytes(StandardCharsets.UTF_8);
+					if (tolerant && !hasDecodedSomething) {
+						byte[] buf = ('%' + hexval).getBytes(StandardCharsets.UTF_8);
 						decodedBytes.write(buf, 0, buf.length);
 						continue;
 					}
-					
-					throw new URLEncodedFormatException("Not a two character hex % escape: "+hexval+" in "+s);
+
+					throw new URLEncodedFormatException("Not a two character hex % escape: " + hexval + " in " + s);
 				}
 			} else {
 				byte[] encoded = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
