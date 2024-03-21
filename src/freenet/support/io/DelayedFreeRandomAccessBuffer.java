@@ -31,7 +31,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	@Override
 	public void pread(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
 		synchronized (this) {
-			if (freed) throw new IOException("Already freed");
+			if (freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		underlying.pread(fileOffset, buf, bufOffset, length);
 	}
@@ -39,7 +41,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	@Override
 	public void pwrite(long fileOffset, byte[] buf, int bufOffset, int length) throws IOException {
 		synchronized (this) {
-			if (freed) throw new IOException("Already freed");
+			if (freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		underlying.pwrite(fileOffset, buf, bufOffset, length);
 	}
@@ -47,7 +51,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	@Override
 	public void close() {
 		synchronized (this) {
-			if (freed) return;
+			if (freed) {
+				return;
+			}
 		}
 		underlying.close();
 	}
@@ -55,7 +61,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	@Override
 	public void free() {
 		synchronized (this) {
-			if (freed) return;
+			if (freed) {
+				return;
+			}
 			freed = true;
 		}
 		this.factory.delayedFree(this, createdCommitID);
@@ -64,7 +72,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	@Override
 	public RAFLock lockOpen() throws IOException {
 		synchronized (this) {
-			if (freed) throw new IOException("Already freed");
+			if (freed) {
+				throw new IOException("Already freed");
+			}
 		}
 		return underlying.lockOpen();
 	}
@@ -96,7 +106,9 @@ public class DelayedFreeRandomAccessBuffer implements LockableRandomAccessBuffer
 	}
 
 	public LockableRandomAccessBuffer getUnderlying() {
-		if (freed) return null;
+		if (freed) {
+			return null;
+		}
 		return underlying;
 	}
 

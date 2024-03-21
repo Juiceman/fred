@@ -144,8 +144,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 	public void setFilesAndLoad(File dir, String baseName, boolean writeEncrypted, boolean noWrite,
 								DatabaseKey encryptionKey, ClientContext context, RequestStarterGroup requestStarters,
 								Random random) throws MasterKeysWrongPasswordException {
-		if (noWrite)
+		if (noWrite) {
 			super.disableWrite();
+		}
 		synchronized (serializeCheckpoints) {
 			this.dir = dir;
 			this.baseName = baseName;
@@ -198,13 +199,16 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 
 	private void innerSetFilesOnly(File dir, String baseName, boolean writeEncrypted,
 								   DatabaseKey encryptionKey) throws MasterKeysWrongPasswordException {
-		if (writeEncrypted && encryptionKey == null)
+		if (writeEncrypted && encryptionKey == null) {
 			throw new MasterKeysWrongPasswordException();
+		}
 		File oldWriteToFilename = writeToFilename;
 		writeToBucket = makeBucket(dir, baseName, false, writeEncrypted ? encryptionKey : null);
 		writeToFilename = makeFilename(dir, baseName, false, writeEncrypted);
 		writeToBackupFilename = makeFilename(dir, baseName, true, writeEncrypted);
-		if (writeToFilename.equals(oldWriteToFilename)) return;
+		if (writeToFilename.equals(oldWriteToFilename)) {
+			return;
+		}
 		System.out.println("Will save downloads to " + writeToFilename);
 		deleteAfterSuccessfulWrite = makeFilename(dir, baseName, false, !writeEncrypted);
 		otherDeleteAfterSuccessfulWrite = makeFilename(dir, baseName, true, !writeEncrypted);
@@ -222,8 +226,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 	private boolean innerSetFilesAndLoad(boolean noSerialize, File dir, String baseName,
 										 boolean writeEncrypted, DatabaseKey encryptionKey, ClientContext context,
 										 RequestStarterGroup requestStarters, Random random) throws MasterKeysWrongPasswordException {
-		if (writeEncrypted && encryptionKey == null)
+		if (writeEncrypted && encryptionKey == null) {
 			throw new MasterKeysWrongPasswordException();
+		}
 		File clientDat = new File(dir, baseName);
 		File clientDatCrypt = new File(dir, baseName + ".crypt");
 		File clientDatBak = new File(dir, baseName + ".bak");
@@ -233,8 +238,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 		boolean clientDatBakExists = clientDatBak.exists();
 		boolean clientDatBakCryptExists = clientDatBakCrypt.exists();
 		if (encryptionKey == null) {
-			if (clientDatCryptExists || clientDatBakCryptExists)
+			if (clientDatCryptExists || clientDatBakCryptExists) {
 				throw new MasterKeysWrongPasswordException();
+			}
 		}
 		boolean failedSerialize = false;
 		PartialLoad loaded = new PartialLoad();
@@ -278,7 +284,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			// Resume the requests.
 			for (PartiallyLoadedRequest partial : loaded.partiallyLoadedRequests.values()) {
 				ClientRequest req = partial.request;
-				if (req == null) continue;
+				if (req == null) {
+					continue;
+				}
 				try {
 					req.onResume(context);
 					if (partial.status == RequestLoadStatus.RESTORED_FULLY ||
@@ -300,8 +308,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 							break;
 					}
 				} catch (Throwable t) {
-					if (partial.status == RequestLoadStatus.LOADED)
+					if (partial.status == RequestLoadStatus.LOADED) {
 						failedSerialize = true;
+					}
 					failed++;
 					System.err.println("Unable to resume request " + req + " after loading it.");
 					Logger.error(this, "Unable to resume request " + req + " after loading it: " + t, t);
@@ -312,14 +321,18 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 					}
 				}
 			}
-			if (success > 0)
+			if (success > 0) {
 				System.out.println("Resumed " + success + " requests ...");
-			if (restoredFully > 0)
+			}
+			if (restoredFully > 0) {
 				System.out.println("Restored " + restoredFully + " requests (in spite of data corruption)");
-			if (restoredRestarted > 0)
+			}
+			if (restoredRestarted > 0) {
 				System.out.println("Restarted " + restoredRestarted + " requests (due to data corruption)");
-			if (failed > 0)
+			}
+			if (failed > 0) {
 				System.err.println("Failed to restore " + failed + " requests due to data corruption");
+			}
 			return failedSerialize;
 		} else {
 			// FIXME backups etc!
@@ -343,8 +356,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 	private Bucket makeBucket(File dir, String baseName, boolean backup, DatabaseKey encryptionKey) {
 		File filename = makeFilename(dir, baseName, backup, encryptionKey != null);
 		Bucket bucket = new FileBucket(filename, false, false, false, false);
-		if (encryptionKey != null)
+		if (encryptionKey != null) {
 			bucket = encryptionKey.createEncryptedBucketForClientLayer(bucket);
+		}
 		return bucket;
 	}
 
@@ -400,8 +414,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			PartiallyLoadedRequest old = partiallyLoadedRequests.get(reqID);
 			if (old == null || old.status.ordinal() > status.ordinal()) {
 				partiallyLoadedRequests.put(reqID, new PartiallyLoadedRequest(request, status));
-				if (!(status == RequestLoadStatus.LOADED || status == RequestLoadStatus.RESTORED_FULLY))
+				if (!(status == RequestLoadStatus.LOADED || status == RequestLoadStatus.RESTORED_FULLY)) {
 					somethingFailed = true;
+				}
 				doneSomething = true;
 			}
 		}
@@ -415,8 +430,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 		}
 
 		public void setSalt(byte[] loadedSalt) {
-			if (salt == null)
+			if (salt == null) {
 				salt = loadedSalt;
+			}
 			doneSomething = true;
 		}
 
@@ -450,7 +466,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			loaded.setSomethingFailed();
 		} finally {
 			try {
-				if (fis != null) fis.close();
+				if (fis != null) {
+					fis.close();
+				}
 			} catch (IOException e) {
 				System.err.println("Failed to load persistent requests: " + e);
 				e.printStackTrace();
@@ -462,9 +480,13 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 						   ClientContext context, RequestStarterGroup requestStarters, Random random, boolean noSerialize) throws NodeInitException, IOException {
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		long magic = ois.readLong();
-		if (magic != MAGIC) throw new IOException("Bad magic");
+		if (magic != MAGIC) {
+			throw new IOException("Bad magic");
+		}
 		int version = ois.readInt();
-		if (version != VERSION) throw new IOException("Bad version");
+		if (version != VERSION) {
+			throw new IOException("Bad version");
+		}
 		byte[] salt = new byte[32];
 		try {
 			checker.readAndChecksum(ois, salt, 0, salt.length);
@@ -496,8 +518,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 							}
 						}
 					}
-				} else
+				} else {
 					skipChecksummedObject(ois, length);
+				}
 			} catch (ChecksumFailedException e) {
 				Logger.error(this, "Failed to load request (checksum failed)");
 				System.err.println("Failed to load a request (checksum failed)");
@@ -523,8 +546,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 					} else {
 						Logger.error(this, "Test recovery failed: Checksum failed for " + reqID);
 					}
-					if (request == null)
+					if (request == null) {
 						loaded.addPartiallyLoadedRequest(reqID, null, RequestLoadStatus.FAILED);
+					}
 				} catch (StorageFormatException e) {
 					if (request == null) {
 						Logger.error(this, "Failed to recovery a request (storage format): " + e, e);
@@ -533,8 +557,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 					} else {
 						Logger.error(this, "Test recovery failed for " + reqID + " : " + e, e);
 					}
-					if (request == null)
+					if (request == null) {
 						loaded.addPartiallyLoadedRequest(reqID, null, RequestLoadStatus.FAILED);
+					}
 				}
 			} else {
 				skipChecksummedObject(ois, length);
@@ -573,7 +598,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 	}
 
 	protected void save(boolean shutdown) {
-		if (writeToFilename == null) return;
+		if (writeToFilename == null) {
+			return;
+		}
 		if (writeToFilename.exists()) {
 			FileUtil.renameTo(writeToFilename, writeToBackupFilename);
 		}
@@ -602,7 +629,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			ClientRequest[] requests = getRequests();
 			if (shutdown) {
 				for (ClientRequest req : requests) {
-					if (req == null) continue;
+					if (req == null) {
+						continue;
+					}
 					try {
 						req.onShutdown(getClientContext());
 					} catch (Throwable t) {
@@ -641,7 +670,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			return false;
 		} finally {
 			try {
-				if (fos != null) fos.close();
+				if (fos != null) {
+					fos.close();
+				}
 			} catch (IOException e) {
 				System.err.println("Failed to write persistent requests: " + e);
 				e.printStackTrace();
@@ -662,7 +693,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			e.printStackTrace();
 			oos.abort();
 		} finally {
-			if (oos != null) oos.close();
+			if (oos != null) {
+				oos.close();
+			}
 		}
 	}
 
@@ -679,7 +712,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			Logger.error(this, "Serialization failed: " + t, t);
 			return null;
 		} finally {
-			if (tmp != null) tmp.close();
+			if (tmp != null) {
+				tmp.close();
+			}
 		}
 	}
 
@@ -694,7 +729,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			Logger.error(this, "Unable to write recovery data for " + name + " : " + e, e);
 			oos.abort();
 		} finally {
-			if (oos != null) oos.close();
+			if (oos != null) {
+				oos.close();
+			}
 		}
 	}
 
@@ -711,13 +748,17 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 			Logger.error(this, "Serialization failed: " + t, t);
 			return null;
 		} finally {
-			if (ois != null) ois.close();
+			if (ois != null) {
+				ois.close();
+			}
 		}
 	}
 
 	private void skipChecksummedObject(ObjectInputStream is, long totalLength) throws IOException {
 		long length = is.readLong();
-		if (length > totalLength) throw new IOException("Too long: " + length + " > " + totalLength);
+		if (length > totalLength) {
+			throw new IOException("Too long: " + length + " > " + totalLength);
+		}
 		FileUtil.skipFully(is, length + checker.checksumLength());
 	}
 
@@ -731,7 +772,9 @@ public class ClientLayerPersister extends PersistentJobRunnerImpl {
 
 	private RequestIdentifier readRequestIdentifier(DataInput is) throws IOException {
 		short length = is.readShort();
-		if (length <= 0) return null;
+		if (length <= 0) {
+			return null;
+		}
 		byte[] buf = new byte[length];
 		try {
 			checker.readAndChecksum(is, buf, 0, length);

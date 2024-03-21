@@ -53,8 +53,9 @@ public class AEADCryptBucket implements Bucket, Serializable {
 	@Override
 	public OutputStream getOutputStreamUnbuffered() throws IOException {
 		synchronized (this) {
-			if (readOnly)
+			if (readOnly) {
 				throw new IOException("Read only");
+			}
 		}
 		OutputStream os = underlying.getOutputStreamUnbuffered();
 		return AEADOutputStream.createAES(os, key, NodeStarter.getGlobalSecureRandom());
@@ -126,10 +127,13 @@ public class AEADCryptBucket implements Bucket, Serializable {
 			throws IOException, StorageFormatException, ResumeFailedException {
 		// Magic already read by caller.
 		int version = dis.readInt();
-		if (version != VERSION) throw new StorageFormatException("Unknown version " + version);
+		if (version != VERSION) {
+			throw new StorageFormatException("Unknown version " + version);
+		}
 		int keyLength = dis.readByte();
-		if (keyLength < 0 || !(keyLength == 16 || keyLength == 24 || keyLength == 32))
+		if (keyLength < 0 || !(keyLength == 16 || keyLength == 24 || keyLength == 32)) {
 			throw new StorageFormatException("Unknown key length " + keyLength); // FIXME validate this in a more permanent way
+		}
 		key = new byte[keyLength];
 		dis.readFully(key);
 		readOnly = dis.readBoolean();

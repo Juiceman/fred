@@ -37,7 +37,9 @@ public class PluginJarUpdater extends NodeUpdater {
 	 */
 	boolean onNoRevocation() {
 		synchronized (this) {
-			if (!readyToDeploy) return false;
+			if (!readyToDeploy) {
+				return false;
+			}
 			if (deployOnNoRevocation) {
 				// Lets go ...
 			} else if (deployOnNextNoRevocation) {
@@ -45,8 +47,9 @@ public class PluginJarUpdater extends NodeUpdater {
 				deployOnNextNoRevocation = false;
 				System.out.println("Deploying " + pluginName + " after next revocation check");
 				return true;
-			} else
+			} else {
 				return false;
+			}
 		}
 		// Deploy it!
 		if (!pluginManager.isPluginLoaded(pluginName)) {
@@ -123,11 +126,14 @@ public class PluginJarUpdater extends NodeUpdater {
 				tempBlobFile.delete();
 				return;
 			}
-			if (this.result != null)
+			if (this.result != null) {
 				oldResult = this.result.asBucket();
+			}
 			this.result = result;
 		}
-		if (oldResult != null) oldResult.free();
+		if (oldResult != null) {
+			oldResult.free();
+		}
 
 		PluginInfoWrapper loaded = pluginManager.getPluginInfo(pluginName);
 
@@ -149,7 +155,9 @@ public class PluginJarUpdater extends NodeUpdater {
 		UserAlert toRegister = null;
 		synchronized (this) {
 			readyToDeploy = true;
-			if (alert != null) return;
+			if (alert != null) {
+				return;
+			}
 
 			toRegister = alert = new AbstractUserAlert(true, l10n("pluginUpdatedTitle", "name", pluginName), l10n("pluginUpdatedText", "name", pluginName), l10n("pluginUpdatedShortText", "name", pluginName), null, UserAlert.ERROR, true, NodeL10n.getBase().getString("UserAlert.hide"), true, this) {
 
@@ -184,8 +192,9 @@ public class PluginJarUpdater extends NodeUpdater {
 				}
 			};
 		}
-		if (toRegister != null)
+		if (toRegister != null) {
 			node.getClientCore().getAlerts().register(toRegister);
+		}
 	}
 
 	private String l10n(String key) {
@@ -231,8 +240,9 @@ public class PluginJarUpdater extends NodeUpdater {
 			a = alert;
 			alert = null;
 		}
-		if (a != null)
+		if (a != null) {
 			node.getClientCore().getAlerts().unregister(a);
+		}
 	}
 
 	@Override
@@ -243,8 +253,9 @@ public class PluginJarUpdater extends NodeUpdater {
 			a = alert;
 			alert = null;
 		}
-		if (a != null)
+		if (a != null) {
 			node.getClientCore().getAlerts().unregister(a);
+		}
 	}
 
 	public synchronized void arm(boolean wasRunning) {

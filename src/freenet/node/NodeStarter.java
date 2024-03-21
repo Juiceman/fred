@@ -67,10 +67,11 @@ public class NodeStarter implements WrapperListener {
 	 * If false, this is some sort of multi-node testing VM
 	 */
 	public synchronized static boolean isTestingVM() {
-		if (isStarted)
+		if (isStarted) {
 			return isTestingVM;
-		else
+		} else {
 			throw new IllegalStateException();
+		}
 	}
 
 	/*---------------------------------------------------------------
@@ -103,7 +104,9 @@ public class NodeStarter implements WrapperListener {
 	@Override
 	public Integer start(String[] args) {
 		synchronized (NodeStarter.class) {
-			if (isStarted) throw new IllegalStateException();
+			if (isStarted) {
+				throw new IllegalStateException();
+			}
 			isStarted = true;
 			isTestingVM = false;
 		}
@@ -119,8 +122,9 @@ public class NodeStarter implements WrapperListener {
 		if (args.length == 0) {
 			System.out.println("Using default config filename freenet.ini");
 			configFilename = new File("freenet.ini");
-		} else
+		} else {
 			configFilename = new File(args[0]);
+		}
 
 		// set Java's DNS cache not to cache forever, since many people
 		// use dyndns hostnames
@@ -252,8 +256,9 @@ public class NodeStarter implements WrapperListener {
 			//  handle the event ourselves.
 			if ((event == WrapperManager.WRAPPER_CTRL_C_EVENT) ||
 					(event == WrapperManager.WRAPPER_CTRL_CLOSE_EVENT) ||
-					(event == WrapperManager.WRAPPER_CTRL_SHUTDOWN_EVENT))
+					(event == WrapperManager.WRAPPER_CTRL_SHUTDOWN_EVENT)) {
 				WrapperManager.stop(0);
+			}
 	}
 
 	/*---------------------------------------------------------------
@@ -311,7 +316,9 @@ public class NodeStarter implements WrapperListener {
 			throws InvalidThresholdException {
 
 		synchronized (NodeStarter.class) {
-			if (isStarted) throw new IllegalStateException();
+			if (isStarted) {
+				throw new IllegalStateException();
+			}
 			isStarted = true;
 			isTestingVM = true;
 		}
@@ -500,8 +507,9 @@ public class NodeStarter implements WrapperListener {
 	public static Node createTestNode(TestNodeParameters params) throws NodeInitException {
 
 		synchronized (NodeStarter.class) {
-			if ((!isStarted) || (!isTestingVM))
+			if ((!isStarted) || (!isTestingVM)) {
 				throw new IllegalStateException("Call globalTestInit() first!");
+			}
 		}
 
 		File baseDir = params.baseDirectory;
@@ -547,8 +555,9 @@ public class NodeStarter implements WrapperListener {
 		configFS.put("node.includeLocalAddressesInNoderefs", true);
 		configFS.put("node.enableARKs", false);
 		configFS.put("node.load.threadLimit", params.threadLimit);
-		if (params.ramStore)
+		if (params.ramStore) {
 			configFS.putSingle("node.storeType", "ram");
+		}
 		configFS.put("node.storeSize", params.storeSize);
 		configFS.put("node.disableHangCheckers", true);
 		configFS.put("node.enableSwapping", params.enableSwapping);
@@ -568,8 +577,9 @@ public class NodeStarter implements WrapperListener {
 		configFS.put("node.encryptTempBuckets", false);
 		configFS.put("node.encryptPersistentTempBuckets", false);
 		configFS.put("node.enableRoutedPing", true);
-		if (params.ipAddressOverride != null)
+		if (params.ipAddressOverride != null) {
 			configFS.putSingle("node.ipAddressOverride", params.ipAddressOverride);
+		}
 		if (params.longPingTimes) {
 			configFS.put("node.maxPingTime", 100000);
 			configFS.put("node.subMaxPingTime", 50000);
@@ -609,11 +619,16 @@ public class NodeStarter implements WrapperListener {
 	 */
 	public static long getMemoryLimitMB() {
 		long limit = getMemoryLimitBytes();
-		if (limit <= 0) return limit;
-		if (limit == Long.MAX_VALUE) return -2;
+		if (limit <= 0) {
+			return limit;
+		}
+		if (limit == Long.MAX_VALUE) {
+			return -2;
+		}
 		limit /= (1024 * 1024);
-		if (limit > Integer.MAX_VALUE)
+		if (limit > Integer.MAX_VALUE) {
 			return -1; // Seems unlikely. FIXME 2TB limit!
+		}
 		return limit;
 	}
 
@@ -623,11 +638,11 @@ public class NodeStarter implements WrapperListener {
 	 */
 	public static long getMemoryLimitBytes() {
 		long maxMemory = Runtime.getRuntime().maxMemory();
-		if (maxMemory == Long.MAX_VALUE)
+		if (maxMemory == Long.MAX_VALUE) {
 			return maxMemory;
-		else if (maxMemory <= 0)
+		} else if (maxMemory <= 0) {
 			return -1;
-		else {
+		} else {
 			if (maxMemory < (1024 * 1024)) {
 				// Some weird buggy JVMs provide this number in MB IIRC?
 				return maxMemory * 1024 * 1024;

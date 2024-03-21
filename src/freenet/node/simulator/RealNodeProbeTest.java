@@ -96,7 +96,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 				try {
 					waitForAllConnected(nodes);
 					int status = tester.insertRequestTest();
-					if (status == -1) continue;
+					if (status == -1) {
+						continue;
+					}
 					System.out.println("Insert test completed with status " + status);
 					break;
 				} catch (Throwable t) {
@@ -110,7 +112,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 			@Override
 			public void onError(Error error, Byte code, boolean local) {
 				System.out.print("Probe error: " + error.name());
-				if (local) System.out.print(" (local)");
+				if (local) {
+					System.out.print(" (local)");
+				}
 				System.out.println(code == null ? "" : " (" + code + ")");
 			}
 
@@ -191,10 +195,11 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 		byte htl = Probe.MAX_HTL;
 		BufferedReader r;
 		Console console = System.console();
-		if (console != null)
+		if (console != null) {
 			r = new BufferedReader(console.reader());
-		else
+		} else {
 			r = new BufferedReader(new InputStreamReader(System.in)); // Use the system locale here.
+		}
 		while (true) {
 			System.err.println("Sending probes from node " + index + " with HTL " + htl + ".");
 			System.err.println("0) BANDWIDTH");
@@ -228,7 +233,9 @@ public class RealNodeProbeTest extends RealNodeRoutingTest {
 						System.err.print(option + ": ");
 						nodeConfig.set(option, Boolean.valueOf(r.readLine()));
 					}
-				} else nodes[index].startProbe(htl, random.nextLong(), types[selection], print);
+				} else {
+					nodes[index].startProbe(htl, random.nextLong(), types[selection], print);
+				}
 			} catch (Exception e) {
 				//If a non-number is entered or one outside the bounds.
 				System.out.print(e.toString());

@@ -57,8 +57,10 @@ public final class DecayingKeyspaceAverage implements RunningAverage, Cloneable 
 	@Override
 	public synchronized void report(double d) {
 		if ((d < 0.0) || (d > 1.0))
-			//Just because we use non-normalized locations doesn't mean we can accept them.
+		//Just because we use non-normalized locations doesn't mean we can accept them.
+		{
 			throw new IllegalArgumentException("Not a valid normalized key: " + d);
+		}
 		double superValue = avg.currentValue();
 		double thisValue = Location.normalize(superValue);
 		double diff = Location.change(thisValue, d);
@@ -74,14 +76,16 @@ public final class DecayingKeyspaceAverage implements RunningAverage, Cloneable 
 		 */
 		avg.report(toAverage);
 		double newValue = avg.currentValue();
-		if (newValue < 0.0 || newValue > 1.0)
+		if (newValue < 0.0 || newValue > 1.0) {
 			avg.setCurrentValue(Location.normalize(newValue));
+		}
 	}
 
 	@Override
 	public synchronized double valueIfReported(double d) {
-		if ((d < 0.0) || (d > 1.0))
+		if ((d < 0.0) || (d > 1.0)) {
 			throw new IllegalArgumentException("Not a valid normalized key: " + d);
+		}
 		double superValue = avg.currentValue();
 		double thisValue = Location.normalize(superValue);
 		double diff = Location.change(thisValue, d);

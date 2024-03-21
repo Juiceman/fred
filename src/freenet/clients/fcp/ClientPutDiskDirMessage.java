@@ -55,8 +55,9 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 		allowUnreadableFiles = fs.getBoolean("AllowUnreadableFiles", false);
 		includeHiddenFiles = fs.getBoolean("includeHiddenFiles", false);
 		String fnam = fs.get("Filename");
-		if (fnam == null)
+		if (fnam == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Filename missing", identifier, global);
+		}
 		dirname = new File(fnam);
 	}
 
@@ -68,8 +69,9 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 	@Override
 	public void run(FCPConnectionHandler handler, Node node)
 			throws MessageInvalidException {
-		if (!handler.getServer().getCore().allowUploadFrom(dirname))
+		if (!handler.getServer().getCore().allowUploadFrom(dirname)) {
 			throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to upload from " + dirname, identifier, global);
+		}
 		// Create a directory listing of Buckets of data, mapped to ManifestElement's.
 		// Directories are sub-HashMap's.
 		HashMap<String, Object> buckets = makeBucketsByName(dirname, "");
@@ -84,16 +86,20 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 	 */
 	private HashMap<String, Object> makeBucketsByName(File thisdir, String prefix) throws MessageInvalidException {
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Listing directory: " + thisdir);
+		}
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 
 		File filelist[] = thisdir.listFiles();
-		if (filelist == null)
+		if (filelist == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "No such directory!", identifier, global);
+		}
 		for (int i = 0; i < filelist.length; i++) {
-			if (filelist[i].isHidden() && !includeHiddenFiles) continue;
+			if (filelist[i].isHidden() && !includeHiddenFiles) {
+				continue;
+			}
 			//   Skip unreadable files and dirs
 			//   Skip files nonexistent (dangling symlinks) - check last
 			if (filelist[i].canRead() && filelist[i].exists()) {
@@ -111,8 +117,9 @@ public class ClientPutDiskDirMessage extends ClientPutDirMessage {
 					throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not directory and not file: " + filelist[i], identifier, global);
 				}
 			} else {
-				if (!allowUnreadableFiles)
+				if (!allowUnreadableFiles) {
 					throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, "Not readable or doesn't exist: " + filelist[i], identifier, global);
+				}
 			}
 		}
 		return ret;

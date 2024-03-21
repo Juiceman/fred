@@ -57,10 +57,11 @@ public class ClientSSK extends ClientKey {
 	private ClientSSK(ClientSSK key) {
 		this.cryptoAlgorithm = key.cryptoAlgorithm;
 		this.docName = key.docName;
-		if (key.pubKey != null)
+		if (key.pubKey != null) {
 			this.pubKey = key.pubKey.cloneKey();
-		else
+		} else {
 			this.pubKey = null;
+		}
 		pubKeyHash = key.pubKeyHash.clone();
 		cryptoKey = key.cryptoKey.clone();
 		ehDocname = key.ehDocname.clone();
@@ -71,29 +72,37 @@ public class ClientSSK extends ClientKey {
 		this.docName = docName;
 		this.pubKey = pubKey;
 		this.pubKeyHash = pubKeyHash;
-		if (docName == null)
+		if (docName == null) {
 			throw new MalformedURLException("No document name.");
-		if (extras == null)
+		}
+		if (extras == null) {
 			throw new MalformedURLException("No extra bytes in SSK - maybe a 0.5 key?");
-		if (extras.length < 5)
+		}
+		if (extras.length < 5) {
 			throw new MalformedURLException("Extra bytes too short: " + extras.length + " bytes");
+		}
 		this.cryptoAlgorithm = extras[2];
-		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256)
+		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256) {
 			throw new MalformedURLException("Unknown encryption algorithm " + cryptoAlgorithm);
-		if (!Arrays.equals(extras, getExtraBytes()))
+		}
+		if (!Arrays.equals(extras, getExtraBytes())) {
 			throw new MalformedURLException("Wrong extra bytes");
-		if (pubKeyHash.length != NodeSSK.PUBKEY_HASH_SIZE)
+		}
+		if (pubKeyHash.length != NodeSSK.PUBKEY_HASH_SIZE) {
 			throw new MalformedURLException("Pubkey hash wrong length: " + pubKeyHash.length + " should be " + NodeSSK.PUBKEY_HASH_SIZE);
-		if (cryptoKey.length != CRYPTO_KEY_LENGTH)
+		}
+		if (cryptoKey.length != CRYPTO_KEY_LENGTH) {
 			throw new MalformedURLException("Decryption key wrong length: " + cryptoKey.length + " should be " + CRYPTO_KEY_LENGTH);
+		}
 		MessageDigest md = SHA256.getMessageDigest();
 		try {
 			if (pubKey != null) {
 				byte[] pubKeyAsBytes = pubKey.asBytes();
 				md.update(pubKeyAsBytes);
 				byte[] otherPubKeyHash = md.digest();
-				if (!Arrays.equals(otherPubKeyHash, pubKeyHash))
+				if (!Arrays.equals(otherPubKeyHash, pubKeyHash)) {
 					throw new IllegalArgumentException();
+				}
 			}
 			this.cryptoKey = cryptoKey;
 			md.update(docName.getBytes(StandardCharsets.UTF_8));
@@ -109,15 +118,17 @@ public class ClientSSK extends ClientKey {
 		} finally {
 			SHA256.returnMessageDigest(md);
 		}
-		if (ehDocname == null)
+		if (ehDocname == null) {
 			throw new NullPointerException();
+		}
 		hashCode = Fields.hashCode(pubKeyHash) ^ Fields.hashCode(cryptoKey) ^ Fields.hashCode(ehDocname) ^ docName.hashCode();
 	}
 
 	public ClientSSK(FreenetURI origURI) throws MalformedURLException {
 		this(origURI.getDocName(), origURI.getRoutingKey(), origURI.getExtra(), null, origURI.getCryptoKey());
-		if (!origURI.getKeyType().equalsIgnoreCase("SSK"))
+		if (!origURI.getKeyType().equalsIgnoreCase("SSK")) {
 			throw new MalformedURLException();
+		}
 	}
 
 	protected ClientSSK() {
@@ -131,11 +142,13 @@ public class ClientSSK extends ClientKey {
 	}
 
 	public synchronized void setPublicKey(DSAPublicKey pubKey) {
-		if ((this.pubKey != null) && (this.pubKey != pubKey) && !this.pubKey.equals(pubKey))
+		if ((this.pubKey != null) && (this.pubKey != pubKey) && !this.pubKey.equals(pubKey)) {
 			throw new IllegalArgumentException("Cannot reassign: was " + this.pubKey + " now " + pubKey);
+		}
 		byte[] newKeyHash = pubKey.asBytesHash();
-		if (!Arrays.equals(newKeyHash, pubKeyHash))
+		if (!Arrays.equals(newKeyHash, pubKeyHash)) {
 			throw new IllegalArgumentException("New pubKey hash does not match pubKeyHash: " + HexUtil.bytesToHex(newKeyHash) + " ( " + HexUtil.bytesToHex(pubKey.asBytesHash()) + " != " + HexUtil.bytesToHex(pubKeyHash) + " for " + pubKey);
+		}
 		this.pubKey = pubKey;
 		this.cachedNodeKey = null;
 	}
@@ -164,7 +177,9 @@ public class ClientSSK extends ClientKey {
 	static final byte[] STANDARD_EXTRA = getExtraBytes(Key.ALGO_AES_PCFB_256_SHA256);
 
 	public static byte[] internExtra(byte[] buf) {
-		if (Arrays.equals(buf, STANDARD_EXTRA)) return STANDARD_EXTRA;
+		if (Arrays.equals(buf, STANDARD_EXTRA)) {
+			return STANDARD_EXTRA;
+		}
 		return buf;
 	}
 
@@ -175,12 +190,15 @@ public class ClientSSK extends ClientKey {
 		try {
 			Key nodeKey;
 			synchronized (this) {
-				if (ehDocname == null)
+				if (ehDocname == null) {
 					throw new NullPointerException();
-				if (pubKeyHash == null)
+				}
+				if (pubKeyHash == null) {
 					throw new NullPointerException();
-				if (cachedNodeKey == null || cachedNodeKey.getKeyBytes() == null || cachedNodeKey.getRoutingKey() == null)
+				}
+				if (cachedNodeKey == null || cachedNodeKey.getKeyBytes() == null || cachedNodeKey.getRoutingKey() == null) {
 					cachedNodeKey = new NodeSSK(pubKeyHash, ehDocname, pubKey, cryptoAlgorithm);
+				}
 				nodeKey = cachedNodeKey;
 			}
 			return cloneKey ? nodeKey.cloneKey() : nodeKey;
@@ -211,13 +229,25 @@ public class ClientSSK extends ClientKey {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof ClientSSK)) return false;
+		if (!(o instanceof ClientSSK)) {
+			return false;
+		}
 		ClientSSK key = (ClientSSK) o;
-		if (cryptoAlgorithm != key.cryptoAlgorithm) return false;
-		if (!docName.equals(key.docName)) return false;
-		if (!Arrays.equals(pubKeyHash, key.pubKeyHash)) return false;
-		if (!Arrays.equals(cryptoKey, key.cryptoKey)) return false;
-		if (!Arrays.equals(ehDocname, key.ehDocname)) return false;
+		if (cryptoAlgorithm != key.cryptoAlgorithm) {
+			return false;
+		}
+		if (!docName.equals(key.docName)) {
+			return false;
+		}
+		if (!Arrays.equals(pubKeyHash, key.pubKeyHash)) {
+			return false;
+		}
+		if (!Arrays.equals(cryptoKey, key.cryptoKey)) {
+			return false;
+		}
+		if (!Arrays.equals(ehDocname, key.ehDocname)) {
+			return false;
+		}
 		return true;
 	}
 }

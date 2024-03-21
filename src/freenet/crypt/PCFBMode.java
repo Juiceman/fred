@@ -151,7 +151,9 @@ public class PCFBMode {
 	 */
 	//public synchronized int decipher(int b) {
 	public int decipher(int b) {
-		if (registerPointer == feedback_register.length) refillBuffer();
+		if (registerPointer == feedback_register.length) {
+			refillBuffer();
+		}
 		int rv = (feedback_register[registerPointer] ^ (byte) b) & 0xff;
 		feedback_register[registerPointer++] = (byte) b;
 		return rv;
@@ -168,7 +170,9 @@ public class PCFBMode {
 				buf[off++] ^= feedback_register[registerPointer];
 				feedback_register[registerPointer++] = b;
 			}
-			if (len == 0) return;
+			if (len == 0) {
+				return;
+			}
 			refillBuffer();
 		}
 		// assert(registerPointer == 0);
@@ -202,7 +206,9 @@ public class PCFBMode {
 	 */
 	//public synchronized int encipher(int b) {
 	public int encipher(int b) {
-		if (registerPointer == feedback_register.length) refillBuffer();
+		if (registerPointer == feedback_register.length) {
+			refillBuffer();
+		}
 		feedback_register[registerPointer] ^= (byte) b;
 		return feedback_register[registerPointer++] & 0xff;
 	}
@@ -214,7 +220,9 @@ public class PCFBMode {
 			int l = Math.min(feedback_length - registerPointer, len);
 			for (len -= l; l-- > 0; off++)
 				buf[off] = (feedback_register[registerPointer++] ^= buf[off]);
-			if (len == 0) return;
+			if (len == 0) {
+				return;
+			}
 			refillBuffer();
 		}
 		// assert(registerPointer == 0);

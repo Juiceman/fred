@@ -148,7 +148,9 @@ public class FCPServer implements Runnable, DownloadCache {
 	}
 
 	private void maybeGetNetworkInterface() {
-		if (this.networkInterface != null) return;
+		if (this.networkInterface != null) {
+			return;
+		}
 
 		NetworkInterface tempNetworkInterface = null;
 		try {
@@ -200,12 +202,15 @@ public class FCPServer implements Runnable, DownloadCache {
 				networkInterface.waitBound();
 				realRun();
 			} catch (IOException e) {
-				if (logMINOR) Logger.minor(this, "Caught " + e, e);
+				if (logMINOR) {
+					Logger.minor(this, "Caught " + e, e);
+				}
 			} catch (Throwable t) {
 				Logger.error(this, "Caught " + t, t);
 			}
-			if (WrapperManager.hasShutdownHookBeenTriggered())
+			if (WrapperManager.hasShutdownHookBeenTriggered()) {
 				return;
+			}
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -214,7 +219,9 @@ public class FCPServer implements Runnable, DownloadCache {
 	}
 
 	private void realRun() throws IOException {
-		if (!node.isHasStarted()) return;
+		if (!node.isHasStarted()) {
+			return;
+		}
 		// Accept a connection
 		Socket s = networkInterface.accept();
 		FCPConnectionHandler ch = new FCPConnectionHandler(s, this);
@@ -283,8 +290,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			if (!SSL.available()) {
 				throw new InvalidConfigValueException("Enable SSL support before use ssl with FCP");
 			}
@@ -350,7 +358,9 @@ public class FCPServer implements Runnable, DownloadCache {
 		@Override
 		public String get() {
 			FCPServer server = node.getFCPServer();
-			if (server == null) return NetworkInterface.DEFAULT_BIND_TO;
+			if (server == null) {
+				return NetworkInterface.DEFAULT_BIND_TO;
+			}
 			NetworkInterface netIface = server.networkInterface;
 			return (netIface == null ? NetworkInterface.DEFAULT_BIND_TO : netIface.getAllowedHosts());
 		}
@@ -402,8 +412,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			server.assumeDownloadDDAIsAllowed = val;
 		}
 	}
@@ -418,8 +429,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			server.assumeUploadDDAIsAllowed = val;
 		}
 	}
@@ -434,8 +446,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			server.neverDropAMessage = val;
 		}
 	}
@@ -450,8 +463,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 		@Override
 		public void set(Integer val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			server.maxMessageQueueLength = val;
 		}
 	}
@@ -650,11 +664,14 @@ public class FCPServer implements Runnable, DownloadCache {
 	}
 
 	public RequestStatus[] getGlobalRequests() throws PersistenceDisabledException {
-		if (core.killedDatabase()) throw new PersistenceDisabledException();
+		if (core.killedDatabase()) {
+			throw new PersistenceDisabledException();
+		}
 		List<RequestStatus> v = new ArrayList<RequestStatus>();
 		globalRebootClient.addPersistentRequestStatus(v);
-		if (globalForeverClient != null)
+		if (globalForeverClient != null) {
 			globalForeverClient.addPersistentRequestStatus(v);
+		}
 		return v.toArray(new RequestStatus[v.size()]);
 	}
 
@@ -692,7 +709,9 @@ public class FCPServer implements Runnable, DownloadCache {
 				}
 			}
 			return success.get();
-		} else return true;
+		} else {
+			return true;
+		}
 	}
 
 	public boolean removeAllGlobalRequestsBlocking() throws PersistenceDisabledException {
@@ -794,8 +813,12 @@ public class FCPServer implements Runnable, DownloadCache {
 					}
 					continue;
 				}
-				if (ow.ioe != null) throw ow.ioe;
-				if (ow.ne != null) throw ow.ne;
+				if (ow.ioe != null) {
+					throw ow.ioe;
+				}
+				if (ow.ne != null) {
+					throw ow.ne;
+				}
 				return;
 			}
 		}
@@ -824,8 +847,9 @@ public class FCPServer implements Runnable, DownloadCache {
 					boolean success = false;
 					try {
 						ClientRequest req = globalForeverClient.getRequest(identifier);
-						if (req != null)
+						if (req != null) {
 							req.modifyRequest(newToken, newPriority, FCPServer.this);
+						}
 						success = true;
 					} finally {
 						synchronized (ow) {
@@ -919,12 +943,15 @@ public class FCPServer implements Runnable, DownloadCache {
 		if ((expectedMimeType != null) && (expectedMimeType.length() > 0) &&
 				!expectedMimeType.equals(DefaultMIMETypes.DEFAULT_MIME_TYPE)) {
 			ext = DefaultMIMETypes.getExtension(expectedMimeType);
-		} else ext = null;
+		} else {
+			ext = null;
+		}
 		String extAdd = (ext == null ? "" : '.' + ext);
 		String preferred = uri.getPreferredFilename();
 		String preferredWithExt = preferred;
-		if (!(ext != null && preferredWithExt.endsWith(ext)))
+		if (!(ext != null && preferredWithExt.endsWith(ext))) {
 			preferredWithExt += extAdd;
+		}
 		File f = new File(downloadsDir, preferredWithExt);
 		int x = 0;
 		StringBuilder sb = new StringBuilder();
@@ -962,8 +989,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 	public ClientRequest getGlobalRequest(String identifier) {
 		ClientRequest req = globalRebootClient.getRequest(identifier);
-		if (req == null)
+		if (req == null) {
 			req = globalForeverClient.getRequest(identifier);
+		}
 		return req;
 	}
 
@@ -976,8 +1004,9 @@ public class FCPServer implements Runnable, DownloadCache {
 	}
 
 	public void setCompletionCallback(RequestCompletionCallback cb) {
-		if (globalForeverClient != null)
+		if (globalForeverClient != null) {
 			globalForeverClient.addRequestCompletionCallback(cb);
+		}
 		globalRebootClient.addRequestCompletionCallback(cb);
 	}
 
@@ -1039,8 +1068,9 @@ public class FCPServer implements Runnable, DownloadCache {
 							// Ignore
 						}
 					} else {
-						if (ow.collided != null)
+						if (ow.collided != null) {
 							throw ow.collided;
+						}
 						return;
 					}
 				}
@@ -1059,7 +1089,9 @@ public class FCPServer implements Runnable, DownloadCache {
 				boolean success;
 			}
 			final OutputWrapper ow = new OutputWrapper();
-			if (logMINOR) Logger.minor(this, "Queueing restart of " + identifier);
+			if (logMINOR) {
+				Logger.minor(this, "Queueing restart of " + identifier);
+			}
 			core.getClientContext().jobRunner.queue(new PersistentJob() {
 
 				@Override
@@ -1072,7 +1104,9 @@ public class FCPServer implements Runnable, DownloadCache {
 					boolean success = false;
 					try {
 						ClientRequest req = globalForeverClient.getRequest(identifier);
-						if (logMINOR) Logger.minor(this, "Restarting " + req + " for " + identifier);
+						if (logMINOR) {
+							Logger.minor(this, "Restarting " + req + " for " + identifier);
+						}
 						if (req != null) {
 							req.restart(context, disableFilterData);
 							success = true;
@@ -1093,7 +1127,9 @@ public class FCPServer implements Runnable, DownloadCache {
 
 			synchronized (ow) {
 				while (true) {
-					if (ow.done) return ow.success;
+					if (ow.done) {
+						return ow.success;
+					}
 					try {
 						ow.wait();
 					} catch (InterruptedException e) {
@@ -1185,15 +1221,21 @@ public class FCPServer implements Runnable, DownloadCache {
 			}
 		}
 
-		if (origData == null) return null;
+		if (origData == null) {
+			return null;
+		}
 
-		if (!mustCopy)
+		if (!mustCopy) {
 			return new CacheFetchResult(new ClientMetadata(mime), origData, filtered);
+		}
 
 		Bucket newData = null;
 		try {
-			if (preferred != null) newData = preferred;
-			else newData = core.getTempBucketFactory().makeBucket(origData.size());
+			if (preferred != null) {
+				newData = preferred;
+			} else {
+				newData = core.getTempBucketFactory().makeBucket(origData.size());
+			}
 			BucketTools.copy(origData, newData);
 			if (origData.size() != newData.size()) {
 				Logger.normal(this, "Maybe it disappeared under us?");
@@ -1213,20 +1255,24 @@ public class FCPServer implements Runnable, DownloadCache {
 	@Override
 	public CacheFetchResult lookup(FreenetURI key, boolean noFilter, ClientContext context,
 								   boolean mustCopy, Bucket preferred) {
-		if (globalForeverClient == null) return null;
+		if (globalForeverClient == null) {
+			return null;
+		}
 		ClientGet get = globalForeverClient.getCompletedRequest(key);
 		if (get != null) {
 			boolean filtered = get.filterData();
 			Bucket origData = get.getBucket();
 			Bucket newData = null;
-			if (!mustCopy)
+			if (!mustCopy) {
 				newData = origData.createShadow();
+			}
 			if (newData == null) {
 				try {
-					if (preferred != null)
+					if (preferred != null) {
 						newData = preferred;
-					else
+					} else {
 						newData = core.getTempBucketFactory().makeBucket(origData.size());
+					}
 					BucketTools.copy(origData, newData);
 				} catch (IOException e) {
 					Logger.error(this, "Unable to copy data: " + e, e);

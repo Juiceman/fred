@@ -40,13 +40,16 @@ public class ConfigurablePersister extends Persister {
 		File tmp = new File(f.toString() + ".tmp");
 		while (true) {
 			if (f.exists()) {
-				if (!(f.canRead() && f.canWrite()))
+				if (!(f.canRead() && f.canWrite())) {
 					throw new InvalidConfigValueException(l10n("existsCannotReadWrite") + " : " + tmp);
+				}
 				break;
 			} else {
 				try {
 					if (!f.createNewFile()) {
-						if (f.exists()) continue;
+						if (f.exists()) {
+							continue;
+						}
 						throw new InvalidConfigValueException(l10n("doesNotExistCannotCreate") + " : " + tmp);
 					}
 				} catch (IOException e) {
@@ -56,8 +59,9 @@ public class ConfigurablePersister extends Persister {
 		}
 		while (true) {
 			if (tmp.exists()) {
-				if (!(tmp.canRead() && tmp.canWrite()))
+				if (!(tmp.canRead() && tmp.canWrite())) {
 					throw new InvalidConfigValueException(l10n("existsCannotReadWrite") + " : " + tmp);
+				}
 				break;
 			} else {
 				try {

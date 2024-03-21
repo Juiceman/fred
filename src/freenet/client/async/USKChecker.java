@@ -40,8 +40,9 @@ class USKChecker extends BaseSingleFileFetcher {
 	USKChecker(USKCheckerCallback cb, ClientKey key, int maxRetries, FetchContext ctx, ClientRequester parent, boolean realTimeFlag) {
 		super(key, maxRetries, ctx, parent, false, realTimeFlag);
 		this.cb = cb;
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(USKChecker.class, "Created USKChecker for " + key + " : " + this);
+		}
 	}
 
 	@Override
@@ -52,8 +53,9 @@ class USKChecker extends BaseSingleFileFetcher {
 
 	@Override
 	public void onFailure(LowLevelGetException e, SendableRequestItem token, ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "onFailure: " + e + " for " + this);
+		}
 		// Firstly, can we retry?
 		boolean canRetry;
 		switch (e.code) {
@@ -81,7 +83,9 @@ class USKChecker extends BaseSingleFileFetcher {
 				canRetry = true;
 		}
 
-		if (canRetry && retry(context)) return;
+		if (canRetry && retry(context)) {
+			return;
+		}
 
 		// Ran out of retries.
 		unregisterAll(context);
@@ -93,10 +97,11 @@ class USKChecker extends BaseSingleFileFetcher {
 			return;
 		}
 		// Rest are non-fatal. If have DNFs, DNF, else network error.
-		if (dnfs > 0)
+		if (dnfs > 0) {
 			cb.onDNF(context);
-		else
+		} else {
 			cb.onNetworkError(context);
+		}
 	}
 
 	@Override

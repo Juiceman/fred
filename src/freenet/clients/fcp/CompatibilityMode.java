@@ -30,8 +30,9 @@ public class CompatibilityMode extends FCPMessage {
 		fs.putOverwrite("Identifier", identifier);
 		fs.put("Global", global);
 		byte[] cryptoKey = compat.getCryptoKey();
-		if (cryptoKey != null)
+		if (cryptoKey != null) {
 			fs.putOverwrite("SplitfileCryptoKey", HexUtil.bytesToHex(cryptoKey));
+		}
 		fs.put("DontCompress", compat.dontCompress());
 		fs.put("Definitive", compat.definitive());
 		return fs;

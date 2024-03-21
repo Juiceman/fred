@@ -111,25 +111,29 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 				throw new IOException("Directory does not exist and cannot be created: " + dir);
 			}
 		}
-		if (!dir.isDirectory())
+		if (!dir.isDirectory()) {
 			throw new IOException("Directory is not a directory: " + dir);
+		}
 		originalFiles = new HashSet<File>();
 		File[] files = dir.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File pathname) {
-				if (!pathname.exists() || pathname.isDirectory())
+				if (!pathname.exists() || pathname.isDirectory()) {
 					return false;
+				}
 				String name = pathname.getName();
-				if (name.startsWith(prefix))
+				if (name.startsWith(prefix)) {
 					return true;
+				}
 				return false;
 			}
 		});
 		for (File f : files) {
 			f = FileUtil.getCanonicalFile(f);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Found " + f);
+			}
 			originalFiles.add(f);
 		}
 
@@ -154,12 +158,16 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	@Override
 	public void register(File file) {
 		synchronized (this) {
-			if (originalFiles == null)
+			if (originalFiles == null) {
 				throw new IllegalStateException("completed Init has already been called!");
+			}
 			file = FileUtil.getCanonicalFile(file);
-			if (logMINOR) Logger.minor(this, "Preserving " + file, new Exception("debug"));
-			if (!originalFiles.remove(file))
+			if (logMINOR) {
+				Logger.minor(this, "Preserving " + file, new Exception("debug"));
+			}
+			if (!originalFiles.remove(file)) {
 				Logger.error(this, "Preserving " + file + " but it wasn't found!", new Exception("error"));
+			}
 		}
 	}
 
@@ -173,8 +181,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 			return;
 		}
 		for (File f : originalFiles) {
-			if (Logger.shouldLog(LogLevel.MINOR, this))
+			if (Logger.shouldLog(LogLevel.MINOR, this)) {
 				Logger.minor(this, "Deleting old tempfile " + f);
+			}
 			f.delete();
 		}
 		originalFiles = null;
@@ -189,8 +198,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	public RandomAccessBucket makeBucket(long size) throws IOException {
 		RandomAccessBucket rawBucket = null;
 		boolean mustWrap = true;
-		if (rawBucket == null)
+		if (rawBucket == null) {
 			rawBucket = new PersistentTempFileBucket(fg.makeRandomFilename(), fg, this);
+		}
 		synchronized (encryptLock) {
 			if (encrypt) {
 				rawBucket = new PaddedRandomAccessBucket(rawBucket);
@@ -198,8 +208,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 						rawBucket, secret);
 			}
 		}
-		if (mustWrap)
+		if (mustWrap) {
 			rawBucket = new DelayedFreeRandomAccessBucket(this, rawBucket);
+		}
 		return rawBucket;
 	}
 
@@ -223,7 +234,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 	 */
 	public DelayedFree[] grabBucketsToFree() {
 		synchronized (this) {
-			if (bucketsToFree.isEmpty()) return null;
+			if (bucketsToFree.isEmpty()) {
+				return null;
+			}
 			DelayedFree[] buckets = bucketsToFree.toArray(new DelayedFree[bucketsToFree.size()]);
 			bucketsToFree.clear();
 			commitID++;
@@ -278,8 +291,9 @@ public class PersistentTempBucketFactory implements BucketFactory, PersistentFil
 		if (buckets != null) {
 			for (DelayedFree bucket : buckets) {
 				try {
-					if (bucket.toFree())
+					if (bucket.toFree()) {
 						bucket.realFree();
+					}
 				} catch (Throwable t) {
 					Logger.error(this, "Caught " + t + " freeing bucket " + bucket + " after transaction commit", t);
 				}

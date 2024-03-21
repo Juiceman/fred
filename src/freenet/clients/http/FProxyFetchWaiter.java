@@ -7,7 +7,9 @@ public class FProxyFetchWaiter {
 
 	public FProxyFetchWaiter(FProxyFetchInProgress progress2) {
 		this.progress = progress2;
-		if (progress.finished()) finished = true;
+		if (progress.finished()) {
+			finished = true;
+		}
 		hasWaited = progress.hasWaited();
 	}
 
@@ -72,10 +74,11 @@ public class FProxyFetchWaiter {
 	}
 
 	public synchronized void wakeUp(boolean fin) {
-		if (fin)
+		if (fin) {
 			this.finished = true;
-		else
+		} else {
 			this.awoken = true;
+		}
 		notifyAll();
 	}
 

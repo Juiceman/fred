@@ -58,8 +58,9 @@ public class ConnectivityToadlet extends Toadlet {
 		HTMLNode contentNode = page.content;
 
 		/* add alert summary box */
-		if (ctx.isAllowedFullAccess())
+		if (ctx.isAllowedFullAccess()) {
 			contentNode.addChild(ctx.getAlertManager().createSummary());
+		}
 
 		// our ports
 		HTMLNode portInfobox = contentNode.addChild("div", "class", "infobox infobox-normal");
@@ -71,8 +72,9 @@ public class ConnectivityToadlet extends Toadlet {
 		SimpleFieldSet tmciConfig = node.getConfig().get("console").exportFieldSet(true);
 		portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.darknetFnpPort", new String[]{"port"}, new String[]{Integer.toString(node.getFNPPort())}));
 		int opennetPort = node.getOpennetFNPPort();
-		if (opennetPort > 0)
+		if (opennetPort > 0) {
 			portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.opennetFnpPort", new String[]{"port"}, new String[]{Integer.toString(opennetPort)}));
+		}
 		try {
 			if (fproxyConfig.getBoolean("enabled", false)) {
 				portInfoList.addChild("li", NodeL10n.getBase().getString("DarknetConnectionsToadlet.fproxyPort", new String[]{"port"}, new String[]{Integer.toString(fproxyConfig.getInt("port"))}));

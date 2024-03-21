@@ -213,8 +213,9 @@ public class NodeCrypto {
 						continue;
 					}
 				}
-				if (u == null)
+				if (u == null) {
 					throw new NodeInitException(NodeInitException.EXIT_NO_AVAILABLE_UDP_PORTS, "Could not find an available UDP port number for FNP (none specified)");
+				}
 			} else {
 				try {
 					u = new UdpSocketHandler(port, bindto.getAddress(), node, startupTime, getTitle(port), node.getCollector());
@@ -270,8 +271,9 @@ public class NodeCrypto {
 	 */
 	public void readCrypto(SimpleFieldSet fs) throws IOException {
 		String identity = fs.get("identity");
-		if (identity == null)
+		if (identity == null) {
 			throw new IOException();
+		}
 		try {
 			myIdentity = Base64.decode(identity);
 		} catch (IllegalBase64Exception e2) {
@@ -283,8 +285,9 @@ public class NodeCrypto {
 
 		try {
 			SimpleFieldSet ecdsaSFS = fs.subset("ecdsa");
-			if (ecdsaSFS != null)
+			if (ecdsaSFS != null) {
 				ecdsaP256 = new ECDSA(ecdsaSFS.subset(ECDSA.Curves.P256.name()), Curves.P256);
+			}
 		} catch (FSParseException e) {
 			Logger.error(this, "Caught " + e, e);
 			throw new IOException(e.toString());
@@ -411,14 +414,16 @@ public class NodeCrypto {
 			fs.put("location", node.getLocationManager().getLocation());
 		}
 		fs.putSingle("version", Version.getVersionString()); // Keep, vital that peer know our version. For example, some types may be sent in different formats to different node versions (e.g. Peer).
-		if (!forAnonInitiator)
+		if (!forAnonInitiator) {
 			fs.putSingle("lastGoodVersion", Version.getLastGoodVersionString()); // Also vital
+		}
 		if (Node.isTestnetEnabled()) {
 			fs.put("testnet", true);
 			//fs.put("testnetPort", node.testnetHandler.getPort()); // Useful, saves a lot of complexity
 		}
-		if ((!isOpennet) && (!forSetup) && (!forARK))
+		if ((!isOpennet) && (!forSetup) && (!forARK)) {
 			fs.putSingle("myName", node.getMyName());
+		}
 
 		if (!forAnonInitiator) {
 			// Anonymous initiator setup type specifies whether the node is opennet or not.
@@ -439,7 +444,9 @@ public class NodeCrypto {
 			}
 		}
 
-		if (logMINOR) Logger.minor(this, "My reference: " + fs.toOrderedString());
+		if (logMINOR) {
+			Logger.minor(this, "My reference: " + fs.toOrderedString());
+		}
 		return fs;
 	}
 
@@ -463,14 +470,17 @@ public class NodeCrypto {
 	}
 
 	private String ecdsaSignRef(String mySignedReference) throws NodeInitException {
-		if (logMINOR) Logger.minor(this, "Signing reference:\n" + mySignedReference);
+		if (logMINOR) {
+			Logger.minor(this, "Signing reference:\n" + mySignedReference);
+		}
 
 		byte[] ref = mySignedReference.getBytes(StandardCharsets.UTF_8);
 
 		// We don't need a padded signature here
 		byte[] sig = ecdsaP256.sign(ref);
-		if (logMINOR && !ECDSA.verify(Curves.P256, getECDSAP256Pubkey(), sig, ref))
+		if (logMINOR && !ECDSA.verify(Curves.P256, getECDSAP256Pubkey(), sig, ref)) {
 			throw new NodeInitException(NodeInitException.EXIT_EXCEPTION_TO_DEBUG, mySignedReference);
+		}
 		return Base64.encode(sig);
 	}
 
@@ -490,14 +500,16 @@ public class NodeCrypto {
 		}
 
 		byte[] buf = baos.toByteArray();
-		if (buf.length >= 4096)
+		if (buf.length >= 4096) {
 			throw new IllegalStateException("We are attempting to send a " + buf.length + " bytes big reference!");
+		}
 		byte[] obuf = new byte[buf.length + 1];
 		int offset = 0;
 		obuf[offset++] = 0x01; // compressed noderef
 		System.arraycopy(buf, 0, obuf, offset, buf.length);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "myCompressedRef(" + setup + "," + heavySetup + ") returning " + obuf.length + " bytes");
+		}
 		return obuf;
 	}
 
@@ -552,7 +564,9 @@ public class NodeCrypto {
 
 	public void onSetDropProbability(int val) {
 		synchronized (this) {
-			if (socket == null) return;
+			if (socket == null) {
+				return;
+			}
 		}
 		socket.setDropProbability(val);
 	}
@@ -563,11 +577,14 @@ public class NodeCrypto {
 	}
 
 	public PeerNode[] getPeerNodes() {
-		if (node.getPeers() == null) return null;
-		if (isOpennet)
+		if (node.getPeers() == null) {
+			return null;
+		}
+		if (isOpennet) {
 			return node.getPeers().getOpennetAndSeedServerPeers();
-		else
+		} else {
 			return node.getPeers().getDarknetPeers();
+		}
 	}
 
 	public boolean allowConnection(PeerNode pn, FreenetInetAddress addr) {
@@ -593,13 +610,23 @@ public class NodeCrypto {
 	 */
 	public void maybeBootConnection(PeerNode peerNode,
 									FreenetInetAddress address) {
-		if (detector.includes(address)) return;
-		if (!address.isRealInternetAddress(false, false, false)) return;
+		if (detector.includes(address)) {
+			return;
+		}
+		if (!address.isRealInternetAddress(false, false, false)) {
+			return;
+		}
 		ArrayList<PeerNode> possibleMatches = node.getPeers().getAllConnectedByAddress(address, true);
-		if (possibleMatches == null) return;
+		if (possibleMatches == null) {
+			return;
+		}
 		for (PeerNode pn : possibleMatches) {
-			if (pn == peerNode) continue;
-			if (pn.equals(peerNode)) continue;
+			if (pn == peerNode) {
+				continue;
+			}
+			if (pn.equals(peerNode)) {
+				continue;
+			}
 			if (pn.crypto.config.oneConnectionPerAddress()) {
 				if (pn instanceof DarknetPeerNode) {
 					if (!(peerNode instanceof DarknetPeerNode)) {
@@ -627,8 +654,9 @@ public class NodeCrypto {
 	public PeerNode[] getAnonSetupPeerNodes() {
 		ArrayList<PeerNode> v = new ArrayList<PeerNode>();
 		for (PeerNode pn : node.getPeers().myPeers()) {
-			if (pn.handshakeUnknownInitiator() && pn.getOutgoingMangler() == packetMangler)
+			if (pn.handshakeUnknownInitiator() && pn.getOutgoingMangler() == packetMangler) {
 				v.add(pn);
+			}
 		}
 		return v.toArray(new PeerNode[v.size()]);
 	}

@@ -27,7 +27,9 @@ public class ChecksumOutputStream extends FilterOutputStream {
 	public void write(int b) throws IOException {
 		if (bytesInsidePrefix >= skipPrefix) {
 			crc.update(b);
-		} else bytesInsidePrefix++;
+		} else {
+			bytesInsidePrefix++;
+		}
 		out.write(b);
 	}
 
@@ -58,7 +60,9 @@ public class ChecksumOutputStream extends FilterOutputStream {
 	public void close() throws IOException {
 		if (writeChecksum) {
 			synchronized (this) {
-				if (closed) throw new IOException("Already closed");
+				if (closed) {
+					throw new IOException("Already closed");
+				}
 				closed = true;
 			}
 			out.write(Fields.intToBytes((int) crc.getValue()));

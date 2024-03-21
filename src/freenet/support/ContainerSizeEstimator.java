@@ -78,16 +78,18 @@ public final class ContainerSizeEstimator {
 					// Add some bytes for .metadata element.
 					// FIXME 128 picked out of the air! Look up the format.
 					result._sizeFilesNoLimit += 128 + me.getName().length();
-					if (itemsize > maxItemSize)
+					if (itemsize > maxItemSize) {
 						result._sizeFiles += 512;  // spare for redirect
-					else {
+					} else {
 						result._sizeFiles += getContainerItemSize(me.getSize());
 						// Add some bytes for .metadata element.
 						// FIXME 128 picked out of the air! Look up the format.
 						result._sizeFilesNoLimit += 128 + me.getName().length();
 						// FIXME The tar file will need the full name????
 					}
-					if (result._sizeFiles > maxContainerSize) break;
+					if (result._sizeFiles > maxContainerSize) {
+						break;
+					}
 				} else {
 					// Redirect.
 					result._sizeFiles += 512;
@@ -107,7 +109,9 @@ public final class ContainerSizeEstimator {
 					getSubTreeSize(hm, tempResult, maxItemSize, (maxContainerSize - result._sizeSubTrees), maxDeep - 1);
 					result._sizeSubTrees += tempResult.getSizeTotal();
 					result._sizeSubTreesNoLimit += tempResult.getSizeTotalNoLimit();
-					if (result._sizeSubTrees > maxContainerSize) break;
+					if (result._sizeSubTrees > maxContainerSize) {
+						break;
+					}
 				}
 			}
 		}
@@ -118,8 +122,9 @@ public final class ContainerSizeEstimator {
 	}
 
 	private static long getContainerItemSize(ARCHIVE_TYPE archiveType, long size) {
-		if (archiveType == ARCHIVE_TYPE.TAR)
+		if (archiveType == ARCHIVE_TYPE.TAR) {
 			return tarItemSize(size);
+		}
 		throw new UnsupportedOperationException("TODO, only TAR supportet atm.");
 	}
 

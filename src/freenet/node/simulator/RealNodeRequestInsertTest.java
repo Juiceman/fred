@@ -127,7 +127,9 @@ public class RealNodeRequestInsertTest extends RealNodeRoutingTest {
 			try {
 				waitForAllConnected(nodes);
 				int status = tester.insertRequestTest();
-				if (status == -1) continue;
+				if (status == -1) {
+					continue;
+				}
 				System.exit(status);
 			} catch (Throwable t) {
 				Logger.error(RealNodeRequestInsertTest.class, "Caught " + t, t);
@@ -256,12 +258,14 @@ public class RealNodeRequestInsertTest extends RealNodeRoutingTest {
 			int runningUIDsAlt = nodes[i].getTracker().getTotalRunningUIDsAlt();
 			totalRunningUIDsAlt += runningUIDsAlt;
 			load.append(totalRunningUIDsAlt);
-			if (i != nodes.length - 1)
+			if (i != nodes.length - 1) {
 				load.append(' ');
+			}
 		}
 		System.err.println(load.toString());
-		if (totalRunningUIDsAlt != 0)
+		if (totalRunningUIDsAlt != 0) {
 			System.err.println("Still running UIDs (alt): " + totalRunningUIDsAlt);
+		}
 		if (!runningUIDsList.isEmpty()) {
 			System.err.println("List of running UIDs: " + Arrays.toString(runningUIDsList.toArray()));
 		}

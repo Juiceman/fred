@@ -28,9 +28,10 @@ public enum HMAC {
 	}
 
 	public static byte[] mac(HMAC hash, byte[] key, byte[] data) {
-		if (key.length != hash.digestSize)
+		if (key.length != hash.digestSize) {
 			throw new IllegalArgumentException("Wrong keysize! We're not doing key stretching " +
 					key.length + " expected " + hash.digestSize);
+		}
 
 		SecretKeySpec signingKey = new SecretKeySpec(key, hash.algo);
 		Mac mac;

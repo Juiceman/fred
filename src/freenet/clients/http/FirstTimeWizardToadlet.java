@@ -152,8 +152,9 @@ public class FirstTimeWizardToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		//Read the current step from the URL parameter, defaulting to the welcome page if unset or invalid..
 		WIZARD_STEP currentStep;
@@ -212,8 +213,9 @@ public class FirstTimeWizardToadlet extends Toadlet {
 	}
 
 	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		WIZARD_STEP currentStep;
 		try {

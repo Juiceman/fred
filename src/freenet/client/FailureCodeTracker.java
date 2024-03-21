@@ -50,7 +50,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 			// We ignore the Description, if there is one; we just want the count
 			int num = Integer.parseInt(name);
 			int count = Integer.parseInt(f.get("Count"));
-			if (count < 0) throw new IllegalArgumentException("Count < 0");
+			if (count < 0) {
+				throw new IllegalArgumentException("Count < 0");
+			}
 			map.put(Integer.valueOf(num), count);
 			total += count;
 		}
@@ -64,12 +66,16 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	private HashMap<Integer, Integer> map;
 
 	public void inc(FetchExceptionMode k) {
-		if (insert) throw new IllegalStateException();
+		if (insert) {
+			throw new IllegalStateException();
+		}
 		inc(k.code);
 	}
 
 	public void inc(InsertExceptionMode k) {
-		if (!insert) throw new IllegalStateException();
+		if (!insert) {
+			throw new IllegalStateException();
+		}
 		inc(k.code);
 	}
 
@@ -77,23 +83,30 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		if (k == 0) {
 			Logger.error(this, "Can't increment 0, not a valid failure mode", new Exception("error"));
 		}
-		if (map == null) map = new HashMap<Integer, Integer>();
+		if (map == null) {
+			map = new HashMap<Integer, Integer>();
+		}
 		Integer key = k;
 		Integer i = map.get(key);
-		if (i == null)
+		if (i == null) {
 			map.put(key, 1);
-		else
+		} else {
 			map.put(key, i + 1);
+		}
 		total++;
 	}
 
 	public void inc(FetchExceptionMode k, int val) {
-		if (insert) throw new IllegalStateException();
+		if (insert) {
+			throw new IllegalStateException();
+		}
 		inc(k.code, val);
 	}
 
 	public void inc(InsertExceptionMode k, int val) {
-		if (!insert) throw new IllegalStateException();
+		if (!insert) {
+			throw new IllegalStateException();
+		}
 		inc(k.code, val);
 	}
 
@@ -101,18 +114,23 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		if (k == 0) {
 			Logger.error(this, "Can't increment 0, not a valid failure mode", new Exception("error"));
 		}
-		if (map == null) map = new HashMap<Integer, Integer>();
+		if (map == null) {
+			map = new HashMap<Integer, Integer>();
+		}
 		Integer key = k;
 		Integer i = map.get(key);
-		if (i == null)
+		if (i == null) {
 			map.put(key, 1);
-		else
+		} else {
 			map.put(key, i + val);
+		}
 		total += val;
 	}
 
 	public synchronized String toVerboseString() {
-		if (map == null) return super.toString() + ":empty";
+		if (map == null) {
+			return super.toString() + ":empty";
+		}
 		StringBuilder sb = new StringBuilder();
 		for (Map.Entry<Integer, Integer> e : map.entrySet()) {
 			Integer x = e.getKey();
@@ -133,11 +151,14 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 
 	@Override
 	public synchronized String toString() {
-		if (map == null) return super.toString() + ":empty";
+		if (map == null) {
+			return super.toString() + ":empty";
+		}
 		StringBuilder sb = new StringBuilder(super.toString());
 		sb.append(':');
-		if (map.size() == 0) sb.append("empty");
-		else if (map.size() == 1) {
+		if (map.size() == 0) {
+			sb.append("empty");
+		} else if (map.size() == 1) {
 			sb.append("one:");
 			Integer code = (Integer) (map.keySet().toArray())[0];
 			sb.append(code);
@@ -146,8 +167,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 		} else if (map.size() < 10) {
 			boolean needComma = false;
 			for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-				if (needComma)
+				if (needComma) {
 					sb.append(',');
+				}
 				sb.append(entry.getKey()); // code
 				sb.append('=');
 				sb.append(entry.getValue());
@@ -163,8 +185,12 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	 * Merge codes from another tracker into this one.
 	 */
 	public synchronized FailureCodeTracker merge(FailureCodeTracker source) {
-		if (source.map == null) return this;
-		if (map == null) map = new HashMap<Integer, Integer>();
+		if (source.map == null) {
+			return this;
+		}
+		if (map == null) {
+			map = new HashMap<Integer, Integer>();
+		}
 		for (Map.Entry<Integer, Integer> e : source.map.entrySet()) {
 			Integer k = e.getKey();
 			Integer item = e.getValue();
@@ -174,7 +200,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public void merge(FetchException e) {
-		if (insert) throw new IllegalStateException("Merging a FetchException in an insert!");
+		if (insert) {
+			throw new IllegalStateException("Merging a FetchException in an insert!");
+		}
 		if (e.errorCodes != null) {
 			merge(e.errorCodes);
 		}
@@ -198,8 +226,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 				int code = k.intValue();
 				// prefix.num.Description=<code description>
 				// prefix.num.Count=<count>
-				if (verbose)
+				if (verbose) {
 					sfs.putSingle(Integer.toString(code) + ".Description", getMessage(code));
+				}
 				sfs.put(Integer.toString(code) + ".Count", item);
 			}
 		}
@@ -207,17 +236,23 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public synchronized boolean isOneCodeOnly() {
-		if (map == null) return true;
+		if (map == null) {
+			return true;
+		}
 		return map.size() == 1;
 	}
 
 	public FetchExceptionMode getFirstCodeFetch() {
-		if (insert) throw new IllegalStateException();
+		if (insert) {
+			throw new IllegalStateException();
+		}
 		return FetchExceptionMode.getByCode(getFirstCode());
 	}
 
 	public InsertExceptionMode getFirstCodeInsert() {
-		if (!insert) throw new IllegalStateException();
+		if (!insert) {
+			throw new IllegalStateException();
+		}
 		return InsertExceptionMode.getByCode(getFirstCode());
 	}
 
@@ -226,23 +261,34 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public synchronized boolean isFatal(boolean insert) {
-		if (map == null) return false;
+		if (map == null) {
+			return false;
+		}
 		for (Map.Entry<Integer, Integer> e : map.entrySet()) {
 			Integer code = e.getKey();
-			if (e.getValue() == 0) continue;
+			if (e.getValue() == 0) {
+				continue;
+			}
 			if (insert) {
-				if (InsertException.isFatal(InsertExceptionMode.getByCode(code))) return true;
+				if (InsertException.isFatal(InsertExceptionMode.getByCode(code))) {
+					return true;
+				}
 			} else {
-				if (FetchException.isFatal(FetchExceptionMode.getByCode(code))) return true;
+				if (FetchException.isFatal(FetchExceptionMode.getByCode(code))) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	public void merge(InsertException e) {
-		if (!insert) throw new IllegalArgumentException("This is not an insert yet merge(" + e + ") called!");
-		if (e.errorCodes != null)
+		if (!insert) {
+			throw new IllegalArgumentException("This is not an insert yet merge(" + e + ") called!");
+		}
+		if (e.errorCodes != null) {
 			merge(e.errorCodes);
+		}
 		inc(e.getMode());
 	}
 
@@ -262,10 +308,16 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	}
 
 	public synchronized boolean isDataFound() {
-		if (!insert) throw new IllegalStateException();
+		if (!insert) {
+			throw new IllegalStateException();
+		}
 		for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-			if (entry.getValue() <= 0) continue;
-			if (FetchException.isDataFound(FetchExceptionMode.getByCode(entry.getKey()), null)) return true;
+			if (entry.getValue() <= 0) {
+				continue;
+			}
+			if (FetchException.isDataFound(FetchExceptionMode.getByCode(entry.getKey()), null)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -300,7 +352,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	 * Get number of errors of count mode
 	 */
 	public synchronized int getErrorCount(int mode) {
-		if (map == null) return 0;
+		if (map == null) {
+			return 0;
+		}
 		Integer item = map.get(mode);
 		return item == null ? 0 : item;
 	}
@@ -309,7 +363,9 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	 * Get number of errors of count mode
 	 */
 	public synchronized int getErrorCount(InsertExceptionMode mode) {
-		if (!insert) throw new IllegalStateException();
+		if (!insert) {
+			throw new IllegalStateException();
+		}
 		return getErrorCount(mode.code);
 	}
 
@@ -317,25 +373,36 @@ public class FailureCodeTracker implements Cloneable, Serializable {
 	 * Get number of errors of count mode
 	 */
 	public synchronized int getErrorCount(FetchExceptionMode mode) {
-		if (insert) throw new IllegalStateException();
+		if (insert) {
+			throw new IllegalStateException();
+		}
 		return getErrorCount(mode.code);
 	}
 
 	public FailureCodeTracker(boolean insert, DataInputStream dis) throws IOException, StorageFormatException {
 		this.insert = insert;
-		if (dis.readInt() != MAGIC)
+		if (dis.readInt() != MAGIC) {
 			throw new StorageFormatException("Bad magic for FailureCodeTracker");
-		if (dis.readInt() != VERSION)
+		}
+		if (dis.readInt() != VERSION) {
 			throw new StorageFormatException("Bad version for FailureCodeTracker");
+		}
 		int upperLimit =
 				insert ? InsertException.UPPER_LIMIT_ERROR_CODE : FetchException.UPPER_LIMIT_ERROR_CODE;
-		if (dis.readInt() != upperLimit)
+		if (dis.readInt() != upperLimit) {
 			throw new StorageFormatException("Bad upper limit for FailureCodeTracker");
+		}
 		for (int i = 0; i < upperLimit; i++) {
 			int x = dis.readInt();
-			if (x < 0) throw new StorageFormatException("Negative error counts");
-			if (x == 0) continue;
-			if (map == null) map = new HashMap<Integer, Integer>();
+			if (x < 0) {
+				throw new StorageFormatException("Negative error counts");
+			}
+			if (x == 0) {
+				continue;
+			}
+			if (map == null) {
+				map = new HashMap<Integer, Integer>();
+			}
 			total += x;
 			map.put(i, x);
 		}

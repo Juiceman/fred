@@ -50,8 +50,9 @@ public class NewLZMACompressor extends AbstractCompressor {
 			output = bf.makeBucket(maxWriteLength);
 			is = data.getInputStream();
 			os = output.getOutputStream();
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Compressing " + data + " size " + data.size() + " to new bucket " + output);
+			}
 			compress(is, os, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
@@ -108,30 +109,35 @@ public class NewLZMACompressor extends AbstractCompressor {
 				throw e;
 			}
 		}
-		if (cos.written() > maxWriteLength)
+		if (cos.written() > maxWriteLength) {
 			throw new CompressionOutputSizeException(cos.written());
+		}
 		cos.flush();
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Read " + cis.count() + " written " + cos.written());
+		}
 		return cos.written();
 	}
 
 	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException, CompressionOutputSizeException {
 		Bucket output;
-		if (preferred != null)
+		if (preferred != null) {
 			output = preferred;
-		else
+		} else {
 			output = bf.makeBucket(maxLength);
-		if (logMINOR)
+		}
+		if (logMINOR) {
 			Logger.minor(this, "Decompressing " + data + " size " + data.size() + " to new bucket " + output);
+		}
 		CountedInputStream is = null;
 		OutputStream os = null;
 		try {
 			is = new CountedInputStream(data.getInputStream());
 			os = output.getOutputStream();
 			decompress(is, os, maxLength, maxCheckSizeLength);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Output: " + output + " size " + output.size() + " read " + is.count());
+			}
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
 			is = null;
@@ -155,10 +161,16 @@ public class NewLZMACompressor extends AbstractCompressor {
 		for (int i = 0; i < 4; i++)
 			dictionarySize += ((props[1 + i]) & 0xFF) << (i * 8);
 
-		if (dictionarySize < 0) throw new InvalidCompressedDataException("Invalid dictionary size");
-		if (dictionarySize > MAX_DICTIONARY_SIZE) throw new TooBigDictionaryException();
+		if (dictionarySize < 0) {
+			throw new InvalidCompressedDataException("Invalid dictionary size");
+		}
+		if (dictionarySize > MAX_DICTIONARY_SIZE) {
+			throw new TooBigDictionaryException();
+		}
 		Decoder decoder = new Decoder();
-		if (!decoder.SetDecoderProperties(props)) throw new InvalidCompressedDataException("Invalid properties");
+		if (!decoder.SetDecoderProperties(props)) {
+			throw new InvalidCompressedDataException("Invalid properties");
+		}
 		decoder.Code(is, cos, maxLength);
 		//cos.flush();
 		return cos.written();

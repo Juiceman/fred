@@ -96,7 +96,7 @@ public class SSL {
 					public void set(Boolean newValue) throws InvalidConfigValueException {
 						if (!get().equals(newValue)) {
 							enable = newValue;
-							if (enable)
+							if (enable) {
 								try {
 									loadKeyStore();
 									createSSLContext();
@@ -105,7 +105,7 @@ public class SSL {
 									e.printStackTrace(System.out);
 									throwConfigError("SSL could not be enabled", e);
 								}
-							else {
+							} else {
 								ssf = null;
 								keyStore = null;
 							}
@@ -211,8 +211,9 @@ public class SSL {
 	 * @throws IOException
 	 */
 	public static ServerSocket createServerSocket() throws IOException {
-		if (ssf == null)
+		if (ssf == null) {
 			throw new IOException("SSL not initialized");
+		}
 		return ssf.createServerSocket();
 	}
 

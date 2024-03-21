@@ -170,7 +170,9 @@ public class ContentFilter {
 	}
 
 	public static String stripMIMEType(String mimeType) {
-		if (mimeType == null) return null;
+		if (mimeType == null) {
+			return null;
+		}
 		int x;
 		if ((x = mimeType.indexOf(';')) != -1) {
 			mimeType = mimeType.substring(0, x).trim();
@@ -179,7 +181,9 @@ public class ContentFilter {
 	}
 
 	public static FilterMIMEType getMIMEType(String mimeType) {
-		if (mimeType == null) return null;
+		if (mimeType == null) {
+			return null;
+		}
 		return mimeTypesByName.get(stripMIMEType(mimeType));
 	}
 
@@ -273,7 +277,9 @@ public class ContentFilter {
 	 * @throws IllegalStateException      If data is invalid (e.g. corrupted file) and the filter have no way to recover.
 	 */
 	public static FilterStatus filter(InputStream input, OutputStream output, String typeName, String maybeCharset, String schemeHostAndPort, FilterCallback filterCallback) throws UnsafeContentTypeException, IOException {
-		if (logMINOR) Logger.minor(ContentFilter.class, "Filtering data of type" + typeName);
+		if (logMINOR) {
+			Logger.minor(ContentFilter.class, "Filtering data of type" + typeName);
+		}
 		String type = typeName;
 		String options = "";
 		String charset = null;
@@ -309,9 +315,9 @@ public class ContentFilter {
 
 		FilterMIMEType handler = getMIMEType(type);
 
-		if (handler == null)
+		if (handler == null) {
 			throw new UnknownContentTypeException(typeName);
-		else {
+		} else {
 			// Run the read filter if there is one.
 			if (handler.readFilter != null) {
 				if (handler.takesACharset && ((charset == null) || (charset.length() == 0))) {
@@ -322,7 +328,9 @@ public class ContentFilter {
 					while (true) {
 						toread = bufferSize - offset;
 						bytesRead = input.read(charsetBuffer, offset, toread);
-						if (bytesRead == -1 || toread == 0) break;
+						if (bytesRead == -1 || toread == 0) {
+							break;
+						}
 						offset += bytesRead;
 					}
 					input.reset();
@@ -336,10 +344,13 @@ public class ContentFilter {
 				} catch (IOException e) {
 					throw e;
 				} finally {
-					if (filterCallback != null)
+					if (filterCallback != null) {
 						filterCallback.onFinished();
+					}
 				}
-				if (charset != null) type = type + "; charset=" + charset;
+				if (charset != null) {
+					type = type + "; charset=" + charset;
+				}
 				output.flush();
 				return new FilterStatus(charset, typeName);
 			}
@@ -367,11 +378,13 @@ public class ContentFilter {
 					// so check with the full extractor.
 					try {
 						if ((charset = handler.charsetExtractor.getCharset(input, length, charset)) != null) {
-							if (logMINOR)
+							if (logMINOR) {
 								Logger.minor(ContentFilter.class, "Returning charset: " + charset);
+							}
 							return charset;
-						} else if (bom.mustHaveCharset)
+						} else if (bom.mustHaveCharset) {
 							throw new UndetectableCharsetException(bom.charset);
+						}
 					} catch (DataFilterException e) {
 						// Ignore
 					}
@@ -385,8 +398,9 @@ public class ContentFilter {
 			if (handler.defaultCharset != null) {
 				try {
 					if ((charset = handler.charsetExtractor.getCharset(input, length, handler.defaultCharset)) != null) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(ContentFilter.class, "Returning charset: " + charset);
+						}
 						return charset;
 					}
 				} catch (DataFilterException e) {
@@ -394,30 +408,35 @@ public class ContentFilter {
 				}
 			}
 			try {
-				if ((charset = handler.charsetExtractor.getCharset(input, length, "ISO-8859-1")) != null)
+				if ((charset = handler.charsetExtractor.getCharset(input, length, "ISO-8859-1")) != null) {
 					return charset;
+				}
 			} catch (DataFilterException e) {
 				// Ignore
 			}
 			try {
-				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-8")) != null)
+				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-8")) != null) {
 					return charset;
+				}
 			} catch (DataFilterException e) {
 				// Ignore
 			}
 			try {
-				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-16")) != null)
+				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-16")) != null) {
 					return charset;
+				}
 			} catch (DataFilterException e) {
 				// Ignore
 			}
 			try {
-				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-32")) != null)
+				if ((charset = handler.charsetExtractor.getCharset(input, length, "UTF-32")) != null) {
 					return charset;
+				}
 			} catch (UnsupportedEncodingException e) {
 				// Doesn't seem to be supported by prior to 1.6.
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(ContentFilter.class, "UTF-32 not supported");
+				}
 			} catch (DataFilterException e) {
 				// Ignore
 			}
@@ -425,11 +444,13 @@ public class ContentFilter {
 		}
 
 		// If no BOM, use the charset from the referring document.
-		if (handler.useMaybeCharset && maybeCharset != null && (maybeCharset.length() != 0))
+		if (handler.useMaybeCharset && maybeCharset != null && (maybeCharset.length() != 0)) {
 			return maybeCharset;
+		}
 
-		if (charset != null)
+		if (charset != null) {
 			return charset;
+		}
 
 		// If it doesn't have a BOM, then it's *probably* safe to use as default.
 
@@ -443,33 +464,44 @@ public class ContentFilter {
 	 * @throws IOException
 	 */
 	private static String detectBOM(byte[] input, int length) throws IOException {
-		if (startsWith(input, bom_utf8, length))
+		if (startsWith(input, bom_utf8, length)) {
 			return "UTF-8";
-		if (startsWith(input, bom_utf16_be, length))
+		}
+		if (startsWith(input, bom_utf16_be, length)) {
 			return "UTF-16BE";
-		if (startsWith(input, bom_utf16_le, length))
+		}
+		if (startsWith(input, bom_utf16_le, length)) {
 			return "UTF-16LE";
-		if (startsWith(input, bom_utf32_be, length))
+		}
+		if (startsWith(input, bom_utf32_be, length)) {
 			return "UTF-32BE";
-		if (startsWith(input, bom_utf32_le, length))
+		}
+		if (startsWith(input, bom_utf32_le, length)) {
 			return "UTF-32LE";
+		}
 		// We do NOT support UTF-32-2143 or UTF-32-3412
 		// Java does not have charset support for them, and well,
 		// very few people create web content on a PDP-11!
 
-		if (startsWith(input, bom_utf32_2143, length))
+		if (startsWith(input, bom_utf32_2143, length)) {
 			throw new UnsupportedCharsetInFilterException("UTF-32-2143");
-		if (startsWith(input, bom_utf32_3412, length))
+		}
+		if (startsWith(input, bom_utf32_3412, length)) {
 			throw new UnsupportedCharsetInFilterException("UTF-32-3412");
+		}
 
-		if (startsWith(input, bom_scsu, length))
+		if (startsWith(input, bom_scsu, length)) {
 			return "SCSU";
-		if (startsWith(input, bom_utf7_1, length) || startsWith(input, bom_utf7_2, length) || startsWith(input, bom_utf7_3, length) || startsWith(input, bom_utf7_4, length) || startsWith(input, bom_utf7_5, length))
+		}
+		if (startsWith(input, bom_utf7_1, length) || startsWith(input, bom_utf7_2, length) || startsWith(input, bom_utf7_3, length) || startsWith(input, bom_utf7_4, length) || startsWith(input, bom_utf7_5, length)) {
 			return "UTF-7";
-		if (startsWith(input, bom_utf_ebcdic, length))
+		}
+		if (startsWith(input, bom_utf_ebcdic, length)) {
 			return "UTF-EBCDIC";
-		if (startsWith(input, bom_bocu_1, length))
+		}
+		if (startsWith(input, bom_bocu_1, length)) {
 			return "BOCU-1";
+		}
 		return null;
 	}
 
@@ -496,9 +528,13 @@ public class ContentFilter {
 	static byte[] bom_utf32_3412 = new byte[]{(byte) 0xfe, (byte) 0xff, (byte) 0x00, (byte) 0x00};
 
 	public static boolean startsWith(byte[] data, byte[] cmp, int length) {
-		if (cmp.length > length) return false;
+		if (cmp.length > length) {
+			return false;
+		}
 		for (int i = 0; i < cmp.length; i++) {
-			if (data[i] != cmp[i]) return false;
+			if (data[i] != cmp[i]) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -545,11 +581,14 @@ public class ContentFilter {
 		FilterMIMEType handler = getMIMEType(expectedMIME);
 		if (handler == null || (handler.readFilter == null && !handler.safeToRead)) {
 			if (handler == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(ContentFilter.class, "Unable to get filter handler for MIME type " + expectedMIME);
+				}
 				return new UnknownContentTypeException(expectedMIME);
 			} else {
-				if (logMINOR) Logger.minor(ContentFilter.class, "Unable to filter unsafe MIME type " + expectedMIME);
+				if (logMINOR) {
+					Logger.minor(ContentFilter.class, "Unable to filter unsafe MIME type " + expectedMIME);
+				}
 				return new KnownUnsafeContentTypeException(handler);
 			}
 		}

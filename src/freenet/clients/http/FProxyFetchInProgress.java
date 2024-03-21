@@ -204,9 +204,9 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	synchronized FProxyFetchResult innerGetResult(boolean hasWaited) {
 		lastTouched = System.currentTimeMillis();
 		FProxyFetchResult res;
-		if (data != null)
+		if (data != null) {
 			res = new FProxyFetchResult(this, data, mimeType, timeStarted, goneToNetwork, getETA(), hasWaited);
-		else {
+		} else {
 			res = new FProxyFetchResult(this, mimeType, size, timeStarted, goneToNetwork,
 					totalBlocks, requiredBlocks, fetchedBlocks, failedBlocks, fatallyFailedBlocks, finalizedBlocks, failed, getETA(), hasWaited);
 		}
@@ -220,8 +220,9 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 
 	public void start(ClientContext context) throws FetchException {
 		try {
-			if (!checkCache(context))
+			if (!checkCache(context)) {
 				context.start(getter);
+			}
 		} catch (FetchException e) {
 			synchronized (this) {
 				this.failed = e;
@@ -244,9 +245,13 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	 */
 	private boolean checkCache(ClientContext context) {
 		// Fproxy uses lookupInstant() with mustCopy = false. I.e. it can reuse stuff unsafely. If the user frees it it's their fault.
-		if (bogusUSK(context)) return false;
+		if (bogusUSK(context)) {
+			return false;
+		}
 		CacheFetchResult result = context.downloadCache == null ? null : context.downloadCache.lookupInstant(uri, !fctx.filterData, false, null);
-		if (result == null) return false;
+		if (result == null) {
+			return false;
+		}
 		Bucket data = null;
 		String mimeType = null;
 		if ((!fctx.filterData) && (!result.alreadyFiltered)) {
@@ -273,18 +278,21 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 						onSuccess(result, null);
 						return true;
 					} // else re-filter
-				} else
+				} else {
 					return false;
+				}
 			} else {
 				return false;
 			}
 		}
 		data = result.asBucket();
 		mimeType = result.getMimeType();
-		if (mimeType == null || mimeType.isEmpty()) mimeType = DefaultMIMETypes.DEFAULT_MIME_TYPE;
-		if (fctx.overrideMIME != null && !result.alreadyFiltered)
+		if (mimeType == null || mimeType.isEmpty()) {
+			mimeType = DefaultMIMETypes.DEFAULT_MIME_TYPE;
+		}
+		if (fctx.overrideMIME != null && !result.alreadyFiltered) {
 			mimeType = fctx.overrideMIME;
-		else if (fctx.overrideMIME != null && !mimeType.equals(fctx.overrideMIME)) {
+		} else if (fctx.overrideMIME != null && !mimeType.equals(fctx.overrideMIME)) {
 			// Doesn't work.
 			return false;
 		}
@@ -342,10 +350,13 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	 * @return True if we can't use the download queue, false if we can.
 	 */
 	private boolean bogusUSK(ClientContext context) {
-		if (!uri.isUSK()) return false;
+		if (!uri.isUSK()) {
+			return false;
+		}
 		long edition = uri.getSuggestedEdition();
-		if (edition < 0)
+		if (edition < 0) {
 			return true; // Need to do the fetch.
+		}
 		USK usk;
 		try {
 			usk = USK.create(uri);
@@ -353,22 +364,27 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 			return false; // Will fail later.
 		}
 		long ret = context.uskManager.lookupKnownGood(usk);
-		if (ret == -1) return false;
+		if (ret == -1) {
+			return false;
+		}
 		return ret > edition;
 	}
 
 	private boolean shouldAcceptCachedFilteredData(FetchContext fctx,
 												   CacheFetchResult result) {
 		// FIXME allow the charset if it's the same
-		if (fctx.charset != null) return false;
+		if (fctx.charset != null) {
+			return false;
+		}
 		if (fctx.overrideMIME == null) {
 			return true;
 		} else {
 			String finalMIME = result.getMimeType();
-			if (fctx.overrideMIME.equals(finalMIME))
+			if (fctx.overrideMIME.equals(finalMIME)) {
 				return true;
-			else if (ContentFilter.stripMIMEType(finalMIME).equals(fctx.overrideMIME) && fctx.charset == null)
+			} else if (ContentFilter.stripMIMEType(finalMIME).equals(fctx.overrideMIME) && fctx.charset == null) {
 				return true;
+			}
 			// FIXME we could make this work in a few more cases... it doesn't matter much though as usually people don't override the MIME type!
 		}
 		return false;
@@ -388,11 +404,15 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 					fatallyFailedBlocks = split.fatallyFailedBlocks;
 					finalizedBlocks = split.finalizedTotal;
 					int req = requiredBlocks - (fetchedBlocks + failedBlocks + fatallyFailedBlocks);
-					if (!(req > 1024 && oldReq <= 1024)) return;
+					if (!(req > 1024 && oldReq <= 1024)) {
+						return;
+					}
 				}
 			} else if (ce instanceof SendingToNetworkEvent) {
 				synchronized (this) {
-					if (goneToNetwork) return;
+					if (goneToNetwork) {
+						return;
+					}
 					goneToNetwork = true;
 					fetchedBlocksPreNetwork = fetchedBlocks;
 				}
@@ -400,13 +420,19 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 				synchronized (this) {
 					this.mimeType = ((ExpectedMIMEEvent) ce).expectedMIMEType;
 				}
-				if (!goneToNetwork) return;
+				if (!goneToNetwork) {
+					return;
+				}
 			} else if (ce instanceof ExpectedFileSizeEvent) {
 				synchronized (this) {
 					this.size = ((ExpectedFileSizeEvent) ce).expectedSize;
 				}
-				if (!goneToNetwork) return;
-			} else return;
+				if (!goneToNetwork) {
+					return;
+				}
+			} else {
+				return;
+			}
 			wakeWaiters(false);
 		} finally {
 			for (FProxyFetchListener l : new ArrayList<FProxyFetchListener>(listener)) {
@@ -444,16 +470,18 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	public void onSuccess(FetchResult result, ClientGetter state) {
 		Bucket droppedData = null;
 		synchronized (this) {
-			if (cancelled)
+			if (cancelled) {
 				droppedData = result.asBucket();
-			else
+			} else {
 				this.data = result.asBucket();
+			}
 			this.mimeType = result.getMimeType();
 			this.finished = true;
 		}
 		wakeWaiters(true);
-		if (droppedData != null)
+		if (droppedData != null) {
 			droppedData.free();
+		}
 	}
 
 	public synchronized boolean hasData() {
@@ -467,8 +495,12 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	public void close(FProxyFetchWaiter waiter) {
 		synchronized (this) {
 			waiters.remove(waiter);
-			if (!results.isEmpty()) return;
-			if (!waiters.isEmpty()) return;
+			if (!results.isEmpty()) {
+				return;
+			}
+			if (!waiters.isEmpty()) {
+				return;
+			}
 		}
 		tracker.queueCancel(this);
 	}
@@ -483,14 +515,24 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	 * function, if it returns true then finish the cancel outside the lock.
 	 */
 	public synchronized boolean canCancel() {
-		if (!waiters.isEmpty()) return false;
-		if (!results.isEmpty()) return false;
-		if (!listener.isEmpty()) return false;
-		if (lastTouched + LIFETIME >= System.currentTimeMillis() && !requestImmediateCancel) {
-			if (logMINOR) Logger.minor(this, "Not able to cancel for " + this + " : " + uri + " : " + maxSize);
+		if (!waiters.isEmpty()) {
 			return false;
 		}
-		if (logMINOR) Logger.minor(this, "Can cancel for " + this + " : " + uri + " : " + maxSize);
+		if (!results.isEmpty()) {
+			return false;
+		}
+		if (!listener.isEmpty()) {
+			return false;
+		}
+		if (lastTouched + LIFETIME >= System.currentTimeMillis() && !requestImmediateCancel) {
+			if (logMINOR) {
+				Logger.minor(this, "Not able to cancel for " + this + " : " + uri + " : " + maxSize);
+			}
+			return false;
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Can cancel for " + this + " : " + uri + " : " + maxSize);
+		}
 		return true;
 	}
 
@@ -499,7 +541,9 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	 * must have been removed from the tracker already, so it won't be reused.
 	 */
 	public void finishCancel() {
-		if (logMINOR) Logger.minor(this, "Finishing cancel for " + this + " : " + uri + " : " + maxSize);
+		if (logMINOR) {
+			Logger.minor(this, "Finishing cancel for " + this + " : " + uri + " : " + maxSize);
+		}
 		try {
 			getter.cancel(tracker.context);
 		} catch (Throwable t) {
@@ -524,29 +568,47 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	public void close(FProxyFetchResult result) {
 		synchronized (this) {
 			results.remove(result);
-			if (!results.isEmpty()) return;
-			if (!waiters.isEmpty()) return;
+			if (!results.isEmpty()) {
+				return;
+			}
+			if (!waiters.isEmpty()) {
+				return;
+			}
 		}
 		tracker.queueCancel(this);
 	}
 
 	public synchronized long getETA() {
-		if (!goneToNetwork) return -1;
-		if (requiredBlocks <= 0) return -1;
-		if (fetchedBlocks >= requiredBlocks) return -1;
-		if (fetchedBlocks - fetchedBlocksPreNetwork < 5) return -1;
+		if (!goneToNetwork) {
+			return -1;
+		}
+		if (requiredBlocks <= 0) {
+			return -1;
+		}
+		if (fetchedBlocks >= requiredBlocks) {
+			return -1;
+		}
+		if (fetchedBlocks - fetchedBlocksPreNetwork < 5) {
+			return -1;
+		}
 		return ((System.currentTimeMillis() - timeStarted) * (requiredBlocks - fetchedBlocksPreNetwork)) / (fetchedBlocks - fetchedBlocksPreNetwork);
 	}
 
 	public synchronized boolean notFinishedOrFatallyFinished() {
-		if (data == null && failed == null) return true;
-		if (failed != null && failed.isFatal()) return true;
+		if (data == null && failed == null) {
+			return true;
+		}
+		if (failed != null && failed.isFatal()) {
+			return true;
+		}
 		if (failed != null && !hasNotifiedFailure) {
 			hasNotifiedFailure = true;
 			return true;
 		}
 		if (failed != null && (System.currentTimeMillis() - timeFailed < 1000 || fetched < 2)) // Once for javascript and once for the user when it re-pulls.
+		{
 			return true;
+		}
 		return false;
 	}
 
@@ -601,13 +663,27 @@ public class FProxyFetchInProgress implements ClientEventListener, ClientGetCall
 	}
 
 	public boolean fetchContextEquivalent(FetchContext context) {
-		if (this.fctx.filterData != context.filterData) return false;
-		if (this.fctx.maxOutputLength != context.maxOutputLength) return false;
-		if (this.fctx.maxTempLength != context.maxTempLength) return false;
-		if (this.fctx.charset == null && context.charset != null) return false;
-		if (this.fctx.charset != null && !this.fctx.charset.equals(context.charset)) return false;
-		if (this.fctx.overrideMIME == null && context.overrideMIME != null) return false;
-		if (this.fctx.overrideMIME != null && !this.fctx.overrideMIME.equals(context.overrideMIME)) return false;
+		if (this.fctx.filterData != context.filterData) {
+			return false;
+		}
+		if (this.fctx.maxOutputLength != context.maxOutputLength) {
+			return false;
+		}
+		if (this.fctx.maxTempLength != context.maxTempLength) {
+			return false;
+		}
+		if (this.fctx.charset == null && context.charset != null) {
+			return false;
+		}
+		if (this.fctx.charset != null && !this.fctx.charset.equals(context.charset)) {
+			return false;
+		}
+		if (this.fctx.overrideMIME == null && context.overrideMIME != null) {
+			return false;
+		}
+		if (this.fctx.overrideMIME != null && !this.fctx.overrideMIME.equals(context.overrideMIME)) {
+			return false;
+		}
 		return true;
 	}
 

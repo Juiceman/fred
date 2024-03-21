@@ -31,22 +31,26 @@ public class LoadPlugin extends FCPMessage {
 
 	public LoadPlugin(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain an Identifier field", null, false);
+		}
 		pluginURL = fs.get("PluginURL");
-		if (pluginURL == null)
+		if (pluginURL == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain a PluginURL field", identifier, false);
+		}
 		String type = fs.get("URLType");
-		if ((type != null) && (type.trim().length() > 0))
+		if ((type != null) && (type.trim().length() > 0)) {
 			urlType = type.trim();
-		else
+		} else {
 			urlType = null;
+		}
 		if (urlType != null) {
 			if (!(TYPENAME_FILE.equalsIgnoreCase(urlType) ||
 					TYPENAME_FREENET.equalsIgnoreCase(urlType) ||
 					TYPENAME_OFFICIAL.equalsIgnoreCase(urlType) ||
-					TYPENAME_URL.equalsIgnoreCase(urlType)))
+					TYPENAME_URL.equalsIgnoreCase(urlType))) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unknown URL type: '" + urlType + "'", identifier, false);
+			}
 		}
 		store = fs.getBoolean("Store", false);
 	}

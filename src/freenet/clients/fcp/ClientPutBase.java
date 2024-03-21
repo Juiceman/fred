@@ -94,14 +94,18 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		final int code;
 
 		UploadFrom(int code) {
-			if (uploadFromByCode.containsKey(code)) throw new Error("Duplicate");
+			if (uploadFromByCode.containsKey(code)) {
+				throw new Error("Duplicate");
+			}
 			uploadFromByCode.put(code, this);
 			this.code = code;
 		}
 
 		public static UploadFrom getByCode(int x) {
 			UploadFrom u = uploadFromByCode.get(x);
-			if (u == null) throw new IllegalArgumentException();
+			if (u == null) {
+				throw new IllegalArgumentException();
+			}
 			return u;
 		}
 
@@ -136,7 +140,9 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 
 	static FreenetURI checkEmptySSK(FreenetURI uri, String filename, ClientContext context) {
 		if ("SSK".equals(uri.getKeyType()) && uri.getDocName() == null && uri.getRoutingKey() == null) {
-			if (filename == null || filename.isEmpty()) filename = "key";
+			if (filename == null || filename.isEmpty()) {
+				filename = "key";
+			}
 			// SSK@ = use a random SSK.
 			InsertableClientSSK key = InsertableClientSSK.createRandom(context.random, "");
 			return key.getInsertURI().setDocName(filename);
@@ -168,8 +174,9 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 
 	@Override
 	public void onLostConnection(ClientContext context) {
-		if (persistence == Persistence.CONNECTION)
+		if (persistence == Persistence.CONNECTION) {
 			cancel(context);
+		}
 		// otherwise ignore
 	}
 
@@ -182,21 +189,25 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 			succeeded = true;
 			finished = true;
 			completionTime = System.currentTimeMillis();
-			if (generatedURI == null)
+			if (generatedURI == null) {
 				Logger.error(this, "No generated URI in onSuccess() for " + this + " from " + state);
+			}
 		}
 		if (persistence == Persistence.CONNECTION) {
 			freeData();
 		}
 		finish();
 		trySendFinalMessage(null, null);
-		if (client != null)
+		if (client != null) {
 			client.notifySuccess(this);
+		}
 	}
 
 	@Override
 	public void onFailure(InsertException e, BaseClientPutter state) {
-		if (finished) return;
+		if (finished) {
+			return;
+		}
 		synchronized (this) {
 			started = true; // FIXME remove, used by resuming
 			finished = true;
@@ -208,18 +219,20 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		}
 		finish();
 		trySendFinalMessage(null, null);
-		if (client != null)
+		if (client != null) {
 			client.notifyFailure(this);
+		}
 	}
 
 	@Override
 	public void onGeneratedURI(FreenetURI uri, BaseClientPutter state) {
 		synchronized (this) {
 			if (generatedURI != null) {
-				if (!uri.equals(generatedURI))
+				if (!uri.equals(generatedURI)) {
 					Logger.error(this, "onGeneratedURI(" + uri + ',' + state + ") but already set generatedURI to " + generatedURI);
-				else if (logMINOR)
+				} else if (logMINOR) {
 					Logger.minor(this, "onGeneratedURI() twice with same value: " + generatedURI + " -> " + uri);
+				}
 			} else {
 				generatedURI = uri;
 			}
@@ -241,8 +254,9 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	public void onGeneratedMetadata(Bucket metadata, BaseClientPutter state) {
 		boolean delete = false;
 		synchronized (this) {
-			if (generatedURI != null)
+			if (generatedURI != null) {
 				Logger.error(this, "Got generated metadata but already have URI on " + this + " from " + state);
+			}
 			if (generatedMetadata != null) {
 				Logger.error(this, "Already got generated metadata from " + state + " on " + this);
 				delete = true;
@@ -270,10 +284,11 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		}
 		// notify client that request was removed
 		FCPMessage msg = new PersistentRequestRemovedMessage(getIdentifier(), global);
-		if (persistence == Persistence.CONNECTION)
+		if (persistence == Persistence.CONNECTION) {
 			origHandler.send(msg);
-		else
+		} else {
 			client.queueClientRequestMessage(msg, 0);
+		}
 
 		freeData();
 		Bucket meta;
@@ -297,8 +312,12 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 
 	@Override
 	public void receive(final ClientEvent ce, ClientContext context) {
-		if (finished) return;
-		if (logMINOR) Logger.minor(this, "Receiving event " + ce + " on " + this);
+		if (finished) {
+			return;
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Receiving event " + ce + " on " + this);
+		}
 		if (ce instanceof SplitfileProgressEvent) {
 			if ((verbosity & VERBOSITY_SPLITFILE_PROGRESS) == VERBOSITY_SPLITFILE_PROGRESS) {
 				SimpleProgressMessage progress =
@@ -341,7 +360,9 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 
 	@Override
 	public void onFetchable(BaseClientPutter putter) {
-		if (finished) return;
+		if (finished) {
+			return;
+		}
 		if ((verbosity & VERBOSITY_PUT_FETCHABLE) == VERBOSITY_PUT_FETCHABLE) {
 			FreenetURI temp;
 			synchronized (this) {
@@ -367,12 +388,14 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		if (msg == null) {
 			Logger.error(this, "Trying to send null message on " + this, new Exception("error"));
 		} else {
-			if (persistence == Persistence.CONNECTION && handler == null)
+			if (persistence == Persistence.CONNECTION && handler == null) {
 				handler = origHandler.getOutputHandler();
-			if (handler != null)
+			}
+			if (handler != null) {
 				handler.queue(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier));
-			else
+			} else {
 				client.queueClientRequestMessage(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier), 0);
+			}
 		}
 	}
 
@@ -381,12 +404,14 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 		synchronized (this) {
 			msg = new URIGeneratedMessage(generatedURI, identifier, isGlobalQueue());
 		}
-		if (persistence == Persistence.CONNECTION && handler == null)
+		if (persistence == Persistence.CONNECTION && handler == null) {
 			handler = origHandler.getOutputHandler();
-		if (handler != null)
+		}
+		if (handler != null) {
 			handler.queue(FCPMessage.withListRequestIdentifier(msg, listRequestIdentifier));
-		else
+		} else {
 			client.queueClientRequestMessage(msg, 0);
+		}
 	}
 
 	/**
@@ -396,12 +421,14 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	 */
 	private void trySendGeneratedMetadataMessage(Bucket metadata, FCPConnectionOutputHandler handler, String listRequestIdentifier) {
 		FCPMessage msg = FCPMessage.withListRequestIdentifier(new GeneratedMetadataMessage(identifier, global, metadata), listRequestIdentifier);
-		if (persistence == Persistence.CONNECTION && handler == null)
+		if (persistence == Persistence.CONNECTION && handler == null) {
 			handler = origHandler.getOutputHandler();
-		if (handler != null)
+		}
+		if (handler != null) {
 			handler.queue(msg);
-		else
+		} else {
 			client.queueClientRequestMessage(msg, 0);
+		}
 	}
 
 	/**
@@ -413,15 +440,18 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	 */
 	private void trySendProgressMessage(final FCPMessage msg, final int verbosity, FCPConnectionOutputHandler handler, ClientContext context) {
 		synchronized (this) {
-			if (persistence != Persistence.CONNECTION)
+			if (persistence != Persistence.CONNECTION) {
 				progressMessage = msg;
+			}
 		}
-		if (persistence == Persistence.CONNECTION && handler == null)
+		if (persistence == Persistence.CONNECTION && handler == null) {
 			handler = origHandler.getOutputHandler();
-		if (handler != null)
+		}
+		if (handler != null) {
 			handler.queue(msg);
-		else
+		} else {
 			client.queueClientRequestMessage(msg, verbosity);
+		}
 	}
 
 	protected abstract FCPMessage persistentTagMessage();
@@ -440,14 +470,18 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 			fin = finished;
 			meta = generatedMetadata;
 		}
-		if (generated)
+		if (generated) {
 			trySendGeneratedURIMessage(handler, listRequestIdentifier);
-		if (meta != null)
+		}
+		if (meta != null) {
 			trySendGeneratedMetadataMessage(meta, handler, listRequestIdentifier);
-		if (msg != null)
+		}
+		if (msg != null) {
 			handler.queue(msg);
-		if (fin)
+		}
+		if (fin) {
 			trySendFinalMessage(handler, listRequestIdentifier);
+		}
 	}
 
 	protected abstract String getTypeName();
@@ -455,85 +489,107 @@ public abstract class ClientPutBase extends ClientRequest implements ClientPutCa
 	@Override
 	public synchronized double getSuccessFraction() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getFraction();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 
 	@Override
 	public synchronized double getTotalBlocks() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getTotalBlocks();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public synchronized double getMinBlocks() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getMinBlocks();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public synchronized double getFailedBlocks() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getFailedBlocks();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public synchronized double getFatalyFailedBlocks() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getFatalyFailedBlocks();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public synchronized double getFetchedBlocks() {
 		if (progressMessage != null) {
-			if (progressMessage instanceof SimpleProgressMessage)
+			if (progressMessage instanceof SimpleProgressMessage) {
 				return ((SimpleProgressMessage) progressMessage).getFetchedBlocks();
-			else return 0;
-		} else
+			} else {
+				return 0;
+			}
+		} else {
 			return -1;
+		}
 	}
 
 	@Override
 	public synchronized boolean isTotalFinalized() {
-		if (!(progressMessage instanceof SimpleProgressMessage)) return false;
-		else {
+		if (!(progressMessage instanceof SimpleProgressMessage)) {
+			return false;
+		} else {
 			return ((SimpleProgressMessage) progressMessage).isTotalFinalized();
 		}
 	}
 
 	@Override
 	public synchronized String getFailureReason(boolean longDescription) {
-		if (putFailedMessage == null)
+		if (putFailedMessage == null) {
 			return null;
+		}
 		String s = putFailedMessage.shortCodeDescription;
-		if (longDescription && putFailedMessage.extraDescription != null)
+		if (longDescription && putFailedMessage.extraDescription != null) {
 			s += ": " + putFailedMessage.extraDescription;
+		}
 		return s;
 	}
 
 	public PutFailedMessage getFailureMessage() {
-		if (putFailedMessage == null)
+		if (putFailedMessage == null) {
 			return null;
+		}
 		return putFailedMessage;
 	}
 

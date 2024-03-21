@@ -96,17 +96,21 @@ public class BookmarkEditorToadlet extends Toadlet {
 
 			actions.addChild("a", "href", "?action=del&bookmark=" + itemPath).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/delete.png", delete, delete});
 
-			if (cutedPath == null)
+			if (cutedPath == null) {
 				actions.addChild("a", "href", "?action=cut&bookmark=" + itemPath).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/cut.png", cut, cut});
+			}
 
-			if (i != 0)
+			if (i != 0) {
 				actions.addChild("a", "href", "?action=up&bookmark=" + itemPath).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/go-up.png", moveUp, moveUp});
+			}
 
-			if (i != items.size() - 1)
+			if (i != items.size() - 1) {
 				actions.addChild("a", "href", "?action=down&bookmark=" + itemPath).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/go-down.png", moveDown, moveDown});
+			}
 
-			if (hasFriends)
+			if (hasFriends) {
 				actions.addChild("a", "href", "?action=share&bookmark=" + itemPath, NodeL10n.getBase().getString("BookmarkEditorToadlet.share"));
+			}
 
 			li.addChild(actions);
 			list.addChild(li);
@@ -129,28 +133,34 @@ public class BookmarkEditorToadlet extends Toadlet {
 
 			actions.addChild("a", "href", "?action=addCat&bookmark=" + catPathEncoded).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/folder-new.png", addCategory, addCategory});
 
-			if (cutedPath == null)
+			if (cutedPath == null) {
 				actions.addChild("a", "href", "?action=cut&bookmark=" + catPathEncoded).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/cut.png", cut, cut});
+			}
 
-			if (i != 0)
+			if (i != 0) {
 				actions.addChild("a", "href", "?action=up&bookmark=" + catPathEncoded).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/go-up.png", moveUp, moveUp});
+			}
 
-			if (i != cats.size() - 1)
+			if (i != cats.size() - 1) {
 				actions.addChild("a", "href", "?action=down&bookmark=" + catPathEncoded).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/go-down.png", moveDown, moveDown});
+			}
 
-			if (cutedPath != null && !catPathEncoded.startsWith(cutedPath) && !catPathEncoded.equals(bookmarkManager.parentPath(cutedPath)))
+			if (cutedPath != null && !catPathEncoded.startsWith(cutedPath) && !catPathEncoded.equals(bookmarkManager.parentPath(cutedPath))) {
 				actions.addChild("a", "href", "?action=paste&bookmark=" + catPathEncoded).addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/paste.png", paste, paste});
+			}
 
 			subCat.addChild(actions);
-			if (cats.get(i).size() != 0)
+			if (cats.get(i).size() != 0) {
 				addCategoryToList(cats.get(i), catPath, list.addChild("li").addChild("ul"), bookmarkManager);
+			}
 		}
 	}
 
 	private void sendBookmarkFeeds(HTTPRequest req, BookmarkItem item, String publicDescription) {
 		for (DarknetPeerNode peer : core.getNode().getDarknetConnections())
-			if (req.isPartSet("node_" + peer.hashCode()))
+			if (req.isPartSet("node_" + peer.hashCode())) {
 				peer.sendBookmarkFeed(item.getURI(), item.getName(), publicDescription, item.hasAnActivelink());
+			}
 	}
 
 	private HTMLNode getBookmarksList(BookmarkManager bookmarkManager) {
@@ -164,8 +174,9 @@ public class BookmarkEditorToadlet extends Toadlet {
 		actions.addChild("a", "href", "?action=addItem&bookmark=/").addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/bookmark-new.png", addBookmark, addBookmark});
 		actions.addChild("a", "href", "?action=addCat&bookmark=/").addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/folder-new.png", addCategory, addCategory});
 
-		if (cutedPath != null && !"/".equals(bookmarkManager.parentPath(cutedPath)))
+		if (cutedPath != null && !"/".equals(bookmarkManager.parentPath(cutedPath))) {
 			actions.addChild("a", "href", "?action=paste&bookmark=/").addChild("img", new String[]{"src", "alt", "title"}, new String[]{"/static/icon/paste.png", paste, paste});
+		}
 
 		root.addChild(actions);
 		addCategoryToList(BookmarkManager.MAIN_CATEGORY, "/", root.addChild("ul"), bookmarkManager);
@@ -175,8 +186,9 @@ public class BookmarkEditorToadlet extends Toadlet {
 
 	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx)
 			throws ToadletContextClosedException, IOException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		PageMaker pageMaker = ctx.getPageMaker();
 		BookmarkManager bookmarkManager = ctx.getBookmarkManager();
@@ -199,10 +211,11 @@ public class BookmarkEditorToadlet extends Toadlet {
 			}
 			Bookmark bookmark;
 
-			if (bookmarkPath.endsWith("/"))
+			if (bookmarkPath.endsWith("/")) {
 				bookmark = bookmarkManager.getCategoryByPath(bookmarkPath);
-			else
+			} else {
 				bookmark = bookmarkManager.getItemByPath(bookmarkPath);
+			}
 
 			if (bookmark == null) {
 				pageMaker.getInfobox("infobox-error", error, content, "bookmark-does-not-exist", false).
@@ -224,9 +237,9 @@ public class BookmarkEditorToadlet extends Toadlet {
 				confirmForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "cancel", NodeL10n.getBase().getString("Toadlet.cancel")});
 				confirmForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "confirmdelete", NodeL10n.getBase().getString("BookmarkEditorToadlet.confirmDelete")});
 
-			} else if ("cut".equals(action))
+			} else if ("cut".equals(action)) {
 				cutedPath = bookmarkPath;
-			else if ("paste".equals(action) && cutedPath != null) {
+			} else if ("paste".equals(action) && cutedPath != null) {
 
 				bookmarkManager.moveBookmark(cutedPath, bookmarkPath);
 				bookmarkManager.storeBookmarks();
@@ -275,10 +288,11 @@ public class BookmarkEditorToadlet extends Toadlet {
 						form.addChild("br");
 					}
 					form.addChild("label", "for", "hasAnActivelink", (NodeL10n.getBase().getString("BookmarkEditorToadlet.hasAnActivelinkLabel") + ' '));
-					if (!isNew && item.hasAnActivelink())
+					if (!isNew && item.hasAnActivelink()) {
 						form.addChild("input", new String[]{"type", "id", "name", "checked"}, new String[]{"checkbox", "hasAnActivelink", "hasAnActivelink", String.valueOf(item.hasAnActivelink())});
-					else
+					} else {
 						form.addChild("input", new String[]{"type", "id", "name"}, new String[]{"checkbox", "hasAnActivelink", "hasAnActivelink"});
+					}
 					if (core.getNode().getDarknetConnections().length > 0 && ("addItem".equals(action) || "share".equals(action))) {
 						form.addChild("br");
 						form.addChild("br");
@@ -310,10 +324,11 @@ public class BookmarkEditorToadlet extends Toadlet {
 				form.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "action", req.getParam("action")});
 
 				form.addChild("input", new String[]{"type", "value"}, new String[]{"submit", "share".equals(action) ? NodeL10n.getBase().getString("BookmarkEditorToadlet.share") : NodeL10n.getBase().getString("BookmarkEditorToadlet.save")});
-			} else if ("up".equals(action))
+			} else if ("up".equals(action)) {
 				bookmarkManager.moveBookmarkUp(bookmarkPath, true);
-			else if ("down".equals(action))
+			} else if ("down".equals(action)) {
 				bookmarkManager.moveBookmarkDown(bookmarkPath, true);
+			}
 		}
 
 		if (cutedPath != null) {
@@ -331,8 +346,9 @@ public class BookmarkEditorToadlet extends Toadlet {
 		HTMLNode addDefaultBookmarksForm = ctx.addFormChild(content, "", "AddDefaultBookmarks");
 		addDefaultBookmarksForm.addChild("input", new String[]{"type", "name", "value"}, new String[]{"submit", "AddDefaultBookmarks", NodeL10n.getBase().getString("BookmarkEditorToadlet.addDefaultBookmarks")});
 
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "Returning:\n" + pageNode.generate());
+		}
 
 		this.writeHTMLReply(ctx, 200, "OK", pageNode.generate());
 	}
@@ -355,10 +371,11 @@ public class BookmarkEditorToadlet extends Toadlet {
 		try {
 
 			Bookmark bookmark;
-			if (bookmarkPath.endsWith("/"))
+			if (bookmarkPath.endsWith("/")) {
 				bookmark = bookmarkManager.getCategoryByPath(bookmarkPath);
-			else
+			} else {
 				bookmark = bookmarkManager.getItemByPath(bookmarkPath);
+			}
 			if (bookmark == null && !req.isPartSet("cancelCut")) {
 				pageMaker.getInfobox("infobox-error", NodeL10n.getBase().getString("BookmarkEditorToadlet.error"), content, "bookmark-error", false).
 						addChild("#", NodeL10n.getBase().getString("BookmarkEditorToadlet.bookmarkDoesNotExist", new String[]{"bookmark"}, new String[]{bookmarkPath}));
@@ -375,13 +392,14 @@ public class BookmarkEditorToadlet extends Toadlet {
 				pageMaker.getInfobox("infobox-success", NodeL10n.getBase().getString("BookmarkEditorToadlet.deleteSucceededTitle"), content, "bookmark-successful-delete", false).
 						addChild("p", NodeL10n.getBase().getString("BookmarkEditorToadlet.deleteSucceeded"));
 
-			} else if (req.isPartSet("cancelCut"))
+			} else if (req.isPartSet("cancelCut")) {
 				cutedPath = null;
-			else if ("edit".equals(action) || "addItem".equals(action) || "addCat".equals(action)) {
+			} else if ("edit".equals(action) || "addItem".equals(action) || "addCat".equals(action)) {
 
 				String name = "unnamed";
-				if (req.isPartSet("name"))
+				if (req.isPartSet("name")) {
 					name = req.getPartAsStringFailsafe("name", MAX_NAME_LENGTH);
+				}
 
 				if ("edit".equals(action)) {
 					bookmarkManager.renameBookmark(bookmarkPath, name);
@@ -410,29 +428,33 @@ public class BookmarkEditorToadlet extends Toadlet {
 						boolean hasAnActivelink = req.isPartSet("hasAnActivelink");
 						if (!isValidName(name)) {
 							addNameError(pageMaker, content);
-						} else
+						} else {
 							newBookmark = new BookmarkItem(key, name,
 									req.getPartAsStringFailsafe("descB", MAX_KEY_LENGTH),
 									req.getPartAsStringFailsafe("explain", MAX_EXPLANATION_LENGTH),
 									hasAnActivelink, bookmarkManager, ctx.getAlertManager());
+						}
 					} else if (!isValidName(name)) {
 						addNameError(pageMaker, content);
-					} else
+					} else {
 						newBookmark = new BookmarkCategory(name);
+					}
 
 					if (newBookmark != null) {
 
 						bookmarkManager.addBookmark(bookmarkPath, newBookmark);
 						bookmarkManager.storeBookmarks();
-						if (newBookmark instanceof BookmarkItem)
+						if (newBookmark instanceof BookmarkItem) {
 							sendBookmarkFeeds(req, (BookmarkItem) newBookmark, req.getPartAsStringFailsafe("publicDescB", MAX_KEY_LENGTH));
+						}
 
 						pageMaker.getInfobox("infobox-success", NodeL10n.getBase().getString("BookmarkEditorToadlet.addedNewBookmarkTitle"), content, "bookmark-add-new", false).
 								addChild("p", NodeL10n.getBase().getString("BookmarkEditorToadlet.addedNewBookmark"));
 					}
 				}
-			} else if ("share".equals(action))
+			} else if ("share".equals(action)) {
 				sendBookmarkFeeds(req, (BookmarkItem) bookmark, req.getPartAsStringFailsafe("publicDescB", MAX_KEY_LENGTH));
+			}
 		} catch (MalformedURLException mue) {
 			pageMaker.getInfobox("infobox-error", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidKeyTitle"), content, "bookmark-error", false).
 					addChild("#", NodeL10n.getBase().getString("BookmarkEditorToadlet.invalidKey"));

@@ -56,14 +56,18 @@ public class PrependLengthOutputStream extends FilterOutputStream {
 	 * @return False if the stream has already been closed.
 	 */
 	public boolean abort() throws IOException {
-		if (closed) return false;
+		if (closed) {
+			return false;
+		}
 		aborted = true;
 		return true;
 	}
 
 	@Override
 	public void close() throws IOException {
-		if (closed) return;
+		if (closed) {
+			return;
+		}
 		out.close();
 		DataOutputStream dos = new DataOutputStream(origOS);
 		if (aborted) {
@@ -74,8 +78,9 @@ public class PrependLengthOutputStream extends FilterOutputStream {
 		}
 		temp.free();
 		closed = true;
-		if (closeUnderlying)
+		if (closeUnderlying) {
 			dos.close();
+		}
 	}
 
 }

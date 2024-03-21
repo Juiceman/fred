@@ -163,7 +163,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	 */
 	@Override
 	public FetchResult fetch(FreenetURI uri) throws FetchException {
-		if (uri == null) throw new NullPointerException();
+		if (uri == null) {
+			throw new NullPointerException();
+		}
 		FetchContext context = getFetchContext();
 		FetchWaiter fw = new FetchWaiter(this);
 		ClientGetter get = new ClientGetter(fw, uri, context, priorityClass, null, null, null);
@@ -180,7 +182,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 	 */
 	@Override
 	public FetchResult fetchFromMetadata(Bucket initialMetadata) throws FetchException {
-		if (initialMetadata == null) throw new NullPointerException();
+		if (initialMetadata == null) {
+			throw new NullPointerException();
+		}
 		FetchContext context = getFetchContext();
 		FetchWaiter fw = new FetchWaiter(this);
 		ClientGetter get = new ClientGetter(fw, FreenetURI.EMPTY_CHK_URI, context, priorityClass, null, null, initialMetadata);
@@ -199,7 +203,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 
 	@Override
 	public FetchResult fetch(FreenetURI uri, long overrideMaxSize, RequestClient clientContext) throws FetchException {
-		if (uri == null) throw new NullPointerException();
+		if (uri == null) {
+			throw new NullPointerException();
+		}
 		FetchWaiter fw = new FetchWaiter(clientContext);
 		FetchContext context = getFetchContext(overrideMaxSize);
 		ClientGetter get = new ClientGetter(fw, uri, context, priorityClass, null, null, null);
@@ -228,7 +234,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 
 	@Override
 	public ClientGetter fetch(FreenetURI uri, ClientGetCallback callback, FetchContext fctx, short prio) throws FetchException {
-		if (uri == null) throw new NullPointerException();
+		if (uri == null) {
+			throw new NullPointerException();
+		}
 		ClientGetter get = new ClientGetter(callback, uri, fctx, prio, null, null, null);
 		try {
 			core.getClientContext().start(get);
@@ -240,7 +248,9 @@ public class HighLevelSimpleClientImpl implements HighLevelSimpleClient, Request
 
 	@Override
 	public ClientGetter fetchFromMetadata(Bucket initialMetadata, ClientGetCallback callback, FetchContext fctx, short prio) throws FetchException {
-		if (initialMetadata == null) throw new NullPointerException();
+		if (initialMetadata == null) {
+			throw new NullPointerException();
+		}
 		ClientGetter get = new ClientGetter(callback, FreenetURI.EMPTY_CHK_URI, fctx, prio, null, null, initialMetadata);
 		try {
 			core.getClientContext().start(get);

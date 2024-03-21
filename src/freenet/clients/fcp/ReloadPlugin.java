@@ -22,11 +22,13 @@ public class ReloadPlugin extends FCPMessage {
 
 	public ReloadPlugin(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain an Identifier field", null, false);
+		}
 		plugname = fs.get("PluginName");
-		if (plugname == null)
+		if (plugname == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must contain a PluginName field", identifier, false);
+		}
 		maxWaitTime = fs.getInt("MaxWaitTime", 0);
 		purge = fs.getBoolean("Purge", false);
 		store = fs.getBoolean("Store", false);

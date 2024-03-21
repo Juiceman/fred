@@ -34,7 +34,9 @@ public abstract class MultipleDataCarryingMessage extends BaseDataCarryingMessag
 		for (Map.Entry<String, Bucket> entry : buckets.entrySet()) {
 			Bucket bucket = entry.getValue();
 			BucketTools.copyTo(bucket, os, bucket.size());
-			if (freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
+			if (freeOnSent) {
+				bucket.free(); // Always transient so no removeFrom() needed.
+			}
 		}
 	}
 

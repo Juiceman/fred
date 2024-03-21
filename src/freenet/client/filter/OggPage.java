@@ -178,10 +178,18 @@ public class OggPage {
 	public static void seekToPage(DataInputStream input) throws IOException {
 		while (true) {
 			//Seek for magic number
-			if (input.readByte() != magicNumber[0]) continue;
-			if (input.readByte() != magicNumber[1]) continue;
-			if (input.readByte() != magicNumber[2]) continue;
-			if (input.readByte() != magicNumber[3]) continue;
+			if (input.readByte() != magicNumber[0]) {
+				continue;
+			}
+			if (input.readByte() != magicNumber[1]) {
+				continue;
+			}
+			if (input.readByte() != magicNumber[2]) {
+				continue;
+			}
+			if (input.readByte() != magicNumber[3]) {
+				continue;
+			}
 			return;
 		}
 		//If we've found all of the previous magic numbers, we've probably found a page
@@ -206,13 +214,19 @@ public class OggPage {
 	 * @return whether or not the page is valid
 	 */
 	public boolean headerValid() {
-		if (version != 0) return false;
-		if (!Arrays.equals(checksum, calculateCRC())) return false;
+		if (version != 0) {
+			return false;
+		}
+		if (!Arrays.equals(checksum, calculateCRC())) {
+			return false;
+		}
 		return true;
 	}
 
 	public boolean isPacketContinued() {
-		if (logMINOR) Logger.minor(this, "Packet continued: " + (headerType & 0x1));
+		if (logMINOR) {
+			Logger.minor(this, "Packet continued: " + (headerType & 0x1));
+		}
 		return (headerType & 0x01) == 1;
 	}
 
@@ -286,22 +300,31 @@ public class OggPage {
 		segments = 0;
 		for (int packet : packetSizes) {
 			segments += packet / 255 + (packet % 255 == 0 ? 0 : 1);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Size of current packet: " + packet + " Current number of segments: " + segments + " Number of whole segments belonging to this packet: " + packet / 255 + " Remaining bytes " + packet % 255);
+			}
 		}
-		if (logMINOR) Logger.minor(this, "Segments " + segments);
+		if (logMINOR) {
+			Logger.minor(this, "Segments " + segments);
+		}
 		segmentTable = new byte[segments];
 		int segment = 0;
 		for (int packet : packetSizes) {
-			if (logMINOR) Logger.minor(this, "Setting segments for packet sized " + packet);
+			if (logMINOR) {
+				Logger.minor(this, "Setting segments for packet sized " + packet);
+			}
 			for (int packetSegment = 0; packetSegment < packet / 255; packetSegment++) {
-				if (logMINOR) Logger.minor(this, "Setting segment " + segment + " to full.");
+				if (logMINOR) {
+					Logger.minor(this, "Setting segment " + segment + " to full.");
+				}
 				segmentTable[segment] = intToUnsignedByte(255);
 				segment++;
 			}
 			int remainder = packet % 255;
 			if (remainder != 0) {
-				if (logMINOR) Logger.minor(this, "Partially filling segment " + segment);
+				if (logMINOR) {
+					Logger.minor(this, "Partially filling segment " + segment);
+				}
 				segmentTable[segment] = intToUnsignedByte(remainder);
 				segment++;
 			}

@@ -33,8 +33,9 @@ public class DiskSpaceCheckingOutputStream extends FilterOutputStream {
 	@Override
 	public synchronized void write(byte[] buf, int offset, int length) throws IOException {
 		if (written + length - lastChecked >= bufferSize) {
-			if (!checker.checkDiskSpace(file, length, bufferSize))
+			if (!checker.checkDiskSpace(file, length, bufferSize)) {
 				throw new InsufficientDiskSpaceException();
+			}
 			lastChecked = written;
 		}
 		out.write(buf, offset, length);

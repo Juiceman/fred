@@ -130,8 +130,9 @@ public final class StringValidityChecker {
 	public static boolean isWindowsReservedFilename(String filename) {
 		filename = filename.toLowerCase();
 		int nameEnd = filename.indexOf('.'); // For files with multiple dots, the part before the first dot counts as the filename. E.g. "con.blah.txt" is reserved.
-		if (nameEnd == -1)
+		if (nameEnd == -1) {
 			nameEnd = filename.length();
+		}
 
 		return windowsReservedFilenames.contains(filename.substring(0, nameEnd));
 	}
@@ -151,8 +152,9 @@ public final class StringValidityChecker {
 
 	public static boolean containsNoIDNBlacklistCharacters(String text) {
 		for (Character c : text.toCharArray()) {
-			if (idnBlacklist.contains(c))
+			if (idnBlacklist.contains(c)) {
 				return false;
+			}
 		}
 
 		return true;
@@ -162,8 +164,9 @@ public final class StringValidityChecker {
 		for (Character c : text.toCharArray()) {
 			if (Character.getType(c) == Character.LINE_SEPARATOR
 					|| Character.getType(c) == Character.PARAGRAPH_SEPARATOR
-					|| c == '\n' || c == '\r')
+					|| c == '\n' || c == '\r') {
 				return false;
+			}
 		}
 
 		return true;
@@ -179,8 +182,9 @@ public final class StringValidityChecker {
 			i += Character.charCount(c);
 
 			if ((c & 0xFFFE) == 0xFFFE
-					|| Character.getType(c) == Character.SURROGATE)
+					|| Character.getType(c) == Character.SURROGATE) {
 				return false;
+			}
 		}
 
 		return true;
@@ -192,8 +196,9 @@ public final class StringValidityChecker {
 	 */
 	public static boolean containsNoControlCharacters(String text) {
 		for (Character c : text.toCharArray()) {
-			if (Character.getType(c) == Character.CONTROL)
+			if (Character.getType(c) == Character.CONTROL) {
 				return false;
+			}
 		}
 
 		return true;
@@ -216,20 +221,24 @@ public final class StringValidityChecker {
 				dirCount++;
 			} else if (c == 0x202C) {    // POP DIRECTIONAL FORMATTING
 				dirCount--;
-				if (dirCount < 0)
+				if (dirCount < 0) {
 					return false;
+				}
 			} else if (c == 0xFFF9) {    // INTERLINEAR ANNOTATION ANCHOR
-				if (inAnnotatedText || inAnnotation)
+				if (inAnnotatedText || inAnnotation) {
 					return false;
+				}
 				inAnnotatedText = true;
 			} else if (c == 0xFFFA) {    // INTERLINEAR ANNOTATION SEPARATOR
-				if (!inAnnotatedText)
+				if (!inAnnotatedText) {
 					return false;
+				}
 				inAnnotatedText = false;
 				inAnnotation = true;
 			} else if (c == 0xFFFB) { // INTERLINEAR ANNOTATION TERMINATOR
-				if (!inAnnotation)
+				if (!inAnnotation) {
 					return false;
+				}
 				inAnnotation = false;
 			}
 		}
@@ -239,10 +248,11 @@ public final class StringValidityChecker {
 
 	public static boolean isLatinLettersAndNumbersOnly(String text) {
 		for (char c : text.toCharArray()) {
-			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c >= '0' && c <= '9')
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c >= '0' && c <= '9') {
 				continue;
-			else
+			} else {
 				return false;
+			}
 		}
 
 		return true;

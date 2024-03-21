@@ -110,10 +110,11 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 							uri = thisURI;
 							insertTime = t2 - t1;
 						} else {
-							if (f != null)
+							if (f != null) {
 								failed = f;
-							else
+							} else {
 								f = new InsertException(InsertExceptionMode.INTERNAL_ERROR);
+							}
 						}
 
 						InsertBatch.this.notifyAll();
@@ -125,7 +126,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 
 		public synchronized void waitUntilFinished() {
 			while (true) {
-				if (runningInserts == 0) return;
+				if (runningInserts == 0) {
+					return;
+				}
 				try {
 					wait();
 				} catch (InterruptedException e) {
@@ -311,14 +314,20 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 				calendar.getTime();
 				FreenetURI[] insertedURIs = new FreenetURI[INSERTED_BLOCKS];
 				int[] insertTimes = new int[INSERTED_BLOCKS];
-				if (split.length < 3) continue;
+				if (split.length < 3) {
+					continue;
+				}
 				int seedTime = Integer.parseInt(split[2]);
 				System.out.println("Seed time: " + seedTime);
-				if (split.length < 4) continue;
+				if (split.length < 4) {
+					continue;
+				}
 
 				int token = 3;
 
-				if (split.length < token + INSERTED_BLOCKS * 2) continue;
+				if (split.length < token + INSERTED_BLOCKS * 2) {
+					continue;
+				}
 
 				for (int i = 0; i < INSERTED_BLOCKS; i++) {
 					try {
@@ -360,8 +369,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 								pulled++;
 							} catch (FetchException e) {
 								if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-										&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+										&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 									e.printStackTrace();
+								}
 								csvLine.add(FetchException.getShortMessage(e.getMode()));
 								System.err.println("FAILED PULL FOR BLOCK " + j + ": " + e);
 							}
@@ -386,8 +396,9 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 					int totalSuccesses = 0;
 					int totalFetches = 0;
 					for (int i = 0; i < INSERTED_BLOCKS; i++) {
-						if (split[token].isEmpty())
+						if (split[token].isEmpty()) {
 							continue;
+						}
 						int mhkFetchTime = -1;
 						totalFetches++;
 						try {
@@ -422,13 +433,15 @@ public class LongTermManySingleBlocksTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable tt) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable tt) {
 			}
 			Closer.close(fis);

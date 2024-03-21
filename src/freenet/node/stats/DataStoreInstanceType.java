@@ -18,13 +18,21 @@ public class DataStoreInstanceType {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		DataStoreInstanceType that = (DataStoreInstanceType) o;
 
-		if (key != that.key) return false;
-		if (store != that.store) return false;
+		if (key != that.key) {
+			return false;
+		}
+		if (store != that.store) {
+			return false;
+		}
 
 		return true;
 	}

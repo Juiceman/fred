@@ -66,18 +66,27 @@ public class HourlyStatsRecord {
 	 */
 	public synchronized void remoteRequest(boolean ssk, boolean success, boolean local,
 										   int htl, double location) {
-		if (finishedReporting) throw new IllegalStateException(
-				"Attempted to modify completed stats record.");
-		if (htl < 0) throw new IllegalArgumentException("Invalid HTL.");
-		if (location < 0 || location > 1)
+		if (finishedReporting) {
+			throw new IllegalStateException(
+					"Attempted to modify completed stats record.");
+		}
+		if (htl < 0) {
+			throw new IllegalArgumentException("Invalid HTL.");
+		}
+		if (location < 0 || location > 1) {
 			throw new IllegalArgumentException("Invalid location.");
+		}
 		htl = Math.min(htl, node.maxHTL());
 		double rawDist = Location.distance(node.getLocation(), location);
-		if (rawDist <= 0.0) rawDist = Double.MIN_VALUE;
+		if (rawDist <= 0.0) {
+			rawDist = Double.MIN_VALUE;
+		}
 		double logDist = Math.log(rawDist) / Math.log(2.0);
 		assert logDist < (-1.0 + 0x1.0p-1022/* Double.MIN_NORMAL */);
 		int distBucket = ((int) Math.floor(-1 * logDist));
-		if (distBucket >= byDist.length) distBucket = byDist.length - 1;
+		if (distBucket >= byDist.length) {
+			distBucket = byDist.length - 1;
+		}
 
 		if (ssk) {
 			byHTL[htl].locDiffSSK.report(logDist);
@@ -129,7 +138,9 @@ public class HourlyStatsRecord {
 	private static final DecimalFormat fix4p = new DecimalFormat("#.0000");
 
 	private static double fixNaN(double d) {
-		if (Double.isNaN(d)) return 0.;
+		if (Double.isNaN(d)) {
+			return 0.;
+		}
 		return d;
 	}
 
@@ -188,8 +199,12 @@ public class HourlyStatsRecord {
 
 				double chkRate = 0.;
 				double sskRate = 0.;
-				if (chkT > 0) chkRate = ((double) (chkLS + chkRS)) / (chkT);
-				if (sskT > 0) sskRate = ((double) (sskLS + sskRS)) / (sskT);
+				if (chkT > 0) {
+					chkRate = ((double) (chkLS + chkRS)) / (chkT);
+				}
+				if (sskT > 0) {
+					sskRate = ((double) (sskLS + sskRS)) / (sskT);
+				}
 
 				row.addChild("td", fix3p3pct.format(chkRate) + nbsp + "(" + chkLS + "," + chkRS + "," + chkT + ")" + nbsp + "(" + fix4p.format(locdiffCHK) + ")");
 				row.addChild("td", fix3p3pct.format(sskRate) + nbsp + "(" + sskLS + "," + sskRS + "," + sskT + ")" + nbsp + "(" + fix4p.format(locdiffSSK) + ")");
@@ -203,8 +218,12 @@ public class HourlyStatsRecord {
 			}
 			double totalCHKRate = 0.0;
 			double totalSSKRate = 0.0;
-			if (totalCHKT > 0) totalCHKRate = ((double) (totalCHKLS + totalCHKRS)) / totalCHKT;
-			if (totalSSKT > 0) totalSSKRate = ((double) (totalSSKLS + totalSSKRS)) / totalSSKT;
+			if (totalCHKT > 0) {
+				totalCHKRate = ((double) (totalCHKLS + totalCHKRS)) / totalCHKT;
+			}
+			if (totalSSKT > 0) {
+				totalSSKRate = ((double) (totalSSKLS + totalSSKRS)) / totalSSKT;
+			}
 
 			row = table.addChild("tr");
 			row.addChild("td", "Total");

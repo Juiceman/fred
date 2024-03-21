@@ -53,12 +53,15 @@ import freenet.support.io.Closer;
  * @author Jeroen C. van Gelderen (gelderen@cryptix.org)
  */
 public class SHA256 {
-	/** Size (in bytes) of this hash */
+	/**
+	 * Size (in bytes) of this hash
+	 */
 	private static final int HASH_SIZE = 32;
 	private static final Queue<SoftReference<MessageDigest>> digests = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * It won't reset the Message Digest for you!
+	 *
 	 * @param InputStream
 	 * @param MessageDigest
 	 * @return
@@ -109,11 +112,13 @@ public class SHA256 {
 	 * Must be SHA-256 !
 	 */
 	public static void returnMessageDigest(MessageDigest md256) {
-		if (md256 == null)
+		if (md256 == null) {
 			return;
+		}
 		String algo = md256.getAlgorithm();
-		if (!(algo.equals("SHA-256") || algo.equals("SHA256")))
+		if (!(algo.equals("SHA-256") || algo.equals("SHA256"))) {
 			throw new IllegalArgumentException("Should be SHA-256 but is " + algo);
+		}
 		md256.reset();
 		digests.add(new SoftReference<>(md256));
 	}

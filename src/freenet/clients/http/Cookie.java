@@ -79,11 +79,13 @@ public class Cookie {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this)
+		if (obj == this) {
 			return true;
+		}
 
-		if (!(obj instanceof Cookie))
+		if (!(obj instanceof Cookie)) {
 			return false;
+		}
 
 		Cookie other = (Cookie) obj;
 
@@ -94,17 +96,21 @@ public class Cookie {
 		URI otherDomain = other.getDomain();
 
 		if (myDomain != null) {
-			if (otherDomain == null || !otherDomain.toString().equals(myDomain.toString()))
+			if (otherDomain == null || !otherDomain.toString().equals(myDomain.toString())) {
 				return false;
-		} else if (otherDomain != null)
+			}
+		} else if (otherDomain != null) {
 			return false;
+		}
 
 
-		if (!getPath().toString().equals(other.getPath().toString()))
+		if (!getPath().toString().equals(other.getPath().toString())) {
 			return false;
+		}
 
-		if (!getName().equals(other.getName()))
+		if (!getName().equals(other.getName())) {
 			return false;
+		}
 
 		return true;
 	}
@@ -121,13 +127,15 @@ public class Cookie {
 	public static URI validateDomain(URI domain) {
 		String scheme = domain.getScheme().toLowerCase();
 
-		if (!"http".equals(scheme) && !"https".equals(scheme))
+		if (!"http".equals(scheme) && !"https".equals(scheme)) {
 			throw new IllegalArgumentException("Illegal cookie domain, must be http or https: " + domain);
+		}
 
 		String path = domain.getPath();
 
-		if (!"".equals(path) && !"/".equals(path))
+		if (!"".equals(path) && !"/".equals(path)) {
 			throw new IllegalArgumentException("Illegal cookie domain, contains a path: " + domain);
+		}
 
 		return domain;
 	}
@@ -139,11 +147,13 @@ public class Cookie {
 	public static URI validatePath(URI path) {
 		// FIXME: Be more restrictive.
 
-		if (path.isAbsolute())
+		if (path.isAbsolute()) {
 			throw new IllegalArgumentException("Illegal cookie path, must be relative: " + path);
+		}
 
-		if (path.toString().startsWith("/") == false)
+		if (path.toString().startsWith("/") == false) {
 			throw new IllegalArgumentException("Illegal cookie path, must start with /: " + path);
+		}
 
 		// RFC2965: Path is case sensitive!
 
@@ -159,11 +169,13 @@ public class Cookie {
 	 * TODO: Read the RFCs in depth and make this function fully compatible.
 	 */
 	public static String validateName(String name) {
-		if ("".equals(name))
+		if ("".equals(name)) {
 			throw new IllegalArgumentException("Name is empty.");
+		}
 
-		if (!isUSASCII(name))
+		if (!isUSASCII(name)) {
 			throw new IllegalArgumentException("Invalid name, contains non-US-ASCII characters: " + name);
+		}
 
 		name = name.trim().toLowerCase(); // RFC2965: Name is case insensitive
 		
@@ -186,15 +198,18 @@ public class Cookie {
 		*/
 
 		for (Character c : name.toCharArray()) {
-			if (Character.isWhitespace(c))
+			if (Character.isWhitespace(c)) {
 				throw new IllegalArgumentException("Invalid name, contains whitespace: " + name);
+			}
 
 			// From isISOControl javadoc: A character is considered to be an ISO control character if its in the range [0,31] or [127,159]
-			if (Character.isISOControl(c))
+			if (Character.isISOControl(c)) {
 				throw new IllegalArgumentException("Invalid name, contains control characters.");
+			}
 
-			if (httpSeparatorCharacters.contains(c))
+			if (httpSeparatorCharacters.contains(c)) {
 				throw new IllegalArgumentException("Invalid name, contains one of the explicitely disallowed characters: " + name);
+			}
 		}
 
 		if (name.startsWith("$")
@@ -206,8 +221,9 @@ public class Cookie {
 				|| "path".equals(name)
 				|| "secure".equals(name)
 				|| "version".equals(name)
-		)
+		) {
 			throw new IllegalArgumentException("Name is reserved: " + name);
+		}
 
 		return name;
 	}
@@ -216,8 +232,9 @@ public class Cookie {
 		for (int i = 0; i < name.length(); i++) {
 			char c = name.charAt(i);
 			// Java chars are unicode. Unicode is a superset of US-ASCII.
-			if (c < 32 || c > 126)
+			if (c < 32 || c > 126) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -230,8 +247,9 @@ public class Cookie {
 	 * TODO: Read the RFCs in depth and make this function fully compatible.
 	 */
 	public static String validateValue(String value) {
-		if (!isUSASCII(value))
+		if (!isUSASCII(value)) {
 			throw new IllegalArgumentException("Invalid value, contains non-US-ASCII characters: " + value);
+		}
 
 		value = value.trim();
 
@@ -256,20 +274,23 @@ public class Cookie {
 		for (Character c : value.toCharArray()) {
 			// We allow whitespace in the value because quotation is allowed and supported by the parser in ReceivedCookie
 
-			if (Character.isISOControl(c))
+			if (Character.isISOControl(c)) {
 				throw new IllegalArgumentException("Invalid value, contains control characters.");
+			}
 
 			// TODO: The source of the invalid value characters list is not mentioned in its javadoc - it has to be re-validated
-			if (invalidValueCharacters.contains(c))
+			if (invalidValueCharacters.contains(c)) {
 				throw new IllegalArgumentException("Invalid value, contains one of the explicitely disallowed characters: " + value);
+			}
 		}
 
 		return value;
 	}
 
 	public static Date validateExpirationDate(Date expirationDate) {
-		if (new Date().after(expirationDate))
+		if (new Date().after(expirationDate)) {
 			throw new IllegalArgumentException("Illegal expiration date, is in past: " + expirationDate);
+		}
 
 		return expirationDate;
 	}

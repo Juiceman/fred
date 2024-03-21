@@ -178,12 +178,14 @@ public class ProtocolErrorMessage extends FCPMessage implements Serializable {
 	@Override
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
-		if (ident != null)
+		if (ident != null) {
 			sfs.putSingle("Identifier", ident);
+		}
 		sfs.put("Code", code);
 		sfs.putSingle("CodeDescription", codeDescription());
-		if (extra != null)
+		if (extra != null) {
 			sfs.putSingle("ExtraDescription", extra);
+		}
 		sfs.put("Fatal", fatal);
 		sfs.put("Global", global);
 		return sfs;

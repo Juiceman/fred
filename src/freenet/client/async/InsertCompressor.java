@@ -90,8 +90,9 @@ public class InsertCompressor implements CompressJob {
 			}
 			scheduled = true;
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Compressing " + this + " : origData.size=" + origData.size() + " for " + inserter + " origData=" + origData + " hashes=" + generateHashes);
+		}
 		ctx.rc.enqueueNewJob(this);
 	}
 
@@ -106,7 +107,9 @@ public class InsertCompressor implements CompressJob {
 
 		HashResult[] hashes = null;
 
-		if (logMINOR) Logger.minor(this, "Attempt to compress the data");
+		if (logMINOR) {
+			Logger.minor(this, "Attempt to compress the data");
+		}
 		// Try to compress the data.
 		// Try each algorithm, starting with the fastest and weakest.
 		// Stop when run out of algorithms, or the compressed data fits in a single block.
@@ -119,8 +122,9 @@ public class InsertCompressor implements CompressJob {
 				boolean shouldFreeOnFinally = true;
 				RandomAccessBucket result = null;
 				try {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Attempt to compress using " + comp);
+					}
 					// Only produce if we are compressing *the original data*
 					if (persistent) {
 						context.jobRunner.queue(new PersistentJob() {
@@ -148,7 +152,9 @@ public class InsertCompressor implements CompressJob {
 						result = bucketFactory.makeBucket(-1);
 						os = result.getOutputStream();
 						if (first && generateHashes != 0) {
-							if (logMINOR) Logger.minor(this, "Generating hashes: " + generateHashes);
+							if (logMINOR) {
+								Logger.minor(this, "Generating hashes: " + generateHashes);
+							}
 							is = hasher = new MultiHashInputStream(is, generateHashes);
 						}
 						try {
@@ -180,13 +186,16 @@ public class InsertCompressor implements CompressJob {
 					long resultNumberOfBlocks = resultSize / CHKBlock.DATA_LENGTH;
 					// minSize is {SSKBlock,CHKBlock}.MAX_COMPRESSED_DATA_LENGTH
 					if (resultSize <= minSize) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "New size " + resultSize + " smaller then minSize " + minSize);
+						}
 
 						bestCodec = comp;
 						if (bestCompressedData != null && bestCompressedData != origData)
-							// Don't need to removeFrom() : we haven't stored it.
+						// Don't need to removeFrom() : we haven't stored it.
+						{
 							bestCompressedData.free();
+						}
 						bestCompressedData = result;
 						bestCompressedDataSize = resultSize;
 						bestNumberOfBlocks = resultNumberOfBlocks;
@@ -194,10 +203,12 @@ public class InsertCompressor implements CompressJob {
 						break;
 					}
 					if (resultNumberOfBlocks < bestNumberOfBlocks) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "New size " + resultSize + " (" + resultNumberOfBlocks + " blocks) better than old best " + bestCompressedDataSize + " (" + bestNumberOfBlocks + " blocks)");
-						if (bestCompressedData != null && bestCompressedData != origData)
+						}
+						if (bestCompressedData != null && bestCompressedData != origData) {
 							bestCompressedData.free();
+						}
 						bestCompressedData = result;
 						bestCompressedDataSize = resultSize;
 						bestNumberOfBlocks = resultNumberOfBlocks;
@@ -205,14 +216,17 @@ public class InsertCompressor implements CompressJob {
 						shouldFreeOnFinally = false;
 					}
 				} catch (PersistenceDisabledException e) {
-					if (!context.jobRunner.shuttingDown())
+					if (!context.jobRunner.shuttingDown()) {
 						Logger.error(this, "Database disabled compressing data", new Exception("error"));
+					}
 					shouldFreeOnFinally = true;
-					if (bestCompressedData != null && bestCompressedData != origData && bestCompressedData != result)
+					if (bestCompressedData != null && bestCompressedData != origData && bestCompressedData != result) {
 						bestCompressedData.free();
+					}
 				} finally {
-					if (shouldFreeOnFinally && (result != null) && result != origData)
+					if (shouldFreeOnFinally && (result != null) && result != origData) {
 						result.free();
+					}
 				}
 
 			}
@@ -254,8 +268,9 @@ public class InsertCompressor implements CompressJob {
 			}
 		} catch (PersistenceDisabledException e) {
 			Logger.error(this, "Database disabled compressing data", new Exception("error"));
-			if (bestCompressedData != null && bestCompressedData != origData)
+			if (bestCompressedData != null && bestCompressedData != origData) {
 				bestCompressedData.free();
+			}
 		} catch (InvalidCompressionCodecException e) {
 			fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR, e, null), context, bestCompressedData);
 		} catch (final IOException e) {
@@ -277,8 +292,9 @@ public class InsertCompressor implements CompressJob {
 				}, NativeThread.NORM_PRIORITY + 1);
 			} catch (PersistenceDisabledException e1) {
 				Logger.error(this, "Database disabled compressing data", new Exception("error"));
-				if (bestCompressedData != null && bestCompressedData != origData)
+				if (bestCompressedData != null && bestCompressedData != origData) {
 					bestCompressedData.free();
+				}
 			}
 		} else {
 			inserter.cb.onFailure(ie, inserter, context);

@@ -29,19 +29,22 @@ public class SectoredRandomGrabArraySimple<MyType, ChildType> extends SectoredRa
 		synchronized (root) {
 			RandomGrabArrayWithObject<ChildType> rga = getGrabber(client);
 			if (rga == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Adding new RGAWithClient for " + client + " on " + this + " for " + item);
+				}
 				rga = new RandomGrabArrayWithObject<ChildType>(client, this, root);
 				addElement(client, rga);
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Adding " + item + " to RGA " + rga + " for " + client);
+			}
 			rga.add(item, context);
 			if (context != null) {
 				clearWakeupTime(context);
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Size now " + size() + " on " + this);
+			}
 		}
 	}
 

@@ -57,7 +57,9 @@ public abstract class BaseSender implements ByteCounter {
 	final int incomingSearchTimeout;
 
 	BaseSender(Key key, boolean realTimeFlag, PeerNode source, Node node, short htl, long uid) {
-		if (key.getRoutingKey() == null) throw new NullPointerException();
+		if (key.getRoutingKey() == null) {
+			throw new NullPointerException();
+		}
 		startTime = System.currentTimeMillis();
 		this.uid = uid;
 		this.key = key;
@@ -137,10 +139,11 @@ public abstract class BaseSender implements ByteCounter {
 	protected abstract void routeRequests();
 
 	protected void innerRouteRequests(PeerNode next, UIDTag origTag) {
-		if (newLoadManagement)
+		if (newLoadManagement) {
 			innerRouteRequestsNew(next, origTag);
-		else
+		} else {
 			innerRouteRequestsOld(next, origTag);
+		}
 	}
 
 	protected void innerRouteRequestsOld(PeerNode next, UIDTag origTag) {
@@ -149,7 +152,9 @@ public abstract class BaseSender implements ByteCounter {
 			lastNode = next;
 		}
 
-		if (logMINOR) Logger.minor(this, "Routing request to " + next);
+		if (logMINOR) {
+			Logger.minor(this, "Routing request to " + next);
+		}
 		nodesRoutedTo.add(next);
 
 		Message req = createDataRequest();
@@ -212,7 +217,9 @@ public abstract class BaseSender implements ByteCounter {
 			}
 		} // loadWaiterLoop
 
-		if (logMINOR) Logger.minor(this, "Got Accepted");
+		if (logMINOR) {
+			Logger.minor(this, "Got Accepted");
+		}
 
 		// Otherwise, must be Accepted
 
@@ -275,11 +282,14 @@ public abstract class BaseSender implements ByteCounter {
 
 			boolean canRerouteWhileWaiting = true;
 			synchronized (this) {
-				if (rejectedLoops > MAX_REJECTED_LOOPS)
+				if (rejectedLoops > MAX_REJECTED_LOOPS) {
 					canRerouteWhileWaiting = false;
+				}
 			}
 
-			if (logMINOR) Logger.minor(this, "Going around loop");
+			if (logMINOR) {
+				Logger.minor(this, "Going around loop");
+			}
 
 			long now = System.currentTimeMillis();
 
@@ -295,11 +305,14 @@ public abstract class BaseSender implements ByteCounter {
 			if (expectedAcceptState == RequestLikelyAcceptedState.UNKNOWN) {
 				// No stats, old style, just go for it.
 				// This can happen both when talking to an old node and when we've just connected, but should not be the case for long enough to be a problem.
-				if (logMINOR) Logger.minor(this, "No load stats for " + next);
+				if (logMINOR) {
+					Logger.minor(this, "No load stats for " + next);
+				}
 			} else {
 				if (expectedAcceptState != null) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Predicted accept state for " + this + " : " + expectedAcceptState + " realtime=" + realTimeFlag);
+					}
 					// FIXME sanity check based on new data. Backoff if not plausible.
 					// FIXME recalculate with broader check, allow a few percent etc.
 					if (lastNext == next && lastExpectedAcceptState == RequestLikelyAcceptedState.GUARANTEED &&
@@ -319,11 +332,13 @@ public abstract class BaseSender implements ByteCounter {
 				int canWaitFor = 1;
 
 				if (expectedAcceptState == null) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Cannot send to " + next + " realtime=" + realTimeFlag);
+					}
 					waitedForLoadManagement = true;
-					if (waiter == null)
+					if (waiter == null) {
 						waiter = PeerNode.createSlotWaiter(origTag, type, false, realTimeFlag, source);
+					}
 					if (next != null) {
 						if (!waiter.addWaitingFor(next)) {
 							dontDecrementHTLThisTime = true;
@@ -348,27 +363,33 @@ public abstract class BaseSender implements ByteCounter {
 								waiter.addWaitingFor(alsoWaitFor);
 								// We do not need to check the return value here.
 								// We will not reuse alsoWaitFor if it is disconnected etc.
-								if (logMINOR)
+								if (logMINOR) {
 									Logger.minor(this, "Waiting for " + next + " and " + alsoWaitFor + " on " + waiter + " because realtime");
+								}
 								PeerNode matched;
 								try {
 									matched = waiter.waitForAny(0, false);
 								} catch (SlotWaiterFailedException e) {
-									if (logMINOR) Logger.minor(this, "Rerouting as slot waiter failed...");
+									if (logMINOR) {
+										Logger.minor(this, "Rerouting as slot waiter failed...");
+									}
 									continue;
 								}
 								if (matched != null) {
 									expectedAcceptState = waiter.getAcceptedState();
 									next = matched;
-									if (logMINOR)
+									if (logMINOR) {
 										Logger.minor(this, "Matched " + matched + " with " + expectedAcceptState);
+									}
 								}
 							}
 						}
 					}
 				}
 
-				if (realTimeFlag) canWaitFor++;
+				if (realTimeFlag) {
+					canWaitFor++;
+				}
 				// Skip it and go straight to rerouting if no next, as above.
 				if (expectedAcceptState == null && waiter.waitingForCount() <= canWaitFor
 						&& canRerouteWhileWaiting) {
@@ -381,24 +402,31 @@ public abstract class BaseSender implements ByteCounter {
 						waiter.addWaitingFor(alsoWaitFor);
 						// We do not need to check the return value here.
 						// We will not reuse alsoWaitFor if it is disconnected etc.
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Waiting for " + next + " and " + alsoWaitFor + " on " + waiter + " because realtime");
+						}
 						PeerNode matched;
 						try {
 							matched = waiter.waitForAny(0, false);
 						} catch (SlotWaiterFailedException e) {
-							if (logMINOR) Logger.minor(this, "Rerouting as slot waiter failed...");
+							if (logMINOR) {
+								Logger.minor(this, "Rerouting as slot waiter failed...");
+							}
 							continue;
 						}
 						if (matched != null) {
 							expectedAcceptState = waiter.getAcceptedState();
 							next = matched;
-							if (logMINOR) Logger.minor(this, "Matched " + matched + " with " + expectedAcceptState);
+							if (logMINOR) {
+								Logger.minor(this, "Matched " + matched + " with " + expectedAcceptState);
+							}
 						}
 					}
 				}
 
-				if (addedExtraNode) canWaitFor++;
+				if (addedExtraNode) {
+					canWaitFor++;
+				}
 				// Skip it and go straight to rerouting if no next, as above.
 				if (expectedAcceptState == null && waiter.waitingForCount() <= canWaitFor
 						&& canRerouteWhileWaiting) {
@@ -411,8 +439,9 @@ public abstract class BaseSender implements ByteCounter {
 						waiter.addWaitingFor(alsoWaitFor);
 						// We do not need to check the return value here.
 						// We will not reuse alsoWaitFor if it is disconnected etc.
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Waiting for " + next + " and " + alsoWaitFor + " on " + waiter + " because realtime");
+						}
 						PeerNode matched;
 						try {
 							matched = waiter.waitForAny(0, false);
@@ -446,8 +475,9 @@ public abstract class BaseSender implements ByteCounter {
 					}
 					if (waited == null) {
 						// Timed out, or not waiting for anything, not failed.
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Timed out waiting for a peer to accept " + this + " on " + waiter);
+						}
 
 						if (addedExtraNode) {
 							// Backtrack
@@ -462,8 +492,9 @@ public abstract class BaseSender implements ByteCounter {
 						next = waited;
 						expectedAcceptState = waiter.getAcceptedState();
 						long endTime = System.currentTimeMillis();
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Sending to " + next + " after waited for " + TimeUtil.formatTime(endTime - startTime) + " realtime=" + realTimeFlag);
+						}
 						expectedAcceptState = waiter.getAcceptedState();
 					}
 
@@ -471,12 +502,15 @@ public abstract class BaseSender implements ByteCounter {
 				assert (expectedAcceptState != null);
 				lastExpectedAcceptState = expectedAcceptState;
 				lastNext = next;
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Leaving new load management big block: Predicted accept state for " + this + " : " + expectedAcceptState + " realtime=" + realTimeFlag + " for " + next);
+				}
 				// FIXME only report for routing accuracy purposes at this point, not in closerPeer().
 				// In fact, we should report only after Accepted.
 			}
-			if (logMINOR) Logger.minor(this, "Routing to " + next);
+			if (logMINOR) {
+				Logger.minor(this, "Routing to " + next);
+			}
 
 			if (origTag.hasSourceReallyRestarted()) {
 				origTag.removeRoutingTo(next);
@@ -489,7 +523,9 @@ public abstract class BaseSender implements ByteCounter {
 				lastNode = next;
 			}
 
-			if (logMINOR) Logger.minor(this, "Routing request to " + next + " realtime=" + realTimeFlag);
+			if (logMINOR) {
+				Logger.minor(this, "Routing request to " + next + " realtime=" + realTimeFlag);
+			}
 			nodesRoutedTo.add(next);
 
 			Message req = createDataRequest();
@@ -519,7 +555,9 @@ public abstract class BaseSender implements ByteCounter {
 				 *
 				 * Don't use sendAsync().
 				 */
-				if (logMINOR) Logger.minor(this, "Sending " + req + " to " + next);
+				if (logMINOR) {
+					Logger.minor(this, "Sending " + req + " to " + next);
+				}
 				next.reportRoutedTo(key.toNormalizedDouble(), source == null, realTimeFlag, source, nodesRoutedTo, htl);
 				next.sendSync(req, this, realTimeFlag);
 			} catch (NotConnectedException e) {
@@ -538,20 +576,28 @@ public abstract class BaseSender implements ByteCounter {
 				hasForwarded = true;
 			}
 
-			if (logMINOR) Logger.minor(this, "Waiting for accepted");
+			if (logMINOR) {
+				Logger.minor(this, "Waiting for accepted");
+			}
 			DO action = waitForAccepted(expectedAcceptState, next, origTag);
 			// Here FINISHED means accepted, WAIT means try again (soft reject).
 			if (action == DO.WAIT) {
 				retriedForLoadManagement = true;
-				if (logMINOR) Logger.minor(this, "Retrying");
+				if (logMINOR) {
+					Logger.minor(this, "Retrying");
+				}
 				continue loadWaiterLoop;
 			} else if (action == DO.NEXT_PEER) {
-				if (logMINOR) Logger.minor(this, "Trying next peer");
+				if (logMINOR) {
+					Logger.minor(this, "Trying next peer");
+				}
 				routeRequests();
 				return;
 			} else { // FINISHED => accepted
 				addedExtraNode = false;
-				if (logMINOR) Logger.minor(this, "Accepted!");
+				if (logMINOR) {
+					Logger.minor(this, "Accepted!");
+				}
 				break;
 			}
 		} // loadWaiterLoop
@@ -562,7 +608,9 @@ public abstract class BaseSender implements ByteCounter {
 		// So log it at error only if it's really bad.
 		logDelta(delta, tryCount, waitedForLoadManagement, retriedForLoadManagement);
 
-		if (logMINOR) Logger.minor(this, "Got Accepted");
+		if (logMINOR) {
+			Logger.minor(this, "Got Accepted");
+		}
 
 		// Otherwise, must be Accepted
 
@@ -605,12 +653,13 @@ public abstract class BaseSender implements ByteCounter {
 
 	private void logDelta(long delta, int tryCount, boolean waitedForLoadManagement, boolean retriedForLoadManagement) {
 		long longTimeout = getLongSlotWaiterTimeout();
-		if ((delta > longTimeout) || tryCount > 3)
+		if ((delta > longTimeout) || tryCount > 3) {
 			Logger.error(this, "Took " + tryCount + " tries in " + TimeUtil.formatTime(delta, 2, true) + " waited=" + waitedForLoadManagement + " retried=" + retriedForLoadManagement + (realTimeFlag ? " (realtime)" : " (bulk)") + ((source == null) ? " (local)" : " (remote)"));
-		else if ((delta > longTimeout / 5) || tryCount > 1)
+		} else if ((delta > longTimeout / 5) || tryCount > 1) {
 			Logger.warning(this, "Took " + tryCount + " tries in " + TimeUtil.formatTime(delta, 2, true) + " waited=" + waitedForLoadManagement + " retried=" + retriedForLoadManagement + (realTimeFlag ? " (realtime)" : " (bulk)") + ((source == null) ? " (local)" : " (remote)"));
-		else if (logMINOR && (waitedForLoadManagement || retriedForLoadManagement))
+		} else if (logMINOR && (waitedForLoadManagement || retriedForLoadManagement)) {
 			Logger.minor(this, "Took " + tryCount + " tries in " + TimeUtil.formatTime(delta, 2, true) + " waited=" + waitedForLoadManagement + " retried=" + retriedForLoadManagement + (realTimeFlag ? " (realtime)" : " (bulk)") + ((source == null) ? " (local)" : " (remote)"));
+		}
 		node.getNodeStats().reportNLMDelay(delta, realTimeFlag, source == null);
 	}
 
@@ -628,7 +677,9 @@ public abstract class BaseSender implements ByteCounter {
 
 			try {
 				msg = node.getUSM().waitFor(mf, this);
-				if (logMINOR) Logger.minor(this, "first part got " + msg);
+				if (logMINOR) {
+					Logger.minor(this, "first part got " + msg);
+				}
 			} catch (DisconnectedException e) {
 				Logger.normal(this, "Disconnected from " + next + " while waiting for Accepted on " + uid);
 				next.noLongerRoutingTo(origTag, false);
@@ -636,7 +687,9 @@ public abstract class BaseSender implements ByteCounter {
 			}
 
 			if (msg == null) {
-				if (logMINOR) Logger.minor(this, "Timeout waiting for Accepted for " + this);
+				if (logMINOR) {
+					Logger.minor(this, "Timeout waiting for Accepted for " + this);
+				}
 				// Timeout waiting for Accepted
 				next.localRejectedOverload("AcceptedTimeout", realTimeFlag);
 				forwardRejectedOverload();
@@ -651,7 +704,9 @@ public abstract class BaseSender implements ByteCounter {
 			}
 
 			if (msg.getSpec() == DMT.FNPRejectedLoop) {
-				if (logMINOR) Logger.minor(this, "Rejected loop");
+				if (logMINOR) {
+					Logger.minor(this, "Rejected loop");
+				}
 				next.successNotOverload(realTimeFlag);
 				int t = timeSinceSent();
 				node.getFailureTable().onFailed(key, next, htl, t, t);
@@ -661,26 +716,37 @@ public abstract class BaseSender implements ByteCounter {
 			}
 
 			if (msg.getSpec() == DMT.FNPRejectedOverload) {
-				if (logMINOR) Logger.minor(this, "Rejected: overload");
+				if (logMINOR) {
+					Logger.minor(this, "Rejected: overload");
+				}
 				// Non-fatal - probably still have time left
 				if (msg.getBoolean(DMT.IS_LOCAL)) {
 
-					if (logMINOR) Logger.minor(this, "Is local");
+					if (logMINOR) {
+						Logger.minor(this, "Is local");
+					}
 
 					// FIXME soft rejects, only check then, but don't backoff if sane
 					// FIXME recalculate with broader check, allow a few percent etc.
 
 					if (msg.getSubMessage(DMT.FNPRejectIsSoft) != null && expectedAcceptState != null) {
-						if (logMINOR) Logger.minor(this, "Soft rejection, waiting to resend");
+						if (logMINOR) {
+							Logger.minor(this, "Soft rejection, waiting to resend");
+						}
 						if (expectedAcceptState == RequestLikelyAcceptedState.GUARANTEED)
-							// Need to recalculate to be sure this is an error.
+						// Need to recalculate to be sure this is an error.
+						{
 							Logger.normal(this, "Rejected overload yet expected state was " + expectedAcceptState);
+						}
 						nodesRoutedTo.remove(next);
 						next.noLongerRoutingTo(origTag, false);
-						if (softRejectCount == null) softRejectCount = new HashMap<PeerNode, Integer>();
+						if (softRejectCount == null) {
+							softRejectCount = new HashMap<PeerNode, Integer>();
+						}
 						Integer i = softRejectCount.get(next);
-						if (i == null) softRejectCount.put(next, 1);
-						else {
+						if (i == null) {
+							softRejectCount.put(next, 1);
+						} else {
 							softRejectCount.put(next, i + 1);
 							if (i > 3) {
 								Logger.error(this, "Rejected repeatedly (" + i + ") by " + next + " : " + this);
@@ -694,7 +760,9 @@ public abstract class BaseSender implements ByteCounter {
 					next.localRejectedOverload("ForwardRejectedOverload", realTimeFlag);
 					int t = timeSinceSent();
 					node.getFailureTable().onFailed(key, next, htl, t, t);
-					if (logMINOR) Logger.minor(this, "Local RejectedOverload, moving on to next peer");
+					if (logMINOR) {
+						Logger.minor(this, "Local RejectedOverload, moving on to next peer");
+					}
 					// Give up on this one, try another
 					next.noLongerRoutingTo(origTag, false);
 					return DO.NEXT_PEER;

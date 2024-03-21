@@ -58,8 +58,9 @@ public class DNSRequester implements Runnable {
 		PeerNode[] nodes = node.getPeers().myPeers();
 		long now = System.currentTimeMillis();
 		if ((now - lastLogTime) > 1000) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Processing DNS Requests (log rate-limited)");
+			}
 			lastLogTime = now;
 		}
 		for (PeerNode pn : nodes) {

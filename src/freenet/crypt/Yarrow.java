@@ -115,9 +115,11 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		}
 
 		if (updateSeed && !(seed.toString()).equals("/dev/urandom")) //Dont try to update the seedfile if we know that it wont be possible anyways
+		{
 			seedfile = seed;
-		else
+		} else {
 			seedfile = null;
+		}
 		if (reseedOnStartup) {
 			entropy_init(seed, reseedOnStartup);
 			seedFromExternalStuff(canBlock);
@@ -138,7 +140,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 			DataInputStream dis = null;
 			FileInputStream fis = null;
 			File hwrng = new File("/dev/hwrng");
-			if (hwrng.exists() && hwrng.canRead())
+			if (hwrng.exists() && hwrng.canRead()) {
 				try {
 					fis = new FileInputStream(hwrng);
 					dis = new DataInputStream(fis);
@@ -153,6 +155,7 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 					Closer.close(dis);
 					Closer.close(fis);
 				}
+			}
 
 			// Read some bits from /dev/urandom
 			try {
@@ -171,7 +174,8 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				Closer.close(fis);
 			}
 			if (canBlock)
-				// Read some bits from /dev/random
+			// Read some bits from /dev/random
+			{
 				try {
 					fis = new FileInputStream("/dev/random");
 					dis = new DataInputStream(fis);
@@ -185,11 +189,14 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 					Closer.close(dis);
 					Closer.close(fis);
 				}
+			}
 			fis = null;
 		} else
-			// Force generateSeed(), since we can't read random data from anywhere else.
-			// Anyway, Windows's CAPI won't block.
+		// Force generateSeed(), since we can't read random data from anywhere else.
+		// Anyway, Windows's CAPI won't block.
+		{
 			canBlock = true;
+		}
 		if (canBlock) {
 			// SecureRandom hopefully acts as a proxy for CAPI on Windows
 			buf = sr.generateSeed(32);
@@ -280,14 +287,16 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 	}
 
 	private void write_seed(File filename, boolean force) {
-		if (!force)
+		if (!force) {
 			synchronized (this) {
 				long now = System.currentTimeMillis();
-				if (now - timeLastWroteSeed <= HOURS.toMillis(1) /* once per hour */)
+				if (now - timeLastWroteSeed <= HOURS.toMillis(1) /* once per hour */) {
 					return;
-				else
+				} else {
 					timeLastWroteSeed = now;
+				}
 			}
+		}
 
 		FileOutputStream fos = null;
 		BufferedOutputStream bos = null;
@@ -330,8 +339,9 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 
 	private void counterInc() {
 		for (int i = counter.length - 1; i >= 0; i--)
-			if (++counter[i] != 0)
+			if (++counter[i] != 0) {
 				break;
+			}
 	}
 
 	private void generateOutput() {
@@ -446,12 +456,13 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 
 		int val = output_buffer[offset];
 
-		if (parameters[0] == 4)
+		if (parameters[0] == 4) {
 			val += (output_buffer[offset + 1] << 24) + (output_buffer[offset + 2] << 16) + (output_buffer[offset + 3] << 8);
-		else if (parameters[0] == 3)
+		} else if (parameters[0] == 3) {
 			val += (output_buffer[offset + 1] << 16) + (output_buffer[offset + 2] << 8);
-		else if (parameters[0] == 2)
+		} else if (parameters[0] == 2) {
 			val += output_buffer[offset + 2] << 8;
+		}
 
 		return val & parameters[1];
 	}
@@ -537,16 +548,18 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 					if (contributedEntropy == null) {
 						contributedEntropy = new int[]{actualEntropy};
 						entropySeen.put(source, contributedEntropy);
-					} else
+					} else {
 						contributedEntropy[0] += actualEntropy;
+					}
 
 					if (slow_entropy >= (SLOW_THRESHOLD * 2)) {
 						int kc = 0;
 						for (Map.Entry<EntropySource, int[]> e : entropySeen.entrySet()) {
 							EntropySource key = e.getKey();
 							int[] v = e.getValue();
-							if (DEBUG)
+							if (DEBUG) {
 								Logger.normal(this, "Key: <" + key + "> " + v);
+							}
 							if (v[0] > SLOW_THRESHOLD) {
 								kc++;
 								if (kc >= SLOW_K) {
@@ -560,18 +573,22 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				}
 			}
 			if (DEBUG)
-				//	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
-				// "+slow_entropy, LogLevel.NORMAL);
+			//	    Core.logger.log(this,"Fast pool: "+fast_entropy+"\tSlow pool:
+			// "+slow_entropy, LogLevel.NORMAL);
+			{
 				System.err.println("Fast pool: " + fast_entropy + "\tSlow pool: " + slow_entropy);
+			}
 		}
 		if (performedPoolReseed && (seedfile != null)) {
 			//Dont do this while synchronized on 'this' since
 			//opening a file seems to be suprisingly slow on windows
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Writing seedfile");
+			}
 			write_seed(seedfile);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Written seedfile");
+			}
 		}
 
 		return actualEntropy;
@@ -585,16 +602,21 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		int delta3 = delta2 - source.lastDelta2;
 		source.lastDelta2 = delta2;
 
-		if (delta < 0)
+		if (delta < 0) {
 			delta = -delta;
-		if (delta2 < 0)
+		}
+		if (delta2 < 0) {
 			delta2 = -delta2;
-		if (delta3 < 0)
+		}
+		if (delta3 < 0) {
 			delta3 = -delta3;
-		if (delta > delta2)
+		}
+		if (delta > delta2) {
 			delta = delta2;
-		if (delta > delta3)
+		}
+		if (delta > delta3) {
 			delta = delta3;
+		}
 
 		/*
 		 * delta is now minimum absolute delta. Round down by 1 bit on general
@@ -670,8 +692,9 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		fast_entropy = 0;
 		if (DEBUG) {
 			long endTime = System.currentTimeMillis();
-			if (endTime - startTime > 5000)
+			if (endTime - startTime > 5000) {
 				Logger.normal(this, "Fast pool reseed took " + (endTime - startTime) + "ms");
+			}
 		}
 	}
 
@@ -707,8 +730,9 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 		byte[] b = new byte[1024];
 
 		if ((args.length == 0) || args[0].equalsIgnoreCase("latency")) {
-			if (args.length == 2)
+			if (args.length == 2) {
 				b = new byte[Integer.parseInt(args[1])];
+			}
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < 100; i++)
 				r.nextBytes(b);
@@ -761,17 +785,18 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 //				r.nextBytes(buffer);
 //				System.out.write(buffer);
 //			}
-		} else if (args[0].equalsIgnoreCase("bitstream"))
+		} else if (args[0].equalsIgnoreCase("bitstream")) {
 			while (true) {
 				int v = r.nextInt();
 				for (int i = 0; i < 32; i++) {
-					if (((v >> i) & 1) == 1)
+					if (((v >> i) & 1) == 1) {
 						System.out.print('1');
-					else
+					} else {
 						System.out.print('0');
+					}
 				}
 			}
-		else if (args[0].equalsIgnoreCase("sample"))
+		} else if (args[0].equalsIgnoreCase("sample")) {
 			if ((args.length == 1) || args[1].equals("general")) {
 				System.out.println("nextInt(): ");
 				for (int i = 0; i < 3; i++)
@@ -791,9 +816,11 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 				System.out.println("nextFullDouble(): ");
 				for (int i = 0; i < 3; i++)
 					System.out.println(r.nextFullDouble());
-			} else if (args[1].equals("normalized"))
+			} else if (args[1].equals("normalized")) {
 				for (int i = 0; i < 20; i++)
 					System.out.println(r.nextDouble());
+			}
+		}
 	}
 
 	private void consumeString(String str) {
@@ -801,10 +828,11 @@ public class Yarrow extends RandomSource implements PersistentRandomSource {
 	}
 
 	private void consumeBytes(byte[] bytes) {
-		if (fast_select)
+		if (fast_select) {
 			fast_pool.update(bytes, 0, bytes.length);
-		else
+		} else {
 			slow_pool.update(bytes, 0, bytes.length);
+		}
 		fast_select = !fast_select;
 	}
 }

@@ -25,8 +25,9 @@ public class RemovePersistentRequest extends FCPMessage {
 	public RemovePersistentRequest(SimpleFieldSet fs) throws MessageInvalidException {
 		this.global = fs.getBoolean("Global", false);
 		this.identifier = fs.get("Identifier");
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Must have Identifier", null, global);
+		}
 	}
 
 	@Override

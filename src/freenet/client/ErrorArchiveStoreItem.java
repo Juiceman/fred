@@ -45,7 +45,9 @@ class ErrorArchiveStoreItem extends ArchiveStoreItem {
 
 	@Override
 	Bucket getReaderBucket() throws ArchiveFailureException {
-		if (tooBig) return null;
+		if (tooBig) {
+			return null;
+		}
 		throw new ArchiveFailureException(error);
 	}
 

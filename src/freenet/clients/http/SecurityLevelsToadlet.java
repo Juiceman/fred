@@ -59,8 +59,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 	}
 
 	public void handleMethodPOST(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		if (request.isPartSet("seclevels")) {
 			// Handle the security level changes.
@@ -111,8 +112,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 			String physicalThreatLevel = request.getPartAsStringFailsafe(configName, 128);
 			PHYSICAL_THREAT_LEVEL newPhysicalLevel = SecurityLevels.parsePhysicalThreatLevel(physicalThreatLevel);
 			PHYSICAL_THREAT_LEVEL oldPhysicalLevel = core.getNode().getSecurityLevels().getPhysicalThreatLevel();
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "New physical threat level: " + newPhysicalLevel + " old = " + node.getSecurityLevels().getPhysicalThreatLevel());
+			}
 			if (newPhysicalLevel != null) {
 				if (newPhysicalLevel == oldPhysicalLevel && newPhysicalLevel == PHYSICAL_THREAT_LEVEL.HIGH) {
 					String password = request.getPartAsStringFailsafe("masterPassword", MAX_PASSWORD_LENGTH);
@@ -126,19 +128,22 @@ public class SecurityLevelsToadlet extends Toadlet {
 							return;
 						} catch (MasterKeysFileSizeException e) {
 							sendPasswordFileCorruptedPage(e.isTooBig(), ctx, false, true);
-							if (changedAnything)
+							if (changedAnything) {
 								core.storeConfig();
+							}
 							return;
 						} catch (AlreadySetPasswordException e) {
 							sendChangePasswordForm(ctx, false, true, newPhysicalLevel.name());
-							if (changedAnything)
+							if (changedAnything) {
 								core.storeConfig();
+							}
 							return;
 						}
 					} else if (!password.isEmpty() || !oldPassword.isEmpty() || !confirmPassword.isEmpty()) {
 						sendChangePasswordForm(ctx, false, true, newPhysicalLevel.name());
-						if (changedAnything)
+						if (changedAnything) {
 							core.storeConfig();
+						}
 						return;
 					}
 				}
@@ -150,10 +155,11 @@ public class SecurityLevelsToadlet extends Toadlet {
 						String confirmPassword = request.getPartAsStringFailsafe("confirmMasterPassword", MAX_PASSWORD_LENGTH);
 						if (!password.isEmpty() && !confirmPassword.isEmpty() && password.equals(confirmPassword)) {
 							try {
-								if (oldPhysicalLevel == PHYSICAL_THREAT_LEVEL.NORMAL || oldPhysicalLevel == PHYSICAL_THREAT_LEVEL.LOW)
+								if (oldPhysicalLevel == PHYSICAL_THREAT_LEVEL.NORMAL || oldPhysicalLevel == PHYSICAL_THREAT_LEVEL.LOW) {
 									core.getNode().changeMasterPassword("", password, false);
-								else
+								} else {
 									core.getNode().setMasterPassword(password, false);
+								}
 							} catch (AlreadySetPasswordException e) {
 								sendChangePasswordForm(ctx, false, false, newPhysicalLevel.name());
 								return;
@@ -169,13 +175,15 @@ public class SecurityLevelsToadlet extends Toadlet {
 								SecurityLevelsToadlet.generatePasswordFormPage(true, ctx.getContainer(), content, false, false, true, newPhysicalLevel.name(), null);
 								addBackToSeclevelsLink(content);
 								writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-								if (changedAnything)
+								if (changedAnything) {
 									core.storeConfig();
+								}
 								return;
 							} catch (MasterKeysFileSizeException e) {
 								sendPasswordFileCorruptedPage(e.isTooBig(), ctx, false, true);
-								if (changedAnything)
+								if (changedAnything) {
 									core.storeConfig();
+								}
 								return;
 							}
 						} else {
@@ -184,8 +192,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 							} else {
 								sendPasswordPageMismatch(ctx, newPhysicalLevel.name());
 							}
-							if (changedAnything)
+							if (changedAnything) {
 								core.storeConfig();
+							}
 							return;
 						}
 					}
@@ -212,8 +221,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 									pw.flush();
 									msg = msg + sw.toString() + "</pre></body></html>";
 									writeHTMLReply(ctx, 500, "Internal Error", msg);
-									if (changedAnything)
+									if (changedAnything) {
 										core.storeConfig();
+									}
 									return;
 								}
 							} catch (MasterKeysWrongPasswordException e) {
@@ -231,18 +241,21 @@ public class SecurityLevelsToadlet extends Toadlet {
 								addBackToSeclevelsLink(content);
 
 								writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-								if (changedAnything)
+								if (changedAnything) {
 									core.storeConfig();
+								}
 								return;
 							} catch (MasterKeysFileSizeException e) {
 								sendPasswordFileCorruptedPage(e.isTooBig(), ctx, false, true);
-								if (changedAnything)
+								if (changedAnything) {
 									core.storeConfig();
+								}
 								return;
 							} catch (AlreadySetPasswordException e) {
 								sendChangePasswordForm(ctx, false, true, newPhysicalLevel.name());
-								if (changedAnything)
+								if (changedAnything) {
 									core.storeConfig();
+								}
 								return;
 							}
 						} else if (core.getNode().getMasterPasswordFile().exists()) {
@@ -264,8 +277,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 							addBackToSeclevelsLink(content);
 
 							writeHTMLReply(ctx, 200, "OK", pageNode.generate());
-							if (changedAnything)
+							if (changedAnything) {
 								core.storeConfig();
+							}
 							return;
 
 						}
@@ -284,8 +298,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 				}
 			}
 
-			if (changedAnything)
+			if (changedAnything) {
 				core.storeConfig();
+			}
 
 			if (pageNode != null) {
 				formNode.addChild("input", new String[]{"type", "name", "value"}, new String[]{"hidden", "seclevels", "on"});
@@ -461,8 +476,9 @@ public class SecurityLevelsToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		PageNode page = ctx.getPageMaker().getPageNode(NodeL10n.getBase().getString("SecurityLevelsToadlet.fullTitle"), ctx);
 		HTMLNode pageNode = page.outer;

@@ -45,10 +45,11 @@ public class URLEncoder {
 			} else {
 				for (byte b : String.valueOf(c).getBytes(StandardCharsets.UTF_8)) {
 					int x = b & 0xFF;
-					if (x < 16)
+					if (x < 16) {
 						enc.append("%0");
-					else
+					} else {
 						enc.append('%');
+					}
 					enc.append(Integer.toHexString(x));
 				}
 			}

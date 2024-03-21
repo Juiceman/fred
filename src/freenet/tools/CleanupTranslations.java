@@ -29,8 +29,12 @@ public class CleanupTranslations {
 		File[] translations = new File("src/freenet/l10n").listFiles();
 		for (File f : translations) {
 			String name = f.getName();
-			if (!name.startsWith("freenet.l10n.")) continue;
-			if (name.equals("freenet.1l0n.en.properties")) continue;
+			if (!name.startsWith("freenet.l10n.")) {
+				continue;
+			}
+			if (name.equals("freenet.1l0n.en.properties")) {
+				continue;
+			}
 			FileInputStream fis = new FileInputStream(f);
 			InputStreamReader isr = new InputStreamReader(new BufferedInputStream(fis), StandardCharsets.UTF_8);
 			BufferedReader br = new BufferedReader(isr);
@@ -70,7 +74,9 @@ public class CleanupTranslations {
 			Closer.close(fis);
 			Closer.close(isr);
 			Closer.close(br);
-			if (!changed) continue;
+			if (!changed) {
+				continue;
+			}
 			FileOutputStream fos = new FileOutputStream(f);
 			OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 			try {

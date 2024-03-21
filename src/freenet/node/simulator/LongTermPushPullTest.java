@@ -208,8 +208,9 @@ public class LongTermPushPullTest extends LongTermTest {
 					csvLine.add(String.valueOf(t2 - t1));
 				} catch (FetchException e) {
 					if (e.getMode() != FetchExceptionMode.ALL_DATA_NOT_FOUND
-							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND)
+							&& e.getMode() != FetchExceptionMode.DATA_NOT_FOUND) {
 						e.printStackTrace();
+					}
 					csvLine.add(FetchException.getShortMessage(e.getMode()));
 				}
 			}
@@ -218,13 +219,15 @@ public class LongTermPushPullTest extends LongTermTest {
 			exitCode = EXIT_THREW_SOMETHING;
 		} finally {
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			try {
-				if (node2 != null)
+				if (node2 != null) {
 					node2.park();
+				}
 			} catch (Throwable t1) {
 			}
 
@@ -253,7 +256,9 @@ public class LongTermPushPullTest extends LongTermTest {
 				long now = calendar.getTimeInMillis();
 				long prev = prevDate.getTimeInMillis();
 				long dist = DAYS.convert(now - prev, MILLISECONDS);
-				if (dist != 1) System.out.println("" + dist + " days since last report");
+				if (dist != 1) {
+					System.out.println("" + dist + " days since last report");
+				}
 			}
 			prevDate = calendar;
 			int version = Integer.parseInt(split[1]);
@@ -325,10 +330,11 @@ public class LongTermPushPullTest extends LongTermTest {
 					if (element.pullTimes[i] == 0) {
 						String failureMode = element.pullFailures[i];
 						Integer count = failureModes.get(failureMode);
-						if (count == null)
+						if (count == null) {
 							failureModes.put(failureMode, 1);
-						else
+						} else {
 							failureModes.put(failureMode, count + 1);
+						}
 						failures++;
 					} else {
 						successes++;
@@ -337,7 +343,9 @@ public class LongTermPushPullTest extends LongTermTest {
 				}
 			}
 			System.out.println("Successes: " + successes);
-			if (successes != 0) System.out.println("Average success time " + (successTime / successes));
+			if (successes != 0) {
+				System.out.println("Average success time " + (successTime / successes));
+			}
 			System.out.println("Failures: " + failures);
 			for (Map.Entry<String, Integer> entry : failureModes.entrySet())
 				System.out.println(entry.getKey() + " : " + entry.getValue());

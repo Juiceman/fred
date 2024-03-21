@@ -105,8 +105,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	static final int QUEUE_THRESHOLD = 100;
 
 	public void registerInsert(final SendableRequest req, boolean persistent) {
-		if (!isInsertScheduler)
+		if (!isInsertScheduler) {
 			throw new IllegalArgumentException("Adding a SendableInsert to a request scheduler!!");
+		}
 		selector.innerRegister(req, clientContext, null);
 		starter.wakeUp();
 	}
@@ -125,8 +126,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 * @throws FetchException
 	 */
 	public void register(final HasKeyListener hasListener, final SendableGet[] getters, final boolean persistent, final BlockSet blocks, final boolean noCheckStore) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "register(" + persistent + "," + hasListener + "," + Fields.commaList(getters));
+		}
 		if (isInsertScheduler) {
 			IllegalStateException e = new IllegalStateException("finishRegister on an insert scheduler");
 			throw e;
@@ -134,28 +136,32 @@ public class ClientRequestScheduler implements RequestScheduler {
 		final KeyListener listener;
 		if (hasListener != null) {
 			listener = hasListener.makeKeyListener(clientContext, false);
-			if (listener != null)
+			if (listener != null) {
 				(persistent ? schedCore : schedTransient).addPendingKeys(listener);
-			else
+			} else {
 				Logger.normal(this, "No KeyListener for " + hasListener);
-		} else
+			}
+		} else {
 			listener = null;
+		}
 		if (getters != null && !noCheckStore) {
 			for (SendableGet getter : getters)
 				datastoreChecker.queueRequest(getter, blocks);
 		} else {
 			boolean anyValid = false;
 			for (SendableGet getter : getters) {
-				if (!(getter.isCancelled() || getter.getWakeupTime(clientContext, System.currentTimeMillis()) != 0))
+				if (!(getter.isCancelled() || getter.getWakeupTime(clientContext, System.currentTimeMillis()) != 0)) {
 					anyValid = true;
+				}
 			}
 			finishRegister(getters, false, anyValid);
 		}
 	}
 
 	void finishRegister(final SendableGet[] getters, boolean persistent, final boolean anyValid) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "finishRegister for " + Fields.commaList(getters) + " anyValid=" + anyValid + " persistent=" + persistent);
+		}
 		if (isInsertScheduler) {
 			IllegalStateException e = new IllegalStateException("finishRegister on an insert scheduler");
 			for (SendableGet getter : getters) {
@@ -165,8 +171,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 		}
 		if (persistent) {
 			// Add to the persistent registration queue
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "finishRegister() for " + Fields.commaList(getters));
+			}
 			if (anyValid) {
 				boolean wereAnyValid = false;
 				for (SendableGet getter : getters) {
@@ -176,8 +183,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 						if (!getter.preRegister(clientContext, true)) {
 							selector.innerRegister(getter, clientContext, getters);
 						}
-					} else
+					} else {
 						getter.preRegister(clientContext, false);
+					}
 
 				}
 				if (!wereAnyValid) {
@@ -194,10 +202,13 @@ public class ClientRequestScheduler implements RequestScheduler {
 					getter.preRegister(clientContext, false);
 					continue;
 				} else {
-					if (getter.preRegister(clientContext, true)) continue;
+					if (getter.preRegister(clientContext, true)) {
+						continue;
+					}
 				}
-				if (!getter.isCancelled())
+				if (!getter.isCancelled()) {
 					selector.innerRegister(getter, clientContext, getters);
+				}
 			}
 			starter.wakeUp();
 		}
@@ -215,8 +226,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	public void removeRunningRequest(SendableRequest request) {
 		synchronized (runningPersistentRequests) {
 			if (runningPersistentRequests.remove(request)) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Removed running request " + request + " size now " + runningPersistentRequests.size());
+				}
 			}
 		}
 		// We *DO* need to call clearCooldown here because it only becomes runnable for persistent requests after it has been removed from starterQueue.
@@ -226,7 +238,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	@Override
 	public boolean isRunningOrQueuedPersistentRequest(SendableRequest request) {
 		synchronized (runningPersistentRequests) {
-			if (runningPersistentRequests.contains(request)) return true;
+			if (runningPersistentRequests.contains(request)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -237,10 +251,11 @@ public class ClientRequestScheduler implements RequestScheduler {
 	@Override
 	public ChosenBlock grabRequest() {
 		short fuzz = -1;
-		if (PRIORITY_SOFT.equals(choosenPriorityScheduler))
+		if (PRIORITY_SOFT.equals(choosenPriorityScheduler)) {
 			fuzz = -1;
-		else if (PRIORITY_HARD.equals(choosenPriorityScheduler))
+		} else if (PRIORITY_HARD.equals(choosenPriorityScheduler)) {
 			fuzz = 0;
+		}
 		return selector.chooseRequest(fuzz, random, offeredKeys, starter, isRTScheduler, clientContext);
 	}
 
@@ -252,10 +267,12 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 */
 	public void removePendingKeys(KeyListener getter, boolean complain) {
 		boolean found = schedTransient.removePendingKeys(getter);
-		if (schedCore != null)
+		if (schedCore != null) {
 			found |= schedCore.removePendingKeys(getter);
-		if (complain && !found)
+		}
+		if (complain && !found) {
 			Logger.error(this, "Listener not found when removing: " + getter);
+		}
 	}
 
 	/**
@@ -266,10 +283,12 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 */
 	public void removePendingKeys(HasKeyListener getter, boolean complain) {
 		boolean found = schedTransient.removePendingKeys(getter);
-		if (schedCore != null)
+		if (schedCore != null) {
 			found |= schedCore.removePendingKeys(getter);
-		if (complain && !found)
+		}
+		if (complain && !found) {
 			Logger.error(this, "Listener not found when removing: " + getter);
+		}
 	}
 
 	public void reregisterAll(final ClientRequester request, short oldPrio) {
@@ -289,7 +308,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	}
 
 	public void tripPendingKey(final KeyBlock block) {
-		if (logMINOR) Logger.minor(this, "tripPendingKey(" + block.getKey() + ")");
+		if (logMINOR) {
+			Logger.minor(this, "tripPendingKey(" + block.getKey() + ")");
+		}
 
 		if (offeredKeys != null) {
 			offeredKeys.remove(block.getKey());
@@ -310,7 +331,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 
 			}, "Trip pending key (transient)");
 		}
-		if (schedCore == null) return;
+		if (schedCore == null) {
+			return;
+		}
 		if (schedCore.anyProbablyWantKey(key, clientContext)) {
 			try {
 				// This is definitely NOT an internal job.
@@ -319,7 +342,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 
 					@Override
 					public boolean run(ClientContext context) {
-						if (logMINOR) Logger.minor(this, "tripPendingKey for " + key);
+						if (logMINOR) {
+							Logger.minor(this, "tripPendingKey for " + key);
+						}
 						schedCore.tripPendingKey(key, block, clientContext);
 						return false;
 					}
@@ -340,8 +365,12 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 * RequestHandler (onAbort() handler). */
 	@Override
 	public boolean wantKey(Key key) {
-		if (schedTransient.anyProbablyWantKey(key, clientContext)) return true;
-		if (schedCore != null && schedCore.anyProbablyWantKey(key, clientContext)) return true;
+		if (schedTransient.anyProbablyWantKey(key, clientContext)) {
+			return true;
+		}
+		if (schedCore != null && schedCore.anyProbablyWantKey(key, clientContext)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -349,8 +378,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	 * Queue the offered key
 	 */
 	public void queueOfferedKey(final Key key, boolean realTime) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "queueOfferedKey(" + key);
+		}
 		offeredKeys.queueKey(key);
 		starter.wakeUp();
 	}
@@ -458,7 +488,9 @@ public class ClientRequestScheduler implements RequestScheduler {
 	}
 
 	public long countPersistentWaitingKeys() {
-		if (schedCore == null) return 0;
+		if (schedCore == null) {
+			return 0;
+		}
 		return schedCore.countWaitingKeys();
 	}
 

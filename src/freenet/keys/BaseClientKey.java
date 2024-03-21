@@ -20,14 +20,18 @@ public abstract class BaseClientKey implements Serializable {
 
 	public static BaseClientKey getBaseKey(FreenetURI origURI) throws MalformedURLException {
 		String keyType = origURI.getKeyType();
-		if ("CHK".equals(keyType))
+		if ("CHK".equals(keyType)) {
 			return new ClientCHK(origURI);
-		if ("SSK".equals(keyType))
+		}
+		if ("SSK".equals(keyType)) {
 			return new ClientSSK(origURI);
-		if ("KSK".equals(keyType))
+		}
+		if ("KSK".equals(keyType)) {
 			return ClientKSK.create(origURI.getDocName());
-		if ("USK".equals(keyType))
+		}
+		if ("USK".equals(keyType)) {
 			return USK.create(origURI);
+		}
 		throw new MalformedURLException("Unknown keytype from " + origURI);
 	}
 

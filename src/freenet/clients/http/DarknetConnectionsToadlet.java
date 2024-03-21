@@ -50,7 +50,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 					return ((DarknetPeerNodeStatus) firstNode).getTrustLevel().compareTo(((DarknetPeerNodeStatus) secondNode).getTrustLevel());
 				case "visibility":
 					int ret = ((DarknetPeerNodeStatus) firstNode).getOurVisibility().compareTo(((DarknetPeerNodeStatus) secondNode).getOurVisibility());
-					if (ret != 0) return ret;
+					if (ret != 0) {
+						return ret;
+					}
 					return ((DarknetPeerNodeStatus) firstNode).getTheirVisibility().compareTo(((DarknetPeerNodeStatus) secondNode).getTheirVisibility());
 				default:
 					return super.customCompare(firstNode, secondNode, sortBy);
@@ -107,8 +109,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 	@Override
 	protected void drawVisibilityColumn(HTMLNode peerRow, PeerNodeStatus peerNodeStatus, boolean advancedModeEnabled) {
 		String content = ((DarknetPeerNodeStatus) peerNodeStatus).getOurVisibility().name();
-		if (advancedModeEnabled)
+		if (advancedModeEnabled) {
 			content += " (" + ((DarknetPeerNodeStatus) peerNodeStatus).getTheirVisibility().name() + ")";
+		}
 		peerRow.addChild("td", "class", "peer-trust").addChild("#", content);
 	}
 
@@ -399,17 +402,22 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 			redirectHere(ctx);
 			return;
 		} else if (request.isPartSet("remove") || (request.isPartSet("doAction") && request.getPartAsStringFailsafe("action", 25).equals("remove"))) {
-			if (logMINOR) Logger.minor(this, "Remove node");
+			if (logMINOR) {
+				Logger.minor(this, "Remove node");
+			}
 
 			DarknetPeerNode[] peerNodes = node.getDarknetConnections();
 			for (DarknetPeerNode pn : peerNodes) {
 				if (request.isPartSet("node_" + pn.hashCode())) {
 					if ((pn.timeLastConnectionCompleted() < (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7) /* one week */) || (pn.peerNodeStatus == PeerManager.PEER_NODE_STATUS_NEVER_CONNECTED) || request.isPartSet("forceit")) {
 						this.node.removePeerConnection(pn);
-						if (logMINOR) Logger.minor(this, "Removed node: node_" + pn.hashCode());
+						if (logMINOR) {
+							Logger.minor(this, "Removed node: node_" + pn.hashCode());
+						}
 					} else {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Refusing to remove : node_" + pn.hashCode() + " (trying to prevent network churn) : let's display the warning message.");
+						}
 						PageNode page = ctx.getPageMaker().getPageNode(l10n("confirmRemoveNodeTitle"), ctx);
 						HTMLNode pageNode = page.outer;
 						HTMLNode contentNode = page.content;
@@ -426,7 +434,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 						return; // FIXME: maybe it breaks multi-node removing
 					}
 				} else {
-					if (logMINOR) Logger.minor(this, "Part not set: node_" + pn.hashCode());
+					if (logMINOR) {
+						Logger.minor(this, "Part not set: node_" + pn.hashCode());
+					}
 				}
 			}
 			redirectHere(ctx);
@@ -483,7 +493,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 
 	@Override
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-		if (tryHandlePeerNoderef(uri, request, ctx)) return;
+		if (tryHandlePeerNoderef(uri, request, ctx)) {
+			return;
+		}
 		super.handleMethodGET(uri, request, ctx);
 	}
 
@@ -515,7 +527,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 				}
 			}
 
-			if (fs == null) return false;
+			if (fs == null) {
+				return false;
+			}
 			String filename = FileUtil.sanitizeFileNameWithExtras(peernode_name + ".fref", "\" ");
 			String content = fs.toString();
 			MultiValueTable<String, String> extraHeaders = new MultiValueTable<String, String>();
@@ -523,7 +537,9 @@ public class DarknetConnectionsToadlet extends ConnectionsToadlet {
 			extraHeaders.put("Content-Disposition", "attachment; filename=" + filename);
 			this.writeReply(ctx, 200, "application/x-freenet-reference", "OK", extraHeaders, content);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

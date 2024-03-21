@@ -56,8 +56,9 @@ public class RetrievalException extends LightweightException {
 	public RetrievalException(int reason, String cause) {
 		_reason = reason;
 		_cause = cause;
-		if (cause == null || cause.length() == 0 || cause.equals("null"))
+		if (cause == null || cause.length() == 0 || cause.equals("null")) {
 			_cause = getErrString(reason);
+		}
 	}
 
 	public int getReason() {

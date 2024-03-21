@@ -90,8 +90,9 @@ public class NodeIPPortDetector {
 		FreenetInetAddress[] addrs = detectPrimaryIPAddress();
 		for (FreenetInetAddress addr : addrs) {
 			addresses.add(new Peer(addr, crypto.getPortNumber()));
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Adding " + addr);
+			}
 		}
 		// Now try to get the rewritten port number from our peers.
 		// Only considering those within this crypto port, this time.
@@ -103,11 +104,16 @@ public class NodeIPPortDetector {
 			// FIXME use a standard mutable int object, we have one somewhere
 			for (PeerNode pn : peerList) {
 				Peer p = pn.getRemoteDetectedPeer();
-				if ((p == null) || p.isNull()) continue;
+				if ((p == null) || p.isNull()) {
+					continue;
+				}
 				// DNSRequester doesn't deal with our own node
-				if (!IPUtil.isValidAddress(p.getAddress(true), false)) continue;
-				if (logMINOR)
+				if (!IPUtil.isValidAddress(p.getAddress(true), false)) {
+					continue;
+				}
+				if (logMINOR) {
 					Logger.minor(this, "Peer " + pn.getPeer() + " thinks we are " + p);
+				}
 				if (countsByPeer.containsKey(p)) {
 					countsByPeer.put(p, countsByPeer.get(p) + 1);
 				} else {
@@ -156,8 +162,9 @@ public class NodeIPPortDetector {
 								ipDetector.setMaybeSymmetric();
 
 								Peer p = new Peer(best.getFreenetAddress(), crypto.getPortNumber());
-								if (!addresses.contains(p))
+								if (!addresses.contains(p)) {
 									addresses.add(p);
+								}
 
 							}
 						}
@@ -166,8 +173,9 @@ public class NodeIPPortDetector {
 			}
 		}
 		lastPeers = addresses.toArray(new Peer[addresses.size()]);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Returning for port " + crypto.getPortNumber() + " : " + Arrays.toString(lastPeers));
+		}
 		return lastPeers;
 	}
 
@@ -180,16 +188,19 @@ public class NodeIPPortDetector {
 	}
 
 	public Peer[] getPrimaryPeers() {
-		if (lastPeers == null)
+		if (lastPeers == null) {
 			return detectPrimaryPeers();
-		else
+		} else {
 			return lastPeers;
+		}
 	}
 
 	public boolean includes(FreenetInetAddress addr) {
 		FreenetInetAddress[] a = detectPrimaryIPAddress();
 		for (FreenetInetAddress ai : a)
-			if (ai.equals(addr)) return true;
+			if (ai.equals(addr)) {
+				return true;
+			}
 		return false;
 	}
 }

@@ -95,9 +95,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 		localRequestOnly = fs.getBoolean("LocalRequestOnly", false);
 		String s = fs.get("CompatibilityMode");
 		InsertContext.CompatibilityMode cmode = null;
-		if (s == null)
+		if (s == null) {
 			cmode = InsertContext.CompatibilityMode.COMPAT_DEFAULT;
-		else {
+		} else {
 			try {
 				cmode = InsertContext.CompatibilityMode.valueOf(s);
 			} catch (IllegalArgumentException e) {
@@ -112,9 +112,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 		}
 		compatibilityMode = cmode.intern();
 		s = fs.get("OverrideSplitfileCryptoKey");
-		if (s == null)
+		if (s == null) {
 			overrideSplitfileCryptoKey = null;
-		else
+		} else {
 			try {
 				overrideSplitfileCryptoKey = HexUtil.hexToBytes(s);
 			} catch (NumberFormatException e1) {
@@ -122,15 +122,18 @@ public class ClientPutMessage extends DataCarryingMessage {
 			} catch (IndexOutOfBoundsException e1) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid splitfile crypto key (too short)", identifier, global);
 			}
-		if (identifier == null)
+		}
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier", null, global);
+		}
 		try {
-			if (binaryBlob)
+			if (binaryBlob) {
 				uri = new FreenetURI("CHK@");
-			else {
+			} else {
 				String u = fs.get("URI");
-				if (u == null)
+				if (u == null) {
 					throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No URI", identifier, global);
+				}
 				FreenetURI uu = new FreenetURI(u);
 				String[] metas = uu.getAllMetaStrings();
 				if (metas != null && metas.length == 1) {
@@ -143,9 +146,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(), identifier, global);
 		}
 		String verbosityString = fs.get("Verbosity");
-		if (verbosityString == null)
+		if (verbosityString == null) {
 			verbosity = 0;
-		else {
+		} else {
 			try {
 				verbosity = Integer.parseInt(verbosityString, 10);
 			} catch (NumberFormatException e) {
@@ -155,9 +158,10 @@ public class ClientPutMessage extends DataCarryingMessage {
 		contentType = fs.get("Metadata.ContentType");
 		String maxRetriesString = fs.get("MaxRetries");
 		if (maxRetriesString == null)
-			// default to 0
+		// default to 0
+		{
 			maxRetries = 0;
-		else {
+		} else {
 			try {
 				maxRetries = Integer.parseInt(maxRetriesString, 10);
 			} catch (NumberFormatException e) {
@@ -172,8 +176,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 		} else {
 			try {
 				priorityClass = Short.parseShort(priorityString);
-				if (!RequestStarter.isValidPriorityClass(priorityClass))
+				if (!RequestStarter.isValidPriorityClass(priorityClass)) {
 					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid priority class " + priorityClass + " - range is " + RequestStarter.PAUSED_PRIORITY_CLASS + " to " + RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				}
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing PriorityClass field: " + e.getMessage(), identifier, global);
 			}
@@ -184,8 +189,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 		if ((uploadFrom == null) || uploadFrom.equalsIgnoreCase("direct")) {
 			uploadFromType = UploadFrom.DIRECT;
 			String dataLengthString = fs.get("DataLength");
-			if (dataLengthString == null)
+			if (dataLengthString == null) {
 				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Need DataLength on a ClientPut", identifier, global);
+			}
 			try {
 				dataLength = Long.parseLong(dataLengthString, 10);
 			} catch (NumberFormatException e) {
@@ -196,23 +202,27 @@ public class ClientPutMessage extends DataCarryingMessage {
 		} else if (uploadFrom.equalsIgnoreCase("disk")) {
 			uploadFromType = UploadFrom.DISK;
 			String filename = fs.get("Filename");
-			if (filename == null)
+			if (filename == null) {
 				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing field Filename", identifier, global);
+			}
 			File f = new File(filename);
-			if (!(f.exists() && f.isFile() && f.canRead()))
+			if (!(f.exists() && f.isFile() && f.canRead())) {
 				throw new MessageInvalidException(ProtocolErrorMessage.FILE_NOT_FOUND, null, identifier, global);
+			}
 			dataLength = f.length();
 			FileBucket fileBucket = new FileBucket(f, true, false, false, false);
 			this.bucket = fileBucket;
 			this.origFilename = f;
 			redirectTarget = null;
-			if (fnam == null)
+			if (fnam == null) {
 				fnam = origFilename.getName();
+			}
 		} else if (uploadFrom.equalsIgnoreCase("redirect")) {
 			uploadFromType = UploadFrom.REDIRECT;
 			String target = fs.get("TargetURI");
-			if (target == null)
+			if (target == null) {
 				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "TargetURI missing but UploadFrom=redirect", identifier, global);
+			}
 			try {
 				redirectTarget = new FreenetURI(target);
 			} catch (MalformedURLException e) {
@@ -221,26 +231,29 @@ public class ClientPutMessage extends DataCarryingMessage {
 			dataLength = 0;
 			origFilename = null;
 			bucket = null;
-		} else
+		} else {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "UploadFrom invalid or unrecognized: " + uploadFrom, identifier, global);
+		}
 		dontCompress = fs.getBoolean("DontCompress", false);
 		String persistenceString = fs.get("Persistence");
 		persistence = Persistence.parseOrThrow(persistenceString, identifier, global);
 		canWriteClientCache = fs.getBoolean("WriteToClientCache", false);
 		clientToken = fs.get("ClientToken");
 		String f = fs.get("TargetFilename");
-		if (f != null)
+		if (f != null) {
 			fnam = f;
+		}
 		if (fnam != null && fnam.indexOf('/') > -1) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "TargetFilename must not contain slashes", identifier, global);
 		}
 		if (fnam != null && fnam.length() == 0) {
 			fnam = null; // Deliberate override to tell us not to create one.
 		}
-		if (uri.getRoutingKey() == null && !uri.isKSK())
+		if (uri.getRoutingKey() == null && !uri.isKSK()) {
 			targetFilename = fnam;
-		else
+		} else {
 			targetFilename = null;
+		}
 		earlyEncode = fs.getBoolean("EarlyEncode", false);
 		String codecs = fs.get("Codecs");
 		if (codecs != null) {
@@ -250,14 +263,16 @@ public class ClientPutMessage extends DataCarryingMessage {
 			} catch (InvalidCompressionCodecException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, global);
 			}
-			if (ca == null)
+			if (ca == null) {
 				codecs = null;
+			}
 		}
 		compressorDescriptor = codecs;
-		if (fs.get("ForkOnCacheable") != null)
+		if (fs.get("ForkOnCacheable") != null) {
 			forkOnCacheable = fs.getBoolean("ForkOnCacheable", false);
-		else
+		} else {
 			forkOnCacheable = Node.FORK_ON_CACHEABLE_DEFAULT;
+		}
 		extraInsertsSingleBlock = fs.getInt("ExtraInsertsSingleBlock", HighLevelSimpleClientImpl.EXTRA_INSERTS_SINGLE_BLOCK);
 		extraInsertsSplitfileHeaderBlock = fs.getInt("ExtraInsertsSplitfileHeaderBlock", HighLevelSimpleClientImpl.EXTRA_INSERTS_SPLITFILE_HEADER);
 		realTimeFlag = fs.getBoolean("RealTimeFlag", false);
@@ -293,8 +308,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 		sfs.put("PriorityClass", priorityClass);
 		sfs.putSingle("Persistence", persistence.toString().toLowerCase());
 		sfs.put("DontCompress", dontCompress);
-		if (compressorDescriptor != null)
+		if (compressorDescriptor != null) {
 			sfs.putSingle("Codecs", compressorDescriptor);
+		}
 		sfs.put("Global", global);
 		sfs.put("BinaryBlob", binaryBlob);
 		return sfs;
@@ -316,9 +332,11 @@ public class ClientPutMessage extends DataCarryingMessage {
 	 */
 	@Override
 	long dataLength() {
-		if (uploadFromType == UploadFrom.DIRECT)
+		if (uploadFromType == UploadFrom.DIRECT) {
 			return dataLength;
-		else return -1;
+		} else {
+			return -1;
+		}
 	}
 
 	@Override
@@ -329,7 +347,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 	@Override
 	RandomAccessBucket createBucket(BucketFactory bf, long length, FCPServer server) throws IOException, PersistenceDisabledException {
 		if (persistence == Persistence.FOREVER) {
-			if (server.getCore().killedDatabase()) throw new PersistenceDisabledException();
+			if (server.getCore().killedDatabase()) {
+				throw new PersistenceDisabledException();
+			}
 			return server.getCore().getPersistentTempBucketFactory().makeBucket(length);
 		} else {
 			return super.createBucket(bf, length, server);
@@ -343,8 +363,9 @@ public class ClientPutMessage extends DataCarryingMessage {
 
 	public void freeData() {
 		if (bucket == null) {
-			if (dataLength() <= 0)
+			if (dataLength() <= 0) {
 				return; // Okay.
+			}
 			Logger.error(this, "bucket is null on " + this + " - freed twice?", new Exception("error"));
 			return;
 		}

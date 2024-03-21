@@ -199,10 +199,12 @@ public class FCPConnectionHandler implements Closeable {
 	@Override
 	public void close() {
 		ClientRequest[] requests;
-		if (rebootClient != null)
+		if (rebootClient != null) {
 			rebootClient.onLostConnection(this);
-		if (foreverClient != null)
+		}
+		if (foreverClient != null) {
 			foreverClient.onLostConnection(this);
+		}
 		boolean dupe;
 		SubscribeUSK[] uskSubscriptions2;
 		synchronized (this) {
@@ -227,11 +229,13 @@ public class FCPConnectionHandler implements Closeable {
 
 					@Override
 					public boolean run(ClientContext context) {
-						if ((rebootClient != null) && !rebootClient.hasPersistentRequests())
+						if ((rebootClient != null) && !rebootClient.hasPersistentRequests()) {
 							server.unregisterClient(rebootClient);
+						}
 						if (foreverClient != null) {
-							if (!foreverClient.hasPersistentRequests())
+							if (!foreverClient.hasPersistentRequests()) {
 								server.unregisterClient(foreverClient);
+							}
 						}
 						return false;
 					}
@@ -261,7 +265,9 @@ public class FCPConnectionHandler implements Closeable {
 		}
 		synchronized (this) {
 			inputClosed = true;
-			if (!outputClosed) return;
+			if (!outputClosed) {
+				return;
+			}
 		}
 		try {
 			sock.close();
@@ -278,7 +284,9 @@ public class FCPConnectionHandler implements Closeable {
 		}
 		synchronized (this) {
 			outputClosed = true;
-			if (!inputClosed) return;
+			if (!inputClosed) {
+				return;
+			}
 		}
 		try {
 			sock.close();
@@ -292,8 +300,9 @@ public class FCPConnectionHandler implements Closeable {
 		rebootClient = server.registerRebootClient(name, server.getCore(), this);
 		rebootClient.queuePendingMessagesOnConnectionRestartAsync(outputHandler, server.getCore().getClientContext());
 		// Create foreverClient lazily. Everything that needs it (especially creating ClientGet's etc) runs on a database job.
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Set client name: " + name);
+		}
 		PersistentRequestClient client = server.getForeverClient(name, server.getCore(), this);
 		if (client != null) {
 			synchronized (this) {
@@ -305,7 +314,9 @@ public class FCPConnectionHandler implements Closeable {
 
 	protected PersistentRequestClient createForeverClient(String name) {
 		synchronized (FCPConnectionHandler.this) {
-			if (foreverClient != null) return foreverClient;
+			if (foreverClient != null) {
+				return foreverClient;
+			}
 		}
 		PersistentRequestClient client = server.registerForeverClient(name, server.getCore(), FCPConnectionHandler.this);
 		synchronized (FCPConnectionHandler.this) {
@@ -333,12 +344,15 @@ public class FCPConnectionHandler implements Closeable {
 		boolean success;
 		boolean persistent = message.persistence != Persistence.CONNECTION;
 		synchronized (this) {
-			if (isClosed) return;
+			if (isClosed) {
+				return;
+			}
 			// We need to track non-persistent requests anyway, so we may as well check
-			if (persistent)
+			if (persistent) {
 				success = true;
-			else
+			} else {
 				success = !requestsByIdentifier.containsKey(id);
+			}
 			if (success) {
 				try {
 
@@ -392,12 +406,13 @@ public class FCPConnectionHandler implements Closeable {
 				}
 			}
 		}
-		if (message.persistence == Persistence.REBOOT)
+		if (message.persistence == Persistence.REBOOT) {
 			try {
 				cg.register(false);
 			} catch (IdentifierCollisionException e) {
 				success = false;
 			}
+		}
 		if (!success) {
 			Logger.normal(this, "Identifier collision on " + this);
 			FCPMessage msg = new IdentifierCollisionMessage(id, message.global);
@@ -409,8 +424,9 @@ public class FCPConnectionHandler implements Closeable {
 	}
 
 	public void startClientPut(final ClientPutMessage message) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Starting insert ID=\"" + message.identifier + '"');
+		}
 		final String id = message.identifier;
 		final boolean global = message.global;
 		ClientPut cp = null;
@@ -419,14 +435,17 @@ public class FCPConnectionHandler implements Closeable {
 		synchronized (this) {
 			boolean success;
 			if (isClosed) {
-				if (logMINOR) Logger.minor(this, "Connection is closed");
+				if (logMINOR) {
+					Logger.minor(this, "Connection is closed");
+				}
 				return;
 			}
 			// We need to track non-persistent requests anyway, so we may as well check
-			if (persistent)
+			if (persistent) {
 				success = true;
-			else
+			} else {
 				success = !requestsByIdentifier.containsKey(id);
+			}
 			if (success) {
 				if (!persistent) {
 					try {
@@ -503,19 +522,23 @@ public class FCPConnectionHandler implements Closeable {
 				failedMessage = new IdentifierCollisionMessage(id, message.global);
 			}
 		}
-		if (message.persistence == Persistence.REBOOT && cp != null)
+		if (message.persistence == Persistence.REBOOT && cp != null) {
 			try {
 				cp.register(false);
 			} catch (IdentifierCollisionException e) {
 				failedMessage = new IdentifierCollisionMessage(id, message.global);
 			}
+		}
 		if (failedMessage != null) {
-			if (logMINOR) Logger.minor(this, "Failed: " + failedMessage);
+			if (logMINOR) {
+				Logger.minor(this, "Failed: " + failedMessage);
+			}
 			outputHandler.queue(failedMessage);
-			if (cp != null)
+			if (cp != null) {
 				cp.freeData();
-			else
+			} else {
 				message.freeData();
+			}
 			return;
 		} else {
 			Logger.minor(this, "Starting " + cp);
@@ -524,8 +547,9 @@ public class FCPConnectionHandler implements Closeable {
 	}
 
 	public void startClientPutDir(final ClientPutDirMessage message, final HashMap<String, Object> buckets, final boolean wasDiskPut) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Start ClientPutDir");
+		}
 		final String id = message.identifier;
 		final boolean global = message.global;
 		ClientPutDir cp = null;
@@ -534,11 +558,14 @@ public class FCPConnectionHandler implements Closeable {
 		// We need to track non-persistent requests anyway, so we may as well check
 		boolean success;
 		synchronized (this) {
-			if (isClosed) return;
-			if (!persistent)
+			if (isClosed) {
+				return;
+			}
+			if (!persistent) {
 				success = true;
-			else
+			} else {
 				success = !requestsByIdentifier.containsKey(id);
+			}
 		}
 		if (success) {
 			if (!persistent) {
@@ -611,21 +638,24 @@ public class FCPConnectionHandler implements Closeable {
 			}
 		}
 
-		if (message.persistence == Persistence.REBOOT)
+		if (message.persistence == Persistence.REBOOT) {
 			try {
 				cp.register(false);
 			} catch (IdentifierCollisionException e) {
 				failedMessage = new IdentifierCollisionMessage(id, message.global);
 			}
+		}
 		if (failedMessage != null) {
 			// FIXME do we need to freeData???
 			outputHandler.queue(failedMessage);
-			if (cp != null)
+			if (cp != null) {
 				cp.cancel(server.getCore().getClientContext());
+			}
 			return;
 		} else {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Starting " + cp);
+			}
 			cp.start(server.getCore().getClientContext());
 		}
 	}
@@ -747,13 +777,15 @@ public class FCPConnectionHandler implements Closeable {
 			da = checkedDirectories.get(parentDirectory);
 		}
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Checking DDA: " + da + " for " + parentDirectory);
+		}
 
-		if (writeRequest)
+		if (writeRequest) {
 			return (da == null ? server.isDownloadDDAAlwaysAllowed() : da.canWrite);
-		else
+		} else {
 			return (da == null ? server.isUploadDDAAlwaysAllowed() : da.canRead);
+		}
 	}
 
 	/**
@@ -770,8 +802,9 @@ public class FCPConnectionHandler implements Closeable {
 			checkedDirectories.put(path, da);
 		}
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "DDA: read=" + read + " write=" + write + " for " + path);
+		}
 	}
 
 	/**
@@ -785,16 +818,18 @@ public class FCPConnectionHandler implements Closeable {
 	 */
 	protected DDACheckJob enqueueDDACheck(String path, boolean read, boolean write) throws IllegalArgumentException {
 		File directory = FileUtil.getCanonicalFile(new File(path));
-		if (!directory.exists() || !directory.isDirectory())
+		if (!directory.exists() || !directory.isDirectory()) {
 			throw new IllegalArgumentException("The specified path isn't a directory! or doesn't exist or the node doesn't have access to it!");
+		}
 
 		// See #1856
 		DDACheckJob job = null;
 		synchronized (inTestDirectories) {
 			job = inTestDirectories.get(directory);
 		}
-		if (job != null)
+		if (job != null) {
 			throw new IllegalArgumentException("There is already a TestDDA going on for that directory!");
+		}
 
 		File writeFile = (write ? new File(path, "DDACheck-" + server.getNode().getFastWeakRandom().nextInt() + ".tmp") : null);
 		File readFile = null;
@@ -844,8 +879,9 @@ public class FCPConnectionHandler implements Closeable {
 	 */
 	protected DDACheckJob popDDACheck(String path) throws IllegalArgumentException {
 		File directory = FileUtil.getCanonicalFile(new File(path));
-		if (!directory.exists() || !directory.isDirectory())
+		if (!directory.exists() || !directory.isDirectory()) {
 			throw new IllegalArgumentException("The specified path isn't a directory! or doesn't exist or the node doesn't have access to it!");
+		}
 
 		synchronized (inTestDirectories) {
 			return inTestDirectories.remove(directory);
@@ -859,8 +895,9 @@ public class FCPConnectionHandler implements Closeable {
 	protected void freeDDAJobs() {
 		synchronized (inTestDirectories) {
 			for (DDACheckJob job : inTestDirectories.values()) {
-				if (job.readFilename != null)
+				if (job.readFilename != null) {
 					job.readFilename.delete();
+				}
 			}
 		}
 	}
@@ -871,25 +908,28 @@ public class FCPConnectionHandler implements Closeable {
 			req = requestsByIdentifier.remove(identifier);
 		}
 		if (req != null) {
-			if (kill)
+			if (kill) {
 				req.cancel(server.getCore().getClientContext());
+			}
 			req.requestWasRemoved(server.getCore().getClientContext());
 		}
 		return req;
 	}
 
 	ClientRequest getRebootRequest(boolean global, FCPConnectionHandler handler, String identifier) {
-		if (global)
+		if (global) {
 			return handler.server.getGlobalRebootClient().getRequest(identifier);
-		else
+		} else {
 			return handler.getRebootClient().getRequest(identifier);
+		}
 	}
 
 	ClientRequest getForeverRequest(boolean global, FCPConnectionHandler handler, String identifier) {
-		if (global)
+		if (global) {
 			return handler.server.getGlobalForeverClient().getRequest(identifier);
-		else
+		} else {
 			return handler.getForeverClient().getRequest(identifier);
+		}
 	}
 
 	ClientRequest removePersistentRebootRequest(boolean global, String identifier) throws MessageInvalidException {
@@ -915,7 +955,9 @@ public class FCPConnectionHandler implements Closeable {
 	}
 
 	public synchronized void addUSKSubscription(String identifier, SubscribeUSK subscribeUSK) throws IdentifierCollisionException {
-		if (uskSubscriptions.containsKey(identifier)) throw new IdentifierCollisionException();
+		if (uskSubscriptions.containsKey(identifier)) {
+			throw new IdentifierCollisionException();
+		}
 		uskSubscriptions.put(identifier, subscribeUSK);
 	}
 
@@ -923,17 +965,19 @@ public class FCPConnectionHandler implements Closeable {
 		SubscribeUSK sub;
 		synchronized (this) {
 			sub = uskSubscriptions.remove(identifier);
-			if (sub == null)
+			if (sub == null) {
 				throw new MessageInvalidException(ProtocolErrorMessage.NO_SUCH_IDENTIFIER, "No such identifier unsubscribing", identifier, false);
+			}
 		}
 		sub.unsubscribe();
 	}
 
 	public RequestClient connectionRequestClient(boolean realTime) {
-		if (realTime)
+		if (realTime) {
 			return connectionRequestClientRT;
-		else
+		} else {
 			return connectionRequestClientBulk;
+		}
 	}
 
 	public FCPServer getServer() {

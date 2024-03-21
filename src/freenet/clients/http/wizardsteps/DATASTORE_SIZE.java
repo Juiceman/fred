@@ -48,7 +48,9 @@ public class DATASTORE_SIZE implements Step {
 		long maxSize = maxDatastoreSize(core.getNode());
 
 		long autodetectedSize = canAutoconfigureDatastoreSize();
-		if (maxSize < autodetectedSize) autodetectedSize = maxSize;
+		if (maxSize < autodetectedSize) {
+			autodetectedSize = maxSize;
+		}
 
 		@SuppressWarnings("unchecked")
 		Option<Long> sizeOption = (Option<Long>) config.get("node").getOption("storeSize");
@@ -80,13 +82,27 @@ public class DATASTORE_SIZE implements Step {
 						new String[]{"2G", "on"}, "2GiB");
 			}
 		}
-		if (maxSize >= 3L * 1024 * 1024 * 1024) result.addChild("option", "value", "3G", "3 GiB");
-		if (maxSize >= 5L * 1024 * 1024 * 1024) result.addChild("option", "value", "5G", "5 GiB");
-		if (maxSize >= 10L * 1024 * 1024 * 1024) result.addChild("option", "value", "10G", "10 GiB");
-		if (maxSize >= 20L * 1024 * 1024 * 1024) result.addChild("option", "value", "20G", "20 GiB");
-		if (maxSize >= 50L * 1024 * 1024 * 1024) result.addChild("option", "value", "50G", "50 GiB");
-		if (maxSize >= 200L * 1024 * 1024 * 1024) result.addChild("option", "value", "200G", "200GiB");
-		if (maxSize >= 500L * 1024 * 1024 * 1024) result.addChild("option", "value", "500G", "500GiB");
+		if (maxSize >= 3L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "3G", "3 GiB");
+		}
+		if (maxSize >= 5L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "5G", "5 GiB");
+		}
+		if (maxSize >= 10L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "10G", "10 GiB");
+		}
+		if (maxSize >= 20L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "20G", "20 GiB");
+		}
+		if (maxSize >= 50L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "50G", "50 GiB");
+		}
+		if (maxSize >= 200L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "200G", "200GiB");
+		}
+		if (maxSize >= 500L * 1024 * 1024 * 1024) {
+			result.addChild("option", "value", "500G", "500GiB");
+		}
 
 		//Put buttons below dropdown.
 		HTMLNode below = bandwidthForm.addChild("div");
@@ -140,8 +156,11 @@ public class DATASTORE_SIZE implements Step {
 			int downstreamLimit = config.get("node").getInt("inputBandwidthLimit");
 			// is used for remote stuff, so go by the minimum of the two
 			int limit;
-			if (downstreamLimit <= 0) limit = upstreamLimit;
-			else limit = Math.min(downstreamLimit, upstreamLimit);
+			if (downstreamLimit <= 0) {
+				limit = upstreamLimit;
+			} else {
+				limit = Math.min(downstreamLimit, upstreamLimit);
+			}
 			// 35KB/sec limit has been seen to have 0.5 store writes per second.
 			// So saying we want to have space to cache everything is only doubling that ...
 			// OTOH most stuff is at low enough HTL to go to the datastore and thus not to
@@ -154,10 +173,14 @@ public class DATASTORE_SIZE implements Step {
 
 			System.out.println("Setting datastore size to " + Fields.longToString(storeSize, true));
 			config.get("node").set("storeSize", Fields.longToString(storeSize, true));
-			if (firsttime) config.get("node").set("storeType", "salt-hash");
+			if (firsttime) {
+				config.get("node").set("storeType", "salt-hash");
+			}
 			System.out.println("Setting client cache size to " + Fields.longToString(clientCacheSize, true));
 			config.get("node").set("clientCacheSize", Fields.longToString(clientCacheSize, true));
-			if (firsttime) config.get("node").set("clientCacheType", "salt-hash");
+			if (firsttime) {
+				config.get("node").set("clientCacheType", "salt-hash");
+			}
 			System.out.println("Setting slashdot/ULPR/recent requests cache size to " + Fields.longToString(slashdotCacheSize, true));
 			config.get("node").set("slashdotCacheSize", Fields.longToString(slashdotCacheSize, true));
 
@@ -170,8 +193,12 @@ public class DATASTORE_SIZE implements Step {
 
 	public static long maxDatastoreSize(Node node) {
 		long maxMemory = NodeStarter.getMemoryLimitBytes();
-		if (maxMemory == Long.MAX_VALUE) return 1024 * 1024 * 1024; // Treat as don't know.
-		if (maxMemory < 128 * 1024 * 1024) return 1024 * 1024 * 1024; // 1GB default if don't know or very small memory.
+		if (maxMemory == Long.MAX_VALUE) {
+			return 1024 * 1024 * 1024; // Treat as don't know.
+		}
+		if (maxMemory < 128 * 1024 * 1024) {
+			return 1024 * 1024 * 1024; // 1GB default if don't know or very small memory.
+		}
 		// Don't use the first 100MB for slot filters.
 		long available = maxMemory - 100 * 1024 * 1024;
 		// Don't use more than 50% of available memory for slot filters.

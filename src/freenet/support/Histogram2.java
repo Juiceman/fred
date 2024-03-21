@@ -23,7 +23,9 @@ public class Histogram2 {
 	}
 
 	public void report(final double key, final double value) {
-		if (key < 0.0 || key >= MAX) return;
+		if (key < 0.0 || key >= MAX) {
+			return;
+		}
 		int n = (int) (bars.length * key / MAX);
 		bars[n].report(value);
 	}

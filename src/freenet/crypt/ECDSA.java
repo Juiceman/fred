@@ -64,13 +64,15 @@ public class ECDSA {
 			PrivateKey pk = key.getPrivate();
 			byte[] pubkey = pub.getEncoded();
 			byte[] pkey = pk.getEncoded();
-			if (pubkey.length > modulusSize || pubkey.length == 0)
+			if (pubkey.length > modulusSize || pubkey.length == 0) {
 				throw new Error("Unexpected pubkey length: " + pubkey.length + "!=" + modulusSize);
+			}
 			PublicKey pub2 = kf.generatePublic(
 					new X509EncodedKeySpec(pubkey)
 			);
-			if (!Arrays.equals(pub2.getEncoded(), pubkey))
+			if (!Arrays.equals(pub2.getEncoded(), pubkey)) {
 				throw new Error("Pubkey encoding mismatch");
+			}
 			PrivateKey pk2 = kf.generatePrivate(
 					new PKCS8EncodedKeySpec(pkey)
 			);
@@ -87,8 +89,9 @@ public class ECDSA {
 			byte[] sign = sig.sign();
 			sig.initVerify(key.getPublic());
 			boolean verified = sig.verify(sign);
-			if (!verified)
+			if (!verified) {
 				throw new Error("Verification failed");
+			}
 		}
 
 		private Curves(String name, String defaultHashAlgorithm, int modulusSize, int maxSigSize) {
@@ -192,8 +195,9 @@ public class ECDSA {
 		byte[] pri = null;
 		try {
 			pub = Base64.decode(sfs.get("pub"));
-			if (pub.length > curve.modulusSize)
+			if (pub.length > curve.modulusSize) {
 				throw new InvalidKeyException();
+			}
 			ECPublicKey pubK = getPublicKey(pub, curve);
 
 			pri = Base64.decode(sfs.get("pri"));
@@ -222,10 +226,11 @@ public class ECDSA {
 				result = sig.sign();
 				// It's a DER encoded signature, most sigs will fit in N bytes
 				// If it doesn't let's re-sign.
-				if (result.length <= curve.maxSigSize)
+				if (result.length <= curve.maxSigSize) {
 					break;
-				else
+				} else {
 					Logger.error(this, "DER encoded signature used " + result.length + " bytes, more than expected " + curve.maxSigSize + " - re-signing...");
+				}
 			}
 		} catch (NoSuchAlgorithmException e) {
 			Logger.error(this, "NoSuchAlgorithmException : " + e.getMessage(), e);
@@ -311,8 +316,9 @@ public class ECDSA {
 	}
 
 	public static boolean verify(Curves curve, ECPublicKey key, byte[] signature, int sigoffset, int siglen, byte[]... data) {
-		if (key == null || curve == null || signature == null || data == null)
+		if (key == null || curve == null || signature == null || data == null) {
 			return false;
+		}
 		boolean result = false;
 		try {
 			Signature sig = Signature.getInstance(curve.defaultHashAlgorithm, curve.sigProvider);
@@ -378,8 +384,9 @@ public class ECDSA {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		SimpleFieldSet fsCurve = new SimpleFieldSet(true);
 		fsCurve.putSingle("pub", Base64.encode(key.getPublic().getEncoded()));
-		if (includePrivate)
+		if (includePrivate) {
 			fsCurve.putSingle("pri", Base64.encode(key.getPrivate().getEncoded()));
+		}
 		fs.put(curve.name(), fsCurve);
 		return fs;
 	}

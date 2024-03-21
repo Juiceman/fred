@@ -48,7 +48,9 @@ public class NodePinger implements Runnable {
 			synchronized (node.getPeers()) {
 				peers = node.getPeers().connectedPeers();
 			}
-			if (peers == null || peers.length == 0) return;
+			if (peers == null || peers.length == 0) {
+				return;
+			}
 
 			// Now we don't have to care about synchronization anymore
 			recalculateMean(peers);
@@ -66,10 +68,13 @@ public class NodePinger implements Runnable {
 	 * Recalculate the mean ping time
 	 */
 	private void recalculateMean(PeerNode[] peers) {
-		if (peers.length == 0) return;
+		if (peers.length == 0) {
+			return;
+		}
 		meanPing = calculateMedianPing(peers);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Median ping: " + meanPing);
+		}
 	}
 
 	private double calculateMedianPing(PeerNode[] peers) {
@@ -111,22 +116,27 @@ public class NodePinger implements Runnable {
 			int x = 0;
 			for (PeerNode peer : peers) {
 				PeerLoadStats stats = peer.outputLoadTracker(isRealtime).getLastIncomingLoadStats();
-				if (stats == null) continue;
+				if (stats == null) {
+					continue;
+				}
 				allPeers[x++] = stats.peerLimit(isInput);
 			}
 			if (x != peers.length) {
 				allPeers = Arrays.copyOf(allPeers, x);
 			}
 			Arrays.sort(allPeers);
-			if (x == 0) return;
+			if (x == 0) {
+				return;
+			}
 			synchronized (this) {
 				min = allPeers[0];
 				median = allPeers[x / 2];
 				firstQuartile = allPeers[x / 4];
 				lastQuartile = allPeers[(x * 3) / 4];
 				max = allPeers[x - 1];
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Quartiles for peer capacities: " + (isInput ? "input " : "output ") + (isRealtime ? "realtime: " : "bulk: ") + Arrays.toString(getQuartiles()));
+				}
 			}
 		}
 

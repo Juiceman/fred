@@ -50,7 +50,9 @@ public class MultiHashInputStream extends FilterInputStream {
 	@Override
 	public int read(byte[] buf, int off, int len) throws IOException {
 		int ret = in.read(buf, off, len);
-		if (ret <= 0) return ret;
+		if (ret <= 0) {
+			return ret;
+		}
 		for (Digester d : digesters)
 			d.digest.update(buf, off, ret);
 		readBytes += ret;
@@ -68,7 +70,9 @@ public class MultiHashInputStream extends FilterInputStream {
 	@Override
 	public int read() throws IOException {
 		int ret = in.read();
-		if (ret < 0) return ret;
+		if (ret < 0) {
+			return ret;
+		}
 		byte[] b = new byte[]{(byte) ret};
 		for (Digester d : digesters)
 			d.digest.update(b, 0, 1);
@@ -82,7 +86,9 @@ public class MultiHashInputStream extends FilterInputStream {
 		long skipped = 0;
 		while (length > 0) {
 			int x = read(buf, 0, (int) Math.min(buf.length, length));
-			if (x == -1) return skipped;
+			if (x == -1) {
+				return skipped;
+			}
 			skipped += x;
 			length -= x;
 		}

@@ -91,23 +91,34 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 			if (ignoreSlots != null && ignoreSlots[i]) {
 				continue;
 			}
-			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH))
+			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH)) {
 				continue;
-			if (ckey == null) ckey = key.getCryptoKey();
+			}
+			if (ckey == null) {
+				ckey = key.getCryptoKey();
+			}
 			assert (ClientCHK.CRYPTO_KEY_LENGTH == NodeCHK.KEY_LENGTH);
 			// FIXME USE THE RIGHT CONSTANT, DONT ASSUME THE TWO LENGTHS ARE THE SAME
 			if (commonDecryptKey != null) {
-				if (!Arrays.equals(commonDecryptKey, ckey)) continue;
-			} else {
-				if (!Fields.byteArrayEqual(decryptKeys, ckey, oldX, 0, NodeCHK.KEY_LENGTH))
+				if (!Arrays.equals(commonDecryptKey, ckey)) {
 					continue;
+				}
+			} else {
+				if (!Fields.byteArrayEqual(decryptKeys, ckey, oldX, 0, NodeCHK.KEY_LENGTH)) {
+					continue;
+				}
 			}
-			if (extra == null) extra = key.getExtra();
+			if (extra == null) {
+				extra = key.getExtra();
+			}
 			if (commonExtraBytes != null) {
-				if (!Arrays.equals(commonExtraBytes, extra)) continue;
-			} else {
-				if (!Fields.byteArrayEqual(extraBytesForKeys, extra, i * EXTRA_BYTES_LENGTH, 0, EXTRA_BYTES_LENGTH))
+				if (!Arrays.equals(commonExtraBytes, extra)) {
 					continue;
+				}
+			} else {
+				if (!Fields.byteArrayEqual(extraBytesForKeys, extra, i * EXTRA_BYTES_LENGTH, 0, EXTRA_BYTES_LENGTH)) {
+					continue;
+				}
 			}
 			return i;
 		}
@@ -123,8 +134,9 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 			if (ignoreSlots != null && ignoreSlots[i]) {
 				continue;
 			}
-			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH))
+			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH)) {
 				continue;
+			}
 			return i;
 		}
 		return -1;
@@ -140,12 +152,17 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 			if (ignoreSlots != null && ignoreSlots[i]) {
 				continue;
 			}
-			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH))
+			if (!Fields.byteArrayEqual(routingKeys, rkey, oldX, 0, NodeCHK.KEY_LENGTH)) {
 				continue;
-			if (results == null) results = new ArrayList<Integer>();
+			}
+			if (results == null) {
+				results = new ArrayList<Integer>();
+			}
 			results.add(i);
 		}
-		if (results == null) return new int[0];
+		if (results == null) {
+			return new int[0];
+		}
 		int[] ret = new int[results.size()];
 		for (int i = 0; i < ret.length; i++) ret[i] = results.get(i);
 		return ret;
@@ -153,14 +170,18 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 
 	public NodeCHK getNodeKey(int x, boolean[] ignoreSlots, boolean copy) {
 		if (ignoreSlots != null) {
-			if (ignoreSlots[x]) return null;
+			if (ignoreSlots[x]) {
+				return null;
+			}
 		}
 		return getNodeKey(x, copy);
 	}
 
 	public ClientCHK getKey(int x, boolean[] ignoreSlots, boolean copy) {
 		if (ignoreSlots != null) {
-			if (ignoreSlots[x]) return null;
+			if (ignoreSlots[x]) {
+				return null;
+			}
 		}
 		return getKey(x, copy);
 	}
@@ -299,7 +320,9 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 		ArrayList<NodeCHK> list = new ArrayList<NodeCHK>();
 		for (int i = 0; i < dataBlocks + checkBlocks; i++) {
 			NodeCHK k = getNodeKey(i, foundKeys, copy);
-			if (k == null) continue;
+			if (k == null) {
+				continue;
+			}
 			list.add(k);
 		}
 		return list.toArray(new NodeCHK[list.size()]);
@@ -331,27 +354,37 @@ public class SplitFileSegmentKeys implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		SplitFileSegmentKeys other = (SplitFileSegmentKeys) obj;
-		if (checkBlocks != other.checkBlocks)
+		if (checkBlocks != other.checkBlocks) {
 			return false;
-		if (!Arrays.equals(commonDecryptKey, other.commonDecryptKey))
+		}
+		if (!Arrays.equals(commonDecryptKey, other.commonDecryptKey)) {
 			return false;
-		if (!Arrays.equals(commonExtraBytes, other.commonExtraBytes))
+		}
+		if (!Arrays.equals(commonExtraBytes, other.commonExtraBytes)) {
 			return false;
-		if (dataBlocks != other.dataBlocks)
+		}
+		if (dataBlocks != other.dataBlocks) {
 			return false;
-		if (!Arrays.equals(decryptKeys, other.decryptKeys))
+		}
+		if (!Arrays.equals(decryptKeys, other.decryptKeys)) {
 			return false;
-		if (!Arrays.equals(extraBytesForKeys, other.extraBytesForKeys))
+		}
+		if (!Arrays.equals(extraBytesForKeys, other.extraBytesForKeys)) {
 			return false;
-		if (!Arrays.equals(routingKeys, other.routingKeys))
+		}
+		if (!Arrays.equals(routingKeys, other.routingKeys)) {
 			return false;
+		}
 		return true;
 	}
 

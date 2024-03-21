@@ -87,8 +87,9 @@ public class Util {
 	public static BigInteger readMPI(InputStream in) throws IOException {
 		int b1 = in.read();
 		int b2 = in.read();
-		if ((b1 == -1) || (b2 == -1))
+		if ((b1 == -1) || (b2 == -1)) {
 			throw new EOFException();
+		}
 		byte[] data = new byte[(((b1 << 8) + b2) + 8) >> 3];
 		readFully(in, data, 0, data.length);
 		//(new DataInputStream(in)).readFully(data, 0, data.length);
@@ -401,8 +402,9 @@ public class Util {
 	public static double keyDigestAsNormalizedDouble(byte[] digest) {
 		long asLong = Math.abs(Fields.bytesToLong(digest));
 		// Math.abs can actually return negative...
-		if (asLong == Long.MIN_VALUE)
+		if (asLong == Long.MIN_VALUE) {
 			asLong = Long.MAX_VALUE;
+		}
 		return ((double) asLong) / ((double) Long.MAX_VALUE);
 	}
 }

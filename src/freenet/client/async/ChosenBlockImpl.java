@@ -34,8 +34,9 @@ public class ChosenBlockImpl extends ChosenBlock {
 		this.request = req;
 		this.sched = sched;
 		this.persistent = persistent;
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.minor(this, "Created " + this + " for " + (persistent ? "persistent" : "transient") + " block " + token + " for key " + key, new Exception("debug"));
+		}
 	}
 
 	@Override

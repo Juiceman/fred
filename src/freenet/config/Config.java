@@ -25,8 +25,9 @@ public class Config {
 
 	public void register(SubConfig sc) {
 		synchronized (this) {
-			if (configsByPrefix.containsKey(sc.prefix))
+			if (configsByPrefix.containsKey(sc.prefix)) {
 				throw new IllegalArgumentException("Already registered " + sc.prefix + ": " + sc);
+			}
 			configsByPrefix.put(sc.prefix, sc);
 		}
 	}
@@ -50,8 +51,9 @@ public class Config {
 			configs = configsByPrefix.values().toArray(new SubConfig[configsByPrefix.size()]);
 		}
 		for (SubConfig config : configs) {
-			if (!config.hasFinishedInitialization())
+			if (!config.hasFinishedInitialization()) {
 				Logger.error(this, "Not finished initialization: " + config.prefix);
+			}
 		}
 	}
 

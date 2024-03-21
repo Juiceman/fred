@@ -76,25 +76,28 @@ public class PushDataManager {
 				Logger.minor(this, "Element is updating, but not present on elements! elements:" + elements + " pages:" + pages + " awaitingNotifications:" + awaitingNotifications);
 			}
 		}
-		if (elements.containsKey(id)) for (String reqId : elements.get(id)) {
-			if (logMINOR) {
-				Logger.minor(this, "Element is present on page:" + reqId + ". Adding an UpdateEvent for all notification list.");
-			}
-			for (Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
-//			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
-				List<UpdateEvent> notificationList = entry.getValue();
-				UpdateEvent updateEvent = new UpdateEvent(reqId, id);
-				if (notificationList.contains(updateEvent) == false) {
-					notificationList.add(updateEvent);
-					if (logMINOR) {
-						Logger.minor(this, "Notification(" + updateEvent + ") added to a notification list for " + entry.getKey());
-					}
-				} else {
-					if (logMINOR)
-						Logger.minor(this, "Not notifying " + entry.getKey() + " because already on list");
+		if (elements.containsKey(id)) {
+			for (String reqId : elements.get(id)) {
+				if (logMINOR) {
+					Logger.minor(this, "Element is present on page:" + reqId + ". Adding an UpdateEvent for all notification list.");
 				}
+				for (Map.Entry<String, List<UpdateEvent>> entry : awaitingNotifications.entrySet()) {
+//			for (List<UpdateEvent> notificationList : awaitingNotifications.values()) {
+					List<UpdateEvent> notificationList = entry.getValue();
+					UpdateEvent updateEvent = new UpdateEvent(reqId, id);
+					if (notificationList.contains(updateEvent) == false) {
+						notificationList.add(updateEvent);
+						if (logMINOR) {
+							Logger.minor(this, "Notification(" + updateEvent + ") added to a notification list for " + entry.getKey());
+						}
+					} else {
+						if (logMINOR) {
+							Logger.minor(this, "Not notifying " + entry.getKey() + " because already on list");
+						}
+					}
+				}
+				needsUpdate = true;
 			}
-			needsUpdate = true;
 		}
 		if (needsUpdate) {
 			if (logMINOR) {
@@ -151,10 +154,12 @@ public class PushDataManager {
 		if (logMINOR) {
 			Logger.minor(this, "Getting element data for element:" + id + " in page:" + requestId);
 		}
-		if (pages.get(requestId) != null) for (BaseUpdateableElement element : pages.get(requestId)) {
-			if (element.getUpdaterId(requestId).compareTo(id) == 0) {
-				element.updateState(false);
-				return element;
+		if (pages.get(requestId) != null) {
+			for (BaseUpdateableElement element : pages.get(requestId)) {
+				if (element.getUpdaterId(requestId).compareTo(id) == 0) {
+					element.updateState(false);
+					return element;
+				}
 			}
 		}
 		Logger.error(this, "Could not find data for the element requested. requestId:" + requestId + " id:" + id + " pages:" + pages + " keepaliveReceived:" + isKeepaliveReceived);
@@ -320,7 +325,9 @@ public class PushDataManager {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) return true;
+			if (obj == this) {
+				return true;
+			}
 			if (obj instanceof UpdateEvent) {
 				UpdateEvent o = (UpdateEvent) obj;
 				if (o.getRequestId().compareTo(requestId) == 0 && o.getElementId().compareTo(elementId) == 0) {

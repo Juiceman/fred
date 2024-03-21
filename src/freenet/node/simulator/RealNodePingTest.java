@@ -66,10 +66,11 @@ public class RealNodePingTest {
 				Logger.error(RealNodePingTest.class, "Not connected");
 				continue;
 			}
-			if (success)
+			if (success) {
 				Logger.error(RealNodePingTest.class, "PING " + pingID + " successful");
-			else
+			} else {
 				Logger.error(RealNodePingTest.class, "PING FAILED: " + pingID);
+			}
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {

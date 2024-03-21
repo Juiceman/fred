@@ -124,11 +124,13 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		}
 
 		public static boolean setAddressPreference(DatagramSocket s, SOCKET_ADDR_PREFERENCE p) {
-			if (!Platform.isLinux())
+			if (!Platform.isLinux()) {
 				return false;
+			}
 			int fd = getFd(s);
-			if (fd <= 2)
+			if (fd <= 2) {
 				return false;
+			}
 			int ret = -1;
 			try {
 				ret = socketOptionsHolder.setsockopt(fd, SOCKET_level.IPPROTO_IPV6.linux, p.option_name.linux, new IntByReference(p.linux).getPointer(), Native.POINTER_SIZE);
@@ -167,8 +169,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			Logger.error(this, "Failed to setTrafficClass with " + node.getTrafficClass().value, e);
 		}
 		boolean r = socketOptions.setAddressPreference(_sock, socketOptions.SOCKET_ADDR_PREFERENCE.IPV6_PREFER_SRC_PUBLIC);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Setting IPV6_PREFER_SRC_PUBLIC for port " + listenPort + " is a " + (r ? "success" : "failure"));
+		}
 //		}
 		// Only used for debugging, no need to seed from Yarrow
 		dropRandom = node.getFastWeakRandom();
@@ -266,14 +269,18 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 				if (endTime - startTime > 3000) {
 					Logger.error(this, "packet creation took " + (endTime - startTime) + "ms");
 				} else {
-					if (logMINOR) Logger.minor(this, "packet creation took " + (endTime - startTime) + "ms");
+					if (logMINOR) {
+						Logger.minor(this, "packet creation took " + (endTime - startTime) + "ms");
+					}
 				}
 			}
 			byte[] data = packet.getData();
 			int offset = packet.getOffset();
 			int length = packet.getLength();
 			try {
-				if (logMINOR) Logger.minor(this, "Processing packet of length " + length + " from " + peer);
+				if (logMINOR) {
+					Logger.minor(this, "Processing packet of length " + length + " from " + peer);
+				}
 				startTime = System.currentTimeMillis();
 				lowLevelFilter.process(data, offset, length, peer, now);
 				endTime = System.currentTimeMillis();
@@ -281,17 +288,23 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 					if (endTime - startTime > 3000) {
 						Logger.error(this, "processing packet took " + (endTime - startTime) + "ms");
 					} else {
-						if (logMINOR) Logger.minor(this, "processing packet took " + (endTime - startTime) + "ms");
+						if (logMINOR) {
+							Logger.minor(this, "processing packet took " + (endTime - startTime) + "ms");
+						}
 					}
 				}
-				if (logMINOR) Logger.minor(this,
-						"Successfully handled packet length " + length);
+				if (logMINOR) {
+					Logger.minor(this,
+							"Successfully handled packet length " + length);
+				}
 			} catch (Throwable t) {
 				Logger.error(this, "Caught " + t + " from "
 						+ lowLevelFilter, t);
 			}
 		} else {
-			if (logDEBUG) Logger.debug(this, "No packet received");
+			if (logDEBUG) {
+				Logger.debug(this, "No packet received");
+			}
 		}
 	}
 
@@ -313,7 +326,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 				throw new RuntimeException(e2);
 			}
 		}
-		if (logMINOR) Logger.minor(this, "Received packet");
+		if (logMINOR) {
+			Logger.minor(this, "Received packet");
+		}
 		return true;
 	}
 
@@ -359,8 +374,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			tracker.sentPacketTo(destination);
 			boolean isLocal = (!IPUtil.isValidAddress(address, false)) && (IPUtil.isValidAddress(address, true));
 			collector.addInfo(address, port, 0, getHeadersLength(address) + blockToSend.length, isLocal);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Sent packet length " + blockToSend.length + " to " + address + ':' + port);
+			}
 		} catch (IOException | UnsupportedAddressTypeException e) {
 			if (packet.getAddress() instanceof Inet6Address) {
 				Logger.normal(this, "Error while sending packet to IPv6 address: " + destination + ": " + e);
@@ -401,8 +417,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 		int oldSize = maxPacketSize;
 		int newSize = innerCalculateMaxPacketSize();
 		maxPacketSize = newSize;
-		if (oldSize != newSize)
+		if (oldSize != newSize) {
 			System.out.println("Max packet size: " + newSize);
+		}
 		return maxPacketSize;
 	}
 
@@ -420,7 +437,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 	}
 
 	public void start() {
-		if (!_active) return;
+		if (!_active) {
+			return;
+		}
 		synchronized (this) {
 			_started = true;
 			startTime = System.currentTimeMillis();
@@ -434,7 +453,9 @@ public class UdpSocketHandler implements PrioRunnable, PacketSocketHandler, Port
 			_active = false;
 			_sock.close();
 
-			if (!_started) return;
+			if (!_started) {
+				return;
+			}
 			while (!_isDone) {
 				try {
 					wait(2000);

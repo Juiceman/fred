@@ -68,11 +68,13 @@ public final class SessionManager {
 	 * @param myCookiePath The path in which the cookies should be valid.
 	 */
 	public SessionManager(URI myCookiePath) {
-		if (myCookiePath.isAbsolute())
+		if (myCookiePath.isAbsolute()) {
 			throw new IllegalArgumentException("Illegal cookie path, must be relative: " + myCookiePath);
+		}
 
-		if (myCookiePath.toString().startsWith("/") == false)
+		if (myCookiePath.toString().startsWith("/") == false) {
 			throw new IllegalArgumentException("Illegal cookie path, must start with /: " + myCookiePath);
+		}
 
 		// FIXME: The new constructor was written at 2010-11-15. Uncomment the following safety check after we gave plugins some time to migrate
 		//	if(myCookiePath.getPath().equals("/"))
@@ -94,12 +96,14 @@ public final class SessionManager {
 	 * @param myCookieNamespace The name of the client application which uses this cookie. Must not be empty. Must be latin letters and numbers only.
 	 */
 	public SessionManager(String myCookieNamespace) {
-		if (myCookieNamespace.length() == 0)
+		if (myCookieNamespace.length() == 0) {
 			throw new IllegalArgumentException("You must specify a cookie namespace or use the constructor " +
 					"which allows specification of a cookie path.");
+		}
 
-		if (!StringValidityChecker.isLatinLettersAndNumbersOnly(myCookieNamespace))
+		if (!StringValidityChecker.isLatinLettersAndNumbersOnly(myCookieNamespace)) {
 			throw new IllegalArgumentException("The cookie namespace must be latin letters and numbers only.");
+		}
 
 		//mCookieDomain = myCookieDomain;
 		try {
@@ -128,8 +132,12 @@ public final class SessionManager {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null) return false;
-			if (!(obj instanceof Session)) return false;
+			if (obj == null) {
+				return false;
+			}
+			if (!(obj instanceof Session)) {
+				return false;
+			}
 			Session other = ((Session) obj);
 			return other.getID().equals(mID);
 		}
@@ -270,8 +278,9 @@ public final class SessionManager {
 	public synchronized boolean sessionExists(ToadletContext context) {
 		UUID sessionID = getSessionID(context);
 
-		if (sessionID == null)
+		if (sessionID == null) {
 			return false;
+		}
 
 		removeExpiredSessions(System.currentTimeMillis());
 
@@ -288,8 +297,9 @@ public final class SessionManager {
 	 */
 	public synchronized Session useSession(ToadletContext context) {
 		UUID sessionID = getSessionID(context);
-		if (sessionID == null)
+		if (sessionID == null) {
 			return null;
+		}
 
 		// We must synchronize around the fetching of the time and mSessionsByID.push() because mSessionsByID is no sorting data structure: It's a plain
 		// LRUMap so to ensure that it stays sorted the operation "getTime(); push();" must be atomic.
@@ -299,8 +309,9 @@ public final class SessionManager {
 
 		Session session = mSessionsByID.get(sessionID);
 
-		if (session == null)
+		if (session == null) {
 			return null;
+		}
 
 
 		session.updateExpiresAtTime(time);
@@ -319,8 +330,9 @@ public final class SessionManager {
 	 */
 	public boolean deleteSession(ToadletContext context) {
 		UUID sessionID = getSessionID(context);
-		if (sessionID == null)
+		if (sessionID == null) {
 			return false;
+		}
 
 		return deleteSession(sessionID);
 	}
@@ -329,8 +341,9 @@ public final class SessionManager {
 	 * @return Returns the session ID stored in the cookies of the HTTP headers of the given {@link ToadletContext}. Returns null if there is no session ID stored.
 	 */
 	private UUID getSessionID(ToadletContext context) {
-		if (context == null)
+		if (context == null) {
 			return null;
+		}
 
 		try {
 			ReceivedCookie sessionCookie = context.getCookie(null, mCookiePath, mCookieName);
@@ -363,8 +376,9 @@ public final class SessionManager {
 	private synchronized boolean deleteSession(UUID sessionID) {
 		Session session = mSessionsByID.get(sessionID);
 
-		if (session == null)
+		if (session == null) {
 			return false;
+		}
 
 		mSessionsByID.removeKey(sessionID);
 		mSessionsByUserID.remove(session.getUserID());
@@ -378,8 +392,9 @@ public final class SessionManager {
 	 */
 	private synchronized boolean deleteSessionByUserID(String userID) {
 		Session session = mSessionsByUserID.remove(userID);
-		if (session == null)
+		if (session == null) {
 			return false;
+		}
 
 		mSessionsByID.removeKey(session.getID());
 		return true;

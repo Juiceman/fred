@@ -83,7 +83,9 @@ public class PluginRespirator {
 	 */
 	public PageMaker getPageMaker() {
 		ToadletContainer container = getToadletContainer();
-		if (container == null) return null;
+		if (container == null) {
+			return null;
+		}
 		return container.getPageMaker();
 	}
 
@@ -187,8 +189,9 @@ public class PluginRespirator {
 													FredPluginFCPMessageHandler.ClientSideFCPMessageHandler messageHandler)
 			throws PluginNotFoundException {
 
-		if (messageHandler == null)
+		if (messageHandler == null) {
 			throw new NullPointerException("messageHandler must not be null");
+		}
 
 		// pluginName being null will be handled by createFCPPluginConnectionForIntraNodeFCP().
 
@@ -254,10 +257,13 @@ public class PluginRespirator {
 	 */
 	public PluginStore getStore() throws PersistenceDisabledException {
 		synchronized (this) {
-			if (store != null) return store;
+			if (store != null) {
+				return store;
+			}
 			store = stores.loadPluginStore(this.plugin.getClass().getCanonicalName());
-			if (store == null)
+			if (store == null) {
 				store = new PluginStore();
+			}
 			return store;
 		}
 	}
@@ -296,8 +302,9 @@ public class PluginRespirator {
 	public SessionManager getSessionManager(URI cookiePath) {
 		synchronized (sessionManagers) {
 			for (SessionManager m : sessionManagers) {
-				if (m.getCookiePath().equals(cookiePath))
+				if (m.getCookiePath().equals(cookiePath)) {
 					return m;
+				}
 			}
 
 			final SessionManager m = new SessionManager(cookiePath);
@@ -317,8 +324,9 @@ public class PluginRespirator {
 	public SessionManager getSessionManager(String cookieNamespace) {
 		synchronized (sessionManagers) {
 			for (SessionManager m : sessionManagers) {
-				if (m.getCookieNamespace().equals(cookieNamespace))
+				if (m.getCookieNamespace().equals(cookieNamespace)) {
 					return m;
+				}
 			}
 
 			final SessionManager m = new SessionManager(cookieNamespace);

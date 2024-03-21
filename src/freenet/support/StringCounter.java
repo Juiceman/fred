@@ -35,13 +35,16 @@ public class StringCounter {
 			item = new Item(string);
 			item.counter = 1;
 			map.put(string, item);
-		} else
+		} else {
 			item.counter++;
+		}
 	}
 
 	public int get(String string) {
 		Item item = map.get(string);
-		if (item == null) return 0;
+		if (item == null) {
+			return 0;
+		}
 		return item.counter;
 	}
 
@@ -55,10 +58,16 @@ public class StringCounter {
 			@Override
 			public int compare(Item it0, Item it1) {
 				int ret;
-				if (it0.counter > it1.counter) ret = 1;
-				else if (it0.counter < it1.counter) ret = -1;
-				else ret = it0.string.compareTo(it1.string);
-				if (!ascending) ret = -ret;
+				if (it0.counter > it1.counter) {
+					ret = 1;
+				} else if (it0.counter < it1.counter) {
+					ret = -1;
+				} else {
+					ret = it0.string.compareTo(it1.string);
+				}
+				if (!ascending) {
+					ret = -ret;
+				}
 				return ret;
 			}
 		});
@@ -67,8 +76,9 @@ public class StringCounter {
 
 	public String toLongString() {
 		Item[] items = sortedItems(false);
-		if (items.length == 0)
+		if (items.length == 0) {
 			return "";
+		}
 		StringBuilder sb = new StringBuilder();
 		for (Item it : items) {
 			sb.append(it.string);

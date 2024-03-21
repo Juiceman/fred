@@ -45,8 +45,9 @@ public class OldLZMACompressor implements Compressor {
 			output = bf.makeBucket(maxWriteLength);
 			is = data.getInputStream();
 			os = output.getOutputStream();
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Compressing " + data + " size " + data.size() + " to new bucket " + output);
+			}
 			compress(is, os, maxReadLength, maxWriteLength);
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
@@ -76,10 +77,12 @@ public class OldLZMACompressor implements Compressor {
 		// enc.WriteCoderProperties( out );
 		// 5d 00 00 10 00
 		encoder.Code(cis, cos, -1, -1, null);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Read " + cis.count() + " written " + cos.written());
-		if (cos.written() > maxWriteLength)
+		}
+		if (cos.written() > maxWriteLength) {
 			throw new CompressionOutputSizeException();
+		}
 		cos.flush();
 		return cos.written();
 	}
@@ -91,20 +94,23 @@ public class OldLZMACompressor implements Compressor {
 
 	public Bucket decompress(Bucket data, BucketFactory bf, long maxLength, long maxCheckSizeLength, Bucket preferred) throws IOException, CompressionOutputSizeException {
 		Bucket output;
-		if (preferred != null)
+		if (preferred != null) {
 			output = preferred;
-		else
+		} else {
 			output = bf.makeBucket(maxLength);
-		if (logMINOR)
+		}
+		if (logMINOR) {
 			Logger.minor(this, "Decompressing " + data + " size " + data.size() + " to new bucket " + output);
+		}
 		CountedInputStream is = null;
 		OutputStream os = null;
 		try {
 			is = new CountedInputStream(data.getInputStream());
 			os = output.getOutputStream();
 			decompress(is, os, maxLength, maxCheckSizeLength);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Output: " + output + " size " + output.size() + " read " + is.count());
+			}
 			// It is essential that the close()'s throw if there is any problem.
 			is.close();
 			is = null;

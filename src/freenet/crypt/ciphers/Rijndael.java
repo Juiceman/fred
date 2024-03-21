@@ -129,11 +129,13 @@ public class Rijndael implements BlockCipher {
 	public Rijndael(int keysize, int blocksize) throws UnsupportedCipherException {
 		if (!((keysize == 128) ||
 				(keysize == 192) ||
-				(keysize == 256)))
+				(keysize == 256))) {
 			throw new UnsupportedCipherException("Invalid keysize");
+		}
 		if (!((blocksize == 128) ||
-				(blocksize == 256)))
+				(blocksize == 256))) {
 			throw new UnsupportedCipherException("Invalid blocksize");
+		}
 		this.keysize = keysize;
 		this.blocksize = blocksize;
 	}
@@ -168,15 +170,17 @@ public class Rijndael implements BlockCipher {
 
 	@Override
 	public synchronized final void encipher(byte[] block, byte[] result) {
-		if (block.length != blocksize / 8)
+		if (block.length != blocksize / 8) {
 			throw new IllegalArgumentException();
+		}
 		Rijndael_Algorithm.blockEncrypt(block, result, 0, sessionKey, blocksize / 8);
 	}
 
 	@Override
 	public synchronized final void decipher(byte[] block, byte[] result) {
-		if (block.length != blocksize / 8)
+		if (block.length != blocksize / 8) {
 			throw new IllegalArgumentException();
+		}
 		Rijndael_Algorithm.blockDecrypt(block, result, 0, sessionKey, blocksize / 8);
 	}
 }

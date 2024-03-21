@@ -62,8 +62,9 @@ public class CHKBlock implements KeyBlock {
 	public CHKBlock(byte[] data2, byte[] header2, NodeCHK key, boolean verify, byte cryptoAlgorithm) throws CHKVerifyException {
 		data = data2;
 		headers = header2;
-		if (headers.length != TOTAL_HEADERS_LENGTH)
+		if (headers.length != TOTAL_HEADERS_LENGTH) {
 			throw new IllegalArgumentException("Wrong length: " + headers.length + " should be " + TOTAL_HEADERS_LENGTH);
+		}
 		hashIdentifier = (short) (((headers[0] & 0xff) << 8) + (headers[1] & 0xff));
 //        Logger.debug(CHKBlock.class, "Data length: "+data.length+", header length: "+header.length);
 		if ((key != null) && !verify) {
@@ -74,8 +75,9 @@ public class CHKBlock implements KeyBlock {
 
 		// Minimal verification
 		// Check the hash
-		if (hashIdentifier != HASH_SHA256)
+		if (hashIdentifier != HASH_SHA256) {
 			throw new CHKVerifyException("Hash not SHA-256");
+		}
 		MessageDigest md = SHA256.getMessageDigest();
 
 		md.update(headers);
@@ -132,12 +134,22 @@ public class CHKBlock implements KeyBlock {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof CHKBlock)) return false;
+		if (!(o instanceof CHKBlock)) {
+			return false;
+		}
 		CHKBlock block = (CHKBlock) o;
-		if (!chk.equals(block.chk)) return false;
-		if (!Arrays.equals(data, block.data)) return false;
-		if (!Arrays.equals(headers, block.headers)) return false;
-		if (hashIdentifier != block.hashIdentifier) return false;
+		if (!chk.equals(block.chk)) {
+			return false;
+		}
+		if (!Arrays.equals(data, block.data)) {
+			return false;
+		}
+		if (!Arrays.equals(headers, block.headers)) {
+			return false;
+		}
+		if (hashIdentifier != block.hashIdentifier) {
+			return false;
+		}
 		return true;
 	}
 

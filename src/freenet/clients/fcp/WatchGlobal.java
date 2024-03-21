@@ -15,14 +15,15 @@ public class WatchGlobal extends FCPMessage {
 	public WatchGlobal(SimpleFieldSet fs) throws MessageInvalidException {
 		enabled = fs.getBoolean("Enabled", true);
 		String s = fs.get("VerbosityMask");
-		if (s != null)
+		if (s != null) {
 			try {
 				verbosityMask = Integer.parseInt(s);
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, e.toString(), null, false);
 			}
-		else
+		} else {
 			verbosityMask = Integer.MAX_VALUE;
+		}
 	}
 
 	@Override
@@ -46,8 +47,9 @@ public class WatchGlobal extends FCPMessage {
 			handler.send(err);
 		}
 		PersistentRequestClient client = handler.getForeverClient();
-		if (client != null)
+		if (client != null) {
 			client.setWatchGlobal(enabled, verbosityMask, handler.getServer());
+		}
 	}
 
 }

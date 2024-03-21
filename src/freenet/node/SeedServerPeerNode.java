@@ -54,12 +54,16 @@ public class SeedServerPeerNode extends PeerNode {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == this) return true;
+		if (o == this) {
+			return true;
+		}
 		// Only equal to seednode of its own type.
 		// Different to an OpennetPeerNode with the same identity!
 		if (o instanceof SeedServerPeerNode) {
 			return super.equals(o);
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -104,9 +108,13 @@ public class SeedServerPeerNode extends PeerNode {
 		ArrayList<InetAddress> v = new ArrayList<InetAddress>();
 		for (Peer peer : getHandshakeIPs()) {
 			FreenetInetAddress fa = peer.getFreenetAddress().dropHostname();
-			if (fa == null) continue;
+			if (fa == null) {
+				continue;
+			}
 			InetAddress ia = fa.getAddress();
-			if (v.contains(ia)) continue;
+			if (v.contains(ia)) {
+				continue;
+			}
 			v.add(ia);
 		}
 		if (v.isEmpty()) {
@@ -135,8 +143,12 @@ public class SeedServerPeerNode extends PeerNode {
 	@Override
 	public boolean shouldDisconnectAndRemoveNow() {
 		OpennetManager om = node.getOpennet();
-		if (om == null) return true;
-		if (!om.getAnnouncer().enoughPeers()) return false;
+		if (om == null) {
+			return true;
+		}
+		if (!om.getAnnouncer().enoughPeers()) {
+			return false;
+		}
 		// We have enough peers, but we might fluctuate a bit.
 		// Drop the connection once we have consistently had enough opennet peers for 5 minutes.
 		return System.currentTimeMillis() - om.getAnnouncer().timeGotEnoughPeers() > MINUTES.toMillis(5);

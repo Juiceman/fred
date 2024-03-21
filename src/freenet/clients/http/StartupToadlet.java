@@ -26,9 +26,9 @@ public class StartupToadlet extends Toadlet {
 		ctx.forceDisconnect();
 
 		String path = uri.getPath();
-		if (path.startsWith(StaticToadlet.ROOT_URL) && staticToadlet != null)
+		if (path.startsWith(StaticToadlet.ROOT_URL) && staticToadlet != null) {
 			staticToadlet.handleMethodGET(uri, req, ctx);
-		else {
+		} else {
 			String desc = NodeL10n.getBase().getString("StartupToadlet.title");
 			PageNode page = ctx.getPageMaker().getPageNode(desc, ctx, new RenderParameters().renderStatus(false).renderNavigationLinks(false).renderModeSwitch(false));
 			HTMLNode pageNode = page.outer;

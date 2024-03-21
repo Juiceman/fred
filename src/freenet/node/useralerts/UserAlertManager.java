@@ -43,8 +43,9 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	}
 
 	public void register(UserAlert alert) {
-		if (alert instanceof UserEvent)
+		if (alert instanceof UserEvent) {
 			register((UserEvent) alert);
+		}
 		synchronized (alerts) {
 			if (!alerts.contains(alert)) {
 				alerts.add(alert);
@@ -57,15 +58,17 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	public void register(UserEvent event) {
 		// The event is ignored if it has been indefinitely unregistered
 		synchronized (unregisteredEventTypes) {
-			if (unregisteredEventTypes.contains(event.getEventType()))
+			if (unregisteredEventTypes.contains(event.getEventType())) {
 				return;
+			}
 		}
 		// Only the latest event is displayed as an alert
 		synchronized (events) {
 			UserEvent lastEvent = events.get(event.getEventType());
 			synchronized (alerts) {
-				if (lastEvent != null)
+				if (lastEvent != null) {
 					alerts.remove(lastEvent);
+				}
 				alerts.add(event);
 			}
 			events.put(event.getEventType(), event);
@@ -87,26 +90,31 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	}
 
 	public void unregister(UserAlert alert) {
-		if (alert == null) return;
-		if (alert instanceof UserEvent)
+		if (alert == null) {
+			return;
+		}
+		if (alert instanceof UserEvent) {
 			unregister(((UserEvent) alert).getEventType());
+		}
 		synchronized (alerts) {
 			alerts.remove(alert);
 		}
 	}
 
 	public void unregister(UserEvent.Type eventType) {
-		if (eventType.unregisterIndefinitely())
+		if (eventType.unregisterIndefinitely()) {
 			synchronized (unregisteredEventTypes) {
 				unregisteredEventTypes.add(eventType);
 			}
+		}
 		synchronized (events) {
 			UserEvent latestEvent;
 			latestEvent = events.remove(eventType);
-			if (latestEvent != null)
+			if (latestEvent != null) {
 				synchronized (alerts) {
 					alerts.remove(latestEvent);
 				}
+			}
 		}
 	}
 
@@ -144,31 +152,50 @@ public class UserAlertManager implements Comparator<UserAlert> {
 
 	@Override
 	public int compare(UserAlert a0, UserAlert a1) {
-		if (a0 == a1) return 0; // common case, also we should be consistent with == even with proxyuseralert's
+		if (a0 == a1) {
+			return 0; // common case, also we should be consistent with == even with proxyuseralert's
+		}
 		short prio0 = a0.getPriorityClass();
 		short prio1 = a1.getPriorityClass();
 		if (prio0 - prio1 == 0) {
 			boolean isEvent0 = a0.isEventNotification();
 			boolean isEvent1 = a1.isEventNotification();
-			if (isEvent0 && !isEvent1) return 1;
-			if ((!isEvent0) && isEvent1) return -1;
+			if (isEvent0 && !isEvent1) {
+				return 1;
+			}
+			if ((!isEvent0) && isEvent1) {
+				return -1;
+			}
 			// First go by class
 			int classHash0 = a0.getClass().hashCode();
 			int classHash1 = a1.getClass().hashCode();
-			if (classHash0 > classHash1) return 1;
-			else if (classHash0 < classHash1) return -1;
+			if (classHash0 > classHash1) {
+				return 1;
+			} else if (classHash0 < classHash1) {
+				return -1;
+			}
 			// Then go by time (newest first)
-			if (a0.getUpdatedTime() < a1.getUpdatedTime()) return 1;
-			else if (a0.getUpdatedTime() > a1.getUpdatedTime()) return -1;
+			if (a0.getUpdatedTime() < a1.getUpdatedTime()) {
+				return 1;
+			} else if (a0.getUpdatedTime() > a1.getUpdatedTime()) {
+				return -1;
+			}
 			// And finally by object hashCode
 			int hash0 = a0.hashCode();
 			int hash1 = a1.hashCode();
-			if (hash0 > hash1) return 1;
-			if (hash1 > hash0) return -1;
+			if (hash0 > hash1) {
+				return 1;
+			}
+			if (hash1 > hash0) {
+				return -1;
+			}
 			return 0;
 		} else {
-			if (prio0 > prio1) return 1;
-			else return -1;
+			if (prio0 > prio1) {
+				return 1;
+			} else {
+				return -1;
+			}
 		}
 	}
 
@@ -183,10 +210,12 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		HTMLNode alertsNode = new HTMLNode("div");
 		int totalNumber = 0;
 		for (UserAlert alert : getAlerts()) {
-			if (showOnlyErrors && alert.getPriorityClass() > UserAlert.ERROR)
+			if (showOnlyErrors && alert.getPriorityClass() > UserAlert.ERROR) {
 				continue;
-			if (!alert.isValid())
+			}
+			if (!alert.isValid()) {
 				continue;
+			}
 			totalNumber++;
 			alertsNode.addChild("a", "name", alert.anchor());
 			if (showOnlyErrors) {
@@ -244,15 +273,15 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	}
 
 	private String getAlertLevelName(short level) {
-		if (level <= UserAlert.CRITICAL_ERROR)
+		if (level <= UserAlert.CRITICAL_ERROR) {
 			return "error";
-		else if (level <= UserAlert.ERROR)
+		} else if (level <= UserAlert.ERROR) {
 			return "alert";
-		else if (level <= UserAlert.WARNING)
+		} else if (level <= UserAlert.WARNING) {
 			return "warning";
-		else if (level <= UserAlert.MINOR)
+		} else if (level <= UserAlert.MINOR) {
 			return "minor";
-		else {
+		} else {
 			Logger.error(this, "Unknown alert level: " + level, new Exception("debug"));
 			return "error";
 		}
@@ -277,27 +306,32 @@ public class UserAlertManager implements Comparator<UserAlert> {
 		int numberOfMinor = 0;
 		int totalNumber = 0;
 		for (UserAlert alert : getAlerts()) {
-			if (!alert.isValid())
+			if (!alert.isValid()) {
 				continue;
+			}
 			short level = alert.getPriorityClass();
-			if (level < highestLevel)
+			if (level < highestLevel) {
 				highestLevel = level;
-			if (level <= UserAlert.CRITICAL_ERROR)
+			}
+			if (level <= UserAlert.CRITICAL_ERROR) {
 				numberOfCriticalError++;
-			else if (level <= UserAlert.ERROR)
+			} else if (level <= UserAlert.ERROR) {
 				numberOfError++;
-			else if (level <= UserAlert.WARNING)
+			} else if (level <= UserAlert.WARNING) {
 				numberOfWarning++;
-			else if (level <= UserAlert.MINOR)
+			} else if (level <= UserAlert.MINOR) {
 				numberOfMinor++;
+			}
 			totalNumber++;
 		}
 
-		if (numberOfMinor == 0 && numberOfWarning == 0 && oneLine)
+		if (numberOfMinor == 0 && numberOfWarning == 0 && oneLine) {
 			return null;
+		}
 
-		if (totalNumber == 0)
+		if (totalNumber == 0) {
 			return new HTMLNode("#", "");
+		}
 
 		boolean separatorNeeded = false;
 		String separator = oneLine ? ", " : " | ";
@@ -309,15 +343,17 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			messageTypes++;
 		}
 		if (numberOfError != 0 && !oneLine) {
-			if (separatorNeeded)
+			if (separatorNeeded) {
 				alertSummaryString.append(separator);
+			}
 			alertSummaryString.append(l10n("errorCountLabel")).append(' ').append(numberOfError);
 			separatorNeeded = true;
 			messageTypes++;
 		}
 		if (numberOfWarning != 0) {
-			if (separatorNeeded)
+			if (separatorNeeded) {
 				alertSummaryString.append(separator);
+			}
 			if (oneLine) {
 				alertSummaryString.append(numberOfWarning).append(' ').append(l10n("warningCountLabel").replace(":", ""));
 			} else {
@@ -327,8 +363,9 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			messageTypes++;
 		}
 		if (numberOfMinor != 0) {
-			if (separatorNeeded)
+			if (separatorNeeded) {
 				alertSummaryString.append(separator);
+			}
 			if (oneLine) {
 				alertSummaryString.append(numberOfMinor).append(' ').append(l10n("minorCountLabel").replace(":", ""));
 			} else {
@@ -338,22 +375,24 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			messageTypes++;
 		}
 		if (messageTypes != 1 && !oneLine) {
-			if (separatorNeeded)
+			if (separatorNeeded) {
 				alertSummaryString.append(separator);
+			}
 			alertSummaryString.append(l10n("totalLabel")).append(' ').append(totalNumber);
 		}
 		HTMLNode summaryBox = null;
 
 		String classes = oneLine ? "alerts-line contains-" : "infobox infobox-";
 
-		if (highestLevel <= UserAlert.CRITICAL_ERROR && !oneLine)
+		if (highestLevel <= UserAlert.CRITICAL_ERROR && !oneLine) {
 			summaryBox = new HTMLNode("div", "class", classes + "error");
-		else if (highestLevel <= UserAlert.ERROR && !oneLine)
+		} else if (highestLevel <= UserAlert.ERROR && !oneLine) {
 			summaryBox = new HTMLNode("div", "class", classes + "alert");
-		else if (highestLevel <= UserAlert.WARNING)
+		} else if (highestLevel <= UserAlert.WARNING) {
 			summaryBox = new HTMLNode("div", "class", classes + "warning");
-		else if (highestLevel <= UserAlert.MINOR)
+		} else if (highestLevel <= UserAlert.MINOR) {
 			summaryBox = new HTMLNode("div", "class", classes + "information");
+		}
 		summaryBox.addChild("div", "class", "infobox-header", l10n("alertsTitle"));
 		HTMLNode summaryContent = summaryBox.addChild("div", "class", "infobox-content");
 		if (!oneLine) {
@@ -374,8 +413,12 @@ public class UserAlertManager implements Comparator<UserAlert> {
 	public void dumpEvents(HashSet<String> toDump) {
 		// An iterator might be faster, but we don't want to call methods on the alert within the lock.
 		for (UserAlert alert : getAlerts()) {
-			if (!alert.isEventNotification()) continue;
-			if (!toDump.contains(alert.anchor())) continue;
+			if (!alert.isEventNotification()) {
+				continue;
+			}
+			if (!toDump.contains(alert.anchor())) {
+				continue;
+			}
 			unregister(alert);
 			alert.onDismiss();
 		}
@@ -389,8 +432,9 @@ public class UserAlertManager implements Comparator<UserAlert> {
 			@Override
 			public void run() {
 				for (UserAlert alert : getAlerts())
-					if (alert.isValid())
+					if (alert.isValid()) {
 						subscriber.send(alert.getFCPMessage());
+					}
 			}
 		}, "UserAlertManager callback executor");
 		subscribers.add(subscriber);

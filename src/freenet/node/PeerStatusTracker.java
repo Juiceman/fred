@@ -30,25 +30,29 @@ class PeerStatusTracker<K extends Object> {
 		WeakHashSet<PeerNode> statusSet = statuses.get(peerNodeStatus);
 		if (statusSet != null) {
 			if (statusSet.contains(peerNode)) {
-				if (!noLog)
+				if (!noLog) {
 					Logger.error(this, "addPeerNodeStatus(): node already in peerNodeStatuses: " + peerNode + " status " + peerNodeStatus, new Exception("debug"));
+				}
 				return;
 			}
 			statuses.remove(peerNodeStatus);
-		} else
+		} else {
 			statusSet = new WeakHashSet<PeerNode>();
-		if (logMINOR)
+		}
+		if (logMINOR) {
 			Logger.minor(this, "addPeerNodeStatus(): adding PeerNode for '" + peerNode.getIdentityString() + "' with status '" + peerNodeStatus + "'");
+		}
 		statusSet.add(peerNode);
 		statuses.put(peerNodeStatus, statusSet);
 	}
 
 	public synchronized int statusSize(K pnStatus) {
 		WeakHashSet<PeerNode> statusSet = statuses.get(pnStatus);
-		if (statusSet != null)
+		if (statusSet != null) {
 			return statusSet.size();
-		else
+		} else {
 			return 0;
+		}
 	}
 
 	public synchronized void removeStatus(K peerNodeStatus, PeerNode peerNode,
@@ -56,21 +60,25 @@ class PeerStatusTracker<K extends Object> {
 		WeakHashSet<PeerNode> statusSet = statuses.get(peerNodeStatus);
 		if (statusSet != null) {
 			if (!statusSet.remove(peerNode)) {
-				if (!noLog)
+				if (!noLog) {
 					Logger.error(this, "removePeerNodeStatus(): identity '" + peerNode.getIdentityString() + " for " + peerNode.shortToString() + "' not in peerNodeStatuses with status '" + peerNodeStatus + "'", new Exception("debug"));
+				}
 				return;
 			}
-			if (statusSet.isEmpty())
+			if (statusSet.isEmpty()) {
 				statuses.remove(peerNodeStatus);
+			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "removePeerNodeStatus(): removing PeerNode for '" + peerNode.getIdentityString() + "' with status '" + peerNodeStatus + "'");
+		}
 	}
 
 	public synchronized void changePeerNodeStatus(PeerNode peerNode, K oldPeerNodeStatus,
 												  K peerNodeStatus, boolean noLog) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Peer status change: " + oldPeerNodeStatus + " -> " + peerNodeStatus + " on " + peerNode);
+		}
 		removeStatus(oldPeerNodeStatus, peerNode, noLog);
 		addStatus(peerNodeStatus, peerNode, noLog);
 	}

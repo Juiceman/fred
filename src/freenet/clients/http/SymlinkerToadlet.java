@@ -53,8 +53,9 @@ public class SymlinkerToadlet extends Toadlet {
 		if (fns != null) {
 			for (String fn : fns) {
 				String tuple[] = fn.split("#");
-				if (tuple.length == 2)
+				if (tuple.length == 2) {
 					addLink(tuple[0], tuple[1], false);
+				}
 			}
 		}
 
@@ -74,7 +75,9 @@ public class SymlinkerToadlet extends Toadlet {
 			}
 			Logger.normal(this, "Adding link: " + alias + " => " + target);
 		}
-		if (store) node.getClientCore().storeConfig();
+		if (store) {
+			node.getClientCore().storeConfig();
+		}
 		return ret;
 	}
 
@@ -82,14 +85,17 @@ public class SymlinkerToadlet extends Toadlet {
 		boolean ret;
 		synchronized (linkMap) {
 			Object o;
-			if ((o = linkMap.remove(alias)) != null)
+			if ((o = linkMap.remove(alias)) != null) {
 				ret = true;
-			else
+			} else {
 				ret = false;
+			}
 
 			Logger.normal(this, "Removing link: " + alias + " => " + o);
 		}
-		if (store) node.getClientCore().storeConfig();
+		if (store) {
+			node.getClientCore().storeConfig();
+		}
 		return ret;
 	}
 

@@ -86,8 +86,9 @@ public class ConfigData extends FCPMessage {
 				fs.put("dataType", type);
 			}
 		}
-		if (identifier != null)
+		if (identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 

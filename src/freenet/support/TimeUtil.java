@@ -50,8 +50,9 @@ public class TimeUtil {
 	 */
 	public static String formatTime(long timeInterval, int maxTerms, boolean withSecondFractions) {
 
-		if (maxTerms > 6)
+		if (maxTerms > 6) {
 			throw new IllegalArgumentException();
+		}
 
 		StringBuilder sb = new StringBuilder(64);
 		long l = timeInterval;
@@ -146,7 +147,9 @@ public class TimeUtil {
 
 		long millis = 0;
 		for (String term : terms) {
-			if (term.length() == 0) continue;
+			if (term.length() == 0) {
+				continue;
+			}
 
 			char measure = term.charAt(term.length() - 1);
 			switch (measure) {

@@ -20,11 +20,13 @@ public class GetPluginInfo extends FCPMessage {
 
 	public GetPluginInfo(SimpleFieldSet fs) throws MessageInvalidException {
 		identifier = fs.get("Identifier");
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "GetPluginInfo must contain an Identifier field", null, false);
+		}
 		plugname = fs.get("PluginName");
-		if (plugname == null)
+		if (plugname == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "GetPluginInfo must contain a PluginName field", identifier, false);
+		}
 		detailed = fs.getBoolean("Detailed", false);
 	}
 

@@ -44,14 +44,20 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 
 	@Override
 	public OutputStream getOutputStream() throws IOException {
-		if (readOnly) throw new IOException("Read only");
-		if (freed) throw new IOException("Already freed");
+		if (readOnly) {
+			throw new IOException("Read only");
+		}
+		if (freed) {
+			throw new IOException("Already freed");
+		}
 		return new ArrayBucketOutputStream();
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		if (freed) throw new IOException("Already freed");
+		if (freed) {
+			throw new IOException("Already freed");
+		}
 		return new ByteArrayInputStream(data);
 	}
 
@@ -79,9 +85,13 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 
 		@Override
 		public synchronized void close() throws IOException {
-			if (hasBeenClosed) return;
+			if (hasBeenClosed) {
+				return;
+			}
 			data = super.toByteArray();
-			if (readOnly) throw new IOException("Read only");
+			if (readOnly) {
+				throw new IOException("Read only");
+			}
 			// FIXME maybe we should throw on write instead? :)
 			hasBeenClosed = true;
 		}
@@ -105,7 +115,9 @@ public class ArrayBucket implements Bucket, Serializable, RandomAccessBucket {
 	}
 
 	public byte[] toByteArray() throws IOException {
-		if (freed) throw new IOException("Already freed");
+		if (freed) {
+			throw new IOException("Already freed");
+		}
 		long sz = size();
 		int size = (int) sz;
 		return Arrays.copyOf(data, size);

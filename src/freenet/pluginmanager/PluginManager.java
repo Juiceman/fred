@@ -103,11 +103,13 @@ public class PluginManager {
 		this.node = node;
 		this.core = node.getClientCore();
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Starting Plugin Manager");
+		}
 
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "Initialize Plugin Manager config");
+		}
 
 		client = core.makeClient(PRIO, true, false);
 
@@ -126,8 +128,9 @@ public class PluginManager {
 			@Override
 			public void set(Boolean val) throws InvalidConfigValueException,
 					NodeNeedRestartException {
-				if (enabled != val)
+				if (enabled != val) {
 					throw new NodeNeedRestartException(l10n("changePluginManagerEnabledInConfig"));
+				}
 			}
 
 		});
@@ -165,8 +168,9 @@ public class PluginManager {
 
 		if (contains(toStart, "KeyExplorer")) {
 			for (int i = 0; i < toStart.length; i++) {
-				if ("KeyExplorer".equals(toStart[i]))
+				if ("KeyExplorer".equals(toStart[i])) {
 					toStart[i] = "KeyUtils";
+				}
 			}
 			System.err.println("KeyExplorer plugin renamed to KeyUtils");
 		}
@@ -182,7 +186,9 @@ public class PluginManager {
 
 	private boolean contains(String[] array, String string) {
 		for (String s : array)
-			if (string.equals(s)) return true;
+			if (string.equals(s)) {
+				return true;
+			}
 		return false;
 	}
 
@@ -191,7 +197,9 @@ public class PluginManager {
 	private String[] toStart;
 
 	public void start() {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 		synchronized (loadedPlugins) {
 			if (started) {
 				return;
@@ -224,7 +232,9 @@ public class PluginManager {
 	}
 
 	public void stop(long maxWaitTime) {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 		// Stop loading plugins.
 		synchronized (loadedPlugins) {
 			stopping = true;
@@ -364,9 +374,12 @@ public class PluginManager {
 	}
 
 	private PluginInfoWrapper realStartPlugin(final PluginDownLoader<?> pdl, final String filename, final boolean store, boolean alwaysDownload) {
-		if (!enabled) throw new IllegalStateException("Plugins disabled");
-		if (filename.trim().length() == 0)
+		if (!enabled) {
+			throw new IllegalStateException("Plugins disabled");
+		}
+		if (filename.trim().length() == 0) {
 			return null;
+		}
 		final PluginProgress pluginProgress = new PluginProgress(filename, pdl);
 		loadedPlugins.addStartingPlugin(pluginProgress);
 		Logger.normal(this, "Loading plugin: " + filename);
@@ -434,11 +447,13 @@ public class PluginManager {
 		}
 		/* try not to destroy the config. */
 		synchronized (this) {
-			if (store)
+			if (store) {
 				core.storeConfig();
+			}
 		}
-		if (pi != null)
+		if (pi != null) {
 			node.getNodeUpdater().startPluginUpdater(filename);
+		}
 		return pi;
 	}
 
@@ -447,7 +462,9 @@ public class PluginManager {
 		for (PluginProgress progress : loadedPlugins.getStartingPlugins()) {
 			if (filename.equals(progress.name)) {
 				count++;
-				if (count == 2) return true;
+				if (count == 2) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -482,7 +499,9 @@ public class PluginManager {
 				msg = e.getClass() + ": " + e.getMessage();
 				stacktrace = e.getStackTrace();
 			}
-			if (msg == null) msg = e.toString();
+			if (msg == null) {
+				msg = e.toString();
+			}
 			this.message = msg;
 		}
 
@@ -597,8 +616,9 @@ public class PluginManager {
 		FredPlugin plug = pi.getPlugin();
 
 		// handles FProxy? If so, register
-		if (pi.isPproxyPlugin())
+		if (pi.isPproxyPlugin()) {
 			registerToadlet(plug);
+		}
 
 		if (pi.isConfigurablePlugin()) {
 			// Registering the toadlet with atFront=false means that
@@ -622,12 +642,15 @@ public class PluginManager {
 			}
 		}
 
-		if (pi.isIPDetectorPlugin())
+		if (pi.isIPDetectorPlugin()) {
 			node.getIpDetector().registerIPDetectorPlugin((FredPluginIPDetector) plug);
-		if (pi.isPortForwardPlugin())
+		}
+		if (pi.isPortForwardPlugin()) {
 			node.getIpDetector().registerPortForwardPlugin((FredPluginPortForward) plug);
-		if (pi.isBandwidthIndicator())
+		}
+		if (pi.isBandwidthIndicator()) {
 			node.getIpDetector().registerBandwidthIndicatorPlugin((FredPluginBandwidthIndicator) plug);
+		}
 	}
 
 	public void cancelRunningLoads(String filename, PluginProgress exceptFor) {
@@ -705,23 +728,30 @@ public class PluginManager {
 		int lastSlash = pluginSpecification.lastIndexOf('/');
 		String pluginFilename;
 		if (lastSlash == -1)
-			/* Windows, maybe? */
+			/* Windows, maybe? */ {
 			lastSlash = pluginSpecification.lastIndexOf('\\');
+		}
 		File pluginDirectory = node.getPluginDir();
 		if (lastSlash == -1) {
 			/* it's an official plugin or filename without path */
-			if (pluginSpecification.toLowerCase().endsWith(".jar"))
+			if (pluginSpecification.toLowerCase().endsWith(".jar")) {
 				pluginFilename = pluginSpecification;
-			else
+			} else {
 				pluginFilename = pluginSpecification + ".jar";
-		} else
+			}
+		} else {
 			pluginFilename = pluginSpecification.substring(lastSlash + 1);
-		if (logDEBUG)
+		}
+		if (logDEBUG) {
 			Logger.minor(this, "Delete plugin - plugname: " + pluginSpecification + " filename: " + pluginFilename, new Exception("debug"));
+		}
 		List<File> cachedFiles = getPreviousInstances(pluginDirectory, pluginFilename);
 		for (File cachedFile : cachedFiles) {
-			if (!cachedFile.delete())
-				if (logMINOR) Logger.minor(this, "Can't delete file " + cachedFile);
+			if (!cachedFile.delete()) {
+				if (logMINOR) {
+					Logger.minor(this, "Can't delete file " + cachedFile);
+				}
+			}
 		}
 	}
 
@@ -745,8 +775,9 @@ public class PluginManager {
 		synchronized (toadletList) {
 			try {
 				String targets[] = pi.getPluginToadletSymlinks();
-				if (targets == null)
+				if (targets == null) {
 					return;
+				}
 
 				for (String target : targets) {
 					toadletList.remove(target);
@@ -768,8 +799,9 @@ public class PluginManager {
 			String rm = null;
 			try {
 				String targets[] = pi.getPluginToadletSymlinks();
-				if (targets == null)
+				if (targets == null) {
 					return;
+				}
 
 				for (String target : targets) {
 					rm = target;
@@ -921,15 +953,17 @@ public class PluginManager {
 		synchronized (toadletList) {
 			handler = toadletList.get(plugin);
 		}
-		if (handler == null)
+		if (handler == null) {
 			throw new NotFoundPluginHTTPException("Plugin '" + plugin + "' not found!", "/plugins");
+		}
 
 		ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
 		ClassLoader pluginClassLoader = handler.getClass().getClassLoader();
 		Thread.currentThread().setContextClassLoader(pluginClassLoader);
 		try {
-			if (handler instanceof FredPluginHTTP)
+			if (handler instanceof FredPluginHTTP) {
 				return ((FredPluginHTTP) handler).handleHTTPPost(request);
+			}
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldClassLoader);
 		}
@@ -994,12 +1028,14 @@ public class PluginManager {
 	}
 
 	public OfficialPluginDescription isOfficialPlugin(String name) {
-		if ((name == null) || (name.trim().length() == 0))
+		if ((name == null) || (name.trim().length() == 0)) {
 			return null;
+		}
 		List<OfficialPluginDescription> availablePlugins = findAvailablePlugins();
 		for (OfficialPluginDescription desc : availablePlugins) {
-			if (desc.name.equals(name))
+			if (desc.name.equals(name)) {
 				return desc;
+			}
 		}
 		return null;
 	}
@@ -1022,8 +1058,9 @@ public class PluginManager {
 
 	public File getPluginFilename(String pluginName) {
 		File pluginDirectory = node.getPluginDir();
-		if ((pluginDirectory.exists() && !pluginDirectory.isDirectory()) || (!pluginDirectory.exists() && !pluginDirectory.mkdirs()))
+		if ((pluginDirectory.exists() && !pluginDirectory.isDirectory()) || (!pluginDirectory.exists() && !pluginDirectory.mkdirs())) {
 			return null;
+		}
 		return new File(pluginDirectory, pluginName + ".jar");
 	}
 
@@ -1056,8 +1093,9 @@ public class PluginManager {
 
 		boolean downloadWasAttempted = false;
 		/* check if file needs to be downloaded. */
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "plugin file " + pluginFile.getAbsolutePath() + " exists: " + pluginFile.exists() + " downloader " + pdl + " name " + name);
+		}
 		int RETRIES = 5;
 		for (int i = 0; i < RETRIES; i++) {
 			if (!pluginFile.exists() || pluginFile.length() == 0) {
@@ -1342,8 +1380,9 @@ public class PluginManager {
 				hash.update(buffer, 0, len);
 			}
 			result = HexUtil.bytesToHex(hash.digest());
-			if (wasFromDigest256Pool)
+			if (wasFromDigest256Pool) {
 				SHA256.returnMessageDigest(hash);
+			}
 		} catch (Exception e) {
 			throw new PluginNotFoundException("Error while computing hash '" + digest + "' of the downloaded plugin: " + e, e);
 		} finally {
@@ -1470,12 +1509,13 @@ public class PluginManager {
 		public HTMLNode toLocalisedHTML() {
 			if (pluginProgress == ProgressState.DOWNLOADING && total > 0) {
 				return QueueToadlet.createProgressCell(false, true, ClientPut.COMPRESS_STATE.WORKING, current, failed, fatallyFailed, minSuccessful, total, finalisedTotal, false);
-			} else if (pluginProgress == ProgressState.DOWNLOADING)
+			} else if (pluginProgress == ProgressState.DOWNLOADING) {
 				return new HTMLNode("td", NodeL10n.getBase().getString("PproxyToadlet.startingPluginStatus.downloading"));
-			else if (pluginProgress == ProgressState.STARTING)
+			} else if (pluginProgress == ProgressState.STARTING) {
 				return new HTMLNode("td", NodeL10n.getBase().getString("PproxyToadlet.startingPluginStatus.starting"));
-			else
+			} else {
 				return new HTMLNode("td", toString());
+			}
 		}
 
 		public void setDownloadProgress(int minSuccess, int current, int total, int failed, int fatallyFailed, boolean finalised) {
@@ -1500,7 +1540,9 @@ public class PluginManager {
 			String pluginName = getName();
 			if (isOfficialPlugin()) {
 				return getOfficialPluginLocalisedName(pluginName);
-			} else return pluginName;
+			} else {
+				return pluginName;
+			}
 		}
 	}
 
@@ -1530,7 +1572,9 @@ public class PluginManager {
 	}
 
 	public static void setLanguage(LANGUAGE lang) {
-		if (selfinstance == null) return;
+		if (selfinstance == null) {
+			return;
+		}
 		selfinstance.setPluginLanguage(lang);
 	}
 
@@ -1577,14 +1621,18 @@ public class PluginManager {
 		if (wrapper.isConfigurablePlugin()) {
 			core.getToadletContainer().unregister(wrapper.getConfigToadlet());
 		}
-		if (wrapper.isIPDetectorPlugin())
+		if (wrapper.isIPDetectorPlugin()) {
 			node.getIpDetector().unregisterIPDetectorPlugin((FredPluginIPDetector) plug);
-		if (wrapper.isPortForwardPlugin())
+		}
+		if (wrapper.isPortForwardPlugin()) {
 			node.getIpDetector().unregisterPortForwardPlugin((FredPluginPortForward) plug);
-		if (wrapper.isBandwidthIndicator())
+		}
+		if (wrapper.isBandwidthIndicator()) {
 			node.getIpDetector().unregisterBandwidthIndicatorPlugin((FredPluginBandwidthIndicator) plug);
-		if (!reloading)
+		}
+		if (!reloading) {
 			node.getNodeUpdater().stopPluginUpdater(wrapper.getFilename());
+		}
 	}
 
 	public boolean isEnabled() {

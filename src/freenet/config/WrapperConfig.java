@@ -30,8 +30,9 @@ public class WrapperConfig {
 	public static String getWrapperProperty(String name) {
 		synchronized (WrapperConfig.class) {
 			String override = overrides.get(name);
-			if (override != null)
+			if (override != null) {
 				return override;
+			}
 		}
 		return WrapperManager.getProperties().getProperty(name, null);
 	}
@@ -117,10 +118,12 @@ public class WrapperConfig {
 			}
 			br.close();
 			fis = null;
-			if (!written)
+			if (!written) {
 				bw.write(name + '=' + value + '\n');
-			if (!writtenReload)
+			}
+			if (!writtenReload) {
 				bw.write("wrapper.restart.reload_configuration=TRUE\n");
+			}
 			bw.close();
 			fos = null;
 		} catch (IOException e) {
@@ -128,7 +131,9 @@ public class WrapperConfig {
 			Closer.close(fos);
 			fis = null;
 			fos = null;
-			if (oldConfig.exists()) newConfig.delete();
+			if (oldConfig.exists()) {
+				newConfig.delete();
+			}
 			Logger.error(WrapperConfig.class, "Cannot update wrapper property " + "name: " + e, e);
 			System.err.println("Unable to update wrapper property " + name + " : " + e);
 			return false;
@@ -139,7 +144,7 @@ public class WrapperConfig {
 
 		if (!newConfig.renameTo(oldConfig)) {
 			File oldOldConfig = new File(wrapperDir + "/wrapper.conf.old");
-			if (oldOldConfig.exists() && !oldOldConfig.delete())
+			if (oldOldConfig.exists() && !oldOldConfig.delete()) {
 				try {
 					oldOldConfig = File.createTempFile(wrapperDir + "/wrapper.conf", ".old.tmp", new File("."));
 				} catch (IOException e) {
@@ -148,6 +153,7 @@ public class WrapperConfig {
 					System.err.println(error);
 					return false;
 				}
+			}
 			if (!oldConfig.renameTo(oldOldConfig)) {
 				String error = "Unable to change property " + name + ": Could not move old config file " + oldConfig + ", so could not rename new config file " + newConfig + " over it (already tried without deleting.";
 				Logger.error(WrapperConfig.class, error);

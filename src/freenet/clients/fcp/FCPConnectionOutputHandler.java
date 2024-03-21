@@ -40,8 +40,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 	}
 
 	void start() {
-		if (handler.getSocket() == null)
+		if (handler.getSocket() == null) {
 			return;
+		}
 		handler.getServer().getNode().getExecutor().execute(this, "FCP output handler for " + handler.getSocket().getRemoteSocketAddress() + ':' + handler.getSocket().getPort());
 	}
 
@@ -51,8 +52,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 		try {
 			realRun();
 		} catch (IOException e) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Caught " + e, e);
+			}
 		} catch (Throwable t) {
 			Logger.error(this, "Caught " + t, t);
 		} finally {
@@ -83,9 +85,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 							outQueue.notifyAll();
 							break;
 						}
-						if (!flushed)
+						if (!flushed) {
 							shouldFlush = true;
-						else {
+						} else {
 							try {
 								outQueue.wait(1000);
 							} catch (InterruptedException e) {
@@ -98,7 +100,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 					}
 				}
 				if (shouldFlush) {
-					if (logMINOR) Logger.minor(this, "Flushing");
+					if (logMINOR) {
+						Logger.minor(this, "Flushing");
+					}
 					os.flush();
 					flushed = true;
 					continue;
@@ -113,7 +117,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 					return;
 				}
 			} else {
-				if (logMINOR) Logger.minor(this, "Sending " + msg);
+				if (logMINOR) {
+					Logger.minor(this, "Sending " + msg);
+				}
 				msg.send(os);
 				flushed = false;
 			}
@@ -134,9 +140,12 @@ public class FCPConnectionOutputHandler implements Runnable {
 	 */
 	@Deprecated
 	public void queue(FCPMessage msg) {
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "Queueing " + msg, new Exception("debug"));
-		if (msg == null) throw new NullPointerException();
+		}
+		if (msg == null) {
+			throw new NullPointerException();
+		}
 		boolean neverDropAMessage = handler.getServer().neverDropAMessage();
 		int MAX_QUEUE_LENGTH = handler.getServer().maxMessageQueueLength();
 		synchronized (outQueue) {
@@ -165,7 +174,9 @@ public class FCPConnectionOutputHandler implements Runnable {
 			// its queue before the socket is closed
 			// @see #2019 - nextgens
 			while (!outQueue.isEmpty()) {
-				if (closedOutputQueue) return;
+				if (closedOutputQueue) {
+					return;
+				}
 				try {
 					outQueue.wait(1500);
 				} catch (InterruptedException e) {

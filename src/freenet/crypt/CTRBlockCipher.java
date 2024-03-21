@@ -10,24 +10,36 @@ package freenet.crypt;
  * block cipher. This mode is also known as CTR mode.
  */
 public class CTRBlockCipher {
-	/** Block cipher */
+	/**
+	 * Block cipher
+	 */
 	private final BlockCipher cipher;
-	/** Block size in bytes.
-	 * Equal to IV.length = counter.length = counterOut.length. */
+	/**
+	 * Block size in bytes.
+	 * Equal to IV.length = counter.length = counterOut.length.
+	 */
 	private final int blockSize;
 
-	/** Initialization vector, equal to the initial value of the plaintext
-	 * counter. */
+	/**
+	 * Initialization vector, equal to the initial value of the plaintext
+	 * counter.
+	 */
 	private final byte[] IV;
-	/** The plaintext block counter. This is incremented (from [31]
-	 * backwards) after each block encryption. */
+	/**
+	 * The plaintext block counter. This is incremented (from [31]
+	 * backwards) after each block encryption.
+	 */
 	private final byte[] counter;
-	/** The ciphertext block counter. This is the result of encrypting the
+	/**
+	 * The ciphertext block counter. This is the result of encrypting the
 	 * plaintext block counter. It is XOR'ed with the plaintext to get the
-	 * ciphertext. */
+	 * ciphertext.
+	 */
 	private final byte[] counterOut;
 
-	/** Offset within the current block. */
+	/**
+	 * Offset within the current block.
+	 */
 	private int blockOffset;
 
 	/**
@@ -54,17 +66,20 @@ public class CTRBlockCipher {
 		return cipher;
 	}
 
-	/** Initialize the cipher with an IV. Must only be called once for any
+	/**
+	 * Initialize the cipher with an IV. Must only be called once for any
 	 * given IV!
+	 *
 	 * @param iv The initialization vector. This is the initial value of
-	 * the plaintext counter. The plaintext is XORed with a sequence of
-	 * bytes consisting of the encryption of successive values of the counter.
+	 *           the plaintext counter. The plaintext is XORed with a sequence of
+	 *           bytes consisting of the encryption of successive values of the counter.
 	 * @throws IllegalArgumentException If the IV length is wrong.
 	 */
 	public void init(byte[] iv, int offset, int length)
 			throws IllegalArgumentException {
-		if (length != IV.length)
+		if (length != IV.length) {
 			throw new IllegalArgumentException();
+		}
 		System.arraycopy(iv, offset, IV, 0, IV.length);
 		System.arraycopy(IV, 0, counter, 0, counter.length);
 		processBlock();
@@ -88,10 +103,11 @@ public class CTRBlockCipher {
 
 	/**
 	 * Encrypt some data.
-	 * @param input The input data array.
-	 * @param offsetIn The offset within the input data array to the first byte.
-	 * @param length The number of bytes to encrypt.
-	 * @param output The output data array.
+	 *
+	 * @param input     The input data array.
+	 * @param offsetIn  The offset within the input data array to the first byte.
+	 * @param length    The number of bytes to encrypt.
+	 * @param output    The output data array.
 	 * @param offsetOut The offset within the output data array to the first byte.
 	 */
 	public void processBytes(byte[] input, int offsetIn, int length, byte[] output, int offsetOut) {
@@ -104,7 +120,9 @@ public class CTRBlockCipher {
 			length -= len;
 			while (len-- > 0)
 				output[offsetOut++] = (byte) (input[offsetIn++] ^ counterOut[blockOffset++]);
-			if (length == 0) return;
+			if (length == 0) {
+				return;
+			}
 			processBlock();
 		}
 		assert (blockOffset == 0);
@@ -117,14 +135,18 @@ public class CTRBlockCipher {
 			processBlock();
 		}
 		assert (blockOffset == 0 && length <= blockSize);
-		if (length == 0) return;
+		if (length == 0) {
+			return;
+		}
 		while (length-- > 0) {
 			/* handle final block */
 			output[offsetOut++] = (byte) (input[offsetIn++] ^ counterOut[blockOffset++]);
 		}
 	}
 
-	/** Encrypt counter to counterOut, and then increment counter. */
+	/**
+	 * Encrypt counter to counterOut, and then increment counter.
+	 */
 	private void processBlock()
 			throws IllegalStateException {
 		// Our ciphers clobber the input array, so it is essential to copy

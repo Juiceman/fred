@@ -193,8 +193,9 @@ public class DMT {
 		msg.set(PACKET_NO, packetNo);
 		msg.set(SENT, sent);
 		msg.set(DATA, data);
-		if (realTime)
+		if (realTime) {
 			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -493,10 +494,11 @@ public class DMT {
 		msg.set(UID, id);
 		msg.set(IS_LOCAL, isLocal);
 		if (needsLoad) {
-			if (realTimeFlag)
+			if (realTimeFlag) {
 				msg.setNeedsLoadRT();
-			else
+			} else {
 				msg.setNeedsLoadBulk();
+			}
 		}
 		return msg;
 	}
@@ -642,14 +644,15 @@ public class DMT {
 	public static final short DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED = 4;
 
 	public static String getDataInsertRejectedReason(short reason) {
-		if (reason == DATA_INSERT_REJECTED_VERIFY_FAILED)
+		if (reason == DATA_INSERT_REJECTED_VERIFY_FAILED) {
 			return "Verify failed";
-		else if (reason == DATA_INSERT_REJECTED_RECEIVE_FAILED)
+		} else if (reason == DATA_INSERT_REJECTED_RECEIVE_FAILED) {
 			return "Receive failed";
-		else if (reason == DATA_INSERT_REJECTED_SSK_ERROR)
+		} else if (reason == DATA_INSERT_REJECTED_SSK_ERROR) {
 			return "SSK error";
-		else if (reason == DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED)
+		} else if (reason == DATA_INSERT_REJECTED_TIMEOUT_WAITING_FOR_ACCEPTED) {
 			return "Timeout waiting for Accepted (moved on)";
+		}
 		return "Unknown reason code: " + reason;
 	}
 
@@ -675,7 +678,9 @@ public class DMT {
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
 		msg.set(PUBKEY_HASH, new ShortBuffer(pubKeyHash));
 		msg.set(DATA, new ShortBuffer(data));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -704,7 +709,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKInsertRequestHeaders);
 		msg.set(UID, uid);
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -717,7 +724,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKInsertRequestData);
 		msg.set(UID, uid);
 		msg.set(DATA, new ShortBuffer(data));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -734,7 +743,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKDataFoundHeaders);
 		msg.set(UID, uid);
 		msg.set(BLOCK_HEADERS, new ShortBuffer(headers));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -747,7 +758,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKDataFoundData);
 		msg.set(UID, uid);
 		msg.set(DATA, new ShortBuffer(data));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -776,7 +789,9 @@ public class DMT {
 		Message msg = new Message(FNPSSKPubKey);
 		msg.set(UID, uid);
 		msg.set(PUBKEY_AS_BYTES, new ShortBuffer(pubkey.asPaddedBytes()));
-		if (realTime) msg.boostPriority();
+		if (realTime) {
+			msg.boostPriority();
+		}
 		return msg;
 	}
 
@@ -1876,7 +1891,9 @@ public class DMT {
 
 	public static boolean getRealTimeFlag(Message m) {
 		Message bulk = m.getSubMessage(FNPRealTimeFlag);
-		if (bulk == null) return false;
+		if (bulk == null) {
+			return false;
+		}
 		return bulk.getBoolean(REAL_TIME_FLAG);
 	}
 

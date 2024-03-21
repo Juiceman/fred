@@ -23,8 +23,9 @@ public final class IfNull {
 	 */
 	@Deprecated
 	public static void thenThrow(Object value) {
-		if (value == null)
+		if (value == null) {
 			throw new NullPointerException();
+		}
 	}
 
 	/**
@@ -32,8 +33,9 @@ public final class IfNull {
 	 */
 	@Deprecated
 	public static void thenThrow(Object value, String message) {
-		if (value == null)
+		if (value == null) {
 			throw new NullPointerException(message);
+		}
 	}
 
 }

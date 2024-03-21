@@ -68,19 +68,26 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 		long totalBytes = 0;
 		// Now parse the meat
 		SimpleFieldSet files = fs.subset("Files");
-		if (files == null)
+		if (files == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing Files section", identifier, global);
+		}
 		boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		for (int i = 0; ; i++) {
 			SimpleFieldSet subset = files.subset(Integer.toString(i));
-			if (subset == null) break;
+			if (subset == null) {
+				break;
+			}
 			DirPutFile f = DirPutFile.create(subset, identifier, global, (persistence == Persistence.FOREVER) ? bfPersistent : bfTemp);
 			addFile(f);
-			if (logMINOR) Logger.minor(this, "Adding " + f);
+			if (logMINOR) {
+				Logger.minor(this, "Adding " + f);
+			}
 			if (f instanceof DirectDirPutFile) {
 				totalBytes += ((DirectDirPutFile) f).bytesToRead();
 				filesToRead.addLast(f);
-				if (logMINOR) Logger.minor(this, "totalBytes now " + totalBytes);
+				if (logMINOR) {
+					Logger.minor(this, "totalBytes now " + totalBytes);
+				}
 			}
 		}
 		attachedBytes = totalBytes;
@@ -177,8 +184,9 @@ public class ClientPutComplexDirMessage extends ClientPutDirMessage {
 				convertFilesByNameToManifestElements(h, manifests, node);
 			} else {
 				DirPutFile f = (DirPutFile) val;
-				if (f instanceof DiskDirPutFile && !node.getClientCore().allowUploadFrom(((DiskDirPutFile) f).getFile()))
+				if (f instanceof DiskDirPutFile && !node.getClientCore().allowUploadFrom(((DiskDirPutFile) f).getFile())) {
 					throw new MessageInvalidException(ProtocolErrorMessage.ACCESS_DENIED, "Not allowed to upload " + ((DiskDirPutFile) f).getFile(), identifier, global);
+				}
 				ManifestElement e = f.getElement();
 				manifestElements.put(tempName, e);
 			}

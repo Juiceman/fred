@@ -188,8 +188,9 @@ public class RequestStarterGroup {
 
 		public synchronized void successfulCompletion(long rtt) {
 			roundTripTime.report(Math.max(rtt, 10));
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Reported successful completion: " + rtt + " on " + this + " avg " + roundTripTime.currentValue());
+			}
 		}
 
 		@Override
@@ -225,16 +226,19 @@ public class RequestStarterGroup {
 
 		@Override
 		public String get() {
-			if (csBulk != null)
+			if (csBulk != null) {
 				return csBulk.getChoosenPriorityScheduler();
-			else
+			} else {
 				return ClientRequestScheduler.PRIORITY_SOFT;
+			}
 		}
 
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
 			String value;
-			if (val == null || val.equalsIgnoreCase(get())) return;
+			if (val == null || val.equalsIgnoreCase(get())) {
+				return;
+			}
 			if (val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_HARD)) {
 				value = ClientRequestScheduler.PRIORITY_HARD;
 			} else if (val.equalsIgnoreCase(ClientRequestScheduler.PRIORITY_SOFT)) {
@@ -253,8 +257,11 @@ public class RequestStarterGroup {
 	}
 
 	public ThrottleWindowManager getThrottleWindow(boolean realTime) {
-		if (realTime) return throttleWindowRT;
-		else return throttleWindowBulk;
+		if (realTime) {
+			return throttleWindowRT;
+		} else {
+			return throttleWindowBulk;
+		}
 	}
 
 	public void requestCompleted(boolean isSSK, boolean isInsert, Key key, boolean realTime) {
@@ -305,19 +312,31 @@ public class RequestStarterGroup {
 	MyRequestThrottle getThrottle(boolean isSSK, boolean isInsert, boolean realTime) {
 		if (realTime) {
 			if (isSSK) {
-				if (isInsert) return sskInsertThrottleRT;
-				else return sskRequestThrottleRT;
+				if (isInsert) {
+					return sskInsertThrottleRT;
+				} else {
+					return sskRequestThrottleRT;
+				}
 			} else {
-				if (isInsert) return chkInsertThrottleRT;
-				else return chkRequestThrottleRT;
+				if (isInsert) {
+					return chkInsertThrottleRT;
+				} else {
+					return chkRequestThrottleRT;
+				}
 			}
 		} else {
 			if (isSSK) {
-				if (isInsert) return sskInsertThrottleBulk;
-				else return sskRequestThrottleBulk;
+				if (isInsert) {
+					return sskInsertThrottleBulk;
+				} else {
+					return sskRequestThrottleBulk;
+				}
 			} else {
-				if (isInsert) return chkInsertThrottleBulk;
-				else return chkRequestThrottleBulk;
+				if (isInsert) {
+					return chkInsertThrottleBulk;
+				} else {
+					return chkRequestThrottleBulk;
+				}
 			}
 		}
 	}

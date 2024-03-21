@@ -160,7 +160,9 @@ public final class EncryptedRandomAccessBuffer implements LockableRandomAccessBu
 					+ " be read from.");
 		}
 
-		if (fileOffset < 0) throw new IllegalArgumentException("Cannot read before zero");
+		if (fileOffset < 0) {
+			throw new IllegalArgumentException("Cannot read before zero");
+		}
 		if (fileOffset + length > size()) {
 			throw new IOException("Cannot read after end: trying to read from " + fileOffset + " to " +
 					(fileOffset + length) + " on block length " + size());
@@ -197,7 +199,9 @@ public final class EncryptedRandomAccessBuffer implements LockableRandomAccessBu
 					+ " be written to.");
 		}
 
-		if (fileOffset < 0) throw new IllegalArgumentException("Cannot read before zero");
+		if (fileOffset < 0) {
+			throw new IllegalArgumentException("Cannot read before zero");
+		}
 		if (fileOffset + length > size()) {
 			throw new IOException("Cannot write after end: trying to write from " + fileOffset + " to " +
 					(fileOffset + length) + " on block length " + size());
@@ -386,8 +390,9 @@ public final class EncryptedRandomAccessBuffer implements LockableRandomAccessBu
 	public static LockableRandomAccessBuffer create(DataInputStream dis, FilenameGenerator fg, PersistentFileTracker persistentFileTracker, MasterSecret masterKey)
 			throws IOException, StorageFormatException, ResumeFailedException {
 		EncryptedRandomAccessBufferType type = EncryptedRandomAccessBufferType.getByBitmask(dis.readInt());
-		if (type == null)
+		if (type == null) {
 			throw new StorageFormatException("Unknown EncryptedRandomAccessBufferType");
+		}
 		LockableRandomAccessBuffer underlying = BucketTools.restoreRAFFrom(dis, fg, persistentFileTracker, masterKey);
 		try {
 			return new EncryptedRandomAccessBuffer(type, underlying, masterKey, false);

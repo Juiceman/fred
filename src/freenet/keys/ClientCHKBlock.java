@@ -98,15 +98,17 @@ public class ClientCHKBlock implements ClientKeyBlock {
 
 	// forceNoJCA for unit tests.
 	Bucket decode(BucketFactory bf, int maxLength, boolean dontCompress, boolean forceNoJCA) throws CHKDecodeException, IOException {
-		if (key.cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256)
+		if (key.cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256) {
 			return decodeOld(bf, maxLength, dontCompress);
-		else if (key.cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256) {
-			if (Rijndael.AesCtrProvider == null || forceNoJCA)
+		} else if (key.cryptoAlgorithm == Key.ALGO_AES_CTR_256_SHA256) {
+			if (Rijndael.AesCtrProvider == null || forceNoJCA) {
 				return decodeNewNoJCA(bf, maxLength, dontCompress);
-			else
+			} else {
 				return decodeNew(bf, maxLength, dontCompress);
-		} else
+			}
+		} else {
 			throw new UnsupportedOperationException();
+		}
 	}
 
 
@@ -119,8 +121,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	@SuppressWarnings("deprecation") // FIXME Back compatibility, using dubious ciphers; remove eventually.
 	public Bucket decodeOld(BucketFactory bf, int maxLength, boolean dontCompress) throws CHKDecodeException, IOException {
 		// Overall hash already verified, so first job is to decrypt.
-		if (key.cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256)
+		if (key.cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256) {
 			throw new UnsupportedOperationException();
+		}
 		BlockCipher cipher;
 		try {
 			cipher = new Rijndael(256, 256);
@@ -129,8 +132,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 			throw new Error(e);
 		}
 		byte[] cryptoKey = key.cryptoKey;
-		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH)
+		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH) {
 			throw new CHKDecodeException("Crypto key too short");
+		}
 		cipher.initialize(key.cryptoKey);
 		PCFBMode pcfb = PCFBMode.create(cipher);
 		byte[] headers = block.headers;
@@ -148,8 +152,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 		md256 = null;
 		// Extract the IV
 		byte[] iv = Arrays.copyOf(hbuf, 32);
-		if (!Arrays.equals(iv, predIV))
+		if (!Arrays.equals(iv, predIV)) {
 			throw new CHKDecodeException("Check failed: Decrypted IV == H(decryption key)");
+		}
 		// Checks complete
 		int size = ((hbuf[32] & 0xff) << 8) + (hbuf[33] & 0xff);
 		if ((size > 32768) || (size < 0)) {
@@ -244,14 +249,16 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	 * @throws IOException If there is a bucket error.
 	 */
 	public Bucket decodeNew(BucketFactory bf, int maxLength, boolean dontCompress) throws CHKDecodeException, IOException {
-		if (key.cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256)
+		if (key.cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256) {
 			throw new UnsupportedOperationException();
+		}
 		byte[] headers = block.headers;
 		byte[] data = block.data;
 		byte[] hash = Arrays.copyOfRange(headers, 2, 2 + 32);
 		byte[] cryptoKey = key.cryptoKey;
-		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH)
+		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH) {
 			throw new CHKDecodeException("Crypto key too short");
+		}
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CTR/NOPADDING", Rijndael.AesCtrProvider);
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(cryptoKey, "AES"), new IvParameterSpec(hash, 0, 16));
@@ -286,14 +293,16 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	 * @throws IOException If there is a bucket error.
 	 */
 	public Bucket decodeNewNoJCA(BucketFactory bf, int maxLength, boolean dontCompress) throws CHKDecodeException, IOException {
-		if (key.cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256)
+		if (key.cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256) {
 			throw new UnsupportedOperationException();
+		}
 		byte[] headers = block.headers;
 		byte[] data = block.data;
 		byte[] hash = Arrays.copyOfRange(headers, 2, 2 + 32);
 		byte[] cryptoKey = key.cryptoKey;
-		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH)
+		if (cryptoKey.length < Node.SYMMETRIC_KEY_LENGTH) {
 			throw new CHKDecodeException("Crypto key too short");
+		}
 		Rijndael aes;
 		try {
 			aes = new Rijndael(256, 128);
@@ -337,17 +346,22 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	 *                  encode.
 	 */
 	static public ClientCHKBlock encodeSplitfileBlock(byte[] data, byte[] cryptoKey, byte cryptoAlgorithm) throws CHKEncodeException {
-		if (data.length != CHKBlock.DATA_LENGTH) throw new IllegalArgumentException();
-		if (cryptoKey != null && cryptoKey.length != 32) throw new IllegalArgumentException();
+		if (data.length != CHKBlock.DATA_LENGTH) {
+			throw new IllegalArgumentException();
+		}
+		if (cryptoKey != null && cryptoKey.length != 32) {
+			throw new IllegalArgumentException();
+		}
 		MessageDigest md256 = SHA256.getMessageDigest();
 		// No need to pad
 		if (cryptoKey == null) {
 			cryptoKey = md256.digest(data);
 		}
-		if (cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256)
+		if (cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256) {
 			return innerEncode(data, CHKBlock.DATA_LENGTH, md256, cryptoKey, false, (short) -1, cryptoAlgorithm);
-		else if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256)
+		} else if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256) {
 			throw new IllegalArgumentException("Unknown crypto algorithm: " + cryptoAlgorithm);
+		}
 		if (Rijndael.AesCtrProvider == null) {
 			return encodeNewNoJCA(data, CHKBlock.DATA_LENGTH, md256, cryptoKey, false, (short) -1, cryptoAlgorithm, KeyBlock.HASH_SHA256);
 		} else {
@@ -413,8 +427,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 		int dataLength = finalData.length;
 		if (finalData.length != 32768) {
 			// Hash the data
-			if (finalData.length != 0)
+			if (finalData.length != 0) {
 				md256.update(finalData);
+			}
 			byte[] digest = md256.digest();
 			MersenneTwister mt = new MersenneTwister(digest);
 			data = Arrays.copyOf(finalData, 32768);
@@ -424,22 +439,24 @@ public class ClientCHKBlock implements ClientKeyBlock {
 		}
 		// Now make the header
 		byte[] encKey;
-		if (cryptoKey != null)
+		if (cryptoKey != null) {
 			encKey = cryptoKey;
-		else
+		} else {
 			encKey = md256.digest(data);
+		}
 		if (cryptoAlgorithm == 0) {
 			// TODO find all such cases and fix them.
 			Logger.error(ClientCHKBlock.class, "Passed in 0 crypto algorithm", new Exception("warning"));
 			cryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256;
 		}
-		if (cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256)
+		if (cryptoAlgorithm == Key.ALGO_AES_PCFB_256_SHA256) {
 			return innerEncode(data, dataLength, md256, encKey, asMetadata, compressionAlgorithm, cryptoAlgorithm);
-		else {
-			if (Rijndael.AesCtrProvider == null || forceNoJCA)
+		} else {
+			if (Rijndael.AesCtrProvider == null || forceNoJCA) {
 				return encodeNewNoJCA(data, dataLength, md256, encKey, asMetadata, compressionAlgorithm, cryptoAlgorithm, KeyBlock.HASH_SHA256);
-			else
+			} else {
 				return encodeNew(data, dataLength, md256, encKey, asMetadata, compressionAlgorithm, cryptoAlgorithm, KeyBlock.HASH_SHA256);
+			}
 		}
 	}
 
@@ -464,8 +481,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	 * @return
 	 */
 	public static ClientCHKBlock encodeNew(byte[] data, int dataLength, MessageDigest md256, byte[] encKey, boolean asMetadata, short compressionAlgorithm, byte cryptoAlgorithm, int blockHashAlgorithm) throws CHKEncodeException {
-		if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256)
+		if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256) {
 			throw new IllegalArgumentException("Unsupported crypto algorithm " + cryptoAlgorithm);
+		}
 		try {
 			// IV = HMAC<cryptokey>(plaintext).
 			// It's okay that this is the same for 2 blocks with the same key and the same content.
@@ -480,9 +498,12 @@ public class ClientCHKBlock implements ClientKeyBlock {
 			hmac.update(tmpLen);
 			byte[] hash = hmac.doFinal();
 			byte[] header = new byte[hash.length + 2 + 2];
-			if (blockHashAlgorithm == 0) cryptoAlgorithm = KeyBlock.HASH_SHA256;
-			if (blockHashAlgorithm != KeyBlock.HASH_SHA256)
+			if (blockHashAlgorithm == 0) {
+				cryptoAlgorithm = KeyBlock.HASH_SHA256;
+			}
+			if (blockHashAlgorithm != KeyBlock.HASH_SHA256) {
 				throw new IllegalArgumentException("Unsupported block hash algorithm " + cryptoAlgorithm);
+			}
 			header[0] = (byte) (blockHashAlgorithm >> 8);
 			header[1] = (byte) (blockHashAlgorithm & 0xff);
 			System.arraycopy(hash, 0, header, 2, hash.length);
@@ -539,8 +560,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	 * @throws CHKEncodeException
 	 */
 	public static ClientCHKBlock encodeNewNoJCA(byte[] data, int dataLength, MessageDigest md256, byte[] encKey, boolean asMetadata, short compressionAlgorithm, byte cryptoAlgorithm, int blockHashAlgorithm) throws CHKEncodeException {
-		if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256)
+		if (cryptoAlgorithm != Key.ALGO_AES_CTR_256_SHA256) {
 			throw new IllegalArgumentException("Unsupported crypto algorithm " + cryptoAlgorithm);
+		}
 		try {
 			// IV = HMAC<cryptokey>(plaintext).
 			// It's okay that this is the same for 2 blocks with the same key and the same content.
@@ -555,9 +577,12 @@ public class ClientCHKBlock implements ClientKeyBlock {
 			hmac.update(tmpLen);
 			byte[] hash = hmac.doFinal();
 			byte[] header = new byte[hash.length + 2 + 2];
-			if (blockHashAlgorithm == 0) cryptoAlgorithm = KeyBlock.HASH_SHA256;
-			if (blockHashAlgorithm != KeyBlock.HASH_SHA256)
+			if (blockHashAlgorithm == 0) {
+				cryptoAlgorithm = KeyBlock.HASH_SHA256;
+			}
+			if (blockHashAlgorithm != KeyBlock.HASH_SHA256) {
 				throw new IllegalArgumentException("Unsupported block hash algorithm " + cryptoAlgorithm);
+			}
 			header[0] = (byte) (blockHashAlgorithm >> 8);
 			header[1] = (byte) (blockHashAlgorithm & 0xff);
 			Rijndael aes;
@@ -600,8 +625,9 @@ public class ClientCHKBlock implements ClientKeyBlock {
 	@SuppressWarnings("deprecation") // FIXME Back compatibility, using dubious ciphers; remove eventually.
 	public static ClientCHKBlock innerEncode(byte[] data, int dataLength, MessageDigest md256, byte[] encKey, boolean asMetadata, short compressionAlgorithm, byte cryptoAlgorithm) {
 		data = data.clone(); // Will overwrite otherwise. Callers expect data not to be clobbered.
-		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256)
+		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256) {
 			throw new IllegalArgumentException("Unsupported crypto algorithm " + cryptoAlgorithm);
+		}
 		byte[] header;
 		ClientCHK key;
 		// IV = E(H(crypto key))
@@ -699,9 +725,13 @@ public class ClientCHKBlock implements ClientKeyBlock {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof ClientCHKBlock)) return false;
+		if (!(o instanceof ClientCHKBlock)) {
+			return false;
+		}
 		ClientCHKBlock block = (ClientCHKBlock) o;
-		if (!key.equals(block.key)) return false;
+		if (!key.equals(block.key)) {
+			return false;
+		}
 		return block.block.equals(this.block);
 	}
 

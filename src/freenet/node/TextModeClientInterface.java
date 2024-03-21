@@ -121,7 +121,9 @@ public class TextModeClientInterface implements Runnable {
 		try {
 			realRun();
 		} catch (IOException e) {
-			if (logMINOR) Logger.minor(this, "Caught " + e, e);
+			if (logMINOR) {
+				Logger.minor(this, "Caught " + e, e);
+			}
 		} catch (Throwable t) {
 			Logger.error(this, "Caught " + t, t);
 		}
@@ -208,8 +210,9 @@ public class TextModeClientInterface implements Runnable {
 		sb.append("MEMSTAT - display some memory usage related informations.\r\n");
 		sb.append("SHUTDOWN - exit the program\r\n");
 		sb.append("ANNOUNCE[:<location>] - announce to the specified location\r\n");
-		if (n.isUsingWrapper())
+		if (n.isUsingWrapper()) {
 			sb.append("RESTART - restart the program\r\n");
+		}
 		if (core != null && core.getDirectTMCI() != this) {
 			sb.append("QUIT - close the socket\r\n");
 		}
@@ -235,10 +238,13 @@ public class TextModeClientInterface implements Runnable {
 			return true;
 		}
 		boolean getCHKOnly = false;
-		if (line == null) return true;
+		if (line == null) {
+			return true;
+		}
 		String uline = line.toUpperCase();
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Command: " + line);
+		}
 		if (uline.startsWith("GET:")) {
 			// Should have a key next
 			String key = line.substring("GET:".length()).trim();
@@ -272,8 +278,12 @@ public class TextModeClientInterface implements Runnable {
 				boolean evil = false;
 				for (byte b : dataBytes) {
 					// Look for escape codes
-					if (b == '\n') continue;
-					if (b == '\r') continue;
+					if (b == '\n') {
+						continue;
+					}
+					if (b == '\r') {
+						continue;
+					}
 					if (b < 32) {
 						evil = true;
 						break;
@@ -294,8 +304,9 @@ public class TextModeClientInterface implements Runnable {
 				if ((e.getMode() == FetchExceptionMode.SPLITFILE_ERROR) && (e.errorCodes != null)) {
 					outsb.append(e.errorCodes.toVerboseString());
 				}
-				if (e.newURI != null)
+				if (e.newURI != null) {
 					outsb.append("Permanent redirect: ").append(e.newURI).append("\r\n");
+				}
 			}
 		} else if (uline.startsWith("DUMP:")) {
 			// Should have a key next
@@ -335,8 +346,12 @@ public class TextModeClientInterface implements Runnable {
 				boolean evil = false;
 				for (byte b : dataBytes) {
 					// Look for escape codes
-					if (b == '\n') continue;
-					if (b == '\r') continue;
+					if (b == '\n') {
+						continue;
+					}
+					if (b == '\r') {
+						continue;
+					}
 					if (b < 32) {
 						evil = true;
 						break;
@@ -357,8 +372,9 @@ public class TextModeClientInterface implements Runnable {
 				if ((e.getMode() == FetchExceptionMode.SPLITFILE_ERROR) && (e.errorCodes != null)) {
 					outsb.append(e.errorCodes.toVerboseString());
 				}
-				if (e.newURI != null)
+				if (e.newURI != null) {
 					outsb.append("Permanent redirect: ").append(e.newURI).append("\r\n");
+				}
 			}
 		} else if (uline.startsWith("GETFILE:")) {
 			// Should have a key next
@@ -386,8 +402,9 @@ public class TextModeClientInterface implements Runnable {
 				if (fnam.length() == 0) {
 					fnam = "freenet-download-" + HexUtil.bytesToHex(BucketTools.hash(data), 0, 10);
 					String ext = DefaultMIMETypes.getExtension(cm.getMIMEType());
-					if ((ext != null) && !ext.isEmpty())
+					if ((ext != null) && !ext.isEmpty()) {
 						fnam += '.' + ext;
+					}
 				}
 				File f = new File(downloadsDir, fnam);
 				if (f.exists()) {
@@ -404,10 +421,12 @@ public class TextModeClientInterface implements Runnable {
 					outsb.append("Could not write file: caught ").append(e);
 					e.printStackTrace();
 				} finally {
-					if (fos != null) try {
-						fos.close();
-					} catch (IOException e1) {
-						// Ignore
+					if (fos != null) {
+						try {
+							fos.close();
+						} catch (IOException e1) {
+							// Ignore
+						}
 					}
 				}
 				long endTime = System.currentTimeMillis();
@@ -419,8 +438,9 @@ public class TextModeClientInterface implements Runnable {
 				if ((e.getMode() == FetchExceptionMode.SPLITFILE_ERROR) && (e.errorCodes != null)) {
 					outsb.append(e.errorCodes.toVerboseString());
 				}
-				if (e.newURI != null)
+				if (e.newURI != null) {
 					outsb.append("Permanent redirect: ").append(e.newURI).append("\r\n");
+				}
 			}
 		} else if (uline.startsWith("UPDATE")) {
 			outsb.append("starting the update process");
@@ -541,10 +561,11 @@ public class TextModeClientInterface implements Runnable {
 			w.flush();
 			return false;
 		} else if (uline.startsWith("PUT:") || (getCHKOnly = uline.startsWith("GETCHK:"))) {
-			if (getCHKOnly)
+			if (getCHKOnly) {
 				line = line.substring(("GETCHK:").length()).trim();
-			else
+			} else {
 				line = line.substring("PUT:".length()).trim();
+			}
 			String content;
 			if (line.length() > 0) {
 				// Single line insert
@@ -563,8 +584,9 @@ public class TextModeClientInterface implements Runnable {
 				uri = client.insert(block, getCHKOnly, null);
 			} catch (InsertException e) {
 				outsb.append("Error: ").append(e.getMessage());
-				if (e.uri != null)
+				if (e.uri != null) {
 					outsb.append("URI would have been: ").append(e.uri);
+				}
 				InsertExceptionMode mode = e.getMode();
 				if ((mode == InsertExceptionMode.FATAL_ERRORS_IN_BLOCKS) || (mode == InsertExceptionMode.TOO_MANY_RETRIES_IN_BLOCKS)) {
 					outsb.append("Splitfile-specific error:\n").append(e.errorCodes.toVerboseString());
@@ -580,14 +602,14 @@ public class TextModeClientInterface implements Runnable {
 		} else if (uline.startsWith("PUTDIR:") || (uline.startsWith("PUTSSKDIR")) || (getCHKOnly = uline.startsWith("GETCHKDIR:"))) {
 			// TODO: Check for errors?
 			boolean ssk = false;
-			if (uline.startsWith("PUTDIR:"))
+			if (uline.startsWith("PUTDIR:")) {
 				line = line.substring("PUTDIR:".length());
-			else if (uline.startsWith("PUTSSKDIR:")) {
+			} else if (uline.startsWith("PUTSSKDIR:")) {
 				line = line.substring("PUTSSKDIR:".length());
 				ssk = true;
-			} else if (uline.startsWith("GETCHKDIR:"))
+			} else if (uline.startsWith("GETCHKDIR:")) {
 				line = line.substring(("GETCHKDIR:").length());
-			else {
+			} else {
 				System.err.println("Impossible");
 				outsb.append("Impossible");
 			}
@@ -612,8 +634,9 @@ public class TextModeClientInterface implements Runnable {
 				if (ssk) {
 					insertURI = new FreenetURI(split[0]);
 					line = split[1];
-					if (split.length > 2)
+					if (split.length > 2) {
 						defaultFile = split[2];
+					}
 				} else {
 					defaultFile = split[1];
 					line = split[0];
@@ -678,8 +701,9 @@ public class TextModeClientInterface implements Runnable {
 
 				// Guess MIME type
 				outsb.append(" using MIME type: ").append(mimeType).append("\r\n");
-				if (mimeType.equals(DefaultMIMETypes.DEFAULT_MIME_TYPE))
+				if (mimeType.equals(DefaultMIMETypes.DEFAULT_MIME_TYPE)) {
 					mimeType = ""; // don't need to override it
+				}
 
 				FileBucket fb = new FileBucket(f, true, false, false, false);
 				InsertBlock block = new InsertBlock(fb, new ClientMetadata(mimeType), FreenetURI.EMPTY_CHK_URI);
@@ -792,8 +816,12 @@ public class TextModeClientInterface implements Runnable {
 			} else {
 				content = readLines(reader, true);
 			}
-			if (content == null) return false;
-			if (content.isEmpty()) return false;
+			if (content == null) {
+				return false;
+			}
+			if (content.isEmpty()) {
+				return false;
+			}
 			addPeer(content);
 
 		} else if (uline.startsWith("NAME:")) {
@@ -803,8 +831,9 @@ public class TextModeClientInterface implements Runnable {
 
 			try {
 				n.setName(key);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Setting node.name to " + key);
+				}
 			} catch (Exception e) {
 				Logger.error(this, "Error setting node's name", e);
 			}
@@ -928,8 +957,9 @@ public class TextModeClientInterface implements Runnable {
 			}
 			SimpleFieldSet fs = pn.exportFieldSet();
 			SimpleFieldSet meta = pn.exportMetadataFieldSet(System.currentTimeMillis());
-			if (!meta.isEmpty())
+			if (!meta.isEmpty()) {
 				fs.put("metadata", meta);
+			}
 			outsb.append(fs.toString());
 		} else if (uline.startsWith("PEERS")) {
 			outsb.append(n.getTMCIPeerList());
@@ -1027,8 +1057,9 @@ public class TextModeClientInterface implements Runnable {
 
 			});
 		} else {
-			if (uline.length() > 0)
+			if (uline.length() > 0) {
 				printHeader(w);
+			}
 		}
 		outsb.append("\r\n");
 		w.write(outsb.toString());
@@ -1042,8 +1073,9 @@ public class TextModeClientInterface implements Runnable {
 	 */
 	private HashMap<String, Object> makeBucketsByName(String directory) {
 
-		if (!directory.endsWith("/"))
+		if (!directory.endsWith("/")) {
 			directory = directory + '/';
+		}
 		File thisdir = new File(directory);
 
 		System.out.println("Listing dir: " + thisdir);
@@ -1051,8 +1083,9 @@ public class TextModeClientInterface implements Runnable {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 
 		File filelist[] = thisdir.listFiles();
-		if (filelist == null)
+		if (filelist == null) {
 			throw new IllegalArgumentException("No such directory");
+		}
 		for (int i = 0; i < filelist.length; i++) {
 			//   Skip unreadable files and dirs
 			//   Skip files nonexistant (dangling symlinks) - check last
@@ -1084,12 +1117,16 @@ public class TextModeClientInterface implements Runnable {
 			String line;
 			try {
 				line = reader.readLine();
-				if (line == null) throw new EOFException();
+				if (line == null) {
+					throw new EOFException();
+				}
 			} catch (IOException e1) {
 				System.err.println("Bye... (" + e1 + ')');
 				return null;
 			}
-			if ((!isFieldSet) && line.equals(".")) break;
+			if ((!isFieldSet) && line.equals(".")) {
+				break;
+			}
 			if (isFieldSet) {
 				// Mangling
 				// First trim
@@ -1109,10 +1146,11 @@ public class TextModeClientInterface implements Runnable {
 						} else {
 							if (idx > 0) {
 								String after;
-								if (idx == line.length() - 1)
+								if (idx == line.length() - 1) {
 									after = "";
-								else
+								} else {
 									after = line.substring(idx + 1);
+								}
 								String before = line.substring(0, idx);
 								before = before.trim();
 								int x = 0;
@@ -1137,7 +1175,9 @@ public class TextModeClientInterface implements Runnable {
 				}
 			}
 			sb.append(line).append("\r\n");
-			if (breakflag) break;
+			if (breakflag) {
+				break;
+			}
 		}
 		return sb.toString();
 	}
@@ -1175,8 +1215,9 @@ public class TextModeClientInterface implements Runnable {
 			Logger.error(this, "Did not parse: " + e1, e1);
 			return;
 		}
-		if (n.getPeers().addPeer(pn))
+		if (n.getPeers().addPeer(pn)) {
 			System.out.println("Added peer: " + pn);
+		}
 		n.getPeers().writePeersDarknetUrgent();
 	}
 
@@ -1266,12 +1307,15 @@ public class TextModeClientInterface implements Runnable {
 	}
 
 	private String sanitize(String fnam) {
-		if (fnam == null) return "";
+		if (fnam == null) {
+			return "";
+		}
 		StringBuilder sb = new StringBuilder(fnam.length());
 		for (int i = 0; i < fnam.length(); i++) {
 			char c = fnam.charAt(i);
-			if (Character.isLetterOrDigit(c) || (c == '-') || (c == '.'))
+			if (Character.isLetterOrDigit(c) || (c == '-') || (c == '.')) {
 				sb.append(c);
+			}
 		}
 		return sb.toString();
 	}

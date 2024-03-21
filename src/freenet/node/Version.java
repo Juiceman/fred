@@ -126,10 +126,11 @@ public class Version {
 	 * data normally.
 	 */
 	public static int lastGoodBuild() {
-		if (System.currentTimeMillis() >= transitionTime)
+		if (System.currentTimeMillis() >= transitionTime) {
 			return newLastGoodBuild;
-		else
+		} else {
 			return oldLastGoodBuild;
+		}
 	}
 
 	/**
@@ -201,8 +202,9 @@ public class Version {
 		if (prot.equals(protocolVersion)
 // uncomment next line to accept stable, see also explainBadVersion() below
 //			|| prot.equals(stableProtocolVersion)
-		)
+		) {
 			return true;
+		}
 		return false;
 	}
 
@@ -227,19 +229,22 @@ public class Version {
 				int build = Integer.parseInt(v[3]);
 				int req = lastGoodBuild();
 				if (build < req) {
-					if (logDEBUG) Logger.debug(
-							Version.class,
-							"Not accepting unstable from version: "
-									+ version
-									+ "(lastGoodBuild="
-									+ req
-									+ ')');
+					if (logDEBUG) {
+						Logger.debug(
+								Version.class,
+								"Not accepting unstable from version: "
+										+ version
+										+ "(lastGoodBuild="
+										+ req
+										+ ')');
+					}
 					return false;
 				}
 			} catch (NumberFormatException e) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(Version.class,
 							"Not accepting (" + e + ") from " + version);
+				}
 				return false;
 			}
 		}
@@ -247,13 +252,15 @@ public class Version {
 			try {
 				int build = Integer.parseInt(v[3]);
 				if (build < lastGoodStableBuild) {
-					if (logDEBUG) Logger.debug(
-							Version.class,
-							"Not accepting stable from version"
-									+ version
-									+ "(lastGoodStableBuild="
-									+ lastGoodStableBuild
-									+ ')');
+					if (logDEBUG) {
+						Logger.debug(
+								Version.class,
+								"Not accepting stable from version"
+										+ version
+										+ "(lastGoodStableBuild="
+										+ lastGoodStableBuild
+										+ ')');
+					}
 					return false;
 				}
 			} catch (NumberFormatException e) {
@@ -263,8 +270,9 @@ public class Version {
 				return false;
 			}
 		}
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.minor(Version.class, "Accepting: " + version);
+		}
 		return true;
 	}
 
@@ -298,19 +306,22 @@ public class Version {
 				int build = Integer.parseInt(v[3]);
 				int min_build = Integer.parseInt(lgv[3]);
 				if (build < min_build) {
-					if (logDEBUG) Logger.debug(
-							Version.class,
-							"Not accepting unstable from version: "
-									+ version
-									+ "(lastGoodVersion="
-									+ lastGoodVersion
-									+ ')');
+					if (logDEBUG) {
+						Logger.debug(
+								Version.class,
+								"Not accepting unstable from version: "
+										+ version
+										+ "(lastGoodVersion="
+										+ lastGoodVersion
+										+ ')');
+					}
 					return false;
 				}
 			} catch (NumberFormatException e) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(Version.class,
 							"Not accepting (" + e + ") from " + version + " and/or " + lastGoodVersion);
+				}
 				return false;
 			}
 		}
@@ -318,13 +329,15 @@ public class Version {
 			try {
 				int build = Integer.parseInt(v[3]);
 				if (build < lastGoodStableBuild) {
-					if (logDEBUG) Logger.debug(
-							Version.class,
-							"Not accepting stable from version"
-									+ version
-									+ "(lastGoodStableBuild="
-									+ lastGoodStableBuild
-									+ ')');
+					if (logDEBUG) {
+						Logger.debug(
+								Version.class,
+								"Not accepting stable from version"
+										+ version
+										+ "(lastGoodStableBuild="
+										+ lastGoodStableBuild
+										+ ')');
+					}
 					return false;
 				}
 			} catch (NumberFormatException e) {
@@ -334,8 +347,9 @@ public class Version {
 				return false;
 			}
 		}
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.minor(Version.class, "Accepting: " + version);
+		}
 		return true;
 	}
 
@@ -356,8 +370,9 @@ public class Version {
 			try {
 				int build = Integer.parseInt(v[3]);
 				int req = lastGoodBuild();
-				if (build < req)
+				if (build < req) {
 					return "Build older than last good build " + req;
+				}
 			} catch (NumberFormatException e) {
 				return "Build number not numeric.";
 			}
@@ -365,8 +380,9 @@ public class Version {
 		if (stableVersion(v)) {
 			try {
 				int build = Integer.parseInt(v[3]);
-				if (build < lastGoodStableBuild)
+				if (build < lastGoodStableBuild) {
 					return "Build older than last good stable build " + lastGoodStableBuild;
+				}
 			} catch (NumberFormatException e) {
 				return "Build number not numeric.";
 			}
@@ -412,8 +428,9 @@ public class Version {
 	public static void seenVersion(String version) {
 		String[] v = Fields.commaList(version);
 
-		if ((v == null) || (v.length < 3))
+		if ((v == null) || (v.length < 3)) {
 			return; // bad, but that will be discovered elsewhere
+		}
 
 		if (sameVersion(v)) {
 

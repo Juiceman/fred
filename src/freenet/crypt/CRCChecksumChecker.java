@@ -27,7 +27,9 @@ public class CRCChecksumChecker extends ChecksumChecker {
 
 	@Override
 	public boolean checkChecksum(byte[] data, int offset, int length, byte[] checksum) {
-		if (checksum.length != 4) throw new IllegalArgumentException();
+		if (checksum.length != 4) {
+			throw new IllegalArgumentException();
+		}
 		CRC32 crc = new CRC32();
 		crc.update(data, offset, length);
 		int computed = (int) crc.getValue();
@@ -74,18 +76,23 @@ public class CRCChecksumChecker extends ChecksumChecker {
 				}
 				throw new EOFException("stream reached eof");
 			}
-			if (read == 0) throw new IOException("stream returning 0 bytes");
-			if (read != 0)
+			if (read == 0) {
+				throw new IOException("stream returning 0 bytes");
+			}
+			if (read != 0) {
 				crc.update(buffer, 0, read);
+			}
 			destination.write(buffer, 0, read);
-			if (remaining > 0)
+			if (remaining > 0) {
 				remaining -= read;
+			}
 		}
 		byte[] checksum = new byte[checksumLength()];
 		source.readFully(checksum);
 		byte[] myChecksum = Fields.intToBytes((int) crc.getValue());
-		if (!Arrays.equals(checksum, myChecksum))
+		if (!Arrays.equals(checksum, myChecksum)) {
 			throw new ChecksumFailedException();
+		}
 	}
 
 	@Override

@@ -98,9 +98,10 @@ public class PacketSender implements Runnable {
 			public void run() {
 				try {
 					long now = System.currentTimeMillis();
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(PacketSender.class,
 								"Starting shedulePeriodicJob() at " + now);
+					}
 					PeerManager pm = node.getPeers();
 					pm.maybeLogPeerNodeStatusSummary(now);
 					pm.maybeUpdateOldestNeverConnectedDarknetPeerAge(now);
@@ -108,10 +109,11 @@ public class PacketSender implements Runnable {
 					stats.maybeUpdateNodeIOStats(now);
 					pm.maybeUpdatePeerNodeRoutableConnectionStats(now);
 
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(PacketSender.class,
 								"Finished running shedulePeriodicJob() at "
 										+ System.currentTimeMillis());
+					}
 				} finally {
 					node.getTicker().queueTimedJob(this, 1000);
 				}
@@ -121,7 +123,9 @@ public class PacketSender implements Runnable {
 
 	@Override
 	public void run() {
-		if (logMINOR) Logger.minor(this, "In PacketSender.run()");
+		if (logMINOR) {
+			Logger.minor(this, "In PacketSender.run()");
+		}
 		freenet.support.Logger.OSThread.logPID(this);
 
 		schedulePeriodicJob();
@@ -170,13 +174,14 @@ public class PacketSender implements Runnable {
 
 		int MAX_PACKET_SIZE = node.getDarknetCrypto().getSocket().getMaxPacketSize();
 		long count = node.getOutputThrottle().getCount();
-		if (count > MAX_PACKET_SIZE)
+		if (count > MAX_PACKET_SIZE) {
 			canSendThrottled = true;
-		else {
+		} else {
 			long canSendAt = node.getOutputThrottle().getNanosPerTick() * (MAX_PACKET_SIZE - count);
 			canSendAt = MILLISECONDS.convert(canSendAt + MILLISECONDS.toNanos(1) - 1, NANOSECONDS);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Can send throttled packets in " + canSendAt + "ms");
+			}
 			nextActionTime = Math.min(nextActionTime, now + canSendAt);
 			canSendThrottled = false;
 		}
@@ -261,23 +266,27 @@ public class PacketSender implements Runnable {
 							// Message is urgent.
 							if (sendTime < lowestUrgentSendTime) {
 								lowestUrgentSendTime = sendTime;
-								if (urgentSendPeers != null)
+								if (urgentSendPeers != null) {
 									urgentSendPeers.clear();
-								else
+								} else {
 									urgentSendPeers = new ArrayList<PeerNode>();
+								}
 							}
-							if (sendTime <= lowestUrgentSendTime)
+							if (sendTime <= lowestUrgentSendTime) {
 								urgentSendPeers.add(pn);
+							}
 						} else if (pn.fullPacketQueued()) {
 							if (sendTime < lowestFullPacketSendTime) {
 								lowestFullPacketSendTime = sendTime;
-								if (urgentFullPacketPeers != null)
+								if (urgentFullPacketPeers != null) {
 									urgentFullPacketPeers.clear();
-								else
+								} else {
 									urgentFullPacketPeers = new ArrayList<PeerNode>();
+								}
 							}
-							if (sendTime <= lowestFullPacketSendTime)
+							if (sendTime <= lowestFullPacketSendTime) {
 								urgentFullPacketPeers.add(pn);
+							}
 						}
 					}
 				} else if (shouldThrottle && !canSendThrottled) {
@@ -286,13 +295,15 @@ public class PacketSender implements Runnable {
 						if (ackTime <= now) {
 							if (ackTime < lowestAckTime) {
 								lowestAckTime = ackTime;
-								if (ackPeers != null)
+								if (ackPeers != null) {
 									ackPeers.clear();
-								else
+								} else {
 									ackPeers = new ArrayList<PeerNode>();
+								}
 							}
-							if (ackTime <= lowestAckTime)
+							if (ackTime <= lowestAckTime) {
 								ackPeers.add(pn);
+							}
 						}
 					}
 				}
@@ -300,8 +311,9 @@ public class PacketSender implements Runnable {
 				if (canSendThrottled || !shouldThrottle) {
 					long urgentTime = pn.getNextUrgentTime(now);
 					// Should spam the logs, unless there is a deadlock
-					if (urgentTime < Long.MAX_VALUE && logMINOR)
+					if (urgentTime < Long.MAX_VALUE && logMINOR) {
 						Logger.minor(this, "Next urgent time: " + urgentTime + "(in " + (urgentTime - now) + ") for " + pn);
+					}
 					nextActionTime = Math.min(nextActionTime, urgentTime);
 				} else {
 					nextActionTime = Math.min(nextActionTime, pn.timeCheckForLostPackets());
@@ -309,25 +321,29 @@ public class PacketSender implements Runnable {
 			} else
 				// Not connected
 
-				if (pn.noContactDetails())
+				if (pn.noContactDetails()) {
 					pn.startARKFetcher();
+				}
 
 			long handshakeTime = pn.timeSendHandshake(now);
 			if (handshakeTime != Long.MAX_VALUE) {
 				if (handshakeTime < lowestHandshakeTime) {
 					lowestHandshakeTime = handshakeTime;
-					if (handshakePeers != null)
+					if (handshakePeers != null) {
 						handshakePeers.clear();
-					else
+					} else {
 						handshakePeers = new ArrayList<PeerNode>();
+					}
 				}
-				if (handshakeTime <= lowestHandshakeTime)
+				if (handshakeTime <= lowestHandshakeTime) {
 					handshakePeers.add(pn);
+				}
 			}
 
 			long tempNow = System.currentTimeMillis();
-			if ((tempNow - oldTempNow) > SECONDS.toMillis(5))
+			if ((tempNow - oldTempNow) > SECONDS.toMillis(5)) {
 				Logger.error(this, "tempNow is more than 5 seconds past oldTempNow (" + (tempNow - oldTempNow) + ") in PacketSender working with " + pn.userToString());
+			}
 			oldTempNow = tempNow;
 		}
 
@@ -400,8 +416,9 @@ public class PacketSender implements Runnable {
 			long beforeHandshakeTime = System.currentTimeMillis();
 			toSendHandshake.getOutgoingMangler().sendHandshake(toSendHandshake, false);
 			long afterHandshakeTime = System.currentTimeMillis();
-			if ((afterHandshakeTime - beforeHandshakeTime) > SECONDS.toMillis(2))
+			if ((afterHandshakeTime - beforeHandshakeTime) > SECONDS.toMillis(2)) {
 				Logger.error(this, "afterHandshakeTime is more than 2 seconds past beforeHandshakeTime (" + (afterHandshakeTime - beforeHandshakeTime) + ") in PacketSender working with " + toSendHandshake.userToString());
+			}
 		}
 
 		// All of these take into account whether the data can be sent already.
@@ -425,16 +442,20 @@ public class PacketSender implements Runnable {
 
 			for (OpennetPeerNode pn : peers) {
 				long lastConnected = pn.timeLastConnected(now);
-				if (lastConnected <= 0)
+				if (lastConnected <= 0) {
 					Logger.error(this, "Last connected is zero or negative for old-opennet-peer " + pn);
+				}
 				// Will be removed by next line.
 				if (now - lastConnected > OpennetManager.MAX_TIME_ON_OLD_OPENNET_PEERS) {
 					om.purgeOldOpennetPeer(pn);
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Removing old opennet peer (too old): " + pn + " age is " + TimeUtil.formatTime(now - lastConnected));
+					}
 					continue;
 				}
-				if (pn.isConnected()) continue; // Race condition??
+				if (pn.isConnected()) {
+					continue; // Race condition??
+				}
 				if (pn.noContactDetails()) {
 					pn.startARKFetcher();
 					continue;
@@ -444,8 +465,9 @@ public class PacketSender implements Runnable {
 					long beforeHandshakeTime = System.currentTimeMillis();
 					pn.getOutgoingMangler().sendHandshake(pn, true);
 					long afterHandshakeTime = System.currentTimeMillis();
-					if ((afterHandshakeTime - beforeHandshakeTime) > SECONDS.toMillis(2))
+					if ((afterHandshakeTime - beforeHandshakeTime) > SECONDS.toMillis(2)) {
 						Logger.error(this, "afterHandshakeTime is more than 2 seconds past beforeHandshakeTime (" + (afterHandshakeTime - beforeHandshakeTime) + ") in PacketSender working with " + pn.userToString());
+					}
 				}
 			}
 
@@ -456,25 +478,28 @@ public class PacketSender implements Runnable {
 		// Send may have taken some time
 		now = System.currentTimeMillis();
 
-		if ((now - oldNow) > SECONDS.toMillis(10))
+		if ((now - oldNow) > SECONDS.toMillis(10)) {
 			Logger.error(this, "now is more than 10 seconds past oldNow (" + (now - oldNow) + ") in PacketSender");
+		}
 
 		long sleepTime = nextActionTime - now;
 
 		// MAX_COALESCING_DELAYms maximum sleep time - same as the maximum coalescing delay
 		sleepTime = Math.min(sleepTime, MAX_COALESCING_DELAY);
 
-		if (now - node.getStartupTime() > MINUTES.toMillis(5))
+		if (now - node.getStartupTime() > MINUTES.toMillis(5)) {
 			if (now - lastReceivedPacketFromAnyNode > Node.ALARM_TIME) {
 				Logger.error(this, "Have not received any packets from any node in last " + SECONDS.convert(Node.ALARM_TIME, MILLISECONDS) + " seconds");
 				lastReportedNoPackets = now;
 			}
+		}
 
 		if (sleepTime > 0) {
 			// Update logging only when have time to do so
 			try {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Sleeping for " + sleepTime);
+				}
 				synchronized (this) {
 					wait(sleepTime);
 				}
@@ -483,8 +508,9 @@ public class PacketSender implements Runnable {
 				// because a new packet came in.
 			}
 		} else {
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(this, "Next urgent time is " + (now - nextActionTime) + "ms in the past");
+			}
 		}
 	}
 

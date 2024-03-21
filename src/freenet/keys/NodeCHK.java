@@ -28,8 +28,9 @@ public class NodeCHK extends Key {
 
 	public NodeCHK(byte[] routingKey2, byte cryptoAlgorithm) {
 		super(routingKey2);
-		if (routingKey2.length != KEY_LENGTH)
+		if (routingKey2.length != KEY_LENGTH) {
 			throw new IllegalArgumentException("Wrong length: " + routingKey2.length + " should be " + KEY_LENGTH);
+		}
 		this.cryptoAlgorithm = cryptoAlgorithm;
 	}
 
@@ -76,7 +77,9 @@ public class NodeCHK extends Key {
 
 	@Override
 	public boolean equals(Object key) {
-		if (key == this) return true;
+		if (key == this) {
+			return true;
+		}
 		if (key instanceof NodeCHK) {
 			NodeCHK chk = (NodeCHK) key;
 			return java.util.Arrays.equals(chk.routingKey, routingKey) && (cryptoAlgorithm == chk.cryptoAlgorithm);
@@ -114,7 +117,9 @@ public class NodeCHK extends Key {
 	}
 
 	public static byte[] routingKeyFromFullKey(byte[] keyBuf) {
-		if (keyBuf.length == KEY_LENGTH) return keyBuf;
+		if (keyBuf.length == KEY_LENGTH) {
+			return keyBuf;
+		}
 		if (keyBuf.length != FULL_KEY_LENGTH) {
 			Logger.error(NodeCHK.class, "routingKeyFromFullKey() on " + keyBuf.length + " bytes");
 			return null;
@@ -134,7 +139,9 @@ public class NodeCHK extends Key {
 
 	@Override
 	public int compareTo(Key arg0) {
-		if (arg0 instanceof NodeSSK) return 1;
+		if (arg0 instanceof NodeSSK) {
+			return 1;
+		}
 		NodeCHK key = (NodeCHK) arg0;
 		return Fields.compareBytes(routingKey, key.routingKey);
 	}

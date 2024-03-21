@@ -71,10 +71,12 @@ public class NodeSSK extends Key {
 		this.pubKeyHash = pkHash;
 		this.cryptoAlgorithm = cryptoAlgorithm;
 		this.pubKey = null;
-		if (ehDocname.length != E_H_DOCNAME_SIZE)
+		if (ehDocname.length != E_H_DOCNAME_SIZE) {
 			throw new IllegalArgumentException("ehDocname must be " + E_H_DOCNAME_SIZE + " bytes");
-		if (pkHash.length != PUBKEY_HASH_SIZE)
+		}
+		if (pkHash.length != PUBKEY_HASH_SIZE) {
 			throw new IllegalArgumentException("pubKeyHash must be " + PUBKEY_HASH_SIZE + " bytes");
+		}
 		hashCode = Fields.hashCode(pkHash) ^ Fields.hashCode(ehDocname);
 	}
 
@@ -86,13 +88,16 @@ public class NodeSSK extends Key {
 		this.pubKey = pubKey;
 		if (pubKey != null) {
 			byte[] hash = SHA256.digest(pubKey.asBytes());
-			if (!Arrays.equals(hash, pkHash))
+			if (!Arrays.equals(hash, pkHash)) {
 				throw new SSKVerifyException("Invalid pubKey: wrong hash");
+			}
 		}
-		if (ehDocname.length != E_H_DOCNAME_SIZE)
+		if (ehDocname.length != E_H_DOCNAME_SIZE) {
 			throw new IllegalArgumentException("ehDocname must be " + E_H_DOCNAME_SIZE + " bytes");
-		if (pkHash.length != PUBKEY_HASH_SIZE)
+		}
+		if (pkHash.length != PUBKEY_HASH_SIZE) {
 			throw new IllegalArgumentException("pubKeyHash must be " + PUBKEY_HASH_SIZE + " bytes");
+		}
 		hashCode = Fields.hashCode(pkHash) ^ Fields.hashCode(ehDocname);
 	}
 
@@ -168,8 +173,12 @@ public class NodeSSK extends Key {
 	}
 
 	public void setPubKey(DSAPublicKey pubKey2) throws SSKVerifyException {
-		if (pubKey == pubKey2) return;
-		if (pubKey2 == null) return;
+		if (pubKey == pubKey2) {
+			return;
+		}
+		if (pubKey2 == null) {
+			return;
+		}
 		if ((pubKey == null) || !pubKey2.equals(pubKey)) {
 			if (pubKey2 != null) {
 				byte[] newPubKeyHash = SHA256.digest(pubKey2.asBytes());
@@ -190,12 +199,22 @@ public class NodeSSK extends Key {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == this) return true;
-		if (!(o instanceof NodeSSK)) return false;
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof NodeSSK)) {
+			return false;
+		}
 		NodeSSK key = (NodeSSK) o;
-		if (!Arrays.equals(key.encryptedHashedDocname, encryptedHashedDocname)) return false;
-		if (!Arrays.equals(key.pubKeyHash, pubKeyHash)) return false;
-		if (!Arrays.equals(key.routingKey, routingKey)) return false;
+		if (!Arrays.equals(key.encryptedHashedDocname, encryptedHashedDocname)) {
+			return false;
+		}
+		if (!Arrays.equals(key.pubKeyHash, pubKeyHash)) {
+			return false;
+		}
+		if (!Arrays.equals(key.routingKey, routingKey)) {
+			return false;
+		}
 		// cachedNormalizedDouble and pubKey could be negative/null.
 		return true;
 	}
@@ -223,18 +242,22 @@ public class NodeSSK extends Key {
 	}
 
 	public static NodeSSK construct(byte[] buf) throws SSKVerifyException {
-		if (buf[0] != 2)
+		if (buf[0] != 2) {
 			throw new SSKVerifyException("Unknown type byte " + buf[0]);
+		}
 		byte cryptoAlgorithm = buf[1];
-		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256)
+		if (cryptoAlgorithm != Key.ALGO_AES_PCFB_256_SHA256) {
 			throw new SSKVerifyException("Unknown crypto algorithm " + buf[1]);
+		}
 		byte[] encryptedHashedDocname = Arrays.copyOfRange(buf, 2, 2 + E_H_DOCNAME_SIZE);
 		byte[] pubkeyHash = Arrays.copyOfRange(buf, 2 + E_H_DOCNAME_SIZE, 2 + E_H_DOCNAME_SIZE + PUBKEY_HASH_SIZE);
 		return new NodeSSK(pubkeyHash, encryptedHashedDocname, null, cryptoAlgorithm);
 	}
 
 	public boolean grabPubkey(GetPubkey pubkeyCache, boolean canReadClientCache, boolean forULPR, BlockMetadata meta) {
-		if (pubKey != null) return false;
+		if (pubKey != null) {
+			return false;
+		}
 		pubKey = pubkeyCache.getKey(pubKeyHash, canReadClientCache, forULPR, meta);
 		return pubKey != null;
 	}
@@ -250,10 +273,14 @@ public class NodeSSK extends Key {
 
 	@Override
 	public int compareTo(Key arg0) {
-		if (arg0 instanceof NodeCHK) return -1;
+		if (arg0 instanceof NodeCHK) {
+			return -1;
+		}
 		NodeSSK key = (NodeSSK) arg0;
 		int result = Fields.compareBytes(encryptedHashedDocname, key.encryptedHashedDocname);
-		if (result != 0) return result;
+		if (result != 0) {
+			return result;
+		}
 		return Fields.compareBytes(pubKeyHash, key.pubKeyHash);
 	}
 

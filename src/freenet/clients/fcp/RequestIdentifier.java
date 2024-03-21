@@ -39,18 +39,25 @@ public final class RequestIdentifier {
 
 	public RequestIdentifier(DataInput dis) throws IOException {
 		int magic = dis.readInt();
-		if (magic != MAGIC) throw new IOException("Bad magic");
+		if (magic != MAGIC) {
+			throw new IOException("Bad magic");
+		}
 		short version = dis.readShort();
-		if (version != VERSION) throw new IOException("Bad version");
+		if (version != VERSION) {
+			throw new IOException("Bad version");
+		}
 		this.globalQueue = dis.readBoolean();
-		if (globalQueue)
+		if (globalQueue) {
 			clientName = null;
-		else
+		} else {
 			clientName = dis.readUTF();
+		}
 		identifier = dis.readUTF();
 		RequestType[] types = RequestType.values();
 		short typeKey = dis.readShort();
-		if (typeKey < 0 || typeKey >= types.length) throw new IOException("Bogus type");
+		if (typeKey < 0 || typeKey >= types.length) {
+			throw new IOException("Bogus type");
+		}
 		type = types[typeKey];
 	}
 
@@ -58,8 +65,9 @@ public final class RequestIdentifier {
 		dos.writeInt(MAGIC);
 		dos.writeShort(VERSION);
 		dos.writeBoolean(globalQueue);
-		if (!globalQueue)
+		if (!globalQueue) {
 			dos.writeUTF(clientName);
+		}
 		dos.writeUTF(identifier);
 		dos.writeShort(type.ordinal());
 	}
@@ -68,13 +76,20 @@ public final class RequestIdentifier {
 	 * Only compare the identifier, not the type.
 	 */
 	public boolean sameIdentifier(RequestIdentifier other) {
-		if (globalQueue != other.globalQueue) return false;
-		if (!globalQueue) {
-			if (!clientName.equals(other.clientName)) return false;
-		}
-		if (globalQueue != other.globalQueue)
+		if (globalQueue != other.globalQueue) {
 			return false;
-		if (!identifier.equals(other.identifier)) return false;
+		}
+		if (!globalQueue) {
+			if (!clientName.equals(other.clientName)) {
+				return false;
+			}
+		}
+		if (globalQueue != other.globalQueue) {
+			return false;
+		}
+		if (!identifier.equals(other.identifier)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -91,22 +106,33 @@ public final class RequestIdentifier {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof RequestIdentifier))
-			return false;
-		RequestIdentifier other = (RequestIdentifier) obj;
-		if (globalQueue != other.globalQueue) return false;
-		if (!globalQueue) {
-			if (!clientName.equals(other.clientName)) return false;
 		}
-		if (globalQueue != other.globalQueue)
+		if (obj == null) {
 			return false;
-		if (!identifier.equals(other.identifier)) return false;
-		if (type != other.type)
+		}
+		if (!(obj instanceof RequestIdentifier)) {
 			return false;
+		}
+		RequestIdentifier other = (RequestIdentifier) obj;
+		if (globalQueue != other.globalQueue) {
+			return false;
+		}
+		if (!globalQueue) {
+			if (!clientName.equals(other.clientName)) {
+				return false;
+			}
+		}
+		if (globalQueue != other.globalQueue) {
+			return false;
+		}
+		if (!identifier.equals(other.identifier)) {
+			return false;
+		}
+		if (type != other.type) {
+			return false;
+		}
 		return true;
 	}
 }

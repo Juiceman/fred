@@ -57,7 +57,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 	public OutputStream getOutputStream() throws IOException {
 		OutputStream os;
 		synchronized (this) {
-			if (outputStreamOpen) throw new IOException("Already have an OutputStream for " + this);
+			if (outputStreamOpen) {
+				throw new IOException("Already have an OutputStream for " + this);
+			}
 			os = underlying.getOutputStream();
 			outputStreamOpen = true;
 			size = 0;
@@ -69,7 +71,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 	public OutputStream getOutputStreamUnbuffered() throws IOException {
 		OutputStream os;
 		synchronized (this) {
-			if (outputStreamOpen) throw new IOException("Already have an OutputStream for " + this);
+			if (outputStreamOpen) {
+				throw new IOException("Already have an OutputStream for " + this);
+			}
 			os = underlying.getOutputStreamUnbuffered();
 			outputStreamOpen = true;
 			size = 0;
@@ -97,7 +101,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 		public void write(byte[] buf) throws IOException {
 			out.write(buf);
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (closed) throw new IOException("Already closed");
+				if (closed) {
+					throw new IOException("Already closed");
+				}
 				size += buf.length;
 			}
 		}
@@ -106,7 +112,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 		public void write(byte[] buf, int offset, int length) throws IOException {
 			out.write(buf, offset, length);
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (closed) throw new IOException("Already closed");
+				if (closed) {
+					throw new IOException("Already closed");
+				}
 				size += length;
 			}
 		}
@@ -116,7 +124,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 			try {
 				long padding;
 				synchronized (PaddedRandomAccessBucket.this) {
-					if (closed) return;
+					if (closed) {
+						return;
+					}
 					closed = true;
 					long paddedLength = paddedLength(size);
 					padding = paddedLength - size;
@@ -139,15 +149,21 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 	private static final long MIN_PADDED_SIZE = 1024;
 
 	private long paddedLength(long size) {
-		if (size < MIN_PADDED_SIZE) size = MIN_PADDED_SIZE;
-		if (size == MIN_PADDED_SIZE) return size;
+		if (size < MIN_PADDED_SIZE) {
+			size = MIN_PADDED_SIZE;
+		}
+		if (size == MIN_PADDED_SIZE) {
+			return size;
+		}
 		long min = MIN_PADDED_SIZE;
 		long max = MIN_PADDED_SIZE << 1;
 		while (true) {
-			if (max < 0)
+			if (max < 0) {
 				throw new Error("Impossible size: " + size + " - min=" + min + ", max=" + max);
-			if (size < min)
+			}
+			if (size < min) {
 				throw new IllegalStateException("???");
+			}
 			if ((size >= min) && (size <= max)) {
 				return max;
 			}
@@ -177,7 +193,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 		@Override
 		public int read() throws IOException {
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (counter >= size) return -1;
+				if (counter >= size) {
+					return -1;
+				}
 			}
 			int ret = in.read();
 			synchronized (PaddedRandomAccessBucket.this) {
@@ -194,31 +212,42 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 		@Override
 		public int read(byte[] buf, int offset, int length) throws IOException {
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (length < 0) return -1;
-				if (length == 0) return 0;
-				if (counter >= size) return -1;
+				if (length < 0) {
+					return -1;
+				}
+				if (length == 0) {
+					return 0;
+				}
+				if (counter >= size) {
+					return -1;
+				}
 				if (counter + length >= size) {
 					length = (int) Math.min(length, size - counter);
 				}
 			}
 			int ret = in.read(buf, offset, length);
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (ret > 0)
+				if (ret > 0) {
 					counter += ret;
+				}
 			}
 			return ret;
 		}
 
 		public long skip(long length) throws IOException {
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (counter >= size) return -1;
+				if (counter >= size) {
+					return -1;
+				}
 				if (counter + length >= size) {
 					length = (int) Math.min(length, counter + length - size);
 				}
 			}
 			long ret = in.skip(length);
 			synchronized (PaddedRandomAccessBucket.this) {
-				if (ret > 0) counter += ret;
+				if (ret > 0) {
+					counter += ret;
+				}
 			}
 			return ret;
 		}
@@ -227,7 +256,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 		public synchronized int available() throws IOException {
 			long max = size - counter;
 			int ret = in.available();
-			if (max < ret) ret = (int) max;
+			if (max < ret) {
+				ret = (int) max;
+			}
 			return Math.max(ret, 0);
 		}
 
@@ -288,7 +319,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 									   PersistentFileTracker persistentFileTracker, MasterSecret masterKey)
 			throws IOException, StorageFormatException, ResumeFailedException {
 		int version = dis.readInt();
-		if (version != VERSION) throw new StorageFormatException("Bad version");
+		if (version != VERSION) {
+			throw new StorageFormatException("Bad version");
+		}
 		size = dis.readLong();
 		readOnly = dis.readBoolean();
 		underlying = (RandomAccessBucket) BucketTools.restoreFrom(dis, fg, persistentFileTracker, masterKey);
@@ -297,7 +330,9 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
 	@Override
 	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
 		synchronized (this) {
-			if (outputStreamOpen) throw new IOException("Must close first");
+			if (outputStreamOpen) {
+				throw new IOException("Must close first");
+			}
 			readOnly = true;
 		}
 		underlying.setReadOnly();

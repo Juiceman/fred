@@ -23,7 +23,9 @@ public class PersistentConfig extends Config {
 	@Override
 	public synchronized void finishedInit() {
 		finishedInit = true;
-		if (origConfigFileContents == null) return;
+		if (origConfigFileContents == null) {
+			return;
+		}
 		Iterator<String> i = origConfigFileContents.keyIterator();
 		while (i.hasNext()) {
 			String key = i.next();
@@ -59,13 +61,18 @@ public class PersistentConfig extends Config {
 	public void onRegister(SubConfig config, Option<?> o) {
 		String val, name;
 		synchronized (this) {
-			if (finishedInit)
+			if (finishedInit) {
 				throw new IllegalStateException("onRegister(" + config + ':' + o + ") called after finishedInit() !!");
-			if (origConfigFileContents == null) return;
+			}
+			if (origConfigFileContents == null) {
+				return;
+			}
 			name = config.prefix + SimpleFieldSet.MULTI_LEVEL_CHAR + o.name;
 			val = origConfigFileContents.get(name);
 			origConfigFileContents.removeValue(name);
-			if (val == null) return;
+			if (val == null) {
+				return;
+			}
 		}
 		try {
 			o.setInitialValue(val.trim());

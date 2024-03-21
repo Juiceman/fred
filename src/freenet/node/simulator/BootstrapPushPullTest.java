@@ -44,8 +44,9 @@ public class BootstrapPushPullTest {
 		Node secondNode = null;
 		try {
 			String ipOverride = null;
-			if (args.length > 0)
+			if (args.length > 0) {
 				ipOverride = args[0];
+			}
 			File dir = new File("bootstrap-push-pull-test");
 			FileUtil.removeAll(dir);
 			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.NORMAL, ""/*"freenet.node:MINOR,freenet.client:MINOR"*/, false);
@@ -135,13 +136,15 @@ public class BootstrapPushPullTest {
 			System.err.println("CAUGHT: " + t);
 			t.printStackTrace();
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			try {
-				if (secondNode != null)
+				if (secondNode != null) {
 					secondNode.park();
+				}
 			} catch (Throwable t1) {
 			}
 

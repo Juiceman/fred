@@ -62,8 +62,9 @@ public class UploadFileRequestStatus extends UploadRequestStatus {
 	@Override
 	public String getPreferredFilename() {
 		String s = super.getPreferredFilename();
-		if (s == null && origFilename != null)
+		if (s == null && origFilename != null) {
 			return origFilename.getName();
+		}
 		return s;
 	}
 }

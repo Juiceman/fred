@@ -24,8 +24,9 @@ public class PeerRemoved extends FCPMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identity", identity);
 		fs.putSingle("NodeIdentifier", nodeIdentifier);
-		if (identifier != null)
+		if (identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 

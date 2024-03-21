@@ -32,8 +32,9 @@ public class URIPreEncoder {
 				for (byte u : tmp.getBytes(StandardCharsets.UTF_8)) {
 					int x = u & 0xff;
 					output.append('%');
-					if (x < 16)
+					if (x < 16) {
 						output.append('0');
+					}
 					output.append(Integer.toHexString(x));
 				}
 			}

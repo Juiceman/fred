@@ -27,12 +27,14 @@ public class IPUndetectedUserAlert extends AbstractUserAlert {
 
 	@Override
 	public String getText() {
-		if (node.getIpDetector().noDetectPlugins())
+		if (node.getIpDetector().noDetectPlugins()) {
 			return l10n("noDetectorPlugins");
-		if (node.getIpDetector().isDetecting())
+		}
+		if (node.getIpDetector().isDetecting()) {
 			return l10n("detecting");
-		else
+		} else {
 			return l10n("unknownAddress", "port", Integer.toString(node.getDarknetPortNumber())) + ' ' + textPortForwardSuggestion();
+		}
 	}
 
 	private String l10n(String key) {
@@ -49,10 +51,12 @@ public class IPUndetectedUserAlert extends AbstractUserAlert {
 
 	@Override
 	public boolean isValid() {
-		if (node.isOpennetEnabled())
+		if (node.isOpennetEnabled()) {
 			return false;
-		if (node.getPeers().countConnectiblePeers() >= 5 && (node.getUptime() < MINUTES.toMillis(1) || node.getIpDetector().isDetecting()))
+		}
+		if (node.getPeers().countConnectiblePeers() >= 5 && (node.getUptime() < MINUTES.toMillis(1) || node.getIpDetector().isDetecting())) {
 			return false;
+		}
 		return true;
 	}
 
@@ -67,8 +71,9 @@ public class IPUndetectedUserAlert extends AbstractUserAlert {
 				new HTMLNode[]{HTMLNode.link("/config/" + sc.getPrefix())});
 
 		int peers = node.getPeers().getDarknetPeers().length;
-		if (peers > 0)
+		if (peers > 0) {
 			textNode.addChild("p", l10n("noIPMaybeFromPeers", "number", Integer.toString(peers)));
+		}
 
 		if (node.getIpDetector().noDetectPlugins()) {
 			HTMLNode p = textNode.addChild("p");
@@ -121,20 +126,23 @@ public class IPUndetectedUserAlert extends AbstractUserAlert {
 
 	@Override
 	public short getPriorityClass() {
-		if (node.getIpDetector().isDetecting())
+		if (node.getIpDetector().isDetecting()) {
 			return UserAlert.WARNING;
-		else
+		} else {
 			return UserAlert.ERROR;
+		}
 	}
 
 	@Override
 	public String getShortText() {
-		if (node.getIpDetector().noDetectPlugins())
+		if (node.getIpDetector().noDetectPlugins()) {
 			return l10n("noDetectorPlugins");
-		if (node.getIpDetector().isDetecting())
+		}
+		if (node.getIpDetector().isDetecting()) {
 			return l10n("detectingShort");
-		else
+		} else {
 			return l10n("unknownAddressShort");
+		}
 	}
 
 }

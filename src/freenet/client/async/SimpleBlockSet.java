@@ -37,7 +37,9 @@ public class SimpleBlockSet implements BlockSet {
 	@Override
 	public ClientKeyBlock get(ClientKey key) {
 		KeyBlock block = get(key.getNodeKey(false));
-		if (block == null) return null;
+		if (block == null) {
+			return null;
+		}
 		try {
 			return Key.createKeyBlock(key, block);
 		} catch (KeyVerifyException e) {

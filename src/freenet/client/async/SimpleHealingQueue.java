@@ -54,7 +54,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		int ctr;
 		synchronized (this) {
 			ctr = counter++;
-			if (runningInserters.size() > maxRunning) return false;
+			if (runningInserters.size() > maxRunning) {
+				return false;
+			}
 			try {
 				sbi = new SingleBlockInserter(this, data, (short) -1,
 						FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, this, false,
@@ -69,8 +71,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		}
 		try {
 			sbi.schedule(context);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Started healing insert " + ctr + " for " + data);
+			}
 			return true;
 		} catch (Throwable e) {
 			Logger.error(this, "Caught trying to insert healing block: " + e, e);
@@ -89,8 +92,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 
 	@Override
 	public void queue(Bucket data, byte[] cryptoKey, byte cryptoAlgorithm, ClientContext context) {
-		if (!innerQueue(data, cryptoKey, cryptoAlgorithm, context))
+		if (!innerQueue(data, cryptoKey, cryptoAlgorithm, context)) {
 			data.free();
+		}
 	}
 
 	@Override
@@ -115,8 +119,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		synchronized (this) {
 			runningInserters.remove(data);
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Successfully inserted healing block: " + sbi.getURINoEncode() + " for " + data + " (" + sbi.token + ')');
+		}
 		data.free();
 	}
 
@@ -127,8 +132,9 @@ public class SimpleHealingQueue extends BaseClientPutter implements HealingQueue
 		synchronized (this) {
 			runningInserters.remove(data);
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Failed to insert healing block: " + sbi.getURINoEncode() + " : " + e + " for " + data + " (" + sbi.token + ')', e);
+		}
 		data.free();
 	}
 

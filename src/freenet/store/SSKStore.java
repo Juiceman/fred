@@ -20,14 +20,19 @@ public class SSKStore extends StoreCallback<SSKBlock> {
 							  byte[] routingKey, byte[] fullKey,
 							  boolean canReadClientCache, boolean canReadSlashdotCache, BlockMetadata meta, DSAPublicKey knownPublicKey)
 			throws SSKVerifyException {
-		if (data == null || headers == null) throw new SSKVerifyException("Need data and headers");
-		if (fullKey == null) throw new SSKVerifyException("Need full key to reconstruct an SSK");
+		if (data == null || headers == null) {
+			throw new SSKVerifyException("Need data and headers");
+		}
+		if (fullKey == null) {
+			throw new SSKVerifyException("Need full key to reconstruct an SSK");
+		}
 		NodeSSK key;
 		key = NodeSSK.construct(fullKey);
-		if (knownPublicKey != null)
+		if (knownPublicKey != null) {
 			key.setPubKey(knownPublicKey);
-		else if (!key.grabPubkey(pubkeyCache, canReadClientCache, canReadSlashdotCache, meta))
+		} else if (!key.grabPubkey(pubkeyCache, canReadClientCache, canReadSlashdotCache, meta)) {
 			throw new SSKVerifyException("No pubkey found");
+		}
 		SSKBlock block = new SSKBlock(data, headers, key, false);
 		return block;
 	}

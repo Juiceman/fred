@@ -76,8 +76,9 @@ public class PartiallyReceivedBulk {
 		this.raf = raf;
 		this.usm = usm;
 		long blocks = (size + blockSize - 1) / blockSize;
-		if (blocks > Integer.MAX_VALUE)
+		if (blocks > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Too big");
+		}
 		this.blocks = (int) blocks;
 		blocksReceived = new BitArray(this.blocks);
 		if (initialState) {
@@ -104,9 +105,9 @@ public class PartiallyReceivedBulk {
 	 * @param bt The BulkTransmitter to register.
 	 */
 	synchronized void add(BulkTransmitter bt) {
-		if (transmitters == null)
+		if (transmitters == null) {
 			transmitters = new BulkTransmitter[]{bt};
-		else {
+		} else {
 			transmitters = Arrays.copyOf(transmitters, transmitters.length + 1);
 			transmitters[transmitters.length - 1] = bt;
 		}
@@ -124,8 +125,9 @@ public class PartiallyReceivedBulk {
 			Logger.error(this, "Received block " + blockNum + " of " + blocks + " !");
 			return;
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Received block " + blockNum);
+		}
 		BulkTransmitter[] notifyBTs;
 		long fileOffset = (long) blockNum * (long) blockSize;
 		int bs = (int) Math.min(blockSize, size - fileOffset);
@@ -136,7 +138,9 @@ public class PartiallyReceivedBulk {
 			return;
 		}
 		synchronized (this) {
-			if (blocksReceived.bitAt(blockNum)) return; // ignore
+			if (blocksReceived.bitAt(blockNum)) {
+				return; // ignore
+			}
 			blocksReceived.setBit(blockNum, true); // assume the rest of the function succeeds
 			blocksReceivedCount++;
 			notifyBTs = transmitters;
@@ -147,7 +151,9 @@ public class PartiallyReceivedBulk {
 			Logger.error(this, "Failed to store received block " + blockNum + " on " + this + " : " + t, t);
 			abort(RetrievalException.IO_ERROR, t.toString());
 		}
-		if (notifyBTs == null) return;
+		if (notifyBTs == null) {
+			return;
+		}
 		for (BulkTransmitter notifyBT : notifyBTs) {
 			// Not a generic callback, so no catch{} guard
 			notifyBT.blockReceived(blockNum);
@@ -155,8 +161,9 @@ public class PartiallyReceivedBulk {
 	}
 
 	public void abort(int errCode, String why) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.normal(this, "Aborting " + this + ": " + errCode + " : " + why + " first missing is " + blocksReceived.firstZero(0), new Exception("debug"));
+		}
 		BulkTransmitter[] notifyBTs;
 		BulkReceiver notifyBR;
 		synchronized (this) {
@@ -171,8 +178,9 @@ public class PartiallyReceivedBulk {
 				notifyBT.onAborted();
 			}
 		}
-		if (notifyBR != null)
+		if (notifyBR != null) {
 			notifyBR.onAborted();
+		}
 		raf.close();
 	}
 
@@ -206,11 +214,15 @@ public class PartiallyReceivedBulk {
 				break;
 			}
 		}
-		if (!found) return;
+		if (!found) {
+			return;
+		}
 		BulkTransmitter[] newTrans = new BulkTransmitter[transmitters.length - 1];
 		int j = 0;
 		for (BulkTransmitter t : transmitters) {
-			if (t == remove) continue;
+			if (t == remove) {
+				continue;
+			}
 			newTrans[j++] = t;
 		}
 		transmitters = newTrans;

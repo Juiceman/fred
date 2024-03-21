@@ -20,8 +20,9 @@ public class BooleanOption extends Option<Boolean> {
 			return true;
 		} else if (val.equalsIgnoreCase("false") || val.equalsIgnoreCase("no")) {
 			return false;
-		} else
+		} else {
 			throw new OptionFormatException(NodeL10n.getBase().getString("BooleanOption.parseError", "val", val));
+		}
 	}
 
 	@Override

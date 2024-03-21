@@ -89,9 +89,9 @@ class LegacyJarFetcher implements ClientGetCallback {
 		synchronized (this) {
 			f = fetched;
 		}
-		if (f)
+		if (f) {
 			cb.onSuccess(this);
-		else {
+		} else {
 			try {
 				cg.start(context);
 			} catch (FetchException e) {
@@ -105,7 +105,9 @@ class LegacyJarFetcher implements ClientGetCallback {
 
 	public void stop() {
 		synchronized (this) {
-			if (fetched) return;
+			if (fetched) {
+				return;
+			}
 		}
 		cg.cancel(context);
 	}

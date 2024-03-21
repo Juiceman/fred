@@ -155,7 +155,9 @@ public class RealNodeBusyNetworkTest extends RealNodeRoutingTest {
 				totalRunningRequests += nodes[i].getClientCore().countQueuedRequests();
 			}
 			System.err.println("Running requests: " + totalRunningRequests);
-			if (totalRunningRequests == 0) break;
+			if (totalRunningRequests == 0) {
+				break;
+			}
 			Thread.sleep(1000);
 		}
 		System.exit(0);

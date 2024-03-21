@@ -58,10 +58,11 @@ public abstract class PluginReplySender {
 	}
 
 	public void send(SimpleFieldSet params, byte[] data) throws PluginNotFoundException {
-		if (data == null)
+		if (data == null) {
 			send(params, (Bucket) null);
-		else
+		} else {
 			send(params, new ArrayBucket(data));
+		}
 	}
 
 	public abstract void send(SimpleFieldSet params, Bucket bucket) throws PluginNotFoundException;

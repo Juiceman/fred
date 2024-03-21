@@ -128,8 +128,9 @@ public class RealNodeULPRTest extends RealNodeTest {
 		Logger.normal(RealNodeRoutingTest.class, "Connected nodes");
 		// Now add some random links
 		for (int i = 0; i < NUMBER_OF_NODES * 5; i++) {
-			if (i % NUMBER_OF_NODES == 0)
+			if (i % NUMBER_OF_NODES == 0) {
 				Logger.normal(RealNodeRoutingTest.class, String.valueOf(i));
+			}
 			int length = (int) Math.pow(NUMBER_OF_NODES, random.nextDouble());
 			int nodeA = random.nextInt(NUMBER_OF_NODES);
 			int nodeB = (nodeA + length) % NUMBER_OF_NODES;
@@ -244,9 +245,13 @@ public class RealNodeULPRTest extends RealNodeTest {
 			StringBuilder sb = new StringBuilder(3 * nodes.length + 1);
 			boolean first = true;
 			for (int i = 0; i < visited.length; i++) {
-				if (!visited[i]) continue;
+				if (!visited[i]) {
+					continue;
+				}
 				visitedCount++;
-				if (!first) sb.append(' ');
+				if (!first) {
+					sb.append(' ');
+				}
 				first = false;
 				sb.append(i);
 			}
@@ -265,8 +270,9 @@ public class RealNodeULPRTest extends RealNodeTest {
 				Thread.sleep(1000);
 				int count = 0;
 				for (Node node : nodes) {
-					if (node.hasKey(fetchKey.getNodeKey(false), true, true))
+					if (node.hasKey(fetchKey.getNodeKey(false), true, true)) {
 						count++;
+					}
 				}
 				System.err.println("T=" + x + " : " + count + '/' + nodes.length + " have the data on test " + successfulTests + ".");
 				Logger.normal(RealNodeULPRTest.class, "T=" + x + " : " + count + '/' + nodes.length + " have the data on test " + successfulTests + ".");

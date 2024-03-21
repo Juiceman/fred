@@ -20,8 +20,9 @@ public class UnknownNodeIdentifierMessage extends FCPMessage {
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putSingle("NodeIdentifier", nodeIdentifier);
-		if (identifier != null)
+		if (identifier != null) {
 			sfs.putSingle("Identifier", identifier);
+		}
 		return sfs;
 	}
 

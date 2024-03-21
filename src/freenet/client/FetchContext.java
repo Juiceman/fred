@@ -193,34 +193,54 @@ public class FetchContext implements Cloneable, Serializable {
 						String schemeHostAndPort) {
 		this.blocks = null;
 		this.maxOutputLength = curMaxLength;
-		if (maxOutputLength < 0) throw new IllegalArgumentException("Bad max output length");
+		if (maxOutputLength < 0) {
+			throw new IllegalArgumentException("Bad max output length");
+		}
 		this.maxTempLength = curMaxTempLength;
-		if (maxTempLength < 0) throw new IllegalArgumentException("Bad max temp length");
+		if (maxTempLength < 0) {
+			throw new IllegalArgumentException("Bad max temp length");
+		}
 		this.maxMetadataSize = maxMetadataSize;
-		if (maxMetadataSize < 0) throw new IllegalArgumentException("Bad max metadata size");
+		if (maxMetadataSize < 0) {
+			throw new IllegalArgumentException("Bad max metadata size");
+		}
 		this.maxRecursionLevel = maxRecursionLevel;
-		if (maxRecursionLevel < 0) throw new IllegalArgumentException("Bad max recursion level");
+		if (maxRecursionLevel < 0) {
+			throw new IllegalArgumentException("Bad max recursion level");
+		}
 		this.maxArchiveRestarts = maxArchiveRestarts;
-		if (maxArchiveRestarts < 0) throw new IllegalArgumentException("Bad max archive restarts");
+		if (maxArchiveRestarts < 0) {
+			throw new IllegalArgumentException("Bad max archive restarts");
+		}
 		this.maxArchiveLevels = maxArchiveLevels;
-		if (maxArchiveLevels < 0) throw new IllegalArgumentException("Bad max archive levels");
+		if (maxArchiveLevels < 0) {
+			throw new IllegalArgumentException("Bad max archive levels");
+		}
 		this.dontEnterImplicitArchives = dontEnterImplicitArchives;
 		this.maxSplitfileBlockRetries = maxSplitfileBlockRetries;
-		if (maxSplitfileBlockRetries < -1) throw new IllegalArgumentException("Bad max splitfile block retries");
+		if (maxSplitfileBlockRetries < -1) {
+			throw new IllegalArgumentException("Bad max splitfile block retries");
+		}
 		this.maxNonSplitfileRetries = maxNonSplitfileRetries;
-		if (maxNonSplitfileRetries < -1) throw new IllegalArgumentException("Bad non-splitfile retries");
+		if (maxNonSplitfileRetries < -1) {
+			throw new IllegalArgumentException("Bad non-splitfile retries");
+		}
 		this.maxUSKRetries = maxUSKRetries;
-		if (maxUSKRetries < -1) throw new IllegalArgumentException("Bad max USK retries");
+		if (maxUSKRetries < -1) {
+			throw new IllegalArgumentException("Bad max USK retries");
+		}
 		this.allowSplitfiles = allowSplitfiles;
 		this.followRedirects = followRedirects;
 		this.localRequestOnly = localRequestOnly;
 		this.eventProducer = producer;
 		this.maxDataBlocksPerSegment = maxDataBlocksPerSegment;
-		if (maxDataBlocksPerSegment < 0 || maxDataBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if (maxDataBlocksPerSegment < 0 || maxDataBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new IllegalArgumentException("Bad max blocks per segment");
+		}
 		this.maxCheckBlocksPerSegment = maxCheckBlocksPerSegment;
-		if (maxCheckBlocksPerSegment < 0 || maxCheckBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if (maxCheckBlocksPerSegment < 0 || maxCheckBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new IllegalArgumentException("Bad max blocks per segment");
+		}
 		this.filterData = filterData;
 		this.ignoreTooManyPathComponents = ignoreTooManyPathComponents;
 		this.canWriteClientCache = canWriteClientCache;
@@ -256,16 +276,18 @@ public class FetchContext implements Cloneable, Serializable {
 	 * @param blocks       Storing a BlockSet to the database is not supported, see comments on SimpleBlockSet.objectCanNew().
 	 */
 	public FetchContext(FetchContext ctx, int maskID, boolean keepProducer, BlockSet blocks) {
-		if (keepProducer)
+		if (keepProducer) {
 			this.eventProducer = ctx.eventProducer;
-		else
+		} else {
 			this.eventProducer = new SimpleEventProducer();
+		}
 		hasOwnEventProducer = !keepProducer;
 		this.ignoreTooManyPathComponents = ctx.ignoreTooManyPathComponents;
-		if (blocks != null)
+		if (blocks != null) {
 			this.blocks = blocks;
-		else
+		} else {
 			this.blocks = ctx.blocks;
+		}
 
 		this.allowedMIMETypes = ctx.allowedMIMETypes;
 		this.maxUSKRetries = ctx.maxUSKRetries;
@@ -307,7 +329,9 @@ public class FetchContext implements Cloneable, Serializable {
 			this.returnZIPManifests = false;
 		} else if (maskID == SET_RETURN_ARCHIVES) {
 			this.returnZIPManifests = true;
-		} else throw new IllegalArgumentException();
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
@@ -324,10 +348,12 @@ public class FetchContext implements Cloneable, Serializable {
 	}
 
 	public void setCooldownRetries(int cooldownRetries) {
-		if (cooldownRetries < 0)
+		if (cooldownRetries < 0) {
 			throw new IllegalArgumentException("Bogus negative retries");
-		if (cooldownRetries > RequestScheduler.COOLDOWN_RETRIES)
+		}
+		if (cooldownRetries > RequestScheduler.COOLDOWN_RETRIES) {
 			throw new IllegalArgumentException("Invalid COOLDOWN_RETRIES: Must be <= " + RequestScheduler.COOLDOWN_RETRIES + " since the network will not tolerate more than that");
+		}
 		this.cooldownRetries = cooldownRetries;
 	}
 
@@ -342,10 +368,12 @@ public class FetchContext implements Cloneable, Serializable {
 	 * Only for tests
 	 */
 	public void setCooldownTime(long cooldownTime, boolean force) {
-		if (cooldownTime < 0)
+		if (cooldownTime < 0) {
 			throw new IllegalArgumentException("Bogus negative cooldown time");
-		if (cooldownTime < RequestScheduler.COOLDOWN_PERIOD && !force)
+		}
+		if (cooldownTime < RequestScheduler.COOLDOWN_PERIOD && !force) {
 			throw new IllegalArgumentException("Invalid COOLDOWN_PERIOD: Must be >= " + RequestScheduler.COOLDOWN_PERIOD + " since ULPRs will ensure fast response at that level");
+		}
 		this.cooldownTime = cooldownTime;
 	}
 
@@ -386,7 +414,9 @@ public class FetchContext implements Cloneable, Serializable {
 		dos.writeBoolean(returnZIPManifests);
 		dos.writeBoolean(filterData);
 		dos.writeBoolean(ignoreTooManyPathComponents);
-		if (blocks != null) throw new UnsupportedOperationException("Binary blob not supported");
+		if (blocks != null) {
+			throw new UnsupportedOperationException("Binary blob not supported");
+		}
 		if (allowedMIMETypes != null) {
 			dos.writeInt(allowedMIMETypes.size());
 			for (String s : allowedMIMETypes)
@@ -394,24 +424,31 @@ public class FetchContext implements Cloneable, Serializable {
 		} else {
 			dos.writeInt(0);
 		}
-		if (charset == null)
+		if (charset == null) {
 			dos.writeUTF("");
-		else
+		} else {
 			dos.writeUTF(charset);
+		}
 		dos.writeBoolean(canWriteClientCache);
-		if (prefetchHook != null) throw new UnsupportedOperationException("Prefetch hook not supported");
-		if (tagReplacer != null) throw new UnsupportedOperationException("Tag replacer not supported");
-		if (overrideMIME != null)
+		if (prefetchHook != null) {
+			throw new UnsupportedOperationException("Prefetch hook not supported");
+		}
+		if (tagReplacer != null) {
+			throw new UnsupportedOperationException("Tag replacer not supported");
+		}
+		if (overrideMIME != null) {
 			dos.writeUTF(overrideMIME);
-		else
+		} else {
 			dos.writeUTF("");
+		}
 		dos.writeInt(cooldownRetries);
 		dos.writeLong(cooldownTime);
 		dos.writeBoolean(ignoreUSKDatehints);
-		if (schemeHostAndPort != null)
+		if (schemeHostAndPort != null) {
 			dos.writeUTF(schemeHostAndPort);
-		else
+		} else {
 			dos.writeUTF("");
+		}
 	}
 
 	/**
@@ -424,45 +461,69 @@ public class FetchContext implements Cloneable, Serializable {
 	 */
 	public FetchContext(DataInputStream dis) throws StorageFormatException, IOException {
 		long magic = dis.readLong();
-		if (magic != CLIENT_DETAIL_MAGIC)
+		if (magic != CLIENT_DETAIL_MAGIC) {
 			throw new StorageFormatException("Bad magic for fetch settings (FetchContext)");
+		}
 		int version = dis.readInt();
-		if (version != CLIENT_DETAIL_VERSION)
+		if (version != CLIENT_DETAIL_VERSION) {
 			throw new StorageFormatException("Bad version for fetch settings (FetchContext)");
+		}
 		maxOutputLength = dis.readLong();
-		if (maxOutputLength < 0) throw new StorageFormatException("Bad max output length");
+		if (maxOutputLength < 0) {
+			throw new StorageFormatException("Bad max output length");
+		}
 		maxTempLength = dis.readLong();
-		if (maxTempLength < 0) throw new StorageFormatException("Bad max temp length");
+		if (maxTempLength < 0) {
+			throw new StorageFormatException("Bad max temp length");
+		}
 		maxRecursionLevel = dis.readInt();
-		if (maxRecursionLevel < 0) throw new StorageFormatException("Bad max recursion level");
+		if (maxRecursionLevel < 0) {
+			throw new StorageFormatException("Bad max recursion level");
+		}
 		maxArchiveRestarts = dis.readInt();
-		if (maxArchiveRestarts < 0) throw new StorageFormatException("Bad max archive restarts");
+		if (maxArchiveRestarts < 0) {
+			throw new StorageFormatException("Bad max archive restarts");
+		}
 		maxArchiveLevels = dis.readInt();
-		if (maxArchiveLevels < 0) throw new StorageFormatException("Bad max archive levels");
+		if (maxArchiveLevels < 0) {
+			throw new StorageFormatException("Bad max archive levels");
+		}
 		dontEnterImplicitArchives = dis.readBoolean();
 		maxSplitfileBlockRetries = dis.readInt();
-		if (maxSplitfileBlockRetries < -1) throw new StorageFormatException("Bad max splitfile block retries");
+		if (maxSplitfileBlockRetries < -1) {
+			throw new StorageFormatException("Bad max splitfile block retries");
+		}
 		maxNonSplitfileRetries = dis.readInt();
-		if (maxNonSplitfileRetries < -1) throw new StorageFormatException("Bad non-splitfile retries");
+		if (maxNonSplitfileRetries < -1) {
+			throw new StorageFormatException("Bad non-splitfile retries");
+		}
 		maxUSKRetries = dis.readInt();
-		if (maxUSKRetries < -1) throw new StorageFormatException("Bad max USK retries");
+		if (maxUSKRetries < -1) {
+			throw new StorageFormatException("Bad max USK retries");
+		}
 		allowSplitfiles = dis.readBoolean();
 		followRedirects = dis.readBoolean();
 		localRequestOnly = dis.readBoolean();
 		ignoreStore = dis.readBoolean();
 		maxMetadataSize = dis.readInt();
-		if (maxMetadataSize < 0) throw new StorageFormatException("Bad max metadata size");
+		if (maxMetadataSize < 0) {
+			throw new StorageFormatException("Bad max metadata size");
+		}
 		maxDataBlocksPerSegment = dis.readInt();
-		if (maxDataBlocksPerSegment < 0 || maxDataBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if (maxDataBlocksPerSegment < 0 || maxDataBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new StorageFormatException("Bad max blocks per segment");
+		}
 		maxCheckBlocksPerSegment = dis.readInt();
-		if (maxCheckBlocksPerSegment < 0 || maxCheckBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if (maxCheckBlocksPerSegment < 0 || maxCheckBlocksPerSegment > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new StorageFormatException("Bad max blocks per segment");
+		}
 		returnZIPManifests = dis.readBoolean();
 		filterData = dis.readBoolean();
 		ignoreTooManyPathComponents = dis.readBoolean();
 		int x = dis.readInt();
-		if (x < 0) throw new StorageFormatException("Bad allowed MIME types length " + x);
+		if (x < 0) {
+			throw new StorageFormatException("Bad allowed MIME types length " + x);
+		}
 		if (x == 0) {
 			allowedMIMETypes = null;
 		} else {
@@ -472,16 +533,18 @@ public class FetchContext implements Cloneable, Serializable {
 			}
 		}
 		String s = dis.readUTF();
-		if (s.isEmpty())
+		if (s.isEmpty()) {
 			charset = null;
-		else
+		} else {
 			charset = s;
+		}
 		canWriteClientCache = dis.readBoolean();
 		s = dis.readUTF();
-		if (s.isEmpty())
+		if (s.isEmpty()) {
 			overrideMIME = null;
-		else
+		} else {
 			overrideMIME = s;
+		}
 		cooldownRetries = dis.readInt();
 		cooldownTime = dis.readLong();
 		ignoreUSKDatehints = dis.readBoolean();
@@ -546,99 +609,140 @@ public class FetchContext implements Cloneable, Serializable {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		FetchContext other = (FetchContext) obj;
 		// eventProducer is ignored.
-		if (allowSplitfiles != other.allowSplitfiles)
+		if (allowSplitfiles != other.allowSplitfiles) {
 			return false;
+		}
 		if (allowedMIMETypes == null) {
-			if (other.allowedMIMETypes != null)
+			if (other.allowedMIMETypes != null) {
 				return false;
-		} else if (!allowedMIMETypes.equals(other.allowedMIMETypes))
+			}
+		} else if (!allowedMIMETypes.equals(other.allowedMIMETypes)) {
 			return false;
+		}
 		// We *DO* compare on blocks, which means that two FetchContext's can be non-equal even
 		// though the are really the same, until blocks has a proper equals(). FIXME
 		if (blocks == null) {
-			if (other.blocks != null)
+			if (other.blocks != null) {
 				return false;
-		} else if (!blocks.equals(other.blocks))
+			}
+		} else if (!blocks.equals(other.blocks)) {
 			return false;
-		if (canWriteClientCache != other.canWriteClientCache)
+		}
+		if (canWriteClientCache != other.canWriteClientCache) {
 			return false;
+		}
 		if (charset == null) {
-			if (other.charset != null)
+			if (other.charset != null) {
 				return false;
-		} else if (!charset.equals(other.charset))
+			}
+		} else if (!charset.equals(other.charset)) {
 			return false;
-		if (cooldownRetries != other.cooldownRetries)
+		}
+		if (cooldownRetries != other.cooldownRetries) {
 			return false;
-		if (cooldownTime != other.cooldownTime)
+		}
+		if (cooldownTime != other.cooldownTime) {
 			return false;
-		if (dontEnterImplicitArchives != other.dontEnterImplicitArchives)
+		}
+		if (dontEnterImplicitArchives != other.dontEnterImplicitArchives) {
 			return false;
-		if (filterData != other.filterData)
+		}
+		if (filterData != other.filterData) {
 			return false;
-		if (followRedirects != other.followRedirects)
+		}
+		if (followRedirects != other.followRedirects) {
 			return false;
-		if (hasOwnEventProducer != other.hasOwnEventProducer)
+		}
+		if (hasOwnEventProducer != other.hasOwnEventProducer) {
 			return false;
-		if (ignoreStore != other.ignoreStore)
+		}
+		if (ignoreStore != other.ignoreStore) {
 			return false;
-		if (ignoreTooManyPathComponents != other.ignoreTooManyPathComponents)
+		}
+		if (ignoreTooManyPathComponents != other.ignoreTooManyPathComponents) {
 			return false;
-		if (ignoreUSKDatehints != other.ignoreUSKDatehints)
+		}
+		if (ignoreUSKDatehints != other.ignoreUSKDatehints) {
 			return false;
-		if (localRequestOnly != other.localRequestOnly)
+		}
+		if (localRequestOnly != other.localRequestOnly) {
 			return false;
-		if (maxArchiveLevels != other.maxArchiveLevels)
+		}
+		if (maxArchiveLevels != other.maxArchiveLevels) {
 			return false;
-		if (maxArchiveRestarts != other.maxArchiveRestarts)
+		}
+		if (maxArchiveRestarts != other.maxArchiveRestarts) {
 			return false;
-		if (maxCheckBlocksPerSegment != other.maxCheckBlocksPerSegment)
+		}
+		if (maxCheckBlocksPerSegment != other.maxCheckBlocksPerSegment) {
 			return false;
-		if (maxDataBlocksPerSegment != other.maxDataBlocksPerSegment)
+		}
+		if (maxDataBlocksPerSegment != other.maxDataBlocksPerSegment) {
 			return false;
-		if (maxMetadataSize != other.maxMetadataSize)
+		}
+		if (maxMetadataSize != other.maxMetadataSize) {
 			return false;
-		if (maxNonSplitfileRetries != other.maxNonSplitfileRetries)
+		}
+		if (maxNonSplitfileRetries != other.maxNonSplitfileRetries) {
 			return false;
-		if (maxOutputLength != other.maxOutputLength)
+		}
+		if (maxOutputLength != other.maxOutputLength) {
 			return false;
-		if (maxRecursionLevel != other.maxRecursionLevel)
+		}
+		if (maxRecursionLevel != other.maxRecursionLevel) {
 			return false;
-		if (maxSplitfileBlockRetries != other.maxSplitfileBlockRetries)
+		}
+		if (maxSplitfileBlockRetries != other.maxSplitfileBlockRetries) {
 			return false;
-		if (maxTempLength != other.maxTempLength)
+		}
+		if (maxTempLength != other.maxTempLength) {
 			return false;
-		if (maxUSKRetries != other.maxUSKRetries)
+		}
+		if (maxUSKRetries != other.maxUSKRetries) {
 			return false;
+		}
 		if (overrideMIME == null) {
-			if (other.overrideMIME != null)
+			if (other.overrideMIME != null) {
 				return false;
-		} else if (!overrideMIME.equals(other.overrideMIME))
+			}
+		} else if (!overrideMIME.equals(other.overrideMIME)) {
 			return false;
+		}
 		if (prefetchHook == null) {
-			if (other.prefetchHook != null)
+			if (other.prefetchHook != null) {
 				return false;
-		} else if (!prefetchHook.equals(other.prefetchHook))
+			}
+		} else if (!prefetchHook.equals(other.prefetchHook)) {
 			return false;
-		if (returnZIPManifests != other.returnZIPManifests)
+		}
+		if (returnZIPManifests != other.returnZIPManifests) {
 			return false;
+		}
 		if (tagReplacer == null) {
-			if (other.tagReplacer != null)
+			if (other.tagReplacer != null) {
 				return false;
-		} else if (!tagReplacer.equals(other.tagReplacer))
+			}
+		} else if (!tagReplacer.equals(other.tagReplacer)) {
 			return false;
+		}
 		if (schemeHostAndPort == null) {
-			if (other.schemeHostAndPort != null)
+			if (other.schemeHostAndPort != null) {
 				return false;
-		} else if (!schemeHostAndPort.equals(other.schemeHostAndPort))
+			}
+		} else if (!schemeHostAndPort.equals(other.schemeHostAndPort)) {
 			return false;
+		}
 		return true;
 	}
 

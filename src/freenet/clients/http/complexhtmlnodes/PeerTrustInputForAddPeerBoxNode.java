@@ -17,8 +17,9 @@ public class PeerTrustInputForAddPeerBoxNode extends HTMLNode {
 					.addChild("input",
 							new String[]{"type", "name", "value", "id"},
 							new String[]{"radio", "trust", trust.name(), "trust" + trust.name()});
-			if (trust.isDefaultValue())
+			if (trust.isDefaultValue()) {
 				input.addAttribute("checked", "checked");
+			}
 			input.addChild("label",
 					new String[]{"for"},
 					new String[]{"trust" + trust.name()}

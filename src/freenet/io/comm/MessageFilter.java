@@ -78,15 +78,19 @@ public final class MessageFilter {
 			 * - On matching a message (setMessage), call the callback immediately if not waitFor()ing.
 			 * - If we are waitFor()ing, call the callback when we exit waitFor() (onStopWaiting()???).
 			 */
-			if (waitFor && _callback != null)
+			if (waitFor && _callback != null) {
 				throw new IllegalStateException("Cannot wait on a MessageFilter with a callback!");
-			if (!_setTimeout)
+			}
+			if (!_setTimeout) {
 				throw new IllegalStateException("No timeout set on filter " + this + "; cannot wait.");
-			if (_initialTimeout > 0 && _timeoutFromWait)
+			}
+			if (_initialTimeout > 0 && _timeoutFromWait) {
 				_timeout = System.currentTimeMillis() + _initialTimeout;
+			}
 		}
-		if (_or != null)
+		if (_or != null) {
 			_or.onStartWaiting(waitFor);
+		}
 	}
 
 	/**
@@ -129,8 +133,9 @@ public final class MessageFilter {
 
 	public MessageFilter setSource(PeerContext source) {
 		_source = source;
-		if (source != null)
+		if (source != null) {
 			_oldBootID = source.getBootID();
+		}
 		return this;
 	}
 
@@ -217,8 +222,9 @@ public final class MessageFilter {
 	public MATCHED match(Message m, boolean noTimeout, long now) {
 		if (_or != null) {
 			MATCHED matched = _or.match(m, noTimeout, now);
-			if (matched != MATCHED.NONE)
+			if (matched != MATCHED.NONE) {
 				return matched; // Filter is matched once only. That includes timeouts.
+			}
 		}
 
 		final MATCHED resultNoMatch = _timeout < now ? MATCHED.TIMED_OUT : MATCHED.NONE;
@@ -243,7 +249,9 @@ public final class MessageFilter {
 			}
 		}
 		if ((!noTimeout) && reallyTimedOut(now)) {
-			if (logMINOR) Logger.minor(this, "Matched but timed out: " + this);
+			if (logMINOR) {
+				Logger.minor(this, "Matched but timed out: " + this);
+			}
 			return MATCHED.TIMED_OUT_AND_MATCHED;
 		}
 		return MATCHED.MATCHED;
@@ -261,8 +269,9 @@ public final class MessageFilter {
 	}
 
 	boolean reallyTimedOut(long time) {
-		if (_callback != null && _callback.shouldTimeout())
+		if (_callback != null && _callback.shouldTimeout()) {
 			_timeout = -1; // timeout immediately
+		}
 		return _timeout < time;
 	}
 
@@ -313,8 +322,9 @@ public final class MessageFilter {
 			_message = null;
 			or = _or;
 		}
-		if (or != null)
+		if (or != null) {
 			or.clearMatched();
+		}
 	}
 
 	public void clearOr() {
@@ -322,14 +332,22 @@ public final class MessageFilter {
 	}
 
 	public boolean matchesDroppedConnection(PeerContext ctx) {
-		if (_source == ctx) return true;
-		if (_or != null) return _or.matchesDroppedConnection(ctx);
+		if (_source == ctx) {
+			return true;
+		}
+		if (_or != null) {
+			return _or.matchesDroppedConnection(ctx);
+		}
 		return false;
 	}
 
 	public boolean matchesRestartedConnection(PeerContext ctx) {
-		if (_source == ctx) return true;
-		if (_or != null) return _or.matchesRestartedConnection(ctx);
+		if (_source == ctx) {
+			return true;
+		}
+		if (_or != null) {
+			return _or.matchesRestartedConnection(ctx);
+		}
 		return false;
 	}
 
@@ -418,11 +436,12 @@ public final class MessageFilter {
 			cb = _callback;
 			ctr = _ctr;
 			// Clear matched before calling callback in case we are re-added.
-			if (_callback != null)
+			if (_callback != null) {
 				clearMatched();
+			}
 		}
 		if (cb != null) {
-			if (cb instanceof SlowAsyncMessageFilterCallback)
+			if (cb instanceof SlowAsyncMessageFilterCallback) {
 				executor.execute(new PrioRunnable() {
 
 					@Override
@@ -436,10 +455,12 @@ public final class MessageFilter {
 					}
 
 				}, "Slow callback for " + cb);
-			else
+			} else {
 				cb.onMatched(msg);
-			if (ctr != null)
+			}
+			if (ctr != null) {
 				ctr.receivedBytes(msg._receivedByteCount);
+			}
 		}
 	}
 
@@ -467,8 +488,9 @@ public final class MessageFilter {
 					}
 
 				});
-			} else
+			} else {
 				cb.onTimeout();
+			}
 		}
 	}
 
@@ -476,7 +498,9 @@ public final class MessageFilter {
 	 * Returns true if a connection related to this filter has been dropped or restarted.
 	 */
 	public boolean anyConnectionsDropped() {
-		if (_matched) return false;
+		if (_matched) {
+			return false;
+		}
 		if (_source != null) {
 			if (!_source.isConnected()) {
 				return true;
@@ -484,8 +508,9 @@ public final class MessageFilter {
 				return true; // Counts as a disconnect.
 			}
 		}
-		if (_or != null)
+		if (_or != null) {
 			return _or.anyConnectionsDropped();
+		}
 		return false;
 	}
 

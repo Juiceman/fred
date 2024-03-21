@@ -41,7 +41,9 @@ public class PersistentGet extends FCPMessage {
 		this.identifier = identifier;
 		this.uri = uri;
 		// This has been seen in practice (bug #3606), lets try to get an earlier stack trace...
-		if (uri == null) throw new NullPointerException();
+		if (uri == null) {
+			throw new NullPointerException();
+		}
 		this.verbosity = verbosity;
 		this.priorityClass = priorityClass;
 		this.returnType = returnType;
@@ -68,8 +70,9 @@ public class PersistentGet extends FCPMessage {
 			fs.putSingle("Filename", targetFile.getAbsolutePath());
 		}
 		fs.put("PriorityClass", priorityClass);
-		if (clientToken != null)
+		if (clientToken != null) {
 			fs.putSingle("ClientToken", clientToken);
+		}
 		fs.put("Global", global);
 		fs.put("Started", started);
 		fs.put("MaxRetries", maxRetries);

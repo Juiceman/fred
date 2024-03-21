@@ -141,17 +141,21 @@ public class FailureTable {
 			ftTimeout = Math.max(Math.min(REJECT_TIME, ftTimeout), 0);
 		}
 		if (rfTimeout < 0 || rfTimeout > RECENTLY_FAILED_TIME) {
-			if (rfTimeout > 0)
+			if (rfTimeout > 0) {
 				Logger.error(this, "Bogus timeout " + rfTimeout, new Exception("error"));
+			}
 			rfTimeout = Math.max(Math.min(RECENTLY_FAILED_TIME, rfTimeout), 0);
 		}
-		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) return;
+		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) {
+			return;
+		}
 		long now = System.currentTimeMillis();
 		FailureTableEntry entry;
 		synchronized (this) {
 			entry = entriesByKey.get(key);
-			if (entry == null)
+			if (entry == null) {
 				entry = new FailureTableEntry(key);
+			}
 			entriesByKey.push(key, entry);
 			// LOCKING: Taking PeerNode then FT/FTE will deadlock.
 			// However this should not happen.
@@ -177,27 +181,33 @@ public class FailureTable {
 			ftTimeout = Math.max(Math.min(REJECT_TIME, ftTimeout), 0);
 		}
 		if (rfTimeout < 0 || rfTimeout > RECENTLY_FAILED_TIME) {
-			if (rfTimeout > 0)
+			if (rfTimeout > 0) {
 				Logger.error(this, "Bogus timeout " + rfTimeout, new Exception("error"));
+			}
 			rfTimeout = Math.max(Math.min(RECENTLY_FAILED_TIME, rfTimeout), 0);
 		}
-		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) return;
+		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) {
+			return;
+		}
 		long now = System.currentTimeMillis();
 		FailureTableEntry entry;
 		synchronized (this) {
 			entry = entriesByKey.get(key);
-			if (entry == null)
+			if (entry == null) {
 				entry = new FailureTableEntry(key);
+			}
 			entriesByKey.push(key, entry);
 
 			// LOCKING: Taking PeerNode then FT/FTE will deadlock.
 			// However this should not happen.
 			// We have to do this inside the lock to prevent race condition with the cleaner causing us to get dropped because isEmpty() before updating.
 
-			if (routedTo != null)
+			if (routedTo != null) {
 				entry.failedTo(routedTo, rfTimeout, ftTimeout, now, htl);
-			if (requestor != null)
+			}
+			if (requestor != null) {
 				entry.addRequestor(requestor, now, origHTL);
+			}
 
 			trimEntries(now);
 		}
@@ -223,7 +233,9 @@ public class FailureTable {
 			synchronized (blockOfferListByKey) {
 				long last = 0;
 				for (BlockOffer offer : offers) {
-					if (offer.offeredTime > last) last = offer.offeredTime;
+					if (offer.offeredTime > last) {
+						last = offer.offeredTime;
+					}
 				}
 				return last + OFFER_EXPIRY_TIME;
 			}
@@ -232,28 +244,40 @@ public class FailureTable {
 		public boolean isEmpty(long now) {
 			synchronized (blockOfferListByKey) {
 				for (BlockOffer offer : offers) {
-					if (!offer.isExpired(now)) return false;
+					if (!offer.isExpired(now)) {
+						return false;
+					}
 				}
 				return true;
 			}
 		}
 
 		public void deleteOffer(BlockOffer offer) {
-			if (logMINOR) Logger.minor(this, "Deleting " + offer + " from " + this);
+			if (logMINOR) {
+				Logger.minor(this, "Deleting " + offer + " from " + this);
+			}
 			synchronized (blockOfferListByKey) {
 				int idx = -1;
 				final int offerLength = offers.length;
 				for (int i = 0; i < offerLength; i++) {
-					if (offers[i] == offer) idx = i;
+					if (offers[i] == offer) {
+						idx = i;
+					}
 				}
-				if (idx < 0) return;
+				if (idx < 0) {
+					return;
+				}
 				BlockOffer[] newOffers = new BlockOffer[offerLength - 1];
-				if (idx > 0)
+				if (idx > 0) {
 					System.arraycopy(offers, 0, newOffers, 0, idx);
-				if (idx < newOffers.length)
+				}
+				if (idx < newOffers.length) {
 					System.arraycopy(offers, idx + 1, newOffers, idx, offers.length - idx - 1);
+				}
 				offers = newOffers;
-				if (offers.length > 1) return;
+				if (offers.length > 1) {
+					return;
+				}
 				blockOfferListByKey.removeKey(entry.key);
 			}
 			node.getClientCore().dequeueOfferedKey(entry.key);
@@ -315,14 +339,19 @@ public class FailureTable {
 	 * they might cause a deadlock. Schedule off-thread if necessary.
 	 */
 	public void onFound(KeyBlock block) {
-		if (logMINOR) Logger.minor(this, "Found " + block.getKey());
+		if (logMINOR) {
+			Logger.minor(this, "Found " + block.getKey());
+		}
 		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Ignoring onFound because enable ULPR = " + node.isEnableULPRDataPropagation() + " and enable failure tables = " + node.isEnablePerNodeFailureTables());
+			}
 			return;
 		}
 		Key key = block.getKey();
-		if (key == null) throw new NullPointerException();
+		if (key == null) {
+			throw new NullPointerException();
+		}
 		FailureTableEntry entry;
 		synchronized (blockOfferListByKey) {
 			blockOfferListByKey.removeKey(key);
@@ -330,13 +359,19 @@ public class FailureTable {
 		synchronized (this) {
 			entry = entriesByKey.get(key);
 			if (entry == null) {
-				if (logMINOR) Logger.minor(this, "Key not found in entriesByKey");
+				if (logMINOR) {
+					Logger.minor(this, "Key not found in entriesByKey");
+				}
 				return; // Nobody cares
 			}
 			entriesByKey.removeKey(key);
 		}
-		if (logMINOR) Logger.minor(this, "Offering key");
-		if (!node.isEnableULPRDataPropagation()) return;
+		if (logMINOR) {
+			Logger.minor(this, "Offering key");
+		}
+		if (!node.isEnableULPRDataPropagation()) {
+			return;
+		}
 		entry.offer();
 	}
 
@@ -355,14 +390,19 @@ public class FailureTable {
 	 * @param authenticator
 	 */
 	void onOffer(final Key key, final PeerNode peer, final byte[] authenticator) {
-		if (!node.isEnableULPRDataPropagation()) return;
-		if (logMINOR)
+		if (!node.isEnableULPRDataPropagation()) {
+			return;
+		}
+		if (logMINOR) {
 			Logger.minor(this, "Offered key " + key + " by peer " + peer);
+		}
 		FailureTableEntry entry;
 		synchronized (this) {
 			entry = entriesByKey.get(key);
 			if (entry == null) {
-				if (logMINOR) Logger.minor(this, "We didn't ask for the key");
+				if (logMINOR) {
+					Logger.minor(this, "We didn't ask for the key");
+				}
 				return; // we haven't asked for it
 			}
 		}
@@ -380,9 +420,12 @@ public class FailureTable {
 	 * serialise it, as high latencies can otherwise result.
 	 */
 	protected void innerOnOffer(Key key, PeerNode peer, byte[] authenticator) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Inner on offer for " + key + " from " + peer + " on " + node.getDarknetPortNumber());
-		if (key.getRoutingKey() == null) throw new NullPointerException();
+		}
+		if (key.getRoutingKey() == null) {
+			throw new NullPointerException();
+		}
 		//NB: node.hasKey() executes a datastore fetch
 		// If we have the key in the datastore (store or cache), we don't want it.
 		// If we have the key in the client cache, we might want it for other nodes,
@@ -398,7 +441,9 @@ public class FailureTable {
 		synchronized (this) {
 			entry = entriesByKey.get(key);
 			if (entry == null) {
-				if (logMINOR) Logger.minor(this, "We didn't ask for the key");
+				if (logMINOR) {
+					Logger.minor(this, "We didn't ask for the key");
+				}
 				return; // we haven't asked for it
 			}
 		}
@@ -435,7 +480,9 @@ public class FailureTable {
 		boolean weAsked = entry.askedFromPeer(peer, now);
 		boolean heAsked = entry.askedByPeer(peer, now);
 		if (!(weAsked || heAsked)) {
-			if (logMINOR) Logger.minor(this, "Not propagating key: weAsked=" + weAsked + " heAsked=" + heAsked);
+			if (logMINOR) {
+				Logger.minor(this, "Not propagating key: weAsked=" + weAsked + " heAsked=" + heAsked);
+			}
 			if (entry.isEmpty(now)) {
 				synchronized (this) {
 					entriesByKey.removeKey(key);
@@ -454,7 +501,9 @@ public class FailureTable {
 		// Add to offers list
 
 		synchronized (blockOfferListByKey) {
-			if (logMINOR) Logger.minor(this, "Valid offer");
+			if (logMINOR) {
+				Logger.minor(this, "Valid offer");
+			}
 			BlockOfferList bl = blockOfferListByKey.get(key);
 			BlockOffer offer = new BlockOffer(peer, now, authenticator, peer.getBootID());
 			if (bl == null) {
@@ -480,11 +529,14 @@ public class FailureTable {
 	private void trimOffersList(long now) {
 		synchronized (blockOfferListByKey) {
 			while (true) {
-				if (blockOfferListByKey.isEmpty()) return;
+				if (blockOfferListByKey.isEmpty()) {
+					return;
+				}
 				BlockOfferList bl = blockOfferListByKey.peekValue();
 				if (bl.isEmpty(now) || bl.expires() < now || blockOfferListByKey.size() > MAX_OFFERS) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Removing block offer list " + bl + " list size now " + blockOfferListByKey.size());
+					}
 					blockOfferListByKey.popKey();
 				} else {
 					return;
@@ -637,13 +689,15 @@ public class FailureTable {
 			expiredOffers = new ArrayList<BlockOffer>();
 			long now = System.currentTimeMillis();
 			for (BlockOffer offer : offerList.offers) {
-				if (!offer.isExpired(now))
+				if (!offer.isExpired(now)) {
 					recentOffers.add(offer);
-				else
+				} else {
 					expiredOffers.add(offer);
+				}
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Offers: " + recentOffers.size() + " recent " + expiredOffers.size() + " expired");
+			}
 		}
 
 		private final BlockOfferList offerList;
@@ -701,11 +755,15 @@ public class FailureTable {
 	}
 
 	public OfferList getOffers(Key key) {
-		if (!node.isEnableULPRDataPropagation()) return null;
+		if (!node.isEnableULPRDataPropagation()) {
+			return null;
+		}
 		BlockOfferList bl;
 		synchronized (blockOfferListByKey) {
 			bl = blockOfferListByKey.get(key);
-			if (bl == null) return null;
+			if (bl == null) {
+				return null;
+			}
 		}
 		return new OfferList(bl);
 	}
@@ -714,12 +772,16 @@ public class FailureTable {
 	 * Called when a node disconnects
 	 */
 	public void onDisconnect(final PeerNode pn) {
-		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) return;
+		if (!(node.isEnableULPRDataPropagation() || node.isEnablePerNodeFailureTables())) {
+			return;
+		}
 		// FIXME do something (off thread if expensive)
 	}
 
 	public TimedOutNodesList getTimedOutNodesList(Key key) {
-		if (!node.isEnablePerNodeFailureTables()) return null;
+		if (!node.isEnablePerNodeFailureTables()) {
+			return null;
+		}
 		synchronized (this) {
 			return entriesByKey.get(key);
 		}
@@ -739,7 +801,9 @@ public class FailureTable {
 		}
 
 		private void realRun() {
-			if (logMINOR) Logger.minor(this, "Starting FailureTable cleanup");
+			if (logMINOR) {
+				Logger.minor(this, "Starting FailureTable cleanup");
+			}
 			long startTime = System.currentTimeMillis();
 			FailureTableEntry[] entries;
 			synchronized (FailureTable.this) {
@@ -751,7 +815,9 @@ public class FailureTable {
 					synchronized (FailureTable.this) {
 						synchronized (entry) {
 							if (entry.isEmpty()) {
-								if (logMINOR) Logger.minor(this, "Removing entry for " + entry.key);
+								if (logMINOR) {
+									Logger.minor(this, "Removing entry for " + entry.key);
+								}
 								entriesByKey.removeKey(entry.key);
 							}
 						}
@@ -759,7 +825,9 @@ public class FailureTable {
 				}
 			}
 			long endTime = System.currentTimeMillis();
-			if (logMINOR) Logger.minor(this, "Finished FailureTable cleanup took " + (endTime - startTime) + "ms");
+			if (logMINOR) {
+				Logger.minor(this, "Finished FailureTable cleanup took " + (endTime - startTime) + "ms");
+			}
 		}
 	}
 
@@ -767,7 +835,9 @@ public class FailureTable {
 		FailureTableEntry entry;
 		synchronized (this) {
 			entry = entriesByKey.get(key);
-			if (entry == null) return false; // Nobody cares
+			if (entry == null) {
+				return false; // Nobody cares
+			}
 		}
 		return entry.othersWant(apartFrom);
 	}
@@ -779,7 +849,9 @@ public class FailureTable {
 		FailureTableEntry entry;
 		synchronized (this) {
 			entry = entriesByKey.get(key);
-			if (entry == null) return htl;
+			if (entry == null) {
+				return htl;
+			}
 		}
 		return entry.minRequestorHTL(htl);
 	}

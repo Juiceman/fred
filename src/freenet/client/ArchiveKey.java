@@ -17,8 +17,12 @@ public class ArchiveKey {
 
 	@Override
 	public boolean equals(Object o) {
-		if ((o == null) || !(o instanceof ArchiveKey)) return false;
-		if (this == o) return true;
+		if ((o == null) || !(o instanceof ArchiveKey)) {
+			return false;
+		}
+		if (this == o) {
+			return true;
+		}
 
 		ArchiveKey cmp = ((ArchiveKey) o);
 		return (cmp.key.equals(key) && cmp.filename.equals(filename));

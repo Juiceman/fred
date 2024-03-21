@@ -25,8 +25,9 @@ public class DarknetAddRefToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, final HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		String path = uri.getPath();
 		if (path.endsWith(NodeFile.InstallerWindows.getFilename())) {
@@ -64,11 +65,12 @@ public class DarknetAddRefToadlet extends Toadlet {
 
 		HTMLNode p = boxContent.addChild("p");
 
-		if (installer != null)
+		if (installer != null) {
 			NodeL10n.getBase().addL10nSubstitution(p, "DarknetAddRefToadlet.explainInstallerWindows", new String[]{"filename", "get-windows"},
 					new HTMLNode[]{HTMLNode.text(installer.getCanonicalPath()), HTMLNode.link(path() + shortFilename)});
-		else
+		} else {
 			NodeL10n.getBase().addL10nSubstitution(p, "DarknetAddRefToadlet.explainInstallerWindowsNotYet", new String[]{"link"}, new HTMLNode[]{HTMLNode.link("/" + node.getNodeUpdater().getInstallerWindowsURI().toString())});
+		}
 
 		installer = node.getNodeUpdater().getInstallerNonWindows();
 		shortFilename = NodeFile.InstallerNonWindows.getFilename();
@@ -77,11 +79,12 @@ public class DarknetAddRefToadlet extends Toadlet {
 
 		p = boxContent.addChild("p");
 
-		if (installer != null)
+		if (installer != null) {
 			NodeL10n.getBase().addL10nSubstitution(p, "DarknetAddRefToadlet.explainInstallerNonWindows", new String[]{"filename", "get-nonwindows", "shortfilename"},
 					new HTMLNode[]{HTMLNode.text(installer.getCanonicalPath()), HTMLNode.link(path() + shortFilename), HTMLNode.text(shortFilename)});
-		else
+		} else {
 			NodeL10n.getBase().addL10nSubstitution(p, "DarknetAddRefToadlet.explainInstallerNonWindowsNotYet", new String[]{"link", "shortfilename"}, new HTMLNode[]{HTMLNode.link("/" + node.getNodeUpdater().getInstallerNonWindowsURI().toString()), HTMLNode.text(shortFilename)});
+		}
 
 
 		ConnectionsToadlet.drawAddPeerBox(contentNode, ctx, false, friendsToadlet.path());

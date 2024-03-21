@@ -56,13 +56,15 @@ public class ECDH {
 			PrivateKey pk = key.getPrivate();
 			byte[] pubkey = pub.getEncoded();
 			byte[] pkey = pk.getEncoded();
-			if (pubkey.length > modulusSize || pubkey.length == 0)
+			if (pubkey.length > modulusSize || pubkey.length == 0) {
 				throw new Error("Unexpected pubkey length: " + pubkey.length + "!=" + modulusSize);
+			}
 			PublicKey pub2 = kf.generatePublic(
 					new X509EncodedKeySpec(pubkey)
 			);
-			if (!Arrays.equals(pub2.getEncoded(), pubkey))
+			if (!Arrays.equals(pub2.getEncoded(), pubkey)) {
 				throw new Error("Pubkey encoding mismatch");
+			}
 			PrivateKey pk2 = kf.generatePrivate(
 					new PKCS8EncodedKeySpec(pkey)
 			);
@@ -141,7 +143,9 @@ public class ECDH {
 		}
 
 		private synchronized KeyPairGenerator getKeyPairGenerator() {
-			if (keygenCached != null) return keygenCached;
+			if (keygenCached != null) {
+				return keygenCached;
+			}
 			KeyPairGenerator kg = null;
 			try {
 				kg = KeyPairGenerator.getInstance("EC", kgProvider);

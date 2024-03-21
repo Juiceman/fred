@@ -49,8 +49,9 @@ public class CachingFreenetStoreTracker {
 	}
 
 	public CachingFreenetStoreTracker(long maxSize, long period, Ticker ticker) {
-		if (ticker == null)
+		if (ticker == null) {
 			throw new IllegalArgumentException();
+		}
 		this.size = 0;
 		this.maxSize = maxSize;
 		this.period = period;
@@ -73,10 +74,11 @@ public class CachingFreenetStoreTracker {
 		while (true) {
 			sizeBlock = fs.pushLeastRecentlyBlock();
 			synchronized (this) {
-				if (sizeBlock == -1)
+				if (sizeBlock == -1) {
 					break;
-				else
+				} else {
 					size -= sizeBlock;
+				}
 			}
 		}
 
@@ -116,7 +118,9 @@ public class CachingFreenetStoreTracker {
 	}
 
 	private synchronized void pushOffThreadNow() {
-		if (runningJob) return;
+		if (runningJob) {
+			return;
+		}
 		runningJob = true;
 		this.ticker.queueTimedJob(new Runnable() {
 			@Override
@@ -131,13 +135,17 @@ public class CachingFreenetStoreTracker {
 	}
 
 	private void pushOffThreadDelayed() {
-		if (queuedJob) return;
+		if (queuedJob) {
+			return;
+		}
 		queuedJob = true;
 		this.ticker.queueTimedJob(new Runnable() {
 			@Override
 			public void run() {
 				synchronized (this) {
-					if (runningJob) return;
+					if (runningJob) {
+						return;
+					}
 					runningJob = true;
 				}
 				try {
@@ -164,7 +172,9 @@ public class CachingFreenetStoreTracker {
 				int k = 0;
 				while (k < numberOfKeysToWrite) {
 					long sizeBlock = cfs.pushLeastRecentlyBlock();
-					if (sizeBlock == -1) break;
+					if (sizeBlock == -1) {
+						break;
+					}
 					synchronized (this) {
 						size -= sizeBlock;
 						assert (size >= 0); // Break immediately if in unit testing.
@@ -172,7 +182,9 @@ public class CachingFreenetStoreTracker {
 							Logger.error(this, "Cache broken: Size = " + size);
 							size = 0;
 						}
-						if (size == 0) return;
+						if (size == 0) {
+							return;
+						}
 					}
 					k++;
 				}

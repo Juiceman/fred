@@ -37,8 +37,12 @@ public class PersistentRequestModifiedMessage extends FCPMessage {
 		final SimpleFieldSet fs = new SimpleFieldSet(true);
 		fs.putSingle("Identifier", ident);
 		fs.put("Global", global);
-		if (priorityClass >= 0) fs.put("PriorityClass", priorityClass);
-		if (clientToken != null) fs.putSingle("ClientToken", clientToken);
+		if (priorityClass >= 0) {
+			fs.put("PriorityClass", priorityClass);
+		}
+		if (clientToken != null) {
+			fs.putSingle("ClientToken", clientToken);
+		}
 		return fs;
 	}
 

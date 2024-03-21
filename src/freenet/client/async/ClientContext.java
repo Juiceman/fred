@@ -273,10 +273,11 @@ public class ClientContext {
 	 *                   which will be deleted once the node is restarted.
 	 */
 	public BucketFactory getBucketFactory(boolean persistent) {
-		if (persistent)
+		if (persistent) {
 			return persistentBucketFactory;
-		else
+		} else {
 			return tempBucketFactory;
+		}
 	}
 
 	/**
@@ -285,7 +286,9 @@ public class ClientContext {
 	 * @param ssk If true, get the SSK request scheduler. If false, get the CHK request scheduler.
 	 */
 	public RequestScheduler getFetchScheduler(boolean ssk, boolean realTime) {
-		if (ssk) return realTime ? sskFetchSchedulerRT : sskFetchSchedulerBulk;
+		if (ssk) {
+			return realTime ? sskFetchSchedulerRT : sskFetchSchedulerBulk;
+		}
 		return realTime ? chkFetchSchedulerRT : chkFetchSchedulerBulk;
 	}
 

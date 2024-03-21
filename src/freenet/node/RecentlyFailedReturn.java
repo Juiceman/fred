@@ -19,17 +19,19 @@ public class RecentlyFailedReturn {
 	private long wakeup;
 
 	public synchronized void fail(int countWaiting, long wakeupTime) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "RecentlyFailed until " + TimeUtil.formatTime(wakeupTime - System.currentTimeMillis()));
+		}
 		this.wakeup = wakeupTime;
 		this.recentlyFailed = true;
 	}
 
 	public synchronized long recentlyFailed() {
-		if (recentlyFailed)
+		if (recentlyFailed) {
 			return wakeup;
-		else
+		} else {
 			return -1;
+		}
 	}
 
 }

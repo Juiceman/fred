@@ -62,8 +62,9 @@ public final class ReceivedCookie extends Cookie {
 	 */
 	protected static ArrayList<ReceivedCookie> parseHeader(String httpHeader) throws ParseException {
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(ReceivedCookie.class, "Received HTTP cookie header:" + httpHeader);
+		}
 
 		char[] header = httpHeader.toCharArray();
 
@@ -97,16 +98,18 @@ public final class ReceivedCookie extends Cookie {
 
 					int keyEndIndex = i;
 
-					if (keyEndIndex >= header.length || header[keyEndIndex] == ';')
+					if (keyEndIndex >= header.length || header[keyEndIndex] == ';') {
 						value = "";
+					}
 
 					while (Character.isWhitespace(header[keyEndIndex - 1])) // Remove trailing whitespace
 						--keyEndIndex;
 
 					key = new String(header, keyBeginIndex, keyEndIndex - keyBeginIndex).toLowerCase();
 
-					if (key.length() == 0)
+					if (key.length() == 0) {
 						throw new ParseException("Invalid cookie: Contains an empty key: " + httpHeader, i);
+					}
 
 					// We're done parsing the key, continue to the next character.
 					++i;
@@ -149,8 +152,9 @@ public final class ReceivedCookie extends Cookie {
 					// Skip whitespace between end of quotation and the semicolon following the quotation.
 					if (valueEndChar == '\"') {
 						while (i < header.length && header[i] != ';') {
-							if (!Character.isWhitespace(header[i]))
+							if (!Character.isWhitespace(header[i])) {
 								throw new ParseException("Invalid cookie: Missing terminating semicolon after value quotation: " + httpHeader, i);
+							}
 
 							++i;
 						}
@@ -159,8 +163,9 @@ public final class ReceivedCookie extends Cookie {
 						++i;
 					}
 
-				} else
+				} else {
 					value = "";
+				}
 
 				// RFC2965: Name MUST be first. Anything key besides the name of the cookie begins with $. The next cookie begins if a key occurs which is not
 				// prefixed with $.
@@ -176,9 +181,9 @@ public final class ReceivedCookie extends Cookie {
 						currentCookieContent.put(currentCookieName, value);
 					}
 				} else {
-					if (key.charAt(0) == '$')
+					if (key.charAt(0) == '$') {
 						currentCookieContent.put(key, value);
-					else {// We finished parsing of the current cookie, a new one starts here.
+					} else {// We finished parsing of the current cookie, a new one starts here.
 						//if(singleCookie)
 						//	throw new ParseException("Invalid cookie header: Multiple cookies specified but "
 						//			+ " the name of the first cookie was not the first attribute: " + httpHeader, i);
@@ -198,8 +203,9 @@ public final class ReceivedCookie extends Cookie {
 		}
 
 		// Store the last cookie (the loop only stores the current cookie when a new one starts).
-		if (currentCookieName != null)
+		if (currentCookieName != null) {
 			cookies.add(new ReceivedCookie(currentCookieName, currentCookieContent));
+		}
 
 		return cookies;
 	}
@@ -226,8 +232,9 @@ public final class ReceivedCookie extends Cookie {
 		if (domain == null) {
 			try {
 				String domainString = content.get("$domain");
-				if (domainString == null)
+				if (domainString == null) {
 					return null;
+				}
 
 				domain = validateDomain(domainString);
 			} catch (URISyntaxException e) {
@@ -259,8 +266,9 @@ public final class ReceivedCookie extends Cookie {
 	 */
 	@Override
 	public String getValue() {
-		if (value == null)
+		if (value == null) {
 			value = validateValue(content.get(getName()));
+		}
 
 		return value;
 	}

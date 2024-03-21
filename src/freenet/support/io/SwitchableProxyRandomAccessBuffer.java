@@ -42,7 +42,9 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	SwitchableProxyRandomAccessBuffer(LockableRandomAccessBuffer initialWrap, long size) throws IOException {
 		this.underlying = initialWrap;
 		this.size = size;
-		if (underlying.size() < size) throw new IOException("Underlying must be >= size given");
+		if (underlying.size() < size) {
+			throw new IOException("Underlying must be >= size given");
+		}
 	}
 
 	@Override
@@ -53,11 +55,17 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	@Override
 	public void pread(long fileOffset, byte[] buf, int bufOffset, int length)
 			throws IOException {
-		if (fileOffset < 0) throw new IllegalArgumentException();
-		if (fileOffset + length > size) throw new IOException("Tried to read past end of file");
+		if (fileOffset < 0) {
+			throw new IllegalArgumentException();
+		}
+		if (fileOffset + length > size) {
+			throw new IOException("Tried to read past end of file");
+		}
 		try {
 			lock.readLock().lock();
-			if (underlying == null || closed) throw new IOException("Already closed");
+			if (underlying == null || closed) {
+				throw new IOException("Already closed");
+			}
 			underlying.pread(fileOffset, buf, bufOffset, length);
 		} finally {
 			lock.readLock().unlock();
@@ -67,11 +75,17 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	@Override
 	public void pwrite(long fileOffset, byte[] buf, int bufOffset, int length)
 			throws IOException {
-		if (fileOffset < 0) throw new IllegalArgumentException();
-		if (fileOffset + length > size) throw new IOException("Tried to write past end of file");
+		if (fileOffset < 0) {
+			throw new IllegalArgumentException();
+		}
+		if (fileOffset + length > size) {
+			throw new IOException("Tried to write past end of file");
+		}
 		try {
 			lock.readLock().lock();
-			if (underlying == null || closed) throw new IOException("Already closed");
+			if (underlying == null || closed) {
+				throw new IOException("Already closed");
+			}
 			underlying.pwrite(fileOffset, buf, bufOffset, length);
 		} finally {
 			lock.readLock().unlock();
@@ -82,8 +96,12 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	public void close() {
 		try {
 			lock.writeLock().lock();
-			if (underlying == null) return;
-			if (closed) return;
+			if (underlying == null) {
+				return;
+			}
+			if (closed) {
+				return;
+			}
 			closed = true;
 			underlying.close();
 		} finally {
@@ -104,7 +122,9 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 			// Write lock as we're going to change the underlying pointer.
 			lock.writeLock().lock();
 			closed = true; // Effectively ...
-			if (underlying == null) return false;
+			if (underlying == null) {
+				return false;
+			}
 			underlying.free();
 			underlying = null;
 		} finally {
@@ -135,7 +155,9 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	public RAFLock lockOpen() throws IOException {
 		try {
 			lock.writeLock().lock();
-			if (closed || underlying == null) throw new IOException("Already closed");
+			if (closed || underlying == null) {
+				throw new IOException("Already closed");
+			}
 			RAFLock lock = new RAFLock() {
 
 				@Override
@@ -177,10 +199,16 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 	protected final void migrate() throws IOException {
 		try {
 			lock.writeLock().lock();
-			if (closed) return;
-			if (underlying == null) throw new IOException("Already freed");
+			if (closed) {
+				return;
+			}
+			if (underlying == null) {
+				throw new IOException("Already freed");
+			}
 			LockableRandomAccessBuffer successor = innerMigrate(underlying);
-			if (successor == null) throw new NullPointerException();
+			if (successor == null) {
+				throw new NullPointerException();
+			}
 			RAFLock newLock = null;
 			if (lockOpenCount > 0) {
 				try {
@@ -191,8 +219,9 @@ abstract class SwitchableProxyRandomAccessBuffer implements LockableRandomAccess
 					throw e;
 				}
 			}
-			if (lockOpenCount > 0)
+			if (lockOpenCount > 0) {
 				underlyingLock.unlock();
+			}
 			underlying.close();
 			underlying.free();
 			underlying = successor;

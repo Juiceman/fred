@@ -59,8 +59,9 @@ public class BootstrapPullTest {
 		Node secondNode = null;
 		try {
 			String ipOverride = null;
-			if (args.length > 0)
+			if (args.length > 0) {
 				ipOverride = args[0];
+			}
 			File dir = new File("bootstrap-pull-test");
 			FileUtil.removeAll(dir);
 			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.ERROR, "", false);
@@ -128,8 +129,9 @@ public class BootstrapPullTest {
 			System.err.println("CAUGHT: " + t);
 			t.printStackTrace();
 			try {
-				if (secondNode != null)
+				if (secondNode != null) {
 					secondNode.park();
+				}
 			} catch (Throwable t1) {
 			}
 			System.exit(EXIT_THREW_SOMETHING);

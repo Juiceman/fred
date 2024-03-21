@@ -32,7 +32,9 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 	}
 
 	public void setMinDiskSpace(long min) {
-		if (min < 0) throw new IllegalArgumentException();
+		if (min < 0) {
+			throw new IllegalArgumentException();
+		}
 		this.minDiskSpace = min;
 	}
 
@@ -40,10 +42,11 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 	public LockableRandomAccessBuffer makeRAF(long size) throws IOException {
 		lock.lock();
 		try {
-			if (dir.getUsableSpace() > size + minDiskSpace)
+			if (dir.getUsableSpace() > size + minDiskSpace) {
 				return underlying.makeRAF(size);
-			else
+			} else {
 				throw new InsufficientDiskSpaceException();
+			}
 		} finally {
 			lock.unlock();
 		}
@@ -54,10 +57,11 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 			throws IOException {
 		lock.lock();
 		try {
-			if (dir.getUsableSpace() > size + minDiskSpace)
+			if (dir.getUsableSpace() > size + minDiskSpace) {
 				return underlying.makeRAF(initialContents, offset, size, readOnly);
-			else
+			} else {
 				throw new InsufficientDiskSpaceException();
+			}
 		} finally {
 			lock.unlock();
 		}
@@ -78,8 +82,12 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 		lock.lock();
 		PooledFileRandomAccessBuffer ret = null;
 		try {
-			if (!file.exists()) throw new IOException("File does not exist");
-			if (file.length() != 0) throw new IOException("File is wrong length");
+			if (!file.exists()) {
+				throw new IOException("File does not exist");
+			}
+			if (file.length() != 0) {
+				throw new IOException("File is wrong length");
+			}
 			// FIXME ideally we would have separate locks for each filesystem ...
 			if (dir.getUsableSpace() > size + minDiskSpace) {
 				ret = new PooledFileRandomAccessBuffer(file, false, size, random, -1, true);
@@ -88,7 +96,9 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 				throw new InsufficientDiskSpaceException();
 			}
 		} finally {
-			if (ret == null) file.delete();
+			if (ret == null) {
+				file.delete();
+			}
 			lock.unlock();
 		}
 	}
@@ -101,10 +111,11 @@ public class DiskSpaceCheckingRandomAccessBufferFactory implements LockableRando
 		}
 		lock.lock();
 		try {
-			if (dir.getUsableSpace() - (toWrite + bufferSize) < minDiskSpace)
+			if (dir.getUsableSpace() - (toWrite + bufferSize) < minDiskSpace) {
 				return false;
-			else
+			} else {
 				return true;
+			}
 		} finally {
 			lock.unlock();
 		}

@@ -96,7 +96,9 @@ public class StaticToadlet extends Toadlet {
 			byte[] cbuf = new byte[4096];
 			while (true) {
 				int r = strm.read(cbuf);
-				if (r == -1) break;
+				if (r == -1) {
+					break;
+				}
 				os.write(cbuf, 0, r);
 			}
 		} finally {

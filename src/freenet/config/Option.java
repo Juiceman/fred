@@ -185,10 +185,11 @@ public abstract class Option<T> {
 	 * it is the value set at startup (possibly the default).
 	 */
 	public final T getValue() {
-		if (config.hasFinishedInitialization())
+		if (config.hasFinishedInitialization()) {
 			return currentValue = cb.get();
-		else
+		} else {
 			return currentValue;
+		}
 	}
 
 	/**

@@ -110,14 +110,17 @@ public class SplitFileFetcherCrossSegmentStorage {
 					totalFound++;
 				}
 			}
-			if (tryDecode || succeeded || cancelled) return;
+			if (tryDecode || succeeded || cancelled) {
+				return;
+			}
 			if (!found) {
 				Logger.warning(this, "Block " + blockNo + " on " + segment + " not wanted by " + this);
 				return;
 			}
 			if (totalFound < dataBlockCount) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Not decoding " + this + " : found " + totalFound + " blocks of " + dataBlockCount + " (total " + segments.length + ")");
+				}
 				return;
 			}
 			tryDecodeOrEncode(priorityClass);
@@ -125,9 +128,15 @@ public class SplitFileFetcherCrossSegmentStorage {
 	}
 
 	private synchronized void tryDecodeOrEncode(final short prio) {
-		if (succeeded) return;
-		if (tryDecode) return;
-		if (cancelled) return;
+		if (succeeded) {
+			return;
+		}
+		if (tryDecode) {
+			return;
+		}
+		if (cancelled) {
+			return;
+		}
 		long limit = totalBlocks * CHKBlock.DATA_LENGTH +
 				Math.max(parent.fecCodec.maxMemoryOverheadDecode(dataBlockCount, crossCheckBlockCount),
 						parent.fecCodec.maxMemoryOverheadEncode(dataBlockCount, crossCheckBlockCount));
@@ -163,7 +172,9 @@ public class SplitFileFetcherCrossSegmentStorage {
 						}
 					} finally {
 						// Callback is part of the persistent job, unlock *after* calling it.
-						if (lock != null) lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						if (lock != null) {
+							lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						}
 					}
 				}
 				return true;
@@ -178,10 +189,14 @@ public class SplitFileFetcherCrossSegmentStorage {
 	 * the new decoded blocks afterwards to ensure reproducible behaviour.
 	 */
 	private void innerDecode(MemoryLimitedChunk chunk) throws IOException {
-		if (logMINOR) Logger.minor(this, "Trying to decode " + this + " for " + parent);
+		if (logMINOR) {
+			Logger.minor(this, "Trying to decode " + this + " for " + parent);
+		}
 		boolean killed = false;
 		synchronized (this) {
-			if (succeeded) return;
+			if (succeeded) {
+				return;
+			}
 			if (cancelled) {
 				killed = true;
 			}
@@ -193,7 +208,9 @@ public class SplitFileFetcherCrossSegmentStorage {
 		// readAllBlocks does most of the housekeeping for us, see below...
 		byte[][] dataBlocks = readBlocks(false);
 		byte[][] checkBlocks = readBlocks(true);
-		if (dataBlocks == null || checkBlocks == null) return; // Failed with disk error.
+		if (dataBlocks == null || checkBlocks == null) {
+			return; // Failed with disk error.
+		}
 
 		// Original status.
 		boolean[] dataBlocksFound = wasNonNullFill(dataBlocks);
@@ -237,7 +254,9 @@ public class SplitFileFetcherCrossSegmentStorage {
 			succeeded = true;
 		}
 
-		if (logMINOR) Logger.minor(this, "Completed a cross-segment: decoded=" + decoded + " encoded=" + encoded);
+		if (logMINOR) {
+			Logger.minor(this, "Completed a cross-segment: decoded=" + decoded + " encoded=" + encoded);
+		}
 	}
 
 
@@ -276,12 +295,15 @@ public class SplitFileFetcherCrossSegmentStorage {
 				try {
 					// FIXME CPU USAGE Add another API to the segment to avoid re-decoding.
 					SplitFileSegmentKeys keys = segments[blockNo].getSegmentKeys();
-					if (keys == null) return false;
+					if (keys == null) {
+						return false;
+					}
 					boolean success = segments[blockNo].innerOnGotKey(key.getNodeCHK(), block, keys,
 							blockNumbers[blockNo], data);
 					if (success) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Successfully decoded cross-segment block");
+						}
 					} else {
 						// Not really a big deal, but potentially interesting...
 						Logger.warning(this, "Decoded cross-segment block but not wanted by segment");
@@ -355,10 +377,14 @@ public class SplitFileFetcherCrossSegmentStorage {
 				blocks[i - start] = block;
 				synchronized (this) {
 					if (block != null) {
-						if (!blocksFound[i]) totalFound++;
+						if (!blocksFound[i]) {
+							totalFound++;
+						}
 						blocksFound[i] = true;
 					} else {
-						if (blocksFound[i]) totalFound--;
+						if (blocksFound[i]) {
+							totalFound--;
+						}
 						blocksFound[i] = false;
 					}
 				}
@@ -373,7 +399,9 @@ public class SplitFileFetcherCrossSegmentStorage {
 	private static int count(boolean[] array) {
 		int total = 0;
 		for (boolean b : array)
-			if (b) total++;
+			if (b) {
+				total++;
+			}
 		return total;
 	}
 
@@ -409,13 +437,15 @@ public class SplitFileFetcherCrossSegmentStorage {
 		blockNumbers = new int[totalBlocks];
 		for (int i = 0; i < totalBlocks; i++) {
 			int readSeg = dis.readInt();
-			if (readSeg < 0 || readSeg >= parent.segments.length)
+			if (readSeg < 0 || readSeg >= parent.segments.length) {
 				throw new StorageFormatException("Invalid segment number " + readSeg);
+			}
 			SplitFileFetcherSegmentStorage segment = parent.segments[readSeg];
 			this.segments[i] = segment;
 			int blockNo = dis.readInt();
-			if (blockNo < 0 || blockNo >= segment.totalBlocks())
+			if (blockNo < 0 || blockNo >= segment.totalBlocks()) {
 				throw new StorageFormatException("Invalid block number " + blockNo + " for segment " + segment.segNo);
+			}
 			this.blockNumbers[i] = blockNo;
 			segment.resumeCallback(blockNo, this);
 		}
@@ -440,11 +470,15 @@ public class SplitFileFetcherCrossSegmentStorage {
 	 */
 	public void restart() {
 		synchronized (this) {
-			if (succeeded) return;
+			if (succeeded) {
+				return;
+			}
 		}
 		short priorityClass = parent.getPriorityClass();
 		synchronized (this) {
-			if (totalBlocks < dataBlockCount) return;
+			if (totalBlocks < dataBlockCount) {
+				return;
+			}
 			tryDecodeOrEncode(priorityClass);
 		}
 	}
@@ -452,7 +486,9 @@ public class SplitFileFetcherCrossSegmentStorage {
 	public void cancel() {
 		synchronized (this) {
 			cancelled = true;
-			if (tryDecode) return;
+			if (tryDecode) {
+				return;
+			}
 			succeeded = true;
 		}
 		parent.finishedEncoding(this);

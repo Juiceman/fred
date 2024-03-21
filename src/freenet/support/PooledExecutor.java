@@ -74,13 +74,16 @@ public class PooledExecutor implements Executor {
 	@Override
 	public void execute(Runnable runnable, String jobName, boolean fromTicker) {
 		int prio = NativeThread.NORM_PRIORITY;
-		if (runnable instanceof PrioRunnable)
+		if (runnable instanceof PrioRunnable) {
 			prio = ((PrioRunnable) runnable).getPriority();
+		}
 
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Executing " + runnable + " as " + jobName + " at prio " + prio);
-		if (prio < NativeThread.MIN_PRIORITY || prio > NativeThread.MAX_PRIORITY)
+		}
+		if (prio < NativeThread.MIN_PRIORITY || prio > NativeThread.MAX_PRIORITY) {
 			throw new IllegalArgumentException("Unreconized priority level : " + prio + '!');
+		}
 
 		Job job = new Job(runnable, jobName);
 		while (true) {
@@ -90,10 +93,12 @@ public class PooledExecutor implements Executor {
 				jobCount++;
 				if (!waitingThreads[prio - 1].isEmpty()) {
 					t = waitingThreads[prio - 1].remove(waitingThreads[prio - 1].size() - 1);
-					if (t != null)
+					if (t != null) {
 						waitingThreadsCount--;
-					if (logMINOR)
+					}
+					if (logMINOR) {
 						Logger.minor(this, "Reusing thread " + t);
+					}
 				} else {
 					// Must create new thread
 					if (ticker != null && (!fromTicker) && NativeThread.usingNativeCode() && prio > Thread.currentThread().getPriority()) {
@@ -116,8 +121,9 @@ public class PooledExecutor implements Executor {
 					runningThreads[prio - 1]++;
 					jobMisses++;
 
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Jobs: " + jobMisses + " misses of " + jobCount + " starting urgently " + jobName);
+					}
 				}
 
 				t.start();
@@ -126,10 +132,12 @@ public class PooledExecutor implements Executor {
 
 			// use existing thread
 			synchronized (t) {
-				if (!t.alive)
+				if (!t.alive) {
 					continue;
-				if (t.nextJob != null)
+				}
+				if (t.nextJob != null) {
 					continue;
+				}
 				t.nextJob = job;
 
 				// It is possible that we could get a wierd race condition with
@@ -138,10 +146,11 @@ public class PooledExecutor implements Executor {
 				t.notifyAll();
 			}
 
-			if (logMINOR)
+			if (logMINOR) {
 				synchronized (this) {
 					Logger.minor(this, "Not starting: Jobs: " + jobMisses + " misses of " + jobCount + " starting urgently " + jobName);
 				}
+			}
 			return;
 		}
 	}
@@ -240,21 +249,24 @@ public class PooledExecutor implements Executor {
 						}
 					}
 					synchronized (PooledExecutor.this) {
-						if (waitingThreads[nativePriority - 1].remove(this))
+						if (waitingThreads[nativePriority - 1].remove(this)) {
 							waitingThreadsCount--;
+						}
 
 						synchronized (this) {
 							job = nextJob;
 							nextJob = null;
 							// FIXME Fortify thinks this is double-checked locking. IMHO this is a false alarm.
-							if (job == null)
+							if (job == null) {
 								alive = false;
+							}
 						}
 
 						if (!alive) {
 							runningThreads[nativePriority - 1]--;
-							if (logMINOR)
+							if (logMINOR) {
 								Logger.minor(this, "Exiting having executed " + ranJobs + " jobs : " + this);
+							}
 							removed = true;
 							return;
 						}

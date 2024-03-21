@@ -110,13 +110,17 @@ class KeyListenerTracker implements KeySalter {
 
 	private boolean contains(KeyListener[] listeners, KeyListener listener) {
 		for (KeyListener l : listeners) {
-			if (l == listener) return true;
+			if (l == listener) {
+				return true;
+			}
 		}
 		return false;
 	}
 
 	public void addPendingKeys(KeyListener listener) {
-		if (listener == null) throw new NullPointerException();
+		if (listener == null) {
+			throw new NullPointerException();
+		}
 		byte[] wantedKey = listener.getWantedKey();
 		ByteArrayWrapper wrapper = wantedKey != null ? new ByteArrayWrapper(saltKey(wantedKey)) : null;
 		assert (Arrays.equals(wantedKey, listener.getHasKeyListener().getWantedKey()));
@@ -127,25 +131,31 @@ class KeyListenerTracker implements KeySalter {
 				if (o == null) {
 					singleKeyListeners.put(wrapper, listener);
 				} else if (o instanceof KeyListener) {
-					if (listener == (KeyListener) o) return;
+					if (listener == (KeyListener) o) {
+						return;
+					}
 					singleKeyListeners.put(wrapper,
 							new KeyListener[]{(KeyListener) o, listener});
 				} else {
 					@SuppressWarnings("unchecked")
 					KeyListener[] listeners = (KeyListener[]) o;
-					if (contains(listeners, listener)) return;
+					if (contains(listeners, listener)) {
+						return;
+					}
 					KeyListener[] newListeners = Arrays.copyOf(listeners, listeners.length + 1);
 					newListeners[listeners.length] = listener;
 					singleKeyListeners.put(wrapper, newListeners);
 				}
 			} else {
-				if (keyListeners.contains(listener))
+				if (keyListeners.contains(listener)) {
 					return;
+				}
 				keyListeners.add(listener);
 			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Added pending keys to " + this + " : size now " + this.keyListeners.size() + "/" + singleKeyListeners.size() + " : " + listener);
+		}
 	}
 
 	public boolean removePendingKeys(KeyListener listener) {
@@ -158,8 +168,9 @@ class KeyListenerTracker implements KeySalter {
 				if (o == null) {
 					// do nothing
 				} else if (o instanceof KeyListener) {
-					if ((ret = (listener == (KeyListener) o)))
+					if ((ret = (listener == (KeyListener) o))) {
 						singleKeyListeners.remove(wrapper);
+					}
 				} else {
 					@SuppressWarnings("unchecked")
 					KeyListener[] listeners = (KeyListener[]) o;
@@ -196,8 +207,9 @@ class KeyListenerTracker implements KeySalter {
 			listener.onRemove();
 		}
 		listener.onRemove();
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Removed pending keys from " + this + " : size now " + this.keyListeners.size() + "/" + singleKeyListeners.size() + " : " + listener, new Exception("debug"));
+		}
 		return ret;
 	}
 
@@ -225,8 +237,9 @@ class KeyListenerTracker implements KeySalter {
 						if (l.getHasKeyListener() == hasListener) {
 							ret = true;
 							l.onRemove();
-							if (logMINOR)
+							if (logMINOR) {
 								msg = msg + " : " + l;
+							}
 							continue;
 						}
 						if (x == newListeners.length) {
@@ -238,8 +251,9 @@ class KeyListenerTracker implements KeySalter {
 					if (!ret) {
 						// do nothing
 					} else {
-						if (x < newListeners.length)
+						if (x < newListeners.length) {
 							newListeners = Arrays.copyOf(newListeners, x);
+						}
 						if (newListeners.length == 0) {
 							singleKeyListeners.remove(wrapper);
 						} else if (newListeners.length == 1) {
@@ -247,8 +261,9 @@ class KeyListenerTracker implements KeySalter {
 						} else {
 							singleKeyListeners.put(wrapper, newListeners);
 						}
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Removed pending keys from " + this + " : size now " + this.keyListeners.size() + "/" + singleKeyListeners.size() + msg);
+						}
 					}
 				}
 				return ret;
@@ -259,8 +274,9 @@ class KeyListenerTracker implements KeySalter {
 					ret = true;
 					i.remove();
 					listener.onRemove();
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Removed pending keys from " + this + " : size now " + this.keyListeners.size() + "/" + singleKeyListeners.size() + " : " + listener);
+					}
 				}
 			}
 		}
@@ -276,22 +292,34 @@ class KeyListenerTracker implements KeySalter {
 		} else if (o instanceof KeyListener) {
 			KeyListener listener = (KeyListener) o;
 			do {
-				if (!listener.probablyWantKey(key, saltedKey)) continue;
-				if (matches == null) matches = new ArrayList<KeyListener>();
+				if (!listener.probablyWantKey(key, saltedKey)) {
+					continue;
+				}
+				if (matches == null) {
+					matches = new ArrayList<KeyListener>();
+				}
 				matches.add(listener);
 			} while (false);
 		} else {
 			@SuppressWarnings("unchecked")
 			KeyListener[] listeners = (KeyListener[]) o;
 			for (KeyListener listener : listeners) {
-				if (!listener.probablyWantKey(key, saltedKey)) continue;
-				if (matches == null) matches = new ArrayList<KeyListener>();
+				if (!listener.probablyWantKey(key, saltedKey)) {
+					continue;
+				}
+				if (matches == null) {
+					matches = new ArrayList<KeyListener>();
+				}
 				matches.add(listener);
 			}
 		}
 		for (KeyListener listener : keyListeners) {
-			if (!listener.probablyWantKey(key, saltedKey)) continue;
-			if (matches == null) matches = new ArrayList<KeyListener>();
+			if (!listener.probablyWantKey(key, saltedKey)) {
+				continue;
+			}
+			if (matches == null) {
+				matches = new ArrayList<KeyListener>();
+			}
 			matches.add(listener);
 		}
 		return matches;
@@ -301,7 +329,9 @@ class KeyListenerTracker implements KeySalter {
 		assert (key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
 		ArrayList<KeyListener> matches = probablyMatches(key, saltedKey);
-		if (matches == null) return priority;
+		if (matches == null) {
+			return priority;
+		}
 		for (KeyListener listener : matches) {
 			short prio;
 			try {
@@ -310,8 +340,12 @@ class KeyListenerTracker implements KeySalter {
 				Logger.error(this, format("Error in definitelyWantKey callback for %s", listener), t);
 				continue;
 			}
-			if (prio == -1) continue;
-			if (prio < priority) priority = prio;
+			if (prio == -1) {
+				continue;
+			}
+			if (prio < priority) {
+				priority = prio;
+			}
 		}
 		return priority;
 	}
@@ -367,13 +401,16 @@ class KeyListenerTracker implements KeySalter {
 			// do nothing
 		} else if (o instanceof KeyListener) {
 			KeyListener listener = (KeyListener) o;
-			if (listener.probablyWantKey(key, saltedKey)) return true;
+			if (listener.probablyWantKey(key, saltedKey)) {
+				return true;
+			}
 		} else {
 			@SuppressWarnings("unchecked")
 			KeyListener[] listeners = (KeyListener[]) o;
 			for (KeyListener listener : listeners) {
-				if (listener.probablyWantKey(key, saltedKey))
+				if (listener.probablyWantKey(key, saltedKey)) {
 					return true;
+				}
 			}
 		}
 		for (KeyListener listener : keyListeners) {
@@ -426,8 +463,9 @@ class KeyListenerTracker implements KeySalter {
 		assert (key instanceof NodeSSK == isSSKScheduler);
 		byte[] saltedKey = saltKey(key);
 		List<KeyListener> matches = probablyWantKey(key, saltedKey);
-		if (matches == null)
+		if (matches == null) {
 			return null;
+		}
 		for (KeyListener listener : matches) {
 			SendableGet[] reqs;
 			try {
@@ -454,12 +492,14 @@ class KeyListenerTracker implements KeySalter {
 		StringBuffer sb = new StringBuffer();
 		sb.append(super.toString());
 		sb.append(':');
-		if (isInsertScheduler)
+		if (isInsertScheduler) {
 			sb.append("insert:");
-		if (isSSKScheduler)
+		}
+		if (isSSKScheduler) {
 			sb.append("SSK");
-		else
+		} else {
 			sb.append("CHK");
+		}
 		return sb.toString();
 	}
 
@@ -470,8 +510,9 @@ class KeyListenerTracker implements KeySalter {
 	}
 
 	private byte[] saltKey(byte[] key) {
-		if (isSSKScheduler)
+		if (isSSKScheduler) {
 			return key;
+		}
 		MessageDigest md = SHA256.getMessageDigest();
 		md.update(key);
 		md.update(globalSalt);
@@ -481,8 +522,9 @@ class KeyListenerTracker implements KeySalter {
 	}
 
 	protected void hintGlobalSalt(byte[] globalSalt2) {
-		if (globalSalt == null)
+		if (globalSalt == null) {
 			globalSalt = globalSalt2;
+		}
 	}
 
 	/**

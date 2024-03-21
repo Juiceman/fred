@@ -38,8 +38,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	protected HashResult(HashType hashType, byte[] bs, boolean testing) {
 		this.type = hashType;
 		this.result = bs;
-		if (!testing)
+		if (!testing) {
 			assert (bs.length == type.hashLength);
+		}
 	}
 
 	protected HashResult() {
@@ -50,7 +51,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	public static HashResult[] readHashes(DataInputStream dis) throws IOException {
 		int bitmask = dis.readInt();
-		if (bitmask == 0) return null;
+		if (bitmask == 0) {
+			return null;
+		}
 		int count = 0;
 		for (HashType h : HashType_values) {
 			if ((bitmask & h.bitmask) == h.bitmask) {
@@ -74,7 +77,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 	}
 
 	public static void write(HashResult[] hashes, DataOutputStream dos) throws IOException {
-		if (hashes == null) hashes = new HashResult[0];
+		if (hashes == null) {
+			hashes = new HashResult[0];
+		}
 		int bitmask = 0;
 		for (HashResult hash : hashes)
 			bitmask |= hash.type.bitmask;
@@ -82,8 +87,9 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 		Arrays.sort(hashes);
 		HashType prev = null;
 		for (HashResult h : hashes) {
-			if (prev == h.type || (prev != null && prev.bitmask == h.type.bitmask))
+			if (prev == h.type || (prev != null && prev.bitmask == h.type.bitmask)) {
 				throw new IllegalArgumentException("Multiple hashes of the same type!");
+			}
 			prev = h.type;
 		}
 		for (HashResult h : hashes)
@@ -97,8 +103,12 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	@Override
 	public int compareTo(HashResult h) {
-		if (type.bitmask == h.type.bitmask) return 0;
-		if (type.bitmask > h.type.bitmask) return 1;
+		if (type.bitmask == h.type.bitmask) {
+			return 0;
+		}
+		if (type.bitmask > h.type.bitmask) {
+			return 1;
+		}
 		/* else if(type.bitmask < h.type.bitmask) */
 		return -1;
 	}
@@ -133,20 +143,24 @@ public class HashResult implements Comparable<HashResult>, Cloneable, Serializab
 
 	public static boolean contains(HashResult[] hashes, HashType type) {
 		for (HashResult res : hashes)
-			if (res.type == type || type.name().equals(res.type.name()))
+			if (res.type == type || type.name().equals(res.type.name())) {
 				return true;
+			}
 		return false;
 	}
 
 	public static byte[] get(HashResult[] hashes, HashType type) {
 		for (HashResult res : hashes)
-			if (res.type == type || type.name().equals(res.type.name()))
+			if (res.type == type || type.name().equals(res.type.name())) {
 				return res.result;
+			}
 		return null;
 	}
 
 	public static HashResult[] copy(HashResult[] hashes) {
-		if (hashes == null) return null;
+		if (hashes == null) {
+			return null;
+		}
 		HashResult[] out = new HashResult[hashes.length];
 		for (int i = 0; i < hashes.length; i++) {
 			out[i] = hashes[i].clone();

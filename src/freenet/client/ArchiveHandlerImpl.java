@@ -36,13 +36,16 @@ class ArchiveHandlerImpl implements ArchiveHandler, Serializable {
 			throws ArchiveFailureException, ArchiveRestartException,
 			MetadataParseException, FetchException {
 
-		if (forceRefetchArchive) return null;
+		if (forceRefetchArchive) {
+			return null;
+		}
 
 		Bucket data;
 
 		// Fetch from cache
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Checking cache: " + key + ' ' + internalName);
+		}
 		if ((data = manager.getCached(key, internalName)) != null) {
 			return data;
 		}

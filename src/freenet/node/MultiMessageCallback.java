@@ -68,11 +68,17 @@ public abstract class MultiMessageCallback {
 				public void sent() {
 					boolean success;
 					synchronized (MultiMessageCallback.this) {
-						if (finished || sent) return;
+						if (finished || sent) {
+							return;
+						}
 						sent = true;
 						waitingForSend--;
-						if (waitingForSend > 0) return;
-						if (!armed) return;
+						if (waitingForSend > 0) {
+							return;
+						}
+						if (!armed) {
+							return;
+						}
 						success = !someFailed;
 					}
 					MultiMessageCallback.this.sent(success);
@@ -96,21 +102,31 @@ public abstract class MultiMessageCallback {
 				private void complete(boolean success) {
 					boolean callSent = false;
 					synchronized (MultiMessageCallback.this) {
-						if (finished) return;
+						if (finished) {
+							return;
+						}
 						if (!sent) {
 							sent = true;
 							waitingForSend--;
-							if (waitingForSend == 0)
+							if (waitingForSend == 0) {
 								callSent = true;
+							}
 						}
-						if (!success) someFailed = true;
+						if (!success) {
+							someFailed = true;
+						}
 						finished = true;
 						waiting--;
-						if (!finished()) return;
-						if (someFailed) success = false;
+						if (!finished()) {
+							return;
+						}
+						if (someFailed) {
+							success = false;
+						}
 					}
-					if (callSent)
+					if (callSent) {
 						MultiMessageCallback.this.sent(success);
+					}
 					finish(success);
 				}
 
@@ -133,11 +149,17 @@ public abstract class MultiMessageCallback {
 		synchronized (this) {
 			armed = true;
 			complete = waiting == 0;
-			if (waitingForSend == 0) callSent = true;
+			if (waitingForSend == 0) {
+				callSent = true;
+			}
 			success = !someFailed;
 		}
-		if (callSent) sent(success);
-		if (complete) finish(success);
+		if (callSent) {
+			sent(success);
+		}
+		if (complete) {
+			finish(success);
+		}
 	}
 
 	/**

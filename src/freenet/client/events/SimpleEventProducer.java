@@ -37,10 +37,11 @@ public class SimpleEventProducer implements ClientEventProducer, Serializable {
 
 	@Override
 	public synchronized void addEventListener(ClientEventListener cel) {
-		if (cel != null)
+		if (cel != null) {
 			listeners.add(cel);
-		else
+		} else {
 			throw new IllegalArgumentException("Adding a null listener!");
+		}
 	}
 
 	@Override

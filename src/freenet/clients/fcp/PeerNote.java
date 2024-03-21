@@ -28,8 +28,9 @@ public class PeerNote extends FCPMessage {
 		fs.putSingle("NodeIdentifier", nodeIdentifier);
 		fs.put("PeerNoteType", peerNoteType);
 		fs.putSingle("NoteText", Base64.encodeUTF8(noteText, true));
-		if (identifier != null)
+		if (identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 

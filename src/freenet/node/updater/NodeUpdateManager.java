@@ -302,10 +302,12 @@ public class NodeUpdateManager {
 		}
 
 		updateURI = updateURI.setSuggestedEdition(Version.buildNumber());
-		if (updateURI.hasMetaStrings())
+		if (updateURI.hasMetaStrings()) {
 			throw new InvalidConfigValueException(l10n("updateURIMustHaveNoMetaStrings"));
-		if (!updateURI.isUSK())
+		}
+		if (!updateURI.isUSK()) {
 			throw new InvalidConfigValueException(l10n("updateURIMustBeAUSK"));
+		}
 
 		updaterConfig.register("revocationURI", REVOCATION_URI, 4, true, false,
 				"NodeUpdateManager.revocationURI",
@@ -365,15 +367,17 @@ public class NodeUpdateManager {
 					public void set(Boolean val)
 							throws InvalidConfigValueException,
 							NodeNeedRestartException {
-						if (updateSeednodes == val)
+						if (updateSeednodes == val) {
 							return;
+						}
 						updateSeednodes = val;
-						if (val)
+						if (val) {
 							throw new NodeNeedRestartException(
 									"Must restart to fetch the seednodes");
-						else
+						} else {
 							throw new NodeNeedRestartException(
 									"Must restart to stop the seednodes fetch if it is still running");
+						}
 					}
 
 				});
@@ -394,15 +398,17 @@ public class NodeUpdateManager {
 					public void set(Boolean val)
 							throws InvalidConfigValueException,
 							NodeNeedRestartException {
-						if (updateInstallers == val)
+						if (updateInstallers == val) {
 							return;
+						}
 						updateInstallers = val;
-						if (val)
+						if (val) {
 							throw new NodeNeedRestartException(
 									"Must restart to fetch the installers");
-						else
+						} else {
 							throw new NodeNeedRestartException(
 									"Must restart to stop the installers fetches if they are still running");
+						}
 					}
 
 				});
@@ -530,18 +536,20 @@ public class NodeUpdateManager {
 
 	public File getInstallerWindows() {
 		File f = NodeFile.InstallerWindows.getFile(node);
-		if (!(f.exists() && f.canRead() && f.length() > 0))
+		if (!(f.exists() && f.canRead() && f.length() > 0)) {
 			return null;
-		else
+		} else {
 			return f;
+		}
 	}
 
 	public File getInstallerNonWindows() {
 		File f = NodeFile.InstallerNonWindows.getFile(node);
-		if (!(f.exists() && f.canRead() && f.length() > 0))
+		if (!(f.exists() && f.canRead() && f.length() > 0)) {
 			return null;
-		else
+		} else {
 			return f;
+		}
 	}
 
 	public FreenetURI getSeednodesURI() {
@@ -607,9 +615,13 @@ public class NodeUpdateManager {
 		boolean mainJarAvailable = transitionMainJarFetcher == null ? false
 				: transitionMainJarFetcher.fetched();
 		Message msg;
-		if (!mainJarAvailable) return;
+		if (!mainJarAvailable) {
+			return;
+		}
 		synchronized (broadcastUOMAnnouncesSync) {
-			if (broadcastUOMAnnouncesOld && !hasBeenBlown) return;
+			if (broadcastUOMAnnouncesOld && !hasBeenBlown) {
+				return;
+			}
 			broadcastUOMAnnouncesOld = true;
 			msg = getOldUOMAnnouncement();
 		}
@@ -617,16 +629,24 @@ public class NodeUpdateManager {
 	}
 
 	void broadcastUOMAnnouncesNew() {
-		if (logMINOR) Logger.minor(this, "Broadcast UOM announcements (new)");
+		if (logMINOR) {
+			Logger.minor(this, "Broadcast UOM announcements (new)");
+		}
 		long size = canAnnounceUOMNew();
 		Message msg;
-		if (size <= 0 && !hasBeenBlown) return;
+		if (size <= 0 && !hasBeenBlown) {
+			return;
+		}
 		synchronized (broadcastUOMAnnouncesSync) {
-			if (broadcastUOMAnnouncesNew && !hasBeenBlown) return;
+			if (broadcastUOMAnnouncesNew && !hasBeenBlown) {
+				return;
+			}
 			broadcastUOMAnnouncesNew = true;
 			msg = getNewUOMAnnouncement(size);
 		}
-		if (logMINOR) Logger.minor(this, "Broadcasting UOM announcements (new)");
+		if (logMINOR) {
+			Logger.minor(this, "Broadcasting UOM announcements (new)");
+		}
 		node.getPeers().localBroadcast(msg, true, true, ctr, TRANSITION_VERSION, Integer.MAX_VALUE);
 	}
 
@@ -637,21 +657,28 @@ public class NodeUpdateManager {
 		Bucket data;
 		synchronized (this) {
 			if (hasNewMainJar && armed) {
-				if (logMINOR) Logger.minor(this, "Will update soon, not offering UOM.");
+				if (logMINOR) {
+					Logger.minor(this, "Will update soon, not offering UOM.");
+				}
 				return -1;
 			}
 			if (fetchedMainJarVersion <= 0) {
-				if (logMINOR) Logger.minor(this, "Not fetched yet");
+				if (logMINOR) {
+					Logger.minor(this, "Not fetched yet");
+				}
 				return -1;
 			} else if (fetchedMainJarVersion != Version.buildNumber()) {
 				// Don't announce UOM unless we've successfully started the jar.
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Downloaded a different version than the one we are running, not offering UOM.");
+				}
 				return -1;
 			}
 			data = fetchedMainJarData;
 		}
-		if (logMINOR) Logger.minor(this, "Got data for UOM: " + data + " size " + data.size());
+		if (logMINOR) {
+			Logger.minor(this, "Got data for UOM: " + data + " size " + data.size());
+		}
 		return data.size();
 	}
 
@@ -671,7 +698,9 @@ public class NodeUpdateManager {
 
 	private Message getNewUOMAnnouncement(long blobSize) {
 		int fetchedVersion = blobSize <= 0 ? -1 : Version.buildNumber();
-		if (blobSize <= 0) fetchedVersion = -1;
+		if (blobSize <= 0) {
+			fetchedVersion = -1;
+		}
 		return DMT.createUOMAnnouncement(updateURI.toString(), revocationURI
 						.toString(), revocationChecker.hasBlown(), fetchedVersion,
 				revocationChecker.lastSucceededDelta(), revocationChecker
@@ -686,29 +715,33 @@ public class NodeUpdateManager {
 		boolean sendOld, sendNew;
 		synchronized (broadcastUOMAnnouncesSync) {
 			if (!(broadcastUOMAnnouncesOld || broadcastUOMAnnouncesNew)) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this,
 							"Not sending UOM (any) on connect: Nothing worth announcing yet");
+				}
 				return; // nothing worth announcing yet
 			}
 			sendOld = broadcastUOMAnnouncesOld;
 			sendNew = broadcastUOMAnnouncesNew;
 		}
 		if (hasBeenBlown && !revocationChecker.hasBlown()) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this,
 						"Not sending UOM (any) on connect: Local problem causing blown key");
+			}
 			// Local problem, don't broadcast.
 			return;
 		}
 		long size = canAnnounceUOMNew();
 		try {
 			if (peer.getVersionNumber() < TRANSITION_VERSION) {
-				if (sendOld || hasBeenBlown)
+				if (sendOld || hasBeenBlown) {
 					peer.sendAsync(getOldUOMAnnouncement(), null, ctr);
+				}
 			} else {
-				if (sendNew || hasBeenBlown)
+				if (sendNew || hasBeenBlown) {
 					peer.sendAsync(getNewUOMAnnouncement(size), null, ctr);
+				}
 			}
 		} catch (NotConnectedException e) {
 			// Sad, but ignore it
@@ -746,8 +779,9 @@ public class NodeUpdateManager {
 		revocationChecker.start(false);
 		synchronized (this) {
 			boolean enabled = (mainUpdater != null);
-			if (enabled == enable)
+			if (enabled == enable) {
 				return;
+			}
 			if (!enable) {
 				// Kill it
 				mainUpdater.preKill();
@@ -772,8 +806,9 @@ public class NodeUpdateManager {
 			}
 		}
 		if (!enable) {
-			if (main != null)
+			if (main != null) {
 				main.kill();
+			}
 			stopPluginUpdaters(oldPluginUpdaters);
 			transitionMainJarFetcher.stop();
 		} else {
@@ -804,16 +839,18 @@ public class NodeUpdateManager {
 	 *                 plugin. E.g. "Library" (no .jar)
 	 */
 	public void startPluginUpdater(String plugName) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Starting plugin updater for " + plugName);
+		}
 		OfficialPluginDescription plugin = node.getPluginManager().getOfficialPlugin(plugName);
-		if (plugin != null)
+		if (plugin != null) {
 			startPluginUpdater(plugin);
-		else
+		} else
 			// Most likely not an official plugin
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "No such plugin " + plugName
 						+ " in startPluginUpdater()");
+			}
 	}
 
 	void startPluginUpdater(OfficialPluginDescription plugin) {
@@ -824,26 +861,30 @@ public class NodeUpdateManager {
 		PluginInfoWrapper info = node.getPluginManager().getPluginInfo(name);
 		if (info == null) {
 			if (!(node.getPluginManager().isPluginLoadedOrLoadingOrWantLoad(name))) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Plugin not loaded");
+				}
 				return;
 			}
 		}
-		if (info != null)
+		if (info != null) {
 			minVer = Math.max(minVer, info.getPluginLongVersion());
+		}
 		FreenetURI uri = updateURI.setDocName(name).setSuggestedEdition(minVer);
 		PluginJarUpdater updater = new PluginJarUpdater(this, uri,
 				(int) minVer, -1, (plugin.essential ? (int) minVer : Integer.MAX_VALUE)
 				, name + "-", name, node.getPluginManager(), autoDeployPluginsOnRestart);
 		synchronized (this) {
 			if (pluginUpdaters == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Updating not enabled");
+				}
 				return; // Not enabled
 			}
 			if (pluginUpdaters.containsKey(name)) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Already in updaters list");
+				}
 				return; // Already started
 			}
 			pluginUpdaters.put(name, updater);
@@ -854,19 +895,22 @@ public class NodeUpdateManager {
 
 	public void stopPluginUpdater(String plugName) {
 		OfficialPluginDescription plugin = node.getPluginManager().getOfficialPlugin(plugName);
-		if (plugin == null)
+		if (plugin == null) {
 			return; // Not an official plugin
+		}
 		PluginJarUpdater updater = null;
 		synchronized (this) {
 			if (pluginUpdaters == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Updating not enabled");
+				}
 				return; // Not enabled
 			}
 			updater = pluginUpdaters.remove(plugName);
 		}
-		if (updater != null)
+		if (updater != null) {
 			updater.kill();
+		}
 	}
 
 	private void stopPluginUpdaters(
@@ -934,15 +978,17 @@ public class NodeUpdateManager {
 		NodeUpdater updater;
 		Map<String, PluginJarUpdater> oldPluginUpdaters = null;
 		synchronized (this) {
-			if (updateURI.equals(uri))
+			if (updateURI.equals(uri)) {
 				return;
+			}
 			updateURI = uri;
 			updateURI = updateURI.setSuggestedEdition(Version.buildNumber());
 			updater = mainUpdater;
 			oldPluginUpdaters = pluginUpdaters;
 			pluginUpdaters = new HashMap<String, PluginJarUpdater>();
-			if (updater == null)
+			if (updater == null) {
 				return;
+			}
 		}
 		updater.onChangeURI(uri);
 		stopPluginUpdaters(oldPluginUpdaters);
@@ -963,8 +1009,9 @@ public class NodeUpdateManager {
 	 */
 	public void setRevocationURI(FreenetURI uri) {
 		synchronized (this) {
-			if (revocationURI.equals(uri))
+			if (revocationURI.equals(uri)) {
 				return;
+			}
 			this.revocationURI = uri;
 		}
 		revocationChecker.onChangeRevocationURI();
@@ -985,14 +1032,17 @@ public class NodeUpdateManager {
 	 */
 	public void setAutoUpdateAllowed(boolean val) {
 		synchronized (this) {
-			if (val == isAutoUpdateAllowed)
+			if (val == isAutoUpdateAllowed) {
 				return;
+			}
 			isAutoUpdateAllowed = val;
 			if (val) {
-				if (!isReadyToDeployUpdate(false))
+				if (!isReadyToDeployUpdate(false)) {
 					return;
-			} else
+				}
+			} else {
 				return;
+			}
 		}
 		deployOffThread(0, false);
 	}
@@ -1020,15 +1070,19 @@ public class NodeUpdateManager {
 		long now = System.currentTimeMillis();
 		int waitForNextJar = -1;
 		synchronized (this) {
-			if (mainUpdater == null)
+			if (mainUpdater == null) {
 				return false;
+			}
 			if (!(hasNewMainJar)) {
 				return false; // no jar
 			}
-			if (hasBeenBlown)
+			if (hasBeenBlown) {
 				return false; // Duh
+			}
 			if (peersSayBlown) {
-				if (logMINOR) Logger.minor(this, "Not deploying, peers say blown");
+				if (logMINOR) {
+					Logger.minor(this, "Not deploying, peers say blown");
+				}
 				return false;
 			}
 			// Don't immediately deploy if still fetching
@@ -1036,25 +1090,28 @@ public class NodeUpdateManager {
 				waitForNextJar = (int) (startedFetchingNextMainJar
 						+ WAIT_FOR_SECOND_FETCH_TO_COMPLETE - now);
 				if (waitForNextJar > 0) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Not ready: Still fetching");
+					}
 					// Wait for running fetch to complete
 				}
 			}
 
 			// Check dependencies.
 			if (this.latestMainJarDependencies == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Dependencies not available");
+				}
 				return false;
 			}
 			if (this.fetchedMainJarVersion != this.dependenciesValidForBuild) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this,
 							"Not deploying because dependencies are older version "
 									+ dependenciesValidForBuild
 									+ " - new version " + fetchedMainJarVersion
 									+ " may not start");
+				}
 				return false;
 			}
 
@@ -1062,29 +1119,37 @@ public class NodeUpdateManager {
 			if (waitForNextJar <= 0) {
 				if (!ignoreRevocation) {
 					if (now - revocationChecker.lastSucceeded() < RECENT_REVOCATION_INTERVAL) {
-						if (logMINOR) Logger.minor(this, "Ready to deploy (revocation checker succeeded recently)");
+						if (logMINOR) {
+							Logger.minor(this, "Ready to deploy (revocation checker succeeded recently)");
+						}
 						return true;
 					}
 					if (gotJarTime > 0
 							&& now - gotJarTime >= REVOCATION_FETCH_TIMEOUT) {
-						if (logMINOR) Logger.minor(this, "Ready to deploy (got jar before timeout)");
+						if (logMINOR) {
+							Logger.minor(this, "Ready to deploy (got jar before timeout)");
+						}
 						return true;
 					}
 				}
 			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Still here in isReadyToDeployUpdate");
+		}
 		// Apparently everything is ready except the revocation fetch. So start
 		// it.
 		revocationChecker.start(true);
 		if (ignoreRevocation) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Returning true because of ignoreRevocation");
+			}
 			return true;
 		}
 		long waitTime = Math.max(REVOCATION_FETCH_TIMEOUT, waitForNextJar);
-		if (logMINOR) Logger.minor(this, "Will deploy in " + waitTime + "ms");
+		if (logMINOR) {
+			Logger.minor(this, "Will deploy in " + waitTime + "ms");
+		}
 		deployOffThread(waitTime, false);
 		return false;
 	}
@@ -1119,23 +1184,27 @@ public class NodeUpdateManager {
 
 				}
 				if (!isEnabled()) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Not enabled");
+					}
 					return;
 				}
 				if (!(isAutoUpdateAllowed || armed)) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Not armed");
+					}
 					return;
 				}
 				if (!isReadyToDeployUpdate(false)) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Not ready to deploy update");
+					}
 					return;
 				}
 				if (isDeployingUpdate) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Already deploying update");
+					}
 					return;
 				}
 				started = true;
@@ -1145,7 +1214,9 @@ public class NodeUpdateManager {
 
 			synchronized (deployLock()) {
 				success = innerDeployUpdate(deps);
-				if (success) waitForever();
+				if (success) {
+					waitForever();
+				}
 			}
 			// isDeployingUpdate remains true as we are about to restart.
 		} catch (Throwable t) {
@@ -1172,8 +1243,9 @@ public class NodeUpdateManager {
 						maybeNextMainJarData = null;
 					}
 				}
-				if (toFree != null)
+				if (toFree != null) {
 					toFree.free();
+				}
 			}
 		}
 	}
@@ -1225,8 +1297,9 @@ public class NodeUpdateManager {
 			restart(ctx);
 			return true;
 		} else {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Did not write jars");
+			}
 			return false;
 		}
 	}
@@ -1256,8 +1329,9 @@ public class NodeUpdateManager {
 			File backupJar = ctx.getBackupJar();
 			try {
 				if (writeJar(mainJar, newMainJar, backupJar, mainUpdater, "main",
-						tryEasyWay))
+						tryEasyWay)) {
 					writtenNewJar = true;
+				}
 			} catch (UpdateFailedException e) {
 				failUpdate(e.getMessage());
 				return false;
@@ -1267,8 +1341,9 @@ public class NodeUpdateManager {
 		// Dependencies have been written for us already.
 		// But we may need to modify wrapper.conf.
 
-		if (!(writtenNewJar || deps.mustRewriteWrapperConf))
+		if (!(writtenNewJar || deps.mustRewriteWrapperConf)) {
 			return true;
+		}
 		try {
 			ctx.rewriteWrapperConf(writtenNewJar);
 		} catch (IOException e) {
@@ -1348,9 +1423,10 @@ public class NodeUpdateManager {
 						writeJarTo(newMainJar);
 					}
 				} else {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(NodeUpdateManager.class,
 								"Deleted old jar " + newMainJar);
+					}
 					writeJarTo(newMainJar);
 				}
 			} else {
@@ -1365,8 +1441,9 @@ public class NodeUpdateManager {
 		if (tryEasyWay) {
 			// Do it the easy way. Just rewrite the main jar.
 			backupMainJar.delete();
-			if (FileUtil.copyFile(mainJar, backupMainJar))
+			if (FileUtil.copyFile(mainJar, backupMainJar)) {
 				System.err.println("Written backup of current main jar to " + backupMainJar + " (if freenet fails to start up try renaming " + backupMainJar + " over " + mainJar);
+			}
 			if (!newMainJar.renameTo(mainJar)) {
 				Logger.error(NodeUpdateManager.class,
 						"Cannot rename temp file " + newMainJar
@@ -1417,8 +1494,9 @@ public class NodeUpdateManager {
 	 * Restart the node. Does not return.
 	 */
 	private void restart(UpdateDeployContext ctx) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Restarting...");
+		}
 		node.getNodeStarter().restart();
 		try {
 			Thread.sleep(MINUTES.toMillis(5));
@@ -1465,18 +1543,20 @@ public class NodeUpdateManager {
 				hasNewMainJar = true;
 				startedFetchingNextMainJar = -1;
 				gotJarTime = System.currentTimeMillis();
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Got main jar: " + fetched);
+				}
 			}
 			if (!isDeployingUpdate) {
 				delete1 = fetchedMainJarData;
 				fetchedMainJarVersion = fetched;
 				fetchedMainJarData = result;
 				if (fetched == Version.buildNumber()) {
-					if (savedBlob != null)
+					if (savedBlob != null) {
 						currentVersionBlobFile = savedBlob;
-					else
+					} else {
 						Logger.error(this, "No blob file for latest version?!", new Exception("error"));
+					}
 				}
 			} else {
 				delete2 = maybeNextMainJarData;
@@ -1487,10 +1567,12 @@ public class NodeUpdateManager {
 								+ fetched);
 			}
 		}
-		if (delete1 != null)
+		if (delete1 != null) {
 			delete1.free();
-		if (delete2 != null)
+		}
+		if (delete2 != null) {
 			delete2.free();
+		}
 		// We cannot deploy yet, we must wait for the dependencies check.
 	}
 
@@ -1516,8 +1598,9 @@ public class NodeUpdateManager {
 		NodeUpdater main;
 		synchronized (this) {
 			if (hasBeenBlown) {
-				if (this.disabledNotBlown && !disabledNotBlown)
+				if (this.disabledNotBlown && !disabledNotBlown) {
 					disabledNotBlown = true;
+				}
 				Logger.error(this,
 						"The key has ALREADY been marked as blown! Message was "
 								+ revocationMessage + " new message " + msg);
@@ -1549,12 +1632,14 @@ public class NodeUpdateManager {
 				}
 			}
 			main = mainUpdater;
-			if (main != null)
+			if (main != null) {
 				main.preKill();
+			}
 			mainUpdater = null;
 		}
-		if (main != null)
+		if (main != null) {
 			main.kill();
+		}
 		if (revocationAlert == null) {
 			revocationAlert = new RevocationKeyFoundUserAlert(msg,
 					disabledNotBlown);
@@ -1593,19 +1678,22 @@ public class NodeUpdateManager {
 	private void deployPluginUpdates() {
 		PluginJarUpdater[] updaters = null;
 		synchronized (this) {
-			if (this.pluginUpdaters != null)
+			if (this.pluginUpdaters != null) {
 				updaters = pluginUpdaters.values().toArray(
 						new PluginJarUpdater[pluginUpdaters.size()]);
+			}
 		}
 		boolean restartRevocationFetcher = false;
 		if (updaters != null) {
 			for (PluginJarUpdater u : updaters) {
-				if (u.onNoRevocation())
+				if (u.onNoRevocation()) {
 					restartRevocationFetcher = true;
+				}
 			}
 		}
-		if (restartRevocationFetcher)
+		if (restartRevocationFetcher) {
 			revocationChecker.start(true, true);
+		}
 	}
 
 	public void arm() {
@@ -1615,8 +1703,9 @@ public class NodeUpdateManager {
 			if (om.waitingForUpdater()) {
 				synchronized (this) {
 					// Reannounce and count it from now.
-					if (gotJarTime > 0)
+					if (gotJarTime > 0) {
 						gotJarTime = System.currentTimeMillis();
+					}
 				}
 				om.reannounce();
 			}
@@ -1628,24 +1717,35 @@ public class NodeUpdateManager {
 		node.getTicker().queueTimedJob(new Runnable() {
 			@Override
 			public void run() {
-				if (announce)
+				if (announce) {
 					maybeBroadcastUOMAnnouncesNew();
-				if (logMINOR)
+				}
+				if (logMINOR) {
 					Logger.minor(this, "Running deployOffThread");
+				}
 				deployUpdate();
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Run deployOffThread");
+				}
 			}
 		}, delay);
 	}
 
 	protected void maybeBroadcastUOMAnnouncesNew() {
-		if (logMINOR) Logger.minor(this, "Maybe broadcast UOM announces new");
-		synchronized (NodeUpdateManager.this) {
-			if (hasBeenBlown) return;
-			if (peersSayBlown) return;
+		if (logMINOR) {
+			Logger.minor(this, "Maybe broadcast UOM announces new");
 		}
-		if (logMINOR) Logger.minor(this, "Maybe broadcast UOM announces new (2)");
+		synchronized (NodeUpdateManager.this) {
+			if (hasBeenBlown) {
+				return;
+			}
+			if (peersSayBlown) {
+				return;
+			}
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Maybe broadcast UOM announces new (2)");
+		}
 		// If the node has no peers, noRevocationFound will never be called.
 		broadcastUOMAnnouncesNew();
 	}
@@ -1668,8 +1768,9 @@ public class NodeUpdateManager {
 	 * results through the mainUpdater.
 	 */
 	public int newMainJarVersion() {
-		if (mainUpdater == null)
+		if (mainUpdater == null) {
 			return -1;
+		}
 		return mainUpdater.getFetchedVersion();
 	}
 
@@ -1678,8 +1779,9 @@ public class NodeUpdateManager {
 	}
 
 	public int fetchingNewMainJarVersion() {
-		if (mainUpdater == null)
+		if (mainUpdater == null) {
 			return -1;
+		}
 		return mainUpdater.fetchingVersion();
 	}
 
@@ -1729,11 +1831,13 @@ public class NodeUpdateManager {
 
 		@Override
 		public Boolean get() {
-			if (isEnabled())
+			if (isEnabled()) {
 				return true;
+			}
 			synchronized (NodeUpdateManager.this) {
-				if (disabledNotBlown)
+				if (disabledNotBlown) {
 					return true;
+				}
 			}
 			return false;
 		}
@@ -1774,10 +1878,12 @@ public class NodeUpdateManager {
 						"invalidUpdateURI", "error",
 						e.getLocalizedMessage()));
 			}
-			if (uri.hasMetaStrings())
+			if (uri.hasMetaStrings()) {
 				throw new InvalidConfigValueException(l10n("updateURIMustHaveNoMetaStrings"));
-			if (!uri.isUSK())
+			}
+			if (!uri.isUSK()) {
 				throw new InvalidConfigValueException(l10n("updateURIMustBeAUSK"));
+			}
 			setURI(uri);
 		}
 	}
@@ -1827,8 +1933,9 @@ public class NodeUpdateManager {
 
 			@Override
 			public void run() {
-				if (isReadyToDeployUpdate(false))
+				if (isReadyToDeployUpdate(false)) {
 					deployUpdate();
+				}
 			}
 
 		}, "Check for updates");
@@ -1849,11 +1956,13 @@ public class NodeUpdateManager {
 	public File getMainBlob(int version) {
 		NodeUpdater updater;
 		synchronized (this) {
-			if (hasBeenBlown)
+			if (hasBeenBlown) {
 				return null;
+			}
 			updater = mainUpdater;
-			if (updater == null)
+			if (updater == null) {
 				return null;
+			}
 		}
 		return updater.getBlobFile(version);
 	}
@@ -1932,8 +2041,9 @@ public class NodeUpdateManager {
 			// Normally this means we won't send UOM.
 			// However, if something breaks severely, we need an escape route.
 			if (node.getUptime() > MINUTES.toMillis(5)
-					&& node.getPeers().countCompatibleRealPeers() == 0)
+					&& node.getPeers().countCompatibleRealPeers() == 0) {
 				return false;
+			}
 			return true;
 		}
 		return false;
@@ -1972,9 +2082,13 @@ public class NodeUpdateManager {
 	public void renderProgress(HTMLNode alertNode) {
 		MainJarUpdater m;
 		synchronized (this) {
-			if (this.fetchedMainJarData == null) return;
+			if (this.fetchedMainJarData == null) {
+				return;
+			}
 			m = mainUpdater;
-			if (m == null) return;
+			if (m == null) {
+				return;
+			}
 		}
 		m.renderProperties(alertNode);
 	}
@@ -1983,7 +2097,9 @@ public class NodeUpdateManager {
 		MainJarUpdater m;
 		synchronized (this) {
 			m = mainUpdater;
-			if (m == null) return false;
+			if (m == null) {
+				return false;
+			}
 		}
 		return m.brokenDependencies();
 	}
@@ -1992,15 +2108,23 @@ public class NodeUpdateManager {
 		MainJarUpdater m;
 		synchronized (this) {
 			m = mainUpdater;
-			if (m == null) return;
+			if (m == null) {
+				return;
+			}
 		}
 		m.onStartFetchingUOM();
 	}
 
 	public synchronized File getCurrentVersionBlobFile() {
-		if (hasNewMainJar) return null;
-		if (isDeployingUpdate) return null;
-		if (fetchedMainJarVersion != Version.buildNumber()) return null;
+		if (hasNewMainJar) {
+			return null;
+		}
+		if (isDeployingUpdate) {
+			return null;
+		}
+		if (fetchedMainJarVersion != Version.buildNumber()) {
+			return null;
+		}
 		return currentVersionBlobFile;
 	}
 

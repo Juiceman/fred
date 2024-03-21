@@ -122,19 +122,21 @@ public class IPAddressDetector implements Runnable {
 		if (!old) {
 			while (interfaces.hasMoreElements()) {
 				java.net.NetworkInterface iface = interfaces.nextElement();
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(
 							this,
 							"Scanning NetworkInterface " + iface.getDisplayName());
+				}
 				int ifaceMTU = 0;
 				try {
 					if (!iface.isLoopback()) {
 						ifaceMTU = iface.getMTU(); //MTU is retrieved directly instead of using
 						//a plugin
-						if (logDEBUG)
+						if (logDEBUG) {
 							Logger.debug(
 									this,
 									"MTU = " + ifaceMTU);
+						}
 					}
 				} catch (SocketException e) {
 					Logger.error(
@@ -150,8 +152,9 @@ public class IPAddressDetector implements Runnable {
 					//telling the NodeIPDetector object about the MTU only if MTU != 0
 					// MTU = 0 means error in retrieving it
 					//FIXME: We should(n't) report MTU for local IPs
-					if (ifaceMTU > 0)
+					if (ifaceMTU > 0) {
 						detector.reportMTU(ifaceMTU, addr instanceof Inet6Address);
+					}
 
 					if ((addr instanceof Inet6Address) && !(addr.isLinkLocalAddress() || IPUtil.isSiteLocalAddress(addr))) {
 						try {
@@ -162,23 +165,26 @@ public class IPAddressDetector implements Runnable {
 						}
 					}
 					addrs.add(addr);
-					if (logDEBUG)
+					if (logDEBUG) {
 						Logger.debug(
 								this,
 								"Adding address "
 										+ addr
 										+ " from "
 										+ iface.getDisplayName());
+					}
 				}
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(
 							this,
 							"Finished scanning interface " + iface.getDisplayName());
+				}
 			}
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(
 						this,
 						"Finished scanning interfaces");
+			}
 		}
 
 		InetAddress[] oldAddressList = lastAddressList;
@@ -189,9 +195,15 @@ public class IPAddressDetector implements Runnable {
 
 	private boolean addressListChanged(InetAddress[] oldList,
 									   InetAddress[] newList) {
-		if (oldList == null) return newList != null;
-		if (oldList == newList) return false;
-		if (oldList.length != newList.length) return true;
+		if (oldList == null) {
+			return newList != null;
+		}
+		if (oldList == newList) {
+			return false;
+		}
+		if (oldList.length != newList.length) {
+			return true;
+		}
 		InetAddress[] a = Arrays.copyOf(oldList, oldList.length);
 		InetAddress[] b = Arrays.copyOf(newList, newList.length);
 		Arrays.sort(a, InetAddressComparator.COMPARATOR);
@@ -204,10 +216,11 @@ public class IPAddressDetector implements Runnable {
 	 */
 	protected InetAddress oldDetect() {
 		boolean shouldLog = Logger.shouldLog(LogLevel.DEBUG, this);
-		if (shouldLog)
+		if (shouldLog) {
 			Logger.debug(
 					this,
 					"Running old style detection code");
+		}
 		DatagramSocket ds = null;
 		try {
 			try {
@@ -241,10 +254,11 @@ public class IPAddressDetector implements Runnable {
 	protected void onGetAddresses(List<InetAddress> addrs) {
 		final boolean logDEBUG = IPAddressDetector.logDEBUG;
 		List<InetAddress> output = new ArrayList<InetAddress>();
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(
 					this,
 					"onGetAddresses found " + addrs.size() + " potential addresses)");
+		}
 		if (addrs.size() == 0) {
 			Logger.error(this, "No addresses found!");
 			lastAddressList = null;
@@ -254,10 +268,11 @@ public class IPAddressDetector implements Runnable {
 			for (int x = 0; x < addrs.size(); x++) {
 				if (addrs.get(x) != null) {
 					InetAddress i = addrs.get(x);
-					if (logDEBUG)
+					if (logDEBUG) {
 						Logger.debug(
 								this,
 								"Address " + x + ": " + i);
+					}
 					if (i.isAnyLocalAddress()) {
 						// Wildcard address, 0.0.0.0, ignore.
 					} else if (i.isLinkLocalAddress() || i.isLoopbackAddress() ||
@@ -269,8 +284,9 @@ public class IPAddressDetector implements Runnable {
 					} else {
 						// Ignore ISATAP addresses
 						// @see http://archives.freenetproject.org/message/20071129.220955.ac2a2a36.en.html
-						if (!AddressIdentifier.isAnISATAPIPv6Address(i.toString()))
+						if (!AddressIdentifier.isAnISATAPIPv6Address(i.toString())) {
 							output.add(i);
+						}
 					}
 				}
 			}

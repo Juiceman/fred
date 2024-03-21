@@ -34,8 +34,9 @@ public class FlacFilter implements ContentDataFilter {
 		State currentState = State.UNINITIALIZED;
 		short frameHeader = 0;
 		for (byte magicCharacter : magicNumber) {
-			if (magicCharacter != in.readByte())
+			if (magicCharacter != in.readByte()) {
 				throw new DataFilterException(l10n("InvalidFLACStreamTitle"), l10n("InvalidFLACStreamTitle"), l10n("InvalidFLACStreamMessage"));
+			}
 		}
 		output.write(magicNumber);
 
@@ -43,21 +44,30 @@ public class FlacFilter implements ContentDataFilter {
 		while (currentState != State.STREAM_FINISHED) {
 			CodecPacket packet = null;
 			try {
-				if (currentState == State.METADATA_FOUND) frameHeader = (short) (in.readUnsignedShort() & 0x0000FFFF);
+				if (currentState == State.METADATA_FOUND) {
+					frameHeader = (short) (in.readUnsignedShort() & 0x0000FFFF);
+				}
 				byte[] payload = null;
 				switch (currentState) {
 					case UNINITIALIZED:
-						if (logMINOR) Logger.minor(this, "Reading metadata packet");
+						if (logMINOR) {
+							Logger.minor(this, "Reading metadata packet");
+						}
 						int header = in.readInt();
 						payload = new byte[header & 0x00FFFFFF];
-						if (logMINOR) Logger.minor(this, "About to read " + payload.length + " bytes");
+						if (logMINOR) {
+							Logger.minor(this, "About to read " + payload.length + " bytes");
+						}
 						in.readFully(payload);
 						packet = new FlacMetadataBlock(header, payload);
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, ((FlacMetadataBlock) packet).getMetadataBlockType() + " packet read");
+						}
 						break;
 					case METADATA_FOUND:
-						if (logMINOR) Logger.minor(this, "Reading audio packet");
+						if (logMINOR) {
+							Logger.minor(this, "Reading audio packet");
+						}
 						boolean firstHalfOfSyncHeaderFound = false;
 						ArrayList<Byte> buffer = new ArrayList<Byte>();
 						int data = 0;
@@ -105,7 +115,9 @@ public class FlacFilter implements ContentDataFilter {
 					currentState = State.METADATA_FOUND;
 				}
 				packet = parser.parse(packet);
-				if (packet != null) output.write(packet.toArray());
+				if (packet != null) {
+					output.write(packet.toArray());
+				}
 			} catch (EOFException e) {
 				return;
 			}

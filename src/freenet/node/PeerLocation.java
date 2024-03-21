@@ -65,7 +65,9 @@ public class PeerLocation {
 	}
 
 	public synchronized int getDegree() {
-		if (currentPeersLocation == null) return 0;
+		if (currentPeersLocation == null) {
+			return 0;
+		}
 		return currentPeersLocation.length;
 	}
 

@@ -76,14 +76,16 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 		String[] lines = messageText.split("\n");
 		for (int i = 0, c = lines.length; i < c; i++) {
 			alertNode.addChild("#", lines[i]);
-			if (i != lines.length - 1)
+			if (i != lines.length - 1) {
 				alertNode.addChild("br");
+			}
 		}
 
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if (pn != null)
+		if (pn != null) {
 			alertNode.addChild("p").addChild("a", "href", "/send_n2ntm/?peernode_hashcode=" + pn.hashCode(),
 					l10n("reply"));
+		}
 		return alertNode;
 	}
 
@@ -107,8 +109,9 @@ public class N2NTMUserAlert extends AbstractUserAlert {
 	@Override
 	public void onDismiss() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if (pn != null)
+		if (pn != null) {
 			pn.deleteExtraPeerDataFile(fileNumber);
+		}
 	}
 
 	@Override

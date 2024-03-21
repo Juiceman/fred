@@ -32,7 +32,9 @@ public class RAFInputStream extends InputStream {
 
 	@Override
 	public int read(byte[] buf, int offset, int length) throws IOException {
-		if (rafOffset >= rafLength) throw new EOFException();
+		if (rafOffset >= rafLength) {
+			throw new EOFException();
+		}
 		length = (int) Math.min((long) length, rafLength - rafOffset);
 		underlying.pread(rafOffset, buf, offset, length);
 		rafOffset += length;

@@ -42,16 +42,20 @@ public class PersistentRequestRoot {
 	}
 
 	public PersistentRequestClient registerForeverClient(final String name, FCPConnectionHandler handler) {
-		if (logMINOR) Logger.minor(this, "Registering forever-client for " + name);
+		if (logMINOR) {
+			Logger.minor(this, "Registering forever-client for " + name);
+		}
 		PersistentRequestClient client;
 		synchronized (this) {
 			client = clients.get(name);
-			if (client == null)
+			if (client == null) {
 				client = new PersistentRequestClient(name, handler, false, null, Persistence.FOREVER, this);
+			}
 			clients.put(name, client);
 		}
-		if (handler != null)
+		if (handler != null) {
 			client.setConnection(handler);
+		}
 		return client;
 	}
 
@@ -64,10 +68,13 @@ public class PersistentRequestRoot {
 		PersistentRequestClient client;
 		synchronized (this) {
 			client = clients.get(name);
-			if (client == null) return null;
+			if (client == null) {
+				return null;
+			}
 		}
-		if (handler != null)
+		if (handler != null) {
 			client.setConnection(handler);
+		}
 		return client;
 	}
 
@@ -103,11 +110,14 @@ public class PersistentRequestRoot {
 
 	public synchronized boolean hasRequest(RequestIdentifier req) {
 		PersistentRequestClient client;
-		if (req.globalQueue)
+		if (req.globalQueue) {
 			client = globalForeverClient;
-		else
+		} else {
 			client = getForeverClient(req.clientName, null);
-		if (client == null) return false;
+		}
+		if (client == null) {
+			return false;
+		}
 		return client.getRequest(req.identifier) != null;
 	}
 

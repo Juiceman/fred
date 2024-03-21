@@ -81,13 +81,17 @@ public class RealNodeTest {
 			double norm = 0.0;
 			for (int j = 0; j < nodes.length; j++) {
 				Node b = nodes[j];
-				if (a.getLocation() == b.getLocation()) continue;
+				if (a.getLocation() == b.getLocation()) {
+					continue;
+				}
 				norm += 1.0 / distance(a, b);
 			}
 			// Create degree/2 outgoing connections
 			for (int k = 0; k < nodes.length; k++) {
 				Node b = nodes[k];
-				if (a.getLocation() == b.getLocation()) continue;
+				if (a.getLocation() == b.getLocation()) {
+					continue;
+				}
 				double p = 1.0 / distance(a, b) / norm;
 				for (int n = 0; n < degree / 2; n++) {
 					if (random.nextFloat() < p) {
@@ -121,14 +125,16 @@ public class RealNodeTest {
 	}
 
 	static String getPortNumber(PeerNode p) {
-		if (p == null || p.getPeer() == null)
+		if (p == null || p.getPeer() == null) {
 			return "null";
+		}
 		return Integer.toString(p.getPeer().getPort());
 	}
 
 	static String getPortNumber(Node n) {
-		if (n == null)
+		if (n == null) {
 			return "null";
+		}
 		return Integer.toString(n.getDarknetPortNumber());
 	}
 
@@ -158,18 +164,26 @@ public class RealNodeTest {
 				totalBackedOff += countBackedOff;
 				double pingTime = nodes[i].getNodeStats().getNodeAveragePingTime();
 				totalPingTime += pingTime;
-				if (pingTime > maxPingTime) maxPingTime = pingTime;
-				if (pingTime < minPingTime) minPingTime = pingTime;
+				if (pingTime > maxPingTime) {
+					maxPingTime = pingTime;
+				}
+				if (pingTime < minPingTime) {
+					minPingTime = pingTime;
+				}
 				if (countConnected == countTotal) {
 					countFullyConnected++;
-					if (countBackedOff == 0) countReallyConnected++;
+					if (countBackedOff == 0) {
+						countReallyConnected++;
+					}
 				} else {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(RealNodeTest.class, "Connection count for " + nodes[i] + " : " + countConnected + " partial " + countAlmostConnected);
+					}
 				}
 				if (countBackedOff > 0) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(RealNodeTest.class, "Backed off: " + nodes[i] + " : " + countBackedOff);
+					}
 				}
 			}
 			double avgPingTime = totalPingTime / nodes.length;

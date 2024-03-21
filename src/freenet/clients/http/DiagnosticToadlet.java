@@ -76,8 +76,9 @@ public class DiagnosticToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		node.getClientCore().getBandwidthStatsPutter().updateData(node);
 
@@ -242,40 +243,57 @@ public class DiagnosticToadlet extends Toadlet {
 			int numberOfConnError = getPeerStatusCount(peerNodeStatuses, PeerManager.PEER_NODE_STATUS_CONN_ERROR);
 			int numberOfDisconnecting = PeerNodeStatus.getPeerStatusCount(peerNodeStatuses, PeerManager.PEER_NODE_STATUS_DISCONNECTING);
 			int numberOfNoLoadStats = PeerNodeStatus.getPeerStatusCount(peerNodeStatuses, PeerManager.PEER_NODE_STATUS_NO_LOAD_STATS);
-			if (numberOfConnected > 0)
+			if (numberOfConnected > 0) {
 				textBuilder.append(l10nDark("connectedShort")).append(": ").append(numberOfConnected).append("\n");
-			if (numberOfRoutingBackedOff > 0)
+			}
+			if (numberOfRoutingBackedOff > 0) {
 				textBuilder.append(l10nDark("backedOffShort")).append(": ").append(numberOfRoutingBackedOff).append("\n");
-			if (numberOfTooNew > 0)
+			}
+			if (numberOfTooNew > 0) {
 				textBuilder.append(l10nDark("tooNewShort")).append(": ").append(numberOfTooNew).append("\n");
-			if (numberOfTooOld > 0)
+			}
+			if (numberOfTooOld > 0) {
 				textBuilder.append(l10nDark("tooOldShort")).append(": ").append(numberOfTooOld).append("\n");
-			if (numberOfDisconnected > 0)
+			}
+			if (numberOfDisconnected > 0) {
 				textBuilder.append(l10nDark("notConnectedShort")).append(": ").append(numberOfDisconnected).append("\n");
-			if (numberOfNeverConnected > 0)
+			}
+			if (numberOfNeverConnected > 0) {
 				textBuilder.append(l10nDark("neverConnectedShort")).append(": ").append(numberOfNeverConnected).append("\n");
-			if (numberOfDisabled > 0)
+			}
+			if (numberOfDisabled > 0) {
 				textBuilder.append(l10nDark("disabledShort")).append(": ").append(numberOfDisabled).append("\n");
-			if (numberOfBursting > 0)
+			}
+			if (numberOfBursting > 0) {
 				textBuilder.append(l10nDark("burstingShort")).append(": ").append(numberOfBursting).append("\n");
-			if (numberOfListening > 0)
+			}
+			if (numberOfListening > 0) {
 				textBuilder.append(l10nDark("listeningShort")).append(": ").append(numberOfListening).append("\n");
-			if (numberOfListenOnly > 0)
+			}
+			if (numberOfListenOnly > 0) {
 				textBuilder.append(l10nDark("listenOnlyShort")).append(": ").append(numberOfListenOnly).append("\n");
-			if (numberOfClockProblem > 0)
+			}
+			if (numberOfClockProblem > 0) {
 				textBuilder.append(l10nDark("clockProblemShort")).append(": ").append(numberOfClockProblem).append("\n");
-			if (numberOfConnError > 0)
+			}
+			if (numberOfConnError > 0) {
 				textBuilder.append(l10nDark("connErrorShort")).append(": ").append(numberOfConnError).append("\n");
-			if (numberOfDisconnecting > 0)
+			}
+			if (numberOfDisconnecting > 0) {
 				textBuilder.append(l10nDark("disconnectingShort")).append(": ").append(numberOfDisconnecting).append("\n");
-			if (numberOfSeedServers > 0)
+			}
+			if (numberOfSeedServers > 0) {
 				textBuilder.append(l10nDark("seedServersShort")).append(": ").append(numberOfSeedServers).append("\n");
-			if (numberOfSeedClients > 0)
+			}
+			if (numberOfSeedClients > 0) {
 				textBuilder.append(l10nDark("seedClientsShort")).append(": ").append(numberOfSeedClients).append("\n");
-			if (numberOfRoutingDisabled > 0)
+			}
+			if (numberOfRoutingDisabled > 0) {
 				textBuilder.append(l10nDark("routingDisabledShort")).append(": ").append(numberOfRoutingDisabled).append("\n");
-			if (numberOfNoLoadStats > 0)
+			}
+			if (numberOfNoLoadStats > 0) {
 				textBuilder.append(l10nDark("noLoadStatsShort")).append(": ").append(numberOfNoLoadStats).append("\n");
+			}
 			OpennetManager om = node.getOpennet();
 			if (om != null) {
 				textBuilder.append(l10n("maxTotalPeers") + ": " + om.getNumberOfConnectedPeersToAimIncludingDarknet()).append("\n");
@@ -286,18 +304,22 @@ public class DiagnosticToadlet extends Toadlet {
 			// drawBandwidth
 			textBuilder.append("Bandwidth:\n");
 			long[] total = node.getCollector().getTotalIO();
-			if (total[0] == 0 || total[1] == 0)
+			if (total[0] == 0 || total[1] == 0) {
 				textBuilder.append("bandwidth error\n");
-			else {
+			} else {
 				final long now = System.currentTimeMillis();
 				final long nodeUptimeSeconds = (now - node.getStartupTime()) / 1000;
 				long total_output_rate = (total[0]) / nodeUptimeSeconds;
 				long total_input_rate = (total[1]) / nodeUptimeSeconds;
 				long totalPayload = node.getTotalPayloadSent();
 				long total_payload_rate = totalPayload / nodeUptimeSeconds;
-				if (node.getClientCore() == null) throw new NullPointerException();
+				if (node.getClientCore() == null) {
+					throw new NullPointerException();
+				}
 				BandwidthStatsContainer stats = node.getClientCore().getBandwidthStatsPutter().getLatestBWData();
-				if (stats == null) throw new NullPointerException();
+				if (stats == null) {
+					throw new NullPointerException();
+				}
 				long overall_total_out = stats.totalBytesOut;
 				long overall_total_in = stats.totalBytesIn;
 				int percent = (int) (100 * totalPayload / total[0]);
@@ -381,10 +403,11 @@ public class DiagnosticToadlet extends Toadlet {
 				textBuilder.append(baseL10n.getString("PluginToadlet.pluginListTitle")).append("\n");
 				for (PluginInfoWrapper pi : pm.getPlugins()) {
 					long ver = pi.getPluginLongVersion();
-					if (ver != -1)
+					if (ver != -1) {
 						textBuilder.append(pi.getFilename()).append(" (").append(pi.getPluginClassName()).append(") - ").append(pi.getPluginVersion() + " (" + ver + ")").append(" ").append(pi.getThreadName()).append("\n");
-					else
+					} else {
 						textBuilder.append(pi.getFilename()).append(" (").append(pi.getPluginClassName()).append(") - ").append(pi.getPluginVersion()).append(" ").append(pi.getThreadName()).append("\n");
+					}
 				}
 			}
 			textBuilder.append("\n");
@@ -393,9 +416,9 @@ public class DiagnosticToadlet extends Toadlet {
 			textBuilder.append("Queue:\n");
 			try {
 				RequestStatus[] reqs = fcp.getGlobalRequests();
-				if (reqs.length < 1)
+				if (reqs.length < 1) {
 					textBuilder.append(baseL10n.getString("QueueToadlet.globalQueueIsEmpty")).append("\n");
-				else {
+				} else {
 					long totalQueuedDownload = 0;
 					long totalQueuedUpload = 0;
 					for (RequestStatus req : reqs) {
@@ -483,8 +506,9 @@ public class DiagnosticToadlet extends Toadlet {
 	private int getPeerStatusCount(PeerNodeStatus[] peerNodeStatuses, int status) {
 		int count = 0;
 		for (PeerNodeStatus peerNodeStatus : peerNodeStatuses) {
-			if (!peerNodeStatus.recordStatus())
+			if (!peerNodeStatus.recordStatus()) {
 				continue;
+			}
 			if (peerNodeStatus.getStatusValue() == status) {
 				count++;
 			}
@@ -495,7 +519,9 @@ public class DiagnosticToadlet extends Toadlet {
 	private int getCountSeedServers(PeerNodeStatus[] peerNodeStatuses) {
 		int count = 0;
 		for (PeerNodeStatus peerNodeStatus : peerNodeStatuses) {
-			if (peerNodeStatus.isSeedServer()) count++;
+			if (peerNodeStatus.isSeedServer()) {
+				count++;
+			}
 		}
 		return count;
 	}
@@ -503,7 +529,9 @@ public class DiagnosticToadlet extends Toadlet {
 	private int getCountSeedClients(PeerNodeStatus[] peerNodeStatuses) {
 		int count = 0;
 		for (PeerNodeStatus peerNodeStatus : peerNodeStatuses) {
-			if (peerNodeStatus.isSeedClient()) count++;
+			if (peerNodeStatus.isSeedClient()) {
+				count++;
+			}
 		}
 		return count;
 	}

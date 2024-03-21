@@ -34,7 +34,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 
 		@Override
 		public boolean equals(Object o) {
-			if (!(o instanceof Job)) return false;
+			if (!(o instanceof Job)) {
+				return false;
+			}
 			// Ignore the name, we are only interested in the job, needed for noDupes.
 			return ((Job) o).job == job;
 		}
@@ -70,7 +72,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 
 	@Override
 	public void run() {
-		if (logMINOR) Logger.minor(this, "In Ticker.run()");
+		if (logMINOR) {
+			Logger.minor(this, "In Ticker.run()");
+		}
 		freenet.support.Logger.OSThread.logPID(this);
 		while (true) {
 			try {
@@ -94,8 +98,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 			while (!timedJobsByTime.isEmpty()) {
 				Long tRun = timedJobsByTime.firstKey();
 				if (tRun.longValue() <= now) {
-					if (jobsToRun == null)
+					if (jobsToRun == null) {
 						jobsToRun = new ArrayList<Job>();
+					}
 					Object o = timedJobsByTime.remove(tRun);
 					if (o instanceof Job[]) {
 						for (Job r : (Job[]) o) {
@@ -114,19 +119,21 @@ public class PrioritizedTicker implements Ticker, Runnable {
 			}
 		}
 
-		if (jobsToRun != null)
+		if (jobsToRun != null) {
 			for (Job r : jobsToRun) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Running " + r);
+				}
 				if (r.job instanceof FastRunnable)
-					// Run in-line
+				// Run in-line
 
+				{
 					try {
 						r.job.run();
 					} catch (Throwable t) {
 						Logger.error(this, "Caught " + t + " running " + r, t);
 					}
-				else
+				} else {
 					try {
 						executor.execute(r.job, r.name, true);
 					} catch (Throwable t) {
@@ -136,7 +143,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 						System.err.println("Will retry above failed operation...");
 						queueTimedJob(r.job, r.name, 200, true, false);
 					}
+				}
 			}
+		}
 
 		if (sleepTime > 0) {
 			try {
@@ -149,8 +158,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	}
 
 	protected void sleep(long sleepTime) throws InterruptedException {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Sleeping for " + sleepTime);
+		}
 		synchronized (this) {
 			wait(sleepTime);
 		}
@@ -182,7 +192,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	public void queueTimedJob(Runnable runner, String name, long offset, boolean runOnTickerAnyway, boolean noDupes) {
 		// Run directly *if* that won't cause any priority problems.
 		long now = System.currentTimeMillis();
-		if (offset < 0) offset = 0;
+		if (offset < 0) {
+			offset = 0;
+		}
 		queueTimedJobInner(runner, name, now + offset, offset, runOnTickerAnyway, noDupes);
 	}
 
@@ -208,9 +220,13 @@ public class PrioritizedTicker implements Ticker, Runnable {
 	 */
 	private void queueTimedJobInner(Runnable runner, String name, long runJobAt, long offset,
 									boolean runOnTickerAnyway, boolean noDupes) {
-		if (noDupes) runOnTickerAnyway = true;
+		if (noDupes) {
+			runOnTickerAnyway = true;
+		}
 		if (offset <= 0 && !runOnTickerAnyway) {
-			if (logMINOR) Logger.minor(this, "Running directly: " + runner);
+			if (logMINOR) {
+				Logger.minor(this, "Running directly: " + runner);
+			}
 			executor.execute(runner, name);
 			return;
 		}
@@ -229,11 +245,11 @@ public class PrioritizedTicker implements Ticker, Runnable {
 				}
 			}
 			Object o = timedJobsByTime.get(runJobAt);
-			if (o == null)
+			if (o == null) {
 				timedJobsByTime.put(runJobAt, job);
-			else if (o instanceof Job)
+			} else if (o instanceof Job) {
 				timedJobsByTime.put(runJobAt, new Job[]{(Job) o, job});
-			else if (o instanceof Job[]) {
+			} else if (o instanceof Job[]) {
 				Job[] r = (Job[]) o;
 				Job[] jobs = Arrays.copyOf(r, r.length + 1);
 				jobs[jobs.length - 1] = job;
@@ -320,8 +336,9 @@ public class PrioritizedTicker implements Ticker, Runnable {
 				if (x == 1) {
 					timedJobsByTime.put(t, newJobs[0]);
 				} else {
-					if (x != newJobs.length)
+					if (x != newJobs.length) {
 						newJobs = Arrays.copyOf(newJobs, x);
+					}
 					timedJobsByTime.put(t, newJobs);
 					assert (x == jobs.length - 1);
 				}

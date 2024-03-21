@@ -137,9 +137,9 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 					formText = l10n("updateASAPButton");
 				}
 			} else {
-				if (updater.fetchingFromUOM())
+				if (updater.fetchingFromUOM()) {
 					sb.append(l10n("fetchingUOM", "updateScript", getUpdateScriptName()));
-				else {
+				} else {
 					boolean fetchingNew = updater.fetchingNewMainJar();
 					if (fetchingNew) {
 						sb.append(l10n("fetchingNewNode", "nodeVersion", Integer.toString(updater.fetchingNewMainJarVersion())));
@@ -174,21 +174,27 @@ public class UpdatedVersionAvailableUserAlert extends AbstractUserAlert {
 			name = "update.sh";
 		}
 		File f = new File(updater.getNode().getNodeDir(), name);
-		if (f.exists()) return f.toString();
+		if (f.exists()) {
+			return f.toString();
+		}
 		f = new File(new File(updater.getNode().getNodeDir(), "bin"), name);
-		if (f.exists()) return f.toString();
+		if (f.exists()) {
+			return f.toString();
+		}
 		return name;
 	}
 
 	@Override
 	public short getPriorityClass() {
 		Node node = updater.getNode();
-		if (node.updateIsUrgent())
+		if (node.updateIsUrgent()) {
 			return UserAlert.CRITICAL_ERROR;
-		if (updater.inFinalCheck() || updater.canUpdateNow() || !updater.isArmed())
+		}
+		if (updater.inFinalCheck() || updater.canUpdateNow() || !updater.isArmed()) {
 			return UserAlert.ERROR;
-		else
+		} else {
 			return UserAlert.MINOR;
+		}
 	}
 
 	@Override

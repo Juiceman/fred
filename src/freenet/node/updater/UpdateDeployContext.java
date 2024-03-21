@@ -58,14 +58,18 @@ public class UpdateDeployContext {
 		Properties p = WrapperManager.getProperties();
 		for (int propNo = 1; true; propNo++) {
 			String prop = p.getProperty("wrapper.java.classpath." + propNo);
-			if (prop == null) break;
+			if (prop == null) {
+				break;
+			}
 			File f = new File(prop);
 			boolean isAbsolute = f.isAbsolute();
 			String name = f.getName().toLowerCase();
 			if (mainJar == null) {
 				if (name.equals("freenet-ext.jar") || name.equals("freenet-ext.jar.new") || (name.startsWith("freenet-ext") && name.endsWith(".jar")))
-					// Don't match freenet-ext.jar!
+				// Don't match freenet-ext.jar!
+				{
 					continue;
+				}
 				// Try to match it
 				if ((name.startsWith("freenet") && (name.endsWith(".jar")))) {
 					mainJar = f;
@@ -85,8 +89,9 @@ public class UpdateDeployContext {
 
 		}
 
-		if (mainJar == null)
+		if (mainJar == null) {
 			throw new UpdaterParserException(l10n("cannotUpdateNoMainJar"));
+		}
 		backupMainJar = new File(mainJar.getParent(), "freenet.jar.bak");
 	}
 
@@ -184,18 +189,20 @@ public class UpdateDeployContext {
 					if (rhs.equals("freenet.jar") || rhs.equals("freenet.jar.new") ||
 							rhs.equals("freenet-stable-latest.jar") || rhs.equals("freenet-stable-latest.jar.new") ||
 							rhs.equals("freenet-testing-latest.jar") || rhs.equals("freenet-testing-latest.jar.new")) {
-						if (writtenNewJar)
+						if (writtenNewJar) {
 							mainRHS = newMain;
-						else
+						} else {
 							mainRHS = rhs;
+						}
 					} else {
 						// Is it on the list of dependencies?
 						Dependency dep = findDependencyByRHSFilename(new File(rhs));
 						if (dep != null) {
-							if (dep.oldFilename() != null)
+							if (dep.oldFilename() != null) {
 								System.out.println("Found old dependency " + dep.oldFilename());
-							else
+							} else {
 								System.out.println("Found new dependency " + dep.newFilename());
+							}
 						} else { // dep == null
 							System.out.println("Found unknown jar in classpath, will keep: " + rhs);
 							// If not, it's something the user has added, we just keep it.
@@ -229,8 +236,9 @@ public class UpdateDeployContext {
 			} else if (lowcaseLine.startsWith("wrapper.anchor.poll_interval=")) {
 				writtenAnchorInterval = true;
 			}
-			if (!dontWrite)
+			if (!dontWrite) {
 				otherLines.add(line);
+			}
 		}
 		br.close();
 
@@ -327,20 +335,30 @@ public class UpdateDeployContext {
 				// Not in use.
 				continue;
 			}
-			if (rhs.equals(f)) return dep;
-			if (rhsName.equals(f.getName().toLowerCase())) return dep;
+			if (rhs.equals(f)) {
+				return dep;
+			}
+			if (rhsName.equals(f.getName().toLowerCase())) {
+				return dep;
+			}
 		}
 		// It may be already on the classpath even though it's a new file officially.
 		for (Dependency dep : deps.dependencies) {
 			File f = dep.newFilename();
-			if (rhs.equals(f)) return dep;
-			if (rhsName.equals(f.getName().toLowerCase())) return dep;
+			if (rhs.equals(f)) {
+				return dep;
+			}
+			if (rhsName.equals(f.getName().toLowerCase())) {
+				return dep;
+			}
 		}
 		// Slightly more expensive test.
 		for (Dependency dep : deps.dependencies) {
 			Pattern p = dep.regex();
 			if (p != null) {
-				if (p.matcher(rhs.getName().toLowerCase()).matches()) return dep;
+				if (p.matcher(rhs.getName().toLowerCase()).matches()) {
+					return dep;
+				}
 			}
 		}
 		return null;
@@ -396,8 +414,9 @@ public class UpdateDeployContext {
 
 			while ((line = br.readLine()) != null) {
 
-				if (line.equals("#" + markerComment))
+				if (line.equals("#" + markerComment)) {
 					return CHANGED.ALREADY;
+				}
 
 				if (line.startsWith("wrapper.java.maxmemory=")) {
 					try {

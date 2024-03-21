@@ -40,10 +40,11 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 		this.rcb = rcb;
 		this.token = l;
 		if (!dontAdd) {
-			if (isEssential)
+			if (isEssential) {
 				parent.addMustSucceedBlocks(1);
-			else
+			} else {
 				parent.addBlock();
+			}
 			parent.notifyClients(context);
 		}
 	}
@@ -70,15 +71,21 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 
 	// Real onFailure
 	protected void onFailure(FetchException e, boolean forceFatal, ClientContext context) {
-		if (logMINOR) Logger.minor(this, "onFailure( " + e + " , " + forceFatal + ")", e);
+		if (logMINOR) {
+			Logger.minor(this, "onFailure( " + e + " , " + forceFatal + ")", e);
+		}
 		if (parent.isCancelled() || cancelled) {
-			if (logMINOR) Logger.minor(this, "Failing: cancelled");
+			if (logMINOR) {
+				Logger.minor(this, "Failing: cancelled");
+			}
 			e = new FetchException(FetchExceptionMode.CANCELLED);
 			forceFatal = true;
 		}
 		if (!(e.isFatal() || forceFatal)) {
 			if (retry(context)) {
-				if (logMINOR) Logger.minor(this, "Retrying");
+				if (logMINOR) {
+					Logger.minor(this, "Retrying");
+				}
 				return;
 			}
 		}
@@ -87,10 +94,11 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 		synchronized (this) {
 			finished = true;
 		}
-		if (e.isFatal() || forceFatal)
+		if (e.isFatal() || forceFatal) {
 			parent.fatallyFailedBlock(context);
-		else
+		} else {
 			parent.failedBlock(context);
+		}
 		rcb.onFailure(e, this, context);
 	}
 
@@ -108,10 +116,13 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 
 	@Override
 	public void onSuccess(ClientKeyBlock block, boolean fromStore, Object reqTokenIgnored, ClientContext context) {
-		if (parent instanceof ClientGetter)
+		if (parent instanceof ClientGetter) {
 			((ClientGetter) parent).addKeyToBinaryBlob(block, context);
+		}
 		Bucket data = extract(block, context);
-		if (data == null) return; // failed
+		if (data == null) {
+			return; // failed
+		}
 		context.uskManager.checkUSK(key.getURI(), fromStore, block.isMetadata());
 		if (!block.isMetadata()) {
 			onSuccess(new FetchResult(new ClientMetadata(null), data), context);
@@ -129,8 +140,9 @@ public class SimpleSingleFileFetcher extends BaseSingleFileFetcher implements Cl
 		try {
 			data = block.decode(context.getBucketFactory(parent.persistent()), (int) (Math.min(ctx.maxOutputLength, Integer.MAX_VALUE)), false);
 		} catch (KeyDecodeException e1) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Decode failure: " + e1, e1);
+			}
 			onFailure(new FetchException(FetchExceptionMode.BLOCK_DECODE_ERROR, e1.getMessage()), false, context);
 			return null;
 		} catch (TooBigException e) {

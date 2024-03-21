@@ -137,8 +137,9 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 					blocksByRoutingKey.push(key, block);
 				}
 			}
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(this, "Block was last accessed " + (System.currentTimeMillis() - timeAccessed) + "ms ago");
+			}
 			return ret;
 		} catch (KeyVerifyException e) {
 			block.data.free();
@@ -207,7 +208,9 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 
 	@Override
 	public void setMaxKeys(long maxStoreKeys, boolean shrinkNow) throws IOException {
-		if (maxStoreKeys > Integer.MAX_VALUE) throw new IllegalArgumentException();
+		if (maxStoreKeys > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException();
+		}
 		this.maxKeys = (int) maxStoreKeys;
 		if (shrinkNow) {
 			purgeOldData();
@@ -242,21 +245,31 @@ public class SlashdotStore<T extends StorableBlock> implements FreenetStore<T> {
 				addFirst.lastAccessed = now;
 				oldBlock = blocksByRoutingKey.push(key, addFirst);
 				if (oldBlock != null) {
-					if (blocks == null) blocks = new ArrayList<DiskBlock>();
+					if (blocks == null) {
+						blocks = new ArrayList<DiskBlock>();
+					}
 					blocks.add(oldBlock);
 				}
 				writes++;
 			}
 			while (true) {
-				if (blocksByRoutingKey.isEmpty()) break;
+				if (blocksByRoutingKey.isEmpty()) {
+					break;
+				}
 				DiskBlock block = blocksByRoutingKey.peekValue();
-				if (now - block.lastAccessed < maxLifetime && blocksByRoutingKey.size() < maxKeys) break;
-				if (blocks == null) blocks = new ArrayList<DiskBlock>();
+				if (now - block.lastAccessed < maxLifetime && blocksByRoutingKey.size() < maxKeys) {
+					break;
+				}
+				if (blocks == null) {
+					blocks = new ArrayList<DiskBlock>();
+				}
 				blocks.add(block);
 				blocksByRoutingKey.popValue();
 			}
 		}
-		if (blocks == null) return;
+		if (blocks == null) {
+			return;
+		}
 		for (DiskBlock block : blocks) {
 			block.data.free();
 		}

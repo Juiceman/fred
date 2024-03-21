@@ -97,8 +97,9 @@ public class SecurityLevels {
 			@Override
 			protected void setValue(String val) throws InvalidConfigValueException {
 				NETWORK_THREAT_LEVEL newValue = parseNetworkThreatLevel(val);
-				if (newValue == null)
+				if (newValue == null) {
 					throw new InvalidConfigValueException("Invalid value for network threat level: " + val);
+				}
 				synchronized (SecurityLevels.this) {
 					networkThreatLevel = newValue;
 				}
@@ -146,8 +147,9 @@ public class SecurityLevels {
 			@Override
 			protected void setValue(String val) throws InvalidConfigValueException {
 				PHYSICAL_THREAT_LEVEL newValue = PHYSICAL_THREAT_LEVEL.valueOf(val);
-				if (newValue != null)
+				if (newValue != null) {
 					throw new InvalidConfigValueException("Invalid value for physical threat level: " + val);
+				}
 				synchronized (SecurityLevels.this) {
 					physicalThreatLevel = newValue;
 				}
@@ -250,8 +252,9 @@ public class SecurityLevels {
 	 * @return
 	 */
 	public HTMLNode getConfirmWarning(NETWORK_THREAT_LEVEL newThreatLevel, String checkboxName) {
-		if (newThreatLevel == networkThreatLevel)
+		if (newThreatLevel == networkThreatLevel) {
 			return null; // Not going to be changed.
+		}
 		HTMLNode parent = new HTMLNode("div");
 		if ((newThreatLevel == NETWORK_THREAT_LEVEL.HIGH && networkThreatLevel != NETWORK_THREAT_LEVEL.MAXIMUM) ||
 				newThreatLevel == NETWORK_THREAT_LEVEL.MAXIMUM) {
@@ -314,10 +317,14 @@ public class SecurityLevels {
 	}
 
 	public void setThreatLevel(NETWORK_THREAT_LEVEL newThreatLevel) {
-		if (newThreatLevel == null) throw new NullPointerException();
+		if (newThreatLevel == null) {
+			throw new NullPointerException();
+		}
 		NETWORK_THREAT_LEVEL oldLevel;
 		synchronized (this) {
-			if (networkThreatLevel == newThreatLevel) return;
+			if (networkThreatLevel == newThreatLevel) {
+				return;
+			}
 			oldLevel = networkThreatLevel;
 			networkThreatLevel = newThreatLevel;
 		}
@@ -325,10 +332,14 @@ public class SecurityLevels {
 	}
 
 	public void setThreatLevel(PHYSICAL_THREAT_LEVEL newThreatLevel) {
-		if (newThreatLevel == null) throw new NullPointerException();
+		if (newThreatLevel == null) {
+			throw new NullPointerException();
+		}
 		PHYSICAL_THREAT_LEVEL oldLevel;
 		synchronized (this) {
-			if (physicalThreatLevel == newThreatLevel) return;
+			if (physicalThreatLevel == newThreatLevel) {
+				return;
+			}
 			oldLevel = physicalThreatLevel;
 			physicalThreatLevel = newThreatLevel;
 		}
@@ -353,12 +364,15 @@ public class SecurityLevels {
 				Logger.error(this, "Asking for default friend trust yet we have no friend security level!");
 				return FRIEND_TRUST.NORMAL;
 			}
-			if (friendsThreatLevel == FRIENDS_THREAT_LEVEL.HIGH)
+			if (friendsThreatLevel == FRIENDS_THREAT_LEVEL.HIGH) {
 				return FRIEND_TRUST.LOW;
-			if (friendsThreatLevel == FRIENDS_THREAT_LEVEL.NORMAL)
+			}
+			if (friendsThreatLevel == FRIENDS_THREAT_LEVEL.NORMAL) {
 				return FRIEND_TRUST.NORMAL;
-			else // friendsThreatLevel == FRIENDS_THREAT_LEVEL.LOW
+			} else // friendsThreatLevel == FRIENDS_THREAT_LEVEL.LOW
+			{
 				return FRIEND_TRUST.HIGH;
+			}
 		}
 	}
 }

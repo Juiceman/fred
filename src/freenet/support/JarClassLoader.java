@@ -213,20 +213,26 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 	 */
 	@Override
 	public InputStream getResourceAsStream(String name) {
-		if (logMINOR) Logger.minor(this, "Requested resource: " + name, new Exception("debug"));
+		if (logMINOR) {
+			Logger.minor(this, "Requested resource: " + name, new Exception("debug"));
+		}
 		URL url = getResource(name);
-		if (url == null)
+		if (url == null) {
 			return null;
-		if (logMINOR) Logger.minor(this, "Found resource at URL: " + url);
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Found resource at URL: " + url);
+		}
 
 		// If the resource is not from our jar, return it as normal
 		URL localUrl = findResource(name);
-		if (localUrl == null || !url.toString().equals(localUrl.toString()))
+		if (localUrl == null || !url.toString().equals(localUrl.toString())) {
 			try {
 				return url.openStream();
 			} catch (IOException e) {
 				return null;
 			}
+		}
 
 		// If the resource is from our jar, open InputStream explicitly from the jar
 		// so that we can close() all opened streams later and let the jar file
@@ -265,7 +271,9 @@ public class JarClassLoader extends ClassLoader implements Closeable {
 			if (pkg == null) {
 				try {
 					Manifest man = tempJarFile.getManifest();
-					if (man == null) throw new IOException();
+					if (man == null) {
+						throw new IOException();
+					}
 					pkg = definePackage(pkgname, man);
 				} catch (IOException e) {
 					pkg = definePackage(pkgname, null, null, null, null, null, null, null);

@@ -82,8 +82,9 @@ public class TextModeClientInterfaceServer implements Runnable {
 			ssl = TMCIConfig.getBoolean("ssl");
 		}
 
-		if (TMCIEnabled)
+		if (TMCIEnabled) {
 			server = new TextModeClientInterfaceServer(node, core, port, bind_ip, allowedHosts);
+		}
 
 		if (direct) {
 			HighLevelSimpleClient client = core.makeClient(RequestStarter.INTERACTIVE_PRIORITY_CLASS, true, false);
@@ -114,8 +115,9 @@ public class TextModeClientInterfaceServer implements Runnable {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			// FIXME implement - see bug #122
 			throw new InvalidConfigValueException("Cannot be updated on the fly");
 		}
@@ -135,8 +137,9 @@ public class TextModeClientInterfaceServer implements Runnable {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			if (!SSL.available()) {
 				throw new InvalidConfigValueException("Enable SSL support before use ssl with TMCI");
 			}
@@ -165,8 +168,9 @@ public class TextModeClientInterfaceServer implements Runnable {
 
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			// FIXME implement - see bug #122
 			throw new InvalidConfigValueException("Cannot be updated on the fly");
 		}
@@ -187,15 +191,18 @@ public class TextModeClientInterfaceServer implements Runnable {
 
 		@Override
 		public String get() {
-			if (core.getTextModeClientInterface() != null)
+			if (core.getTextModeClientInterface() != null) {
 				return core.getTextModeClientInterface().bindTo;
-			else
+			} else {
 				return NetworkInterface.DEFAULT_BIND_TO;
+			}
 		}
 
 		@Override
 		public void set(String val) throws InvalidConfigValueException {
-			if (val.equals(get())) return;
+			if (val.equals(get())) {
+				return;
+			}
 			String[] failedAddresses = core.getTextModeClientInterface().networkInterface.setBindTo(val, false);
 			if (failedAddresses != null) {
 				// This is an advanced option for reasons of reducing clutter,
@@ -234,8 +241,9 @@ public class TextModeClientInterfaceServer implements Runnable {
 						throw new InvalidConfigValueException(e);
 					}
 					server.allowedHosts = val;
-				} else
+				} else {
 					throw new InvalidConfigValueException("Setting allowedHosts for TMCI (console) server when TMCI is disabled");
+				}
 			}
 		}
 	}
@@ -250,17 +258,19 @@ public class TextModeClientInterfaceServer implements Runnable {
 
 		@Override
 		public Integer get() {
-			if (core.getTextModeClientInterface() != null)
+			if (core.getTextModeClientInterface() != null) {
 				return core.getTextModeClientInterface().port;
-			else
+			} else {
 				return 2323;
+			}
 		}
 
 		// TODO: implement it
 		@Override
 		public void set(Integer val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
+			}
 			core.getTextModeClientInterface().setPort(val);
 		}
 	}
@@ -284,12 +294,17 @@ public class TextModeClientInterfaceServer implements Runnable {
 			}
 			while (isEnabled) {
 				// Maybe something has changed?
-				if (port != curPort) break;
-				if (!(this.bindTo.equals(tempBindTo))) break;
+				if (port != curPort) {
+					break;
+				}
+				if (!(this.bindTo.equals(tempBindTo))) {
+					break;
+				}
 				try {
 					Socket s = networkInterface.accept();
-					if (s == null)
+					if (s == null) {
 						continue; // timeout
+					}
 					InputStream in = s.getInputStream();
 					OutputStream out = s.getOutputStream();
 

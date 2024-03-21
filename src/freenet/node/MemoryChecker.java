@@ -55,10 +55,11 @@ public class MemoryChecker implements Runnable {
 		if (totalMemory == maxMemory || maxMemory == Long.MAX_VALUE) {
 			// jvm have allocated maximum memory
 			// totalMemory never decrease, so check it only for once
-			if (avgFreeMemory == null)
+			if (avgFreeMemory == null) {
 				avgFreeMemory = new SimpleRunningAverage(3, freeMemory);
-			else
+			} else {
 				avgFreeMemory.report(freeMemory);
+			}
 
 			if (avgFreeMemory.countReports() >= 3 && avgFreeMemory.currentValue() < 4 * 1024 * 1024) {//  average free memory < 4 MB
 				Logger.normal(this, "Reached threshold, checking for low memory ...");
@@ -79,8 +80,9 @@ public class MemoryChecker implements Runnable {
 		if (sleeptime <= 0) { // We are done
 			ps.queueTimedJob(this, 120 * 250); // 30 sec
 			return;
-		} else
+		} else {
 			ps.queueTimedJob(this, 120L * sleeptime);
+		}
 
 		// FIXME
 		// Do not remove until all known memory issues fixed,
@@ -92,7 +94,9 @@ public class MemoryChecker implements Runnable {
 		if (aggressiveGCModificator > 0) {
 			boolean logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			long beforeGCUsedMemory = (r.totalMemory() - r.freeMemory());
-			if (logMINOR) Logger.minor(this, "Memory in use before GC: " + beforeGCUsedMemory);
+			if (logMINOR) {
+				Logger.minor(this, "Memory in use before GC: " + beforeGCUsedMemory);
+			}
 			long beforeGCTime = System.currentTimeMillis();
 			System.gc();
 			System.runFinalization();

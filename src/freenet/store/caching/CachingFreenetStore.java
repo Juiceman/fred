@@ -146,8 +146,9 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 				} else {
 					//Case cache it but is it in blocksByRoutingKey? If so, throw a KCE
 					if (previousBlock != null) {
-						if (block.equals(previousBlock.block))
+						if (block.equals(previousBlock.block)) {
 							return;
+						}
 						throw new KeyCollisionException();
 					}
 
@@ -190,7 +191,9 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		configLock.writeLock().lock();
 		try {
 			block = blocksByRoutingKey.peekValue();
-			if (block == null) return -1;
+			if (block == null) {
+				return -1;
+			}
 			key = blocksByRoutingKey.peekKey();
 		} finally {
 			configLock.writeLock().unlock();
@@ -201,7 +204,9 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 		} catch (IOException e) {
 			Logger.error(this, "Error in pushAll for CachingFreenetStore: " + e, e);
 		} catch (KeyCollisionException e) {
-			if (logMINOR) Logger.minor(this, "KeyCollisionException in pushAll for CachingFreenetStore: " + e, e);
+			if (logMINOR) {
+				Logger.minor(this, "KeyCollisionException in pushAll for CachingFreenetStore: " + e, e);
+			}
 		}
 
 		configLock.writeLock().lock();
@@ -211,8 +216,9 @@ public class CachingFreenetStore<T extends StorableBlock> extends ProxyFreenetSt
 			/** it might have changed if there was a put() with overwrite=true. 
 			 *  If it has changed, return 0 , i.e. don't remove it*/
 			if (currentVersionOfBlock != null && currentVersionOfBlock.block.equals(block.block)) {
-				if (blocksByRoutingKey.removeKey(key))
+				if (blocksByRoutingKey.removeKey(key)) {
 					return sizeBlock;
+				}
 			}
 		} finally {
 			configLock.writeLock().unlock();

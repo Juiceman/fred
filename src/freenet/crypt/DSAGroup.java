@@ -28,8 +28,9 @@ public class DSAGroup extends CryptoKey {
 		this.p = p;
 		this.q = q;
 		this.g = g;
-		if (p.signum() != 1 || q.signum() != 1 || g.signum() != 1)
+		if (p.signum() != 1 || q.signum() != 1 || g.signum() != 1) {
 			throw new IllegalArgumentException();
+		}
 	}
 
 	private DSAGroup(DSAGroup group) {
@@ -65,8 +66,11 @@ public class DSAGroup extends CryptoKey {
 		g = Util.readMPI(i);
 		try {
 			DSAGroup group = new DSAGroup(p, q, g);
-			if (group.equals(Global.DSAgroupBigA)) return Global.DSAgroupBigA;
-			else return group;
+			if (group.equals(Global.DSAgroupBigA)) {
+				return Global.DSAgroupBigA;
+			} else {
+				return group;
+			}
 		} catch (IllegalArgumentException e) {
 			throw (CryptFormatException) new CryptFormatException("Invalid group: " + e).initCause(e);
 		}
@@ -113,14 +117,18 @@ public class DSAGroup extends CryptoKey {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) // Not necessary, but a very cheap optimization
+		{
 			return true;
+		}
 		return (o instanceof DSAGroup) && p.equals(((DSAGroup) o).p)
 				&& q.equals(((DSAGroup) o).q) && g.equals(((DSAGroup) o).g);
 	}
 
 	public boolean equals(DSAGroup o) {
 		if (this == o) // Not necessary, but a very cheap optimization
+		{
 			return true;
+		}
 		return p.equals(o.p) && q.equals(o.q) && g.equals(o.g);
 	}
 
@@ -141,32 +149,40 @@ public class DSAGroup extends CryptoKey {
 		String myP = fs.get("p");
 		String myQ = fs.get("q");
 		String myG = fs.get("g");
-		if (myP == null || myQ == null || myG == null)
+		if (myP == null || myQ == null || myG == null) {
 			throw new FSParseException("The given SFS doesn't contain required fields!");
+		}
 		BigInteger p = new BigInteger(1, Base64.decode(myP));
 		BigInteger q = new BigInteger(1, Base64.decode(myQ));
 		BigInteger g = new BigInteger(1, Base64.decode(myG));
 		DSAGroup dg = new DSAGroup(p, q, g);
-		if (dg.equals(Global.DSAgroupBigA)) return Global.DSAgroupBigA;
+		if (dg.equals(Global.DSAgroupBigA)) {
+			return Global.DSAgroupBigA;
+		}
 		return dg;
 	}
 
 	@Override
 	public String toString() {
-		if (this == Global.DSAgroupBigA)
+		if (this == Global.DSAgroupBigA) {
 			return "Global.DSAgroupBigA";
-		else return super.toString();
+		} else {
+			return super.toString();
+		}
 	}
 
 	@Override
 	public String toLongString() {
-		if (this == Global.DSAgroupBigA)
+		if (this == Global.DSAgroupBigA) {
 			return "Global.DSAgroupBigA";
+		}
 		return "p=" + HexUtil.biToHex(p) + ", q=" + HexUtil.biToHex(q) + ", g=" + HexUtil.biToHex(g);
 	}
 
 	public DSAGroup cloneKey() {
-		if (this == Global.DSAgroupBigA) return this;
+		if (this == Global.DSAgroupBigA) {
+			return this;
+		}
 		return new DSAGroup(this);
 	}
 

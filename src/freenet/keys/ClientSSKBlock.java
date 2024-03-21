@@ -49,8 +49,9 @@ public class ClientSSKBlock implements ClientKeyBlock {
 	public static ClientSSKBlock construct(SSKBlock block, ClientSSK key) throws SSKVerifyException {
 		// Constructor expects clientkey to have the pubkey.
 		// In the case of binary blobs, the block may have it instead.
-		if (key.getPubKey() == null)
+		if (key.getPubKey() == null) {
 			key.setPublicKey(block.getPubKey());
+		}
 		return new ClientSSKBlock(block.data, block.headers, key, false);
 	}
 
@@ -97,12 +98,13 @@ public class ClientSSKBlock implements ClientKeyBlock {
 		decoded = true;
 
 		if (dontDecompress) {
-			if (compressionAlgorithm == (short) -1)
+			if (compressionAlgorithm == (short) -1) {
 				return BucketTools.makeImmutableBucket(factory, dataOutput, dataLength);
-			else if (dataLength < 2)
+			} else if (dataLength < 2) {
 				throw new SSKDecodeException("Data length is less than 2 yet compressed!");
-			else
+			} else {
 				return BucketTools.makeImmutableBucket(factory, dataOutput, 2, dataLength - 2);
+			}
 		}
 
 		Bucket b = Key.decompress(compressionAlgorithm >= 0, dataOutput, dataLength, factory, Math.min(MAX_DECOMPRESSED_DATA_LENGTH, maxLength), compressionAlgorithm, true);
@@ -111,8 +113,9 @@ public class ClientSSKBlock implements ClientKeyBlock {
 
 	@Override
 	public boolean isMetadata() {
-		if (!decoded)
+		if (!decoded) {
 			throw new IllegalStateException("Cannot read isMetadata before decoded");
+		}
 		return isMetadata;
 	}
 
@@ -154,9 +157,13 @@ public class ClientSSKBlock implements ClientKeyBlock {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof ClientSSKBlock)) return false;
+		if (!(o instanceof ClientSSKBlock)) {
+			return false;
+		}
 		ClientSSKBlock block = (ClientSSKBlock) o;
-		if (!key.equals(block.key)) return false;
+		if (!key.equals(block.key)) {
+			return false;
+		}
 		return this.block.equals(block.block);
 	}
 

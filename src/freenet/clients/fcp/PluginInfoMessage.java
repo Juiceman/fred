@@ -43,7 +43,9 @@ public class PluginInfoMessage extends FCPMessage {
 	public SimpleFieldSet getFieldSet() {
 		SimpleFieldSet sfs = new SimpleFieldSet(true);
 		if (identifier != null) // is optional on these two only
+		{
 			sfs.putSingle("Identifier", identifier);
+		}
 		sfs.putSingle("PluginName", classname);
 		sfs.put("IsTalkable", isTalkable);
 		sfs.put("LongVersion", longVersion);

@@ -69,8 +69,9 @@ public class MediaType {
 		if (mediaType == null) {
 			throw new NullPointerException("contentType must not be null");
 		}
-		if (!DefaultMIMETypes.isPlausibleMIMEType(mediaType))
+		if (!DefaultMIMETypes.isPlausibleMIMEType(mediaType)) {
 			throw new MalformedURLException("Doesn't look like a MIME type");
+		}
 		int slash = mediaType.indexOf('/');
 		if (slash == -1) {
 			throw new MalformedURLException("mediaType does not contain ‘/’!");
@@ -90,8 +91,9 @@ public class MediaType {
 			}
 			String name = parameter.substring(0, equals).trim().toLowerCase();
 			String value = parameter.substring(equals + 1).trim();
-			if (value.startsWith("\"") && value.endsWith("\""))
+			if (value.startsWith("\"") && value.endsWith("\"")) {
 				value = value.substring(1, value.length() - 1).trim();
+			}
 			this.parameters.put(name, value);
 		}
 	}
@@ -196,10 +198,11 @@ public class MediaType {
 	 */
 	public MediaType setParameter(String name, String value) {
 		MediaType newMediaType = new MediaType(type, subtype, parameters);
-		if (value == null)
+		if (value == null) {
 			newMediaType.parameters.remove(name.toLowerCase());
-		else
+		} else {
 			newMediaType.parameters.put(name.toLowerCase(), value);
+		}
 		return newMediaType;
 	}
 
@@ -242,7 +245,9 @@ public class MediaType {
 
 	public static String getCharsetRobust(String expectedMimeType) {
 		try {
-			if (expectedMimeType == null) return null;
+			if (expectedMimeType == null) {
+				return null;
+			}
 			MediaType type = new MediaType(expectedMimeType);
 			return type.getParameter("charset");
 		} catch (MalformedURLException e) {
@@ -255,7 +260,9 @@ public class MediaType {
 
 	public static String getCharsetRobustOrUTF(String expectedMimeType) {
 		String charset = getCharsetRobust(expectedMimeType);
-		if (charset == null) return "UTF-8";
+		if (charset == null) {
+			return "UTF-8";
+		}
 		return charset;
 	}
 

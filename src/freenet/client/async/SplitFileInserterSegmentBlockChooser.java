@@ -29,19 +29,21 @@ public class SplitFileInserterSegmentBlockChooser extends SimpleBlockChooser {
 		this.segment = segment;
 		this.keysFetching = keysFetching;
 		this.consecutiveRNFsCountAsSuccess = consecutiveRNFsCountAsSuccess;
-		if (consecutiveRNFsCountAsSuccess > 0)
+		if (consecutiveRNFsCountAsSuccess > 0) {
 			consecutiveRNFs = new int[blocks];
-		else
+		} else {
 			consecutiveRNFs = null;
+		}
 	}
 
 	protected int getMaxBlockNumber() {
 		// Ignore cross-segment: We either send all blocks, if the segment has been encoded, or
 		// only the data blocks, if it hasn't (even if the cross-segment blocks have been encoded).
-		if (segment.hasEncoded())
+		if (segment.hasEncoded()) {
 			return segment.totalBlockCount;
-		else
+		} else {
 			return segment.dataBlockCount;
+		}
 	}
 
 	protected void onCompletedAll() {
@@ -49,7 +51,9 @@ public class SplitFileInserterSegmentBlockChooser extends SimpleBlockChooser {
 	}
 
 	protected boolean checkValid(int chosen) {
-		if (!super.checkValid(chosen)) return false;
+		if (!super.checkValid(chosen)) {
+			return false;
+		}
 		return !keysFetching.hasInsert(new BlockInsert(segment, chosen));
 	}
 
@@ -60,7 +64,9 @@ public class SplitFileInserterSegmentBlockChooser extends SimpleBlockChooser {
 	public void onRNF(int blockNo) {
 		synchronized (this) {
 			assert (consecutiveRNFsCountAsSuccess > 0);
-			if (++consecutiveRNFs[blockNo] < consecutiveRNFsCountAsSuccess) return;
+			if (++consecutiveRNFs[blockNo] < consecutiveRNFsCountAsSuccess) {
+				return;
+			}
 		}
 		onSuccess(blockNo);
 	}
@@ -72,7 +78,9 @@ public class SplitFileInserterSegmentBlockChooser extends SimpleBlockChooser {
 		int ret = consecutiveRNFs[blockNo];
 		consecutiveRNFs[blockNo] = 0;
 		for (int i = 0; i < ret; i++)
-			if (onNonFatalFailure(blockNo)) return true;
+			if (onNonFatalFailure(blockNo)) {
+				return true;
+			}
 		return false;
 	}
 

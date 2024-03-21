@@ -77,14 +77,17 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 		// Help to detect removal after clear().
 		// The check in remove() is enough, strictly,
 		// as long as people don't add elements afterwards.
-		if (_firstItem == null)
+		if (_firstItem == null) {
 			return;
+		}
 
 		T pos = _firstItem;
 		T opos;
 
 		while (true) {
-			if (pos == null) break;
+			if (pos == null) {
+				break;
+			}
 			pos.setParent(null);
 			pos.setPrev(null);
 			opos = pos;
@@ -127,8 +130,9 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	@Override
 	public boolean contains(T item) {
 		for (T i : this) {
-			if (i.equals(item))
+			if (i.equals(item)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -173,8 +177,12 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	 */
 	@Override
 	public DoublyLinkedList<T> shift(int n) {
-		if (n > size) n = size;
-		if (n < 1) return new DoublyLinkedListImpl<T>();
+		if (n > size) {
+			n = size;
+		}
+		if (n < 1) {
+			return new DoublyLinkedListImpl<T>();
+		}
 
 		T i = _firstItem;
 		for (int m = 0; m < n - 1; ++m)
@@ -221,8 +229,12 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	 */
 	@Override
 	public DoublyLinkedList<T> pop(int n) {
-		if (n > size) n = size;
-		if (n < 1) return new DoublyLinkedListImpl<T>();
+		if (n > size) {
+			n = size;
+		}
+		if (n < 1) {
+			return new DoublyLinkedListImpl<T>();
+		}
 
 		T i = _lastItem;
 		for (int m = 0; m < n - 1; ++m)
@@ -237,8 +249,9 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 		if (newLastItem != null) {
 			newLastItem.setNext(null);
 			_lastItem = newLastItem;
-		} else
+		} else {
 			_firstItem = _lastItem = null;
+		}
 		size -= n;
 
 		return newlist;
@@ -291,16 +304,20 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	 */
 	@Override
 	public T remove(T i) {
-		if (i.getParent() == null || isEmpty())
+		if (i.getParent() == null || isEmpty()) {
 			return null; // not in list
-		if (i.getParent() != this)
+		}
+		if (i.getParent() != this) {
 			throw new PromiscuousItemException(i, i.getParent());
+		}
 
 		T next = i.getNext();
 		T prev = i.getPrev();
 
 		if ((next == null) && (prev == null)) // only item in list
+		{
 			assert size == 1;
+		}
 
 		if (next == null) { // last item
 			assert _lastItem == i;
@@ -330,10 +347,12 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	 */
 	@Override
 	public void insertPrev(T i, T j) {
-		if (j.getParent() != null)
+		if (j.getParent() != null) {
 			throw new PromiscuousItemException(j, j.getParent());
-		if ((j.getNext() != null) || (j.getPrev() != null))
+		}
+		if ((j.getNext() != null) || (j.getPrev() != null)) {
 			throw new PromiscuousItemException(j);
+		}
 
 		if (i == null) {
 			// insert as tail
@@ -350,17 +369,21 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 			++size;
 		} else {
 			// insert in middle
-			if (i.getParent() == null)
+			if (i.getParent() == null) {
 				throw new PromiscuousItemException(i, i.getParent()); // different trace to make easier debugging
-			if (i.getParent() != this)
+			}
+			if (i.getParent() != this) {
 				throw new PromiscuousItemException(i, i.getParent());
+			}
 			T prev = i.getPrev();
 			if (prev == null) {
-				if (i != _firstItem)
+				if (i != _firstItem) {
 					throw new VirginItemException(i);
+				}
 				_firstItem = j;
-			} else
+			} else {
 				prev.setNext(j);
+			}
 			j.setPrev(prev);
 			i.setPrev(j);
 			j.setNext(i);
@@ -375,10 +398,12 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 	 */
 	@Override
 	public void insertNext(T i, T j) {
-		if (j.getParent() != null)
+		if (j.getParent() != null) {
 			throw new PromiscuousItemException(j, i.getParent());
-		if ((j.getNext() != null) || (j.getPrev() != null))
+		}
+		if ((j.getNext() != null) || (j.getPrev() != null)) {
 			throw new PromiscuousItemException(j);
+		}
 
 		if (i == null) {
 			// insert as head
@@ -395,15 +420,18 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 
 			++size;
 		} else {
-			if (i.getParent() != this)
+			if (i.getParent() != this) {
 				throw new PromiscuousItemException(i, i.getParent());
+			}
 			T next = i.getNext();
 			if (next == null) {
-				if (i != _lastItem)
+				if (i != _lastItem) {
 					throw new VirginItemException(i);
+				}
 				_lastItem = j;
-			} else
+			} else {
 				next.setPrev(j);
+			}
 			j.setNext(next);
 			i.setNext(j);
 			j.setPrev(i);
@@ -443,8 +471,9 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 
 		@Override
 		public T nextElement() {
-			if (next == null)
+			if (next == null) {
 				throw new NoSuchElementException();
+			}
 			T result = next;
 			next = next.getNext();
 			return result;
@@ -465,10 +494,13 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 
 		@Override
 		public T nextElement() {
-			if (next == null)
+			if (next == null) {
 				throw new NoSuchElementException();
+			}
 			T result = next;
-			if (next == null) throw new IllegalStateException("next==null");
+			if (next == null) {
+				throw new IllegalStateException("next==null");
+			}
 			next = next.getPrev();
 			return result;
 		}
@@ -540,8 +572,9 @@ public class DoublyLinkedListImpl<T extends DoublyLinkedList.Item<? extends T>> 
 
 			@Override
 			public T next() {
-				if (!hasNext())
+				if (!hasNext()) {
 					throw new NoSuchElementException();
+				}
 
 				return e.nextElement();
 			}

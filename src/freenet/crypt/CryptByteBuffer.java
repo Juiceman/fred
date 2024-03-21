@@ -239,7 +239,9 @@ public final class CryptByteBuffer implements Serializable {
 	 * modifying the input.
 	 */
 	public void encrypt(byte[] input, int offset, int len, byte[] output, int outputOffset) {
-		if (offset + len > input.length) throw new IllegalArgumentException();
+		if (offset + len > input.length) {
+			throw new IllegalArgumentException();
+		}
 		if (input == output && offset != outputOffset) {
 			// FIXME only copy if it actually overlaps...
 			byte[] temp = Arrays.copyOfRange(input, offset, offset + len);
@@ -251,9 +253,9 @@ public final class CryptByteBuffer implements Serializable {
 			System.arraycopy(input, offset, output, outputOffset, len);
 			encryptPCFB.blockEncipher(output, outputOffset, len);
 		} else if (type.cipherName.equals("RIJNDAEL")) {
-			if (offset == 0 && len == input.length && outputOffset == 0 && len == output.length)
+			if (offset == 0 && len == input.length && outputOffset == 0 && len == output.length) {
 				blockCipher.encipher(input, output);
-			else {
+			} else {
 				byte[] result = new byte[len];
 				blockCipher.encipher(Arrays.copyOfRange(input, offset, offset + len), result);
 				System.arraycopy(result, 0, output, outputOffset, len);
@@ -261,7 +263,9 @@ public final class CryptByteBuffer implements Serializable {
 		} else {
 			try {
 				int copied = encryptCipher.update(input, offset, len, output, outputOffset);
-				if (copied != len) throw new IllegalStateException("Not a stream cipher???");
+				if (copied != len) {
+					throw new IllegalStateException("Not a stream cipher???");
+				}
 			} catch (ShortBufferException e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -314,10 +318,10 @@ public final class CryptByteBuffer implements Serializable {
 	 * input data.
 	 */
 	public ByteBuffer encryptCopy(ByteBuffer input) {
-		if (input.hasArray())
+		if (input.hasArray()) {
 			return ByteBuffer.wrap(encryptCopy(input.array(), input.arrayOffset() + input.position(),
 					input.remaining()));
-		else {
+		} else {
 			return ByteBuffer.wrap(encryptCopy(Fields.copyToArray(input)));
 		}
 	}
@@ -337,7 +341,9 @@ public final class CryptByteBuffer implements Serializable {
 			try {
 				int copy = Math.min(input.remaining(), output.remaining());
 				int copied = encryptCipher.update(input, output);
-				if (copied != copy) throw new IllegalStateException("Not a stream cipher???");
+				if (copied != copy) {
+					throw new IllegalStateException("Not a stream cipher???");
+				}
 			} catch (ShortBufferException e) {
 				throw new Error("Impossible: " + e, e);
 			}
@@ -373,7 +379,9 @@ public final class CryptByteBuffer implements Serializable {
 	 * modifying the input.
 	 */
 	public void decrypt(byte[] input, int offset, int len, byte[] output, int outputOffset) {
-		if (offset + len > input.length) throw new IllegalArgumentException();
+		if (offset + len > input.length) {
+			throw new IllegalArgumentException();
+		}
 		if (input == output && offset != outputOffset) {
 			// FIXME only copy if it actually overlaps...
 			byte[] temp = Arrays.copyOfRange(input, offset, offset + len);
@@ -385,9 +393,9 @@ public final class CryptByteBuffer implements Serializable {
 			System.arraycopy(input, offset, output, outputOffset, len);
 			decryptPCFB.blockDecipher(output, outputOffset, len);
 		} else if (type.cipherName.equals("RIJNDAEL")) {
-			if (offset == 0 && len == input.length && outputOffset == 0 && len == output.length)
+			if (offset == 0 && len == input.length && outputOffset == 0 && len == output.length) {
 				blockCipher.decipher(input, output);
-			else {
+			} else {
 				byte[] result = new byte[len];
 				blockCipher.decipher(Arrays.copyOfRange(input, offset, offset + len), result);
 				System.arraycopy(result, 0, output, outputOffset, len);
@@ -395,7 +403,9 @@ public final class CryptByteBuffer implements Serializable {
 		} else {
 			try {
 				int copied = decryptCipher.update(input, offset, len, output, outputOffset);
-				if (copied != len) throw new IllegalStateException("Not a stream cipher???");
+				if (copied != len) {
+					throw new IllegalStateException("Not a stream cipher???");
+				}
 			} catch (ShortBufferException e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -449,11 +459,12 @@ public final class CryptByteBuffer implements Serializable {
 	 * input data.
 	 */
 	public ByteBuffer decryptCopy(ByteBuffer input) {
-		if (input.hasArray())
+		if (input.hasArray()) {
 			return ByteBuffer.wrap(decryptCopy(input.array(), input.arrayOffset() + input.position(),
 					input.remaining()));
-		else
+		} else {
 			return ByteBuffer.wrap(decryptCopy(Fields.copyToArray(input)));
+		}
 	}
 
 	/**
@@ -471,7 +482,9 @@ public final class CryptByteBuffer implements Serializable {
 			try {
 				int copy = Math.min(input.remaining(), output.remaining());
 				int copied = decryptCipher.update(input, output);
-				if (copied != copy) throw new IllegalStateException("Not a stream cipher???");
+				if (copied != copy) {
+					throw new IllegalStateException("Not a stream cipher???");
+				}
 			} catch (ShortBufferException e) {
 				throw new Error("Impossible: " + e, e);
 			}

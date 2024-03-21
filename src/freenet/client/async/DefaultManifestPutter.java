@@ -116,12 +116,14 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 	 */
 	private long makePutHandlers(ContainerBuilder containerBuilder, HashMap<String, Object> manifestElements, String defaultName, String prefix, long maxSize, String parentName) throws TooManyFilesInsertException {
 		//(HashMap<String, Object> md, PluginReplySender replysender, String identifier, long maxSize, boolean doInsert, String parentName) throws InsertException {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "STAT: handling " + ((parentName == null) ? "<root>?" : parentName));
+		}
 		//if (doInsert && (parentName == null)) throw new IllegalStateException("Parent name cant be null for insert!");
 		//if (doInsert) containercounter += 1;
-		if (maxSize == DEFAULT_MAX_CONTAINERSIZE)
+		if (maxSize == DEFAULT_MAX_CONTAINERSIZE) {
 			maxSize = DEFAULT_MAX_CONTAINERSIZE - DEFAULT_CONTAINERSIZE_SPARE;
+		}
 
 		// first get the size (the whole one)
 		ContainerSize wholeSize = ContainerSizeEstimator.getSubTreeSize(manifestElements, DEFAULT_MAX_CONTAINERITEMSIZE, maxSize, Integer.MAX_VALUE);
@@ -130,16 +132,18 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		// have a look at all
 		if (wholeSize.getSizeTotalNoLimit() <= maxSize) {
 			// that was easy. the whole tree fits into current container (without externals!)
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "PackStat2: the whole tree (unlimited) fits into container (no externals)");
+			}
 			makeEveryThingUnlimitedPutHandlers(containerBuilder, manifestElements, defaultName, prefix);
 			return wholeSize.getSizeTotalNoLimit();
 		}
 
 		if (wholeSize.getSizeTotal() <= maxSize) {
 			// that was easy. the whole tree fits into current container (with externals)
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "PackStat2: the whole tree fits into container (with externals)");
+			}
 			makeEveryThingPutHandlers(containerBuilder, manifestElements, defaultName, prefix);
 			return wholeSize.getSizeTotal();
 		}
@@ -152,8 +156,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		// the files in dir fits into container?
 		if ((wholeSize.getSizeFiles() < maxSize) || (wholeSize.getSizeFilesNoLimit() < maxSize)) {
 			// the files in dir fits into container
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "PackStat2: the files in dir fits into container with spare, so it need to grab stuff from sub's to fill container up");
+			}
 			if (wholeSize.getSizeFilesNoLimit() < maxSize) {
 				for (Map.Entry<String, Object> entry : manifestElements.entrySet()) {
 					String name = entry.getKey();
@@ -172,10 +177,11 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 					Object o = entry.getValue();
 					if (o instanceof ManifestElement) {
 						ManifestElement me = (ManifestElement) o;
-						if (me.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE)
+						if (me.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE) {
 							containerBuilder.addExternal(name, me.getData(), me.getMimeTypeOverride(), name.equals(defaultName));
-						else
+						} else {
 							containerBuilder.addItem(name, prefix + name, me, name.equals(defaultName));
+						}
 					} else {
 						tmpSize += 512;
 					}
@@ -237,10 +243,13 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		if ((wholeSize.getSizeSubTrees() + tmpSize + minUsageForFiles < maxSize) || (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize)) {
 			//all subdirs fit into current container, do it
 			// and add files up to limit
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "PackStat2: the sub dirs fit into container with spare, so it need to grab files to fill container up");
+			}
 			if (wholeSize.getSizeSubTreesNoLimit() + tmpSize + minUsageForFiles < maxSize) {
-				if (logMINOR) Logger.minor(this, " (unlimited)");
+				if (logMINOR) {
+					Logger.minor(this, " (unlimited)");
+				}
 				for (Map.Entry<String, Object> entry : manifestElements.entrySet()) {
 					String name = entry.getKey();
 					Object o = entry.getValue();
@@ -255,7 +264,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 				}
 				tmpSize = wholeSize.getSizeSubTreesNoLimit();
 			} else {
-				if (logMINOR) Logger.minor(this, " (limited)");
+				if (logMINOR) {
+					Logger.minor(this, " (limited)");
+				}
 				for (Map.Entry<String, Object> entry : manifestElements.entrySet()) {
 					String name = entry.getKey();
 					Object o = entry.getValue();
@@ -272,8 +283,9 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			}
 		} else {
 			// sub dirs does not fit into container, make each its own
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "PackStat2: sub dirs does not fit into container, make each its own");
+			}
 			for (Map.Entry<String, Object> entry : manifestElements.entrySet()) {
 				String name = entry.getKey();
 				Object o = entry.getValue();
@@ -307,13 +319,15 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 		}
 		assert (minUsageForFiles == 0);
 
-		if (tmpSize > maxSize)
+		if (tmpSize > maxSize) {
 			throw new TooManyFilesInsertException();
+		}
 
 		// group files left into external archives ('CHK@.../name' redirects)
 		while (!itemsLeft.isEmpty()) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "ItemsLeft checker: " + itemsLeft.size());
+			}
 
 			if (itemsLeft.size() == 1) {
 				// one item left, make it external
@@ -402,10 +416,11 @@ public class DefaultManifestPutter extends BaseManifestPutter {
 			Object o = entry.getValue();
 			if (o instanceof ManifestElement) {
 				ManifestElement element = (ManifestElement) o;
-				if (element.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE)
+				if (element.getSize() > DEFAULT_MAX_CONTAINERITEMSIZE) {
 					containerBuilder.addExternal(name, element.getData(), element.getMimeTypeOverride(), name.equals(defaultName));
-				else
+				} else {
 					containerBuilder.addItem(name, prefix + name, element, name.equals(defaultName));
+				}
 				continue;
 			} else {
 				@SuppressWarnings("unchecked")

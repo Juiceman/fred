@@ -109,30 +109,34 @@ public abstract class TransferThread implements PrioRunnable, ClientGetCallback,
 
 	protected void abortFetches() {
 		Logger.debug(this, "Trying to stop all fetches...");
-		if (mFetches != null) synchronized (mFetches) {
-			ClientGetter[] fetches = mFetches.toArray(new ClientGetter[mFetches.size()]);
-			int fcounter = 0;
-			for (ClientGetter fetch : fetches) {
-				/* This calls onFailure which removes the fetch from mFetches on the same thread, therefore we need to copy to an array */
-				fetch.cancel(mNode.getClientCore().getClientContext());
-				++fcounter;
-			}
+		if (mFetches != null) {
+			synchronized (mFetches) {
+				ClientGetter[] fetches = mFetches.toArray(new ClientGetter[mFetches.size()]);
+				int fcounter = 0;
+				for (ClientGetter fetch : fetches) {
+					/* This calls onFailure which removes the fetch from mFetches on the same thread, therefore we need to copy to an array */
+					fetch.cancel(mNode.getClientCore().getClientContext());
+					++fcounter;
+				}
 
-			Logger.debug(this, "Stopped " + fcounter + " current fetches.");
+				Logger.debug(this, "Stopped " + fcounter + " current fetches.");
+			}
 		}
 	}
 
 	protected void abortInserts() {
 		Logger.debug(this, "Trying to stop all inserts...");
-		if (mInserts != null) synchronized (mInserts) {
-			BaseClientPutter[] inserts = mInserts.toArray(new BaseClientPutter[mInserts.size()]);
-			int icounter = 0;
-			for (BaseClientPutter insert : inserts) {
-				/* This calls onFailure which removes the fetch from mFetches on the same thread, therefore we need to copy to an array */
-				insert.cancel(mNode.getClientCore().getClientContext());
-				++icounter;
+		if (mInserts != null) {
+			synchronized (mInserts) {
+				BaseClientPutter[] inserts = mInserts.toArray(new BaseClientPutter[mInserts.size()]);
+				int icounter = 0;
+				for (BaseClientPutter insert : inserts) {
+					/* This calls onFailure which removes the fetch from mFetches on the same thread, therefore we need to copy to an array */
+					insert.cancel(mNode.getClientCore().getClientContext());
+					++icounter;
+				}
+				Logger.debug(this, "Stopped " + icounter + " current inserts.");
 			}
-			Logger.debug(this, "Stopped " + icounter + " current inserts.");
 		}
 	}
 

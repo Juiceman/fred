@@ -129,7 +129,9 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 		DependencyJarFetcher(File filename, FreenetURI chk, long expectedLength, byte[] expectedHash, JarFetcherCallback cb, boolean essential, boolean executable) throws FetchException {
 			FetchContext myCtx = new FetchContext(dependencyCtx, FetchContext.IDENTICAL_MASK);
 			File parent = filename.getParentFile();
-			if (parent == null) parent = new File(".");
+			if (parent == null) {
+				parent = new File(".");
+			}
 			try {
 				tempFile = File.createTempFile(filename.getName(), NodeUpdateManager.TEMP_FILE_SUFFIX, parent);
 			} catch (InsufficientDiskSpaceException e) {
@@ -161,7 +163,9 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 				@Override
 				public void run() {
 					getter.cancel(clientContext);
-					if (f != null) f.cancel();
+					if (f != null) {
+						f.cancel();
+					}
 				}
 
 			});
@@ -189,35 +193,44 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			if (!MainJarDependenciesChecker.validFile(tempFile, expectedHash, expectedLength, executable)) {
 				Logger.error(this, "Unable to download dependency " + filename + " : not the expected size or hash!");
 				System.err.println("Download of " + filename + " for update failed because temp file appears to be corrupted!");
-				if (cb != null)
+				if (cb != null) {
 					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Downloaded jar from Freenet but failed consistency check: " + tempFile + " length " + tempFile.length() + " "));
+				}
 				tempFile.delete();
 				return;
 			}
 			if (!FileUtil.renameTo(tempFile, filename)) {
 				Logger.error(this, "Unable to rename temp file " + tempFile + " to " + filename);
 				System.err.println("Download of " + filename + " for update failed because cannot rename from " + tempFile);
-				if (cb != null)
+				if (cb != null) {
 					cb.onFailure(new FetchException(FetchExceptionMode.BUCKET_ERROR, "Unable to rename temp file " + tempFile + " to " + filename));
+				}
 				tempFile.delete();
 				return;
 			}
-			if (cb != null) cb.onSuccess();
+			if (cb != null) {
+				cb.onSuccess();
+			}
 		}
 
 		@Override
 		public void onFailure(FetchException e, ClientGetter state) {
 			tempFile.delete();
 			synchronized (this) {
-				if (fetched) return;
+				if (fetched) {
+					return;
+				}
 			}
-			if (cb != null) cb.onFailure(e);
+			if (cb != null) {
+				cb.onFailure(e);
+			}
 		}
 
 		@Override
 		public synchronized void receive(ClientEvent ce, ClientContext context) {
-			if (ce instanceof SplitfileProgressEvent)
+			if (ce instanceof SplitfileProgressEvent) {
 				lastProgress = (SplitfileProgressEvent) ce;
+			}
 		}
 
 		private void start() throws FetchException {
@@ -228,20 +241,25 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 			HTMLNode row = new HTMLNode("tr");
 			row.addChild("td").addChild("p", filename.toString());
 
-			if (uomFetcher != null)
+			if (uomFetcher != null) {
 				row.addChild("td").addChild("#", l10n("fetchingFromUOM"));
-			else if (lastProgress == null)
+			} else if (lastProgress == null) {
 				row.addChild(QueueToadlet.createProgressCell(false, true, COMPRESS_STATE.WORKING, 0, 0, 0, 0, 0, false, false));
-			else
+			} else {
 				row.addChild(QueueToadlet.createProgressCell(false,
 						true, COMPRESS_STATE.WORKING, lastProgress.succeedBlocks, lastProgress.failedBlocks, lastProgress.fatallyFailedBlocks, lastProgress.minSuccessfulBlocks, lastProgress.totalBlocks, lastProgress.finalizedTotal, false));
+			}
 			return row;
 		}
 
 		public void fetchFromUOM() {
 			synchronized (this) {
-				if (fetched) return;
-				if (!essential) return;
+				if (fetched) {
+					return;
+				}
+				if (!essential) {
+					return;
+				}
 			}
 			UOMDependencyFetcher f = manager.getUpdateOverMandatory().fetchDependency(expectedHash, expectedLength, filename, executable,
 					new UOMDependencyFetcherCallback() {
@@ -249,10 +267,14 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 						@Override
 						public void onSuccess() {
 							synchronized (DependencyJarFetcher.this) {
-								if (fetched) return;
+								if (fetched) {
+									return;
+								}
 								fetched = true;
 							}
-							if (cb != null) cb.onSuccess();
+							if (cb != null) {
+								cb.onSuccess();
+							}
 						}
 
 					});
@@ -280,21 +302,27 @@ public class MainJarUpdater extends NodeUpdater implements Deployer {
 	@Override
 	public JarFetcher fetch(FreenetURI uri, File downloadTo,
 							long expectedLength, byte[] expectedHash, JarFetcherCallback cb, int build, boolean essential, boolean executable) throws FetchException {
-		if (essential)
+		if (essential) {
 			System.out.println("Fetching " + downloadTo + " needed for new Freenet update " + build);
-		else if (build != 0) // build 0 means it's a preload or a multi-file update.
+		} else if (build != 0) // build 0 means it's a preload or a multi-file update.
+		{
 			System.out.println("Preloading " + downloadTo + " needed for new Freenet update " + build);
-		if (logMINOR) Logger.minor(this, "Fetching " + uri + " to " + downloadTo + " for next update");
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Fetching " + uri + " to " + downloadTo + " for next update");
+		}
 		DependencyJarFetcher fetcher = new DependencyJarFetcher(downloadTo, uri, expectedLength, expectedHash, cb, essential, executable);
 		synchronized (fetchers) {
 			fetchers.add(fetcher);
-			if (essential)
+			if (essential) {
 				essentialFetchers.add(fetcher);
+			}
 		}
 		fetcher.start();
 		if (manager.getUpdateOverMandatory().fetchingUOM()) {
-			if (essential)
+			if (essential) {
 				fetcher.fetchFromUOM();
+			}
 		}
 		return fetcher;
 	}

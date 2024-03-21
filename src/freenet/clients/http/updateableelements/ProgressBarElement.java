@@ -75,10 +75,12 @@ public class ProgressBarElement extends BaseUpdateableElement {
 				HTMLNode progressBar = addChild("div", "class", "progressbar");
 				progressBar.addChild("div", new String[]{"class", "style"}, new String[]{"progressbar-done", "width: " + fetchedPercent + "%;"});
 
-				if (fr.failedBlocks > 0)
+				if (fr.failedBlocks > 0) {
 					progressBar.addChild("div", new String[]{"class", "style"}, new String[]{"progressbar-failed", "width: " + failedPercent + "%;"});
-				if (fr.fatallyFailedBlocks > 0)
+				}
+				if (fr.fatallyFailedBlocks > 0) {
 					progressBar.addChild("div", new String[]{"class", "style"}, new String[]{"progressbar-failed2", "width: " + fatallyFailedPercent + "%;"});
+				}
 
 				NumberFormat nf = NumberFormat.getInstance();
 				nf.setMaximumFractionDigits(1);

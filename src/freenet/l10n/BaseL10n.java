@@ -133,7 +133,9 @@ public class BaseL10n {
 				}
 				if (currentLanguage.aliases != null) {
 					for (String s : currentLanguage.aliases)
-						if (whatever.equalsIgnoreCase(s)) return currentLanguage;
+						if (whatever.equalsIgnoreCase(s)) {
+							return currentLanguage;
+						}
 				}
 			}
 			return null;
@@ -146,8 +148,9 @@ public class BaseL10n {
 				// We will return the full names sorted alphabetically. To ensure that the user
 				// notices the special "UNLISTED" language code, we add it to the end of the list
 				// after sorting, so now we skip it.
-				if (allValues[i] != UNLISTED)
+				if (allValues[i] != UNLISTED) {
 					result.add(allValues[i].fullName);
+				}
 			}
 
 			Collections.sort(result);
@@ -377,8 +380,9 @@ public class BaseL10n {
 	private synchronized void loadFallback() {
 		if (this.fallbackTranslation == null) {
 			this.fallbackTranslation = loadTranslation(LANGUAGE.getDefault());
-			if (fallbackTranslation == null)
+			if (fallbackTranslation == null) {
 				fallbackTranslation = new SimpleFieldSet(true);
+			}
 		}
 	}
 
@@ -584,16 +588,18 @@ public class BaseL10n {
 	public HTMLNode getHTMLNode(String key, String[] patterns, String[] values) {
 		String value = this.getString(key, true);
 		if (value != null) {
-			if (patterns != null)
+			if (patterns != null) {
 				return new HTMLNode("#", getString(key, patterns, values));
-			else
+			} else {
 				return new HTMLNode("#", value);
+			}
 		}
 		HTMLNode translationField = new HTMLNode("span", "class", "translate_it");
-		if (patterns != null)
+		if (patterns != null) {
 			translationField.addChild("#", getDefaultString(key, patterns, values));
-		else
+		} else {
 			translationField.addChild("#", getDefaultString(key));
+		}
 		translationField.addChild("a", "href", TranslationToadlet.TOADLET_URL + "?translate=" + key).addChild("small", " (translate it in your native language!)");
 
 		return translationField;
@@ -806,8 +812,9 @@ public class BaseL10n {
 		int x;
 		while (!value.isEmpty() && (x = value.indexOf("${")) != -1) {
 			String before = value.substring(0, x);
-			if (before.length() > 0)
+			if (before.length() > 0) {
 				node.addChild("#", before);
+			}
 			value = value.substring(x);
 			int y = value.indexOf('}');
 			if (y == -1) {
@@ -849,8 +856,9 @@ public class BaseL10n {
 				value = rest;
 			}
 		}
-		if (!value.isEmpty())
+		if (!value.isEmpty()) {
 			node.addChild("#", value);
+		}
 	}
 
 	public String[] getAllNamesWithPrefix(String prefix) {

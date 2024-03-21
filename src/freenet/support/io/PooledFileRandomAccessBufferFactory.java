@@ -34,7 +34,9 @@ public class PooledFileRandomAccessBufferFactory implements LockableRandomAccess
 			ret = new PooledFileRandomAccessBuffer(file, false, size, enableCrypto ? seedRandom : null, id, true);
 			return ret;
 		} finally {
-			if (ret == null) file.delete();
+			if (ret == null) {
+				file.delete();
+			}
 		}
 	}
 
@@ -48,7 +50,9 @@ public class PooledFileRandomAccessBufferFactory implements LockableRandomAccess
 			ret = new PooledFileRandomAccessBuffer(file, "rw", initialContents, offset, size, id, true, readOnly);
 			return ret;
 		} finally {
-			if (ret == null) file.delete();
+			if (ret == null) {
+				file.delete();
+			}
 		}
 	}
 

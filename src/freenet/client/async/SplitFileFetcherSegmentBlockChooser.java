@@ -22,12 +22,17 @@ public class SplitFileFetcherSegmentBlockChooser extends CooldownBlockChooser {
 
 	@Override
 	protected boolean checkValid(int chosen) {
-		if (!super.checkValid(chosen)) return false;
-		if (chosen == ignoreLastBlock) return false;
+		if (!super.checkValid(chosen)) {
+			return false;
+		}
+		if (chosen == ignoreLastBlock) {
+			return false;
+		}
 		try {
 			SplitFileSegmentKeys keys = segment.getSegmentKeys();
-			if (keysFetching.hasKey(keys.getNodeKey(chosen, null, false), segment.parent.fetcher.getSendableGet()))
+			if (keysFetching.hasKey(keys.getNodeKey(chosen, null, false), segment.parent.fetcher.getSendableGet())) {
 				return false;
+			}
 			return true;
 		} catch (final IOException e) {
 			segment.parent.jobRunner.queueNormalOrDrop(new PersistentJob() {

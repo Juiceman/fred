@@ -95,10 +95,13 @@ public class UptimeEstimator implements Runnable {
 			try {
 				while (true) {
 					int offset = dis.readInt();
-					if (offset < base) continue;
+					if (offset < base) {
+						continue;
+					}
 					int slotNo = offset - base;
-					if (slotNo == wasOnlineWeek.length)
+					if (slotNo == wasOnlineWeek.length) {
 						break; // Reached the end, restarted within the same timeslot.
+					}
 					if (slotNo > wasOnlineWeek.length || slotNo < 0) {
 						Logger.error(this, "Corrupt data read from uptime file " + file + ": 5-minutes-from-epoch is now " + (base + wasOnlineWeek.length) + " but read " + slotNo);
 						break;
@@ -150,7 +153,9 @@ public class UptimeEstimator implements Runnable {
 
 	private void schedule(long now) {
 		long nextTime = (((now / PERIOD)) * (PERIOD)) + timeOffset;
-		if (nextTime < now) nextTime += PERIOD;
+		if (nextTime < now) {
+			nextTime += PERIOD;
+		}
 		ticker.queueTimedJob(this, nextTime - System.currentTimeMillis());
 	}
 
@@ -161,7 +166,10 @@ public class UptimeEstimator implements Runnable {
 	 */
 	private synchronized double getUptime(boolean[] uptime) {
 		int upCount = 0;
-		for (boolean sample : uptime) if (sample) upCount++;
+		for (boolean sample : uptime)
+			if (sample) {
+				upCount++;
+			}
 		return ((double) upCount) / ((double) uptime.length);
 	}
 

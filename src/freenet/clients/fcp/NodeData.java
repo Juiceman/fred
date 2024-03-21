@@ -45,8 +45,9 @@ public class NodeData extends FCPMessage {
 				fs.put("volatile", vol);
 			}
 		}
-		if (identifier != null)
+		if (identifier != null) {
 			fs.putSingle("Identifier", identifier);
+		}
 		return fs;
 	}
 

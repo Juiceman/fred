@@ -53,13 +53,17 @@ public class Peer implements WritableToDataOutputStream {
 	public Peer(DataInput dis) throws IOException {
 		addr = new FreenetInetAddress(dis);
 		_port = dis.readInt();
-		if (_port > 65535 || _port < 0) throw new IOException("bogus port");
+		if (_port > 65535 || _port < 0) {
+			throw new IOException("bogus port");
+		}
 	}
 
 	public Peer(DataInput dis, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, IOException {
 		addr = new FreenetInetAddress(dis, checkHostnameOrIPSyntax);
 		_port = dis.readInt();
-		if (_port > 65535 || _port < 0) throw new IOException("bogus port");
+		if (_port > 65535 || _port < 0) {
+			throw new IOException("bogus port");
+		}
 	}
 
 	/**
@@ -70,7 +74,9 @@ public class Peer implements WritableToDataOutputStream {
 	public Peer(InetAddress address, int port) {
 		addr = new FreenetInetAddress(address);
 		_port = port;
-		if (_port > 65535 || _port < 0) throw new IllegalArgumentException("bogus port");
+		if (_port > 65535 || _port < 0) {
+			throw new IllegalArgumentException("bogus port");
+		}
 	}
 
 	/**
@@ -89,13 +95,17 @@ public class Peer implements WritableToDataOutputStream {
 	 */
 	public Peer(String physical, boolean allowUnknown) throws PeerParseException, UnknownHostException {
 		int offset = physical.lastIndexOf(':'); // ipv6
-		if (offset < 0) throw new PeerParseException();
+		if (offset < 0) {
+			throw new PeerParseException();
+		}
 		String host = physical.substring(0, offset);
 		addr = new FreenetInetAddress(host, allowUnknown);
 		String strport = physical.substring(offset + 1);
 		try {
 			_port = Integer.parseInt(strport);
-			if (_port < 0 || _port > 65535) throw new PeerParseException("Invalid port " + _port);
+			if (_port < 0 || _port > 65535) {
+				throw new PeerParseException("Invalid port " + _port);
+			}
 		} catch (NumberFormatException e) {
 			throw new PeerParseException(e);
 		}
@@ -121,14 +131,17 @@ public class Peer implements WritableToDataOutputStream {
 	 */
 	public Peer(String physical, boolean allowUnknown, boolean checkHostnameOrIPSyntax) throws HostnameSyntaxException, PeerParseException, UnknownHostException {
 		int offset = physical.lastIndexOf(':'); // ipv6
-		if (offset < 0)
+		if (offset < 0) {
 			throw new PeerParseException("No port number: \"" + physical + "\"");
+		}
 		String host = physical.substring(0, offset);
 		addr = new FreenetInetAddress(host, allowUnknown, checkHostnameOrIPSyntax);
 		String strport = physical.substring(offset + 1);
 		try {
 			_port = Integer.parseInt(strport);
-			if (_port < 0 || _port > 65535) throw new PeerParseException("Invalid port " + _port);
+			if (_port < 0 || _port > 65535) {
+				throw new PeerParseException("Invalid port " + _port);
+			}
 		} catch (NumberFormatException e) {
 			throw new PeerParseException(e);
 		}
@@ -136,9 +149,13 @@ public class Peer implements WritableToDataOutputStream {
 
 	public Peer(FreenetInetAddress addr, int port) {
 		this.addr = addr;
-		if (addr == null) throw new NullPointerException();
+		if (addr == null) {
+			throw new NullPointerException();
+		}
 		this._port = port;
-		if (_port > 65535 || _port < 0) throw new IllegalArgumentException("bogus port");
+		if (_port > 65535 || _port < 0) {
+			throw new IllegalArgumentException("bogus port");
+		}
 	}
 
 	public boolean isNull() {
@@ -159,8 +176,9 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.laxEquals(peer.addr))
+		if (!addr.laxEquals(peer.addr)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -179,8 +197,9 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.equals(peer.addr))
+		if (!addr.equals(peer.addr)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -188,7 +207,9 @@ public class Peer implements WritableToDataOutputStream {
 		if (this == o) {
 			return true;
 		}
-		if (o == null) return false;
+		if (o == null) {
+			return false;
+		}
 		if (!(o instanceof Peer)) {
 			return false;
 		}
@@ -198,8 +219,9 @@ public class Peer implements WritableToDataOutputStream {
 		if (_port != peer._port) {
 			return false;
 		}
-		if (!addr.strictEquals(peer.addr))
+		if (!addr.strictEquals(peer.addr)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -223,8 +245,12 @@ public class Peer implements WritableToDataOutputStream {
 
 	public InetAddress getAddress(boolean doDNSRequest, boolean allowLocal) throws LocalAddressException {
 		InetAddress a = addr.getAddress(doDNSRequest);
-		if (a == null) return null;
-		if (allowLocal || IPUtil.isValidAddress(a, false)) return a;
+		if (a == null) {
+			return null;
+		}
+		if (allowLocal || IPUtil.isValidAddress(a, false)) {
+			return a;
+		}
 		throw new LocalAddressException();
 	}
 
@@ -274,17 +300,23 @@ public class Peer implements WritableToDataOutputStream {
 
 	public Peer dropHostName() {
 		FreenetInetAddress newAddr = addr.dropHostname();
-		if (newAddr == null) return null;
+		if (newAddr == null) {
+			return null;
+		}
 		if (addr != newAddr) {
 			return new Peer(newAddr, _port);
-		} else return this;
+		} else {
+			return this;
+		}
 	}
 
 	/**
 	 * Is this peer using IPv6?
 	 */
 	public boolean isIPv6(boolean defaultValue) {
-		if (addr == null) return defaultValue;
+		if (addr == null) {
+			return defaultValue;
+		}
 		return addr.isIPv6(defaultValue);
 	}
 

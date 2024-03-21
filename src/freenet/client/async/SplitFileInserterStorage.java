@@ -289,8 +289,9 @@ public class SplitFileInserterStorage {
 		this.callback = callback;
 		this.persistent = persistent;
 		dataLength = originalData.size();
-		if (dataLength > ((long) Integer.MAX_VALUE) * CHKBlock.DATA_LENGTH)
+		if (dataLength > ((long) Integer.MAX_VALUE) * CHKBlock.DATA_LENGTH) {
 			throw new InsertException(InsertExceptionMode.TOO_BIG);
+		}
 		totalDataBlocks = (int) ((dataLength + CHKBlock.DATA_LENGTH - 1) / CHKBlock.DATA_LENGTH);
 		this.decompressedLength = decompressedLength;
 		this.compressionCodec = compressionCodec;
@@ -423,15 +424,17 @@ public class SplitFileInserterStorage {
 
 		if (crossCheckBlocks != 0) {
 			byte[] seed = Metadata.getCrossSegmentSeed(hashes, hashThisLayerOnly);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Cross-segment seed: " + HexUtil.bytesToHex(seed));
+			}
 			Random xsRandom = new MersenneTwister(seed);
 			// Cross segment redundancy: Allocate the blocks.
 			crossSegments = new SplitFileInserterCrossSegmentStorage[segs];
 			int segLen = segmentSize;
 			for (int i = 0; i < crossSegments.length; i++) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Allocating blocks for cross segment " + i);
+				}
 				if (segments.length - i == deductBlocksFromSegments) {
 					segLen--;
 				}
@@ -457,10 +460,11 @@ public class SplitFileInserterStorage {
 		// Setup offset arrays early so we can compute the length of encodeOffsets().
 		if (crossSegments != null) {
 			offsetCrossSegmentBlocks = new long[crossSegments.length];
-			if (persistent)
+			if (persistent) {
 				offsetCrossSegmentStatus = new long[crossSegments.length];
-			else
+			} else {
 				offsetCrossSegmentStatus = null;
+			}
 		} else {
 			offsetCrossSegmentBlocks = null;
 			offsetCrossSegmentStatus = null;
@@ -516,8 +520,9 @@ public class SplitFileInserterStorage {
 			// Pad to a 4KB block boundary.
 			int padding = 0;
 			padding = (int) (ptr % 4096);
-			if (padding != 0)
+			if (padding != 0) {
 				padding = 4096 - padding;
+			}
 
 			ptr += padding;
 		} else {
@@ -527,8 +532,9 @@ public class SplitFileInserterStorage {
 
 		this.offsetPaddedLastBlock = ptr;
 
-		if (hasPaddedLastBlock)
+		if (hasPaddedLastBlock) {
 			ptr += CHKBlock.DATA_LENGTH;
+		}
 
 		if (crossSegments != null) {
 			for (int i = 0; i < crossSegments.length; i++) {
@@ -581,17 +587,22 @@ public class SplitFileInserterStorage {
 			}
 			writeOverallStatus(true);
 		}
-		if (hasPaddedLastBlock)
+		if (hasPaddedLastBlock) {
 			raf.pwrite(offsetPaddedLastBlock, paddedLastBlock, 0, paddedLastBlock.length);
+		}
 		if (persistent) {
 			// Padding is initialized to random already.
 			for (SplitFileInserterSegmentStorage segment : segments) {
-				if (logMINOR) Logger.minor(this, "Clearing status for " + segment);
+				if (logMINOR) {
+					Logger.minor(this, "Clearing status for " + segment);
+				}
 				segment.storeStatus(true);
 			}
 			if (crossSegments != null) {
 				for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-					if (logMINOR) Logger.minor(this, "Clearing status for " + segment);
+					if (logMINOR) {
+						Logger.minor(this, "Clearing status for " + segment);
+					}
 					segment.storeStatus();
 				}
 			}
@@ -646,8 +657,9 @@ public class SplitFileInserterStorage {
 		InputStream ois = new RAFInputStream(raf, 0, rafLength);
 		DataInputStream dis = new DataInputStream(ois);
 		long magic = dis.readLong();
-		if (magic != MAGIC)
+		if (magic != MAGIC) {
 			throw new StorageFormatException("Bad magic");
+		}
 		int checksumType = dis.readInt();
 		try {
 			this.checker = ChecksumChecker.create(checksumType);
@@ -660,21 +672,27 @@ public class SplitFileInserterStorage {
 		InputStream is = checker.checksumReaderWithLength(ois, new ArrayBucketFactory(), maxLength);
 		dis = new DataInputStream(is);
 		int version = dis.readInt();
-		if (version != VERSION)
+		if (version != VERSION) {
 			throw new StorageFormatException("Bad version");
+		}
 		LockableRandomAccessBuffer rafOrig = BucketTools.restoreRAFFrom(dis, persistentFG, persistentFileTracker, masterKey);
 		if (originalData == null) {
 			this.originalData = rafOrig;
 		} else {
 			// Check that it's the same, but use the passed-in one.
-			if (!originalData.equals(rafOrig))
+			if (!originalData.equals(rafOrig)) {
 				throw new StorageFormatException("Original data restored from different filename! Expected " + originalData + " but restored " + rafOrig);
+			}
 			this.originalData = originalData;
 		}
 		this.totalDataBlocks = dis.readInt();
-		if (totalDataBlocks <= 0) throw new StorageFormatException("Bad total data blocks " + totalDataBlocks);
+		if (totalDataBlocks <= 0) {
+			throw new StorageFormatException("Bad total data blocks " + totalDataBlocks);
+		}
 		this.totalCheckBlocks = dis.readInt();
-		if (totalCheckBlocks <= 0) throw new StorageFormatException("Bad total data blocks " + totalCheckBlocks);
+		if (totalCheckBlocks <= 0) {
+			throw new StorageFormatException("Bad total data blocks " + totalCheckBlocks);
+		}
 		try {
 			this.splitfileType = SplitfileAlgorithm.getByCode(dis.readShort());
 		} catch (IllegalArgumentException e) {
@@ -686,21 +704,28 @@ public class SplitFileInserterStorage {
 			throw new StorageFormatException("Bad splitfile codec type");
 		}
 		this.dataLength = dis.readLong();
-		if (dataLength <= 0) throw new StorageFormatException("Bad data length");
-		if (dataLength != originalData.size())
+		if (dataLength <= 0) {
+			throw new StorageFormatException("Bad data length");
+		}
+		if (dataLength != originalData.size()) {
 			throw new ResumeFailedException("Original data size is " + originalData.size() + " should be " + dataLength);
-		if (((dataLength + CHKBlock.DATA_LENGTH - 1) / CHKBlock.DATA_LENGTH) != totalDataBlocks)
+		}
+		if (((dataLength + CHKBlock.DATA_LENGTH - 1) / CHKBlock.DATA_LENGTH) != totalDataBlocks) {
 			throw new StorageFormatException("Data blocks " + totalDataBlocks + " not compatible with size " + dataLength);
+		}
 		decompressedLength = dis.readLong();
-		if (decompressedLength <= 0)
+		if (decompressedLength <= 0) {
 			throw new StorageFormatException("Bogus decompressed length");
+		}
 		isMetadata = dis.readBoolean();
 		short atype = dis.readShort();
 		if (atype == -1) {
 			archiveType = null;
 		} else {
 			archiveType = ARCHIVE_TYPE.getArchiveType(atype);
-			if (archiveType == null) throw new StorageFormatException("Unknown archive type " + atype);
+			if (archiveType == null) {
+				throw new StorageFormatException("Unknown archive type " + atype);
+			}
 		}
 		try {
 			clientMetadata = ClientMetadata.construct(dis);
@@ -708,26 +733,37 @@ public class SplitFileInserterStorage {
 			throw new StorageFormatException("Failed to read MIME type: " + e);
 		}
 		short codec = dis.readShort();
-		if (codec == (short) -1)
+		if (codec == (short) -1) {
 			compressionCodec = null;
-		else {
+		} else {
 			compressionCodec = COMPRESSOR_TYPE.getCompressorByMetadataID(codec);
-			if (compressionCodec == null)
+			if (compressionCodec == null) {
 				throw new StorageFormatException("Unknown compression codec ID " + codec);
+			}
 		}
 		int segmentCount = dis.readInt();
-		if (segmentCount <= 0) throw new StorageFormatException("Bad segment count");
+		if (segmentCount <= 0) {
+			throw new StorageFormatException("Bad segment count");
+		}
 		this.segmentSize = dis.readInt();
-		if (segmentSize <= 0) throw new StorageFormatException("Bad segment size");
+		if (segmentSize <= 0) {
+			throw new StorageFormatException("Bad segment size");
+		}
 		this.checkSegmentSize = dis.readInt();
-		if (checkSegmentSize <= 0) throw new StorageFormatException("Bad check segment size");
+		if (checkSegmentSize <= 0) {
+			throw new StorageFormatException("Bad check segment size");
+		}
 		this.crossCheckBlocks = dis.readInt();
-		if (crossCheckBlocks < 0) throw new StorageFormatException("Bad cross-check block count");
-		if (segmentSize + checkSegmentSize + crossCheckBlocks > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT)
+		if (crossCheckBlocks < 0) {
+			throw new StorageFormatException("Bad cross-check block count");
+		}
+		if (segmentSize + checkSegmentSize + crossCheckBlocks > FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT) {
 			throw new StorageFormatException("Must be no more than " + FECCodec.MAX_TOTAL_BLOCKS_PER_SEGMENT + " blocks per segment");
+		}
 		this.splitfileCryptoAlgorithm = dis.readByte();
-		if (!Metadata.isValidSplitfileCryptoAlgorithm(splitfileCryptoAlgorithm))
+		if (!Metadata.isValidSplitfileCryptoAlgorithm(splitfileCryptoAlgorithm)) {
 			throw new StorageFormatException("Invalid splitfile crypto algorithm " + splitfileCryptoAlgorithm);
+		}
 		if (dis.readBoolean()) {
 			splitfileCryptoKey = new byte[32];
 			dis.readFully(splitfileCryptoKey);
@@ -735,21 +771,27 @@ public class SplitFileInserterStorage {
 			splitfileCryptoKey = null;
 		}
 		this.keyLength = dis.readInt(); // FIXME validate
-		if (keyLength < SplitFileInserterSegmentStorage.getKeyLength(this))
+		if (keyLength < SplitFileInserterSegmentStorage.getKeyLength(this)) {
 			throw new StorageFormatException("Invalid key length " + keyLength + " should be at least " +
 					SplitFileInserterSegmentStorage.getKeyLength(this));
+		}
 		int compatMode = dis.readInt();
-		if (compatMode < 0 || compatMode > CompatibilityMode.values().length)
+		if (compatMode < 0 || compatMode > CompatibilityMode.values().length) {
 			throw new StorageFormatException("Invalid compatibility mode " + compatMode);
+		}
 		this.cmode = CompatibilityMode.values()[compatMode];
 		this.deductBlocksFromSegments = dis.readInt();
-		if (deductBlocksFromSegments < 0 || deductBlocksFromSegments > segmentCount)
+		if (deductBlocksFromSegments < 0 || deductBlocksFromSegments > segmentCount) {
 			throw new StorageFormatException("Bad deductBlocksFromSegments");
+		}
 		this.maxRetries = dis.readInt();
-		if (maxRetries < -1) throw new StorageFormatException("Bad maxRetries");
+		if (maxRetries < -1) {
+			throw new StorageFormatException("Bad maxRetries");
+		}
 		this.consecutiveRNFsCountAsSuccess = dis.readInt();
-		if (consecutiveRNFsCountAsSuccess < 0)
+		if (consecutiveRNFsCountAsSuccess < 0) {
 			throw new StorageFormatException("Bad consecutiveRNFsCountAsSuccess");
+		}
 		specifySplitfileKeyInMetadata = dis.readBoolean();
 		if (dis.readBoolean()) {
 			hashThisLayerOnly = new byte[32];
@@ -767,10 +809,11 @@ public class SplitFileInserterStorage {
 		this.hasPaddedLastBlock = (dataLength % CHKBlock.DATA_LENGTH != 0);
 		this.segments = new SplitFileInserterSegmentStorage[segmentCount];
 		randomSegmentIterator = new RandomArrayIterator<SplitFileInserterSegmentStorage>(segments);
-		if (crossCheckBlocks != 0)
+		if (crossCheckBlocks != 0) {
 			this.crossSegments = new SplitFileInserterCrossSegmentStorage[segmentCount];
-		else
+		} else {
 			crossSegments = null;
+		}
 		// Read offsets.
 		is = checker.checksumReaderWithLength(ois, new ArrayBucketFactory(), maxLength);
 		dis = new DataInputStream(is);
@@ -781,9 +824,12 @@ public class SplitFileInserterStorage {
 		}
 		offsetOverallStatus = readOffset(dis, rafLength, "offsetOverallStatus");
 		overallStatusLength = dis.readInt();
-		if (overallStatusLength < 0) throw new StorageFormatException("Negative overall status length");
-		if (overallStatusLength < FailureCodeTracker.getFixedLength(true))
+		if (overallStatusLength < 0) {
+			throw new StorageFormatException("Negative overall status length");
+		}
+		if (overallStatusLength < FailureCodeTracker.getFixedLength(true)) {
 			throw new StorageFormatException("Bad overall status length");
+		}
 		// Will be read after offsets
 		if (crossSegments != null) {
 			offsetCrossSegmentBlocks = new long[crossSegments.length];
@@ -822,8 +868,9 @@ public class SplitFileInserterStorage {
 			assert (underlyingOffsetDataSegments[i] < dataLength);
 		}
 		dis.close();
-		if (blocks != totalDataBlocks)
+		if (blocks != totalDataBlocks) {
 			throw new StorageFormatException("Total data blocks should be " + totalDataBlocks + " but is " + blocks);
+		}
 		if (crossSegments != null) {
 			is = checker.checksumReaderWithLength(ois, new ArrayBucketFactory(), maxLength);
 			dis = new DataInputStream(is);
@@ -852,12 +899,16 @@ public class SplitFileInserterStorage {
 		status = Status.STARTED;
 		if (crossSegments != null) {
 			for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-				if (!segment.isFinishedEncoding()) return;
+				if (!segment.isFinishedEncoding()) {
+					return;
+				}
 			}
 			status = Status.ENCODED_CROSS_SEGMENTS;
 		}
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (!segment.isFinishedEncoding()) return;
+			if (!segment.isFinishedEncoding()) {
+				return;
+			}
 		}
 		status = Status.ENCODED;
 		// Last 3 statuses are only used during completion.
@@ -865,16 +916,24 @@ public class SplitFileInserterStorage {
 
 	private long readOffset(DataInputStream dis, long rafLength, String error) throws IOException, StorageFormatException {
 		long l = dis.readLong();
-		if (l < 0) throw new StorageFormatException("Negative " + error);
-		if (l > rafLength) throw new StorageFormatException("Too big " + error);
+		if (l < 0) {
+			throw new StorageFormatException("Negative " + error);
+		}
+		if (l > rafLength) {
+			throw new StorageFormatException("Too big " + error);
+		}
 		return l;
 	}
 
 	private void writeOverallStatus(boolean force) throws IOException {
 		byte[] buf;
 		synchronized (this) {
-			if (!persistent) return;
-			if (!force && !overallStatusDirty) return;
+			if (!persistent) {
+				return;
+			}
+			if (!force && !overallStatusDirty) {
+				return;
+			}
 			buf = encodeOverallStatus();
 			assert (buf.length == overallStatusLength);
 		}
@@ -921,8 +980,9 @@ public class SplitFileInserterStorage {
 	 * which blocks go in which cross-segments ...
 	 */
 	private Bucket encodeCrossSegmentSettings(BucketFactory bf) throws IOException {
-		if (crossSegments == null)
+		if (crossSegments == null) {
 			return new NullBucket();
+		}
 		Bucket bucket = bf.makeBucket(-1);
 		OutputStream os = bucket.getOutputStream();
 		OutputStream cos = checker.checksumWriterWithLength(os, new ArrayBucketFactory());
@@ -954,15 +1014,17 @@ public class SplitFileInserterStorage {
 			dos.writeLong(dataLength);
 			dos.writeLong(decompressedLength);
 			dos.writeBoolean(isMetadata);
-			if (archiveType == null)
+			if (archiveType == null) {
 				dos.writeShort((short) -1);
-			else
+			} else {
 				dos.writeShort(archiveType.metadataID);
+			}
 			clientMetadata.writeTo(dos);
-			if (compressionCodec == null)
+			if (compressionCodec == null) {
 				dos.writeShort((short) -1);
-			else
+			} else {
 				dos.writeShort(compressionCodec.metadataID);
+			}
 			dos.writeInt(segments.length);
 			dos.writeInt(segmentSize);
 			dos.writeInt(checkSegmentSize);
@@ -1007,8 +1069,9 @@ public class SplitFileInserterStorage {
 		try {
 			OutputStream os = checker.checksumWriterWithLength(baos, new ArrayBucketFactory());
 			DataOutputStream dos = new DataOutputStream(os);
-			if (this.hasPaddedLastBlock)
+			if (this.hasPaddedLastBlock) {
 				dos.writeLong(offsetPaddedLastBlock);
+			}
 			dos.writeLong(offsetOverallStatus);
 			dos.writeInt(overallStatusLength);
 			if (crossSegments != null) {
@@ -1045,8 +1108,9 @@ public class SplitFileInserterStorage {
 		}
 		for (int i = 0; i < segments.length; i++) {
 			x++;
-			if (x == segments.length)
+			if (x == segments.length) {
 				x = 0;
+			}
 			SplitFileInserterSegmentStorage seg = segments[x];
 			int blockNum = seg.allocateCrossDataBlock(segment, xsRandom);
 			if (blockNum >= 0) {
@@ -1071,8 +1135,9 @@ public class SplitFileInserterStorage {
 		}
 		for (int i = 0; i < segments.length; i++) {
 			x++;
-			if (x == segments.length)
+			if (x == segments.length) {
 				x = 0;
+			}
 			SplitFileInserterSegmentStorage seg = segments[x];
 			int blockNum = seg.allocateCrossCheckBlock(segment, xsRandom,
 					segment.getAllocatedCrossCheckBlocks());
@@ -1102,8 +1167,9 @@ public class SplitFileInserterStorage {
 			int check = codec.getCheckBlocks(data + crossCheckBlocks, cmode);
 			for (int i = segmentSize; ; ) {
 				this.underlyingOffsetDataSegments[segNo] = (long) j * CHKBlock.DATA_LENGTH;
-				if (i > dataBlocks)
+				if (i > dataBlocks) {
 					i = dataBlocks;
+				}
 				if (data > (i - j)) {
 					// Last segment.
 					assert (segNo == segCount - 1);
@@ -1115,14 +1181,17 @@ public class SplitFileInserterStorage {
 						data, check, crossCheckBlocks, keyLength, splitfileCryptoAlgorithm, splitfileCryptoKey,
 						random, maxRetries, consecutiveRNFsCountAsSuccess, keysFetching);
 
-				if (deductBlocksFromSegments != 0)
-					if (logMINOR)
+				if (deductBlocksFromSegments != 0) {
+					if (logMINOR) {
 						Logger.minor(this, "INSERTING: Segment " + segNo + " of " + segCount
 								+ " : " + data + " data blocks " + check + " check blocks");
+					}
+				}
 
 				segNo++;
-				if (i == dataBlocks)
+				if (i == dataBlocks) {
 					break;
+				}
 				// Deduct one block from each later segment, rather than having
 				// a really short last segment.
 				if (segCount - segNo == deductBlocksFromSegments) {
@@ -1142,16 +1211,23 @@ public class SplitFileInserterStorage {
 			if (status == Status.NOT_STARTED) {
 				status = Status.STARTED;
 			}
-			if (status == Status.ENCODED_CROSS_SEGMENTS) startSegments = true;
-			if (status == Status.ENCODED) return;
+			if (status == Status.ENCODED_CROSS_SEGMENTS) {
+				startSegments = true;
+			}
+			if (status == Status.ENCODED) {
+				return;
+			}
 			if (status == Status.FAILED || status == Status.GENERATING_METADATA ||
-					status == Status.SUCCEEDED) return;
+					status == Status.SUCCEEDED) {
+				return;
+			}
 		}
 		for (SplitFileInserterSegmentStorage segment : segments)
 			segment.checkKeys();
 		Logger.normal(this, "Starting splitfile, " + countEncodedSegments() + "/" + segments.length + " segments encoded on " + this);
-		if (crossSegments != null)
+		if (crossSegments != null) {
 			Logger.normal(this, "Starting splitfile, " + countEncodedCrossSegments() + "/" + crossSegments.length + " cross-segments encoded on " + this);
+		}
 		if (startSegments) {
 			startSegmentEncode();
 		} else {
@@ -1163,7 +1239,9 @@ public class SplitFileInserterStorage {
 	public int countEncodedSegments() {
 		int total = 0;
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (segment.hasEncoded()) total++;
+			if (segment.hasEncoded()) {
+				total++;
+			}
 		}
 		return total;
 	}
@@ -1171,7 +1249,9 @@ public class SplitFileInserterStorage {
 	public int countEncodedCrossSegments() {
 		int total = 0;
 		for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-			if (segment.isFinishedEncoding()) total++;
+			if (segment.isFinishedEncoding()) {
+				total++;
+			}
 		}
 		return total;
 	}
@@ -1204,7 +1284,9 @@ public class SplitFileInserterStorage {
 					noBlocksToSend = false;
 				}
 				callback.encodingProgress();
-				if (maybeFail()) return true;
+				if (maybeFail()) {
+					return true;
+				}
 				if (allFinishedCrossEncoding()) {
 					onCompletedCrossSegmentEncode();
 				}
@@ -1216,8 +1298,9 @@ public class SplitFileInserterStorage {
 
 	private boolean allFinishedCrossEncoding() {
 		for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-			if (!segment.isFinishedEncoding())
+			if (!segment.isFinishedEncoding()) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -1238,7 +1321,9 @@ public class SplitFileInserterStorage {
 				}
 				completed.storeStatus(true);
 				callback.encodingProgress();
-				if (maybeFail()) return true;
+				if (maybeFail()) {
+					return true;
+				}
 				if (allFinishedEncoding()) {
 					onCompletedSegmentEncode();
 				}
@@ -1250,8 +1335,9 @@ public class SplitFileInserterStorage {
 
 	private boolean allFinishedEncoding() {
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (!segment.isFinishedEncoding())
+			if (!segment.isFinishedEncoding()) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -1261,7 +1347,9 @@ public class SplitFileInserterStorage {
 	 */
 	private void onCompletedCrossSegmentEncode() {
 		synchronized (this) {
-			if (status == Status.ENCODED_CROSS_SEGMENTS) return; // Race condition.
+			if (status == Status.ENCODED_CROSS_SEGMENTS) {
+				return; // Race condition.
+			}
 			if (status != Status.STARTED) {
 				Logger.error(this, "Wrong state " + status + " for " + this, new Exception("error"));
 				return;
@@ -1273,7 +1361,9 @@ public class SplitFileInserterStorage {
 
 	private void onCompletedSegmentEncode() {
 		synchronized (this) {
-			if (status == Status.ENCODED) return; // Race condition.
+			if (status == Status.ENCODED) {
+				return; // Race condition.
+			}
 			if (!(status == Status.ENCODED_CROSS_SEGMENTS || (crossSegments == null && status == Status.STARTED))) {
 				Logger.error(this, "Wrong state " + status + " for " + this, new Exception("error"));
 				return;
@@ -1285,8 +1375,9 @@ public class SplitFileInserterStorage {
 
 	public void onHasKeys(SplitFileInserterSegmentStorage splitFileInserterSegmentStorage) {
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (!segment.hasKeys())
+			if (!segment.hasKeys()) {
 				return;
+			}
 		}
 		onHasKeys();
 	}
@@ -1315,9 +1406,10 @@ public class SplitFileInserterStorage {
 			public void close() throws IOException {
 				out.close();
 				byte[] buf = baos.toByteArray();
-				if (buf.length != length)
+				if (buf.length != length) {
 					throw new IllegalStateException("Wrote wrong number of bytes: " + buf.length
 							+ " should be " + length);
+				}
 				raf.pwrite(fileOffset, buf, 0, length);
 			}
 
@@ -1346,8 +1438,9 @@ public class SplitFileInserterStorage {
 	 */
 	void writeCheckBlock(int segNo, int checkBlockNo, byte[] buf) throws IOException {
 		synchronized (this) {
-			if (status == Status.ENCODED || status == Status.ENCODED_CROSS_SEGMENTS)
+			if (status == Status.ENCODED || status == Status.ENCODED_CROSS_SEGMENTS) {
 				throw new IllegalStateException("Already encoded!?");
+			}
 		}
 		assert (segNo >= 0 && segNo < crossSegments.length);
 		assert (checkBlockNo >= 0 && checkBlockNo < crossCheckBlocks);
@@ -1456,16 +1549,18 @@ public class SplitFileInserterStorage {
 		assert (segNo >= 0 && segNo < segments.length);
 		assert (blockNo >= 0 && blockNo < segments[segNo].totalBlockCount);
 		long fileOffset = this.offsetSegmentKeys[segNo] + keyLength * blockNo;
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "Writing key for block " + blockNo + " for segment " + segNo + " of " + this + " to " + fileOffset);
+		}
 		raf.pwrite(fileOffset, buf, 0, buf.length);
 	}
 
 	byte[] innerReadSegmentKey(int segNo, int blockNo) throws IOException {
 		byte[] buf = new byte[keyLength];
 		long fileOffset = this.offsetSegmentKeys[segNo] + keyLength * blockNo;
-		if (logDEBUG)
+		if (logDEBUG) {
 			Logger.debug(this, "Reading key for block " + blockNo + " for segment " + segNo + " of " + this + " to " + fileOffset);
+		}
 		raf.pread(fileOffset, buf, 0, buf.length);
 		return buf;
 	}
@@ -1478,20 +1573,30 @@ public class SplitFileInserterStorage {
 	 * Called when a segment completes. Can be called inside locks as it runs off-thread.
 	 */
 	public void segmentSucceeded(final SplitFileInserterSegmentStorage completedSegment) {
-		if (logMINOR) Logger.minor(this, "Succeeded segment " + completedSegment + " for " + callback);
+		if (logMINOR) {
+			Logger.minor(this, "Succeeded segment " + completedSegment + " for " + callback);
+		}
 		jobRunner.queueNormalOrDrop(new PersistentJob() {
 
 			@Override
 			public boolean run(ClientContext context) {
-				if (logMINOR) Logger.minor(this, "Succeeding segment " + completedSegment + " for " + callback);
-				if (maybeFail()) return true;
+				if (logMINOR) {
+					Logger.minor(this, "Succeeding segment " + completedSegment + " for " + callback);
+				}
+				if (maybeFail()) {
+					return true;
+				}
 				if (allSegmentsSucceeded()) {
 					synchronized (this) {
 						assert (failing == null);
-						if (hasFinished()) return false;
+						if (hasFinished()) {
+							return false;
+						}
 						status = Status.GENERATING_METADATA;
 					}
-					if (logMINOR) Logger.minor(this, "Generating metadata...");
+					if (logMINOR) {
+						Logger.minor(this, "Generating metadata...");
+					}
 					try {
 						Metadata metadata = encodeMetadata();
 						synchronized (this) {
@@ -1516,7 +1621,9 @@ public class SplitFileInserterStorage {
 						callback.onFailed(e1);
 					}
 				} else {
-					if (logMINOR) Logger.minor(this, "Not all segments succeeded for " + this);
+					if (logMINOR) {
+						Logger.minor(this, "Not all segments succeeded for " + this);
+					}
 				}
 				return true;
 			}
@@ -1530,15 +1637,21 @@ public class SplitFileInserterStorage {
 		if (allSegmentsCompletedOrFailed()) {
 			InsertException e = null;
 			synchronized (this) {
-				if (failing == null) return false;
+				if (failing == null) {
+					return false;
+				}
 				e = failing;
 				if (hasFinished()) {
-					if (logMINOR) Logger.minor(this, "Maybe fail returning true because already finished");
+					if (logMINOR) {
+						Logger.minor(this, "Maybe fail returning true because already finished");
+					}
 					return true;
 				}
 				status = Status.FAILED;
 			}
-			if (logMINOR) Logger.minor(this, "Maybe fail returning true with error " + e);
+			if (logMINOR) {
+				Logger.minor(this, "Maybe fail returning true with error " + e);
+			}
 			callback.onFailed(e);
 			return true;
 		} else {
@@ -1548,11 +1661,15 @@ public class SplitFileInserterStorage {
 
 	private boolean allSegmentsCompletedOrFailed() {
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (!segment.hasCompletedOrFailed()) return false;
+			if (!segment.hasCompletedOrFailed()) {
+				return false;
+			}
 		}
 		if (crossSegments != null) {
 			for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-				if (!segment.hasCompletedOrFailed()) return false;
+				if (!segment.hasCompletedOrFailed()) {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -1560,8 +1677,12 @@ public class SplitFileInserterStorage {
 
 	private boolean allSegmentsSucceeded() {
 		for (SplitFileInserterSegmentStorage segment : segments) {
-			if (!segment.hasSucceeded()) return false;
-			if (logMINOR) Logger.minor(this, "Succeeded " + segment);
+			if (!segment.hasSucceeded()) {
+				return false;
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Succeeded " + segment);
+			}
 		}
 		return true;
 	}
@@ -1596,13 +1717,16 @@ public class SplitFileInserterStorage {
 				return;
 			}
 			// Only fail once.
-			if (failing != null) return;
+			if (failing != null) {
+				return;
+			}
 			failing = e;
 		}
-		if (e.mode == InsertExceptionMode.BUCKET_ERROR || e.mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (e.mode == InsertExceptionMode.BUCKET_ERROR || e.mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Failing: " + e + " for " + this, e);
-		else
+		} else {
 			Logger.normal(this, "Failing: " + e + " for " + this, e);
+		}
 		jobRunner.queueNormalOrDrop(new PersistentJob() {
 
 			@Override
@@ -1610,17 +1734,23 @@ public class SplitFileInserterStorage {
 				// Tell the segments to cancel.
 				boolean allDone = true;
 				for (SplitFileInserterSegmentStorage segment : segments) {
-					if (!segment.cancel()) allDone = false;
+					if (!segment.cancel()) {
+						allDone = false;
+					}
 				}
 				if (crossSegments != null) {
 					for (SplitFileInserterCrossSegmentStorage segment : crossSegments) {
-						if (!segment.cancel()) allDone = false;
+						if (!segment.cancel()) {
+							allDone = false;
+						}
 					}
 				}
 				if (allDone) {
 					synchronized (this) {
 						// Could have beaten us to it in callback.
-						if (hasFinished()) return false;
+						if (hasFinished()) {
+							return false;
+						}
 						status = Status.FAILED;
 					}
 					callback.onFailed(e);
@@ -1649,7 +1779,9 @@ public class SplitFileInserterStorage {
 		@Override
 		public boolean run(ClientContext context) {
 			try {
-				if (isFinishing()) return false;
+				if (isFinishing()) {
+					return false;
+				}
 				RAFLock lock = raf.lockOpen();
 				try {
 					for (SplitFileInserterSegmentStorage segment : segments) {
@@ -1661,7 +1793,9 @@ public class SplitFileInserterStorage {
 				writeOverallStatus(false);
 				return false;
 			} catch (IOException e) {
-				if (isFinishing()) return false;
+				if (isFinishing()) {
+					return false;
+				}
 				Logger.error(this, "Failed writing metadata for " + SplitFileInserterStorage.this + ": " + e, e);
 				return false;
 			}
@@ -1679,7 +1813,9 @@ public class SplitFileInserterStorage {
 	};
 
 	public synchronized void lazyWriteMetadata() {
-		if (!persistent) return;
+		if (!persistent) {
+			return;
+		}
 		if (LAZY_WRITE_METADATA_DELAY != 0) {
 			// The Runnable must be the same object for de-duplication.
 			ticker.queueTimedJob(wrapLazyWriteMetadata, "Write metadata for splitfile",
@@ -1722,8 +1858,9 @@ public class SplitFileInserterStorage {
 		try {
 			raf.pread(fileOffset, lengthBuf, 0, lengthBuf.length);
 			long len = new DataInputStream(new ByteArrayInputStream(lengthBuf)).readLong();
-			if (len + fileOffset > rafLength || len > Integer.MAX_VALUE || len < 0)
+			if (len + fileOffset > rafLength || len > Integer.MAX_VALUE || len < 0) {
 				throw new StorageFormatException("Bogus length " + len);
+			}
 			length = (int) len;
 			buf = new byte[length];
 			raf.pread(fileOffset + lengthBuf.length, buf, 0, length);
@@ -1823,12 +1960,14 @@ public class SplitFileInserterStorage {
 	public long getWakeupTime(ClientContext context, long now) {
 		// LOCKING: hasFinished() uses (this), separate from cooldownLock.
 		// It is safe to use both here (on the request selection thread), one after the other.
-		if (hasFinished())
+		if (hasFinished()) {
 			return -1;
-		if (noBlocksToSend())
+		}
+		if (noBlocksToSend()) {
 			return Long.MAX_VALUE;
-		else
+		} else {
 			return 0;
+		}
 	}
 
 }

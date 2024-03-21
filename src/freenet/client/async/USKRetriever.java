@@ -71,7 +71,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 	public USKRetriever(FetchContext fctx, short prio,
 						final RequestClient client, USKRetrieverCallback cb, USK origUSK) {
 		super(prio, client);
-		if (client.persistent()) throw new UnsupportedOperationException("USKRetriever cannot be persistent");
+		if (client.persistent()) {
+			throw new UnsupportedOperationException("USKRetriever cannot be persistent");
+		}
 		this.ctx = fctx;
 		this.cb = cb;
 		this.origUSK = origUSK;
@@ -88,7 +90,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 			Logger.warning(this, "Found edition prior to that specified by the client: " + l + " < " + origUSK.suggestedEdition);
 			return;
 		}
-		if (logMINOR) Logger.minor(this, "Found edition " + l + " for " + this + " - fetching...");
+		if (logMINOR) {
+			Logger.minor(this, "Found edition " + l + " for " + this + " - fetching...");
+		}
 		// Create a SingleFileFetcher for the key (as an SSK).
 		// Put the edition number into its context object.
 		// Put ourself as callback.
@@ -108,8 +112,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 
 	@Override
 	public void onSuccess(StreamGenerator streamGenerator, ClientMetadata clientMetadata, List<? extends Compressor> decompressors, final ClientGetState state, ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Success on " + this + " from " + state + " : length " + streamGenerator.size() + "mime type " + clientMetadata.getMIMEType());
+		}
 		DecompressorThreadManager decompressorManager = null;
 		OutputStream output = null;
 		Bucket finalResult = null;
@@ -135,7 +140,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 			output = finalResult.getOutputStream();
 			// Decompress
 			if (decompressors != null) {
-				if (logMINOR) Logger.minor(this, "Decompressing...");
+				if (logMINOR) {
+					Logger.minor(this, "Decompressing...");
+				}
 				pipeIn = new PipedInputStream();
 				pipeOut = new PipedOutputStream(pipeIn);
 				decompressorManager = new DecompressorThreadManager(pipeIn, decompressors, maxLen);
@@ -310,10 +317,12 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 			f = fetcher;
 			p = proxy;
 		}
-		if (f != null)
+		if (f != null) {
 			f.cancel(manager.getContext());
-		if (p != null)
+		}
+		if (p != null) {
 			manager.unsubscribe(origUSK, p);
+		}
 	}
 
 	/**
@@ -331,7 +340,9 @@ public class USKRetriever extends BaseClientGetter implements USKCallback {
 		synchronized (this) {
 			f = fetcher;
 		}
-		if (f == null) throw new IllegalStateException();
+		if (f == null) {
+			throw new IllegalStateException();
+		}
 		f.changeUSKPollParameters(time, tries, context);
 	}
 

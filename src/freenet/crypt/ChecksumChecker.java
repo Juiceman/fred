@@ -50,7 +50,9 @@ public abstract class ChecksumChecker {
 	 * Verify a checksum or throw
 	 */
 	public void verifyChecksum(byte[] data, int offset, int length, byte[] checksum) throws ChecksumFailedException {
-		if (!checkChecksum(data, offset, length, checksum)) throw new ChecksumFailedException();
+		if (!checkChecksum(data, offset, length, checksum)) {
+			throw new ChecksumFailedException();
+		}
 	}
 
 	/**
@@ -122,10 +124,11 @@ public abstract class ChecksumChecker {
 	 * @throws IllegalArgumentException If there is no ChecksumChecker for that ID.
 	 */
 	public static ChecksumChecker create(int checksumID) {
-		if (checksumID == CHECKSUM_CRC)
+		if (checksumID == CHECKSUM_CRC) {
 			return new CRCChecksumChecker();
-		else
+		} else {
 			throw new IllegalArgumentException("Bad checksum ID");
+		}
 	}
 
 }

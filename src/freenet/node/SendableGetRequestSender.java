@@ -41,10 +41,13 @@ public class SendableGetRequestSender implements SendableRequestSender {
 			Logger.error(SendableGet.class, "Key is null in send(): keyNum = " + keyNum + " for " + req);
 			return false;
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(SendableGet.class, "Sending get for key " + keyNum + " : " + key);
+		}
 		if (req.isCancelled()) {
-			if (logMINOR) Logger.minor(SendableGet.class, "Cancelled: " + req);
+			if (logMINOR) {
+				Logger.minor(SendableGet.class, "Cancelled: " + req);
+			}
 			req.onFailure(new LowLevelGetException(LowLevelGetException.CANCELLED), context);
 			return false;
 		}

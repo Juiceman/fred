@@ -89,8 +89,12 @@ public class MasterKeys {
 			FileInputStream fis = null;
 			// FIXME move declarations of sensitive data out and clear() in finally {}
 			long len = masterKeysFile.length();
-			if (len > 1024) throw new MasterKeysFileSizeException(true);
-			if (len < (32 + 32 + 8 + 32)) throw new MasterKeysFileSizeException(false);
+			if (len > 1024) {
+				throw new MasterKeysFileSizeException(true);
+			}
+			if (len < (32 + 32 + 8 + 32)) {
+				throw new MasterKeysFileSizeException(false);
+			}
 			int length = (int) len;
 			try {
 				fis = new FileInputStream(masterKeysFile);
@@ -101,10 +105,13 @@ public class MasterKeys {
 					ret.changePassword(masterKeysFile, password, hardRandom);
 					return ret;
 				}
-				if (dis.readInt() != VERSION) throw new IOException("Bad version for master.keys");
+				if (dis.readInt() != VERSION) {
+					throw new IOException("Bad version for master.keys");
+				}
 				long iterations = dis.readLong();
-				if (iterations < 0 || iterations > MAX_ITERATIONS)
+				if (iterations < 0 || iterations > MAX_ITERATIONS) {
 					throw new IOException("Bad iterations " + iterations + " for master.keys");
+				}
 
 				byte[] salt = new byte[32];
 				dis.readFully(salt);
@@ -258,7 +265,9 @@ public class MasterKeys {
 	}
 
 	public static void clear(byte[] buf) {
-		if (buf == null) return; // Valid no-op, simplifies code
+		if (buf == null) {
+			return; // Valid no-op, simplifies code
+		}
 		Arrays.fill(buf, (byte) 0x00);
 	}
 

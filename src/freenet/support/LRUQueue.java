@@ -31,8 +31,9 @@ public class LRUQueue<T> {
 	 * a duplicate entry in the queue.
 	 */
 	public final synchronized void push(T obj) {
-		if (obj == null)
+		if (obj == null) {
 			throw new NullPointerException();
+		}
 
 		QItem<T> insert = hash.get(obj);
 		if (insert == null) {
@@ -49,8 +50,9 @@ public class LRUQueue<T> {
 	 * push to bottom (least recently used position)
 	 */
 	public synchronized void pushLeast(T obj) {
-		if (obj == null)
+		if (obj == null) {
 			throw new NullPointerException();
+		}
 
 		QItem<T> insert = hash.get(obj);
 		if (insert == null) {
@@ -79,8 +81,9 @@ public class LRUQueue<T> {
 	}
 
 	public final synchronized boolean remove(Object obj) {
-		if (obj == null)
+		if (obj == null) {
 			throw new NullPointerException();
+		}
 
 		QItem<T> i = hash.remove(obj);
 		if (i != null) {
@@ -174,8 +177,9 @@ public class LRUQueue<T> {
 	public synchronized <E> E[] toArrayOrdered(E[] array) {
 		array = toArray(array);
 		int listSize = list.size();
-		if (array.length != listSize)
+		if (array.length != listSize) {
 			throw new IllegalStateException("array.length=" + array.length + " but list.size=" + listSize);
+		}
 		int x = 0;
 		for (Enumeration<QItem<T>> e = list.reverseElements(); e.hasMoreElements(); ) {
 			array[x++] = (E) e.nextElement().obj;
@@ -194,7 +198,9 @@ public class LRUQueue<T> {
 
 	public synchronized T get(T obj) {
 		QItem<T> val = hash.get(obj);
-		if (val == null) return null;
+		if (val == null) {
+			return null;
+		}
 		return val.obj;
 	}
 }

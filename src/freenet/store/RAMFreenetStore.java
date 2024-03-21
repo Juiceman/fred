@@ -60,10 +60,12 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 			T ret =
 					callback.construct(block.data, block.header, routingKey, block.fullKey, canReadClientCache, canReadSlashdotCache, meta, null);
 			hits++;
-			if (!dontPromote)
+			if (!dontPromote) {
 				blocksByRoutingKey.push(key, block);
-			if (meta != null && block.oldBlock)
+			}
+			if (meta != null && block.oldBlock) {
 				meta.setOldBlock();
+			}
 			return ret;
 		} catch (KeyVerifyException e) {
 			blocksByRoutingKey.removeKey(key);
@@ -107,31 +109,35 @@ public class RAMFreenetStore<T extends StorableBlock> implements FreenetStore<T>
 						Arrays.equals(oldBlock.header, header) &&
 						(storeFullKeys ? Arrays.equals(oldBlock.fullKey, fullKey) : true);
 				if (equals) {
-					if (!isOldBlock)
+					if (!isOldBlock) {
 						oldBlock.oldBlock = false;
+					}
 					return;
 				}
 				if (overwrite) {
 					oldBlock.data = data;
 					oldBlock.header = header;
-					if (storeFullKeys)
+					if (storeFullKeys) {
 						oldBlock.fullKey = fullKey;
+					}
 					oldBlock.oldBlock = isOldBlock;
 				} else {
 					throw new KeyCollisionException();
 				}
 				return;
 			} else {
-				if (!isOldBlock)
+				if (!isOldBlock) {
 					oldBlock.oldBlock = false;
+				}
 				return;
 			}
 		}
 		Block storeBlock = new Block();
 		storeBlock.data = data;
 		storeBlock.header = header;
-		if (storeFullKeys)
+		if (storeFullKeys) {
 			storeBlock.fullKey = fullKey;
+		}
 		storeBlock.oldBlock = isOldBlock;
 		blocksByRoutingKey.push(key, storeBlock);
 		while (blocksByRoutingKey.size() > maxKeys) {

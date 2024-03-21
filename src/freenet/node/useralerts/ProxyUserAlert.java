@@ -23,12 +23,14 @@ public class ProxyUserAlert extends AbstractUserAlert {
 		UserAlert old = alert;
 		alert = a;
 		if (autoRegister) {
-			if (old == null && alert != null)
+			if (old == null && alert != null) {
 				uam.register(this);
+			}
 		}
 		if (autoRegister) {
-			if (alert == null)
+			if (alert == null) {
 				uam.unregister(this);
+			}
 		}
 	}
 
@@ -64,8 +66,9 @@ public class ProxyUserAlert extends AbstractUserAlert {
 
 	@Override
 	public void isValid(boolean validity) {
-		if (alert != null)
+		if (alert != null) {
 			alert.isValid(validity);
+		}
 	}
 
 	@Override
@@ -80,7 +83,9 @@ public class ProxyUserAlert extends AbstractUserAlert {
 
 	@Override
 	public void onDismiss() {
-		if (alert != null) alert.onDismiss();
+		if (alert != null) {
+			alert.onDismiss();
+		}
 	}
 
 	@Override
@@ -95,7 +100,9 @@ public class ProxyUserAlert extends AbstractUserAlert {
 
 	@Override
 	public boolean isEventNotification() {
-		if (alert == null) return false;
+		if (alert == null) {
+			return false;
+		}
 		return alert.isEventNotification();
 	}
 

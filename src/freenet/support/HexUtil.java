@@ -33,8 +33,9 @@ public class HexUtil {
 	 * @return the string of hex chars.
 	 */
 	public static final String bytesToHex(byte[] bs, int off, int length) {
-		if (bs.length < off + length)
+		if (bs.length < off + length) {
 			throw new IllegalArgumentException("Total length: " + bs.length + ", offset: " + off + ", length: " + length);
+		}
 		StringBuilder sb = new StringBuilder(length * 2);
 		bytesToHexAppend(bs, off, length, sb);
 		return sb.toString();
@@ -45,8 +46,9 @@ public class HexUtil {
 			int off,
 			int length,
 			StringBuilder sb) {
-		if (bs.length < off + length)
+		if (bs.length < off + length) {
 			throw new IllegalArgumentException();
+		}
 		sb.ensureCapacity(sb.length() + length * 2);
 		for (int i = off; i < (off + length); i++) {
 			sb.append(Character.forDigit((bs[i] >>> 4) & 0xf, 16));
@@ -116,7 +118,9 @@ public class HexUtil {
 		int bytesAlloc = countBytesForBits(size);
 		byte[] b = new byte[bytesAlloc];
 		StringBuilder sb = null;
-		if (logDEBUG) sb = new StringBuilder(8 * bytesAlloc); //TODO: Should it be 2*8*bytesAlloc here?
+		if (logDEBUG) {
+			sb = new StringBuilder(8 * bytesAlloc); //TODO: Should it be 2*8*bytesAlloc here?
+		}
 		for (int i = 0; i < b.length; i++) {
 			short s = 0;
 			for (int j = 0; j < 8; j++) {
@@ -125,13 +129,19 @@ public class HexUtil {
 						idx > size - 1 ? false :
 								ba.get(idx);
 				s |= val ? (1 << j) : 0;
-				if (logDEBUG) sb.append(val ? '1' : '0');
+				if (logDEBUG) {
+					sb.append(val ? '1' : '0');
+				}
 			}
-			if (s > 255) throw new IllegalStateException("WTF? s = " + s);
+			if (s > 255) {
+				throw new IllegalStateException("WTF? s = " + s);
+			}
 			b[i] = (byte) s;
 		}
-		if (logDEBUG) Logger.debug(HexUtil.class, "bytes: " + bytesAlloc + " returned from bitsToBytes("
-				+ ba + ',' + size + "): " + bytesToHex(b) + " for " + sb.toString());
+		if (logDEBUG) {
+			Logger.debug(HexUtil.class, "bytes: " + bytesAlloc + " returned from bitsToBytes("
+					+ ba + ',' + size + "): " + bytesToHex(b) + " for " + sb.toString());
+		}
 		return b;
 	}
 
@@ -164,11 +174,15 @@ public class HexUtil {
 	 * @param ba the bitset to write to
 	 */
 	public static void bytesToBits(byte[] b, BitSet ba, int maxSize) {
-		if (logDEBUG) Logger.debug(HexUtil.class, "bytesToBits(" + bytesToHex(b) + ",ba," + maxSize);
+		if (logDEBUG) {
+			Logger.debug(HexUtil.class, "bytesToBits(" + bytesToHex(b) + ",ba," + maxSize);
+		}
 		int x = 0;
 		for (byte bi : b) {
 			for (int j = 0; j < 8; j++) {
-				if (x > maxSize) break;
+				if (x > maxSize) {
+					break;
+				}
 				int mask = 1 << j;
 				boolean value = (mask & bi) != 0;
 				ba.set(x, value);
@@ -202,8 +216,9 @@ public class HexUtil {
 			throw new IllegalStateException("Negative BigInteger!");
 		}
 		byte[] buf = integer.toByteArray();
-		if (buf.length > Short.MAX_VALUE)
+		if (buf.length > Short.MAX_VALUE) {
 			throw new IllegalStateException("Too long: " + buf.length);
+		}
 		out.writeShort((short) buf.length);
 		out.write(buf);
 	}
@@ -216,7 +231,9 @@ public class HexUtil {
 	 */
 	public static BigInteger readBigInteger(DataInputStream dis) throws IOException {
 		short i = dis.readShort();
-		if (i < 0) throw new IOException("Invalid BigInteger length: " + i);
+		if (i < 0) {
+			throw new IOException("Invalid BigInteger length: " + i);
+		}
 		byte[] buf = new byte[i];
 		dis.readFully(buf);
 		return new BigInteger(1, buf);

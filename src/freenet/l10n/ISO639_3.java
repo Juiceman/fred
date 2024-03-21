@@ -131,16 +131,36 @@ public final class ISO639_3 {
 		private LanguageCode(char[] myId, char[] myPart2B, char[] myPart2T, char[] myPart1, Scope myScope, Type myType,
 							 String myReferenceName, String myComment) {
 
-			if (myId == null) throw new NullPointerException();
-			if (myId.length > 3) throw new IllegalArgumentException();
-			if (myPart2B != null && myPart2B.length > 3) throw new IllegalArgumentException();
-			if (myPart2T != null && myPart2T.length > 3) throw new IllegalArgumentException();
-			if (myPart1 != null && myPart1.length > 2) throw new IllegalArgumentException();
-			if (myScope == null) throw new NullPointerException();
-			if (myType == null) throw new NullPointerException();
-			if (myReferenceName == null) throw new NullPointerException();
-			if (myReferenceName.length() > 150) throw new IllegalArgumentException();
-			if (myComment != null && myComment.length() > 150) throw new IllegalArgumentException();
+			if (myId == null) {
+				throw new NullPointerException();
+			}
+			if (myId.length > 3) {
+				throw new IllegalArgumentException();
+			}
+			if (myPart2B != null && myPart2B.length > 3) {
+				throw new IllegalArgumentException();
+			}
+			if (myPart2T != null && myPart2T.length > 3) {
+				throw new IllegalArgumentException();
+			}
+			if (myPart1 != null && myPart1.length > 2) {
+				throw new IllegalArgumentException();
+			}
+			if (myScope == null) {
+				throw new NullPointerException();
+			}
+			if (myType == null) {
+				throw new NullPointerException();
+			}
+			if (myReferenceName == null) {
+				throw new NullPointerException();
+			}
+			if (myReferenceName.length() > 150) {
+				throw new IllegalArgumentException();
+			}
+			if (myComment != null && myComment.length() > 150) {
+				throw new IllegalArgumentException();
+			}
 
 			id = new String(myId).toLowerCase();
 			part2B = new String(myPart2B).toLowerCase();
@@ -158,8 +178,9 @@ public final class ISO639_3 {
 
 		@Override
 		public boolean equals(Object o) {
-			if (!(o instanceof LanguageCode))
+			if (!(o instanceof LanguageCode)) {
 				return false;
+			}
 
 			return equals((LanguageCode) o);
 		}
@@ -192,8 +213,9 @@ public final class ISO639_3 {
 			// Returns null on lookup failures:
 			in = ISO639_3.class.getClassLoader().getResourceAsStream("freenet/l10n/iso-639-3_20100707.tab");
 
-			if (in == null)
+			if (in == null) {
 				throw new RuntimeException("Could not open the language codes resource");
+			}
 
 			isr = new InputStreamReader(in, StandardCharsets.UTF_8);
 			br = new BufferedReader(isr);
@@ -209,19 +231,22 @@ public final class ISO639_3 {
 								|| !headerTokens[5].equals("Language_Type")
 								|| !headerTokens[6].equals("Ref_Name")
 								|| !headerTokens[7].equals("Comment")
-				)
+				) {
 					throw new RuntimeException("File header does not match the expected header.");
+				}
 			}
 
 			for (String line = br.readLine(); line != null; line = br.readLine()) {
 				line = line.trim();
-				if (line.length() == 0)
+				if (line.length() == 0) {
 					continue;
+				}
 
 				final String[] tokens = line.split("[\t]");
 
-				if (tokens.length != 8 && tokens.length != 7)
+				if (tokens.length != 8 && tokens.length != 7) {
 					throw new RuntimeException("Line with invalid token amount: " + line);
+				}
 
 				final LanguageCode newCode = new LanguageCode(
 						tokens[0].toCharArray(),
@@ -234,8 +259,9 @@ public final class ISO639_3 {
 						tokens.length == 8 ? tokens[7] : null
 				);
 
-				if (codes.put(newCode.id, newCode) != null)
+				if (codes.put(newCode.id, newCode) != null) {
 					throw new RuntimeException("Duplicate language code: " + newCode);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -285,8 +311,9 @@ public final class ISO639_3 {
 		final Hashtable<String, LanguageCode> result = new Hashtable<String, LanguageCode>();
 
 		for (final LanguageCode c : all.values()) {
-			if (c.scope.equals(scope) && c.type.equals(type))
+			if (c.scope.equals(scope) && c.type.equals(type)) {
 				result.put(c.id, c); // We do not clone the code because all its fields are final.
+			}
 		}
 
 		return result;

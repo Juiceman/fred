@@ -110,13 +110,15 @@ public final class BootstrappingDecayingRunningAverage implements RunningAverage
 	@Override
 	public synchronized void report(double d) {
 		if (d < min) {
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(this, "Too low: " + d, new Exception("debug"));
+			}
 			d = min;
 		}
 		if (d > max) {
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(this, "Too high: " + d, new Exception("debug"));
+			}
 			d = max;
 		}
 		reports++;

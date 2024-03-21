@@ -37,10 +37,14 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 	 */
 	RealArchiveStoreItem(ArchiveStoreContext ctx, FreenetURI key2, String realName, Bucket bucket) {
 		super(new ArchiveKey(key2, realName), ctx);
-		if (bucket == null) throw new NullPointerException();
+		if (bucket == null) {
+			throw new NullPointerException();
+		}
 		mb = new MultiReaderBucket(bucket);
 		this.bucket = mb.getReaderBucket();
-		if (this.bucket == null) throw new NullPointerException();
+		if (this.bucket == null) {
+			throw new NullPointerException();
+		}
 		this.bucket.setReadOnly();
 		spaceUsed = this.bucket.size();
 	}
@@ -69,8 +73,9 @@ class RealArchiveStoreItem extends ArchiveStoreItem {
 
 	@Override
 	void innerClose() {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "innerClose(): " + this + " : " + bucket);
+		}
 		if (bucket == null) {
 			// This still happens. It is clearly impossible as we check in the constructor and throw if it is null.
 			// Nonetheless there is little we can do here ...

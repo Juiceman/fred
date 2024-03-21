@@ -15,11 +15,13 @@ public final class IfNotEquals {
 	 * @throws IllegalStateException If value.equals(expectedValue) == false.
 	 */
 	public static void thenThrow(final Object value, final Object expectedValue, String valueName) {
-		if (value == null || expectedValue == null)
+		if (value == null || expectedValue == null) {
 			throw new NullPointerException("Got " + valueName + " == " + value + " but should be " + expectedValue);
+		}
 
-		if (!value.equals(expectedValue))
+		if (!value.equals(expectedValue)) {
 			throw new IllegalStateException("Got " + valueName + " == " + value + " but should be " + expectedValue);
+		}
 	}
 
 	/**
@@ -27,11 +29,13 @@ public final class IfNotEquals {
 	 * @throws IllegalStateException If value.equals(expectedValue) == false.
 	 */
 	public static void thenThrow(final Object value, final Object expectedValue) {
-		if (value == null || expectedValue == null)
+		if (value == null || expectedValue == null) {
 			throw new NullPointerException("Got " + value + " but should be " + expectedValue);
+		}
 
-		if (!value.equals(expectedValue))
+		if (!value.equals(expectedValue)) {
 			throw new IllegalStateException("Got " + value + " but should be " + expectedValue);
+		}
 	}
 
 }

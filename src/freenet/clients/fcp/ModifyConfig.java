@@ -47,13 +47,17 @@ public class ModifyConfig extends FCPMessage {
 			String prefix = sc.getPrefix();
 			for (Option<?> o : sc.getOptions()) {
 				String configName = o.getName();
-				if (logMINOR) Logger.minor(this, "Setting " + prefix + '.' + configName);
+				if (logMINOR) {
+					Logger.minor(this, "Setting " + prefix + '.' + configName);
+				}
 
 				// we ignore unreconized parameters 
 				String s = fs.get(prefix + '.' + configName);
 				if (s != null) {
 					if (!(o.getValueString().equals(s))) {
-						if (logMINOR) Logger.minor(this, "Setting " + prefix + '.' + configName + " to " + s);
+						if (logMINOR) {
+							Logger.minor(this, "Setting " + prefix + '.' + configName + " to " + s);
+						}
 						try {
 							o.setValue(s);
 						} catch (Exception e) {

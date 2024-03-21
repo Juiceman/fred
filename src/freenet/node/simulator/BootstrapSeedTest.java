@@ -36,8 +36,9 @@ public class BootstrapSeedTest {
 		Node node = null;
 		try {
 			String ipOverride = null;
-			if (args.length > 0)
+			if (args.length > 0) {
 				ipOverride = args[0];
+			}
 			File dir = new File("bootstrap-test");
 			FileUtil.removeAll(dir);
 			RandomSource random = NodeStarter.globalTestInit(dir.getPath(), false, LogLevel.ERROR, "", false);
@@ -86,8 +87,9 @@ public class BootstrapSeedTest {
 			System.err.println("CAUGHT: " + t);
 			t.printStackTrace();
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			System.exit(EXIT_THREW_SOMETHING);

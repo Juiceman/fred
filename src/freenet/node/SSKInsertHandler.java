@@ -87,7 +87,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 		} catch (Throwable t) {
 			Logger.error(this, "Caught " + t, t);
 		} finally {
-			if (logMINOR) Logger.minor(this, "Exiting InsertHandler.run() for " + uid);
+			if (logMINOR) {
+				Logger.minor(this, "Exiting InsertHandler.run() for " + uid);
+			}
 			tag.unlockHandler();
 		}
 	}
@@ -99,7 +101,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 		try {
 			source.sendAsync(accepted, null, this);
 		} catch (NotConnectedException e1) {
-			if (logMINOR) Logger.minor(this, "Lost connection to source");
+			if (logMINOR) {
+				Logger.minor(this, "Lost connection to source");
+			}
 			return;
 		}
 
@@ -130,7 +134,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 			try {
 				msg = node.getUSM().waitFor(mf, this);
 			} catch (DisconnectedException e) {
-				if (logMINOR) Logger.minor(this, "Lost connection to source on " + uid);
+				if (logMINOR) {
+					Logger.minor(this, "Lost connection to source on " + uid);
+				}
 				return;
 			}
 			if (msg == null) {
@@ -152,12 +158,16 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				byte[] pubkeyAsBytes = ((ShortBuffer) msg.getObject(DMT.PUBKEY_AS_BYTES)).getData();
 				try {
 					pubKey = DSAPublicKey.create(pubkeyAsBytes);
-					if (logMINOR) Logger.minor(this, "Got pubkey on " + uid + " : " + pubKey);
+					if (logMINOR) {
+						Logger.minor(this, "Got pubkey on " + uid + " : " + pubKey);
+					}
 					Message confirm = DMT.createFNPSSKPubKeyAccepted(uid);
 					try {
 						source.sendAsync(confirm, null, this);
 					} catch (NotConnectedException e) {
-						if (logMINOR) Logger.minor(this, "Lost connection to source on " + uid);
+						if (logMINOR) {
+							Logger.minor(this, "Lost connection to source on " + uid);
+						}
 						return;
 					}
 				} catch (CryptFormatException e) {
@@ -206,13 +216,17 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 			try {
 				RequestHandler.sendSSK(storedBlock.getRawHeaders(), storedBlock.getRawData(), false, pubKey, source, uid, this, realTimeFlag);
 			} catch (NotConnectedException e1) {
-				if (logMINOR) Logger.minor(this, "Lost connection to source on " + uid);
+				if (logMINOR) {
+					Logger.minor(this, "Lost connection to source on " + uid);
+				}
 				return;
 			} catch (WaitedTooLongException e1) {
 				Logger.error(this, "Took too long to send ssk datareply to " + uid + " (because of throttling)");
 				return;
 			} catch (PeerRestartedException e) {
-				if (logMINOR) Logger.minor(this, "Source restarted on " + uid);
+				if (logMINOR) {
+					Logger.minor(this, "Source restarted on " + uid);
+				}
 				return;
 			} catch (SyncSendWaitedTooLongException e) {
 				Logger.error(this, "Took too long to send ssk datareply to " + uid);
@@ -221,18 +235,22 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 			block = storedBlock;
 		}
 
-		if (logMINOR) Logger.minor(this, "Got block for " + key + " for " + uid);
+		if (logMINOR) {
+			Logger.minor(this, "Got block for " + key + " for " + uid);
+		}
 
-		if (htl > 0)
+		if (htl > 0) {
 			sender = node.makeInsertSender(block, htl, uid, tag, source, false, false, canWriteDatastore, forkOnCacheable, preferInsert, ignoreLowBackoff, realTimeFlag);
+		}
 
 		boolean receivedRejectedOverload = false;
 
 		while (true) {
 			synchronized (sender) {
 				try {
-					if (sender.getStatus() == SSKInsertSender.NOT_FINISHED)
+					if (sender.getStatus() == SSKInsertSender.NOT_FINISHED) {
 						sender.wait(5000);
+					}
 				} catch (InterruptedException e) {
 					// Ignore
 				}
@@ -246,7 +264,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				try {
 					source.sendAsync(m, null, this);
 				} catch (NotConnectedException e) {
-					if (logMINOR) Logger.minor(this, "Lost connection to source");
+					if (logMINOR) {
+						Logger.minor(this, "Lost connection to source");
+					}
 					return;
 				}
 			}
@@ -265,7 +285,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				try {
 					RequestHandler.sendSSK(headers, data, false, pubKey, source, uid, this, realTimeFlag);
 				} catch (NotConnectedException e1) {
-					if (logMINOR) Logger.minor(this, "Lost connection to source on " + uid);
+					if (logMINOR) {
+						Logger.minor(this, "Lost connection to source on " + uid);
+					}
 					return;
 				} catch (WaitedTooLongException e1) {
 					Logger.error(this, "Took too long to send ssk datareply to " + uid + " because of bwlimiting");
@@ -297,7 +319,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				try {
 					source.sendSync(msg, this, realTimeFlag);
 				} catch (NotConnectedException e) {
-					if (logMINOR) Logger.minor(this, "Lost connection to source");
+					if (logMINOR) {
+						Logger.minor(this, "Lost connection to source");
+					}
 					return;
 				} catch (SyncSendWaitedTooLongException e) {
 					Logger.error(this, "Took too long to send " + msg + " to " + source);
@@ -305,8 +329,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				}
 				// Might as well store it anyway.
 				if ((status == SSKInsertSender.TIMED_OUT) ||
-						(status == SSKInsertSender.GENERATED_REJECTED_OVERLOAD))
+						(status == SSKInsertSender.GENERATED_REJECTED_OVERLOAD)) {
 					canCommit = true;
+				}
 				finish(status);
 				return;
 			}
@@ -318,7 +343,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				try {
 					source.sendSync(msg, this, realTimeFlag);
 				} catch (NotConnectedException e) {
-					if (logMINOR) Logger.minor(this, "Lost connection to source");
+					if (logMINOR) {
+						Logger.minor(this, "Lost connection to source");
+					}
 					return;
 				} catch (SyncSendWaitedTooLongException e) {
 					Logger.error(this, "Took too long to send " + msg + " to source");
@@ -335,7 +362,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				try {
 					source.sendSync(msg, this, realTimeFlag);
 				} catch (NotConnectedException e) {
-					if (logMINOR) Logger.minor(this, "Lost connection to source");
+					if (logMINOR) {
+						Logger.minor(this, "Lost connection to source");
+					}
 					return;
 				} catch (SyncSendWaitedTooLongException e) {
 					Logger.error(this, "Took too long to send " + msg + " to " + source);
@@ -367,7 +396,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 	 * verifies, then commit it.
 	 */
 	private void finish(int code) {
-		if (logMINOR) Logger.minor(this, "Finishing");
+		if (logMINOR) {
+			Logger.minor(this, "Finishing");
+		}
 
 		if (canCommit) {
 			commit();
@@ -381,8 +412,9 @@ public class SSKInsertHandler implements PrioRunnable, ByteCounter {
 				totalSent += sender.getTotalSentBytes();
 				totalReceived += sender.getTotalReceivedBytes();
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Remote SSK insert cost " + totalSent + '/' + totalReceived + " bytes (" + code + ')');
+			}
 			node.getNodeStats().remoteSskInsertBytesSentAverage.report(totalSent);
 			node.getNodeStats().remoteSskInsertBytesReceivedAverage.report(totalReceived);
 			if (code == SSKInsertSender.SUCCESS) {

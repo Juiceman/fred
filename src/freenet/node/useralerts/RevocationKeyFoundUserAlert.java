@@ -39,10 +39,11 @@ public class RevocationKeyFoundUserAlert extends AbstractUserAlert {
 	}
 
 	private static String getTitle(boolean disabledNotBlown) {
-		if (disabledNotBlown)
+		if (disabledNotBlown) {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.titleDisabled");
-		else
+		} else {
 			return NodeL10n.getBase().getString("RevocationKeyFoundUserAlert.title");
+		}
 	}
 
 	@Override

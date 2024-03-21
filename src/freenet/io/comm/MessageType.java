@@ -89,8 +89,12 @@ public class MessageType {
 					" in the message type \"" + getName() + "\".");
 		}
 		Class<?> valueClass = fieldValue.getClass();
-		if (defClass == valueClass) return true;
-		if (defClass.isAssignableFrom(valueClass)) return true;
+		if (defClass == valueClass) {
+			return true;
+		}
+		if (defClass.isAssignableFrom(valueClass)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -116,8 +120,9 @@ public class MessageType {
 	public static MessageType getSpec(Integer specID, boolean dontLog) {
 		MessageType id = _specs.get(specID);
 		if (id == null) {
-			if (!dontLog)
+			if (!dontLog) {
 				Logger.error(MessageType.class, "Unrecognised message type received (" + specID + ')');
+			}
 		}
 		return id;
 	}

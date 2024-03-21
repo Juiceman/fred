@@ -40,7 +40,9 @@ public abstract class SendableGet extends BaseSendableGet {
 	@Override
 	public Key getNodeKey(SendableRequestItem token) {
 		ClientKey key = getKey(token);
-		if (key == null) return null;
+		if (key == null) {
+			return null;
+		}
 		return key.getNodeKey(true);
 	}
 
@@ -77,10 +79,11 @@ public abstract class SendableGet extends BaseSendableGet {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if (isSSK())
+		if (isSSK()) {
 			return context.getSskFetchScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkFetchScheduler(realTimeFlag);
+		}
 	}
 
 	/**

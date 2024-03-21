@@ -37,13 +37,15 @@ public class FilterUtils {
 				containsE = true;
 				strDecimal = strNumber.substring(0, strNumber.indexOf('E'));
 				strInteger = strNumber.substring(strDecimal.indexOf('E') + 1, strNumber.length());
-			} else
+			} else {
 				strDecimal = strNumber;
+			}
 			Double.parseDouble(strDecimal);
-			if (containsE)
+			if (containsE) {
 				return isInteger(strInteger);
-			else
+			} else {
 				return true;
+			}
 		} catch (Exception e) {
 			return false;
 		}
@@ -121,15 +123,20 @@ public class FilterUtils {
 		}
 		try {
 			int x = Integer.parseInt(lengthValue);
-			if (!units && !isSVG && x != 0) return false;
+			if (!units && !isSVG && x != 0) {
+				return false;
+			}
 			return true;
 		} catch (Exception e) {
 		}
 		try {
 			double dval = Double.parseDouble(lengthValue);
-			if (!units && !isSVG && dval != 0) return false;
-			if (!(Double.isInfinite(dval) || Double.isNaN(dval)))
+			if (!units && !isSVG && dval != 0) {
+				return false;
+			}
+			if (!(Double.isInfinite(dval) || Double.isNaN(dval))) {
 				return true;
+			}
 		} catch (Exception e) {
 		}
 		return false;
@@ -141,20 +148,23 @@ public class FilterUtils {
 		if (value.contains("deg")) {
 			index = value.indexOf("deg");
 			String secondpart = value.substring(index, value.length()).trim();
-			if (!("deg".equals(secondpart)))
+			if (!("deg".equals(secondpart))) {
 				isValid = false;
+			}
 		} else if (value.contains("grad")) {
 			index = value.indexOf("grad");
 			String secondpart = value.substring(index, value.length()).trim();
 
-			if (!("grad".equals(secondpart)))
+			if (!("grad".equals(secondpart))) {
 				isValid = false;
+			}
 		} else if (value.contains("rad")) {
 			index = value.indexOf("rad");
 			String secondpart = value.substring(index, value.length()).trim();
 
-			if (!("rad".equals(secondpart)))
+			if (!("rad".equals(secondpart))) {
 				isValid = false;
+			}
 		}
 		if (index != -1 && isValid) {
 			String firstPart = value.substring(0, index);
@@ -334,8 +344,9 @@ public class FilterUtils {
 			if (shapeParts.length == 4) {
 				for (String s : shapeParts) {
 					s = s.trim();
-					if (!(s.equalsIgnoreCase("auto") || isLength(s, false)))
+					if (!(s.equalsIgnoreCase("auto") || isLength(s, false))) {
 						return false;
+					}
 				}
 				return true;
 			}
@@ -357,8 +368,9 @@ public class FilterUtils {
 	public static boolean isColor(String value) {
 		value = value.trim();
 
-		if (CSScolorKeywords.contains(value) || CSSsystemColorKeywords.contains(value) || SVGcolorKeywords.contains(value))
+		if (CSScolorKeywords.contains(value) || CSSsystemColorKeywords.contains(value) || SVGcolorKeywords.contains(value)) {
 			return true;
+		}
 
 		if (value.indexOf('#') == 0) {
 
@@ -384,27 +396,33 @@ public class FilterUtils {
 		}
 		if (value.indexOf("rgb(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] colorParts = value.substring(4, value.length() - 1).split(",");
-			if (colorParts.length != 3)
+			if (colorParts.length != 3) {
 				return false;
+			}
 			boolean isValidColorParts = true;
 			for (int i = 0; i < colorParts.length && isValidColorParts; i++) {
-				if (!(isPercentage(colorParts[i].trim()) || isInteger(colorParts[i].trim())))
+				if (!(isPercentage(colorParts[i].trim()) || isInteger(colorParts[i].trim()))) {
 					isValidColorParts = false;
+				}
 			}
-			if (isValidColorParts)
+			if (isValidColorParts) {
 				return true;
+			}
 		}
 		if (value.indexOf("rgba(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] colorParts = value.substring(5, value.length() - 1).split(",");
-			if (colorParts.length != 4)
+			if (colorParts.length != 4) {
 				return false;
+			}
 			boolean isValidColorParts = true;
 			for (int i = 0; i < colorParts.length - 1 && isValidColorParts; i++) {
-				if (!(isPercentage(colorParts[i].trim()) || isInteger(colorParts[i].trim())))
+				if (!(isPercentage(colorParts[i].trim()) || isInteger(colorParts[i].trim()))) {
 					isValidColorParts = false;
+				}
 			}
-			if (isValidColorParts && isNumber(colorParts[3]))
+			if (isValidColorParts && isNumber(colorParts[3])) {
 				return true;
+			}
 		}
 
 		if (value.indexOf("hsl(") == 0 && value.indexOf(')') == value.length() - 1) {
@@ -413,8 +431,9 @@ public class FilterUtils {
 				return false;
 			}
 
-			if (isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2]))
+			if (isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2])) {
 				return true;
+			}
 		}
 
 		if (value.indexOf("hsla(") == 0 && value.indexOf(')') == value.length() - 1) {
@@ -423,8 +442,9 @@ public class FilterUtils {
 				return false;
 			}
 
-			if (isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2]) && isNumber(colorParts[3]))
+			if (isNumber(colorParts[0]) && isPercentage(colorParts[1]) && isPercentage(colorParts[2]) && isNumber(colorParts[3])) {
 				return true;
+			}
 		}
 
 		return false;
@@ -432,7 +452,9 @@ public class FilterUtils {
 
 	public static boolean isCSSTransform(String value) {
 		value = value.trim();
-		if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform(\"" + value + "\")");
+		if (logDEBUG) {
+			Logger.debug(FilterUtils.class, "isCSSTransform(\"" + value + "\")");
+		}
 
 		if (value.indexOf("matrix(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] parts = value.substring(7, value.length() - 1).split(",");
@@ -447,7 +469,9 @@ public class FilterUtils {
 				}
 			}
 			if (isValid) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a matrix()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a matrix()");
+				}
 				return true;
 			}
 		}
@@ -455,7 +479,9 @@ public class FilterUtils {
 		if (value.indexOf("translateX(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(11, value.length() - 1);
 			if (isPercentage(part.trim()) || isLength(part.trim(), false)) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a translateX()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a translateX()");
+				}
 				return true;
 			}
 		}
@@ -463,7 +489,9 @@ public class FilterUtils {
 		if (value.indexOf("translateY(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(11, value.length() - 1);
 			if (isPercentage(part.trim()) || isLength(part.trim(), false)) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a translateY()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a translateY()");
+				}
 				return true;
 			}
 		}
@@ -471,10 +499,14 @@ public class FilterUtils {
 		if (value.indexOf("translate(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] parts = value.substring(10, value.length() - 1).split(",");
 			if (parts.length == 1 && (isPercentage(parts[0].trim()) || isLength(parts[0].trim(), false))) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a translate()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a translate()");
+				}
 				return true;
 			} else if (parts.length == 2 && (isPercentage(parts[0].trim()) || isLength(parts[0].trim(), false)) && (isPercentage(parts[1].trim()) || isLength(parts[1].trim(), false))) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a translate()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a translate()");
+				}
 				return true;
 			}
 		}
@@ -482,10 +514,14 @@ public class FilterUtils {
 		if (value.indexOf("scale(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] parts = value.substring(6, value.length() - 1).split(",");
 			if (parts.length == 1 && isNumber(parts[0].trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a scale()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a scale()");
+				}
 				return true;
 			} else if (parts.length == 2 && isNumber(parts[0].trim()) && isNumber(parts[1].trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a scale()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a scale()");
+				}
 				return true;
 			}
 		}
@@ -493,7 +529,9 @@ public class FilterUtils {
 		if (value.indexOf("scaleX(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(7, value.length() - 1);
 			if (isNumber(part.trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a scaleX()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a scaleX()");
+				}
 				return true;
 			}
 		}
@@ -501,7 +539,9 @@ public class FilterUtils {
 		if (value.indexOf("scaleY(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(7, value.length() - 1);
 			if (isNumber(part.trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a scaleY()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a scaleY()");
+				}
 				return true;
 			}
 		}
@@ -509,7 +549,9 @@ public class FilterUtils {
 		if (value.indexOf("rotate(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(7, value.length() - 1);
 			if (isAngle(part.trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a rotate()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a rotate()");
+				}
 				return true;
 			}
 		}
@@ -517,7 +559,9 @@ public class FilterUtils {
 		if (value.indexOf("skewX(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(6, value.length() - 1);
 			if (isNumber(part.trim()) || isAngle(part.trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a skewX()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a skewX()");
+				}
 				return true;
 			}
 		}
@@ -525,7 +569,9 @@ public class FilterUtils {
 		if (value.indexOf("skewY(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String part = value.substring(6, value.length() - 1);
 			if (isNumber(part.trim()) || isAngle(part.trim())) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a skewY()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a skewY()");
+				}
 				return true;
 			}
 		}
@@ -533,10 +579,14 @@ public class FilterUtils {
 		if (value.indexOf("skew(") == 0 && value.indexOf(')') == value.length() - 1) {
 			String[] parts = value.substring(5, value.length() - 1).split(",");
 			if (parts.length == 1 && (isNumber(parts[0].trim()) || isAngle(parts[0].trim()))) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a skew()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a skew()");
+				}
 				return true;
 			} else if (parts.length == 2 && (isNumber(parts[0].trim()) || isAngle(parts[0].trim())) && (isNumber(parts[1].trim()) || isAngle(parts[0].trim()))) {
-				if (logDEBUG) Logger.debug(FilterUtils.class, "isCSSTransform found a skew()");
+				if (logDEBUG) {
+					Logger.debug(FilterUtils.class, "isCSSTransform found a skew()");
+				}
 				return true;
 			}
 		}
@@ -562,13 +612,15 @@ public class FilterUtils {
 				isValidFrequency = false;
 			}
 
-		} else
+		} else {
 			firstPart = value.trim();
+		}
 		if (isValidFrequency) {
 			try {
 				float temp = Float.parseFloat(firstPart);
-				if (temp > 0)
+				if (temp > 0) {
 					return true;
+				}
 			} catch (Exception e) {
 			}
 		}
@@ -578,24 +630,29 @@ public class FilterUtils {
 	public static boolean isTime(String value) {
 		value = value.toLowerCase();
 		String intValue;
-		if (value.contains("ms") && value.length() > 2)
+		if (value.contains("ms") && value.length() > 2) {
 			intValue = value.substring(0, value.length() - 2);
-		else if (value.indexOf('s') > -1 && value.length() > 1)
+		} else if (value.indexOf('s') > -1 && value.length() > 1) {
 			intValue = value.substring(0, value.length() - 1);
-		else
+		} else {
 			return false;
+		}
 		return isNumber(intValue);
 	}
 
 	public static String[] removeWhiteSpace(String[] values, boolean stripQuotes) {
-		if (values == null) return null;
+		if (values == null) {
+			return null;
+		}
 		ArrayList<String> arrayToReturn = new ArrayList<String>();
 		for (String value : values) {
 			value = value.trim();
-			if (stripQuotes)
+			if (stripQuotes) {
 				value = CSSTokenizerFilter.removeOuterQuotes(value).trim();
-			if (value != null && !(value.trim().isEmpty()))
+			}
+			if (value != null && !(value.trim().isEmpty())) {
 				arrayToReturn.add(value);
+			}
 		}
 		return arrayToReturn.toArray(new String[0]);
 	}
@@ -644,8 +701,9 @@ public class FilterUtils {
 		String[] pointPairs = splitOnCharArray(value, " \n\t");
 		for (String pointPair : pointPairs) {
 			String[] strParts = pointPair.split(",");
-			if (strParts.length != 2)
+			if (strParts.length != 2) {
 				return false;
+			}
 			try {
 				Float.parseFloat(strParts[0]);
 				Float.parseFloat(strParts[1]);

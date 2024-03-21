@@ -56,25 +56,32 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 		this.cryptoKey = cryptoKey;
 		this.siteName = siteName;
 		this.suggestedEdition = suggestedEdition;
-		if (extra == null)
+		if (extra == null) {
 			throw new MalformedURLException("No extra bytes (third bit) in USK");
-		if (pubKeyHash == null)
+		}
+		if (pubKeyHash == null) {
 			throw new MalformedURLException("No pubkey hash (first bit) in USK");
-		if (cryptoKey == null)
+		}
+		if (cryptoKey == null) {
 			throw new MalformedURLException("No crypto key (second bit) in USK");
+		}
 		// Verify extra bytes, get cryptoAlgorithm - FIXME this should be a static method or something?
 		ClientSSK tmp = new ClientSSK(siteName, pubKeyHash, extra, null, cryptoKey);
 		cryptoAlgorithm = tmp.cryptoAlgorithm;
-		if (pubKeyHash.length != NodeSSK.PUBKEY_HASH_SIZE)
+		if (pubKeyHash.length != NodeSSK.PUBKEY_HASH_SIZE) {
 			throw new MalformedURLException("Pubkey hash wrong length: " + pubKeyHash.length + " should be " + NodeSSK.PUBKEY_HASH_SIZE);
-		if (cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH)
+		}
+		if (cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH) {
 			throw new MalformedURLException("Decryption key wrong length: " + cryptoKey.length + " should be " + ClientSSK.CRYPTO_KEY_LENGTH);
+		}
 		hashCode = Fields.hashCode(pubKeyHash) ^ Fields.hashCode(cryptoKey) ^
 				siteName.hashCode() ^ (int) suggestedEdition ^ (int) (suggestedEdition >> 32);
 	}
 
 	public static USK create(FreenetURI uri) throws MalformedURLException {
-		if (!uri.isUSK()) throw new MalformedURLException("Not a USK");
+		if (!uri.isUSK()) {
+			throw new MalformedURLException("Not a USK");
+		}
 		return new USK(uri.getRoutingKey(), uri.getCryptoKey(), uri.getExtra(), uri.getDocName(), uri.getSuggestedEdition());
 	}
 
@@ -113,7 +120,9 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 		this.cryptoAlgorithm = ssk.cryptoAlgorithm;
 
 		if (badDocNamePattern.matcher(siteName).matches())    // not error -- just "possible" bug
+		{
 			Logger.normal(this, "POSSIBLE BUG: edition in ClientSSK " + ssk, new Exception("debug"));
+		}
 
 		hashCode = Fields.hashCode(pubKeyHash) ^ Fields.hashCode(cryptoKey) ^
 				siteName.hashCode() ^ (int) suggestedEdition ^ (int) (suggestedEdition >> 32);
@@ -160,7 +169,9 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 	}
 
 	public USK copy(long edition) {
-		if (suggestedEdition == edition) return this;
+		if (suggestedEdition == edition) {
+			return this;
+		}
 		return new USK(pubKeyHash, cryptoKey, siteName, edition, cryptoAlgorithm);
 	}
 
@@ -177,17 +188,27 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof USK)) return false;
+		if (o == null || !(o instanceof USK)) {
+			return false;
+		}
 		return equals(o, true);
 	}
 
 	public boolean equals(Object o, boolean includeVersion) {
 		if (o instanceof USK) {
 			USK u = (USK) o;
-			if (!Arrays.equals(pubKeyHash, u.pubKeyHash)) return false;
-			if (!Arrays.equals(cryptoKey, u.cryptoKey)) return false;
-			if (!siteName.equals(u.siteName)) return false;
-			if (includeVersion && (suggestedEdition != u.suggestedEdition)) return false;
+			if (!Arrays.equals(pubKeyHash, u.pubKeyHash)) {
+				return false;
+			}
+			if (!Arrays.equals(cryptoKey, u.cryptoKey)) {
+				return false;
+			}
+			if (!siteName.equals(u.siteName)) {
+				return false;
+			}
+			if (includeVersion && (suggestedEdition != u.suggestedEdition)) {
+				return false;
+			}
 			return true;
 		}
 		return false;
@@ -216,7 +237,9 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 				uri.getDocName().startsWith(siteName)) {
 			String doc = uri.getDocName();
 			doc = doc.substring(siteName.length());
-			if (doc.length() < 2 || doc.charAt(0) != '-') return uri;
+			if (doc.length() < 2 || doc.charAt(0) != '-') {
+				return uri;
+			}
 			doc = doc.substring(1);
 			long edition;
 			try {
@@ -225,7 +248,9 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 				Logger.normal(this, "Trying to turn SSK back into USK: " + uri + " doc=" + doc + " caught " + e, e);
 				return uri;
 			}
-			if (!doc.equals(Long.toString(edition))) return uri;
+			if (!doc.equals(Long.toString(edition))) {
+				return uri;
+			}
 			return new FreenetURI("USK", siteName, uri.getAllMetaStrings(), pubKeyHash, cryptoKey, ClientSSK.getExtraBytes(cryptoAlgorithm), edition);
 		}
 		return uri;
@@ -233,17 +258,33 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 
 	@Override
 	public int compareTo(USK o) {
-		if (this == o) return 0;
-		if (cryptoAlgorithm < o.cryptoAlgorithm) return -1;
-		if (cryptoAlgorithm > o.cryptoAlgorithm) return 1;
+		if (this == o) {
+			return 0;
+		}
+		if (cryptoAlgorithm < o.cryptoAlgorithm) {
+			return -1;
+		}
+		if (cryptoAlgorithm > o.cryptoAlgorithm) {
+			return 1;
+		}
 		int cmp = Fields.compareBytes(pubKeyHash, o.pubKeyHash);
-		if (cmp != 0) return cmp;
+		if (cmp != 0) {
+			return cmp;
+		}
 		cmp = Fields.compareBytes(cryptoKey, o.cryptoKey);
-		if (cmp != 0) return cmp;
+		if (cmp != 0) {
+			return cmp;
+		}
 		cmp = siteName.compareTo(o.siteName);
-		if (cmp != 0) return cmp;
-		if (suggestedEdition > o.suggestedEdition) return 1;
-		if (suggestedEdition < o.suggestedEdition) return -1;
+		if (cmp != 0) {
+			return cmp;
+		}
+		if (suggestedEdition > o.suggestedEdition) {
+			return 1;
+		}
+		if (suggestedEdition < o.suggestedEdition) {
+			return -1;
+		}
 		return 0;
 	}
 
@@ -251,8 +292,11 @@ public class USK extends BaseClientKey implements Comparable<USK>, Serializable 
 
 		@Override
 		public int compare(USK o1, USK o2) {
-			if (o1.hashCode > o2.hashCode) return 1;
-			else if (o1.hashCode < o2.hashCode) return -1;
+			if (o1.hashCode > o2.hashCode) {
+				return 1;
+			} else if (o1.hashCode < o2.hashCode) {
+				return -1;
+			}
 			return o1.compareTo(o2);
 		}
 

@@ -48,10 +48,11 @@ public abstract class SendableInsert extends SendableRequest {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if (isSSK())
+		if (isSSK()) {
 			return context.getSskInsertScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkInsertScheduler(realTimeFlag);
+		}
 	}
 
 	public abstract boolean canWriteClientCache();
@@ -69,7 +70,9 @@ public abstract class SendableInsert extends SendableRequest {
 
 	@Override
 	public long getWakeupTime(ClientContext context, long now) {
-		if (isEmpty()) return -1;
+		if (isEmpty()) {
+			return -1;
+		}
 		return 0;
 	}
 
@@ -77,7 +80,9 @@ public abstract class SendableInsert extends SendableRequest {
 
 	public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 		synchronized (this) {
-			if (resumed) return;
+			if (resumed) {
+				return;
+			}
 			resumed = true;
 		}
 		innerOnResume(context);

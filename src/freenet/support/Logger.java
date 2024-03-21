@@ -228,8 +228,9 @@ public abstract class Logger {
 		@Deprecated
 		public static LogLevel fromOrdinal(int ordinal) {
 			for (LogLevel level : LogLevel.values()) {
-				if (level.ordinal() == ordinal)
+				if (level.ordinal() == ordinal) {
 					return level;
+				}
 			}
 
 			throw new RuntimeException("Invalid ordinal: " + ordinal);
@@ -273,7 +274,9 @@ public abstract class Logger {
 			// Impossible
 			throw new Error(e);
 		}
-		if (detail != null) fh.setDetailedThresholds(detail);
+		if (detail != null) {
+			fh.setDetailedThresholds(detail);
+		}
 		((LoggerHookChain) logger).addHook(fh);
 		fh.start();
 		return fh;
@@ -637,7 +640,9 @@ public abstract class Logger {
 				} catch (IllegalAccessException e) {
 				}
 
-				if (!done) Logger.error(this, "No log level field for " + clazz);
+				if (!done) {
+					Logger.error(this, "No log level field for " + clazz);
+				}
 			}
 		};
 
@@ -662,7 +667,9 @@ public abstract class Logger {
 	 * will be passed to this logger.
 	 */
 	public synchronized static void globalAddHook(LoggerHook logger2) {
-		if (logger instanceof VoidLogger) setupChain();
+		if (logger instanceof VoidLogger) {
+			setupChain();
+		}
 		((LoggerHookChain) logger).addHook(logger2);
 	}
 
@@ -708,7 +715,9 @@ public abstract class Logger {
 	 * everything logged.
 	 */
 	public synchronized static void destroyChainIfEmpty() {
-		if (logger instanceof VoidLogger) return;
+		if (logger instanceof VoidLogger) {
+			return;
+		}
 		if ((logger instanceof LoggerHookChain) && (((LoggerHookChain) logger).getHooks().length == 0)) {
 			logger = new VoidLogger();
 		}

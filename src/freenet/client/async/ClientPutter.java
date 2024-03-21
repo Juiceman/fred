@@ -158,14 +158,16 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 * @throws InsertException If the insert cannot be started for some reason.
 	 */
 	public boolean start(boolean restart, ClientContext context) throws InsertException {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Starting " + this + " for " + targetURI);
+		}
 		byte cryptoAlgorithm;
 		CompatibilityMode mode = ctx.getCompatibilityMode();
-		if (!(mode == CompatibilityMode.COMPAT_CURRENT || mode.ordinal() >= CompatibilityMode.COMPAT_1416.ordinal()))
+		if (!(mode == CompatibilityMode.COMPAT_CURRENT || mode.ordinal() >= CompatibilityMode.COMPAT_1416.ordinal())) {
 			cryptoAlgorithm = Key.ALGO_AES_PCFB_256_SHA256;
-		else
+		} else {
 			cryptoAlgorithm = Key.ALGO_AES_CTR_256_SHA256;
+		}
 		try {
 			this.targetURI.checkInsertURI();
 			// If the top level key is an SSK, all CHK blocks and particularly splitfiles below it should have
@@ -174,39 +176,45 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			// random SSK to take advantage of this.
 			boolean randomiseSplitfileKeys = randomiseSplitfileKeys(targetURI, ctx, persistent());
 
-			if (data == null)
+			if (data == null) {
 				throw new InsertException(InsertExceptionMode.BUCKET_ERROR, "No data to insert", null);
+			}
 
 			boolean cancel = false;
 			synchronized (this) {
 				if (restart) {
 					clearCountersOnRestart();
 					if (currentState != null && !finished) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Can't restart, not finished and currentState != null : " + currentState);
+						}
 						return false;
 					}
-					if (finished)
+					if (finished) {
 						startedStarting = false;
+					}
 					finished = false;
 				}
 				if (startedStarting) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Can't " + (restart ? "restart" : "start") + " : startedStarting = true");
+					}
 					return false;
 				}
 				startedStarting = true;
 				if (currentState != null) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Can't " + (restart ? "restart" : "start") + " : currentState != null : " + currentState);
+					}
 					return false;
 				}
 				cancel = this.cancelled;
 				cryptoKey = null;
 				if (overrideSplitfileCrypto != null) {
 					cryptoKey = overrideSplitfileCrypto;
-					if (cryptoKey.length != 32)
+					if (cryptoKey.length != 32) {
 						throw new InsertException(InsertExceptionMode.INVALID_URI, "overrideSplitfileCryptoKey must be of length 32", null);
+					}
 				} else if (randomiseSplitfileKeys) {
 					cryptoKey = new byte[32];
 					context.random.nextBytes(cryptoKey);
@@ -214,13 +222,16 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 				if (!cancel) {
 					if (!binaryBlob) {
 						ClientMetadata meta = cm;
-						if (meta != null) meta = persistent() ? meta.clone() : meta;
+						if (meta != null) {
+							meta = persistent() ? meta.clone() : meta;
+						}
 						currentState =
 								new SingleFileInserter(this, this, new InsertBlock(data, meta, targetURI), isMetadata, ctx, realTimeFlag,
 										false, false, null, null, false, targetFilename, false, persistent(), 0, 0, null, cryptoAlgorithm, cryptoKey, metadataThreshold);
-					} else
+					} else {
 						currentState =
 								new BinaryBlobInserter(data, this, getClient(), false, priorityClass, ctx, context);
+					}
 				}
 			}
 			if (cancel) {
@@ -234,12 +245,14 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 				onFailure(new InsertException(InsertExceptionMode.CANCELLED), null, context);
 				return false;
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Starting insert: " + currentState);
-			if (currentState instanceof SingleFileInserter)
+			}
+			if (currentState instanceof SingleFileInserter) {
 				((SingleFileInserter) currentState).start(context);
-			else
+			} else {
 				currentState.schedule(context);
+			}
 			synchronized (this) {
 				cancel = cancelled;
 			}
@@ -278,8 +291,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 				this.client.onFailure(new InsertException(InsertExceptionMode.BINARY_BLOB_FORMAT_ERROR, e, null), this);
 			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Started " + this);
+		}
 		return true;
 	}
 
@@ -291,8 +305,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		boolean randomiseSplitfileKeys = targetURI.isSSK() || targetURI.isKSK() || targetURI.isUSK();
 		if (randomiseSplitfileKeys) {
 			CompatibilityMode cmode = ctx.getCompatibilityMode();
-			if (!(cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1255.ordinal()))
+			if (!(cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1255.ordinal())) {
 				randomiseSplitfileKeys = false;
+			}
 		}
 		return randomiseSplitfileKeys;
 	}
@@ -309,10 +324,11 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		if (super.failedBlocks > 0 || super.fatallyFailedBlocks > 0 || super.successfulBlocks < super.totalBlocks) {
 			// USK auxiliary inserts are allowed to fail.
 			// If only generating the key, splitfile may not have reported the blocks as inserted.
-			if (!uri.isUSK() && !ctx.getCHKOnly)
+			if (!uri.isUSK() && !ctx.getCHKOnly) {
 				Logger.error(this, "Failed blocks: " + failedBlocks + ", Fatally failed blocks: " + fatallyFailedBlocks +
 								", Successful blocks: " + successfulBlocks + ", Total blocks: " + totalBlocks + " but success?! on " + this + " from " + state,
 						new Exception("debug"));
+			}
 		}
 		client.onSuccess(this);
 	}
@@ -322,7 +338,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 */
 	@Override
 	public void onFailure(InsertException e, ClientPutState state, ClientContext context) {
-		if (logMINOR) Logger.minor(this, "onFailure() for " + this + " : " + state + " : " + e, e);
+		if (logMINOR) {
+			Logger.minor(this, "onFailure() for " + this + " : " + state + " : " + e, e);
+		}
 		synchronized (this) {
 			finished = true;
 			currentState = null;
@@ -341,8 +359,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			if (gotFinalMetadata) {
 				Logger.error(this, "Generated URI *and* sent final metadata??? on " + this + " from " + state);
 			}
-			if (targetFilename != null)
+			if (targetFilename != null) {
 				u = u.pushMetaString(targetFilename);
+			}
 			if (this.uri != null) {
 				if (!this.uri.equals(u)) {
 					Logger.error(this, "onEncode() called twice with different URIs: " + this.uri + " -> " + u + " for " + this, new Exception("error"));
@@ -384,16 +403,23 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 */
 	@Override
 	public void cancel(ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Cancelling " + this, new Exception("debug"));
+		}
 		ClientPutState oldState = null;
 		synchronized (this) {
-			if (cancelled) return;
-			if (finished) return;
+			if (cancelled) {
+				return;
+			}
+			if (finished) {
+				return;
+			}
 			super.cancel();
 			oldState = currentState;
 		}
-		if (oldState != null) oldState.cancel(context);
+		if (oldState != null) {
+			oldState.cancel(context);
+		}
 		onFailure(new InsertException(InsertExceptionMode.CANCELLED), null, context);
 	}
 
@@ -440,7 +466,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 */
 	@Override
 	public void onTransition(ClientPutState oldState, ClientPutState newState, ClientContext context) {
-		if (newState == null) throw new NullPointerException();
+		if (newState == null) {
+			throw new NullPointerException();
+		}
 
 		synchronized (this) {
 			if (currentState == oldState) {
@@ -448,8 +476,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 				return;
 			}
 		}
-		if (persistent())
+		if (persistent()) {
 			context.jobRunner.setCheckpointASAP();
+		}
 		Logger.normal(this, "onTransition: cur=" + currentState + ", old=" + oldState + ", new=" + newState);
 	}
 
@@ -546,8 +575,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	 */
 	@Override
 	public void onBlockSetFinished(ClientPutState state, ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Set finished", new Exception("debug"));
+		}
 		blockSetFinalized(context);
 	}
 
@@ -568,7 +598,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 			Logger.minor(this, "Cannot restart because not finished for " + uri);
 			return false;
 		}
-		if (data == null) return false;
+		if (data == null) {
+			return false;
+		}
 		return true;
 	}
 
@@ -600,8 +632,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 	public byte[] getClientDetail(ChecksumChecker checker) throws IOException {
 		if (client instanceof PersistentClientCallback) {
 			return getClientDetail((PersistentClientCallback) client, checker);
-		} else
+		} else {
 			return new byte[0];
+		}
 	}
 
 	@Override
@@ -615,8 +648,9 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 				return;
 			}
 		}
-		if (data != null)
+		if (data != null) {
 			data.onResume(context);
+		}
 		notifyClients(context);
 	}
 
@@ -631,7 +665,8 @@ public class ClientPutter extends BaseClientPutter implements PutCompletionCallb
 		synchronized (this) {
 			state = currentState;
 		}
-		if (state != null)
+		if (state != null) {
 			state.onShutdown(context);
+		}
 	}
 }

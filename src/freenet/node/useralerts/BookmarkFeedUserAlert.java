@@ -47,8 +47,9 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 		StringBuilder sb = new StringBuilder();
 		sb.append(l10n("peerName")).append(" ").append(name).append("\n");
 		sb.append(l10n("bookmarkURI")).append(" ").append(uri).append("\n");
-		if (description != null && description.length() != 0)
+		if (description != null && description.length() != 0) {
 			sb.append(l10n("bookmarkDescription")).append(" ").append(description);
+		}
 		return sb.toString();
 	}
 
@@ -76,8 +77,9 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 			alertNode.addChild("br");
 			for (int i = 0; i < lines.length; i++) {
 				alertNode.addChild("#", lines[i]);
-				if (i != lines.length - 1)
+				if (i != lines.length - 1) {
 					alertNode.addChild("br");
+				}
 			}
 		}
 		return alertNode;
@@ -99,8 +101,9 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 	@Override
 	public void onDismiss() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if (pn != null)
+		if (pn != null) {
 			pn.deleteExtraPeerDataFile(fileNumber);
+		}
 	}
 
 	@Override
@@ -111,8 +114,9 @@ public class BookmarkFeedUserAlert extends AbstractUserAlert {
 	@Override
 	public boolean isValid() {
 		DarknetPeerNode pn = (DarknetPeerNode) peerRef.get();
-		if (pn != null)
+		if (pn != null) {
 			sourceNodeName = pn.getName();
+		}
 		return true;
 	}
 }

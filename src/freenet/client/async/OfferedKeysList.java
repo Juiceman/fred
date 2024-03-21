@@ -74,8 +74,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		assert (keysList.size() == keys.size());
 		if (keys.remove(key)) {
 			ListUtils.removeBySwapLast(keysList, key);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Found " + key + " , removing it " + " for " + this + " size now " + keysList.size());
+			}
 		}
 		assert (keysList.size() == keys.size());
 	}
@@ -120,7 +121,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		if (keys.size() == 1) {
 			// Shortcut the common case
 			Key k = keysList.get(0);
-			if (fetching.hasKey(k, null)) return null;
+			if (fetching.hasKey(k, null)) {
+				return null;
+			}
 			// Ignore RecentlyFailed because an offered key overrides it.
 			keys.remove(k);
 			keysList.remove(0);
@@ -129,11 +132,15 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		}
 		for (int i = 0; i < 10; i++) {
 			// Pick a random key
-			if (keysList.isEmpty()) return null;
+			if (keysList.isEmpty()) {
+				return null;
+			}
 			int ptr = random.nextInt(keysList.size());
 			// Avoid shuffling penalty by swapping the chosen element with the end.
 			Key k = keysList.get(ptr);
-			if (fetching.hasKey(k, null)) continue;
+			if (fetching.hasKey(k, null)) {
+				continue;
+			}
 			// Ignore RecentlyFailed because an offered key overrides it.
 			ListUtils.removeBySwapLast(keysList, ptr);
 			keys.remove(k);
@@ -215,7 +222,9 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 		assert (keysList.size() == keys.size());
 		if (keys.add(key)) {
 			keysList.add(key);
-			if (logMINOR) Logger.minor(this, "Queued key " + key + " on " + this);
+			if (logMINOR) {
+				Logger.minor(this, "Queued key " + key + " on " + this);
+			}
 		}
 		assert (keysList.size() == keys.size());
 	}
@@ -237,10 +246,11 @@ public class OfferedKeysList extends BaseSendableGet implements RequestClient {
 
 	@Override
 	public ClientRequestScheduler getScheduler(ClientContext context) {
-		if (isSSK)
+		if (isSSK) {
 			return context.getSskFetchScheduler(realTimeFlag);
-		else
+		} else {
 			return context.getChkFetchScheduler(realTimeFlag);
+		}
 	}
 
 	@Override

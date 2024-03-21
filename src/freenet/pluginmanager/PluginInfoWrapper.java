@@ -93,8 +93,9 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	}
 
 	void setThread(Thread ps) {
-		if (thread != null)
+		if (thread != null) {
 			throw new IllegalStateException("Already set a thread");
+		}
 		thread = ps;
 		thread.setName(threadName);
 	}
@@ -129,14 +130,16 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	}
 
 	public synchronized boolean addPluginToadletSymlink(String linkfrom) {
-		if (toadletLinks.size() < 1)
+		if (toadletLinks.size() < 1) {
 			toadletLinks = new HashSet<String>();
+		}
 		return toadletLinks.add(linkfrom);
 	}
 
 	public synchronized boolean removePluginToadletSymlink(String linkfrom) {
-		if (toadletLinks.size() < 1)
+		if (toadletLinks.size() < 1) {
 			return false;
+		}
 		return toadletLinks.remove(linkfrom);
 	}
 
@@ -215,7 +218,9 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 	 */
 	void unregister(PluginManager manager, boolean reloading) {
 		synchronized (this) {
-			if (unregistered) return;
+			if (unregistered) {
+				return;
+			}
 			unregistered = true;
 		}
 		manager.unregisterPlugin(this, plug, reloading);
@@ -339,8 +344,10 @@ public class PluginInfoWrapper implements Comparable<PluginInfoWrapper> {
 
 	public String getLocalisedPluginName() {
 		String pluginName = getFilename();
-		if (isOfficialPlugin())
+		if (isOfficialPlugin()) {
 			return PluginManager.getOfficialPluginLocalisedName(pluginName);
-		else return pluginName;
+		} else {
+			return pluginName;
+		}
 	}
 }

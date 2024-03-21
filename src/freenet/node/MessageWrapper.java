@@ -69,8 +69,9 @@ public class MessageWrapper {
 						}
 					}
 					alreadyAcked = true;
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Total round trip time for message " + messageID + " : " + item + " : " + (System.currentTimeMillis() - created) + " in " + resends + " resends" + (pn == null ? "" : " for " + pn.shortToString()));
+					}
 				}
 				return true;
 			}
@@ -87,7 +88,9 @@ public class MessageWrapper {
 	 * @return The number of bytes lost
 	 */
 	public int lost(int start, int end) {
-		if (logDEBUG) Logger.debug(this, "Lost from " + start + " to " + end + " on " + this.messageID);
+		if (logDEBUG) {
+			Logger.debug(this, "Lost from " + start + " to " + end + " on " + this.messageID);
+		}
 		int size = end - start + 1;
 		synchronized (sent) {
 			synchronized (acks) {
@@ -95,12 +98,18 @@ public class MessageWrapper {
 				sent.remove(start, end);
 
 				for (int[] range : acks) {
-					if (range[1] < start) continue;
-					if (range[0] > end) continue;
+					if (range[1] < start) {
+						continue;
+					}
+					if (range[0] > end) {
+						continue;
+					}
 
 					int toAddStart = Math.max(start, range[0]);
 					int toAddEnd = Math.min(end, range[1]);
-					if (toAddStart == toAddEnd || toAddStart > toAddEnd) continue;
+					if (toAddStart == toAddEnd || toAddStart > toAddEnd) {
+						continue;
+					}
 					Logger.warning(this, "Lost range (" + start + "->" + end + ") is overlapped by acked range ("
 							+ range[0] + "->" + range[1] + "). Adding " + toAddStart + "->"
 							+ toAddEnd + " to sent");
@@ -192,13 +201,16 @@ public class MessageWrapper {
 			}
 
 			dataLength = Math.min(end - start + 1, dataLength);
-			if (dataLength <= 0) return null;
+			if (dataLength <= 0) {
+				return null;
+			}
 
 			fragmentData = Arrays.copyOfRange(item.buf, start, start + dataLength);
 
 			sent.add(start, start + dataLength - 1);
-			if (logDEBUG)
+			if (logDEBUG) {
 				Logger.debug(this, "Using range " + start + " to " + (start + dataLength - 1) + " gives " + sent + " on " + messageID);
+			}
 		}
 
 		boolean isFragmented = !((start == 0) && (dataLength == item.buf.length));
@@ -243,11 +255,11 @@ public class MessageWrapper {
 			} else {
 				report = everSent.notOverlapping(start, end);
 				resent = end - start + 1 - report;
-				if (report > 0 && resent == 0)
+				if (report > 0 && resent == 0) {
 					report += overhead;
-				else if (resent > 0 && report == 0)
+				} else if (resent > 0 && report == 0) {
 					resent += overhead;
-				else {
+				} else {
 					report += (overhead / 2);
 					resent += (overhead - (overhead / 2));
 				}
@@ -255,20 +267,23 @@ public class MessageWrapper {
 			everSent.add(start, end);
 			if (everSent.contains(0, item.buf.length - 1)) {
 				// Maybe completed
-				if (reportedSent)
+				if (reportedSent) {
 					completed = false;
-				else {
+				} else {
 					completed = true;
 					reportedSent = true;
 				}
 			}
 		}
-		if (report != 0)
+		if (report != 0) {
 			item.onSent(report);
-		if (resent != 0 && pn != null)
+		}
+		if (resent != 0 && pn != null) {
 			pn.resentBytes(resent);
-		if (completed)
+		}
+		if (completed) {
 			item.onSentAll();
+		}
 	}
 
 	SparseBitmap getSent() {

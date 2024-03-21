@@ -116,7 +116,9 @@ public class AddRef {
 			while (lis.available() > 0) {
 				String line = lis.readLine(128, 128, true);
 				int index = line.indexOf('=');
-				if (index == -1 || line.startsWith("End")) return sfs;
+				if (index == -1 || line.startsWith("End")) {
+					return sfs;
+				}
 				sfs.putSingle(line.substring(0, index), line.substring(index + 1));
 			}
 		} catch (IOException e) {

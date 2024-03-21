@@ -53,7 +53,9 @@ public class ContentFilterToadlet extends Toadlet implements LinkEnabledCallback
 	}
 
 	public boolean isEnabled(ToadletContext ctx) {
-		if (ctx == null) return false;
+		if (ctx == null) {
+			return false;
+		}
 		boolean fullAccess = !container.publicGatewayMode() || ctx.isAllowedFullAccess();
 		return ctx.isAdvancedModeEnabled() && fullAccess;
 	}

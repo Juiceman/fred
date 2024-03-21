@@ -48,8 +48,9 @@ public class GzipCompressor extends AbstractCompressor {
 	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 						 long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
 			throws IOException, CompressionRatioException {
-		if (maxReadLength < 0)
+		if (maxReadLength < 0) {
 			throw new IllegalArgumentException();
+		}
 		GZIPOutputStream gos = null;
 		CountedOutputStream cos = new CountedOutputStream(os);
 		try {
@@ -64,12 +65,17 @@ public class GzipCompressor extends AbstractCompressor {
 			while (true) {
 				int l = (int) Math.min(buffer.length, maxReadLength - read);
 				int x = l == 0 ? -1 : is.read(buffer, 0, l);
-				if (x <= -1) break;
-				if (x == 0) throw new IOException("Returned zero from read()");
+				if (x <= -1) {
+					break;
+				}
+				if (x == 0) {
+					throw new IOException("Returned zero from read()");
+				}
 				gos.write(buffer, 0, x);
 				read += x;
-				if (cos.written() > maxWriteLength)
+				if (cos.written() > maxWriteLength) {
 					throw new CompressionOutputSizeException();
+				}
 
 				if (++i == iterationToCheckCompressionRatio && minimumCompressionPercentage != 0) {
 					checkCompressionEffect(read, cos.written(), minimumCompressionPercentage);
@@ -79,8 +85,9 @@ public class GzipCompressor extends AbstractCompressor {
 			gos.finish();
 			cos.flush();
 			gos = null;
-			if (cos.written() > maxWriteLength)
+			if (cos.written() > maxWriteLength) {
 				throw new CompressionOutputSizeException();
+			}
 			return cos.written();
 		} finally {
 			if (gos != null) {
@@ -95,8 +102,9 @@ public class GzipCompressor extends AbstractCompressor {
 		GZIPInputStream gis = new GZIPInputStream(is);
 		long written = 0;
 		int bufSize = 32768;
-		if (maxLength > 0 && maxLength < bufSize)
+		if (maxLength > 0 && maxLength < bufSize) {
 			bufSize = (int) maxLength;
+		}
 		byte[] buffer = new byte[bufSize];
 		while (true) {
 			int expectedBytesRead = (int) Math.min(buffer.length, maxLength - written);
@@ -111,8 +119,12 @@ public class GzipCompressor extends AbstractCompressor {
 					while (true) {
 						expectedBytesRead = (int) Math.min(buffer.length, maxLength + maxCheckSizeBytes - written);
 						bytesRead = gis.read(buffer, 0, expectedBytesRead);
-						if (bytesRead <= -1) throw new CompressionOutputSizeException(written);
-						if (bytesRead == 0) throw new IOException("Returned zero from read()");
+						if (bytesRead <= -1) {
+							throw new CompressionOutputSizeException(written);
+						}
+						if (bytesRead == 0) {
+							throw new IOException("Returned zero from read()");
+						}
 						written += bytesRead;
 					}
 				}
@@ -122,7 +134,9 @@ public class GzipCompressor extends AbstractCompressor {
 				os.flush();
 				return written;
 			}
-			if (bytesRead == 0) throw new IOException("Returned zero from read()");
+			if (bytesRead == 0) {
+				throw new IOException("Returned zero from read()");
+			}
 			os.write(buffer, 0, bytesRead);
 			written += bytesRead;
 		}

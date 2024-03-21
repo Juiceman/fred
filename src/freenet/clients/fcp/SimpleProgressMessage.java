@@ -44,8 +44,9 @@ public class SimpleProgressMessage extends FCPMessage {
 		fs.put("Succeeded", event.succeedBlocks);
 		fs.put("LastProgress", event.latestSuccess != null ? event.latestSuccess.getTime() : 0);
 		fs.put("FinalizedTotal", event.finalizedTotal);
-		if (event.minSuccessFetchBlocks != 0)
+		if (event.minSuccessFetchBlocks != 0) {
 			fs.put("MinSuccessFetchBlocks", event.minSuccessFetchBlocks);
+		}
 		fs.putSingle("Identifier", ident);
 		fs.put("Global", global);
 		return fs;

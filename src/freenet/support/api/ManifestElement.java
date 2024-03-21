@@ -125,9 +125,13 @@ public class ManifestElement implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
+		if (this == o) {
+			return true;
+		}
 		if (o instanceof ManifestElement) {
-			if (((ManifestElement) o).name.equals(name)) return true;
+			if (((ManifestElement) o).name.equals(name)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -151,8 +155,9 @@ public class ManifestElement implements Serializable {
 	 */
 	public String getMimeType() {
 		String mimeType = mimeOverride;
-		if ((mimeOverride == null) && (name != null))
+		if ((mimeOverride == null) && (name != null)) {
 			mimeType = DefaultMIMETypes.guessMIMEType(name, true);
+		}
 		return mimeType;
 	}
 
@@ -169,7 +174,9 @@ public class ManifestElement implements Serializable {
 	}
 
 	public void onResume(ClientContext context) throws ResumeFailedException {
-		if (data != null) data.onResume(context);
+		if (data != null) {
+			data.onResume(context);
+		}
 	}
 
 }

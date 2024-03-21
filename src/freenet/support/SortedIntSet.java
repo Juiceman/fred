@@ -115,7 +115,9 @@ public class SortedIntSet extends AbstractCollection<Integer> implements SortedS
 	 */
 	public synchronized boolean push(int num) {
 		int x = binarySearch(num);
-		if (x >= 0) return false;
+		if (x >= 0) {
+			return false;
+		}
 		// insertion point
 		x = -x - 1;
 		push(num, x);

@@ -56,7 +56,9 @@ public class LocalDownloadDirectoryToadlet extends LocalDirectoryToadlet {
 			fieldPairs.put("return-type", "disk");
 		}
 
-		if (set.containsKey("filterData")) fieldPairs.put("filterData", set.get("filterData"));
+		if (set.containsKey("filterData")) {
+			fieldPairs.put("filterData", set.get("filterData"));
+		}
 		return fieldPairs;
 	}
 }

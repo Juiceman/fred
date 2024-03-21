@@ -17,8 +17,9 @@ public class PeerVisibilityInputForAddPeerBoxNode extends HTMLNode {
 					.addChild("input",
 							new String[]{"type", "name", "value", "id"},
 							new String[]{"radio", "visibility", visibility.name(), "visibility" + visibility.name()});
-			if (visibility.isDefaultValue())
+			if (visibility.isDefaultValue()) {
 				input.addAttribute("checked", "checked");
+			}
 			input.addChild("label",
 					new String[]{"for"},
 					new String[]{"visibility" + visibility.name()}

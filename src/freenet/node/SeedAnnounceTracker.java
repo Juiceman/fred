@@ -54,7 +54,9 @@ public class SeedAnnounceTracker {
 		}
 
 		public void setVersion(int ver) {
-			if (ver <= 0) return;
+			if (ver <= 0) {
+				return;
+			}
 			lastVersion = ver;
 		}
 
@@ -90,11 +92,13 @@ public class SeedAnnounceTracker {
 				item = new TrackerItem(addr);
 			} else {
 				if (item.totalSentRefs > 5 && badVersion) {
-					if (fastRandom.nextInt(5) != 0)
+					if (fastRandom.nextInt(5) != 0) {
 						return false;
+					}
 				} else if (item.totalSentRefs > 10) {
-					if (fastRandom.nextInt(4) != 0)
+					if (fastRandom.nextInt(4) != 0) {
 						return false;
+					}
 				}
 			}
 			item.acceptedAnnounce();
@@ -111,8 +115,9 @@ public class SeedAnnounceTracker {
 		int ver = source.getVersionNumber();
 		synchronized (this) {
 			TrackerItem item = itemsByIP.get(addr);
-			if (item == null)
+			if (item == null) {
 				item = new TrackerItem(addr);
+			}
 			item.rejectedAnnounce();
 			item.setVersion(ver);
 			itemsByIP.push(addr, item);
@@ -126,8 +131,9 @@ public class SeedAnnounceTracker {
 		int ver = source.getVersionNumber();
 		synchronized (this) {
 			TrackerItem item = itemsByIP.get(addr);
-			if (item == null)
+			if (item == null) {
 				item = new TrackerItem(addr);
+			}
 			item.connected();
 			item.setVersion(ver);
 			itemsByIP.push(addr, item);
@@ -141,8 +147,9 @@ public class SeedAnnounceTracker {
 		int ver = source.getVersionNumber();
 		synchronized (this) {
 			TrackerItem item = itemsByIP.get(addr);
-			if (item == null)
+			if (item == null) {
 				item = new TrackerItem(addr);
+			}
 			item.completed(forwardedRefs);
 			item.setVersion(ver);
 			itemsByIP.push(addr, item);
@@ -153,7 +160,9 @@ public class SeedAnnounceTracker {
 
 	public void drawSeedStats(HTMLNode content) {
 		TrackerItem[] topItems = getTopTrackerItems(20);
-		if (topItems.length == 0) return;
+		if (topItems.length == 0) {
+			return;
+		}
 		HTMLNode table = content.addChild("table", "border", "0");
 		HTMLNode row = table.addChild("tr");
 		row.addChild("th", l10nStats("seedTableIP"));
@@ -184,12 +193,17 @@ public class SeedAnnounceTracker {
 			public int compare(TrackerItem arg0, TrackerItem arg1) {
 				int a = Math.max(arg0.totalAnnounceRequests, arg0.totalSeedConnects);
 				int b = Math.max(arg1.totalAnnounceRequests, arg1.totalSeedConnects);
-				if (a > b) return 1;
-				if (b > a) return -1;
-				if (arg0.totalAcceptedAnnounceRequests > arg1.totalAcceptedAnnounceRequests)
+				if (a > b) {
 					return 1;
-				else if (arg0.totalAcceptedAnnounceRequests < arg1.totalAcceptedAnnounceRequests)
+				}
+				if (b > a) {
 					return -1;
+				}
+				if (arg0.totalAcceptedAnnounceRequests > arg1.totalAcceptedAnnounceRequests) {
+					return 1;
+				} else if (arg0.totalAcceptedAnnounceRequests < arg1.totalAcceptedAnnounceRequests) {
+					return -1;
+				}
 				return 0;
 			}
 

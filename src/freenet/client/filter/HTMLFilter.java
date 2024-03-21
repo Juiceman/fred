@@ -78,10 +78,14 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	public void readFilter(
 			InputStream input, OutputStream output, String charset, Map<String, String> otherParams,
 			String schemeHostAndPort, FilterCallback cb) throws DataFilterException, IOException {
-		if (cb == null) cb = new NullFilterCallback();
+		if (cb == null) {
+			cb = new NullFilterCallback();
+		}
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 		logDEBUG = Logger.shouldLog(LogLevel.DEBUG, this);
-		if (logMINOR) Logger.minor(this, "readFilter(): charset=" + charset);
+		if (logMINOR) {
+			Logger.minor(this, "readFilter(): charset=" + charset);
+		}
 		Reader r = null;
 		Writer w = null;
 		InputStreamReader isr = null;
@@ -102,7 +106,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	@Override
 	public String getCharset(byte[] input, int length, String parseCharset) throws DataFilterException, IOException {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-		if (logMINOR) Logger.minor(this, "getCharset(): default=" + parseCharset);
+		if (logMINOR) {
+			Logger.minor(this, "getCharset(): default=" + parseCharset);
+		}
 		if (length > getCharsetBufferSize() && Logger.shouldLog(LogLevel.MINOR, this)) {
 			Logger.minor(this, "More data than was strictly needed was passed to the charset extractor for extraction");
 		}
@@ -125,17 +131,22 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			throw e;
 		} catch (Throwable t) {
 			// Ignore ALL errors
-			if (logMINOR) Logger.minor(this, "Caught " + t + " trying to detect MIME type with " + parseCharset);
+			if (logMINOR) {
+				Logger.minor(this, "Caught " + t + " trying to detect MIME type with " + parseCharset);
+			}
 		}
 		try {
 			r.close();
 		} catch (IOException e) {
 			throw e;
 		} catch (Throwable t) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Caught " + t + " closing stream after trying to detect MIME type with " + parseCharset);
+			}
 		}
-		if (logMINOR) Logger.minor(this, "Returning charset " + pc.detectedCharset);
+		if (logMINOR) {
+			Logger.minor(this, "Returning charset " + pc.detectedCharset);
+		}
 		return pc.detectedCharset;
 	}
 
@@ -185,14 +196,17 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		}
 
 		public String popElementFromStack() {
-			if (openElements.size() > 0)
+			if (openElements.size() > 0) {
 				return openElements.pop();
-			else
+			} else {
 				return null;
+			}
 		}
 
 		public String peekTopElement() {
-			if (openElements.isEmpty()) return null;
+			if (openElements.isEmpty()) {
+				return null;
+			}
 			return openElements.peek();
 		}
 
@@ -228,11 +242,13 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 			while (true) {
 				// If detecting charset, stop after </head> even if haven't found <meta> charset tag.
-				if (onlyDetectingCharset && failedDetectCharset)
+				if (onlyDetectingCharset && failedDetectCharset) {
 					return;
+				}
 				// If detecting charset, and found it, stop afterwards.
-				if (onlyDetectingCharset && detectedCharset != null)
+				if (onlyDetectingCharset && detectedCharset != null) {
 					return;
+				}
 				int x;
 
 				try {
@@ -244,10 +260,11 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				 * line 355 at BufferedInputStream.java (in refill()): http://www.koders.com/java/fid1949641524FAC0083432D79793F554CD85F46759.aspx?s=refill#L355
 				 * TODO: remove this when the gcj bug is fixed and the affected gcj versions are outdated.
 				 */ catch (java.io.CharConversionException cce) {
-					if (freenet.node.Node.checkForGCJCharConversionBug()) /* only ignore the exception on affected libgcj */
+					if (freenet.node.Node.checkForGCJCharConversionBug()) /* only ignore the exception on affected libgcj */ {
 						x = -1;
-					else
+					} else {
 						throw cce;
+					}
 				}
 
 				if (x == -1) {
@@ -256,8 +273,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							if (textAllowed) {
 								saveText(b, currentTag, w, this);
 							} else {
-								if (!b.toString().trim().isEmpty())
+								if (!b.toString().trim().isEmpty()) {
 									throwFilterException(l10n("textBeforeHTML"));
+								}
 							}
 							break;
 						case INTAG:
@@ -290,8 +308,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					if (c == 0xFEFF) {
 						if (firstChar) {
 							// BOM
-							if (w != null)
+							if (w != null) {
 								w.write(c);
+							}
 						} else {
 							// Null character (zero width non breaking space). Get rid.
 						}
@@ -308,8 +327,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								if (textAllowed) {
 									saveText(b, currentTag, w, this);
 								} else {
-									if (!b.toString().trim().isEmpty())
+									if (!b.toString().trim().isEmpty()) {
 										throwFilterException(l10n("textBeforeHTML"));
+									}
 								}
 								b.setLength(0);
 								balt.setLength(0);
@@ -330,8 +350,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								if (textAllowed) {
 									saveText(b, currentTag, w, this);
 								} else {
-									if (!b.toString().trim().isEmpty())
+									if (!b.toString().trim().isEmpty()) {
 										throwFilterException(l10n("textBeforeHTML"));
+									}
 								}
 
 								balt.setLength(0);
@@ -345,8 +366,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								splitTag.clear();
 								balt.setLength(0);
 								mode = INTEXT;
-								if (s != null && (allowNoHTMLTag || (s.equals("html") || (!isXHTML) && s.equalsIgnoreCase("html"))))
+								if (s != null && (allowNoHTMLTag || (s.equals("html") || (!isXHTML) && s.equalsIgnoreCase("html")))) {
 									textAllowed = true;
+								}
 							} else if (
 									(b.length() == 2)
 											&& (c == '-')
@@ -422,8 +444,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							if ((b.length() >= 4) && (c == '-') && (prevC == '-')) {
 								b.append(c);
 								mode = INTAGCOMMENTCLOSING;
-							} else
+							} else {
 								b.append(c);
+							}
 							break;
 						case INTAGCOMMENTCLOSING:
 							if (c == '>') {
@@ -432,8 +455,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								mode = INTEXT;
 							} else {
 								b.append(c);
-								if (c != '-')
+								if (c != '-') {
 									mode = INTAGCOMMENT;
+								}
 							}
 							break;
 						case INTAGWHITESPACE:
@@ -458,16 +482,18 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								b.setLength(0);
 								balt.setLength(0);
 								mode = INTEXT;
-								if (currentTag != null && (allowNoHTMLTag || (currentTag.equals("html") || (!isXHTML) && currentTag.equalsIgnoreCase("html"))))
+								if (currentTag != null && (allowNoHTMLTag || (currentTag.equals("html") || (!isXHTML) && currentTag.equalsIgnoreCase("html")))) {
 									textAllowed = true;
+								}
 							} else if ((c == '<') && Character.isWhitespace(balt.charAt(0))) {
 								// Previous was an un-escaped < in a script.
 
 								if (textAllowed) {
 									saveText(b, currentTag, w, this);
 								} else {
-									if (!b.toString().trim().isEmpty())
+									if (!b.toString().trim().isEmpty()) {
 										throwFilterException(l10n("textBeforeHTML"));
+									}
 								}
 								balt.setLength(0);
 								b.setLength(0);
@@ -520,7 +546,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		public void closeXHTMLTag(String element, Writer w) throws IOException {
 			// Assume that missing closes are way more common than extra closes.
-			if (openElements.isEmpty()) return;
+			if (openElements.isEmpty()) {
+				return;
+			}
 			if (element.equals(openElements.peek())) {
 				w.write("</" + openElements.pop() + ">");
 			} else {
@@ -528,7 +556,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					while (true) {
 						String top = openElements.pop();
 						w.write("</" + top + ">");
-						if (top.equals(element)) return;
+						if (top.equals(element)) {
+							return;
+						}
 					}
 				} // Else it has already been closed.
 			}
@@ -539,9 +569,13 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	void saveText(StringBuilder s, String tagName, Writer w, HTMLParseContext pc)
 			throws IOException {
 
-		if (pc.onlyDetectingCharset) return;
+		if (pc.onlyDetectingCharset) {
+			return;
+		}
 
-		if (logDEBUG) Logger.debug(this, "Saving text: " + s.toString());
+		if (logDEBUG) {
+			Logger.debug(this, "Saving text: " + s.toString());
+		}
 		if (pc.killText) {
 			return;
 		}
@@ -557,7 +591,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				// Not a real character
 				// STRONGLY suggests somebody is using a bogus charset.
 				// This could be in order to break the filter.
-				if (logDEBUG) Logger.debug(this, "Removing '" + c + "' from the output stream");
+				if (logDEBUG) {
+					Logger.debug(this, "Removing '" + c + "' from the output stream");
+				}
 				continue;
 			} else {
 				out.append(c);
@@ -569,8 +605,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			pc.currentStyleScriptChunk += sout;
 			return; // is parsed and written elsewhere
 		}
-		if (pc.cb != null)
+		if (pc.cb != null) {
 			pc.cb.onText(HTMLDecoder.decode(sout), tagName); /* Tag name is given as type for the text */
+		}
 
 		w.write(sout);
 	}
@@ -621,7 +658,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					pc.wasMediaElementFound = true;
 				} else if (t.element.compareTo("head") == 0 && t.startSlash) {
 					pc.headEnded = true;
-					if (pc.onlyDetectingCharset) pc.failedDetectCharset = true;
+					if (pc.onlyDetectingCharset) {
+						pc.failedDetectCharset = true;
+					}
 					//If we found a <title> or a <meta> without a <head>, then we need to add them to a <head>
 				} else if ((t.element.compareTo("meta") == 0 || t.element.compareTo("title") == 0) && pc.wasHeadElementFound == false) {
 					pc.openElements.push("head");
@@ -638,7 +677,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						w.write("</head>");
 					}
 					pc.headEnded = true;
-					if (pc.onlyDetectingCharset) pc.failedDetectCharset = true;
+					if (pc.onlyDetectingCharset) {
+						pc.failedDetectCharset = true;
+					}
 					pc.openElements.pop();
 					//If we found a <body> and no <head> before it, then we insert it
 				} else if (t.element.compareTo("body") == 0 && pc.wasHeadElementFound == false) {
@@ -649,7 +690,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							w.write(headContent + "</head>");
 						}
 						pc.headEnded = true;
-						if (pc.onlyDetectingCharset) pc.failedDetectCharset = true;
+						if (pc.onlyDetectingCharset) {
+							pc.failedDetectCharset = true;
+						}
 					}
 					// if the body is ended and we found a media tag (<video> or <audio>) we include the m3u-player just before the end of the body.
 				} else if (t.element.compareTo("body") == 0 && t.startSlash && pc.wasMediaElementFound) {
@@ -671,10 +714,11 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						if (pc.writeStyleScriptWithTag) {
 							pc.writeStyleScriptWithTag = false;
 							String style = pc.currentStyleScriptChunk;
-							if ((style == null) || (style.length() == 0))
+							if ((style == null) || (style.length() == 0)) {
 								pc.writeAfterTag.append("<!-- " + l10n("deletedUnknownStyle") + " -->");
-							else
+							} else {
 								w.write(style);
+							}
 							pc.currentStyleScriptChunk = "";
 						}
 
@@ -684,18 +728,22 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							pc.writeAfterTag = new StringBuilder(1024);
 						}
 					}
-				} else
+				} else {
 					pc.writeStyleScriptWithTag = false;
+				}
 			}
 			if (t == null || t.startSlash || t.endSlash) {
-				if (!pc.openElements.isEmpty())
+				if (!pc.openElements.isEmpty()) {
 					return pc.openElements.peek();
+				}
 				if (pc.writeAfterTag.length() > 0) {
 					w.write(pc.writeAfterTag.toString());
 					pc.writeAfterTag = new StringBuilder(1024);
 				}
 				return null;
-			} else return t.element;
+			} else {
+				return t.element;
+			}
 		} else {
 			pc.killTag = false;
 			pc.writeStyleScriptWithTag = false;
@@ -705,17 +753,24 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 	void saveComment(StringBuilder s, Writer w, HTMLParseContext pc)
 			throws IOException {
-		if (pc.onlyDetectingCharset) return;
+		if (pc.onlyDetectingCharset) {
+			return;
+		}
 		if ((s.length() > 3) && (s.charAt(0) == '!') && (s.charAt(1) == '-') && (s.charAt(2) == '-')) {
 			s.delete(0, 3);
-			if (s.charAt(s.length() - 1) == '-')
+			if (s.charAt(s.length() - 1) == '-') {
 				s.setLength(s.length() - 1);
-			if (s.charAt(s.length() - 1) == '-')
+			}
+			if (s.charAt(s.length() - 1) == '-') {
 				s.setLength(s.length() - 1);
+			}
 		}
-		if (logDEBUG) Logger.debug(this, "Saving comment: " + s.toString());
-		if (pc.expectingBadComment)
+		if (logDEBUG) {
+			Logger.debug(this, "Saving comment: " + s.toString());
+		}
+		if (pc.expectingBadComment) {
 			return; // ignore it
+		}
 
 		if (pc.inStyle || pc.inScript) {
 			pc.currentStyleScriptChunk += s;
@@ -802,38 +857,49 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			if (((len - 1 != 0) || (s.length() > 1)) && s.endsWith("/")) {
 				s = s.substring(0, s.length() - 1);
 				v.set(len - 1, s);
-				if (s.length() == 0)
+				if (s.length() == 0) {
 					len--;
+				}
 				endSlash = true;
 				// Don't need to set it back because everything is an I-value
-			} else endSlash = false;
+			} else {
+				endSlash = false;
+			}
 			s = v.get(0);
 			if ((s.length() > 1) && s.startsWith("/")) {
 				s = s.substring(1);
 				v.set(0, s);
 				startSlash = true;
-			} else startSlash = false;
+			} else {
+				startSlash = false;
+			}
 			element = v.get(0);
 			if (len > 1) {
 				unparsedAttrs = new String[len - 1];
 				for (int x = 1; x < len; x++)
 					unparsedAttrs[x - 1] = v.get(x);
-			} else
+			} else {
 				unparsedAttrs = new String[0];
-			if (logDEBUG) Logger.debug(this, "Element = " + element);
+			}
+			if (logDEBUG) {
+				Logger.debug(this, "Element = " + element);
+			}
 		}
 
 		public ParsedTag sanitize(HTMLParseContext pc) throws DataFilterException {
 			TagVerifier tv =
 					allowedTagsVerifiers.get(element.toLowerCase());
-			if (logDEBUG) Logger.debug(this, "Got verifier: " + tv + " for " + element);
+			if (logDEBUG) {
+				Logger.debug(this, "Got verifier: " + tv + " for " + element);
+			}
 			if (tv == null) {
 				if (deleteWierdStuff) {
 					return null;
 				} else {
 					String err = "<!-- " + HTMLEncoder.encode(l10n("unknownTag", "tag", element)) + " -->";
-					if (!deleteErrors)
+					if (!deleteErrors) {
 						throwFilterException(l10n("unknownTagLabel") + ' ' + err);
+					}
 					return null;
 				}
 			}
@@ -842,11 +908,13 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		@Override
 		public String toString() {
-			if (element == null)
+			if (element == null) {
 				return "";
+			}
 			StringBuilder sb = new StringBuilder("<");
-			if (startSlash)
+			if (startSlash) {
 				sb.append('/');
+			}
 			sb.append(element);
 			if (unparsedAttrs != null) {
 				int n = unparsedAttrs.length;
@@ -854,8 +922,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					sb.append(' ').append(unparsedAttrs[i]);
 				}
 			}
-			if (endSlash)
+			if (endSlash) {
 				sb.append(" /");
+			}
 			sb.append('>');
 			return sb.toString();
 		}
@@ -884,10 +953,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		public void write(Writer w, HTMLParseContext pc) throws IOException {
 			if (!startSlash) {
-				if (ElementInfo.tryAutoClose(element) && element.equals(pc.peekTopElement()))
+				if (ElementInfo.tryAutoClose(element) && element.equals(pc.peekTopElement())) {
 					pc.closeXHTMLTag(element, w);
-				if (pc.getisXHTML() && !ElementInfo.isVoidElement(element))
+				}
+				if (pc.getisXHTML() && !ElementInfo.isVoidElement(element)) {
 					pc.pushElementInStack(element);
+				}
 				htmlwrite(w, pc);
 			} else {
 				if (pc.getisXHTML()) {
@@ -2159,7 +2230,7 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			Map<String, Object> h = new LinkedHashMap<String, Object>();
 			boolean equals = false;
 			String prevX = "";
-			if (t.unparsedAttrs != null)
+			if (t.unparsedAttrs != null) {
 				for (String s : t.unparsedAttrs) {
 					if (equals) {
 						equals = false;
@@ -2179,14 +2250,16 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							}
 						} else if (idx > -1) {
 							String x = s.substring(0, idx);
-							if (x.length() == 0)
+							if (x.length() == 0) {
 								x = prevX;
+							}
 							x = x.toLowerCase();
 							String y;
-							if (idx == s.length() - 1)
+							if (idx == s.length() - 1) {
 								y = "";
-							else
+							} else {
 								y = s.substring(idx + 1, s.length());
+							}
 							y = stripQuotes(y);
 							h.remove(x);
 							h.put(x, y);
@@ -2198,8 +2271,11 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						}
 					}
 				}
+			}
 			h = sanitizeHash(h, t, pc);
-			if (h == null) return null;
+			if (h == null) {
+				return null;
+			}
 			//Remove any blank entries
 			for (Iterator<Entry<String, Object>> it = h.entrySet().iterator(); it.hasNext(); ) {
 				Map.Entry<String, Object> entry = it.next();
@@ -2208,22 +2284,27 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				}
 			}
 			//If the tag has no attributes, and this is not allowable, remove it
-			if (h.isEmpty() && expungeTagIfNoAttributes()) return null;
-			if (t.startSlash)
+			if (h.isEmpty() && expungeTagIfNoAttributes()) {
+				return null;
+			}
+			if (t.startSlash) {
 				return new ParsedTag(t, (String[]) null);
+			}
 			String[] outAttrs = new String[h.size()];
 			int i = 0;
 			for (Map.Entry<String, Object> entry : h.entrySet()) {
 				String x = entry.getKey();
 				Object o = entry.getValue();
 				String y;
-				if (o instanceof String)
+				if (o instanceof String) {
 					y = (String) o;
-				else
+				} else {
 					y = null;
+				}
 				StringBuilder out = new StringBuilder(x);
-				if (y != null)
+				if (y != null) {
 					out.append("=\"").append(y).append('"');
+				}
 				outAttrs[i++] = out.toString();
 			}
 			return new ParsedTag(t, outAttrs);
@@ -2234,8 +2315,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 										 HTMLParseContext pc) throws DataFilterException {
 			Map<String, Object> hn = new LinkedHashMap<String, Object>();
 			for (Map.Entry<String, Object> entry : h.entrySet()) {
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(this, "HTML Filter is sanitizing: " + entry.getKey() + " = " + entry.getValue());
+				}
 				String x = entry.getKey();
 				Object o = entry.getValue();
 
@@ -2244,9 +2326,13 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				//URI attributes require additional processing
 				if (inline || uriAttrs.contains(x)) {
 					if (!inline) {
-						if (logMINOR) Logger.minor(this, "Non-inline URI attribute: " + x);
+						if (logMINOR) {
+							Logger.minor(this, "Non-inline URI attribute: " + x);
+						}
 					} else {
-						if (logMINOR) Logger.minor(this, "Inline URI attribute: " + x);
+						if (logMINOR) {
+							Logger.minor(this, "Inline URI attribute: " + x);
+						}
 					}
 					// URI
 					if (o instanceof String) {
@@ -2261,8 +2347,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						o = uri;
 					}
 					// FIXME: rewrite absolute URLs, handle ?date= etc
-					if (logDEBUG)
+					if (logDEBUG) {
 						Logger.debug(this, "HTML Filter is putting " + (inline ? "inline" : "") + " uri attribute: " + x + " =  " + o);
+					}
 					hn.put(x, o);
 					continue;
 				}
@@ -2284,7 +2371,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				/*Boolean attributes must either be empty or equal to their own name*/
 				if (booleanAttrs.contains(x)) {
 					String value = null;
-					if (o instanceof String) value = (String) o;
+					if (o instanceof String) {
+						value = (String) o;
+					}
 					if ((value != null && value.equalsIgnoreCase(x)) || (!pc.isXHTML && o == null)) {
 						hn.put(x, o);
 						continue;
@@ -2294,7 +2383,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				// lang or xml:lang = language [ "-" country [ "-" variant ] ]
 				// The variant can be just about anything; no way to test (avian)
 				if (x.equals("xml:lang") || x.equals("lang") || (x.equals("dir") && (o instanceof String) && (((String) o).equalsIgnoreCase("ltr") || ((String) o).equalsIgnoreCase("rtl")))) {
-					if (logDEBUG) Logger.debug(this, "HTML Filter is putting attribute: " + x + " =  " + o);
+					if (logDEBUG) {
+						Logger.debug(this, "HTML Filter is putting attribute: " + x + " =  " + o);
+					}
 					hn.put(x, o);
 				}
 			}
@@ -2315,10 +2406,11 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			for (int x = 0; x < n; x++) {
 				char cc = quotes.charAt(x);
 				if ((s.charAt(0) == cc) && (s.charAt(s.length() - 1) == cc)) {
-					if (s.length() > 2)
+					if (s.length() > 2) {
 						s = s.substring(1, s.length() - 1);
-					else
+					} else {
 						s = "";
+					}
 					break;
 				}
 			}
@@ -2356,16 +2448,19 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		Map<String, Object> finish(Map<String, Object> h, Map<String, Object> hn,
 								   HTMLParseContext pc) throws DataFilterException {
-			if (logDEBUG) Logger.debug(this, "Finishing script/style");
+			if (logDEBUG) {
+				Logger.debug(this, "Finishing script/style");
+			}
 			// Finishing
 			setStyle(false, pc);
 			pc.styleScriptRecurseCount--;
 			if (pc.styleScriptRecurseCount < 0) {
-				if (deleteErrors)
+				if (deleteErrors) {
 					pc.writeAfterTag.append(
 							"<!-- " + l10n("tooManyNestedStyleOrScriptTags") + " -->");
-				else
+				} else {
 					throwFilterException(l10n("tooManyNestedStyleOrScriptTagsLong"));
+				}
 				return null;
 			}
 			if (!pc.killStyle) {
@@ -2382,13 +2477,16 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 		Map<String, Object> start(Map<String, Object> h, Map<String, Object> hn, HTMLParseContext pc)
 				throws DataFilterException {
-			if (logDEBUG) Logger.debug(this, "Starting script/style");
+			if (logDEBUG) {
+				Logger.debug(this, "Starting script/style");
+			}
 			pc.styleScriptRecurseCount++;
 			if (pc.styleScriptRecurseCount > 1) {
-				if (deleteErrors)
+				if (deleteErrors) {
 					pc.writeAfterTag.append("<!-- " + l10n("tooManyNestedStyleOrScriptTags") + " -->");
-				else
+				} else {
 					throwFilterException(l10n("tooManyNestedStyleOrScriptTagsLong"));
+				}
 				return null;
 			}
 			setStyle(true, pc);
@@ -2519,10 +2617,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			String style = getHashString(h, "style");
 			if (style != null) {
 				style = sanitizeStyle(style, pc.cb, pc, true);
-				if (style != null)
+				if (style != null) {
 					style = escapeQuotes(style);
-				if (style != null)
+				}
+				if (style != null) {
 					hn.put("style", style);
+				}
 			}
 			String title = getHashString(h, "title");
 			if (title != null) {
@@ -2605,8 +2705,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				String arg = getHashString(h, name);
 				if (arg != null) {
 					arg = sanitizeScripting(arg);
-					if (arg != null)
+					if (arg != null) {
 						hn.put(name, arg);
+					}
 				}
 			}
 
@@ -2649,19 +2750,22 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			if (type != null) {
 				String[] typesplit = splitType(type);
 				type = typesplit[0];
-				if ((typesplit[1] != null) && (typesplit[1].length() > 0))
+				if ((typesplit[1] != null) && (typesplit[1].length() > 0)) {
 					charset = typesplit[1];
-				if (logDEBUG)
+				}
+				if (logDEBUG) {
 					Logger.debug(
 							this,
 							"Processing link tag, type="
 									+ type
 									+ ", charset="
 									+ charset);
+				}
 			}
 			String c = getHashString(h, "charset");
-			if (c != null)
+			if (c != null) {
 				charset = c;
+			}
 			if (charset != null) {
 				try {
 					charset = URLDecoder.decode(charset, false);
@@ -2669,10 +2773,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					charset = null;
 				}
 			}
-			if (charset != null && charset.indexOf('&') != -1)
+			if (charset != null && charset.indexOf('&') != -1) {
 				charset = null;
-			if (charset != null && !Charset.isSupported(charset))
+			}
+			if (charset != null && !Charset.isSupported(charset)) {
 				charset = null;
+			}
 
 			// Is it a style sheet?
 			// Also, sanitise rel type
@@ -2697,19 +2803,23 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					if (token.equalsIgnoreCase("stylesheet")) {
 						if (token.equalsIgnoreCase("stylesheet")) {
 							isStylesheet = true;
-							if (!((i == 0 || i == 1 && prevToken != null && prevToken.equalsIgnoreCase("alternate"))))
+							if (!((i == 0 || i == 1 && prevToken != null && prevToken.equalsIgnoreCase("alternate")))) {
 								return null;
-							if (tok.hasMoreTokens())
+							}
+							if (tok.hasMoreTokens()) {
 								return null; // Disallow extra tokens after "stylesheet"
+							}
 						}
 					} else if (token.equalsIgnoreCase("icon")) {
 						isIcon = true;
-					} else if (!isStandardLinkType(token)) continue;
+					} else if (!isStandardLinkType(token)) {
+						continue;
+					}
 
 					i++;
-					if (sb.length() == 0)
+					if (sb.length() == 0) {
 						sb.append(token);
-					else {
+					} else {
 						sb.append(' ');
 						sb.append(token);
 					}
@@ -2730,10 +2840,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 				while (tok.hasMoreTokens()) {
 					String token = tok.nextToken();
-					if (!isStandardLinkType(token)) continue;
-					if (sb.length() == 0)
+					if (!isStandardLinkType(token)) {
+						continue;
+					}
+					if (sb.length() == 0) {
 						sb.append(token);
-					else {
+					} else {
 						sb.append(' ');
 						sb.append(token);
 					}
@@ -2746,18 +2858,22 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 			// Allow no rel or rev, even on <link>, as per HTML spec.
 
-			if (parsedRel.length() != 0)
+			if (parsedRel.length() != 0) {
 				hn.put("rel", parsedRel);
-			if (parsedRev.length() != 0)
+			}
+			if (parsedRev.length() != 0) {
 				hn.put("rev", parsedRev);
+			}
 
 			if (rel != null) {
-				if (rel.equals("stylesheet") || rel.equals("alternate stylesheet"))
+				if (rel.equals("stylesheet") || rel.equals("alternate stylesheet")) {
 					isStylesheet = true;
+				}
 			} else {
 				// Not a stylesheet.
-				if (type != null && type.startsWith("text/css"))
+				if (type != null && type.startsWith("text/css")) {
 					return null; // Not a stylesheet, so can't take a stylesheet type.
+				}
 			}
 
 			if (isStylesheet) {
@@ -2772,12 +2888,15 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 					maybecharset = pc.charset;
 				}
 				String media = getHashString(h, "media");
-				if (media != null)
+				if (media != null) {
 					media = CSSReadFilter.filterMediaList(media);
-				if (media != null)
+				}
+				if (media != null) {
 					hn.put("media", media);
-				if (type != null && !type.startsWith("text/css"))
+				}
+				if (type != null && !type.startsWith("text/css")) {
 					return null; // Different style language e.g. XSL, not supported.
+				}
 				type = "text/css";
 			}
 			String href = getHashString(h, "href");
@@ -2791,12 +2910,15 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				if (href != null) {
 					href = HTMLEncoder.encode(href);
 					hn.put("href", href);
-					if (type != null)
+					if (type != null) {
 						hn.put("type", type);
-					if (charset != null)
+					}
+					if (charset != null) {
 						hn.put("charset", charset);
-					if ((charset != null) && (hreflang != null))
+					}
+					if ((charset != null) && (hreflang != null)) {
 						hn.put("hreflang", hreflang);
+					}
 				}
 			}
 			// FIXME: allow these if the charset and encoding are encoded into
@@ -2916,7 +3038,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 				pc.writeAfterTag.append("<!-- ").append(HTMLEncoder.encode(e.toString())).append(" -->");
 				return null;
 			}
-			if (finalAction == null) return null;
+			if (finalAction == null) {
+				return null;
+			}
 			hn.put("method", method);
 			hn.put("action", finalAction);
 			// Force enctype and accept-charset to acceptable values.
@@ -3000,8 +3124,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			String name = getHashString(h, "name");
 			String content = getHashString(h, "content");
 			String scheme = getHashString(h, "scheme");
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "meta: name=" + name + ", content=" + content + ", http-equiv=" + http_equiv + ", scheme=" + scheme);
+			}
 			if (content != null) {
 				if ((name != null) && (http_equiv == null)) {
 					if (name.equalsIgnoreCase("Author")) {
@@ -3043,7 +3168,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						}
 						// FIXME: add some more headers - Dublin Core?
 					} else if (http_equiv.equalsIgnoreCase("Content-Type")) {
-						if (logMINOR) Logger.minor(this, "Found http-equiv content-type=" + content);
+						if (logMINOR) {
+							Logger.minor(this, "Found http-equiv content-type=" + content);
+						}
 						String[] typesplit = splitType(content);
 						if (logDEBUG) {
 							for (int i = 0; i < typesplit.length; i++)
@@ -3061,16 +3188,18 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 								} else if (typesplit[1] != null && pc.charset != null && !typesplit[1].equalsIgnoreCase(pc.charset)) {
 									throwFilterException(l10n("wrongCharsetInMeta"));
 								} else if (typesplit[1] != null) {
-									if (pc.detectedCharset != null)
+									if (pc.detectedCharset != null) {
 										throwFilterException(l10n("multipleCharsetsInMeta"));
+									}
 									pc.detectedCharset = typesplit[1].trim();
 								}
 								detected = true;
 								break;
 							}
 						}
-						if (!detected)
+						if (!detected) {
 							throwFilterException(l10n("invalidMetaType"));
+						}
 					} else if (
 							http_equiv.equalsIgnoreCase("Content-Language")) {
 						if (content.matches("((?>[a-zA-Z0-9]*)(?>-[A-Za-z0-9]*)*(?>,\\s*)?)*") && (!content.trim().isEmpty())) {
@@ -3082,9 +3211,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						if (idx == -1 && metaRefreshSamePageMinInterval >= 0) {
 							try {
 								int seconds = Integer.parseInt(content);
-								if (seconds < 0) return null;
-								if (seconds < metaRefreshSamePageMinInterval)
+								if (seconds < 0) {
+									return null;
+								}
+								if (seconds < metaRefreshSamePageMinInterval) {
 									seconds = metaRefreshSamePageMinInterval;
+								}
 								hn.put("http-equiv", "refresh");
 								hn.put("content", Integer.toString(seconds));
 							} catch (NumberFormatException e) {
@@ -3098,8 +3230,12 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 							String after = content.substring(idx + 1).trim();
 							try {
 								seconds = Integer.parseInt(before);
-								if (seconds < 0) return null;
-								if (seconds < metaRefreshRedirectMinInterval) seconds = metaRefreshRedirectMinInterval;
+								if (seconds < 0) {
+									return null;
+								}
+								if (seconds < metaRefreshRedirectMinInterval) {
+									seconds = metaRefreshRedirectMinInterval;
+								}
 								if (!after.toLowerCase().startsWith("url=")) {
 									pc.writeAfterTag.append("<!-- no url but doesn't parse as number in meta refresh -->");
 									return null;
@@ -3179,31 +3315,39 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		ParsedTag sanitize(ParsedTag t, HTMLParseContext pc) {
 			// HTML5 is just <!doctype html>
 			if (t.unparsedAttrs.length == 1) {
-				if (!t.unparsedAttrs[0].equalsIgnoreCase("html"))
+				if (!t.unparsedAttrs[0].equalsIgnoreCase("html")) {
 					return null;
+				}
 				return t;
 			}
-			if (!((t.unparsedAttrs.length == 3) || (t.unparsedAttrs.length == 4)))
+			if (!((t.unparsedAttrs.length == 3) || (t.unparsedAttrs.length == 4))) {
 				return null;
-			if (!t.unparsedAttrs[0].equalsIgnoreCase("html"))
+			}
+			if (!t.unparsedAttrs[0].equalsIgnoreCase("html")) {
 				return null;
+			}
 			if (t.unparsedAttrs[1].equalsIgnoreCase("system") && t.unparsedAttrs.length == 3) {
 				// HTML5 allows <!DOCTYPE html SYSTEM "about:legacy-compat"> (either kind of quotes)
 				String s = stripQuotes(t.unparsedAttrs[2]);
 				if (s.equals("about:legacy-compat") && t.unparsedAttrs.length == 3) {
 					return t;
-				} else return null;
+				} else {
+					return null;
+				}
 			}
-			if (!t.unparsedAttrs[1].equalsIgnoreCase("public"))
+			if (!t.unparsedAttrs[1].equalsIgnoreCase("public")) {
 				return null;
+			}
 			String s = stripQuotes(t.unparsedAttrs[2]);
-			if (!DTDs.containsKey(s))
+			if (!DTDs.containsKey(s)) {
 				return null;
+			}
 			if (t.unparsedAttrs.length == 4) {
 				String ss = stripQuotes(t.unparsedAttrs[3]);
 				String spec = getHashString(DTDs, s);
-				if ((spec != null) && !spec.equals(ss))
+				if ((spec != null) && !spec.equals(ss)) {
 					return null;
+				}
 			}
 			return t;
 		}
@@ -3217,34 +3361,48 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		@Override
 		ParsedTag sanitize(ParsedTag t, HTMLParseContext pc) throws DataFilterException {
 			if (t.unparsedAttrs.length != 2 && t.unparsedAttrs.length != 3) {
-				if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid length");
+				if (logMINOR) {
+					Logger.minor(this, "Deleting xml declaration, invalid length");
+				}
 				return null;
 			}
 			if (t.unparsedAttrs.length == 3 && !t.unparsedAttrs[2].equals("?")) {
-				if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid ending (length 2)");
+				if (logMINOR) {
+					Logger.minor(this, "Deleting xml declaration, invalid ending (length 2)");
+				}
 				return null;
 			}
 			if (t.unparsedAttrs.length == 2 && !t.unparsedAttrs[1].endsWith("?")) {
-				if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid ending (length 3)");
+				if (logMINOR) {
+					Logger.minor(this, "Deleting xml declaration, invalid ending (length 3)");
+				}
 				return null;
 			}
 			if (!(t.unparsedAttrs[0].equals("version=\"1.0\"") || t.unparsedAttrs[0].equals("version='1.0'"))) {
-				if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid version");
+				if (logMINOR) {
+					Logger.minor(this, "Deleting xml declaration, invalid version");
+				}
 				return null;
 			}
 			String encodingAttr = t.unparsedAttrs[1];
 			if (encodingAttr.startsWith("encoding=\"")) {
 				if (!encodingAttr.endsWith("\"")) {
-					if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid encoding");
+					if (logMINOR) {
+						Logger.minor(this, "Deleting xml declaration, invalid encoding");
+					}
 					return null;
 				}
 			} else if (encodingAttr.startsWith("encoding='")) {
 				if (!encodingAttr.endsWith("'")) {
-					if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid encoding");
+					if (logMINOR) {
+						Logger.minor(this, "Deleting xml declaration, invalid encoding");
+					}
 					return null;
 				}
 			} else {
-				if (logMINOR) Logger.minor(this, "Deleting xml declaration, invalid encoding");
+				if (logMINOR) {
+					Logger.minor(this, "Deleting xml declaration, invalid encoding");
+				}
 				return null;
 			}
 
@@ -3252,8 +3410,10 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 
 			if (!charset.equalsIgnoreCase(pc.charset)) {
 				if (pc.charset != null && !charset.equalsIgnoreCase(pc.charset)) {
-					if (logMINOR) Logger.minor(this, "Deleting xml declaration (invalid charset "
-							+ charset + " should be " + pc.charset + ")");
+					if (logMINOR) {
+						Logger.minor(this, "Deleting xml declaration (invalid charset "
+								+ charset + " should be " + pc.charset + ")");
+					}
 					return null;
 				} else if (pc.detectedCharset != null) {
 					throwFilterException(l10n("multipleCharsetsInMeta"));
@@ -3322,12 +3482,18 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 	}
 
 	static String sanitizeStyle(String style, FilterCallback cb, HTMLParseContext hpc, boolean isInline) throws DataFilterException {
-		if (style == null) return null;
-		if (hpc.onlyDetectingCharset) return null;
+		if (style == null) {
+			return null;
+		}
+		if (hpc.onlyDetectingCharset) {
+			return null;
+		}
 		Reader r = new StringReader(style);
 		Writer w = new StringWriter();
 		style = style.trim();
-		if (logMINOR) Logger.minor(HTMLFilter.class, "Sanitizing style: " + style);
+		if (logMINOR) {
+			Logger.minor(HTMLFilter.class, "Sanitizing style: " + style);
+		}
 		CSSParser pc = new CSSParser(r, w, false, cb, hpc.charset, false, isInline);
 		try {
 			pc.parse();
@@ -3343,14 +3509,18 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 						"CSS Parse Error!",
 						e);
 				return "/* " + l10n("couldNotParseStyle") + " */";
-			} else
+			} else {
 				throw e;
+			}
 		}
 		String s = w.toString();
-		if ((s == null) || (s.length() == 0))
+		if ((s == null) || (s.length() == 0)) {
 			return null;
+		}
 		//		Core.logger.log(SaferFilter.class, "Style now: " + s, LogLevel.DEBUG);
-		if (logMINOR) Logger.minor(HTMLFilter.class, "Style finally: " + s);
+		if (logMINOR) {
+			Logger.minor(HTMLFilter.class, "Style finally: " + s);
+		}
 		return s;
 	}
 
@@ -3394,8 +3564,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			if (x != -1) {
 				name = param.substring(0, x).trim();
 				value = param.substring(x + 1).trim();
-				if (name.equals("charset"))
+				if (name.equals("charset")) {
 					charset = value;
+				}
 			}
 		}
 		return new String[]{type, charset};
@@ -3426,8 +3597,9 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 		public String nextField() {
 			int start, end;
 
-			if (curPos > maxPos)
+			if (curPos > maxPos) {
 				return null;
+			}
 			start = curPos;
 			while ((curPos < maxPos) && (str.charAt(curPos) != c))
 				curPos++;
@@ -3459,31 +3631,36 @@ public class HTMLFilter implements ContentDataFilter, CharsetExtractor {
 			String overrideCharset,
 			String maybeCharset,
 			FilterCallback cb, boolean inline) throws CommentException {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(HTMLFilter.class, "Sanitizing URI: " + suri + " ( override type " + overrideType + " override charset " + overrideCharset + " ) inline=" + inline, new Exception("debug"));
+		}
 		boolean addMaybe = false;
-		if ((overrideCharset != null) && (overrideCharset.length() > 0))
+		if ((overrideCharset != null) && (overrideCharset.length() > 0)) {
 			overrideType += "; charset=" + overrideCharset;
-		else if (maybeCharset != null)
+		} else if (maybeCharset != null) {
 			addMaybe = true;
+		}
 		String retval = cb.processURI(suri, overrideType, false, inline);
 		if (addMaybe) {
-			if (retval.indexOf('?') != -1)
+			if (retval.indexOf('?') != -1) {
 				retval += "&maybecharset=" + maybeCharset;
-			else
+			} else {
 				retval += "?maybecharset=" + maybeCharset;
+			}
 		}
 		return retval;
 	}
 
 	static String getHashString(Map<String, Object> h, String key) {
 		Object o = h.get(key);
-		if (o == null)
+		if (o == null) {
 			return null;
-		if (o instanceof String)
+		}
+		if (o instanceof String) {
 			return (String) o;
-		else
+		} else {
 			return null;
+		}
 	}
 
 	private static String l10n(String key) {

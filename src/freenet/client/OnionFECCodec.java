@@ -19,18 +19,28 @@ public class OnionFECCodec extends FECCodec {
 		Buffer[] buffers = new Buffer[k];
 		// The data blocks are already in the correct positions in dataBlocks.
 		for (int i = 0; i < dataBlocks.length; i++) {
-			if (dataBlocks[i].length != blockLength) throw new IllegalArgumentException();
-			if (!dataBlocksPresent[i]) continue;
+			if (dataBlocks[i].length != blockLength) {
+				throw new IllegalArgumentException();
+			}
+			if (!dataBlocksPresent[i]) {
+				continue;
+			}
 			buffers[i] = new Buffer(dataBlocks[i], 0, blockLength);
 			blockNumbers[i] = i;
 		}
 		int target = 0;
 		// Fill in the gaps with the check blocks.
 		for (int i = 0; i < checkBlocks.length; i++) {
-			if (!checkBlocksPresent[i]) continue;
-			if (checkBlocks[i].length != blockLength) throw new IllegalArgumentException();
+			if (!checkBlocksPresent[i]) {
+				continue;
+			}
+			if (checkBlocks[i].length != blockLength) {
+				throw new IllegalArgumentException();
+			}
 			while (target < dataBlocks.length && buffers[target] != null) target++; // Scan for slot.
-			if (target >= dataBlocks.length) continue;
+			if (target >= dataBlocks.length) {
+				continue;
+			}
 			// Decode into the slot for the relevant data block.
 			buffers[target] = new Buffer(dataBlocks[target]);
 			// Provide the data from the check block.
@@ -105,10 +115,18 @@ public class OnionFECCodec extends FECCodec {
 
 		@Override
 		public int compareTo(CodecKey o) {
-			if (n > o.n) return 1;
-			if (n < o.n) return -1;
-			if (k > o.k) return 1;
-			if (k < o.k) return -1;
+			if (n > o.n) {
+				return 1;
+			}
+			if (n < o.n) {
+				return -1;
+			}
+			if (k > o.k) {
+				return 1;
+			}
+			if (k < o.k) {
+				return -1;
+			}
 			return 0;
 		}
 	}
@@ -122,22 +140,30 @@ public class OnionFECCodec extends FECCodec {
 		PureCode codec = getCodec(k, n);
 		Buffer[] data = new Buffer[dataBlocks.length];
 		for (int i = 0; i < data.length; i++) {
-			if (dataBlocks[i] == null || dataBlocks[i].length != blockLength)
+			if (dataBlocks[i] == null || dataBlocks[i].length != blockLength) {
 				throw new IllegalArgumentException();
+			}
 			data[i] = new Buffer(dataBlocks[i]);
 		}
 		int mustEncode = 0;
 		for (int i = 0; i < checkBlocks.length; i++) {
-			if (checkBlocks[i] == null || checkBlocks[i].length != blockLength)
+			if (checkBlocks[i] == null || checkBlocks[i].length != blockLength) {
 				throw new IllegalArgumentException();
-			if (!checkBlocksPresent[i]) mustEncode++;
+			}
+			if (!checkBlocksPresent[i]) {
+				mustEncode++;
+			}
 		}
 		Buffer[] check = new Buffer[mustEncode];
-		if (mustEncode == 0) return; // Done already.
+		if (mustEncode == 0) {
+			return; // Done already.
+		}
 		int[] toEncode = new int[mustEncode];
 		int x = 0;
 		for (int i = 0; i < checkBlocks.length; i++) {
-			if (checkBlocksPresent[i]) continue;
+			if (checkBlocksPresent[i]) {
+				continue;
+			}
 			check[x] = new Buffer(checkBlocks[i]);
 			toEncode[x++] = i + dataBlocks.length;
 		}
@@ -172,18 +198,22 @@ public class OnionFECCodec extends FECCodec {
 		 * all FEC.
 		 */
 		int checkBlocks = dataBlocks * HighLevelSimpleClientImpl.SPLITFILE_CHECK_BLOCKS_PER_SEGMENT / HighLevelSimpleClientImpl.SPLITFILE_SCALING_BLOCKS_PER_SEGMENT;
-		if (dataBlocks >= HighLevelSimpleClientImpl.SPLITFILE_CHECK_BLOCKS_PER_SEGMENT)
+		if (dataBlocks >= HighLevelSimpleClientImpl.SPLITFILE_CHECK_BLOCKS_PER_SEGMENT) {
 			checkBlocks = HighLevelSimpleClientImpl.SPLITFILE_CHECK_BLOCKS_PER_SEGMENT;
+		}
 		// An extra block for anything below the limit.
 		checkBlocks++;
 		// Keep it within 256 blocks.
-		if (dataBlocks < 256 && dataBlocks + checkBlocks > 256)
+		if (dataBlocks < 256 && dataBlocks + checkBlocks > 256) {
 			checkBlocks = 256 - dataBlocks;
+		}
 		if (compatibilityMode == InsertContext.CompatibilityMode.COMPAT_1250 || compatibilityMode == InsertContext.CompatibilityMode.COMPAT_1250_EXACT) {
 			// Pre-1250, redundancy was always 100% or less.
 			// Builds of that period using the native FEC (ext #26) will segfault sometimes on >100% redundancy.
 			// So limit check blocks to data blocks.
-			if (checkBlocks > dataBlocks) checkBlocks = dataBlocks;
+			if (checkBlocks > dataBlocks) {
+				checkBlocks = dataBlocks;
+			}
 		}
 		return checkBlocks;
 	}

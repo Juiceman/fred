@@ -64,10 +64,11 @@ public class InsertException extends Exception implements Cloneable {
 		mode = m;
 		errorCodes = null;
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode) + ": " + msg, this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode m, FreenetURI expectedURI) {
@@ -76,10 +77,11 @@ public class InsertException extends Exception implements Cloneable {
 		mode = m;
 		errorCodes = null;
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode), this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode mode, Throwable e, FreenetURI expectedURI) {
@@ -89,10 +91,11 @@ public class InsertException extends Exception implements Cloneable {
 		errorCodes = null;
 		initCause(e);
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode) + ": " + e, this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode mode, String message, Throwable e, FreenetURI expectedURI) {
@@ -102,10 +105,11 @@ public class InsertException extends Exception implements Cloneable {
 		errorCodes = null;
 		initCause(e);
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode) + ": " + e, this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode mode, FailureCodeTracker errorCodes, FreenetURI expectedURI) {
@@ -114,10 +118,11 @@ public class InsertException extends Exception implements Cloneable {
 		this.mode = mode;
 		this.errorCodes = errorCodes;
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode), this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode mode, String message, FailureCodeTracker errorCodes, FreenetURI expectedURI) {
@@ -126,10 +131,11 @@ public class InsertException extends Exception implements Cloneable {
 		this.mode = mode;
 		this.errorCodes = errorCodes;
 		this.uri = expectedURI;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode), this);
+		}
 	}
 
 	public InsertException(InsertExceptionMode mode) {
@@ -138,10 +144,11 @@ public class InsertException extends Exception implements Cloneable {
 		this.mode = mode;
 		this.errorCodes = null;
 		this.uri = null;
-		if (mode == InsertExceptionMode.INTERNAL_ERROR)
+		if (mode == InsertExceptionMode.INTERNAL_ERROR) {
 			Logger.error(this, "Internal error: " + this);
-		else if (logMINOR)
+		} else if (logMINOR) {
 			Logger.minor(this, "Creating InsertException: " + getMessage(mode), this);
+		}
 	}
 
 	public InsertException(InsertException e) {
@@ -241,15 +248,19 @@ public class InsertException extends Exception implements Cloneable {
 
 		InsertExceptionMode(int code) {
 			this.code = code;
-			if (code < 0 || code >= UPPER_LIMIT_ERROR_CODE)
+			if (code < 0 || code >= UPPER_LIMIT_ERROR_CODE) {
 				throw new IllegalArgumentException();
-			if (modes.containsKey(code))
+			}
+			if (modes.containsKey(code)) {
 				throw new IllegalArgumentException();
+			}
 			modes.put(code, this);
 		}
 
 		public static InsertExceptionMode getByCode(int code) {
-			if (modes.get(code) == null) throw new IllegalArgumentException();
+			if (modes.get(code) == null) {
+				throw new IllegalArgumentException();
+			}
 			return modes.get(code);
 		}
 
@@ -267,9 +278,11 @@ public class InsertException extends Exception implements Cloneable {
 	public static String getMessage(InsertExceptionMode mode) {
 		// FIXME change the l10n to use the keyword not the code
 		String ret = NodeL10n.getBase().getString("InsertException.longError." + mode.code);
-		if (ret == null)
+		if (ret == null) {
 			return "Unknown error " + mode;
-		else return ret;
+		} else {
+			return ret;
+		}
 	}
 
 	/**
@@ -278,9 +291,11 @@ public class InsertException extends Exception implements Cloneable {
 	public static String getShortMessage(InsertExceptionMode mode) {
 		// FIXME change the l10n to use the keyword not the code
 		String ret = NodeL10n.getBase().getString("InsertException.shortError." + mode.code);
-		if (ret == null)
+		if (ret == null) {
 			return "Unknown error " + mode;
-		else return ret;
+		} else {
+			return ret;
+		}
 	}
 
 	/**
@@ -318,16 +333,21 @@ public class InsertException extends Exception implements Cloneable {
 	 * Construct an InsertException from a bunch of error codes, typically from a splitfile insert.
 	 */
 	public static InsertException construct(FailureCodeTracker errors) {
-		if (errors == null) return null;
-		if (errors.isEmpty()) return null;
+		if (errors == null) {
+			return null;
+		}
+		if (errors.isEmpty()) {
+			return null;
+		}
 		if (errors.isOneCodeOnly()) {
 			return new InsertException(errors.getFirstCodeInsert());
 		}
 		InsertExceptionMode mode;
-		if (errors.isFatal(true))
+		if (errors.isFatal(true)) {
 			mode = InsertExceptionMode.FATAL_ERRORS_IN_BLOCKS;
-		else
+		} else {
 			mode = InsertExceptionMode.TOO_MANY_RETRIES_IN_BLOCKS;
+		}
 		return new InsertException(mode, errors, null);
 	}
 

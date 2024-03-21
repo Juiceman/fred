@@ -125,8 +125,9 @@ public class PartiallyReceivedBlock {
 			if (packet.getLength() != _packetSize) {
 				throw new RuntimeException("New packet size " + packet.getLength() + " but expecting packet of size " + _packetSize);
 			}
-			if (_received[position])
+			if (_received[position]) {
 				return;
+			}
 
 			_receivedCount++;
 			packet.copyTo(_data, position * _packetSize);
@@ -148,7 +149,9 @@ public class PartiallyReceivedBlock {
 
 	public synchronized boolean allReceived() throws AbortedException {
 		if (_receivedCount == _packets) {
-			if (logDEBUG) Logger.debug(this, "Received " + _receivedCount + " of " + _packets + " on " + this);
+			if (logDEBUG) {
+				Logger.debug(this, "Received " + _receivedCount + " of " + _packets + " on " + this);
+			}
 			return true;
 		}
 		if (_aborted) {
@@ -158,7 +161,9 @@ public class PartiallyReceivedBlock {
 	}
 
 	public synchronized byte[] getBlock() throws AbortedException {
-		if (allReceived()) return _data;
+		if (allReceived()) {
+			return _data;
+		}
 		throw new RuntimeException("Tried to get block before all packets received");
 	}
 
@@ -190,12 +195,15 @@ public class PartiallyReceivedBlock {
 		PacketReceivedListener[] listeners;
 		synchronized (this) {
 			if (_aborted) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Already aborted " + this + " : reason=" + _abortReason + " description=" + _abortDescription);
+				}
 				return null;
 			}
 			if (_receivedCount == _packets) {
-				if (logMINOR) Logger.minor(this, "Already received");
+				if (logMINOR) {
+					Logger.minor(this, "Already received");
+				}
 				return _data;
 			}
 			Logger.normal(this, "Aborting PRB: " + reason + " : " + description + " on " + this, new Exception("debug"));

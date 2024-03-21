@@ -58,7 +58,9 @@ public class PacketThrottle {
 
 	public synchronized void setRoundTripTime(long rtt) {
 		_roundTripTime = Math.max(rtt, 10);
-		if (logMINOR) Logger.minor(this, "Set round trip time to " + rtt + " on " + this);
+		if (logMINOR) {
+			Logger.minor(this, "Set round trip time to " + rtt + " on " + this);
+		}
 	}
 
 	public synchronized void notifyOfPacketsLost(int numPackets) {
@@ -93,24 +95,33 @@ public class PacketThrottle {
 		int windowSize = (int) getWindowSize();
 
 		if (slowStart) {
-			if (logMINOR) Logger.minor(this, "Still in slow start");
+			if (logMINOR) {
+				Logger.minor(this, "Still in slow start");
+			}
 			_windowSize += _windowSize / SLOW_START_DIVISOR;
 			// Avoid craziness if there is lag in detecting packet loss.
-			if (_windowSize > maxWindowSize) slowStart = false;
+			if (_windowSize > maxWindowSize) {
+				slowStart = false;
+			}
 			// Window size must not drop below 1.0. Partly this is because we need to be able to send one packet, so it is a logical lower bound.
 			// But mostly it is because of the non-slow-start division by _windowSize!
-			if (_windowSize < 1.0F) _windowSize = 1.0F;
+			if (_windowSize < 1.0F) {
+				_windowSize = 1.0F;
+			}
 		} else {
 			_windowSize += (PACKET_TRANSMIT_INCREMENT / _windowSize);
 		}
 		// Ensure that we the window size does not grow dramatically larger than the largest window
 		// that has actually been in flight at one time.
-		if (_windowSize > maxWindowSize)
+		if (_windowSize > maxWindowSize) {
 			_windowSize = (float) maxWindowSize;
-		if (_windowSize > (windowSize + 1))
+		}
+		if (_windowSize > (windowSize + 1)) {
 			notifyAll();
-		if (logMINOR)
+		}
+		if (logMINOR) {
 			Logger.minor(this, "notifyOfPacketAcked(): " + this);
+		}
 	}
 
 	/**

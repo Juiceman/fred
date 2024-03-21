@@ -153,24 +153,29 @@ final public class FileUtil {
 
 			// Please adapt sanitizeFileName when adding new OS.
 
-			if (name.contains("win"))
+			if (name.contains("win")) {
 				return OperatingSystem.Windows;
+			}
 
-			if (name.contains("mac"))
+			if (name.contains("mac")) {
 				return OperatingSystem.MacOS;
+			}
 
-			if (name.contains("linux"))
+			if (name.contains("linux")) {
 				return OperatingSystem.Linux;
+			}
 
-			if (name.contains("freebsd"))
+			if (name.contains("freebsd")) {
 				return OperatingSystem.FreeBSD;
+			}
 
-			if (name.contains("unix"))
+			if (name.contains("unix")) {
 				return OperatingSystem.GenericUnix;
-			else if (File.separatorChar == '/')
+			} else if (File.separatorChar == '/') {
 				return OperatingSystem.GenericUnix;
-			else if (File.separatorChar == '\\')
+			} else if (File.separatorChar == '\\') {
 				return OperatingSystem.Windows;
+			}
 
 			Logger.error(FileUtil.class, "Unknown operating system:" + name);
 		} catch (Throwable t) {
@@ -183,20 +188,26 @@ final public class FileUtil {
 	private static CPUArchitecture detectCPUArchitecture() { // TODO Move to the proper class
 		try {
 			final String name = System.getProperty("os.arch").toLowerCase();
-			if (name.equals("x86") || name.equals("i386") || name.matches("i[3-9]86"))
+			if (name.equals("x86") || name.equals("i386") || name.matches("i[3-9]86")) {
 				return CPUArchitecture.X86;
+			}
 			if (name.equals("amd64") || name.equals("x86-64") || name.equals("x86_64") ||
 					name.equals("x86") || name.equals("em64t") || name.equals("x8664") ||
-					name.equals("8664"))
+					name.equals("8664")) {
 				return CPUArchitecture.X86_64;
-			if (name.startsWith("arm"))
+			}
+			if (name.startsWith("arm")) {
 				return CPUArchitecture.ARM; // FIXME arm64 support?
-			if (name.equals("ppc") || name.equals("powerpc"))
+			}
+			if (name.equals("ppc") || name.equals("powerpc")) {
 				return CPUArchitecture.PPC_32;
-			if (name.equals("ppc64"))
+			}
+			if (name.equals("ppc64")) {
 				return CPUArchitecture.PPC_64;
-			if (name.startsWith("ia64"))
+			}
+			if (name.startsWith("ia64")) {
 				return CPUArchitecture.IA64;
+			}
 		} catch (Throwable t) {
 			Logger.error(FileUtil.class, "CPU architecture detection failed", t);
 		}
@@ -256,18 +267,30 @@ final public class FileUtil {
 		File canon = FileUtil.getCanonicalFile(poss);
 		File canonFile = FileUtil.getCanonicalFile(filename);
 
-		if (isParentInner(poss, filename)) return true;
-		if (isParentInner(poss, canonFile)) return true;
-		if (isParentInner(canon, filename)) return true;
-		if (isParentInner(canon, canonFile)) return true;
+		if (isParentInner(poss, filename)) {
+			return true;
+		}
+		if (isParentInner(poss, canonFile)) {
+			return true;
+		}
+		if (isParentInner(canon, filename)) {
+			return true;
+		}
+		if (isParentInner(canon, canonFile)) {
+			return true;
+		}
 		return false;
 	}
 
 	private static boolean isParentInner(File possParent, File filename) {
 		while (true) {
-			if (filename.equals(possParent)) return true;
+			if (filename.equals(possParent)) {
+				return true;
+			}
 			filename = filename.getParentFile();
-			if (filename == null) return false;
+			if (filename == null) {
+				return false;
+			}
 		}
 	}
 
@@ -383,7 +406,9 @@ final public class FileUtil {
 		long skipped = 0;
 		while (skipped < skip) {
 			long x = is.skip(skip - skipped);
-			if (x <= 0) throw new IOException("Unable to skip " + (skip - skipped) + " bytes");
+			if (x <= 0) {
+				throw new IOException("Unable to skip " + (skip - skipped) + " bytes");
+			}
 			skipped += x;
 		}
 	}
@@ -392,8 +417,9 @@ final public class FileUtil {
 		DataInputStream dis = null;
 		FileOutputStream fos = null;
 		File file = File.createTempFile("temp", ".tmp", target.getParentFile());
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(FileUtil.class, "Writing to " + file + " to be renamed to " + target);
+		}
 
 		try {
 			dis = new DataInputStream(input);
@@ -405,13 +431,17 @@ final public class FileUtil {
 				fos.write(buffer, 0, len);
 			}
 		} finally {
-			if (dis != null) dis.close();
-			if (fos != null) fos.close();
+			if (dis != null) {
+				dis.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
 		}
 
-		if (FileUtil.renameTo(file, target))
+		if (FileUtil.renameTo(file, target)) {
 			return true;
-		else {
+		} else {
 			file.delete();
 			return false;
 		}
@@ -420,8 +450,9 @@ final public class FileUtil {
 	public static boolean renameTo(File orig, File dest) {
 		// Try an atomic rename
 		// Shall we prevent symlink-race-conditions here ?
-		if (orig.equals(dest))
+		if (orig.equals(dest)) {
 			throw new IllegalArgumentException("Huh? the two file descriptors are the same!");
+		}
 		if (!orig.exists()) {
 			throw new IllegalArgumentException("Original doesn't exist!");
 		}
@@ -454,22 +485,25 @@ final public class FileUtil {
 	 * @param overwrite
 	 */
 	public static boolean moveTo(File orig, File dest, boolean overwrite) {
-		if (orig.equals(dest))
+		if (orig.equals(dest)) {
 			throw new IllegalArgumentException("Huh? the two file descriptors are the same!");
+		}
 		if (!orig.exists()) {
 			throw new IllegalArgumentException("Original doesn't exist!");
 		}
 		if (dest.exists()) {
-			if (overwrite)
+			if (overwrite) {
 				dest.delete();
-			else {
+			} else {
 				System.err.println("Not overwriting " + dest + " - already exists moving " + orig);
 				return false;
 			}
 		}
-		if (!orig.renameTo(dest))
+		if (!orig.renameTo(dest)) {
 			return copyFile(orig, dest);
-		else return true;
+		} else {
+			return true;
+		}
 	}
 
 	/**
@@ -507,8 +541,9 @@ final public class FileUtil {
 			def = '_';
 			if (extraChars.indexOf(def) != -1) {
 				def = '-';
-				if (extraChars.indexOf(def) != -1)
+				if (extraChars.indexOf(def) != -1) {
 					throw new IllegalArgumentException("What do you want me to use instead of spaces???");
+				}
 			}
 		}
 
@@ -557,17 +592,19 @@ final public class FileUtil {
 			int lastCharIndex = sb.length() - 1;
 			while (lastCharIndex >= 0) {
 				char lastChar = sb.charAt(lastCharIndex);
-				if (lastChar == ' ' || lastChar == '.')
+				if (lastChar == ' ' || lastChar == '.') {
 					sb.deleteCharAt(lastCharIndex--);
-				else
+				} else {
 					break;
+				}
 			}
 		}
 
 		// Now the filename might be one of the reserved filenames in Windows (CON etc.) and we must replace it if it is...
 		if (targetOS == OperatingSystem.Unknown || targetOS.isWindows) {
-			if (StringValidityChecker.isWindowsReservedFilename(sb.toString()))
+			if (StringValidityChecker.isWindowsReservedFilename(sb.toString())) {
 				sb.insert(0, '_');
+			}
 		}
 
 		if (sb.length() == 0) {
@@ -589,7 +626,9 @@ final public class FileUtil {
 
 	public static String sanitize(String filename, String mimeType) {
 		filename = sanitize(filename);
-		if (mimeType == null) return filename;
+		if (mimeType == null) {
+			return filename;
+		}
 		return DefaultMIMETypes.forceExtension(filename, mimeType);
 	}
 
@@ -640,8 +679,9 @@ final public class FileUtil {
 				throw new EOFException("stream reached eof");
 			}
 			destination.write(buffer, 0, read);
-			if (remaining > 0)
+			if (remaining > 0) {
 				remaining -= read;
+			}
 		}
 	}
 
@@ -656,7 +696,9 @@ final public class FileUtil {
 			}
 		} else {
 			for (File subfile : wd.listFiles()) {
-				if (!removeAll(subfile)) return false;
+				if (!removeAll(subfile)) {
+					return false;
+				}
 			}
 			if (!wd.delete()) {
 				Logger.error(FileUtil.class, "Could not delete directory: " + wd);
@@ -679,7 +721,9 @@ final public class FileUtil {
 			}
 		} else {
 			for (File subfile : wd.listFiles()) {
-				if (!removeAll(subfile)) return false;
+				if (!removeAll(subfile)) {
+					return false;
+				}
 			}
 			if (!wd.delete()) {
 				Logger.error(FileUtil.class, "Could not delete directory: " + wd);
@@ -690,7 +734,9 @@ final public class FileUtil {
 
 	public static void secureDelete(File file) throws IOException {
 		// FIXME somebody who understands these things should have a look at this...
-		if (!file.exists()) return;
+		if (!file.exists()) {
+			return;
+		}
 		long size = file.length();
 		if (size > 0) {
 			RandomAccessFile raf = null;
@@ -707,8 +753,9 @@ final public class FileUtil {
 				Closer.close(raf);
 			}
 		}
-		if ((!file.delete()) && file.exists())
+		if ((!file.delete()) && file.exists()) {
 			throw new IOException("Unable to delete file " + file);
+		}
 	}
 
 	@Deprecated
@@ -773,8 +820,12 @@ final public class FileUtil {
 	}
 
 	public static boolean equals(File a, File b) {
-		if (a == b) return true;
-		if (a.equals(b)) return true;
+		if (a == b) {
+			return true;
+		}
+		if (a.equals(b)) {
+			return true;
+		}
 		a = getCanonicalFile(a);
 		b = getCanonicalFile(b);
 		return a.equals(b);
@@ -787,8 +838,12 @@ final public class FileUtil {
 	 */
 	public static File createTempFile(String prefix, String suffix,
 									  File directory) throws IOException {
-		if (directory == null) directory = new File(".");
-		if (prefix.length() < 3) prefix += "-TMP"; // File.createTempFile requires the prefix to have at least length 3
+		if (directory == null) {
+			directory = new File(".");
+		}
+		if (prefix.length() < 3) {
+			prefix += "-TMP"; // File.createTempFile requires the prefix to have at least length 3
+		}
 		return File.createTempFile(prefix, suffix, directory);
 	}
 
@@ -853,8 +908,9 @@ final public class FileUtil {
 				throw new EOFException("stream reached eof");
 			}
 			os.write(buffer, 0, read);
-			if (remaining > 0)
+			if (remaining > 0) {
 				remaining -= read;
+			}
 		}
 
 	}
@@ -884,8 +940,9 @@ final public class FileUtil {
 			int toRead = (int) Math.min(BUFFER_SIZE, size - checked);
 			aIn.readFully(aBuffer, 0, toRead);
 			bIn.readFully(bBuffer, 0, toRead);
-			if (!MessageDigest.isEqual(aBuffer, bBuffer))
+			if (!MessageDigest.isEqual(aBuffer, bBuffer)) {
 				return false;
+			}
 			checked += toRead;
 		}
 		return true;

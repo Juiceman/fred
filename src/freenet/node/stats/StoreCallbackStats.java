@@ -80,7 +80,9 @@ public class StoreCallbackStats implements DataStoreStats {
 
 	@Override
 	public StoreAccessStats getTotalAccessStats() throws StatsNotAvailableException {
-		if (totalAccessStats == null) throw new StatsNotAvailableException();
+		if (totalAccessStats == null) {
+			throw new StatsNotAvailableException();
+		}
 		return totalAccessStats;
 	}
 }

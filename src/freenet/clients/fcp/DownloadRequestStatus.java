@@ -110,10 +110,11 @@ public class DownloadRequestStatus extends RequestStatus {
 
 	@Override
 	public String getFailureReason(boolean longDescription) {
-		if (longDescription)
+		if (longDescription) {
 			return failureReasonLong;
-		else
+		} else {
 			return failureReasonShort;
+		}
 	}
 
 	synchronized void updateDetectedCompatModes(
@@ -148,11 +149,13 @@ public class DownloadRequestStatus extends RequestStatus {
 
 	@Override
 	public String getPreferredFilename() {
-		if (destFilename != null)
+		if (destFilename != null) {
 			return destFilename.getName();
+		}
 		if (uri != null &&
-				(uri.hasMetaStrings() || uri.getDocName() != null))
+				(uri.hasMetaStrings() || uri.getDocName() != null)) {
 			return uri.getPreferredFilename();
+		}
 		return null;
 	}
 

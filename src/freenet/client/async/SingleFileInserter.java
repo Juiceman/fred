@@ -149,7 +149,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		this.forceCryptoKey = forceCryptoKey;
 		this.cryptoAlgorithm = cryptoAlgorithm;
 		this.metadataThreshold = metadataThreshold;
-		if (logMINOR) Logger.minor(this, "Created " + this + " persistent=" + persistent + " freeData=" + freeData);
+		if (logMINOR) {
+			Logger.minor(this, "Created " + this + " persistent=" + persistent + " freeData=" + freeData);
+		}
 	}
 
 	public void start(ClientContext context) throws InsertException {
@@ -196,7 +198,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				}
 			}
 			HashResult[] clientHashes = hashes;
-			if (persistent) clientHashes = HashResult.copy(hashes);
+			if (persistent) {
+				clientHashes = HashResult.copy(hashes);
+			}
 			ctx.eventProducer.produceEvent(new ExpectedHashesEvent(clientHashes), context);
 
 			// So it is passed on.
@@ -211,8 +215,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 		boolean shouldFreeData = freeData;
 		if (bestCodec != null) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "The best compression algorithm is " + bestCodec + " we have gained" + (100 - (bestCompressedDataSize * 100 / origSize)) + "% ! (" + origSize + '/' + bestCompressedDataSize + ')');
+			}
 			shouldFreeData = true; // must be freed regardless of whether the original data was to be freed
 			if (freeData) {
 				block.getData().free();
@@ -247,8 +252,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		if (parent == cb) {
 			short codecID = bestCodec == null ? -1 : bestCodec.metadataID;
 			ctx.eventProducer.produceEvent(new FinishedCompressionEvent(codecID, origSize, bestCompressedDataSize), context);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Compressed " + origSize + " to " + data.size() + " on " + this + " data = " + data);
+			}
 		}
 
 		// Insert it...
@@ -257,25 +263,30 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		boolean fitsInOneBlockAsIs = bestCodec == null ? compressedDataSize <= blockSize : compressedDataSize <= oneBlockCompressedSize;
 		boolean fitsInOneCHK = bestCodec == null ? compressedDataSize <= CHKBlock.DATA_LENGTH : compressedDataSize <= CHKBlock.MAX_COMPRESSED_DATA_LENGTH;
 
-		if ((fitsInOneBlockAsIs || fitsInOneCHK) && origSize > Integer.MAX_VALUE)
+		if ((fitsInOneBlockAsIs || fitsInOneCHK) && origSize > Integer.MAX_VALUE) {
 			throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "2GB+ should not encode to one block!", null);
+		}
 
 		boolean noMetadata = ((block.clientMetadata == null) || block.clientMetadata.isTrivial()) && targetFilename == null;
 		if ((noMetadata || metadata) && archiveType == null) {
 			if (fitsInOneBlockAsIs) {
-				if (persistent && (data instanceof NotPersistentBucket))
+				if (persistent && (data instanceof NotPersistentBucket)) {
 					data = fixNotPersistent(data, context);
+				}
 				// Just insert it
 				ClientPutState bi =
 						createInserter(parent, data, codecNumber, ctx, cb, metadata, (int) origSize, -1, true, context, shouldFreeData, forSplitfile);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Inserting without metadata: " + bi + " for " + this);
+				}
 				cb.onTransition(this, bi, context);
-				if (ctx.earlyEncode && bi instanceof SingleBlockInserter && isCHK)
+				if (ctx.earlyEncode && bi instanceof SingleBlockInserter && isCHK) {
 					((SingleBlockInserter) bi).getBlock(context, true);
+				}
 				bi.schedule(context);
-				if (!isUSK)
+				if (!isUSK) {
 					cb.onBlockSetFinished(this, context);
+				}
 				synchronized (this) {
 					started = true;
 				}
@@ -293,14 +304,16 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			}
 			if (reportMetadataOnly) {
 				SingleBlockInserter dataPutter = new SingleBlockInserter(parent, data, codecNumber, FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, cb, metadata, (int) origSize, -1, true, true, token, context, persistent, shouldFreeData, forSplitfile ? ctx.extraInsertsSplitfileHeaderBlock : ctx.extraInsertsSingleBlock, cryptoAlgorithm, forceCryptoKey);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Inserting with metadata: " + dataPutter + " for " + this);
+				}
 				Metadata meta = makeMetadata(archiveType, dataPutter.getURI(context), hashes);
 				cb.onMetadata(meta, this, context);
 				cb.onTransition(this, dataPutter, context);
 				dataPutter.schedule(context);
-				if (!isUSK)
+				if (!isUSK) {
 					cb.onBlockSetFinished(this, context);
+				}
 				synchronized (this) {
 					// Don't delete them because they are being passed on.
 					origHashes = null;
@@ -309,8 +322,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				MultiPutCompletionCallback mcb =
 						new MultiPutCompletionCallback(cb, parent, token, persistent, false, ctx.earlyEncode);
 				SingleBlockInserter dataPutter = new SingleBlockInserter(parent, data, codecNumber, FreenetURI.EMPTY_CHK_URI, ctx, realTimeFlag, mcb, metadata, (int) origSize, -1, true, false, token, context, persistent, shouldFreeData, forSplitfile ? ctx.extraInsertsSplitfileHeaderBlock : ctx.extraInsertsSingleBlock, cryptoAlgorithm, forceCryptoKey);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Inserting data: " + dataPutter + " for " + this);
+				}
 				Metadata meta = makeMetadata(archiveType, dataPutter.getURI(context), hashes);
 				RandomAccessBucket metadataBucket;
 				try {
@@ -324,19 +338,22 @@ class SingleFileInserter implements ClientPutState, Serializable {
 					throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Got MetadataUnresolvedException in SingleFileInserter: " + e.toString(), null);
 				}
 				ClientPutState metaPutter = createInserter(parent, metadataBucket, (short) -1, ctx, mcb, true, (int) origSize, -1, true, context, true, false);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Inserting metadata: " + metaPutter + " for " + this);
+				}
 				mcb.addURIGenerator(metaPutter);
 				mcb.add(dataPutter);
 				cb.onTransition(this, mcb, context);
 				Logger.minor(this, "" + mcb + " : data " + dataPutter + " meta " + metaPutter);
 				mcb.arm(context);
 				dataPutter.schedule(context);
-				if (ctx.earlyEncode && metaPutter instanceof SingleBlockInserter)
+				if (ctx.earlyEncode && metaPutter instanceof SingleBlockInserter) {
 					((SingleBlockInserter) metaPutter).getBlock(context, true);
+				}
 				metaPutter.schedule(context);
-				if (!isUSK)
+				if (!isUSK) {
 					cb.onBlockSetFinished(this, context);
+				}
 				// Deleting origHashes is fine, we are done with them.
 			}
 			synchronized (this) {
@@ -366,8 +383,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 					hashThisLayerOnly, hashes, ctx.dontCompress, parent.getMinSuccessFetchBlocks(),
 					parent.getTotalBlocks(), origDataLength, origCompressedDataLength,
 					realTimeFlag, token);
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Inserting as splitfile: " + sfi + " for " + this);
+			}
 			cb.onTransition(this, sfi, context);
 			sfi.schedule(context);
 			block.nullData();
@@ -379,7 +397,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		} else {
 			CompatibilityMode cmode = ctx.getCompatibilityMode();
 			boolean allowSizes = (cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1255.ordinal());
-			if (metadata) allowSizes = false;
+			if (metadata) {
+				allowSizes = false;
+			}
 			SplitHandler sh = new SplitHandler(origSize, compressedDataSize, allowSizes);
 			SplitFileInserter sfi = new SplitFileInserter(persistent, parent, sh,
 					dataRAF, shouldFreeData, ctx, context, origSize, bestCodec,
@@ -388,8 +408,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 					parent.getTotalBlocks(), origDataLength, origCompressedDataLength,
 					realTimeFlag, token);
 			sh.sfi = sfi;
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Inserting as splitfile: " + sfi + " for " + sh + " for " + this);
+			}
 			cb.onTransition(this, sh, context);
 			sfi.schedule(context);
 			synchronized (this) {
@@ -403,7 +424,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		boolean skip = false;
 		try {
 			if (!skip) {
-				if (logMINOR) Logger.minor(this, "Copying data from " + data + " length " + data.size());
+				if (logMINOR) {
+					Logger.minor(this, "Copying data from " + data + " length " + data.size());
+				}
 				RandomAccessBucket newData = context.persistentBucketFactory.makeBucket(data.size());
 				BucketTools.copy(data, newData);
 				data.free();
@@ -465,8 +488,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		if (tryCompress) {
 			InsertCompressor.start(context, this, origData, oneBlockCompressedSize, context.getBucketFactory(persistent), persistent, wantHashes, !atLeast1254, context.getConfig());
 		} else {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Not compressing " + origData + " size = " + origSize + " block size = " + blockSize);
+			}
 			HashResult[] hashes = null;
 			if (wantHashes != 0) {
 				// Need to get the hashes anyway
@@ -509,10 +533,12 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			data = origDataLength;
 			compressed = origCompressedDataLength;
 		}
-		if (archiveType != null)
+		if (archiveType != null) {
 			meta = new Metadata(DocumentType.ARCHIVE_MANIFEST, archiveType, null, uri, block.clientMetadata, data, compressed, req, total, topDontCompress, topCompatibilityMode, hashes);
-		else // redirect
+		} else // redirect
+		{
 			meta = new Metadata(DocumentType.SIMPLE_REDIRECT, archiveType, null, uri, block.clientMetadata, data, compressed, req, total, topDontCompress, topCompatibilityMode, hashes);
+		}
 		if (targetFilename != null) {
 			HashMap<String, Object> hm = new HashMap<String, Object>();
 			hm.put(targetFilename, meta);
@@ -595,46 +621,59 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		@Override
 		public synchronized void onTransition(ClientPutState oldState, ClientPutState newState, ClientContext context) {
 			if (persistent) { // FIXME debug-point
-				if (logMINOR) Logger.minor(this, "Transition: " + oldState + " -> " + newState);
+				if (logMINOR) {
+					Logger.minor(this, "Transition: " + oldState + " -> " + newState);
+				}
 			}
-			if (oldState == sfi)
+			if (oldState == sfi) {
 				sfi = newState;
-			if (oldState == metadataPutter)
+			}
+			if (oldState == metadataPutter) {
 				metadataPutter = newState;
+			}
 		}
 
 		@Override
 		public void onSuccess(ClientPutState state, ClientContext context) {
-			if (logMINOR) Logger.minor(this, "onSuccess(" + state + ") for " + this);
+			if (logMINOR) {
+				Logger.minor(this, "onSuccess(" + state + ") for " + this);
+			}
 			boolean lateStart = false;
 			synchronized (this) {
 				if (finished) {
 					return;
 				}
 				if (state == sfi) {
-					if (logMINOR) Logger.minor(this, "Splitfile insert succeeded for " + this + " : " + state);
+					if (logMINOR) {
+						Logger.minor(this, "Splitfile insert succeeded for " + this + " : " + state);
+					}
 					splitInsertSuccess = true;
 					if (!metaInsertSuccess && !metaInsertStarted) {
 						lateStart = true;
 						// Cannot remove yet because not created metadata inserter yet.
 					} else {
 						sfi = null;
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Metadata already started for " + this + " : success=" + metaInsertSuccess + " started=" + metaInsertStarted);
+						}
 					}
 				} else if (state == metadataPutter) {
-					if (logMINOR) Logger.minor(this, "Metadata insert succeeded for " + this + " : " + state);
+					if (logMINOR) {
+						Logger.minor(this, "Metadata insert succeeded for " + this + " : " + state);
+					}
 					metaInsertSuccess = true;
 					metadataPutter = null;
 				} else {
 					Logger.error(this, "Unknown: " + state + " for " + this, new Exception("debug"));
 				}
 				if (splitInsertSuccess && metaInsertSuccess) {
-					if (logMINOR) Logger.minor(this, "Both succeeded for " + this);
+					if (logMINOR) {
+						Logger.minor(this, "Both succeeded for " + this);
+					}
 					finished = true;
-					if (freeData)
+					if (freeData) {
 						block.free();
-					else {
+					} else {
 						block.nullData();
 					}
 				}
@@ -655,8 +694,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		public void onFailure(InsertException e, ClientPutState state, ClientContext context) {
 			boolean toFail = true;
 			synchronized (this) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "onFailure(): " + e + " on " + state + " on " + this + " sfi = " + sfi + " metadataPutter = " + metadataPutter);
+				}
 				if (state == sfi) {
 					sfi = null;
 				} else if (state == metadataPutter) {
@@ -670,16 +710,21 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			}
 			// fail() will cancel the other one, so we don't need to.
 			// When it does, it will come back here, and we won't call fail(), because fail() has already set finished = true.
-			if (toFail)
+			if (toFail) {
 				fail(e, context);
+			}
 		}
 
 		@Override
 		public void onMetadata(Metadata meta, ClientPutState state, ClientContext context) {
 			InsertException e = null;
-			if (logMINOR) Logger.minor(this, "Got metadata for " + this + " from " + state);
+			if (logMINOR) {
+				Logger.minor(this, "Got metadata for " + this + " from " + state);
+			}
 			synchronized (this) {
-				if (finished) return;
+				if (finished) {
+					return;
+				}
 				if (reportMetadataOnly) {
 					if (state != sfi) {
 						Logger.error(this, "Got metadata from unknown object " + state + " when expecting to report metadata");
@@ -694,8 +739,12 @@ class SingleFileInserter implements ClientPutState, Serializable {
 					e = new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Got metadata from unknown state", null);
 				} else {
 					// Already started metadata putter ? (in which case we've got the metadata twice)
-					if (metadataPutter != null) return;
-					if (metaInsertSuccess) return;
+					if (metadataPutter != null) {
+						return;
+					}
+					if (metaInsertSuccess) {
+						return;
+					}
 				}
 			}
 			if (reportMetadataOnly) {
@@ -745,8 +794,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 			}
 			ClientMetadata m = meta.getClientMetadata();
 			CompatibilityMode cmode = ctx.getCompatibilityMode();
-			if (!(cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1255.ordinal()))
+			if (!(cmode == CompatibilityMode.COMPAT_CURRENT || cmode.ordinal() >= CompatibilityMode.COMPAT_1255.ordinal())) {
 				m = null;
+			}
 			if (metadataThreshold > 0 && metaBytes.length < metadataThreshold) {
 				// FIXME what to do about m ???
 				// I.e. do the other layers of metadata already include the content type?
@@ -767,12 +817,16 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				}
 				// If EarlyEncode, then start the metadata insert ASAP, to get the key.
 				// Otherwise, wait until the data is fetchable (to improve persistence).
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Created metadata putter for " + this + " : " + metadataPutter + " bucket " + metadataBucket + " size " + metadataBucket.size());
-				if (!(ctx.earlyEncode || splitInsertSuccess)) return;
+				}
+				if (!(ctx.earlyEncode || splitInsertSuccess)) {
+					return;
+				}
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Putting metadata on " + metadataPutter + " from " + sfi + " (" + ((SplitFileInserter) sfi).getLength() + ')');
+			}
 			if (!startMetadata(context)) {
 				Logger.error(this, "onMetadata() yet unable to start metadata due to not having all URIs?!?!");
 				fail(new InsertException(InsertExceptionMode.INTERNAL_ERROR, "onMetadata() yet unable to start metadata due to not having all URIs", null), context);
@@ -787,7 +841,9 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		}
 
 		private void fail(InsertException e, ClientContext context) {
-			if (logMINOR) Logger.minor(this, "Failing: " + e, e);
+			if (logMINOR) {
+				Logger.minor(this, "Failing: " + e, e);
+			}
 			ClientPutState oldSFI = null;
 			ClientPutState oldMetadataPutter = null;
 			synchronized (this) {
@@ -798,14 +854,16 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				oldSFI = sfi;
 				oldMetadataPutter = metadataPutter;
 			}
-			if (oldSFI != null)
+			if (oldSFI != null) {
 				oldSFI.cancel(context);
-			if (oldMetadataPutter != null)
+			}
+			if (oldMetadataPutter != null) {
 				oldMetadataPutter.cancel(context);
+			}
 			synchronized (this) {
-				if (freeData)
+				if (freeData) {
 					block.free();
-				else {
+				} else {
 					block.nullData();
 				}
 			}
@@ -820,10 +878,16 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		@Override
 		public void onEncode(BaseClientKey key, ClientPutState state, ClientContext context) {
 			if (persistent) // FIXME debug-point
-				if (logMINOR) Logger.minor(this, "onEncode() for " + this + " : " + state + " : " + key);
+			{
+				if (logMINOR) {
+					Logger.minor(this, "onEncode() for " + this + " : " + state + " : " + key);
+				}
+			}
 			synchronized (this) {
 				if (state != metadataPutter) {
-					if (logMINOR) Logger.minor(this, "ignored onEncode() for " + this + " : " + state);
+					if (logMINOR) {
+						Logger.minor(this, "ignored onEncode() for " + this + " : " + state);
+					}
 					return;
 				}
 			}
@@ -832,17 +896,21 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 		@Override
 		public void cancel(ClientContext context) {
-			if (logMINOR) Logger.minor(this, "Cancelling " + this);
+			if (logMINOR) {
+				Logger.minor(this, "Cancelling " + this);
+			}
 			ClientPutState oldSFI = null;
 			ClientPutState oldMetadataPutter = null;
 			synchronized (this) {
 				oldSFI = sfi;
 				oldMetadataPutter = metadataPutter;
 			}
-			if (oldSFI != null)
+			if (oldSFI != null) {
 				oldSFI.cancel(context);
-			if (oldMetadataPutter != null)
+			}
+			if (oldMetadataPutter != null) {
 				oldMetadataPutter.cancel(context);
+			}
 
 			// FIXME in the other cases, fail() and onSuccess(), we only free when
 			// we set finished. But we haven't set finished here. Can we rely on 
@@ -858,13 +926,16 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		@Override
 		public void onBlockSetFinished(ClientPutState state, ClientContext context) {
 			synchronized (this) {
-				if (state == sfi)
+				if (state == sfi) {
 					splitInsertSetBlocks = true;
-				else if (state == metadataPutter)
+				} else if (state == metadataPutter) {
 					metaInsertSetBlocks = true;
-				else if (logMINOR) Logger.minor(this, "Unrecognised: " + state + " in onBlockSetFinished()");
-				if (!(splitInsertSetBlocks && metaInsertSetBlocks))
+				} else if (logMINOR) {
+					Logger.minor(this, "Unrecognised: " + state + " in onBlockSetFinished()");
+				}
+				if (!(splitInsertSetBlocks && metaInsertSetBlocks)) {
 					return;
+				}
 			}
 			cb.onBlockSetFinished(this, context);
 		}
@@ -883,9 +954,15 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		public void onFetchable(ClientPutState state) {
 
 			if (persistent) // FIXME debug-point
-				if (logMINOR) Logger.minor(this, "onFetchable on " + this);
+			{
+				if (logMINOR) {
+					Logger.minor(this, "onFetchable on " + this);
+				}
+			}
 
-			if (logMINOR) Logger.minor(this, "onFetchable(" + state + ')');
+			if (logMINOR) {
+				Logger.minor(this, "onFetchable(" + state + ')');
+			}
 
 			boolean meta;
 
@@ -895,16 +972,24 @@ class SingleFileInserter implements ClientPutState, Serializable {
 					if (!metaInsertStarted) {
 						Logger.error(this, "Metadata insert not started yet got onFetchable for it: " + state + " on " + this);
 					}
-					if (logMINOR) Logger.minor(this, "Metadata fetchable" + (metaFetchable ? "" : " already"));
-					if (metaFetchable) return;
+					if (logMINOR) {
+						Logger.minor(this, "Metadata fetchable" + (metaFetchable ? "" : " already"));
+					}
+					if (metaFetchable) {
+						return;
+					}
 					metaFetchable = true;
 				} else {
 					if (state != sfi) {
 						Logger.error(this, "onFetchable for unknown state " + state);
 						return;
 					}
-					if (logMINOR) Logger.minor(this, "Data fetchable");
-					if (metaInsertStarted) return;
+					if (logMINOR) {
+						Logger.minor(this, "Data fetchable");
+					}
+					if (metaInsertStarted) {
+						return;
+					}
 				}
 			}
 
@@ -922,21 +1007,34 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		 */
 		private boolean startMetadata(ClientContext context) {
 			if (persistent) // FIXME debug-point
-				if (logMINOR) Logger.minor(this, "startMetadata() on " + this);
+			{
+				if (logMINOR) {
+					Logger.minor(this, "startMetadata() on " + this);
+				}
+			}
 			try {
 				ClientPutState putter;
 				synchronized (this) {
-					if (metaInsertStarted) return true;
+					if (metaInsertStarted) {
+						return true;
+					}
 					putter = metadataPutter;
 					if (putter == null) {
-						if (logMINOR) Logger.minor(this, "Cannot start metadata yet: no metadataPutter");
-					} else
+						if (logMINOR) {
+							Logger.minor(this, "Cannot start metadata yet: no metadataPutter");
+						}
+					} else {
 						metaInsertStarted = true;
+					}
 				}
 				if (putter != null) {
-					if (logMINOR) Logger.minor(this, "Starting metadata inserter: " + putter + " for " + this);
+					if (logMINOR) {
+						Logger.minor(this, "Starting metadata inserter: " + putter + " for " + this);
+					}
 					putter.schedule(context);
-					if (logMINOR) Logger.minor(this, "Started metadata inserter: " + putter + " for " + this);
+					if (logMINOR) {
+						Logger.minor(this, "Started metadata inserter: " + putter + " for " + this);
+					}
 					return true;
 				} else {
 					return false;
@@ -950,10 +1048,14 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 		@Override
 		public void onMetadata(Bucket meta, ClientPutState state, ClientContext context) {
-			if (logMINOR) Logger.minor(this, "Got metadata bucket for " + this + " from " + state);
+			if (logMINOR) {
+				Logger.minor(this, "Got metadata bucket for " + this + " from " + state);
+			}
 			boolean freeIt = false;
 			synchronized (this) {
-				if (finished) return;
+				if (finished) {
+					return;
+				}
 				if (state == metadataPutter) {
 					// Okay, return it.
 				} else if (state == sfi) {
@@ -985,18 +1087,24 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		@Override
 		public void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 			synchronized (this) {
-				if (resumed) return;
+				if (resumed) {
+					return;
+				}
 				resumed = true;
 			}
-			if (sfi != null)
+			if (sfi != null) {
 				sfi.onResume(context);
-			if (metadataPutter != null)
-				metadataPutter.onResume(context);
-			if (sfi != null)
-				sfi.schedule(context);
+			}
 			if (metadataPutter != null) {
-				if (ctx.earlyEncode || sfi == null || metaInsertStarted)
+				metadataPutter.onResume(context);
+			}
+			if (sfi != null) {
+				sfi.schedule(context);
+			}
+			if (metadataPutter != null) {
+				if (ctx.earlyEncode || sfi == null || metaInsertStarted) {
 					metadataPutter.schedule(context);
+				}
 			}
 		}
 
@@ -1008,10 +1116,12 @@ class SingleFileInserter implements ClientPutState, Serializable {
 				splitfileInserter = sfi;
 				metadataInserter = metadataPutter;
 			}
-			if (splitfileInserter != null)
+			if (splitfileInserter != null) {
 				splitfileInserter.onShutdown(context);
-			if (metadataInserter != null)
+			}
+			if (metadataInserter != null) {
 				metadataInserter.onShutdown(context);
+			}
 		}
 
 	}
@@ -1023,9 +1133,13 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 	@Override
 	public void cancel(ClientContext context) {
-		if (logMINOR) Logger.minor(this, "Cancel " + this);
+		if (logMINOR) {
+			Logger.minor(this, "Cancel " + this);
+		}
 		synchronized (this) {
-			if (cancelled) return;
+			if (cancelled) {
+				return;
+			}
 			cancelled = true;
 		}
 		if (freeData) {
@@ -1047,8 +1161,12 @@ class SingleFileInserter implements ClientPutState, Serializable {
 
 	public void onStartCompression(COMPRESSOR_TYPE ctype, ClientContext context) {
 		if (parent == cb) {
-			if (ctx == null) throw new NullPointerException();
-			if (ctx.eventProducer == null) throw new NullPointerException();
+			if (ctx == null) {
+				throw new NullPointerException();
+			}
+			if (ctx.eventProducer == null) {
+				throw new NullPointerException();
+			}
 			ctx.eventProducer.produceEvent(new StartedCompressionEvent(ctype), context);
 		}
 	}
@@ -1066,15 +1184,21 @@ class SingleFileInserter implements ClientPutState, Serializable {
 	@Override
 	public final void onResume(ClientContext context) throws InsertException, ResumeFailedException {
 		synchronized (this) {
-			if (resumed) return;
+			if (resumed) {
+				return;
+			}
 			resumed = true;
 		}
-		if (block != null && block.getData() != null)
+		if (block != null && block.getData() != null) {
 			block.getData().onResume(context);
-		if (cb != null && cb != parent)
+		}
+		if (cb != null && cb != parent) {
 			cb.onResume(context);
+		}
 		synchronized (this) {
-			if (started || cancelled) return;
+			if (started || cancelled) {
+				return;
+			}
 		}
 		tryCompress(context);
 	}

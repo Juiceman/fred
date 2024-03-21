@@ -24,10 +24,12 @@ public class TestDDAResponseMessage extends FCPMessage {
 
 	public TestDDAResponseMessage(SimpleFieldSet sfs) throws MessageInvalidException {
 		identifier = sfs.get(TestDDARequestMessage.DIRECTORY);
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Directory given!", null, false);
-		if (identifier.length() == 0)
+		}
+		if (identifier.length() == 0) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "The specified Directory can't be empty!", null, false);
+		}
 
 		readContent = sfs.get(READ_CONTENT);
 	}
@@ -50,10 +52,11 @@ public class TestDDAResponseMessage extends FCPMessage {
 		} catch (IllegalArgumentException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, e.getMessage(), identifier, false);
 		}
-		if (job == null)
+		if (job == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_MESSAGE, "The node doesn't know that testDDA identifier! double check it! (" + identifier + ").", identifier, false);
-		else if ((job.readFilename != null) && (readContent == null))
+		} else if ((job.readFilename != null) && (readContent == null)) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "You need to send " + READ_CONTENT + " back to the node if you specify " + TestDDARequestMessage.WANT_READ + " in " + TestDDARequestMessage.NAME + '.', identifier, false);
+		}
 
 		TestDDACompleteMessage reply = new TestDDACompleteMessage(handler, job, readContent);
 		handler.send(reply);

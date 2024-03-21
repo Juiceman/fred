@@ -30,10 +30,10 @@ public class SubscribeUSK implements USKProgressCallback {
 		prio = message.prio;
 		prioProgress = message.prioProgress;
 		handler.addUSKSubscription(identifier, this);
-		if ((!message.dontPoll) && message.sparsePoll)
+		if ((!message.dontPoll) && message.sparsePoll) {
 			toUnsub = core.getUskManager().subscribeSparse(message.key, this, message.ignoreUSKDatehints,
 					handler.getRebootClient().lowLevelClient(message.realTimeFlag));
-		else {
+		} else {
 			core.getUskManager().subscribe(message.key, this, !message.dontPoll, message.ignoreUSKDatehints,
 					handler.getRebootClient().lowLevelClient(message.realTimeFlag));
 			toUnsub = this;

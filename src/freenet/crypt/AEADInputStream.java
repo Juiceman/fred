@@ -61,8 +61,11 @@ public class AEADInputStream extends FilterInputStream {
 	@Override
 	public int read() throws IOException {
 		int length = read(onebyte);
-		if (length <= 0) return -1;
-		else return onebyte[0];
+        if (length <= 0) {
+            return -1;
+        } else {
+            return onebyte[0];
+        }
 	}
 
 	@Override
@@ -72,8 +75,12 @@ public class AEADInputStream extends FilterInputStream {
 
 	@Override
 	public int read(byte[] buf, int offset, int length) throws IOException {
-		if (length < 0) return -1;
-		if (length == 0) return 0;
+        if (length < 0) {
+            return -1;
+        }
+        if (length == 0) {
+            return 0;
+        }
 		if (excessEnd != 0) {
 			length = Math.min(length, excessEnd - excessPtr);
 			if (length > 0) {
@@ -86,13 +93,17 @@ public class AEADInputStream extends FilterInputStream {
 				return length;
 			}
 		}
-		if (finished) return -1;
+        if (finished) {
+            return -1;
+        }
 		// FIXME OPTIMISE Can we avoid allocating new buffers here? We can't safely use in=out when
 		// calling cipher.processBytes().
 		while (true) {
 			byte[] temp = new byte[length];
 			int read = in.read(temp);
-			if (read == 0) return read; // Nasty ambiguous case.
+            if (read == 0) {
+                return read; // Nasty ambiguous case.
+            }
 			if (read < 0) {
 				// End of stream.
 				// The last few bytes will still be in the cipher's buffer and have to be retrieved by doFinal().
@@ -102,12 +113,15 @@ public class AEADInputStream extends FilterInputStream {
 					throw new AEADVerificationFailedException();
 				}
 				finished = true;
-				if (excessEnd > 0)
-					return read(buf, offset, length);
-				else
-					return -1;
+                if (excessEnd > 0) {
+                    return read(buf, offset, length);
+                } else {
+                    return -1;
+                }
 			}
-			if (read <= 0) return read;
+            if (read <= 0) {
+                return read;
+            }
 			assert (read <= length);
 			int outLength = cipher.getUpdateOutputSize(read);
 			if (outLength > length) {
@@ -121,7 +135,9 @@ public class AEADInputStream extends FilterInputStream {
 				return length;
 			} else {
 				int decryptedBytes = cipher.processBytes(temp, 0, read, buf, offset);
-				if (decryptedBytes > 0) return decryptedBytes;
+                if (decryptedBytes > 0) {
+                    return decryptedBytes;
+                }
 			}
 		}
 	}
@@ -129,8 +145,12 @@ public class AEADInputStream extends FilterInputStream {
 	@Override
 	public int available() throws IOException {
 		int excess = excessEnd - excessPtr;
-		if (excess > 0) return excess;
-		if (finished) return 0;
+        if (excess > 0) {
+            return excess;
+        }
+        if (finished) {
+            return 0;
+        }
 		// FIXME Not very accurate as may include the MAC - or it may not, this is not the full
 		// length of the stream. Maybe we should return 0?
 		return in.available();
@@ -156,12 +176,16 @@ public class AEADInputStream extends FilterInputStream {
 			}
 			if (n < temp.length) {
 				int read = read(temp, 0, (int) n);
-				if (read <= 0) return skipped;
+                if (read <= 0) {
+                    return skipped;
+                }
 				skipped += read;
 				n -= read;
 			} else {
 				int read = read(temp);
-				if (read <= 0) return skipped;
+                if (read <= 0) {
+                    return skipped;
+                }
 				skipped += read;
 				n -= read;
 			}
@@ -171,9 +195,11 @@ public class AEADInputStream extends FilterInputStream {
 
 	@Override
 	public void close() throws IOException {
-		if (!finished)
-			// Must read the rest of the data to check hash integrity.
-			skip(Long.MAX_VALUE);
+        if (!finished)
+        // Must read the rest of the data to check hash integrity.
+        {
+            skip(Long.MAX_VALUE);
+        }
 		in.close();
 	}
 

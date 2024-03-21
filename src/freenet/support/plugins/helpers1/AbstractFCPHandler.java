@@ -56,8 +56,9 @@ public abstract class AbstractFCPHandler {
 		if ("Ping".equals(command)) {
 			SimpleFieldSet sfs = new SimpleFieldSet(true);
 			sfs.put("Pong", System.currentTimeMillis());
-			if (identifier != null)
+			if (identifier != null) {
 				sfs.putSingle("Identifier", identifier);
+			}
 			replysender.send(sfs);
 			return;
 		}

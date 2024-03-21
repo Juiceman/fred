@@ -80,8 +80,9 @@ public class PeersOffersUserAlert extends AbstractUserAlert {
 		try {
 			node.getConfig().get("node").set("peersOffersDismissed", true);
 		} catch (InvalidConfigValueException | NodeNeedRestartException e) {
-			if (Logger.shouldLog(Logger.LogLevel.MINOR, this))
+			if (Logger.shouldLog(Logger.LogLevel.MINOR, this)) {
 				Logger.minor(this, e.getLocalizedMessage());
+			}
 			valid = false;
 		}
 	}

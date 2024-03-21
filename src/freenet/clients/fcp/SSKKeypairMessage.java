@@ -25,7 +25,9 @@ public class SSKKeypairMessage extends FCPMessage {
 		sfs.putSingle("InsertURI", insertURI.toString());
 		sfs.putSingle("RequestURI", requestURI.toString());
 		if (identifier != null) // is optional on these two only
+		{
 			sfs.putSingle("Identifier", identifier);
+		}
 		return sfs;
 	}
 

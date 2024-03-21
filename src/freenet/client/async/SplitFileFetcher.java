@@ -134,8 +134,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 			wantBinaryBlob = false;
 		}
 		blockFetchContext = new FetchContext(fetchContext, FetchContext.SPLITFILE_DEFAULT_BLOCK_MASK, true, null);
-		if (parent.isCancelled())
+		if (parent.isCancelled()) {
 			throw new FetchException(FetchExceptionMode.CANCELLED);
+		}
 
 		try {
 			// Completion via truncation.
@@ -175,15 +176,18 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 		}
 		long eventualLength = Math.max(storage.decompressedLength, metadata.uncompressedDataLength());
 		cb.onExpectedSize(eventualLength, context);
-		if (metadata.uncompressedDataLength() > 0)
+		if (metadata.uncompressedDataLength() > 0) {
 			cb.onFinalizedMetadata();
-		if (eventualLength > 0 && fetchContext.maxOutputLength > 0 && eventualLength > fetchContext.maxOutputLength)
+		}
+		if (eventualLength > 0 && fetchContext.maxOutputLength > 0 && eventualLength > fetchContext.maxOutputLength) {
 			throw new FetchException(FetchExceptionMode.TOO_BIG, eventualLength, true, clientMetadata.getMIMEType());
+		}
 		getter = new SplitFileFetcherGet(this, storage);
 		raf = storage.getRAF();
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Created " + (persistent ? "persistent" : "transient") + " download for " +
 					thisKey + " on " + raf + " for " + this);
+		}
 		lastNotifiedStoreFetch = System.currentTimeMillis();
 	}
 
@@ -202,8 +206,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 
 	@Override
 	public void schedule(ClientContext context) {
-		if (storage.start(false))
+		if (storage.start(false)) {
 			getter.schedule(context, false);
+		}
 	}
 
 	/**
@@ -231,15 +236,20 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 
 	public void fail(FetchException e) {
 		synchronized (this) {
-			if (succeeded || failed) return;
+			if (succeeded || failed) {
+				return;
+			}
 			failed = true;
 		}
-		if (storage != null)
+		if (storage != null) {
 			context.getChkFetchScheduler(realTimeFlag).removePendingKeys(storage.keyListener, true);
-		if (getter != null)
+		}
+		if (getter != null) {
 			getter.cancel(context);
-		if (storage != null)
+		}
+		if (storage != null) {
 			storage.cancel();
+		}
 		cb.onFailure(e, this, context);
 	}
 
@@ -269,7 +279,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 					Logger.error(this, "Called onSuccess() twice on " + this, new Exception("debug"));
 					return;
 				} else {
-					if (logMINOR) Logger.minor(this, "onSuccess() on " + this, new Exception("debug"));
+					if (logMINOR) {
+						Logger.minor(this, "onSuccess() on " + this, new Exception("debug"));
+					}
 				}
 				succeeded = true;
 			}
@@ -383,12 +395,14 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 	public void onResume(int succeededBlocks, int failedBlocks, ClientMetadata meta, long finalSize) {
 		for (int i = 0; i < succeededBlocks - 1; i++)
 			parent.completedBlock(true, context);
-		if (succeededBlocks > 0)
+		if (succeededBlocks > 0) {
 			parent.completedBlock(false, context);
+		}
 		for (int i = 0; i < failedBlocks - 1; i++)
 			parent.failedBlock(true, context);
-		if (failedBlocks > 0)
+		if (failedBlocks > 0) {
 			parent.failedBlock(false, context);
+		}
 		parent.blockSetFinalized(context);
 		try {
 			cb.onExpectedMIME(meta, context);
@@ -418,7 +432,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 
 	@Override
 	public void restartedAfterDataCorruption() {
-		if (hasFinished()) return;
+		if (hasFinished()) {
+			return;
+		}
 		Logger.error(this, "Restarting download " + this + " after data corruption");
 		// We need to fetch more blocks. Some of them may even be in the datastore.
 		getter.unregister(context, getPriorityClass());
@@ -428,7 +444,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 
 	@Override
 	public void clearCooldown() {
-		if (hasFinished()) return;
+		if (hasFinished()) {
+			return;
+		}
 		getter.clearWakeupTime(context);
 	}
 
@@ -444,7 +462,9 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 
 	@Override
 	public void onResume(ClientContext context) throws FetchException {
-		if (logMINOR) Logger.minor(this, "Restarting SplitFileFetcher from storage...");
+		if (logMINOR) {
+			Logger.minor(this, "Restarting SplitFileFetcher from storage...");
+		}
 		boolean resumed = parent instanceof ClientGetter && ((ClientGetter) parent).resumedFetcher();
 		this.context = context;
 		try {
@@ -514,12 +534,14 @@ public class SplitFileFetcher implements ClientGetState, SplitFileFetcherStorage
 		boolean completeViaTruncation = dis.readBoolean();
 		if (completeViaTruncation) {
 			fileCompleteViaTruncation = new File(dis.readUTF());
-			if (!fileCompleteViaTruncation.exists())
+			if (!fileCompleteViaTruncation.exists()) {
 				throw new ResumeFailedException("Storage file does not exist: " + fileCompleteViaTruncation);
+			}
 			callbackCompleteViaTruncation = (FileGetCompletionCallback) getter;
 			long rafSize = dis.readLong();
-			if (fileCompleteViaTruncation.length() != rafSize)
+			if (fileCompleteViaTruncation.length() != rafSize) {
 				throw new ResumeFailedException("Storage file is not of the correct length");
+			}
 			// FIXME check against finalLength too, maybe we can finish straight away.
 			this.raf = new PooledFileRandomAccessBuffer(fileCompleteViaTruncation, false, rafSize, null, -1, true);
 		} else {

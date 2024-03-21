@@ -161,8 +161,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 			throw new IOException("Version of the underlying RandomAccessBuffer is "
 					+ "incompatible with this ERATType");
 		}
-		if (!verifyHeader(fullHeader))
+		if (!verifyHeader(fullHeader)) {
 			throw new GeneralSecurityException("MAC is incorrect");
+		}
 		setupKeys();
 		SkippingStreamCipher cipherRead = this.type.get();
 		cipherRead.init(false, cipherParams);
@@ -275,7 +276,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 		@Override
 		public int read() throws IOException {
 			int readBytes = read(one);
-			if (readBytes <= 0) return readBytes;
+			if (readBytes <= 0) {
+				return readBytes;
+			}
 			return one[0] & 0xFF;
 		}
 
@@ -287,7 +290,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 		@Override
 		public int read(byte[] buf, int offset, int length) throws IOException {
 			int readBytes = in.read(buf, offset, length);
-			if (readBytes <= 0) return readBytes;
+			if (readBytes <= 0) {
+				return readBytes;
+			}
 			cipherRead.processBytes(buf, offset, readBytes, buf, offset);
 			return readBytes;
 		}
@@ -296,7 +301,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 
 	@Override
 	public InputStream getInputStreamUnbuffered() throws IOException {
-		if (size() == 0) return new NullInputStream();
+		if (size() == 0) {
+			return new NullInputStream();
+		}
 		if (isFreed) {
 			throw new IOException("This RandomAccessBuffer has already been closed. This should not"
 					+ " happen.");
@@ -318,7 +325,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 	@Override
 	public long size() {
 		long size = underlying.size();
-		if (size == 0) return 0;
+		if (size == 0) {
+			return 0;
+		}
 		return size - type.headerLen;
 	}
 
@@ -334,7 +343,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 
 	@Override
 	public void free() {
-		if (isFreed) return;
+		if (isFreed) {
+			return;
+		}
 		isFreed = true;
 		underlying.free();
 	}
@@ -347,8 +358,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 
 	@Override
 	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
-		if (underlying.size() < type.headerLen)
+		if (underlying.size() < type.headerLen) {
 			throw new IOException("Converting empty bucket");
+		}
 		underlying.setReadOnly();
 		LockableRandomAccessBuffer r = underlying.toRandomAccessBuffer();
 		try {
@@ -388,7 +400,9 @@ public class EncryptedRandomAccessBucket implements RandomAccessBucket, Serializ
 	public EncryptedRandomAccessBucket(DataInputStream dis, FilenameGenerator fg,
 									   PersistentFileTracker persistentFileTracker, MasterSecret masterKey2) throws IOException, ResumeFailedException, StorageFormatException {
 		type = EncryptedRandomAccessBufferType.getByBitmask(dis.readInt());
-		if (type == null) throw new ResumeFailedException("Unknown EncryptedRandomAccessBucket type");
+		if (type == null) {
+			throw new ResumeFailedException("Unknown EncryptedRandomAccessBucket type");
+		}
 		underlying = (RandomAccessBucket) BucketTools.restoreFrom(dis, fg, persistentFileTracker, masterKey2);
 		this.baseSetup(masterKey2);
 	}

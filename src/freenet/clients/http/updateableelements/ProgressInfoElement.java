@@ -37,7 +37,9 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 		this.maxSize = maxSize;
 		this.isAdvancedMode = isAdvancedMode;
 		init(pushed);
-		if (!pushed) return;
+		if (!pushed) {
+			return;
+		}
 		fetchListener = new NotifierFetchListener(((SimpleToadletServer) ctx.getContainer()).getPushDataManager(), this);
 		tracker.getFetchInProgress(key, maxSize, fctx).addListener(fetchListener);
 	}
@@ -55,8 +57,12 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 
 		addChild("#", FProxyToadlet.l10n("filenameLabel") + " ");
 		addChild("a", "href", "/" + key.toString(false, false), key.getPreferredFilename());
-		if (fr.mimeType != null) addChild("br", FProxyToadlet.l10n("contentTypeLabel") + " " + fr.mimeType);
-		if (fr.size > 0) addChild("br", "Size: " + SizeUtil.formatSize(fr.size));
+		if (fr.mimeType != null) {
+			addChild("br", FProxyToadlet.l10n("contentTypeLabel") + " " + fr.mimeType);
+		}
+		if (fr.size > 0) {
+			addChild("br", "Size: " + SizeUtil.formatSize(fr.size));
+		}
 		if (isAdvancedMode) {
 			addChild("br", FProxyToadlet.l10n("blocksDetail",
 					new String[]{"fetched", "required", "total", "failed", "fatallyfailed"},
@@ -76,12 +82,14 @@ public class ProgressInfoElement extends BaseUpdateableElement {
 			lastRefreshNode.addChild(new SecondCounterNode(0, true, FProxyToadlet.l10n("lastRefresh")));
 			addChild(lastRefreshNode);
 		}
-		if (fr.goneToNetwork)
+		if (fr.goneToNetwork) {
 			addChild("p", FProxyToadlet.l10n("progressDownloading"));
-		else
+		} else {
 			addChild("p", FProxyToadlet.l10n("progressCheckingStore"));
-		if (!fr.finalizedBlocks)
+		}
+		if (!fr.finalizedBlocks) {
 			addChild("p", FProxyToadlet.l10n("progressNotFinalized"));
+		}
 
 		if (waiter != null) {
 			tracker.getFetchInProgress(key, maxSize, fctx).close(waiter);

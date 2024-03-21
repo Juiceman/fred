@@ -21,7 +21,9 @@ public class ProbeError extends FCPResponse {
 	public ProbeError(String fcpIdentifier, Error error, Byte code, boolean local) {
 		super(fcpIdentifier);
 		fs.putOverwrite(TYPE, error.name());
-		if (code != null) fs.put(CODE, code);
+		if (code != null) {
+			fs.put(CODE, code);
+		}
 		fs.put(LOCAL, local);
 	}
 

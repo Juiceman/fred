@@ -187,7 +187,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	 */
 	public boolean addCallback(USKFetcherCallback cb) {
 		synchronized (this) {
-			if (completed) return false;
+			if (completed) {
+				return false;
+			}
 			callbacks.add(cb);
 		}
 		updatePriorities();
@@ -225,7 +227,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			fetcher = new DBRFetcher(key, ctxDBR.maxUSKRetries, ctxDBR, parent,
 					this, false, true, 0, context, false, realTimeFlag);
 			this.type = type;
-			if (logMINOR) Logger.minor(this, "Created " + this + " with " + fetcher);
+			if (logMINOR) {
+				Logger.minor(this, "Created " + this + " with " + fetcher);
+			}
 		}
 
 		@Override
@@ -242,7 +246,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				data = context.getBucketFactory(false).makeBucket(maxLen);
 				output = data.getOutputStream();
 				if (decompressors != null) {
-					if (logMINOR) Logger.minor(this, "decompressing...");
+					if (logMINOR) {
+						Logger.minor(this, "decompressing...");
+					}
 					pipeOut.connect(pipeIn);
 					DecompressorThreadManager decompressorManager = new DecompressorThreadManager(pipeIn, decompressors, maxLen);
 					pipeIn = decompressorManager.execute();
@@ -251,7 +257,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 					streamGenerator.writeTo(pipeOut, context);
 					decompressorManager.waitFinished();
 					worker.waitFinished();
-				} else streamGenerator.writeTo(output, context);
+				} else {
+					streamGenerator.writeTo(output, context);
+				}
 
 				output.close();
 				pipeOut.close();
@@ -270,14 +278,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				boolean dbrsFinished;
 				synchronized (USKFetcher.this) {
 					dbrAttempts.remove(this);
-					if (logMINOR) Logger.minor(this, "Remaining DBR attempts: " + dbrAttempts);
+					if (logMINOR) {
+						Logger.minor(this, "Remaining DBR attempts: " + dbrAttempts);
+					}
 					dbrsFinished = dbrAttempts.isEmpty();
 				}
 				Closer.close(pipeOut);
 				Closer.close(pipeIn);
 				Closer.close(output);
-				if (dbrsFinished)
+				if (dbrsFinished) {
 					onDBRsFinished(context);
+				}
 				Closer.close(data);
 			}
 		}
@@ -317,8 +328,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				Logger.error(this, "Unable to parse hint \"" + value + "\"", e);
 				return;
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Found DBR hint edition " + hint + " for " + this.fetcher.getKey(null).getURI() + " for " + USKFetcher.this);
+			}
 			processDBRHint(hint, context, this);
 		}
 
@@ -326,16 +338,20 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		public void onFailure(FetchException e, ClientGetState state,
 							  ClientContext context) {
 			// Okay.
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Failed to fetch hint " + fetcher.getKey(null) + " for " + this + " for " + USKFetcher.this);
+			}
 			boolean dbrsFinished;
 			synchronized (USKFetcher.this) {
 				dbrAttempts.remove(this);
-				if (logMINOR) Logger.minor(this, "Remaining DBR attempts: " + dbrAttempts);
+				if (logMINOR) {
+					Logger.minor(this, "Remaining DBR attempts: " + dbrAttempts);
+				}
 				dbrsFinished = dbrAttempts.isEmpty();
 			}
-			if (dbrsFinished)
+			if (dbrsFinished) {
 				onDBRsFinished(context);
+			}
 		}
 
 		@Override
@@ -479,8 +495,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			synchronized (this) {
 				c = checker;
 			}
-			if (c != null)
+			if (c != null) {
 				c.cancel(context);
+			}
 			onCancelled(context);
 		}
 
@@ -490,8 +507,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				c = checker;
 			}
 			if (c == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Checker == null in schedule() for " + this, new Exception("debug"));
+				}
 			} else {
 				assert (!c.persistent());
 				c.schedule(context);
@@ -542,7 +560,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			synchronized (this) {
 				c = checker;
 			}
-			if (c == null) return;
+			if (c == null) {
+				return;
+			}
 			c.onChangedFetchContext(context);
 		}
 	}
@@ -590,8 +610,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		this.origUSK = origUSK;
 		this.uskManager = manager;
 		this.origMinFailures = minFailures;
-		if (origMinFailures > WATCH_KEYS)
+		if (origMinFailures > WATCH_KEYS) {
 			throw new IllegalArgumentException();
+		}
 		firstLoop = true;
 		callbacks = new ArrayList<USKFetcherCallback>();
 		subscribers = new HashSet<USKCallback>();
@@ -609,7 +630,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		ctxDBR.filterData = false;
 		ctxDBR.maxArchiveLevels = 0;
 		ctxDBR.maxArchiveRestarts = 0;
-		if (checkStoreOnly) ctxDBR.localRequestOnly = true;
+		if (checkStoreOnly) {
+			ctxDBR.localRequestOnly = true;
+		}
 		if (ctx.ignoreStore) {
 			ctxNoStore = this.ctx;
 		} else {
@@ -619,8 +642,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		this.backgroundPoll = pollForever;
 		this.keepLastData = keepLastData;
 		this.checkStoreOnly = checkStoreOnly;
-		if (checkStoreOnly && logMINOR)
+		if (checkStoreOnly && logMINOR) {
 			Logger.minor(this, "Just checking store on " + this);
+		}
 		// origUSK is a hint. We *do* want to check the edition given.
 		// Whereas latestSlot we've definitely fetched, we don't want to re-check.
 		watchingKeys = new USKWatchingKeys(origUSK, Math.max(0, uskManager.lookupLatestSlot(origUSK) + 1));
@@ -630,10 +654,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	public void onDBRsFinished(ClientContext context) {
 		boolean needSchedule = false;
 		synchronized (this) {
-			if (scheduleAfterDBRsDone) needSchedule = true; // FIXME other conditions???
+			if (scheduleAfterDBRsDone) {
+				needSchedule = true; // FIXME other conditions???
+			}
 		}
-		if (needSchedule)
+		if (needSchedule) {
 			schedule(context);
+		}
 		checkFinishedForNow(context);
 	}
 
@@ -652,13 +679,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			short prio;
 			List<DBRAttempt> toCancel = null;
 			synchronized (this) {
-				if (cancelled || completed) return;
+				if (cancelled || completed) {
+					return;
+				}
 				dbrHintsFound++;
 				prio = progressPollPriority;
 				for (Iterator<DBRAttempt> i = dbrAttempts.iterator(); i.hasNext(); ) {
 					DBRAttempt a = i.next();
 					if (dbrAttempt.type.alwaysMorePreciseThan(a.type)) {
-						if (toCancel == null) toCancel = new ArrayList<DBRAttempt>();
+						if (toCancel == null) {
+							toCancel = new ArrayList<DBRAttempt>();
+						}
 						toCancel.add(a);
 						i.remove();
 					}
@@ -681,23 +712,31 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	private void checkFinishedForNow(ClientContext context) {
 		USKAttempt[] attempts;
 		synchronized (this) {
-			if (cancelled || completed) return;
+			if (cancelled || completed) {
+				return;
+			}
 			if (runningStoreChecker != null) {
-				if (logMINOR) Logger.minor(this, "Not finished because still running store checker on " + this);
+				if (logMINOR) {
+					Logger.minor(this, "Not finished because still running store checker on " + this);
+				}
 				return; // Still checking the store
 			}
 			if (!runningAttempts.isEmpty()) {
-				if (logMINOR) Logger.minor(this, "Not finished because running attempts (random probes) on " + this);
+				if (logMINOR) {
+					Logger.minor(this, "Not finished because running attempts (random probes) on " + this);
+				}
 				return; // Still running
 			}
 			if (pollingAttempts.isEmpty()) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Not finished because no polling attempts (not started???) on " + this);
+				}
 				return; // Not started yet
 			}
 			if (!dbrAttempts.isEmpty()) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Not finished because still waiting for DBR attempts on " + this + " : " + dbrAttempts);
+				}
 				return; // DBRs
 			}
 			attempts = pollingAttempts.values().toArray(new USKAttempt[pollingAttempts.size()]);
@@ -707,8 +746,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			// I.e. they must have done all their fetches at least once.
 			// If we check whether they are *currently* in cooldown, then under heavy USK load (the common case!), we can see them overlapping and never notify finished.
 			if (!a.everInCooldown()) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Not finished because polling attempt " + a + " never entered cooldown on " + this);
+				}
 				return;
 			}
 		}
@@ -716,46 +756,60 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	}
 
 	private void notifyFinishedForNow(ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Notifying finished for now on " + this + " for " + origUSK + (this.realTimeFlag ? " (realtime)" : " (bulk)"));
+		}
 		USKCallback[] toCheck;
 		synchronized (this) {
-			if (cancelled || completed) return;
+			if (cancelled || completed) {
+				return;
+			}
 			toCheck = subscribers.toArray(new USKCallback[subscribers.size()]);
 		}
 		for (USKCallback cb : toCheck) {
-			if (cb instanceof USKProgressCallback)
+			if (cb instanceof USKProgressCallback) {
 				((USKProgressCallback) cb).onRoundFinished(context);
+			}
 		}
 	}
 
 	private void notifySendingToNetwork(ClientContext context) {
 		USKCallback[] toCheck;
 		synchronized (this) {
-			if (cancelled || completed) return;
+			if (cancelled || completed) {
+				return;
+			}
 			toCheck = subscribers.toArray(new USKCallback[subscribers.size()]);
 		}
 		for (USKCallback cb : toCheck) {
-			if (cb instanceof USKProgressCallback)
+			if (cb instanceof USKProgressCallback) {
 				((USKProgressCallback) cb).onSendingToNetwork(context);
+			}
 		}
 	}
 
 	void onDNF(USKAttempt att, ClientContext context) {
-		if (logMINOR) Logger.minor(this, "DNF: " + att);
+		if (logMINOR) {
+			Logger.minor(this, "DNF: " + att);
+		}
 		boolean finished = false;
 		long curLatest = uskManager.lookupLatestSlot(origUSK);
 		synchronized (this) {
-			if (completed || cancelled) return;
+			if (completed || cancelled) {
+				return;
+			}
 			lastFetchedEdition = Math.max(lastFetchedEdition, att.number);
 			runningAttempts.remove(att.number);
 			if (runningAttempts.isEmpty()) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "latest: " + curLatest + ", last fetched: " + lastFetchedEdition + ", curLatest+MIN_FAILURES: " + (curLatest + origMinFailures));
+				}
 				if (started) {
 					finished = true;
 				}
-			} else if (logMINOR) Logger.minor(this, "Remaining: " + runningAttempts());
+			} else if (logMINOR) {
+				Logger.minor(this, "Remaining: " + runningAttempts());
+			}
 		}
 		if (finished) {
 			finishSuccess(context);
@@ -766,19 +820,24 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		StringBuffer sb = new StringBuffer();
 		boolean first = true;
 		for (USKAttempt a : runningAttempts.values()) {
-			if (!first) sb.append(", ");
+			if (!first) {
+				sb.append(", ");
+			}
 			sb.append(a.number);
-			if (a.cancelled)
+			if (a.cancelled) {
 				sb.append("(cancelled)");
-			if (a.succeeded)
+			}
+			if (a.succeeded) {
 				sb.append("(succeeded)");
+			}
 		}
 		return sb.toString();
 	}
 
 	private void finishSuccess(ClientContext context) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "finishSuccess() on " + this);
+		}
 		if (backgroundPoll) {
 			long valAtEnd = uskManager.lookupLatestSlot(origUSK);
 			long end;
@@ -788,7 +847,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 				//Find out when we should check next ('end'), in an increasing delay (unless we make progress).
 				long newSleepTime = sleepTime * 2;
-				if (newSleepTime > maxSleepTime) newSleepTime = maxSleepTime;
+				if (newSleepTime > maxSleepTime) {
+					newSleepTime = maxSleepTime;
+				}
 				sleepTime = newSleepTime;
 				end = now + context.random.nextInt((int) sleepTime);
 
@@ -798,11 +859,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 					sleepTime = origSleepTime;
 					firstLoop = false;
 					end = now;
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "We have advanced: at start, " + valueAtSchedule + " at end, " + valAtEnd);
+					}
 				}
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Sleep time is " + sleepTime + " this sleep is " + (end - now) + " for " + this);
+				}
 			}
 			schedule(end - now, context);
 			checkFinishedForNow(context);
@@ -818,9 +881,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			long ed = uskManager.lookupLatestSlot(origUSK);
 			byte[] data;
 			synchronized (this) {
-				if (lastRequestData == null)
+				if (lastRequestData == null) {
 					data = null;
-				else {
+				} else {
 					try {
 						data = BucketTools.toByteArray(lastRequestData);
 					} catch (IOException e) {
@@ -832,10 +895,11 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			}
 			for (USKFetcherCallback c : cb) {
 				try {
-					if (ed == -1)
+					if (ed == -1) {
 						c.onFailure(context);
-					else
+					} else {
 						c.onFoundEdition(ed, origUSK.copy(ed), context, lastWasMetadata, lastCompressionCodec, data, false, false);
+					}
 				} catch (Exception e) {
 					Logger.error(this, "An exception occured while dealing with a callback:" + c.toString() + "\n" + e.getMessage(), e);
 				}
@@ -849,40 +913,51 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	void onSuccess(USKAttempt att, long curLatest, boolean dontUpdate, ClientSSKBlock block, final ClientContext context) {
 		final long lastEd = uskManager.lookupLatestSlot(origUSK);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Found edition " + curLatest + " for " + origUSK + " official is " + lastEd + " on " + this);
+		}
 		boolean decode = false;
 		List<USKAttempt> killAttempts = null;
 		boolean registerNow;
 		// FIXME call uskManager.updateSlot BEFORE getEditionsToFetch, avoids a possible conflict, but creates another (with onFoundEdition) - we'd probably have to handle this there???
 		synchronized (this) {
-			if (att != null) runningAttempts.remove(att.number);
+			if (att != null) {
+				runningAttempts.remove(att.number);
+			}
 			if (completed || cancelled) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Finished already: completed=" + completed + " cancelled=" + cancelled);
+				}
 				return;
 			}
 			decode = curLatest >= lastEd && !(dontUpdate && block == null);
 			curLatest = Math.max(lastEd, curLatest);
-			if (logMINOR) Logger.minor(this, "Latest: " + curLatest + " in onSuccess");
+			if (logMINOR) {
+				Logger.minor(this, "Latest: " + curLatest + " in onSuccess");
+			}
 			if (!checkStoreOnly) {
 				killAttempts = cancelBefore(curLatest, context);
 				USKWatchingKeys.ToFetch list = watchingKeys.getEditionsToFetch(curLatest, context.random, getRunningFetchEditions(), shouldAddRandomEditions(context.random));
 				Lookup[] toPoll = list.toPoll;
 				Lookup[] toFetch = list.toFetch;
 				for (Lookup i : toPoll) {
-					if (logDEBUG) Logger.debug(this, "Polling " + i + " for " + this);
+					if (logDEBUG) {
+						Logger.debug(this, "Polling " + i + " for " + this);
+					}
 					attemptsToStart.add(add(i, true));
 				}
 				for (Lookup i : toFetch) {
-					if (logMINOR) Logger.minor(this, "Adding checker for edition " + i + " for " + origUSK);
+					if (logMINOR) {
+						Logger.minor(this, "Adding checker for edition " + i + " for " + origUSK);
+					}
 					attemptsToStart.add(add(i, false));
 				}
 			}
-			if ((!scheduleAfterDBRsDone) || dbrAttempts.isEmpty())
+			if ((!scheduleAfterDBRsDone) || dbrAttempts.isEmpty()) {
 				registerNow = !fillKeysWatching(curLatest, context);
-			else
+			} else {
 				registerNow = false;
+			}
 		}
 		finishCancelBefore(killAttempts, context);
 		Bucket data = null;
@@ -902,11 +977,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 					lastCompressionCodec = block.getCompressionCodec();
 					lastWasMetadata = block.isMetadata();
 					if (keepLastData) {
-						if (lastRequestData != null)
+						if (lastRequestData != null) {
 							lastRequestData.free();
+						}
 						lastRequestData = data;
-					} else
+					} else {
 						data.free();
+					}
 				} else {
 					lastCompressionCodec = -1;
 					lastWasMetadata = false;
@@ -914,24 +991,31 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				}
 			}
 		}
-		if (!dontUpdate)
+		if (!dontUpdate) {
 			uskManager.updateSlot(origUSK, curLatest, context);
-		if (registerNow)
+		}
+		if (registerNow) {
 			registerAttempts(context);
+		}
 	}
 
 	private boolean shouldAddRandomEditions(Random random) {
-		if (firstLoop) return false;
+		if (firstLoop) {
+			return false;
+		}
 		return random.nextInt(dbrHintsStarted + 1) >= dbrHintsFound;
 	}
 
 	void onCancelled(USKAttempt att, ClientContext context) {
 		synchronized (this) {
 			runningAttempts.remove(att.number);
-			if (!runningAttempts.isEmpty()) return;
+			if (!runningAttempts.isEmpty()) {
+				return;
+			}
 
-			if (cancelled)
+			if (cancelled) {
 				finishCancelled(context);
+			}
 		}
 	}
 
@@ -960,7 +1044,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			for (Iterator<USKAttempt> i = runningAttempts.values().iterator(); i.hasNext(); ) {
 				USKAttempt att = i.next();
 				if (att.number < curLatest) {
-					if (v == null) v = new ArrayList<USKAttempt>(runningAttempts.size() - count);
+					if (v == null) {
+						v = new ArrayList<USKAttempt>(runningAttempts.size() - count);
+					}
 					v.add(att);
 					i.remove();
 				}
@@ -969,10 +1055,14 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			for (Iterator<Map.Entry<Long, USKAttempt>> i = pollingAttempts.entrySet().iterator(); i.hasNext(); ) {
 				Map.Entry<Long, USKAttempt> entry = i.next();
 				if (entry.getKey() < curLatest) {
-					if (v == null) v = new ArrayList<USKAttempt>(Math.max(1, pollingAttempts.size() - count));
+					if (v == null) {
+						v = new ArrayList<USKAttempt>(Math.max(1, pollingAttempts.size() - count));
+					}
 					v.add(entry.getValue());
 					i.remove();
-				} else break; // TreeMap is ordered.
+				} else {
+					break; // TreeMap is ordered.
+				}
 			}
 		}
 		return v;
@@ -993,29 +1083,42 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	 */
 	private synchronized USKAttempt add(Lookup l, boolean forever) {
 		long i = l.val;
-		if (l.val < 0)
+		if (l.val < 0) {
 			throw new IllegalArgumentException("Can't check <0 for " + l.val + " on " + this + " for " + origUSK);
-		if (cancelled) return null;
-		if (checkStoreOnly) return null;
-		if (logMINOR) Logger.minor(this, "Adding USKAttempt for " + i + " for " + origUSK.getURI());
+		}
+		if (cancelled) {
+			return null;
+		}
+		if (checkStoreOnly) {
+			return null;
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Adding USKAttempt for " + i + " for " + origUSK.getURI());
+		}
 		if (forever) {
 			if (pollingAttempts.containsKey(i)) {
-				if (logMINOR) Logger.minor(this, "Already polling edition: " + i + " for " + this);
+				if (logMINOR) {
+					Logger.minor(this, "Already polling edition: " + i + " for " + this);
+				}
 				return null;
 			}
 		} else {
 			if (runningAttempts.containsKey(i)) {
-				if (logMINOR) Logger.minor(this, "Returning because already running for " + origUSK.getURI());
+				if (logMINOR) {
+					Logger.minor(this, "Returning because already running for " + origUSK.getURI());
+				}
 				return null;
 			}
 		}
 		USKAttempt a = new USKAttempt(l, forever);
-		if (forever)
+		if (forever) {
 			pollingAttempts.put(i, a);
-		else {
+		} else {
 			runningAttempts.put(i, a);
 		}
-		if (logMINOR) Logger.minor(this, "Added " + a + " for " + origUSK);
+		if (logMINOR) {
+			Logger.minor(this, "Added " + a + " for " + origUSK);
+		}
 		return a;
 	}
 
@@ -1048,11 +1151,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public void schedule(ClientContext context) {
-		if (logMINOR) Logger.minor(this, "Scheduling " + this);
+		if (logMINOR) {
+			Logger.minor(this, "Scheduling " + this);
+		}
 		DBRAttempt[] atts = null;
 		synchronized (this) {
-			if (cancelled) return;
-			if (completed) return;
+			if (cancelled) {
+				return;
+			}
+			if (completed) {
+				return;
+			}
 			if (!scheduledDBRs && !ctx.ignoreUSKDatehints) {
 				atts = addDBRs(context);
 			}
@@ -1061,8 +1170,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		context.getSskFetchScheduler(realTimeFlag).schedTransient.addPendingKeys(this);
 		updatePriorities();
 		uskManager.subscribe(origUSK, this, false, parent.getClient());
-		if (atts != null)
+		if (atts != null) {
 			startDBRs(atts, context);
+		}
 		long lookedUp = uskManager.lookupLatestSlot(origUSK);
 		boolean registerNow = false;
 		boolean bye = false;
@@ -1078,11 +1188,15 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 					Lookup[] toPoll = list.toPoll;
 					Lookup[] toFetch = list.toFetch;
 					for (Lookup i : toPoll) {
-						if (logDEBUG) Logger.debug(this, "Polling " + i + " for " + this);
+						if (logDEBUG) {
+							Logger.debug(this, "Polling " + i + " for " + this);
+						}
 						attemptsToStart.add(add(i, true));
 					}
 					for (Lookup i : toFetch) {
-						if (logMINOR) Logger.minor(this, "Adding checker for edition " + i + " for " + origUSK);
+						if (logMINOR) {
+							Logger.minor(this, "Adding checker for edition " + i + " for " + origUSK);
+						}
 						attemptsToStart.add(add(i, false));
 					}
 				}
@@ -1100,13 +1214,15 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				completeCheckingStore = checkStoreOnly && scheduleAfterDBRsDone && runningStoreChecker == null;
 			}
 		}
-		if (registerNow)
+		if (registerNow) {
 			registerAttempts(context);
-		else if (completeCheckingStore) {
+		} else if (completeCheckingStore) {
 			this.finishSuccess(context);
 			return;
 		}
-		if (!bye) return;
+		if (!bye) {
+			return;
+		}
 		// We have been cancelled.
 		uskManager.unsubscribe(origUSK, this);
 		context.getSskFetchScheduler(realTimeFlag).schedTransient.removePendingKeys((KeyListener) this);
@@ -1138,7 +1254,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public void cancel(ClientContext context) {
-		if (logMINOR) Logger.minor(this, "Cancelling " + this);
+		if (logMINOR) {
+			Logger.minor(this, "Cancelling " + this);
+		}
 		uskManager.unsubscribe(origUSK, this);
 		context.getSskFetchScheduler(realTimeFlag).schedTransient.removePendingKeys((KeyListener) this);
 		USKAttempt[] attempts;
@@ -1148,8 +1266,12 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		SendableGet storeChecker;
 		Bucket data;
 		synchronized (this) {
-			if (cancelled) Logger.error(this, "Already cancelled " + this);
-			if (completed) Logger.error(this, "Already completed " + this);
+			if (cancelled) {
+				Logger.error(this, "Already cancelled " + this);
+			}
+			if (completed) {
+				Logger.error(this, "Already completed " + this);
+			}
 			cancelled = true;
 			attempts = runningAttempts.values().toArray(new USKAttempt[runningAttempts.size()]);
 			polling = pollingAttempts.values().toArray(new USKAttempt[pollingAttempts.size()]);
@@ -1170,10 +1292,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		for (DBRAttempt a : atts)
 			a.cancel(context);
 		if (storeChecker != null)
-			// Remove from the store checker queue.
+		// Remove from the store checker queue.
+		{
 			storeChecker.unregister(context, storeChecker.getPriorityClass());
-		if (data != null)
+		}
+		if (data != null) {
 			data.free();
+		}
 	}
 
 	/**
@@ -1223,29 +1348,47 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		if (localCallbacks.length == 0 && fetcherCallbacks.length == 0) {
 			normalPollPriority = DEFAULT_NORMAL_POLL_PRIORITY;
 			progressPollPriority = DEFAULT_PROGRESS_POLL_PRIORITY;
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Updating priorities: normal = " + normalPollPriority + " progress = " + progressPollPriority + " for " + this + " for " + origUSK);
+			}
 			return;
 		}
 
 		for (USKCallback cb : localCallbacks) {
 			short prio = cb.getPollingPriorityNormal();
-			if (logDEBUG) Logger.debug(this, "Normal priority for " + cb + " : " + prio);
-			if (prio < normalPrio) normalPrio = prio;
-			if (logDEBUG) Logger.debug(this, "Progress priority for " + cb + " : " + prio);
+			if (logDEBUG) {
+				Logger.debug(this, "Normal priority for " + cb + " : " + prio);
+			}
+			if (prio < normalPrio) {
+				normalPrio = prio;
+			}
+			if (logDEBUG) {
+				Logger.debug(this, "Progress priority for " + cb + " : " + prio);
+			}
 			prio = cb.getPollingPriorityProgress();
-			if (prio < progressPrio) progressPrio = prio;
+			if (prio < progressPrio) {
+				progressPrio = prio;
+			}
 		}
 		for (USKFetcherCallback cb : fetcherCallbacks) {
 			short prio = cb.getPollingPriorityNormal();
-			if (logDEBUG) Logger.debug(this, "Normal priority for " + cb + " : " + prio);
-			if (prio < normalPrio) normalPrio = prio;
-			if (logDEBUG) Logger.debug(this, "Progress priority for " + cb + " : " + prio);
+			if (logDEBUG) {
+				Logger.debug(this, "Normal priority for " + cb + " : " + prio);
+			}
+			if (prio < normalPrio) {
+				normalPrio = prio;
+			}
+			if (logDEBUG) {
+				Logger.debug(this, "Progress priority for " + cb + " : " + prio);
+			}
 			prio = cb.getPollingPriorityProgress();
-			if (prio < progressPrio) progressPrio = prio;
+			if (prio < progressPrio) {
+				progressPrio = prio;
+			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Updating priorities: normal=" + normalPrio + " progress=" + progressPrio + " for " + this + " for " + origUSK);
+		}
 		synchronized (this) {
 			normalPollPriority = normalPrio;
 			progressPollPriority = progressPrio;
@@ -1298,17 +1441,23 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public void onFoundEdition(long ed, USK key, final ClientContext context, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-		if (newKnownGood && !newSlotToo) return; // Only interested in slots
+		if (newKnownGood && !newSlotToo) {
+			return; // Only interested in slots
+		}
 		// Because this is frequently run off-thread, it is actually possible that the looked up edition is not the same as the edition we are being notified of.
 		final long lastEd = uskManager.lookupLatestSlot(origUSK);
 		boolean decode = false;
 		List<USKAttempt> killAttempts = null;
 		boolean registerNow = false;
 		synchronized (this) {
-			if (completed || cancelled) return;
+			if (completed || cancelled) {
+				return;
+			}
 			decode = lastEd == ed && data != null;
 			ed = Math.max(lastEd, ed);
-			if (logMINOR) Logger.minor(this, "Latest: " + ed + " in onFoundEdition");
+			if (logMINOR) {
+				Logger.minor(this, "Latest: " + ed + " in onFoundEdition");
+			}
 
 			if (!checkStoreOnly) {
 				killAttempts = cancelBefore(ed, context);
@@ -1316,32 +1465,38 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				Lookup[] toPoll = list.toPoll;
 				Lookup[] toFetch = list.toFetch;
 				for (Lookup i : toPoll) {
-					if (logMINOR) Logger.minor(this, "Polling " + i + " for " + this + " in onFoundEdition");
+					if (logMINOR) {
+						Logger.minor(this, "Polling " + i + " for " + this + " in onFoundEdition");
+					}
 					attemptsToStart.add(add(i, true));
 				}
 				for (Lookup i : toFetch) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Adding checker for edition " + i + " for " + origUSK + " in onFoundEdition");
+					}
 					attemptsToStart.add(add(i, false));
 				}
 			}
-			if ((!scheduleAfterDBRsDone) || dbrAttempts.isEmpty())
+			if ((!scheduleAfterDBRsDone) || dbrAttempts.isEmpty()) {
 				registerNow = !fillKeysWatching(ed, context);
-			else
+			} else {
 				registerNow = false;
+			}
 
 		}
 		finishCancelBefore(killAttempts, context);
-		if (registerNow)
+		if (registerNow) {
 			registerAttempts(context);
+		}
 		synchronized (this) {
 			if (decode) {
 				lastCompressionCodec = codec;
 				lastWasMetadata = metadata;
 				if (keepLastData) {
 					// FIXME inefficient to convert from bucket to byte[] to bucket
-					if (lastRequestData != null)
+					if (lastRequestData != null) {
 						lastRequestData.free();
+					}
 					try {
 						lastRequestData = BucketTools.makeImmutableBucket(context.tempBucketFactory, data);
 					} catch (IOException e) {
@@ -1355,10 +1510,14 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	private synchronized List<Lookup> getRunningFetchEditions() {
 		List<Lookup> ret = new ArrayList<Lookup>();
 		for (USKAttempt a : runningAttempts.values()) {
-			if (!ret.contains(a.lookup)) ret.add(a.lookup);
+			if (!ret.contains(a.lookup)) {
+				ret.add(a.lookup);
+			}
 		}
 		for (USKAttempt a : pollingAttempts.values()) {
-			if (!ret.contains(a.lookup)) ret.add(a.lookup);
+			if (!ret.contains(a.lookup)) {
+				ret.add(a.lookup);
+			}
 		}
 		return ret;
 	}
@@ -1366,27 +1525,34 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 	private void registerAttempts(ClientContext context) {
 		USKAttempt[] attempts;
 		synchronized (USKFetcher.this) {
-			if (cancelled || completed) return;
+			if (cancelled || completed) {
+				return;
+			}
 			attempts = attemptsToStart.toArray(new USKAttempt[attemptsToStart.size()]);
 			attemptsToStart.clear();
 		}
 
-		if (attempts.length > 0)
+		if (attempts.length > 0) {
 			parent.toNetwork(context);
-		if (logMINOR)
+		}
+		if (logMINOR) {
 			Logger.minor(this, "Registering " + attempts.length + " USKChecker's for " + this + " running=" + runningAttempts.size() + " polling=" + pollingAttempts.size());
+		}
 		for (USKAttempt attempt : attempts) {
 			// Look up on each iteration since scheduling can cause new editions to be found sometimes.
 			long lastEd = uskManager.lookupLatestSlot(origUSK);
 			synchronized (USKFetcher.this) {
 				// FIXME not sure this condition works, test it!
-				if (keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
+				if (keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition) {
 					lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
+				}
 			}
-			if (attempt == null) continue;
-			if (attempt.number > lastEd)
+			if (attempt == null) {
+				continue;
+			}
+			if (attempt.number > lastEd) {
 				attempt.schedule(context);
-			else {
+			} else {
 				synchronized (USKFetcher.this) {
 					runningAttempts.remove(attempt.number);
 				}
@@ -1409,9 +1575,11 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		}
 
 		public Key[] getKeys() {
-			if (checkers.length == 0) return new Key[0];
-			else if (checkers.length == 1) return checkers[0].keysToCheck;
-			else {
+			if (checkers.length == 0) {
+				return new Key[0];
+			} else if (checkers.length == 1) {
+				return checkers[0].keysToCheck;
+			} else {
 				int x = 0;
 				for (USKWatchingKeys.KeyList.StoreSubChecker checker : checkers) {
 					x += checker.keysToCheck.length;
@@ -1422,7 +1590,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				HashSet<Key> check = new HashSet<Key>();
 				for (USKWatchingKeys.KeyList.StoreSubChecker checker : checkers) {
 					for (Key k : checker.keysToCheck) {
-						if (!check.add(k)) continue;
+						if (!check.add(k)) {
+							continue;
+						}
 						keys[ptr++] = k;
 					}
 				}
@@ -1445,10 +1615,14 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		synchronized (this) {
 			// Do not run a new one until this one has finished.
 			// StoreCheckerGetter itself will automatically call back to fillKeysWatching so there is no chance of losing it.
-			if (runningStoreChecker != null) return true;
+			if (runningStoreChecker != null) {
+				return true;
+			}
 			final USKStoreChecker checker = watchingKeys.getDatastoreChecker(ed);
 			if (checker == null) {
-				if (logMINOR) Logger.minor(this, "No datastore checker");
+				if (logMINOR) {
+					Logger.minor(this, "No datastore checker");
+				}
 				return false;
 			}
 
@@ -1467,7 +1641,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				// Ignore, hopefully it's already unregistered
 			}
 		}
-		if (logMINOR) Logger.minor(this, "Registered " + runningStoreChecker + " for " + this);
+		if (logMINOR) {
+			Logger.minor(this, "Registered " + runningStoreChecker + " for " + this);
+		}
 		return true;
 	}
 
@@ -1518,12 +1694,15 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				attempts = attemptsToStart.toArray(new USKAttempt[attemptsToStart.size()]);
 				attemptsToStart.clear();
 				done = true;
-				if (cancelled) return true;
+				if (cancelled) {
+					return true;
+				}
 			}
 			checker.checked();
 
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Checked datastore, finishing registration for " + attempts.length + " checkers for " + USKFetcher.this + " for " + origUSK);
+			}
 			if (attempts.length > 0) {
 				parent.toNetwork(context);
 				notifySendingToNetwork(context);
@@ -1532,13 +1711,16 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				long lastEd = uskManager.lookupLatestSlot(origUSK);
 				synchronized (USKFetcher.this) {
 					// FIXME not sure this condition works, test it!
-					if (keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition)
+					if (keepLastData && lastRequestData == null && lastEd == origUSK.suggestedEdition) {
 						lastEd--; // If we want the data, then get it for the known edition, so we always get the data, so USKInserter can compare it and return the old edition if it is identical.
+					}
 				}
-				if (attempt == null) continue;
-				if (attempt.number > lastEd)
+				if (attempt == null) {
+					continue;
+				}
+				if (attempt.number > lastEd) {
 					attempt.schedule(context);
-				else {
+				} else {
 					synchronized (USKFetcher.this) {
 						runningAttempts.remove(attempt.number);
 						pollingAttempts.remove(attempt.number);
@@ -1549,8 +1731,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			// Do not check beyond WATCH_KEYS after the current slot.
 			if (!fillKeysWatching(lastEd, context)) {
 				if (checkStoreOnly) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Just checking store, terminating " + USKFetcher.this + " ...");
+					}
 					synchronized (this) {
 						if (!dbrAttempts.isEmpty()) {
 							USKFetcher.this.scheduleAfterDBRsDone = true;
@@ -1634,13 +1817,18 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public short definitelyWantKey(Key key, byte[] saltedKey, ClientContext context) {
-		if (!(key instanceof NodeSSK)) return -1;
-		NodeSSK k = (NodeSSK) key;
-		if (!origUSK.samePubKeyHash(k))
+		if (!(key instanceof NodeSSK)) {
 			return -1;
+		}
+		NodeSSK k = (NodeSSK) key;
+		if (!origUSK.samePubKeyHash(k)) {
+			return -1;
+		}
 		long lastSlot = uskManager.lookupLatestSlot(origUSK) + 1;
 		synchronized (this) {
-			if (watchingKeys.match(k, lastSlot) != -1) return progressPollPriority;
+			if (watchingKeys.match(k, lastSlot) != -1) {
+				return progressPollPriority;
+			}
 		}
 		return -1;
 	}
@@ -1662,11 +1850,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public boolean handleBlock(Key key, byte[] saltedKey, KeyBlock found, ClientContext context) {
-		if (!(found instanceof SSKBlock)) return false;
+		if (!(found instanceof SSKBlock)) {
+			return false;
+		}
 		long lastSlot = uskManager.lookupLatestSlot(origUSK) + 1;
 		long edition = watchingKeys.match((NodeSSK) key, lastSlot);
-		if (edition == -1) return false;
-		if (logMINOR) Logger.minor(this, "Matched edition " + edition + " for " + origUSK);
+		if (edition == -1) {
+			return false;
+		}
+		if (logMINOR) {
+			Logger.minor(this, "Matched edition " + edition + " for " + origUSK);
+		}
 
 		ClientSSKBlock data;
 		try {
@@ -1705,10 +1899,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 
 	@Override
 	public boolean probablyWantKey(Key key, byte[] saltedKey) {
-		if (!(key instanceof NodeSSK)) return false;
-		NodeSSK k = (NodeSSK) key;
-		if (!origUSK.samePubKeyHash(k))
+		if (!(key instanceof NodeSSK)) {
 			return false;
+		}
+		NodeSSK k = (NodeSSK) key;
+		if (!origUSK.samePubKeyHash(k)) {
+			return false;
+		}
 		long lastSlot = uskManager.lookupLatestSlot(origUSK) + 1;
 		synchronized (this) {
 			return watchingKeys.match(k, lastSlot) != -1;
@@ -1758,11 +1955,14 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		public USKWatchingKeys(USK origUSK, long lookedUp) {
 			this.pubKeyHash = origUSK.getPubKeyHash();
 			this.cryptoAlgorithm = origUSK.cryptoAlgorithm;
-			if (logMINOR) Logger.minor(this, "Creating KeyList from last known good: " + lookedUp);
+			if (logMINOR) {
+				Logger.minor(this, "Creating KeyList from last known good: " + lookedUp);
+			}
 			fromLastKnownSlot = new KeyList(lookedUp);
 			fromSubscribers = new TreeMap<Long, KeyList>();
-			if (origUSK.suggestedEdition > lookedUp)
+			if (origUSK.suggestedEdition > lookedUp) {
 				fromSubscribers.put(origUSK.suggestedEdition, new KeyList(origUSK.suggestedEdition));
+			}
 		}
 
 		class ToFetch {
@@ -1787,8 +1987,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		 */
 		public synchronized ToFetch getEditionsToFetch(long lookedUp, Random random, List<Lookup> alreadyRunning, boolean doRandom) {
 
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Get editions to fetch, latest slot is " + lookedUp + " running is " + alreadyRunning);
+			}
 
 			List<Lookup> toFetch = new ArrayList<Lookup>();
 			List<Lookup> toPoll = new ArrayList<Lookup>();
@@ -1796,8 +1997,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			boolean probeFromLastKnownGood =
 					lookedUp > -1 || (backgroundPoll && !firstLoop) || fromSubscribers.isEmpty();
 
-			if (probeFromLastKnownGood)
+			if (probeFromLastKnownGood) {
 				fromLastKnownSlot.getNextEditions(toFetch, toPoll, lookedUp, alreadyRunning, random);
+			}
 
 			// If we have moved past the origUSK, then clear the KeyList for it.
 			for (Iterator<Entry<Long, KeyList>> it = fromSubscribers.entrySet().iterator(); it.hasNext(); ) {
@@ -1819,13 +2021,16 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				// But how many???
 				int runningRandom = 0;
 				for (Lookup l : alreadyRunning) {
-					if (toFetch.contains(l) || toPoll.contains(l)) continue;
+					if (toFetch.contains(l) || toPoll.contains(l)) {
+						continue;
+					}
 					runningRandom++;
 				}
 
 				int allowedRandom = 1 + fromSubscribers.size();
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Running random requests: " + runningRandom + " total allowed: " + allowedRandom + " looked up is " + lookedUp + " for " + USKFetcher.this);
+				}
 
 				allowedRandom -= runningRandom;
 
@@ -1849,9 +2054,13 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			Arrays.sort(hints);
 			long prev = -1;
 			for (Long hint : hints) {
-				if (hint == prev) continue;
+				if (hint == prev) {
+					continue;
+				}
 				prev = hint;
-				if (hint <= lookedUp) continue;
+				if (hint <= lookedUp) {
+					continue;
+				}
 				surviving.add(hint);
 			}
 			for (Iterator<Long> i = persistentHints.iterator(); i.hasNext(); ) {
@@ -1859,26 +2068,39 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				if (hint <= lookedUp) {
 					i.remove();
 				}
-				if (surviving.contains(hint)) continue;
+				if (surviving.contains(hint)) {
+					continue;
+				}
 				surviving.add(hint);
 			}
-			if (origUSK.suggestedEdition > lookedUp && !surviving.contains(origUSK.suggestedEdition))
+			if (origUSK.suggestedEdition > lookedUp && !surviving.contains(origUSK.suggestedEdition)) {
 				surviving.add(origUSK.suggestedEdition);
+			}
 			for (Iterator<Long> it = fromSubscribers.keySet().iterator(); it.hasNext(); ) {
 				Long l = it.next();
-				if (surviving.contains(l)) continue;
+				if (surviving.contains(l)) {
+					continue;
+				}
 				it.remove();
 			}
 			for (Long l : surviving) {
-				if (fromSubscribers.containsKey(l)) continue;
+				if (fromSubscribers.containsKey(l)) {
+					continue;
+				}
 				fromSubscribers.put(l, new KeyList(l));
 			}
 		}
 
 		public synchronized void addHintEdition(long suggestedEdition, long lookedUp) {
-			if (suggestedEdition <= lookedUp) return;
-			if (!persistentHints.add(suggestedEdition)) return;
-			if (fromSubscribers.containsKey(suggestedEdition)) return;
+			if (suggestedEdition <= lookedUp) {
+				return;
+			}
+			if (!persistentHints.add(suggestedEdition)) {
+				return;
+			}
+			if (fromSubscribers.containsKey(suggestedEdition)) {
+				return;
+			}
 			fromSubscribers.put(suggestedEdition, new KeyList(suggestedEdition));
 		}
 
@@ -1910,8 +2132,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			private long checkedDatastoreTo = -1;
 
 			public KeyList(long slot) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Creating KeyList from " + slot + " on " + USKFetcher.this + " " + this, new Exception("debug"));
+				}
 				firstSlot = slot;
 				RemoveRangeArrayList<byte[]> ehDocnames = new RemoveRangeArrayList<byte[]>(WATCH_KEYS);
 				cache = new WeakReference<RemoveRangeArrayList<byte[]>>(ehDocnames);
@@ -1929,8 +2152,12 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			 * @param random
 			 */
 			public synchronized void getNextEditions(List<Lookup> toFetch, List<Lookup> toPoll, long lookedUp, List<Lookup> alreadyRunning, Random random) {
-				if (logMINOR) Logger.minor(this, "Getting next editions from " + lookedUp);
-				if (lookedUp < 0) lookedUp = 0;
+				if (logMINOR) {
+					Logger.minor(this, "Getting next editions from " + lookedUp);
+				}
+				if (lookedUp < 0) {
+					lookedUp = 0;
+				}
 				boolean poll = backgroundPoll;
 				for (int i = 1; i <= origMinFailures; i++) {
 					long ed = i + lookedUp;
@@ -1953,11 +2180,15 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				Lookup l = new Lookup();
 				l.val = ed;
 				if (lookupList.contains(l)) {
-					if (logDEBUG) Logger.debug(this, "Ignoring " + l);
+					if (logDEBUG) {
+						Logger.debug(this, "Ignoring " + l);
+					}
 					return false;
 				}
 				if (alreadyRunning.remove(l)) {
-					if (logDEBUG) Logger.debug(this, "Ignoring (2): " + l);
+					if (logDEBUG) {
+						Logger.debug(this, "Ignoring (2): " + l);
+					}
 					return false;
 				}
 				ClientSSK key;
@@ -1967,7 +2198,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				l.key = key;
 				l.ignoreStore = ignoreStore;
 				if (lookupList.contains(l)) {
-					if (logDEBUG) Logger.debug(this, "Ignoring (3): " + l);
+					if (logDEBUG) {
+						Logger.debug(this, "Ignoring (3): " + l);
+					}
 					return false;
 				}
 				return lookupList.add(l);
@@ -1982,9 +2215,12 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 						// 20% chance of mean 100, 80% chance of mean 10. Thanks evanbd.
 						int mean = random.nextInt(5) == 0 ? 100 : 10;
 						long fetch = baseEdition + (long) Math.floor(Math.log(random.nextFloat()) / Math.log(1.0 - 1.0 / mean));
-						if (fetch < baseEdition) continue;
-						if (logMINOR)
+						if (fetch < baseEdition) {
+							continue;
+						}
+						if (logMINOR) {
 							Logger.minor(this, "Trying random future edition " + fetch + " for " + origUSK + " current edition " + lookedUp);
+						}
 						if (getEditionIfNotAlreadyRunning(toFetch, alreadyRunning, fetch, !(fetch - lookedUp >= WATCH_KEYS))) {
 							break;
 						}
@@ -2011,8 +2247,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 					this.keysToCheck = keysToCheck;
 					this.checkedFrom = checkFrom;
 					this.checkedTo = checkTo;
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Checking datastore from " + checkFrom + " to " + checkTo + " for " + USKFetcher.this + " on " + this);
+					}
 				}
 
 				/**
@@ -2027,8 +2264,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 							checkedDatastoreFrom = checkedFrom;
 							checkedDatastoreTo = checkedTo;
 						}
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Checked from " + checkedFrom + " to " + checkedTo + " (now overall is " + checkedDatastoreFrom + " to " + checkedDatastoreTo + ") for " + USKFetcher.this + " for " + origUSK);
+						}
 					}
 
 				}
@@ -2040,13 +2278,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			 * Re-use the cache if possible, and extend it if necessary; all we need to construct a NodeSSK is the base data and the E(H(docname)), and we have that.
 			 */
 			public synchronized StoreSubChecker checkStore(long lastSlot) {
-				if (logDEBUG) Logger.minor(this, "check store from " + lastSlot + " current first slot " + firstSlot);
+				if (logDEBUG) {
+					Logger.minor(this, "check store from " + lastSlot + " current first slot " + firstSlot);
+				}
 				long checkFrom = lastSlot;
 				long checkTo = lastSlot + WATCH_KEYS;
 				if (checkedDatastoreTo >= checkFrom) {
 					checkFrom = checkedDatastoreTo;
 				}
-				if (checkFrom >= checkTo) return null; // Nothing to check.
+				if (checkFrom >= checkTo) {
+					return null; // Nothing to check.
+				}
 				// Update the cache.
 				RemoveRangeArrayList<byte[]> ehDocnames = updateCache(lastSlot);
 				// Now create NodeSSK[] from the part of the cache that
@@ -2061,14 +2303,17 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			}
 
 			synchronized RemoveRangeArrayList<byte[]> updateCache(long curBaseEdition) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "update cache from " + curBaseEdition + " current first slot " + firstSlot);
+				}
 				RemoveRangeArrayList<byte[]> ehDocnames = null;
 				if (cache == null || (ehDocnames = cache.get()) == null) {
 					ehDocnames = new RemoveRangeArrayList<byte[]>(WATCH_KEYS);
 					cache = new WeakReference<RemoveRangeArrayList<byte[]>>(ehDocnames);
 					firstSlot = curBaseEdition;
-					if (logMINOR) Logger.minor(this, "Regenerating because lost cached keys");
+					if (logMINOR) {
+						Logger.minor(this, "Regenerating because lost cached keys");
+					}
 					generate(firstSlot, WATCH_KEYS, ehDocnames);
 					return ehDocnames;
 				}
@@ -2087,7 +2332,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			 * @return The edition number for the key, or -1 if the key is not a match.
 			 */
 			public synchronized long match(NodeSSK key, long curBaseEdition) {
-				if (logDEBUG) Logger.minor(this, "match from " + curBaseEdition + " current first slot " + firstSlot);
+				if (logDEBUG) {
+					Logger.minor(this, "match from " + curBaseEdition + " current first slot " + firstSlot);
+				}
 				RemoveRangeArrayList<byte[]> ehDocnames = null;
 				if (cache == null || (ehDocnames = cache.get()) == null) {
 					ehDocnames = new RemoveRangeArrayList<byte[]>(WATCH_KEYS);
@@ -2098,7 +2345,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				}
 				// Might as well check first.
 				long x = innerMatch(key, ehDocnames, 0, ehDocnames.size(), firstSlot);
-				if (x != -1) return x;
+				if (x != -1) {
+					return x;
+				}
 				return match(key, curBaseEdition, ehDocnames);
 			}
 
@@ -2110,8 +2359,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			 *                       update ehDocnames.
 			 */
 			private long match(NodeSSK key, long curBaseEdition, RemoveRangeArrayList<byte[]> ehDocnames) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Matching " + key + " cur base edition " + curBaseEdition + " first slot was " + firstSlot + " for " + origUSK + " on " + this);
+				}
 				if (firstSlot < curBaseEdition) {
 					if (firstSlot + ehDocnames.size() <= curBaseEdition) {
 						// No overlap. Clear it and start again.
@@ -2134,8 +2384,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				} else if (firstSlot > curBaseEdition) {
 					// Normal due to race conditions. We don't always report the new edition to the USKManager immediately.
 					// So ignore it.
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Ignoring regression in match() from " + curBaseEdition + " to " + firstSlot);
+					}
 					return key == null ? -1 : innerMatch(key, ehDocnames, 0, ehDocnames.size(), firstSlot);
 				}
 				return -1;
@@ -2148,7 +2399,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 				byte[] data = key.getKeyBytes();
 				for (int i = offset; i < (offset + size); i++) {
 					if (Arrays.equals(data, ehDocnames.get(i))) {
-						if (logMINOR) Logger.minor(this, "Found edition " + (firstSlot + i) + " for " + origUSK);
+						if (logMINOR) {
+							Logger.minor(this, "Found edition " + (firstSlot + i) + " for " + origUSK);
+						}
 						return firstSlot + i;
 					}
 				}
@@ -2162,7 +2415,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 			 * @param keys        The number of keys to add.
 			 */
 			private void generate(long baseEdition, int keys, RemoveRangeArrayList<byte[]> ehDocnames) {
-				if (logMINOR) Logger.minor(this, "generate() from " + baseEdition + " for " + origUSK);
+				if (logMINOR) {
+					Logger.minor(this, "generate() from " + baseEdition + " for " + origUSK);
+				}
 				assert (baseEdition >= 0);
 				for (int i = 0; i < keys; i++) {
 					long ed = baseEdition + i;
@@ -2175,23 +2430,31 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		public synchronized USKStoreChecker getDatastoreChecker(long lastSlot) {
 			// Check WATCH_KEYS from last known good slot.
 			// FIXME: Take into account origUSK, subscribers, etc.
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Getting datastore checker from " + lastSlot + " for " + origUSK + " on " + USKFetcher.this, new Exception("debug"));
+			}
 			List<KeyList.StoreSubChecker> checkers = new ArrayList<KeyList.StoreSubChecker>();
 			KeyList.StoreSubChecker c = fromLastKnownSlot.checkStore(lastSlot + 1);
-			if (c != null) checkers.add(c);
+			if (c != null) {
+				checkers.add(c);
+			}
 			// If we have moved past the origUSK, then clear the KeyList for it.
 			for (Iterator<Entry<Long, KeyList>> it = fromSubscribers.entrySet().iterator(); it.hasNext(); ) {
 				Entry<Long, KeyList> entry = it.next();
 				long l = entry.getKey();
-				if (l <= lastSlot)
+				if (l <= lastSlot) {
 					it.remove();
+				}
 				c = entry.getValue().checkStore(l);
-				if (c != null) checkers.add(c);
+				if (c != null) {
+					checkers.add(c);
+				}
 			}
-			if (checkers.size() > 0)
+			if (checkers.size() > 0) {
 				return new USKStoreChecker(checkers);
-			else return null;
+			} else {
+				return null;
+			}
 		}
 
 		public ClientSSKBlock decode(SSKBlock block, long edition) throws SSKVerifyException {
@@ -2201,17 +2464,24 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		}
 
 		public synchronized long match(NodeSSK key, long lastSlot) {
-			if (logMINOR) Logger.minor(this, "Trying to match " + key + " from slot " + lastSlot + " for " + origUSK);
+			if (logMINOR) {
+				Logger.minor(this, "Trying to match " + key + " from slot " + lastSlot + " for " + origUSK);
+			}
 			long ret = fromLastKnownSlot.match(key, lastSlot);
-			if (ret != -1) return ret;
+			if (ret != -1) {
+				return ret;
+			}
 
 			for (Iterator<Entry<Long, KeyList>> it = fromSubscribers.entrySet().iterator(); it.hasNext(); ) {
 				Entry<Long, KeyList> entry = it.next();
 				long l = entry.getKey();
-				if (l <= lastSlot)
+				if (l <= lastSlot) {
 					it.remove();
+				}
 				ret = entry.getValue().match(key, l);
-				if (ret != -1) return ret;
+				if (ret != -1) {
+					return ret;
+				}
 			}
 			return -1;
 		}
@@ -2231,7 +2501,9 @@ public class USKFetcher implements ClientGetState, USKCallback, HasKeyListener, 
 		public boolean equals(Object o) {
 			if (o instanceof Lookup) {
 				return ((Lookup) o).val == val;
-			} else return false;
+			} else {
+				return false;
+			}
 		}
 
 		@Override

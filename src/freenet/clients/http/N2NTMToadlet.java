@@ -42,8 +42,9 @@ public class N2NTMToadlet extends Toadlet {
 			throws ToadletContextClosedException, IOException,
 			RedirectException {
 
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		if (request.isParameterSet("peernode_hashcode")) {
 			PageNode page = ctx.getPageMaker().getPageNode(l10n("sendMessage"), ctx);
@@ -103,7 +104,9 @@ public class N2NTMToadlet extends Toadlet {
 	 */
 	private static long maxSize() {
 		long memory = NodeStarter.getMemoryLimitBytes();
-		if (memory == Long.MAX_VALUE || memory <= 0) return 1024 * 1024;
+		if (memory == Long.MAX_VALUE || memory <= 0) {
+			return 1024 * 1024;
+		}
 		long maxMem = Math.round(0.05 * memory);
 		long limit = Math.max(maxMem, 1024 * 1024);
 		return limit;
@@ -127,8 +130,9 @@ public class N2NTMToadlet extends Toadlet {
 			throws ToadletContextClosedException, IOException,
 			RedirectException {
 
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		//Browse button clicked. Redirect.
 		if (request.isPartSet("n2nm-browse")) {

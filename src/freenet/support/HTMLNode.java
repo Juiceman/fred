@@ -177,10 +177,11 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		children.addAll(node.children);
 		content = node.content;
 		name = node.name;
-		if (clearReadOnly)
+		if (clearReadOnly) {
 			readOnly = false;
-		else
+		} else {
 			readOnly = node.readOnly;
+		}
 	}
 
 	@Override
@@ -192,7 +193,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 
 	protected boolean checkNamePattern(String str) {
 		// Workaround buggy java regexes, also probably slightly faster.
-		if (str.length() < 1) return false;
+		if (str.length() < 1) {
+			return false;
+		}
 		char c;
 		c = str.charAt(0);
 		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
@@ -204,7 +207,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 					break;
 				}
 			}
-			if (simpleMatch) return true;
+			if (simpleMatch) {
+				return true;
+			}
 		}
 		// Regex-based match. Probably more expensive, and problems (infinite recursion in Pattern$6.isSatisfiedBy) have been seen in practice.
 		// Oddly these problems were seen where the answer is almost certainly in the first matcher, because the tag name was "html"...
@@ -231,8 +236,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 		if (content != null && !("#").equals(name) && !("%").equals(name)) {
 			addChild(new HTMLNode("#", content));
 			this.content = null;
-		} else
+		} else {
 			this.content = content;
+		}
 	}
 
 	/**
@@ -243,12 +249,15 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	}
 
 	public void addAttribute(String attributeName, String attributeValue) {
-		if (readOnly)
+		if (readOnly) {
 			throw new IllegalArgumentException("Read only");
-		if (attributeName == null)
+		}
+		if (attributeName == null) {
 			throw new IllegalArgumentException("Cannot add an attribute with a null name");
-		if (attributeValue == null)
+		}
+		if (attributeValue == null) {
 			throw new IllegalArgumentException("Cannot add an attribute with a null value");
+		}
 		attributes.put(attributeName, attributeValue);
 	}
 
@@ -261,16 +270,21 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	}
 
 	public HTMLNode addChild(HTMLNode childNode) {
-		if (readOnly)
+		if (readOnly) {
 			throw new IllegalArgumentException("Read only");
-		if (childNode == null) throw new NullPointerException();
+		}
+		if (childNode == null) {
+			throw new NullPointerException();
+		}
 		//since an efficient algorithm to check the loop presence 
 		//is not present, at least it checks if we are trying to
 		//addChild the node itself as a child
-		if (childNode == this)
+		if (childNode == this) {
 			throw new IllegalArgumentException("A HTMLNode cannot be child of himself");
-		if (children.contains(childNode))
+		}
+		if (children.contains(childNode)) {
 			throw new IllegalArgumentException("Cannot add twice the same HTMLNode as child");
+		}
 		children.add(childNode);
 		return childNode;
 	}
@@ -280,8 +294,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	}
 
 	public void addChildren(List<HTMLNode> childNodes) {
-		if (readOnly)
+		if (readOnly) {
 			throw new IllegalArgumentException("Read only");
+		}
 		for (HTMLNode childNode : childNodes) {
 			addChild(childNode);
 		}
@@ -471,8 +486,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	}
 
 	public void setContent(String newContent) {
-		if (readOnly)
+		if (readOnly) {
 			throw new IllegalArgumentException("Read only");
+		}
 		content = newContent;
 	}
 
@@ -539,8 +555,9 @@ public class HTMLNode implements XMLCharacterClasses, Cloneable {
 	}
 
 	public void removeChildren() {
-		if (readOnly)
+		if (readOnly) {
 			throw new IllegalArgumentException("Read only");
+		}
 		children.clear();
 	}
 }

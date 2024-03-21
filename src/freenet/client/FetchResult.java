@@ -23,7 +23,9 @@ public class FetchResult {
 	final Bucket data;
 
 	public FetchResult(ClientMetadata dm, Bucket fetched) {
-		if (dm == null) throw new IllegalArgumentException();
+		if (dm == null) {
+			throw new IllegalArgumentException();
+		}
 		assert (fetched != null);
 		metadata = dm;
 		data = fetched;

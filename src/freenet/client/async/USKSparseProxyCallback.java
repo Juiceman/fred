@@ -33,7 +33,9 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 		lastEdition = -1; // So we see the first one even if it's 0
 		lastSent = -1;
 		this.key = key;
-		if (logMINOR) Logger.minor(this, "Creating sparse proxy callback " + this + " for " + cb + " for " + key);
+		if (logMINOR) {
+			Logger.minor(this, "Creating sparse proxy callback " + this + " for " + cb + " for " + key);
+		}
 	}
 
 	@Override
@@ -42,10 +44,16 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 							   boolean newKnownGood, boolean newSlotToo) {
 		synchronized (this) {
 			if (l < lastEdition) {
-				if (!roundFinished) return;
-				if (!newKnownGood) return;
+				if (!roundFinished) {
+					return;
+				}
+				if (!newKnownGood) {
+					return;
+				}
 			} else if (l == lastEdition) {
-				if (newKnownGood) lastWasKnownGoodToo = true;
+				if (newKnownGood) {
+					lastWasKnownGoodToo = true;
+				}
 			} else {
 				lastEdition = l;
 				lastMetadata = metadata;
@@ -53,7 +61,9 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 				lastData = data;
 				lastWasKnownGoodToo = newKnownGood;
 			}
-			if (!roundFinished) return;
+			if (!roundFinished) {
+				return;
+			}
 		}
 		target.onFoundEdition(l, key, context, metadata, codec, data, newKnownGood, newSlotToo);
 	}
@@ -85,9 +95,12 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 		byte[] data;
 		boolean wasKnownGood;
 		synchronized (this) {
-			if (finishedRound)
+			if (finishedRound) {
 				roundFinished = true;
-			if (lastSent == lastEdition) return;
+			}
+			if (lastSent == lastEdition) {
+				return;
+			}
 			lastSent = ed = lastEdition;
 			meta = lastMetadata;
 			codec = lastCodec;
@@ -96,13 +109,17 @@ public class USKSparseProxyCallback implements USKProgressCallback {
 		}
 		if (ed == -1) {
 			ed = context.uskManager.lookupLatestSlot(key);
-			if (ed == -1) return;
+			if (ed == -1) {
+				return;
+			}
 			meta = false;
 			codec = -1;
 			data = null;
 			wasKnownGood = false;
 		}
-		if (ed == -1) return;
+		if (ed == -1) {
+			return;
+		}
 		target.onFoundEdition(ed, key, context, meta, codec, data, wasKnownGood, wasKnownGood);
 	}
 

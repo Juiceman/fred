@@ -53,11 +53,15 @@ public class PutWaiter implements ClientPutCallback {
 
 	@Override
 	public synchronized void onGeneratedURI(FreenetURI uri, BaseClientPutter state) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "URI: " + uri);
-		if (this.uri == null)
+		}
+		if (this.uri == null) {
 			this.uri = uri;
-		if (uri.equals(this.uri)) return;
+		}
+		if (uri.equals(this.uri)) {
+			return;
+		}
 		Logger.error(this, "URI already set: " + this.uri + " but new URI: " + uri, new Exception("error"));
 	}
 
@@ -76,7 +80,9 @@ public class PutWaiter implements ClientPutCallback {
 			error.uri = uri;
 			throw error;
 		}
-		if (succeeded) return uri;
+		if (succeeded) {
+			return uri;
+		}
 		Logger.error(this, "Did not succeed but no error");
 		throw new InsertException(InsertExceptionMode.INTERNAL_ERROR, "Did not succeed but no error", uri);
 	}

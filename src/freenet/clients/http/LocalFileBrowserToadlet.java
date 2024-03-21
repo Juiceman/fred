@@ -275,8 +275,11 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 
 		if (filename != null) {
 			File file = new File(filename);
-			if (file.isDirectory()) lastSuccessful = file.getAbsoluteFile();
-			else lastSuccessful = file.getParentFile().getAbsoluteFile();
+			if (file.isDirectory()) {
+				lastSuccessful = file.getAbsoluteFile();
+			} else {
+				lastSuccessful = file.getParentFile().getAbsoluteFile();
+			}
 
 			try {
 				throw new RedirectException(postTo());
@@ -316,7 +319,9 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 					currentPath.getAbsolutePath()), ctx);
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
-			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
+			if (ctx.isAllowedFullAccess()) {
+				contentNode.addChild(ctx.getAlertManager().createSummary());
+			}
 
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path",
@@ -432,7 +437,9 @@ public abstract class LocalFileBrowserToadlet extends Toadlet {
 			PageNode page = pageMaker.getPageNode(l10n("listingTitle", "path", attemptedPath), ctx);
 			pageNode = page.outer;
 			HTMLNode contentNode = page.content;
-			if (ctx.isAllowedFullAccess()) contentNode.addChild(ctx.getAlertManager().createSummary());
+			if (ctx.isAllowedFullAccess()) {
+				contentNode.addChild(ctx.getAlertManager().createSummary());
+			}
 
 			HTMLNode infoboxDiv = contentNode.addChild("div", "class", "infobox");
 			infoboxDiv.addChild("div", "class", "infobox-header", l10n("listing", "path", attemptedPath));

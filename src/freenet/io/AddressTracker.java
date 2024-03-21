@@ -96,12 +96,13 @@ public class AddressTracker {
 			Logger.warning(AddressTracker.class, "Failed to load from disk for port " + port + ": " + e, e);
 			// Fall through
 		} finally {
-			if (fis != null)
+			if (fis != null) {
 				try {
 					fis.close();
 				} catch (IOException e) {
 					// Ignore
 				}
+			}
 		}
 		return new AddressTracker();
 	}
@@ -117,12 +118,14 @@ public class AddressTracker {
 
 	private AddressTracker(SimpleFieldSet fs, long lastBootID) throws FSParseException {
 		int version = fs.getInt("Version");
-		if (version != 2)
+		if (version != 2) {
 			throw new FSParseException("Unknown Version " + version);
+		}
 		long savedBootID = fs.getLong("BootID");
-		if (savedBootID != lastBootID)
+		if (savedBootID != lastBootID) {
 			throw new FSParseException("Unable to load address tracker table, assuming an unclean shutdown: Last ID was " +
 					lastBootID + " but stored " + savedBootID);
+		}
 		// Sadly we don't know whether there were packets arriving during the gap,
 		// and some insecure firewalls will use incoming packets to keep tunnels open
 		//timeDefinitelyNoPacketsReceived = fs.getLong("TimeDefinitelyNoPacketsReceived");
@@ -187,10 +190,11 @@ public class AddressTracker {
 				}
 				peerTrackers.put(peer, peerItem);
 			}
-			if (sent)
+			if (sent) {
 				peerItem.sentPacket(now);
-			else
+			} else {
 				peerItem.receivedPacket(now);
+			}
 			InetAddressAddressTrackerItem ipItem = ipTrackers.get(ip);
 			if (ipItem == null) {
 				ipItem = new InetAddressAddressTrackerItem(timeDefinitelyNoPacketsReceivedIP, timeDefinitelyNoPacketsSentIP, ip);
@@ -203,10 +207,11 @@ public class AddressTracker {
 				}
 				ipTrackers.put(ip, ipItem);
 			}
-			if (sent)
+			if (sent) {
 				ipItem.sentPacket(now);
-			else
+			} else {
 				ipItem.receivedPacket(now);
+			}
 		}
 	}
 
@@ -270,8 +275,12 @@ public class AddressTracker {
 		long now = System.currentTimeMillis();
 		PeerAddressTrackerItem[] items = getPeerAddressTrackerItems();
 		for (PeerAddressTrackerItem item : items) {
-			if (item.packetsReceived() <= 0) continue;
-			if (!item.peer.isRealInternetAddress(false, false, false)) continue;
+			if (item.packetsReceived() <= 0) {
+				continue;
+			}
+			if (!item.peer.isRealInternetAddress(false, false, false)) {
+				continue;
+			}
 			longestGap = Math.max(longestGap, item.longestGap(horizon, now));
 		}
 		return longestGap;
@@ -281,16 +290,21 @@ public class AddressTracker {
 	public Status getPortForwardStatus() {
 		long minGap = getLongestSendReceiveGap(HORIZON);
 
-		if (minGap > DEFINITELY_TUNNEL_LENGTH)
+		if (minGap > DEFINITELY_TUNNEL_LENGTH) {
 			return Status.DEFINITELY_PORT_FORWARDED;
-		if (minGap > MAYBE_TUNNEL_LENGTH)
+		}
+		if (minGap > MAYBE_TUNNEL_LENGTH) {
 			return Status.MAYBE_PORT_FORWARDED;
+		}
 		// Only take isBroken into account if we're not sure.
 		// Somebody could be playing with us by sending bogus FNPSentPackets...
 		synchronized (this) {
-			if (isBroken()) return Status.DEFINITELY_NATED;
-			if (minGap == 0 && timePresumeGuilty > 0 && System.currentTimeMillis() > timePresumeGuilty)
+			if (isBroken()) {
+				return Status.DEFINITELY_NATED;
+			}
+			if (minGap == 0 && timePresumeGuilty > 0 && System.currentTimeMillis() > timePresumeGuilty) {
 				return Status.MAYBE_NATED;
+			}
 		}
 		return Status.DONT_KNOW;
 	}
@@ -308,7 +322,9 @@ public class AddressTracker {
 	 */
 	public void storeData(long bootID, ProgramDirectory runDir, int port) {
 		// Don't write to disk if we know we're NATed anyway!
-		if (isBroken()) return;
+		if (isBroken()) {
+			return;
+		}
 		File data = runDir.file("packets-" + port + ".dat");
 		File dataBak = runDir.file("packets-" + port + ".bak");
 		dataBak.delete();
@@ -328,12 +344,13 @@ public class AddressTracker {
 			Logger.error(this, "Cannot store packet tracker to disk");
 			return;
 		} finally {
-			if (fos != null)
+			if (fos != null) {
 				try {
 					fos.close();
 				} catch (IOException e) {
 					// Ignore
 				}
+			}
 		}
 	}
 
@@ -376,8 +393,9 @@ public class AddressTracker {
 	private long timePresumeGuilty = -1;
 
 	public synchronized void setPresumedGuiltyAt(long l) {
-		if (timePresumeGuilty <= 0)
+		if (timePresumeGuilty <= 0) {
 			timePresumeGuilty = l;
+		}
 	}
 
 	public synchronized void setPresumedInnocent() {

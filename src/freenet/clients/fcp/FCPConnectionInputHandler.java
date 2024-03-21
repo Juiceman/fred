@@ -38,8 +38,9 @@ public class FCPConnectionInputHandler implements Runnable {
 	}
 
 	void start() {
-		if (handler.getSocket() == null)
+		if (handler.getSocket() == null) {
 			return;
+		}
 		handler.getServer().getNode().getExecutor().execute(this, "FCP input handler for " + handler.getSocket().getRemoteSocketAddress());
 	}
 
@@ -51,8 +52,9 @@ public class FCPConnectionInputHandler implements Runnable {
 		} catch (TooLongException e) {
 			Logger.normal(this, "Caught " + e.getMessage(), e);
 		} catch (IOException e) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Caught " + e, e);
+			}
 		} catch (Throwable t) {
 			Logger.error(this, "Caught " + t, t);
 			t.printStackTrace();
@@ -81,8 +83,9 @@ public class FCPConnectionInputHandler implements Runnable {
 				Closer.close(is);
 				return;
 			}
-			if (messageType.isEmpty())
+			if (messageType.isEmpty()) {
 				continue;
+			}
 			fs = new SimpleFieldSet(lis, 4096, 128, true, true, true);
 
 			// check for valid endmarker
@@ -94,10 +97,13 @@ public class FCPConnectionInputHandler implements Runnable {
 
 			FCPMessage msg;
 			try {
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(this, "Incoming FCP message:\n" + messageType + '\n' + fs.toString());
+				}
 				msg = FCPMessage.create(messageType, fs, handler.bf, handler.getServer().getCore().getPersistentTempBucketFactory());
-				if (msg == null) continue;
+				if (msg == null) {
+					continue;
+				}
 			} catch (MessageInvalidException e) {
 				if (firstMessage) {
 					FCPMessage err = new ProtocolErrorMessage(ProtocolErrorMessage.CLIENT_HELLO_MUST_BE_FIRST_MESSAGE, true, null, null, false);
@@ -134,8 +140,9 @@ public class FCPConnectionInputHandler implements Runnable {
 				continue;
 			}
 			try {
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(this, "Parsed message: " + msg + " for " + handler);
+				}
 				msg.run(handler, handler.getServer().getNode());
 			} catch (MessageInvalidException e) {
 				FCPMessage err = new ProtocolErrorMessage(e.protocolCode, false, e.getMessage(), e.ident, e.global);

@@ -38,15 +38,18 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	/**
 	 * @param node
-	 * @param old If true, use the old ARK rather than the new ARK
+	 * @param old  If true, use the old ARK rather than the new ARK
 	 */
 	NodeARKInserter(Node node, NodeCrypto crypto, NodeIPPortDetector detector, boolean enableARKs) {
 		this.node = node;
 		this.crypto = crypto;
 		this.detector = detector;
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-		if (crypto.isOpennet()) darknetOpennetString = "Opennet";
-		else darknetOpennetString = "Darknet";
+		if (crypto.isOpennet()) {
+			darknetOpennetString = "Opennet";
+		} else {
+			darknetOpennetString = "Darknet";
+		}
 		this.enabled = enableARKs;
 	}
 
@@ -56,7 +59,9 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 	private boolean canStart;
 
 	void start() {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 		canStart = true;
 		innerUpdate();
 	}
@@ -76,8 +81,12 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	private void innerUpdate() {
 		logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
-		if (logMINOR) Logger.minor(this, "update()");
-		if (!checkIPUpdated()) return;
+		if (logMINOR) {
+			Logger.minor(this, "update()");
+		}
+		if (!checkIPUpdated()) {
+			return;
+		}
 		// We'll broadcast the new physical.udp entry to our connected peers via a differential node reference
 		// We'll err on the side of caution and not update our peer to an empty physical.udp entry using a differential node reference
 		SimpleFieldSet nfs = crypto.exportPublicFieldSet(false, false, true);
@@ -85,13 +94,19 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		if (entries != null) {
 			SimpleFieldSet fs = new SimpleFieldSet(true);
 			fs.putOverwrite("physical.udp", entries);
-			if (logMINOR) Logger.minor(this, darknetOpennetString + " ref's physical.udp is '" + fs.toString() + "'");
+			if (logMINOR) {
+				Logger.minor(this, darknetOpennetString + " ref's physical.udp is '" + fs.toString() + "'");
+			}
 			node.getPeers().locallyBroadcastDiffNodeRef(fs, !crypto.isOpennet(), crypto.isOpennet());
 		} else {
-			if (logMINOR) Logger.minor(this, darknetOpennetString + " ref's physical.udp is null");
+			if (logMINOR) {
+				Logger.minor(this, darknetOpennetString + " ref's physical.udp is null");
+			}
 		}
 		// Proceed with inserting the ARK
-		if (logMINOR) Logger.minor(this, "Inserting " + darknetOpennetString + " ARK because peers list changed");
+		if (logMINOR) {
+			Logger.minor(this, "Inserting " + darknetOpennetString + " ARK because peers list changed");
+		}
 
 		if (inserter != null) {
 			// Already inserting.
@@ -117,15 +132,20 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 	private boolean checkIPUpdated() {
 		Peer[] p = detector.detectPrimaryPeers();
 		if (p == null) {
-			if (logMINOR) Logger.minor(this, "Not inserting " + darknetOpennetString + " ARK because no IP address");
+			if (logMINOR) {
+				Logger.minor(this, "Not inserting " + darknetOpennetString + " ARK because no IP address");
+			}
 			return false; // no point inserting
 		}
 		synchronized (this) {
 			if (lastInsertedPeers != null) {
-				if (p.length != lastInsertedPeers.length) return true;
+				if (p.length != lastInsertedPeers.length) {
+					return true;
+				}
 				for (int i = 0; i < p.length; i++)
-					if (!p[i].strictEquals(lastInsertedPeers[i]))
+					if (!p[i].strictEquals(lastInsertedPeers[i])) {
 						return true;
+					}
 			} else {
 				// we've not inserted an ARK that we know about (ie since startup)
 				return true;
@@ -136,11 +156,15 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	private void startInserter() {
 		if (!canStart) {
-			if (logMINOR) Logger.minor(this, darknetOpennetString + " ARK inserter can't start yet");
+			if (logMINOR) {
+				Logger.minor(this, darknetOpennetString + " ARK inserter can't start yet");
+			}
 			return;
 		}
 
-		if (logMINOR) Logger.minor(this, "starting " + darknetOpennetString + " ARK inserter");
+		if (logMINOR) {
+			Logger.minor(this, "starting " + darknetOpennetString + " ARK inserter");
+		}
 
 		SimpleFieldSet fs = crypto.exportPublicFieldSet(false, false, true);
 
@@ -162,7 +186,9 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 		InsertableClientSSK ark = crypto.getMyARK();
 		FreenetURI uri = ark.getInsertURI().setKeyType("USK").setSuggestedEdition(number);
 
-		if (logMINOR) Logger.minor(this, "Inserting " + darknetOpennetString + " ARK: " + uri + "  contents:\n" + s);
+		if (logMINOR) {
+			Logger.minor(this, "Inserting " + darknetOpennetString + " ARK: " + uri + "  contents:\n" + s);
+		}
 
 		InsertContext ctx = node.getClientCore().makeClient((short) 0, true, false).getInsertContext(true);
 		inserter = new ClientPutter(this, b, uri,
@@ -175,9 +201,9 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 			node.getClientCore().getClientContext().start(inserter);
 
 			synchronized (this) {
-				if (fs.get("physical.udp") == null)
+				if (fs.get("physical.udp") == null) {
 					lastInsertedPeers = null;
-				else {
+				} else {
 					try {
 						String[] all = fs.getAll("physical.udp");
 						Peer[] peers = new Peer[all.length];
@@ -201,10 +227,14 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 	@Override
 	public void onSuccess(BaseClientPutter state) {
 		FreenetURI uri = state.getURI();
-		if (logMINOR) Logger.minor(this, darknetOpennetString + " ARK insert succeeded: " + uri);
+		if (logMINOR) {
+			Logger.minor(this, darknetOpennetString + " ARK insert succeeded: " + uri);
+		}
 		synchronized (this) {
 			inserter = null;
-			if (!shouldInsert) return;
+			if (!shouldInsert) {
+				return;
+			}
 			shouldInsert = false;
 		}
 		startInserter();
@@ -212,7 +242,9 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	@Override
 	public void onFailure(InsertException e, BaseClientPutter state) {
-		if (logMINOR) Logger.minor(this, darknetOpennetString + " ARK insert failed: " + e);
+		if (logMINOR) {
+			Logger.minor(this, darknetOpennetString + " ARK insert failed: " + e);
+		}
 		synchronized (this) {
 			lastInsertedPeers = null;
 		}
@@ -229,18 +261,22 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 
 	@Override
 	public void onGeneratedURI(FreenetURI uri, BaseClientPutter state) {
-		if (logMINOR) Logger.minor(this, "Generated URI for " + darknetOpennetString + " ARK: " + uri);
+		if (logMINOR) {
+			Logger.minor(this, "Generated URI for " + darknetOpennetString + " ARK: " + uri);
+		}
 		long l = uri.getSuggestedEdition();
 		if (l < crypto.getMyARKNumber()) {
 			Logger.error(this, "Inserted " + darknetOpennetString + " ARK edition # lower than attempted: " + l + " expected " + crypto.getMyARKNumber());
 		} else if (l > crypto.getMyARKNumber()) {
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, darknetOpennetString + " ARK number moving from " + crypto.getMyARKNumber() + " to " + l);
+			}
 			crypto.setMyARKNumber(l);
-			if (crypto.isOpennet())
+			if (crypto.isOpennet()) {
 				node.writeOpennetFile();
-			else
+			} else {
 				node.writeNodeFile();
+			}
 			// We'll broadcast the new ARK edition to our connected peers via a differential node reference
 			SimpleFieldSet fs = new SimpleFieldSet(true);
 			fs.put("ark.number", crypto.getMyARKNumber());
@@ -249,12 +285,18 @@ public class NodeARKInserter implements ClientPutCallback, RequestClient {
 	}
 
 	public void onConnectedPeer() {
-		if (!checkIPUpdated()) return;
+		if (!checkIPUpdated()) {
+			return;
+		}
 		synchronized (this) {
-			if (!shouldInsert) return;
+			if (!shouldInsert) {
+				return;
+			}
 		}
 		// Already inserting.
-		if (inserter != null) return;
+		if (inserter != null) {
+			return;
+		}
 
 		synchronized (this) {
 			shouldInsert = false;

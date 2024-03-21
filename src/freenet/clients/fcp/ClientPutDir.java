@@ -83,7 +83,9 @@ public class ClientPutDir extends ClientPutBase {
 			numberOfFiles = -1;
 			totalSize = -1;
 		}
-		if (logMINOR) Logger.minor(this, "Putting dir " + identifier + " : " + priorityClass);
+		if (logMINOR) {
+			Logger.minor(this, "Putting dir " + identifier + " : " + priorityClass);
+		}
 	}
 
 	/**
@@ -108,7 +110,9 @@ public class ClientPutDir extends ClientPutBase {
 			numberOfFiles = -1;
 			totalSize = -1;
 		}
-		if (logMINOR) Logger.minor(this, "Putting dir " + identifier + " : " + priorityClass);
+		if (logMINOR) {
+			Logger.minor(this, "Putting dir " + identifier + " : " + priorityClass);
+		}
 	}
 
 	public ClientPutDir(PersistentRequestClient client, FreenetURI uri, String identifier, int verbosity, short priorityClass, Persistence persistence, String clientToken, boolean getCHKOnly, boolean dontCompress, int maxRetries, HashMap<String, Object> elements, String defaultName, boolean global, boolean earlyEncode, boolean canWriteClientCache, boolean forkOnCacheable, int extraInsertsSingleBlock, int extraInsertsSplitfileHeaderBlock, boolean realTimeFlag, byte[] overrideSplitfileCryptoKey, NodeClientCore core) throws IdentifierCollisionException, MalformedURLException, TooManyFilesInsertException {
@@ -126,7 +130,9 @@ public class ClientPutDir extends ClientPutBase {
 			numberOfFiles = -1;
 			totalSize = -1;
 		}
-		if (logMINOR) Logger.minor(this, "Putting data from custom buckets " + identifier + " : " + priorityClass);
+		if (logMINOR) {
+			Logger.minor(this, "Putting data from custom buckets " + identifier + " : " + priorityClass);
+		}
 	}
 
 	protected ClientPutDir() {
@@ -140,8 +146,9 @@ public class ClientPutDir extends ClientPutBase {
 
 	@Override
 	void register(boolean noTags) throws IdentifierCollisionException {
-		if (persistence != Persistence.CONNECTION)
+		if (persistence != Persistence.CONNECTION) {
 			client.register(this);
+		}
 		if (persistence != Persistence.CONNECTION && !noTags) {
 			FCPMessage msg = persistentTagMessage();
 			client.queueClientRequestMessage(msg, 0);
@@ -153,31 +160,38 @@ public class ClientPutDir extends ClientPutBase {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		File[] files = dir.listFiles();
 
-		if (files == null)
+		if (files == null) {
 			throw new IllegalArgumentException("No such directory");
+		}
 
 		for (File f : files) {
 
-			if (f.isHidden() && !includeHiddenFiles) continue;
+			if (f.isHidden() && !includeHiddenFiles) {
+				continue;
+			}
 
 			if (f.exists() && f.canRead()) {
 				if (f.isFile()) {
 					FileBucket bucket = new FileBucket(f, true, false, false, false);
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Add file : " + f.getAbsolutePath());
+					}
 
 					map.put(f.getName(), new ManifestElement(f.getName(), prefix + f.getName(), bucket, DefaultMIMETypes.guessMIMEType(f.getName(), true), f.length()));
 				} else if (f.isDirectory()) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Add dir : " + f.getAbsolutePath());
+					}
 
 					map.put(f.getName(), makeDiskDirManifest(f, prefix + f.getName() + "/", allowUnreadableFiles, includeHiddenFiles));
 				} else {
-					if (!allowUnreadableFiles)
+					if (!allowUnreadableFiles) {
 						throw new FileNotFoundException("Not a file and not a directory : " + f);
+					}
 				}
-			} else if (!allowUnreadableFiles)
+			} else if (!allowUnreadableFiles) {
 				throw new FileNotFoundException("The file does not exist or is unreadable : " + f);
+			}
 
 		}
 
@@ -192,11 +206,16 @@ public class ClientPutDir extends ClientPutBase {
 
 	@Override
 	public void start(ClientContext context) {
-		if (finished) return;
-		if (started) return;
+		if (finished) {
+			return;
+		}
+		if (started) {
+			return;
+		}
 		try {
-			if (putter != null)
+			if (putter != null) {
 				putter.start(context);
+			}
 
 			started = true;
 			if (client != null) {
@@ -205,7 +224,9 @@ public class ClientPutDir extends ClientPutBase {
 					cache.updateStarted(identifier, true);
 				}
 			}
-			if (logMINOR) Logger.minor(this, "Started " + putter + " for " + this + " persistence=" + persistence);
+			if (logMINOR) {
+				Logger.minor(this, "Started " + putter + " for " + this + " persistence=" + persistence);
+			}
 			if (persistence != Persistence.CONNECTION && !finished) {
 				FCPMessage msg = persistentTagMessage();
 				client.queueClientRequestMessage(msg, 0);
@@ -218,22 +239,28 @@ public class ClientPutDir extends ClientPutBase {
 
 	@Override
 	public void onLostConnection(ClientContext context) {
-		if (persistence == Persistence.CONNECTION)
+		if (persistence == Persistence.CONNECTION) {
 			cancel(context);
+		}
 		// otherwise ignore
 	}
 
 	@Override
 	protected void freeData() {
-		if (logMINOR) Logger.minor(this, "freeData() on " + this + " persistence type = " + persistence);
+		if (logMINOR) {
+			Logger.minor(this, "freeData() on " + this + " persistence type = " + persistence);
+		}
 		synchronized (this) {
 			if (manifestElements == null) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "manifestElements = " + manifestElements, new Exception("error"));
+				}
 				return;
 			}
 		}
-		if (logMINOR) Logger.minor(this, "freeData() more on " + this + " persistence type = " + persistence);
+		if (logMINOR) {
+			Logger.minor(this, "freeData() more on " + this + " persistence type = " + persistence);
+		}
 		// We have to commit everything, so activating everything here doesn't cost us much memory...?
 		freeData(manifestElements);
 		manifestElements = null;
@@ -241,14 +268,17 @@ public class ClientPutDir extends ClientPutBase {
 
 	@SuppressWarnings("unchecked")
 	private void freeData(HashMap<String, Object> manifestElements) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "freeData() inner on " + this + " persistence type = " + persistence + " size = " + manifestElements.size());
+		}
 		for (Object o : manifestElements.values()) {
 			if (o instanceof HashMap) {
 				freeData((HashMap<String, Object>) o);
 			} else {
 				ManifestElement e = (ManifestElement) o;
-				if (logMINOR) Logger.minor(this, "Freeing " + e);
+				if (logMINOR) {
+					Logger.minor(this, "Freeing " + e);
+				}
 				e.freeData();
 			}
 		}
@@ -262,10 +292,12 @@ public class ClientPutDir extends ClientPutBase {
 	@Override
 	protected FCPMessage persistentTagMessage() {
 		// FIXME: remove debug code
-		if (lowLevelClient == null)
+		if (lowLevelClient == null) {
 			Logger.error(this, "lowLevelClient == null", new Exception("error"));
-		if (putter == null)
+		}
+		if (putter == null) {
 			Logger.error(this, "putter == null", new Exception("error"));
+		}
 		// FIXME end
 		return new PersistentPutDir(identifier, publicURI, uri, verbosity, priorityClass,
 				persistence, global, defaultName, manifestElements, clientToken, started, ctx.maxInsertRetries, ctx.dontCompress, ctx.compressorDescriptor, wasDiskPut, isRealTime(), putter != null ? putter.getSplitfileCryptoKey() : null, this.ctx.getCompatibilityMode());
@@ -318,7 +350,9 @@ public class ClientPutDir extends ClientPutBase {
 
 	@Override
 	public boolean restart(ClientContext context, final boolean disableFilterData) {
-		if (!canRestart()) return false;
+		if (!canRestart()) {
+			return false;
+		}
 		setVarsRestart();
 		if (client != null) {
 			RequestStatusCache cache = client.getRequestStatusCache();

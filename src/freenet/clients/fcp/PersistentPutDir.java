@@ -77,8 +77,9 @@ public class PersistentPutDir extends FCPMessage {
 		SimpleFieldSet fs = new SimpleFieldSet(false); // false because this can get HUGE
 		fs.putSingle("Identifier", identifier);
 		fs.putSingle("URI", uri.toString(false, false));
-		if (privateURI != null)
+		if (privateURI != null) {
 			fs.putSingle("PrivateURI", privateURI.toString(false, false));
+		}
 		fs.put("Verbosity", verbosity);
 		fs.putSingle("Persistence", persistence.toString().toLowerCase());
 		fs.put("PriorityClass", priorityClass);
@@ -113,8 +114,9 @@ public class PersistentPutDir extends FCPMessage {
 					data = ((DelayedFreeRandomAccessBucket) data).getUnderlying();
 				}
 				subset.put("DataLength", e.getSize());
-				if (mimeOverride != null)
+				if (mimeOverride != null) {
 					subset.putSingle("Metadata.ContentType", mimeOverride);
+				}
 				// What to do with the bucket?
 				// It is either a persistent encrypted bucket or a file bucket ...
 				if (data == null) {
@@ -132,16 +134,19 @@ public class PersistentPutDir extends FCPMessage {
 		}
 		files.put("Count", elements.length);
 		fs.put("Files", files);
-		if (token != null)
+		if (token != null) {
 			fs.putSingle("ClientToken", token);
+		}
 		fs.put("Started", started);
 		fs.put("MaxRetries", maxRetries);
 		fs.put("DontCompress", dontCompress);
-		if (compressorDescriptor != null)
+		if (compressorDescriptor != null) {
 			fs.putSingle("Codecs", compressorDescriptor);
+		}
 		fs.put("RealTime", realTime);
-		if (splitfileCryptoKey != null)
+		if (splitfileCryptoKey != null) {
 			fs.putSingle("SplitfileCryptoKey", HexUtil.bytesToHex(splitfileCryptoKey));
+		}
 		return fs;
 	}
 

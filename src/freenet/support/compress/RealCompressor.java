@@ -36,8 +36,9 @@ public class RealCompressor {
 	}
 
 	public void enqueueNewJob(final CompressJob j) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Enqueueing compression job: " + j);
+		}
 
 		Future<String> task = null;
 		while (!executorService.isShutdown() && task == null) {
@@ -72,8 +73,9 @@ public class RealCompressor {
 						return NativeThread.MIN_PRIORITY;
 					}
 				}, "Compressor thread for " + j);
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Compression job: " + j + "has been enqueued.");
+				}
 			} catch (RejectedExecutionException e) {
 				Logger.error(this, "RejectedExectutionException for " + j, e);
 				task = null;
@@ -86,19 +88,22 @@ public class RealCompressor {
 
 		String osName = System.getProperty("os.name");
 		if (!osName.contains("Windows") && (osName.toLowerCase().indexOf("mac os x") > 0) || (!NativeThread.usingNativeCode()))
-			// OS/X niceness is really weak, so we don't want any more background CPU load than necessary
-			// Also, on non-Windows, we need the native threads library to be working.
+		// OS/X niceness is really weak, so we don't want any more background CPU load than necessary
+		// Also, on non-Windows, we need the native threads library to be working.
+		{
 			maxRunningThreads = 1;
-		else {
+		} else {
 			// Most other OSs will have reasonable niceness, so go by RAM.
 			Runtime r = Runtime.getRuntime();
 			int max = r.availableProcessors(); // FIXME this may change in a VM, poll it
 			long maxMemory = r.maxMemory();
-			if (maxMemory < 128 * 1024 * 1024)
+			if (maxMemory < 128 * 1024 * 1024) {
 				max = 1;
-			else
-				// one compressor thread per (128MB of ram + available core)
+			} else
+			// one compressor thread per (128MB of ram + available core)
+			{
 				max = Math.min(max, (int) (Math.min(Integer.MAX_VALUE, maxMemory / (128 * 1024 * 1024))));
+			}
 			maxRunningThreads = max;
 		}
 		Logger.minor(RealCompressor.class, "Maximum Compressor threads: " + maxRunningThreads);

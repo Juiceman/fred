@@ -94,17 +94,18 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		allowedMIMETypes = fs.getAll("AllowedMIMETypes");
 		filterData = fs.getBoolean("FilterData", false);
 		charset = fs.get("Charset");
-		if (identifier == null)
+		if (identifier == null) {
 			throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "No Identifier", null, global);
+		}
 		try {
 			uri = new FreenetURI(fs.get("URI"));
 		} catch (MalformedURLException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.FREENET_URI_PARSE_ERROR, e.getMessage(), identifier, global);
 		}
 		String verbosityString = fs.get("Verbosity");
-		if (verbosityString == null)
+		if (verbosityString == null) {
 			verbosity = 0;
-		else {
+		} else {
 			try {
 				verbosity = Integer.parseInt(verbosityString, 10);
 			} catch (NumberFormatException e) {
@@ -123,11 +124,13 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		} else if (returnType == ReturnType.DISK) {
 			defaultPriority = RequestStarter.BULK_SPLITFILE_PRIORITY_CLASS;
 			String filename = fs.get("Filename");
-			if (filename == null)
+			if (filename == null) {
 				throw new MessageInvalidException(ProtocolErrorMessage.MISSING_FIELD, "Missing Filename", identifier, global);
+			}
 			diskFile = new File(filename);
-			if (diskFile.exists())
+			if (diskFile.exists()) {
 				throw new MessageInvalidException(ProtocolErrorMessage.DISK_TARGET_EXISTS, null, identifier, global);
+			}
 			try {
 				// Check whether we can create a temp file in the target directory.
 				File temp = FileUtil.createTempFile(diskFile.getName(), ".freenet-tmp", diskFile.getParentFile());
@@ -135,49 +138,57 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 			} catch (IOException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.COULD_NOT_CREATE_FILE, e.getMessage(), identifier, global);
 			}
-		} else
+		} else {
 			throw new MessageInvalidException(ProtocolErrorMessage.MESSAGE_PARSE_ERROR, "Unknown return-type", identifier, global);
+		}
 		String maxSizeString = fs.get("MaxSize");
 		if (maxSizeString == null)
-			// default to unlimited
+		// default to unlimited
+		{
 			maxSize = Long.MAX_VALUE;
-		else {
+		} else {
 			try {
 				maxSize = Long.parseLong(maxSizeString, 10);
-				if (maxSize < 0)
+				if (maxSize < 0) {
 					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum size must be positive", identifier, global);
+				}
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: " + e.getMessage(), identifier, global);
 			}
 		}
 		String maxTempSizeString = fs.get("MaxTempSize");
 		if (maxTempSizeString == null)
-			// default to unlimited
+		// default to unlimited
+		{
 			maxTempSize = Long.MAX_VALUE;
-		else {
+		} else {
 			try {
 				maxTempSize = Long.parseLong(maxTempSizeString, 10);
-				if (maxTempSize < 0)
+				if (maxTempSize < 0) {
 					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Maximum temp size must be positive", identifier, global);
+				}
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: " + e.getMessage(), identifier, global);
 			}
 		}
 		String maxRetriesString = fs.get("MaxRetries");
 		if (maxRetriesString == null)
-			// default to 0
+		// default to 0
+		{
 			maxRetries = 0;
-		else {
+		} else {
 			try {
 				maxRetries = Integer.parseInt(maxRetriesString, 10);
-				if (maxRetries < -1)
+				if (maxRetries < -1) {
 					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Max retries must be -1 or larger", identifier, global);
+				}
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing MaxSize field: " + e.getMessage(), identifier, global);
 			}
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "max retries=" + maxRetries);
+		}
 		String priorityString = fs.get("PriorityClass");
 		if (priorityString == null) {
 			// defaults to the one just below FProxy
@@ -185,8 +196,9 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		} else {
 			try {
 				priorityClass = Short.parseShort(priorityString);
-				if (!RequestStarter.isValidPriorityClass(priorityClass))
+				if (!RequestStarter.isValidPriorityClass(priorityClass)) {
 					throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid priority class " + priorityClass + " - range is " + RequestStarter.PAUSED_PRIORITY_CLASS + " to " + RequestStarter.MAXIMUM_PRIORITY_CLASS, identifier, global);
+				}
 			} catch (NumberFormatException e) {
 				throw new MessageInvalidException(ProtocolErrorMessage.ERROR_PARSING_NUMBER, "Error parsing PriorityClass field: " + e.getMessage(), identifier, global);
 			}
@@ -200,8 +212,9 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 		binaryBlob = fs.getBoolean("BinaryBlob", false);
 		realTimeFlag = fs.getBoolean("RealTimeFlag", false);
 		initialMetadataLength = fs.getLong("InitialMetadata.DataLength", 0);
-		if (initialMetadataLength < 0)
+		if (initialMetadataLength < 0) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Invalid data length for initial metadata", identifier, global);
+		}
 		ignoreUSKDatehints = fs.getBoolean("IgnoreUSKDatehints", false);
 	}
 
@@ -238,7 +251,9 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 
 	ReturnType parseReturnTypeFCP(String string) throws MessageInvalidException {
 		try {
-			if (string == null) return ReturnType.DIRECT;
+			if (string == null) {
+				return ReturnType.DIRECT;
+			}
 			return ReturnType.valueOf(string.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new MessageInvalidException(ProtocolErrorMessage.INVALID_FIELD, "Unable to parse ReturnType " + string + " : " + e, identifier, global);
@@ -253,7 +268,9 @@ public class ClientGetMessage extends BaseDataCarryingMessage {
 	@Override
 	public void readFrom(InputStream is, BucketFactory bf, FCPServer server)
 			throws IOException, MessageInvalidException {
-		if (initialMetadataLength == 0) return;
+		if (initialMetadataLength == 0) {
+			return;
+		}
 		Bucket data;
 		data = bf.makeBucket(initialMetadataLength);
 		BucketTools.copyFrom(data, is, initialMetadataLength);

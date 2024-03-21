@@ -45,8 +45,9 @@ public class Bzip2Compressor extends AbstractCompressor {
 	public long compress(InputStream is, OutputStream os, long maxReadLength, long maxWriteLength,
 						 long amountOfDataToCheckCompressionRatio, int minimumCompressionPercentage)
 			throws IOException, CompressionRatioException {
-		if (maxReadLength <= 0)
+		if (maxReadLength <= 0) {
 			throw new IllegalArgumentException();
+		}
 		BZip2CompressorOutputStream bz2os = null;
 		try {
 			CountedOutputStream cos = new CountedOutputStream(os);
@@ -61,12 +62,17 @@ public class Bzip2Compressor extends AbstractCompressor {
 			while (true) {
 				int l = (int) Math.min(buffer.length, maxReadLength - read);
 				int x = l == 0 ? -1 : is.read(buffer, 0, buffer.length);
-				if (x <= -1) break;
-				if (x == 0) throw new IOException("Returned zero from read()");
+				if (x <= -1) {
+					break;
+				}
+				if (x == 0) {
+					throw new IOException("Returned zero from read()");
+				}
 				bz2os.write(buffer, 0, x);
 				read += x;
-				if (cos.written() > maxWriteLength)
+				if (cos.written() > maxWriteLength) {
 					throw new CompressionOutputSizeException();
+				}
 
 				if (++i == iterationToCheckCompressionRatio && minimumCompressionPercentage != 0) {
 					checkCompressionEffect(read, cos.written(), minimumCompressionPercentage);
@@ -76,8 +82,9 @@ public class Bzip2Compressor extends AbstractCompressor {
 			cos.flush();
 			bz2os.close();
 			bz2os = null;
-			if (cos.written() > maxWriteLength)
+			if (cos.written() > maxWriteLength) {
 				throw new CompressionOutputSizeException();
+			}
 			return cos.written();
 		} finally {
 			if (bz2os != null) {
@@ -92,8 +99,9 @@ public class Bzip2Compressor extends AbstractCompressor {
 		BZip2CompressorInputStream bz2is = new BZip2CompressorInputStream(HeaderStreams.augInput(BZ_HEADER, is));
 		long written = 0;
 		int bufSize = 32768;
-		if (maxLength > 0 && maxLength < bufSize)
+		if (maxLength > 0 && maxLength < bufSize) {
 			bufSize = (int) maxLength;
+		}
 		byte[] buffer = new byte[bufSize];
 		while (true) {
 			int expectedBytesRead = (int) Math.min(buffer.length, maxLength - written);
@@ -108,15 +116,23 @@ public class Bzip2Compressor extends AbstractCompressor {
 					while (true) {
 						expectedBytesRead = (int) Math.min(buffer.length, maxLength + maxCheckSizeBytes - written);
 						bytesRead = bz2is.read(buffer, 0, expectedBytesRead);
-						if (bytesRead <= -1) throw new CompressionOutputSizeException(written);
-						if (bytesRead == 0) throw new IOException("Returned zero from read()");
+						if (bytesRead <= -1) {
+							throw new CompressionOutputSizeException(written);
+						}
+						if (bytesRead == 0) {
+							throw new IOException("Returned zero from read()");
+						}
 						written += bytesRead;
 					}
 				}
 				throw new CompressionOutputSizeException();
 			}
-			if (bytesRead <= -1) return written;
-			if (bytesRead == 0) throw new IOException("Returned zero from read()");
+			if (bytesRead <= -1) {
+				return written;
+			}
+			if (bytesRead == 0) {
+				throw new IOException("Returned zero from read()");
+			}
 			os.write(buffer, 0, bytesRead);
 			written += bytesRead;
 		}

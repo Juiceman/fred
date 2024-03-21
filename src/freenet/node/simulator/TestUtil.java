@@ -22,8 +22,9 @@ public class TestUtil {
 				break;
 			}
 		}
-		if (!success)
+		if (!success) {
 			System.err.println("Failed to reach target peers count " + targetPeers + " in 10 minutes.");
+		}
 		return success;
 	}
 }

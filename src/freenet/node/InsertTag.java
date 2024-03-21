@@ -36,7 +36,9 @@ public class InsertTag extends UIDTag {
 		boolean noRecordUnlock;
 		synchronized (this) {
 			senderFinished = true;
-			if (!mustUnlock()) return;
+			if (!mustUnlock()) {
+				return;
+			}
 			noRecordUnlock = this.noRecordUnlock;
 		}
 		innerUnlock(noRecordUnlock);
@@ -44,7 +46,9 @@ public class InsertTag extends UIDTag {
 
 	@Override
 	protected synchronized boolean mustUnlock() {
-		if (senderStarted && !senderFinished) return false;
+		if (senderStarted && !senderFinished) {
+			return false;
+		}
 		return super.mustUnlock();
 	}
 
@@ -61,25 +65,33 @@ public class InsertTag extends UIDTag {
 		sb.append(" thrown=").append(handlerThrew);
 		sb.append(" : ");
 		sb.append(super.toString());
-		if (handlerThrew != null)
+		if (handlerThrew != null) {
 			Logger.error(this, sb.toString(), handlerThrew);
-		else
+		} else {
 			Logger.error(this, sb.toString());
+		}
 	}
 
 	@Override
 	public synchronized int expectedTransfersIn(boolean ignoreLocalVsRemote,
 												int outwardTransfersPerInsert, boolean forAccept) {
-		if (!accepted) return 0;
+		if (!accepted) {
+			return 0;
+		}
 		return ((!isLocal()) || ignoreLocalVsRemote) ? 1 : 0;
 	}
 
 	@Override
 	public synchronized int expectedTransfersOut(boolean ignoreLocalVsRemote,
 												 int outwardTransfersPerInsert, boolean forAccept) {
-		if (!accepted) return 0;
-		if (notRoutedOnwards) return 0;
-		else return outwardTransfersPerInsert;
+		if (!accepted) {
+			return 0;
+		}
+		if (notRoutedOnwards) {
+			return 0;
+		} else {
+			return outwardTransfersPerInsert;
+		}
 	}
 
 	@Override

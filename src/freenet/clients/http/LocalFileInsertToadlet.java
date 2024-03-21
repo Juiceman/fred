@@ -68,7 +68,9 @@ public class LocalFileInsertToadlet extends LocalFileBrowserToadlet {
 		}
 
 		element = set.get("overrideSplitfileKey");
-		if (element != null) fieldPairs.put("overrideSplitfileKey", element);
+		if (element != null) {
+			fieldPairs.put("overrideSplitfileKey", element);
+		}
 		return fieldPairs;
 	}
 }

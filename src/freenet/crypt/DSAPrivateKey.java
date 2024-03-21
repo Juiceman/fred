@@ -20,8 +20,9 @@ public class DSAPrivateKey extends CryptoKey {
 
 	public DSAPrivateKey(BigInteger x, DSAGroup g) {
 		this.x = x;
-		if (x.signum() != 1 || x.compareTo(g.getQ()) > -1 || x.compareTo(BigInteger.ZERO) < 1)
+		if (x.signum() != 1 || x.compareTo(g.getQ()) > -1 || x.compareTo(BigInteger.ZERO) < 1) {
 			throw new IllegalArgumentException();
+		}
 	}
 
 	// this is dangerous...  better to force people to construct the
@@ -85,8 +86,9 @@ public class DSAPrivateKey extends CryptoKey {
 
 	public static DSAPrivateKey create(SimpleFieldSet fs, DSAGroup group) throws IllegalBase64Exception {
 		BigInteger y = new BigInteger(1, Base64.decode(fs.get("x")));
-		if (y.bitLength() > 512)
+		if (y.bitLength() > 512) {
 			throw new IllegalBase64Exception("Probably a pubkey");
+		}
 		return new DSAPrivateKey(y, group);
 	}
 

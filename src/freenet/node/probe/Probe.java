@@ -382,9 +382,13 @@ public class Probe implements ByteCounter {
 		final Type type;
 		if (Type.isValid(typeCode)) {
 			type = Type.valueOf(typeCode);
-			if (logDEBUG) Logger.debug(Probe.class, "Probe type is " + type.name() + ".");
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Probe type is " + type.name() + ".");
+			}
 		} else {
-			if (logMINOR) Logger.minor(Probe.class, "Invalid probe type " + typeCode + ".");
+			if (logMINOR) {
+				Logger.minor(Probe.class, "Invalid probe type " + typeCode + ".");
+			}
 			listener.onError(Error.UNRECOGNIZED_TYPE, typeCode, true);
 			return;
 		}
@@ -439,7 +443,9 @@ public class Probe implements ByteCounter {
 		}
 		if (!availableSlot) {
 			//Send an overload error back to the source.
-			if (logDEBUG) Logger.debug(Probe.class, "Already accepted maximum number of probes; rejecting incoming.");
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Already accepted maximum number of probes; rejecting incoming.");
+			}
 			listener.onError(Error.OVERLOAD, null, true);
 			return;
 		}
@@ -507,27 +513,38 @@ public class Probe implements ByteCounter {
 				/* Candidate's degree is unknown; fall back to random walk by accepting this candidate
 				 * regardless of its degree.
 				 */
-				if (candidateDegree == 0) acceptProbability = 1.0f;
-				else acceptProbability = (float) degree / candidateDegree;
+				if (candidateDegree == 0) {
+					acceptProbability = 1.0f;
+				} else {
+					acceptProbability = (float) degree / candidateDegree;
+				}
 
-				if (logDEBUG) Logger.debug(Probe.class, "acceptProbability is " + acceptProbability);
+				if (logDEBUG) {
+					Logger.debug(Probe.class, "acceptProbability is " + acceptProbability);
+				}
 				if (node.getRandom().nextFloat() < acceptProbability) {
-					if (logDEBUG) Logger.debug(Probe.class, "Accepted candidate.");
+					if (logDEBUG) {
+						Logger.debug(Probe.class, "Accepted candidate.");
+					}
 					//Filter for response to this probe with requested result type.
 					final MessageFilter filter = createResponseFilter(type, candidate, uid, htl);
 					message.set(DMT.HTL, htl);
 					try {
 						node.getUSM().addAsyncFilter(filter, new ResultListener(listener), this);
-						if (logDEBUG) Logger.debug(Probe.class, "Sending.");
+						if (logDEBUG) {
+							Logger.debug(Probe.class, "Sending.");
+						}
 						candidate.sendAsync(message, null, this);
 						return true;
 					} catch (NotConnectedException e) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(Probe.class, "Peer became disconnected between check and send attempt.", e);
+						}
 						// Peer no longer connected - sending was not successful. Try again.
 					} catch (DisconnectedException e) {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(Probe.class, "Peer became disconnected while attempting to add filter.", e);
+						}
 						// Peer no longer connected - cannot send. Try again.
 					}
 				} else {
@@ -537,10 +554,14 @@ public class Probe implements ByteCounter {
 					 */
 					htl = probabilisticDecrement(htl);
 
-					if (htl == 0) return false;
+					if (htl == 0) {
+						return false;
+					}
 				}
 			} else {
-				if (logMINOR) Logger.minor(Probe.class, "Peer in connectedPeers was not connected.", new Exception());
+				if (logMINOR) {
+					Logger.minor(Probe.class, "Peer in connectedPeers was not connected.", new Exception());
+				}
 			}
 		}
 
@@ -651,8 +672,11 @@ public class Probe implements ByteCounter {
 				 */
 				long percent = Math.round(randomNoise(100 * node.getUptimeEstimator().getUptimeWeek(), 0.05));
 				//Clamp to byte.
-				if (percent > Byte.MAX_VALUE) percent = Byte.MAX_VALUE;
-				else if (percent < Byte.MIN_VALUE) percent = Byte.MIN_VALUE;
+				if (percent > Byte.MAX_VALUE) {
+					percent = Byte.MAX_VALUE;
+				} else if (percent < Byte.MIN_VALUE) {
+					percent = Byte.MIN_VALUE;
+				}
 				listener.onIdentifier(probeIdentifier, (byte) percent);
 				break;
 			case LINK_LENGTHS:
@@ -757,7 +781,9 @@ public class Probe implements ByteCounter {
 	private byte probabilisticDecrement(byte htl) {
 		assert htl > 0;
 		if (htl == 1) {
-			if (node.getRandom().nextFloat() < DECREMENT_PROBABILITY) return 0;
+			if (node.getRandom().nextFloat() < DECREMENT_PROBABILITY) {
+				return 0;
+			}
 			return 1;
 		}
 		return (byte) (htl - 1);
@@ -779,7 +805,9 @@ public class Probe implements ByteCounter {
 
 		@Override
 		public void onDisconnect(PeerContext context) {
-			if (logDEBUG) Logger.debug(Probe.class, "Next node in chain disconnected.");
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Next node in chain disconnected.");
+			}
 			listener.onError(Error.DISCONNECTED, null, true);
 		}
 
@@ -790,7 +818,9 @@ public class Probe implements ByteCounter {
 		 */
 		@Override
 		public void onMatched(Message message) {
-			if (logDEBUG) Logger.debug(Probe.class, "Matched " + message.getSpec().getName());
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Matched " + message.getSpec().getName());
+			}
 			if (message.getSpec().equals(DMT.ProbeBandwidth)) {
 				listener.onOutputBandwidth(message.getFloat(DMT.OUTPUT_BANDWIDTH_UPPER_LIMIT));
 			} else if (message.getSpec().equals(DMT.ProbeBuild)) {
@@ -830,7 +860,9 @@ public class Probe implements ByteCounter {
 
 		@Override
 		public void onTimeout() {
-			if (logDEBUG) Logger.debug(Probe.class, "Timed out.");
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Timed out.");
+			}
 			listener.onError(Error.TIMEOUT, null, true);
 		}
 
@@ -862,15 +894,21 @@ public class Probe implements ByteCounter {
 
 		private void send(Message message) {
 			if (!source.isConnected()) {
-				if (logDEBUG) Logger.debug(Probe.class, SOURCE_DISCONNECT);
+				if (logDEBUG) {
+					Logger.debug(Probe.class, SOURCE_DISCONNECT);
+				}
 				return;
 			}
-			if (logDEBUG) Logger.debug(Probe.class, "Relaying " + message.getSpec().getName() + " back" +
-					" to " + source.userToString());
+			if (logDEBUG) {
+				Logger.debug(Probe.class, "Relaying " + message.getSpec().getName() + " back" +
+						" to " + source.userToString());
+			}
 			try {
 				source.sendAsync(message, null, Probe.this);
 			} catch (NotConnectedException e) {
-				if (logDEBUG) Logger.debug(Probe.class, SOURCE_DISCONNECT, e);
+				if (logDEBUG) {
+					Logger.debug(Probe.class, SOURCE_DISCONNECT, e);
+				}
 			}
 		}
 
@@ -925,8 +963,9 @@ public class Probe implements ByteCounter {
 				Logger.warning(this, "Unknown length for stats: " + stats.length);
 				onError(Error.UNKNOWN, Error.UNKNOWN.code, true);
 			} else {
-				if (stats.length > 4)
+				if (stats.length > 4) {
 					stats = Arrays.copyOf(stats, 4);
+				}
 				send(DMT.createProbeRejectStats(uid, stats));
 			}
 		}

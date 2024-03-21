@@ -245,12 +245,19 @@ public class MainJarDependenciesChecker {
 
 		@Override
 		public int compareTo(Dependency arg0) {
-			if (this == arg0) return 0;
-			if (order > arg0.order) return 1;
-			else if (order < arg0.order) return -1;
+			if (this == arg0) {
+				return 0;
+			}
+			if (order > arg0.order) {
+				return 1;
+			} else if (order < arg0.order) {
+				return -1;
+			}
 			// Filename comparisons aren't very reliable (e.g. "./test" versus "test" are not equals()!), go by getName() first.
 			int ret = newFilename.getName().compareTo(arg0.newFilename.getName());
-			if (ret != 0) return ret;
+			if (ret != 0) {
+				return ret;
+			}
 			return newFilename.compareTo(arg0.newFilename);
 		}
 
@@ -330,8 +337,11 @@ public class MainJarDependenciesChecker {
 					forCurrentVersion = (forBuild == Version.buildNumber());
 				}
 			}
-			if (toDeploy) deploy();
-			else if (forCurrentVersion) deployer.reannounce();
+			if (toDeploy) {
+				deploy();
+			} else if (forCurrentVersion) {
+				deployer.reannounce();
+			}
 		}
 
 		@Override
@@ -342,7 +352,9 @@ public class MainJarDependenciesChecker {
 				System.err.println("Failed to fetch " + dep.newFilename + " needed for next update (" + e.getShortMessage() + "). Will try again if we find a new freenet.jar.");
 				synchronized (MainJarDependenciesChecker.this) {
 					downloaders.remove(this);
-					if (forBuild != build) return;
+					if (forBuild != build) {
+						return;
+					}
 					broken = true;
 				}
 			}
@@ -426,22 +438,31 @@ public class MainJarDependenciesChecker {
 
 			@Override
 			public boolean accept(File arg0) {
-				if (!arg0.isFile()) return false;
+				if (!arg0.isFile()) {
+					return false;
+				}
 				// Ignore non-jars regardless of what the regex says.
 				String name = arg0.getName().toLowerCase();
-				if (!(name.endsWith(".jar") || name.endsWith(".jar.new"))) return false;
-				// FIXME similar checks elsewhere, factor out?
-				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new"))
+				if (!(name.endsWith(".jar") || name.endsWith(".jar.new"))) {
 					return false;
+				}
+				// FIXME similar checks elsewhere, factor out?
+				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new")) {
+					return false;
+				}
 				return true;
 			}
 
 		});
 		outer:
 		for (String propName : props.stringPropertyNames()) {
-			if (!propName.contains(".")) continue;
+			if (!propName.contains(".")) {
+				continue;
+			}
 			String baseName = propName.split("\\.")[0];
-			if (!processed.add(baseName)) continue;
+			if (!processed.add(baseName)) {
+				continue;
+			}
 			String s = props.getProperty(baseName + ".type");
 			if (s == null) {
 				Logger.error(this, "dependencies.properties broken? missing type for \"" + baseName + "\"");
@@ -458,8 +479,9 @@ public class MainJarDependenciesChecker {
 			} catch (IllegalArgumentException e) {
 				if (s.startsWith("OPTIONAL_")) {
 					// We don't understand it, but that's OK as it's optional.
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Ignoring non-essential dependency type \"" + s + "\" for \"" + baseName + "\"");
+					}
 					continue;
 				}
 				// We don't understand it, and it's not optional, so we can't deploy the update.
@@ -494,14 +516,17 @@ public class MainJarDependenciesChecker {
 			File filename = null;
 			s = props.getProperty(baseName + ".filename");
 			// FIXME use nodeDir
-			if (s != null) filename = new File(s);
+			if (s != null) {
+				filename = new File(s);
+			}
 			if (filename == null) {
 				Logger.error(this, "dependencies.properties broken? missing filename");
 				broken = true;
 				continue;
 			}
-			if (filename.getParentFile() != null)
+			if (filename.getParentFile() != null) {
 				filename.getParentFile().mkdirs();
+			}
 			FreenetURI maxCHK = null;
 			s = props.getProperty(baseName + ".key");
 			if (s == null) {
@@ -527,8 +552,9 @@ public class MainJarDependenciesChecker {
 					// May be fatal later on depending on what else we have.
 				}
 				try {
-					if (regex != null)
+					if (regex != null) {
 						p = Pattern.compile(regex);
+					}
 				} catch (PatternSyntaxException e) {
 					Logger.error(this, "Bogus Pattern \"" + regex + "\" in dependencies.properties");
 					p = null;
@@ -599,16 +625,18 @@ public class MainJarDependenciesChecker {
 				// Nothing to do. Yay!
 				System.out.println("Found file required by the new Freenet version: " + filename);
 				// Use it.
-				if (type == DEPENDENCY_TYPE.CLASSPATH)
+				if (type == DEPENDENCY_TYPE.CLASSPATH) {
 					dependencies.add(new Dependency(currentFile, filename, p, order));
+				}
 				continue;
 			}
 			// Check the version currently in use.
 			if (currentFile != null && validFile(currentFile, expectedHash, size, executable)) {
 				System.out.println("Existing version of " + currentFile + " is OK for update.");
 				// Use it.
-				if (type == DEPENDENCY_TYPE.CLASSPATH)
+				if (type == DEPENDENCY_TYPE.CLASSPATH) {
 					dependencies.add(new Dependency(currentFile, currentFile, p, order));
+				}
 				continue;
 			}
 			if (type == DEPENDENCY_TYPE.CLASSPATH) {
@@ -632,7 +660,9 @@ public class MainJarDependenciesChecker {
 				}
 				for (File f : list) {
 					String name = f.getName();
-					if (!p.matcher(name.toLowerCase()).matches()) continue;
+					if (!p.matcher(name.toLowerCase()).matches()) {
+						continue;
+					}
 					if (validFile(f, expectedHash, size, executable)) {
 						// Use it.
 						System.out.println("Found " + name + " - meets requirement for " + baseName + " for next update.");
@@ -655,10 +685,11 @@ public class MainJarDependenciesChecker {
 				System.err.println("Failed to start fetch of essential component for next release: " + e);
 			}
 		}
-		if (ready())
+		if (ready()) {
 			return new MainJarDependencies(new TreeSet<Dependency>(dependencies), build);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	private static boolean matchesCurrentOS(String s) {
@@ -713,7 +744,9 @@ public class MainJarDependenciesChecker {
 
 			@Override
 			public boolean accept(File arg0) {
-				if (!arg0.isFile()) return false;
+				if (!arg0.isFile()) {
+					return false;
+				}
 				String name = arg0.getName().toLowerCase();
 				// Cleanup old updater tempfiles.
 				if (name.endsWith(NodeUpdateManager.TEMP_FILE_SUFFIX) || name.endsWith(NodeUpdateManager.TEMP_BLOB_SUFFIX)) {
@@ -721,10 +754,13 @@ public class MainJarDependenciesChecker {
 					return false;
 				}
 				// Ignore non-jars regardless of what the regex says.
-				if (!name.endsWith(".jar")) return false;
-				// FIXME similar checks elsewhere, factor out?
-				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new"))
+				if (!name.endsWith(".jar")) {
 					return false;
+				}
+				// FIXME similar checks elsewhere, factor out?
+				if (name.equals("freenet.jar") || name.equals("freenet.jar.new") || name.equals("freenet-stable-latest.jar") || name.equals("freenet-stable-latest.jar.new")) {
+					return false;
+				}
 				return true;
 			}
 
@@ -734,9 +770,13 @@ public class MainJarDependenciesChecker {
 			f.delete();
 		}
 		for (String propName : props.stringPropertyNames()) {
-			if (!propName.contains(".")) continue;
+			if (!propName.contains(".")) {
+				continue;
+			}
 			String baseName = propName.split("\\.")[0];
-			if (!processed.add(baseName)) continue;
+			if (!processed.add(baseName)) {
+				continue;
+			}
 			String s = props.getProperty(baseName + ".type");
 			if (s == null) {
 				Logger.error(MainJarDependencies.class, "dependencies.properties broken? missing type for \"" + baseName + "\"");
@@ -747,8 +787,9 @@ public class MainJarDependenciesChecker {
 				type = DEPENDENCY_TYPE.valueOf(s);
 			} catch (IllegalArgumentException e) {
 				if (s.startsWith("OPTIONAL_")) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(MainJarDependencies.class, "Ignoring non-essential dependency type \"" + s + "\" for \"" + baseName + "\"");
+					}
 					continue;
 				}
 				Logger.error(MainJarDependencies.class, "dependencies.properties broken? unrecognised type for \"" + baseName + "\"");
@@ -795,7 +836,9 @@ public class MainJarDependenciesChecker {
 			File filename = null;
 			s = props.getProperty(baseName + ".filename");
 			// FIXME use nodeDir
-			if (s != null) filename = new File(s);
+			if (s != null) {
+				filename = new File(s);
+			}
 			if (filename == null) {
 				Logger.error(MainJarDependencies.class, "dependencies.properties broken? missing filename");
 				return false;
@@ -864,8 +907,9 @@ public class MainJarDependenciesChecker {
 			}
 
 			File currentFile = null;
-			if (type == DEPENDENCY_TYPE.CLASSPATH)
+			if (type == DEPENDENCY_TYPE.CLASSPATH) {
 				currentFile = getDependencyInUse(p);
+			}
 
 			if (type == DEPENDENCY_TYPE.OPTIONAL_CLASSPATH_NO_UPDATE && filename.exists()) {
 				if (filename.canRead() && filename.length() > 0) {
@@ -891,8 +935,9 @@ public class MainJarDependenciesChecker {
 				executable = Boolean.parseBoolean(s);
 			}
 
-			if (type == DEPENDENCY_TYPE.OPTIONAL_PRELOAD && filename.exists())
+			if (type == DEPENDENCY_TYPE.OPTIONAL_PRELOAD && filename.exists()) {
 				currentFile = filename;
+			}
 
 			// Serve the file if it meets the hash in the dependencies.properties.
 			if (currentFile != null && currentFile.exists() &&
@@ -932,19 +977,27 @@ public class MainJarDependenciesChecker {
 				}
 			}
 
-			if (currentFile == null)
+			if (currentFile == null) {
 				continue; // Ignore any old versions we might have missed that were actually on the classpath.
+			}
 			String currentFileVersion = getDependencyVersion(currentFile);
-			if (currentFileVersion == null)
+			if (currentFileVersion == null) {
 				continue; // If no version in the current version, no version in any other either, can't reliably detect outdated jars. E.g. freenet-ext.jar up to v29!
+			}
 			// Now delete bogus dependencies.
 			for (File f : listMain) {
 				String name = f.getName().toLowerCase();
-				if (!p.matcher(name).matches()) continue;
+				if (!p.matcher(name).matches()) {
+					continue;
+				}
 				// Comparing File's by equals() is dodgy, e.g. ./blah != blah. So use getName().
 				// Even on *nix some filesystems are case insensitive.
-				if (name.equalsIgnoreCase(currentFile.getName())) continue;
-				if (inClasspath(name)) continue; // Paranoia!
+				if (name.equalsIgnoreCase(currentFile.getName())) {
+					continue;
+				}
+				if (inClasspath(name)) {
+					continue; // Paranoia!
+				}
 				String fileVersion = getDependencyVersion(f);
 				if (fileVersion == null) {
 					f.delete();
@@ -964,7 +1017,9 @@ public class MainJarDependenciesChecker {
 
 	private boolean isOnPathNotAScript(String toFind) {
 		String path = System.getenv("PATH"); // Upper case should work on both linux and Windows
-		if (path == null) return false;
+		if (path == null) {
+			return false;
+		}
 		String[] split = path.split(File.pathSeparator);
 		for (String s : split) {
 			File f = new File(s);
@@ -1034,21 +1089,33 @@ public class MainJarDependenciesChecker {
 	 */
 	private boolean parseAtomicMultiFilesWithRestart(Properties props, String name) {
 		AtomicDeployer atomicDeployer = createRestartingAtomicDeployer(name);
-		if (atomicDeployer == null) return false; // Platform not supported?
+		if (atomicDeployer == null) {
+			return false; // Platform not supported?
+		}
 		boolean nothingToDo = true;
 		for (String propName : props.stringPropertyNames()) {
 			String[] split = propName.split("\\.");
-			if (split.length != 4) continue;
+			if (split.length != 4) {
+				continue;
+			}
 			// namefordeploy.nameforfile.filename=...
 			// nameforfile is not necessarily the filename, which might contain . / etc.
-			if (!split[0].equals(name)) continue;
-			if (!split[1].equals("files")) continue;
-			if (!split[3].equals("filename")) continue;
+			if (!split[0].equals(name)) {
+				continue;
+			}
+			if (!split[1].equals("files")) {
+				continue;
+			}
+			if (!split[3].equals("filename")) {
+				continue;
+			}
 			String fileBase = name + ".files." + split[2];
 			// Filename.
 			File filename = null;
 			String s = props.getProperty(fileBase + ".filename");
-			if (s == null) break;
+			if (s == null) {
+				break;
+			}
 			filename = new File(s);
 			// Key.
 			final FreenetURI key;
@@ -1125,8 +1192,9 @@ public class MainJarDependenciesChecker {
 				}
 				System.out.println("Multi-file replace: Must update " + filename + " for " + name);
 				nothingToDo = false;
-			} else if (mustExist == MUST_EXIST.EXACT)
+			} else if (mustExist == MUST_EXIST.EXACT) {
 				continue;
+			}
 			if (mustBeOnClassPath) {
 				File f = getDependencyInUse(Pattern.compile(Pattern.quote(filename.getName())));
 				if (f == null) {
@@ -1188,12 +1256,15 @@ public class MainJarDependenciesChecker {
 			this.expectedHash = expectedHash;
 			this.executable = executable;
 			File parent = filename.getAbsoluteFile().getParentFile();
-			if (parent == null) parent = new File(".");
+			if (parent == null) {
+				parent = new File(".");
+			}
 			File[] list = parent.listFiles();
 			for (File f : list) {
 				String name = f.getName();
-				if (name.startsWith(filename.getName()) && name.endsWith(UPDATER_BACKUP_SUFFIX))
+				if (name.startsWith(filename.getName()) && name.endsWith(UPDATER_BACKUP_SUFFIX)) {
 					f.delete();
+				}
 			}
 			this.tempFilename = File.createTempFile(filename.getName(), ".tmp", parent);
 			tempFilename.deleteOnExit();
@@ -1202,7 +1273,9 @@ public class MainJarDependenciesChecker {
 
 		public boolean start(AtomicDeployer myDeployer) {
 			synchronized (this) {
-				if (this.myDeployer != null) return true; // Already running.
+				if (this.myDeployer != null) {
+					return true; // Already running.
+				}
 				this.myDeployer = myDeployer;
 			}
 			System.out.println("Fetching " + filename + " from " + key);
@@ -1246,7 +1319,9 @@ public class MainJarDependenciesChecker {
 				f = fetcher;
 				fetcher = null;
 			}
-			if (f == null) return;
+			if (f == null) {
+				return;
+			}
 			f.cancel();
 		}
 
@@ -1263,10 +1338,13 @@ public class MainJarDependenciesChecker {
 				synchronized (this) {
 					backedUp = true;
 				}
-				if (executable)
+				if (executable) {
 					return backupFilename.setExecutable(true) || backupFilename.canExecute();
+				}
 				return true;
-			} else return false;
+			} else {
+				return false;
+			}
 		}
 
 		boolean deploy() {
@@ -1278,24 +1356,29 @@ public class MainJarDependenciesChecker {
 			}
 			if (!filename.exists()) {
 				if (tempFilename.renameTo(filename)) {
-					if (executable)
+					if (executable) {
 						return filename.setExecutable(true) || filename.canExecute();
+					}
 					return true;
-				} else
+				} else {
 					return false;
+				}
 			} else {
 				if (tempFilename.renameTo(filename)) {
-					if (executable)
+					if (executable) {
 						return filename.setExecutable(true) || filename.canExecute();
+					}
 					return true;
 				}
 				filename.delete();
 				if (tempFilename.renameTo(filename)) {
-					if (executable)
+					if (executable) {
 						return filename.setExecutable(true) || filename.canExecute();
+					}
 					return true;
-				} else
+				} else {
 					return false;
+				}
 			}
 		}
 
@@ -1303,7 +1386,9 @@ public class MainJarDependenciesChecker {
 			synchronized (this) {
 				assert (succeededFetch);
 				assert (backedUp);
-				if (!triedDeploy) return true; // Valid no-op.
+				if (!triedDeploy) {
+					return true; // Valid no-op.
+				}
 			}
 			System.out.println("Reverting from backup " + backupFilename + " to " + filename);
 			boolean nothingToBackup;
@@ -1320,12 +1405,16 @@ public class MainJarDependenciesChecker {
 					return true;
 				}
 			} else {
-				if (!backupFilename.renameTo(filename)) return false;
+				if (!backupFilename.renameTo(filename)) {
+					return false;
+				}
 				if (executable) {
 					if (filename.setExecutable(true) || filename.canExecute()) {
 						tempFilename.delete();
 						return true;
-					} else return false;
+					} else {
+						return false;
+					}
 				} else {
 					tempFilename.delete();
 					return true;
@@ -1395,8 +1484,12 @@ public class MainJarDependenciesChecker {
 			synchronized (this) {
 				assert (dependencies.contains(dep));
 				dependenciesWaiting.remove(dep);
-				if (!dependenciesWaiting.isEmpty()) return;
-				if (failed) return;
+				if (!dependenciesWaiting.isEmpty()) {
+					return;
+				}
+				if (failed) {
+					return;
+				}
 			}
 			readyToDeploy();
 		}
@@ -1445,8 +1538,9 @@ public class MainJarDependenciesChecker {
 				@Override
 				public void run() {
 					synchronized (NodeUpdateManager.deployLock()) {
-						if (deployMultiFileUpdate())
+						if (deployMultiFileUpdate()) {
 							NodeUpdateManager.waitForever();
+						}
 					}
 				}
 
@@ -1462,7 +1556,9 @@ public class MainJarDependenciesChecker {
 			if (!innerDeployMultiFileUpdate()) {
 				System.err.println("Failed to deploy multi-file update " + name);
 				return false;
-			} else return true;
+			} else {
+				return true;
+			}
 		}
 
 		/**
@@ -1527,7 +1623,9 @@ public class MainJarDependenciesChecker {
 
 		@Override
 		protected boolean deployMultiFileUpdate() {
-			if (!WrapperManager.isControlledByNativeWrapper()) return false;
+			if (!WrapperManager.isControlledByNativeWrapper()) {
+				return false;
+			}
 			File restartScript;
 			try {
 				restartScript = createRestartScript();
@@ -1536,9 +1634,13 @@ public class MainJarDependenciesChecker {
 				Logger.error(this, "Unable to deploy multi-file update for " + name + " because cannot write script to restart the wrapper: " + e, e);
 				return false;
 			}
-			if (restartScript == null) return false;
+			if (restartScript == null) {
+				return false;
+			}
 			File shell = findShell();
-			if (shell == null) return false;
+			if (shell == null) {
+				return false;
+			}
 			if (innerDeployMultiFileUpdate()) {
 				try { // FIXME use nodeDir
 					if (Runtime.getRuntime().exec(new String[]{shell.toString(), restartScript.toString()}) == null) {
@@ -1553,14 +1655,20 @@ public class MainJarDependenciesChecker {
 				System.out.println("Shutting down Freenet for hard restart after deploying multi-file update for " + name + ". The script " + restartScript + " should start it back up.");
 				WrapperManager.stop(0);
 				return true;
-			} else return false;
+			} else {
+				return false;
+			}
 		}
 
 		private File findShell() {
 			File f = new File("/bin/sh");
-			if (f.exists() && f.canExecute()) return f;
+			if (f.exists() && f.canExecute()) {
+				return f;
+			}
 			f = new File("/bin/bash");
-			if (f.exists() && f.canExecute()) return f;
+			if (f.exists() && f.canExecute()) {
+				return f;
+			}
 			System.err.println("Unable to find system shell");
 			return null;
 		}
@@ -1648,7 +1756,9 @@ public class MainJarDependenciesChecker {
 			} finally {
 				Closer.close(is);
 				Closer.close(os);
-				if (failed) output.delete();
+				if (failed) {
+					output.delete();
+				}
 			}
 		}
 
@@ -1663,8 +1773,12 @@ public class MainJarDependenciesChecker {
 			ZipEntry ze;
 			while (true) {
 				ze = zis.getNextEntry();
-				if (ze == null) break;
-				if (ze.isDirectory()) continue;
+				if (ze == null) {
+					break;
+				}
+				if (ze.isDirectory()) {
+					continue;
+				}
 				String name = ze.getName();
 
 				if (name.equals("META-INF/MANIFEST.MF")) {
@@ -1676,12 +1790,16 @@ public class MainJarDependenciesChecker {
 					Attributes a = m.getMainAttributes();
 					if (a != null) {
 						String ver = a.getValue(key);
-						if (ver != null) return ver;
+						if (ver != null) {
+							return ver;
+						}
 					}
 					a = m.getAttributes("common");
 					if (a != null) {
 						String ver = a.getValue(key);
-						if (ver != null) return ver;
+						if (ver != null) {
+							return ver;
+						}
 					}
 				}
 			}
@@ -1703,13 +1821,16 @@ public class MainJarDependenciesChecker {
 	 * wrapper.conf.
 	 */
 	private static File getDependencyInUse(Pattern p) {
-		if (p == null) return null; // Optional in some cases.
+		if (p == null) {
+			return null; // Optional in some cases.
+		}
 		String classpath = System.getProperty("java.class.path");
 		String[] split = classpath.split(File.pathSeparator);
 		for (String s : split) {
 			File f = new File(s);
-			if (p.matcher(f.getName().toLowerCase()).matches())
+			if (p.matcher(f.getName().toLowerCase()).matches()) {
 				return f;
+			}
 		}
 		return null;
 	}
@@ -1719,8 +1840,9 @@ public class MainJarDependenciesChecker {
 		String[] split = classpath.split(File.pathSeparator);
 		for (String s : split) {
 			File f = new File(s);
-			if (name.equalsIgnoreCase(f.getName()))
+			if (name.equalsIgnoreCase(f.getName())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1742,8 +1864,12 @@ public class MainJarDependenciesChecker {
 	}
 
 	public static boolean validFile(File filename, byte[] expectedHash, long size, boolean executable) {
-		if (filename == null) return false;
-		if (!filename.exists()) return false;
+		if (filename == null) {
+			return false;
+		}
+		if (!filename.exists()) {
+			return false;
+		}
 		if (filename.length() != size) {
 			System.out.println("File exists while updating but length is wrong (" + filename.length() + " should be " + size + ") for " + filename);
 			return false;
@@ -1801,19 +1927,26 @@ public class MainJarDependenciesChecker {
 		synchronized (this) {
 			f = new TreeSet<Dependency>(dependencies);
 		}
-		if (logMINOR) Logger.minor(this, "Deploying build " + build + " with " + f.size() + " dependencies");
+		if (logMINOR) {
+			Logger.minor(this, "Deploying build " + build + " with " + f.size() + " dependencies");
+		}
 		deployer.deploy(new MainJarDependencies(f, build));
 	}
 
 	private synchronized void fetchDependency(FreenetURI chk, Dependency dep, byte[] expectedHash, long expectedSize, boolean essential, boolean executable) throws FetchException {
 		Downloader d = new Downloader(dep, chk, expectedHash, expectedSize, essential, executable, build);
-		if (essential)
+		if (essential) {
 			downloaders.add(d);
+		}
 	}
 
 	private synchronized boolean ready() {
-		if (broken) return false;
-		if (!downloaders.isEmpty()) return false;
+		if (broken) {
+			return false;
+		}
+		if (!downloaders.isEmpty()) {
+			return false;
+		}
 		return true;
 	}
 

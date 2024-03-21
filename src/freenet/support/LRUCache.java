@@ -100,8 +100,9 @@ public final class LRUCache<Key extends Comparable<Key>, Value> {
 	 */
 	public Value get(final Key key) {
 		final Entry entry = mCache.get(key);
-		if (entry == null)
+		if (entry == null) {
 			return null;
+		}
 
 		if (mExpirationDelay < Long.MAX_VALUE && entry.expired()) {
 			mCache.removeKey(key);

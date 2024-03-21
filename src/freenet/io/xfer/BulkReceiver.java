@@ -55,7 +55,9 @@ public class BulkReceiver {
 
 	public void onAborted() {
 		synchronized (this) {
-			if (sentCancel) return;
+			if (sentCancel) {
+				return;
+			}
 			sentCancel = true;
 		}
 		try {

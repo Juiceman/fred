@@ -52,17 +52,21 @@ public class UIDRoutingContextTracker {
 
 		public void add(UIDTag tag) {
 			synchronized (UIDRoutingContextTracker.this) {
-				if (finished) throw new IllegalStateException();
-				if (!tags.contains(tag))
+				if (finished) {
+					throw new IllegalStateException();
+				}
+				if (!tags.contains(tag)) {
 					tags.add(tag);
+				}
 			}
 		}
 
 		public void remove(UIDTag tag) {
 			synchronized (UIDRoutingContextTracker.this) {
 				tags.remove(tag);
-				if (tags.isEmpty())
+				if (tags.isEmpty()) {
 					removeMe();
+				}
 			}
 		}
 

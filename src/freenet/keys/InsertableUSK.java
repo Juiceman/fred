@@ -26,8 +26,9 @@ public class InsertableUSK extends USK {
 	public final DSAPrivateKey privKey;
 
 	public static InsertableUSK createInsertable(FreenetURI uri, boolean persistent) throws MalformedURLException {
-		if (!uri.getKeyType().equalsIgnoreCase("USK"))
+		if (!uri.getKeyType().equalsIgnoreCase("USK")) {
 			throw new MalformedURLException();
+		}
 		InsertableClientSSK ssk =
 				InsertableClientSSK.create(uri.setKeyType("SSK"));
 		return new InsertableUSK(ssk.docName, ssk.pubKeyHash, ssk.cryptoKey, ssk.privKey, uri.getSuggestedEdition(), ssk.cryptoAlgorithm);
@@ -35,8 +36,9 @@ public class InsertableUSK extends USK {
 
 	InsertableUSK(String docName, byte[] pubKeyHash, byte[] cryptoKey, DSAPrivateKey key, long suggestedEdition, byte cryptoAlgorithm) throws MalformedURLException {
 		super(pubKeyHash, cryptoKey, docName, suggestedEdition, cryptoAlgorithm);
-		if (cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH)
+		if (cryptoKey.length != ClientSSK.CRYPTO_KEY_LENGTH) {
 			throw new MalformedURLException("Decryption key wrong length: " + cryptoKey.length + " should be " + ClientSSK.CRYPTO_KEY_LENGTH);
+		}
 		this.privKey = key;
 	}
 
@@ -59,7 +61,9 @@ public class InsertableUSK extends USK {
 	}
 
 	public InsertableUSK privCopy(long edition) {
-		if (edition == suggestedEdition) return this;
+		if (edition == suggestedEdition) {
+			return this;
+		}
 		try {
 			return new InsertableUSK(siteName, pubKeyHash, cryptoKey, privKey, edition, cryptoAlgorithm);
 		} catch (MalformedURLException e) {

@@ -36,8 +36,9 @@ public abstract class BinaryBlob {
 		binaryBlobStream.write(keyData);
 		binaryBlobStream.write(headers);
 		binaryBlobStream.write(data);
-		if (pubkey != null)
+		if (pubkey != null) {
 			binaryBlobStream.write(pubkey);
+		}
 	}
 
 	static final short BLOB_BLOCK = 1;
@@ -58,11 +59,13 @@ public abstract class BinaryBlob {
 
 	public static void readBinaryBlob(DataInputStream dis, BlockSet blocks, boolean tolerant) throws IOException, BinaryBlobFormatException {
 		long magic = dis.readLong();
-		if (magic != BinaryBlob.BINARY_BLOB_MAGIC)
+		if (magic != BinaryBlob.BINARY_BLOB_MAGIC) {
 			throw new BinaryBlobFormatException("Bad magic");
+		}
 		short version = dis.readShort();
-		if (version != BinaryBlob.BINARY_BLOB_OVERALL_VERSION)
+		if (version != BinaryBlob.BINARY_BLOB_OVERALL_VERSION) {
 			throw new BinaryBlobFormatException("Unknown overall version");
+		}
 
 		while (true) {
 			long blobLength;
@@ -81,18 +84,22 @@ public abstract class BinaryBlob {
 				break;
 			} else if (blobType == BinaryBlob.BLOB_BLOCK) {
 				if (blobVer != BinaryBlob.BLOB_BLOCK_VERSION)
-					// Even if tolerant, if we can't read a blob there probably isn't much we can do.
+				// Even if tolerant, if we can't read a blob there probably isn't much we can do.
+				{
 					throw new BinaryBlobFormatException("Unknown block blob version");
-				if (blobLength < 9)
+				}
+				if (blobLength < 9) {
 					throw new BinaryBlobFormatException("Block blob too short");
+				}
 				short keyType = dis.readShort();
 				int keyLen = dis.readUnsignedByte();
 				int headersLen = dis.readUnsignedShort();
 				int dataLen = dis.readUnsignedShort();
 				int pubkeyLen = dis.readUnsignedShort();
 				int total = 9 + keyLen + headersLen + dataLen + pubkeyLen;
-				if (blobLength != total)
+				if (blobLength != total) {
 					throw new BinaryBlobFormatException("Binary blob not same length as data: blobLength=" + blobLength + " total=" + total);
+				}
 				byte[] keyBytes = new byte[keyLen];
 				byte[] headersBytes = new byte[headersLen];
 				byte[] dataBytes = new byte[dataLen];

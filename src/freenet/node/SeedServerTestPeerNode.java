@@ -50,30 +50,34 @@ public class SeedServerTestPeerNode extends SeedServerPeerNode {
 	@Override
 	public void onRemove() {
 		long lastReceivedDataPacketTime = lastReceivedDataPacketTime();
-		if (lastReceivedDataPacketTime <= 0 && timeLastConnectionCompleted() > 0)
+		if (lastReceivedDataPacketTime <= 0 && timeLastConnectionCompleted() > 0) {
 			System.err.println(this.getIdentityString() + " : REMOVED: TIMEOUT: NO PACKETS RECEIVED AFTER SUCCESSFUL CONNECTION SETUP");
-		else if (timeLastConnectionCompleted() <= 0)
+		} else if (timeLastConnectionCompleted() <= 0) {
 			System.err.println(this.getIdentityString() + " : REMOVED: NEVER CONNECTED");
-		else
+		} else {
 			System.err.println(this.getIdentityString() + " : REMOVED: UNKNOWN CAUSE");
+		}
 		super.onRemove();
 	}
 
 	public FATE getFate() {
 		long lastReceivedDataPacketTime = lastReceivedDataPacketTime();
 		if (isConnected()) {
-			if (lastReceivedDataPacketTime <= 0)
+			if (lastReceivedDataPacketTime <= 0) {
 				return FATE.CONNECTED_NO_PACKETS_RECEIVED;
-			else if (this.isUnroutableOlderVersion())
+			} else if (this.isUnroutableOlderVersion()) {
 				return FATE.CONNECTED_TOO_OLD;
-			else
+			} else {
 				return FATE.CONNECTED_SUCCESS;
+			}
 		}
 		long lastConnectionTime = timeLastConnectionCompleted();
-		if (lastConnectionTime <= 0)
+		if (lastConnectionTime <= 0) {
 			return FATE.NEVER_CONNECTED;
-		if (lastReceivedDataPacketTime <= 0)
+		}
+		if (lastReceivedDataPacketTime <= 0) {
 			return FATE.CONNECTED_TIMEOUT_NO_PACKETS_RECEIVED;
+		}
 		return FATE.CONNECTED_DISCONNECTED_UNKNOWN;
 	}
 }

@@ -188,8 +188,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 								 ToadletContext ctx) throws ToadletContextClosedException,
 			IOException, RedirectException {
 
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		// User requested reset to defaults, so present confirmation page.
 		if (request.isPartSet("confirm-reset-to-defaults")) {
@@ -312,8 +313,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 					// Disallow resetting fproxy port number to default as it
 					// might break the link to start fproxy on the system tray,
 					// shortcuts etc.
-					if (prefix.equals("fproxy") && configName.equals("port"))
+					if (prefix.equals("fproxy") && configName.equals("port")) {
 						continue;
+					}
 					value = o.getDefault();
 				} else {
 					value = request.getPartAsStringFailsafe(prefix + '.'
@@ -426,8 +428,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	public void handleMethodGET(URI uri, HTTPRequest req, ToadletContext ctx)
 			throws ToadletContextClosedException, IOException {
 
-		if (!ctx.checkFullAccess(this))
+		if (!ctx.checkFullAccess(this)) {
 			return;
+		}
 
 		boolean advancedModeEnabled = ctx.isAdvancedModeEnabled();
 
@@ -589,8 +592,9 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 							MAX_PARAM_VALUE_SIZE);
 				}
 				if (overriddenOption != null
-						&& overriddenOption.equals(fullName))
+						&& overriddenOption.equals(fullName)) {
 					value = overriddenValue;
+				}
 				switch (optionType) {
 					case DROP_DOWN:
 						configItemValueNode.addChild(addComboBox(value,
@@ -775,11 +779,13 @@ public class ConfigToadlet extends Toadlet implements LinkEnabledCallback {
 	@Override
 	public boolean isEnabled(ToadletContext ctx) {
 		Option<?>[] o = subConfig.getOptions();
-		if (ctx.isAdvancedModeEnabled())
+		if (ctx.isAdvancedModeEnabled()) {
 			return true;
+		}
 		for (Option<?> option : o)
-			if (!option.isExpert())
+			if (!option.isExpert()) {
 				return true;
+			}
 		return false;
 	}
 }

@@ -259,8 +259,9 @@ public class ElementInfo {
 		} else if (disallowNonAlnumFonts) {
 			for (int i = 0; i < font.length(); i++) {
 				char c = font.charAt(i);
-				if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '.' || c == '_' || c == '-' || c == ',' || c == '+' || c == '~'))
+				if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '.' || c == '_' || c == '-' || c == ',' || c == '+' || c == '~')) {
 					return false;
+				}
 			}
 			return true;
 		}
@@ -275,8 +276,9 @@ public class ElementInfo {
 		if (disallowNonAlnumFonts) {
 			for (int i = 0; i < font.length(); i++) {
 				char c = font.charAt(i);
-				if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '.' || c == '_' || c == '-' || c == ',' || c == '+' || c == '~'))
+				if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '.' || c == '_' || c == '-' || c == ',' || c == '+' || c == '~')) {
 					return false;
+				}
 			}
 			return true;
 		}
@@ -301,7 +303,9 @@ public class ElementInfo {
 	public static boolean isWordPrefixOrMatchOfSpecificFontFamily(String prefix) {
 		String extraSpace = prefix + " ";
 		for (String s : FONTS)
-			if (s.equals(prefix) || s.startsWith(extraSpace)) return true;
+			if (s.equals(prefix) || s.startsWith(extraSpace)) {
+				return true;
+			}
 		return false;
 	}
 
@@ -314,7 +318,9 @@ public class ElementInfo {
 	 * AFAICS only <li>.
 	 */
 	public static boolean tryAutoClose(String element) {
-		if ("li".equals(element)) return true;
+		if ("li".equals(element)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -364,7 +370,9 @@ public class ElementInfo {
 					if (escapeNewline) {
 						escapeNewline = false;
 						escape = false;
-						if (c == '\n') continue;
+						if (c == '\n') {
+							continue;
+						}
 					}
 					escapeNewline = false;
 					if (('0' <= c && '9' >= c) || ('a' <= c && 'f' >= c) || ('A' <= c && 'F' >= c)) {
@@ -389,8 +397,10 @@ public class ElementInfo {
 						}
 					}
 					if (c == '\r' || c == '\n' || c == '\f')
-						// Explicitly not allowed to escape these, see grammar, and 4.1.3.
+					// Explicitly not allowed to escape these, see grammar, and 4.1.3.
+					{
 						return false;
+					}
 					// Directly escaped character
 					escape = false;
 					continue;
@@ -398,17 +408,27 @@ public class ElementInfo {
 				if (digitsAllowed && c >= '0' && c <= '9') {
 					continue;
 				}
-				if (c == '-') continue;
+				if (c == '-') {
+					continue;
+				}
 				digitsAllowed = true;
-				if (c == '_') continue;
+				if (c == '_') {
+					continue;
+				}
 				if (c == '\\') {
 					escape = true;
 					continue;
 				}
-				if (c >= 'a' && c <= 'z') continue;
-				if (c >= 'A' && c <= 'Z') continue;
+				if (c >= 'a' && c <= 'z') {
+					continue;
+				}
+				if (c >= 'A' && c <= 'Z') {
+					continue;
+				}
 				// Spec strictly speaking allows control chars, but let's disallow them here as a paranoid precaution.
-				if (c >= 0xA1 && !Character.isISOControl(c)) continue;
+				if (c >= 0xA1 && !Character.isISOControl(c)) {
+					continue;
+				}
 				return false;
 			}
 
@@ -427,7 +447,9 @@ public class ElementInfo {
 			// Pseudo-classes can be chained, at least dynamic ones can, see CSS2.1 section 5.11.3
 			String[] split = cname.split(":");
 			for (String s : split)
-				if (isBannedPseudoClass(s)) return true;
+				if (isBannedPseudoClass(s)) {
+					return true;
+				}
 			return false;
 		}
 		cname = cname.toLowerCase();
@@ -439,25 +461,26 @@ public class ElementInfo {
 			// Pseudo-classes can be chained, at least dynamic ones can, see CSS2.1 section 5.11.3
 			String[] split = cname.split(":");
 			for (String s : split)
-				if (!isValidPseudoClass(s)) return false;
+				if (!isValidPseudoClass(s)) {
+					return false;
+				}
 			return true;
 		}
 		cname = cname.toLowerCase();
-		if (PSEUDOCLASS.contains(cname))
+		if (PSEUDOCLASS.contains(cname)) {
 			return true;
-
-
-		else if (cname.contains("lang") && LANGUAGES.contains(getPseudoClassArg(cname, "lang"))) {
+		} else if (cname.contains("lang") && LANGUAGES.contains(getPseudoClassArg(cname, "lang"))) {
 			// FIXME accept unknown languages as long as they are [a-z-]
 			return true;
-		} else if (cname.contains("nth-child") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-child")))
+		} else if (cname.contains("nth-child") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-child"))) {
 			return true;
-		else if (cname.contains("nth-last-child") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-child")))
+		} else if (cname.contains("nth-last-child") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-child"))) {
 			return true;
-		else if (cname.contains("nth-of-type") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-of-type")))
+		} else if (cname.contains("nth-of-type") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-of-type"))) {
 			return true;
-		else if (cname.contains("nth-last-of-type") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-of-type")))
+		} else if (cname.contains("nth-last-of-type") && FilterUtils.isNth(getPseudoClassArg(cname, "nth-last-of-type"))) {
 			return true;
+		}
 
 		return false;
 	}
@@ -489,7 +512,9 @@ public class ElementInfo {
 				if (escapeNewline) {
 					escapeNewline = false;
 					escape = false;
-					if (c == '\n') continue;
+					if (c == '\n') {
+						continue;
+					}
 				}
 				escapeNewline = false;
 				if (('0' <= c && '9' >= c) || ('a' <= c && 'f' >= c) || ('A' <= c && 'F' >= c)) {
@@ -529,10 +554,14 @@ public class ElementInfo {
 			}
 
 			// No unquoted quotes
-			if (c == '\'' || c == '\"') return false;
+			if (c == '\'' || c == '\"') {
+				return false;
+			}
 
 			// No unquoted newlines
-			if (c == '\r' || c == '\n' || c == '\f') return false;
+			if (c == '\r' || c == '\n' || c == '\f') {
+				return false;
+			}
 
 			if (c == '\\') {
 				escape = true;
@@ -563,12 +592,16 @@ public class ElementInfo {
 	}
 
 	public static boolean isValidStringWithQuotes(String string) {
-		if (string.length() < 2) return false;
+		if (string.length() < 2) {
+			return false;
+		}
 		if ((string.charAt(0) == '\'' && string.charAt(string.length() - 1) == '\'') ||
 				(string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"')) {
 			string = string.substring(1, string.length() - 1);
 			return isValidString(string);
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 

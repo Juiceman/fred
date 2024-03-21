@@ -190,10 +190,11 @@ public class SplitFileFetcherSegmentStorage {
 				parent.maxRetries, parent.cooldownTries, parent.cooldownLength, this,
 				keysFetching, ignoreLastBlock ? dataBlocks - 1 : -1);
 		int minFetched = blocksForDecode();
-		if (crossCheckBlocks != 0)
+		if (crossCheckBlocks != 0) {
 			crossSegmentsByBlock = new SplitFileFetcherCrossSegmentStorage[minFetched];
-		else
+		} else {
 			crossSegmentsByBlock = null;
+		}
 		blocksFetched = new int[minFetched];
 		for (int i = 0; i < blocksFetched.length; i++) blocksFetched[i] = -1;
 		segmentStatusPaddedLength = paddedStoredSegmentStatusLength(dataBlocks, checkBlocks,
@@ -239,28 +240,33 @@ public class SplitFileFetcherSegmentStorage {
 		this.segNo = segNo;
 		this.parent = parent;
 		this.dataBlocks = dis.readInt();
-		if (dataBlocks < 1 || dataBlocks > 256)
+		if (dataBlocks < 1 || dataBlocks > 256) {
 			throw new StorageFormatException("Bad data block count");
+		}
 		this.crossSegmentCheckBlocks = dis.readInt();
 		// REDFLAG one day we will support more than 256 blocks per segment?
-		if (crossSegmentCheckBlocks < 0 || crossSegmentCheckBlocks > 256)
+		if (crossSegmentCheckBlocks < 0 || crossSegmentCheckBlocks > 256) {
 			throw new StorageFormatException("Bad cross-segment check block count");
+		}
 		this.checkBlocks = dis.readInt();
-		if (checkBlocks < 0 || checkBlocks > 256)
+		if (checkBlocks < 0 || checkBlocks > 256) {
 			throw new StorageFormatException("Bad check block count");
+		}
 		int total = dataBlocks + checkBlocks + crossSegmentCheckBlocks;
-		if (total > 256)
+		if (total > 256) {
 			throw new StorageFormatException("Too many blocks in segment");
+		}
 		boolean ignoreLastBlock =
 				(segNo == parent.segments.length - 1 && parent.lastBlockMightNotBePadded());
 		blockChooser = new SplitFileFetcherSegmentBlockChooser(total, parent.random,
 				parent.maxRetries, parent.cooldownTries, parent.cooldownLength,
 				this, keysFetching, ignoreLastBlock ? dataBlocks - 1 : -1);
 		int minFetched = blocksForDecode();
-		if (crossSegmentCheckBlocks != 0)
+		if (crossSegmentCheckBlocks != 0) {
 			crossSegmentsByBlock = new SplitFileFetcherCrossSegmentStorage[minFetched];
-		else
+		} else {
 			crossSegmentsByBlock = null;
+		}
 		blocksFetched = new int[minFetched];
 		for (int i = 0; i < blocksFetched.length; i++) blocksFetched[i] = -1;
 		segmentStatusPaddedLength = paddedStoredSegmentStatusLength(dataBlocks, checkBlocks,
@@ -283,7 +289,9 @@ public class SplitFileFetcherSegmentStorage {
 		synchronized (this) {
 			if (keysCache != null) {
 				SplitFileSegmentKeys cached = keysCache.get();
-				if (cached != null) return cached;
+				if (cached != null) {
+					return cached;
+				}
 			}
 			SplitFileSegmentKeys keys;
 			try {
@@ -293,7 +301,9 @@ public class SplitFileFetcherSegmentStorage {
 				// Treat as IOException, i.e. fatal. FIXME!
 				throw new IOException(e);
 			}
-			if (keys == null) return keys;
+			if (keys == null) {
+				return keys;
+			}
 			keysCache = new SoftReference<SplitFileSegmentKeys>(keys);
 			return keys;
 		}
@@ -334,9 +344,15 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	public boolean tryStartDecode() {
 		synchronized (this) {
-			if (succeeded || failed || finished) return false;
-			if (!corruptMetadata && blockChooser.successCount() < blocksForDecode()) return false;
-			if (tryDecode) return true;
+			if (succeeded || failed || finished) {
+				return false;
+			}
+			if (!corruptMetadata && blockChooser.successCount() < blocksForDecode()) {
+				return false;
+			}
+			if (tryDecode) {
+				return true;
+			}
 			tryDecode = true;
 		}
 		long limit = totalBlocks() * CHKBlock.DATA_LENGTH +
@@ -377,10 +393,13 @@ public class SplitFileFetcherSegmentStorage {
 						// Need to tell the parent, so it can do something about it.
 						// In particular, if we failed, we may need to complete cancellation, and we
 						// can't do that until both tryDecode=false and parent gets the callback.
-						if (!shutdown)
+						if (!shutdown) {
 							parent.finishedEncoding(SplitFileFetcherSegmentStorage.this);
+						}
 					} finally {
-						if (lock != null) lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						if (lock != null) {
+							lock.unlock(false, MemoryLimitedJobRunner.THREAD_PRIORITY);
+						}
 					}
 				}
 				return true;
@@ -395,13 +414,19 @@ public class SplitFileFetcherSegmentStorage {
 	 * the new decoded blocks afterwards to ensure reproducible behaviour.
 	 */
 	private void innerDecode(MemoryLimitedChunk chunk) throws IOException {
-		if (logMINOR) Logger.minor(this, "Trying to decode " + this + " for " + parent);
+		if (logMINOR) {
+			Logger.minor(this, "Trying to decode " + this + " for " + parent);
+		}
 		// Even if we fail, once we set tryDecode=true, we need to notify the parent when we're done.
 		boolean fail;
 		synchronized (this) {
-			if (finished) return;
+			if (finished) {
+				return;
+			}
 			fail = succeeded || failed;
-			if (fail) finished = true;
+			if (fail) {
+				finished = true;
+			}
 		}
 		if (fail) {
 			return;
@@ -431,8 +456,9 @@ public class SplitFileFetcherSegmentStorage {
 			for (short i = 0; i < blocksFetched.length; i++) {
 				if (blocksFetched[i] < 0 || blocksFetched[i] > totalBlocks) {
 					Logger.warning(this, "Inconsistency decoding splitfile: slot " + i + " has bogus block number " + blocksFetched[i]);
-					if (blocksFetched[i] != -1)
+					if (blocksFetched[i] != -1) {
 						blocksFetched[i] = -1;
+					}
 					maybeBlocks.add(new SplitFileFetcherBlock(allBlocks[i], (short) -1, i));
 					continue;
 				} else if (used[blocksFetched[i]]) {
@@ -440,7 +466,9 @@ public class SplitFileFetcherSegmentStorage {
 					blocksFetched[i] = -1;
 					continue;
 				} else {
-					if (logMINOR) Logger.minor(this, "Found block " + blocksFetched[i] + " in slot " + i);
+					if (logMINOR) {
+						Logger.minor(this, "Found block " + blocksFetched[i] + " in slot " + i);
+					}
 					maybeBlocks.add(new SplitFileFetcherBlock(allBlocks[i], blocksFetched[i], i));
 					used[blocksFetched[i]] = true;
 					fetchedCount++;
@@ -511,12 +539,14 @@ public class SplitFileFetcherSegmentStorage {
 			}
 			if (!failed) {
 				validBlocks++;
-				if (blockNumber < blocksForDecode())
+				if (blockNumber < blocksForDecode()) {
 					validDataBlocks++;
-				if (blockNumber < dataBlocks.length)
+				}
+				if (blockNumber < dataBlocks.length) {
 					dataBlocks[blockNumber] = buf;
-				else
+				} else {
 					checkBlocks[blockNumber - dataBlocks.length] = buf;
+				}
 			}
 		}
 		allBlocks = null;
@@ -550,7 +580,9 @@ public class SplitFileFetcherSegmentStorage {
 			}
 		}
 		if (validDataBlocks < blocksForDecode()) {
-			if (logMINOR) Logger.minor(this, "Decoding in memory for " + this);
+			if (logMINOR) {
+				Logger.minor(this, "Decoding in memory for " + this);
+			}
 			parent.fecCodec.decode(dataBlocks, checkBlocks, dataBlocksPresent, checkBlocksPresent, CHKBlock.DATA_LENGTH);
 		}
 		boolean capturingBinaryBlob = parent.fetcher.wantBinaryBlob();
@@ -563,8 +595,9 @@ public class SplitFileFetcherSegmentStorage {
 		writeAllDataBlocks(dataBlocks);
 		// Report success if we are not verifying decoded keys, but if we *are*, we need to wait
 		// until FEC encoding completes.
-		if (!checkDecodedKeys)
+		if (!checkDecodedKeys) {
 			parent.finishedSuccess(this);
+		}
 		triggerAllCrossSegmentCallbacks();
 		parent.fecCodec.encode(dataBlocks, checkBlocks, checkBlocksPresent, CHKBlock.DATA_LENGTH);
 		// Check these *after* we complete, to reduce the critical path.
@@ -591,13 +624,17 @@ public class SplitFileFetcherSegmentStorage {
 			corruptMetadata = false;
 			finished = true;
 		}
-		if (logMINOR) Logger.minor(this, "Finished decoding " + this + " for " + parent);
+		if (logMINOR) {
+			Logger.minor(this, "Finished decoding " + this + " for " + parent);
+		}
 	}
 
 	private void checkDecodedDataBlocks(byte[][] dataBlocks, boolean[] dataBlocksPresent,
 										SplitFileSegmentKeys keys, boolean capturingBinaryBlob) {
 		for (int i = 0; i < dataBlocks.length; i++) {
-			if (dataBlocksPresent[i]) continue;
+			if (dataBlocksPresent[i]) {
+				continue;
+			}
 			ClientCHK decodeKey = keys.getKey(i, null, false);
 			// Encode it to check whether the key is the same.
 			ClientCHKBlock block;
@@ -615,8 +652,9 @@ public class SplitFileFetcherSegmentStorage {
 						return;
 					}
 				}
-				if (capturingBinaryBlob)
+				if (capturingBinaryBlob) {
 					parent.fetcher.maybeAddToBinaryBlob(block);
+				}
 			} catch (CHKEncodeException e) {
 				// Impossible!
 				parent.fail(new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Decoded block could not be encoded"));
@@ -629,7 +667,9 @@ public class SplitFileFetcherSegmentStorage {
 	private boolean checkEncodedDataBlocks(byte[][] checkBlocks, boolean[] checkBlocksPresent,
 										   SplitFileSegmentKeys keys, boolean capturingBinaryBlob) {
 		for (int i = 0; i < checkBlocks.length; i++) {
-			if (checkBlocksPresent[i]) continue;
+			if (checkBlocksPresent[i]) {
+				continue;
+			}
 			ClientCHK decodeKey = keys.getKey(i + blocksForDecode(), null, false);
 			// Encode it to check whether the key is the same.
 			ClientCHKBlock block;
@@ -640,8 +680,9 @@ public class SplitFileFetcherSegmentStorage {
 					Logger.error(this, "Splitfile check block " + i + " does not encode to expected key for " + this + " for " + parent);
 					return false;
 				}
-				if (capturingBinaryBlob)
+				if (capturingBinaryBlob) {
 					parent.fetcher.maybeAddToBinaryBlob(block);
+				}
 			} catch (CHKEncodeException e) {
 				// Impossible!
 				parent.fail(new FetchException(FetchExceptionMode.INTERNAL_ERROR, "Decoded block could not be encoded"));
@@ -657,13 +698,21 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	private void queueHeal(byte[][] dataBlocks, byte[][] checkBlocks, boolean[] dataBlocksPresent, boolean[] checkBlocksPresent) throws IOException {
 		for (int i = 0; i < dataBlocks.length; i++) {
-			if (dataBlocksPresent[i]) continue;
-			if (blockChooser.getRetries(i) == 0) continue;
+			if (dataBlocksPresent[i]) {
+				continue;
+			}
+			if (blockChooser.getRetries(i) == 0) {
+				continue;
+			}
 			queueHeal(i, dataBlocks[i]);
 		}
 		for (int i = 0; i < checkBlocks.length; i++) {
-			if (checkBlocksPresent[i]) continue;
-			if (blockChooser.getRetries(i + dataBlocks.length) == 0) continue;
+			if (checkBlocksPresent[i]) {
+				continue;
+			}
+			if (blockChooser.getRetries(i + dataBlocks.length) == 0) {
+				continue;
+			}
 			queueHeal(i + dataBlocks.length, checkBlocks[i]);
 		}
 	}
@@ -698,13 +747,16 @@ public class SplitFileFetcherSegmentStorage {
 	private void triggerAllCrossSegmentCallbacks() {
 		SplitFileFetcherCrossSegmentStorage[] crossSegmentsByBlockCopy;
 		synchronized (this) {
-			if (crossSegmentsByBlock == null) return;
+			if (crossSegmentsByBlock == null) {
+				return;
+			}
 			crossSegmentsByBlockCopy = Arrays.copyOf(this.crossSegmentsByBlock, this.crossSegmentsByBlock.length);
 		}
 		for (int i = 0; i < crossSegmentsByBlockCopy.length; i++) {
 			SplitFileFetcherCrossSegmentStorage s = crossSegmentsByBlockCopy[i];
-			if (s != null)
+			if (s != null) {
 				s.onFetchedRelevantBlock(this, i);
+			}
 		}
 	}
 
@@ -747,20 +799,28 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	public boolean onGotKey(NodeCHK key, CHKBlock block) throws IOException {
 		SplitFileSegmentKeys keys = getSegmentKeys();
-		if (keys == null) return false;
+		if (keys == null) {
+			return false;
+		}
 		int blockNumber;
 		ClientCHK decodeKey;
 		synchronized (this) {
-			if (succeeded || failed || finished) return false;
-			blockNumber = blockChooser.getBlockNumber(keys, key);
-			if (blockNumber == -1) {
-				if (logMINOR) Logger.minor(this, "Block not found " + key);
+			if (succeeded || failed || finished) {
 				return false;
 			}
-			if (blockChooser.hasSucceeded(blockNumber))
-				return false; // Even if this is inaccurate, it will be corrected on a FEC attempt.
-			if (tryDecode)
+			blockNumber = blockChooser.getBlockNumber(keys, key);
+			if (blockNumber == -1) {
+				if (logMINOR) {
+					Logger.minor(this, "Block not found " + key);
+				}
 				return false;
+			}
+			if (blockChooser.hasSucceeded(blockNumber)) {
+				return false; // Even if this is inaccurate, it will be corrected on a FEC attempt.
+			}
+			if (tryDecode) {
+				return false;
+			}
 			decodeKey = keys.getKey(blockNumber, null, false);
 		}
 		ClientCHKBlock decodedBlock;
@@ -815,17 +875,25 @@ public class SplitFileFetcherSegmentStorage {
 			// LOCKING We have to do the write inside the lock to prevent parallel decodes messing up etc.
 			synchronized (this) {
 				if (succeeded || failed || finished) {
-					if (logMINOR) Logger.minor(this, "Already succeeded/finished/failed");
+					if (logMINOR) {
+						Logger.minor(this, "Already succeeded/finished/failed");
+					}
 					return saved; // Don't double remove from bloom filter!
 				}
 				if (blockChooser.hasSucceeded(blockNumber)) {
-					if (logMINOR) Logger.minor(this, "Already have block " + blockNumber);
+					if (logMINOR) {
+						Logger.minor(this, "Already have block " + blockNumber);
+					}
 					blockNumber = blockChooser.getBlockNumber(keys, key);
-					if (logMINOR) Logger.minor(this, "Trying block " + blockNumber);
+					if (logMINOR) {
+						Logger.minor(this, "Trying block " + blockNumber);
+					}
 					continue;
 				}
 				if (blockChooser.successCount() >= blocksForDecode()) {
-					if (logMINOR) Logger.minor(this, "Already decoding");
+					if (logMINOR) {
+						Logger.minor(this, "Already decoding");
+					}
 					// Don't remove it from the filter. We haven't written it, so it could be
 					// removed twice. And if we decode successfully, the filter will be ignored.
 					return saved;
@@ -852,11 +920,13 @@ public class SplitFileFetcherSegmentStorage {
 				nextBlockNumber = (short) blockChooser.getBlockNumber(keys, key);
 				metadataDirty = true;
 			}
-			if (callback != null)
+			if (callback != null) {
 				callback.onFetchedRelevantBlock(this, blockNumber);
+			}
 			lazyWriteMetadata();
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Got block " + blockNumber + " (" + key + ") for " + this + " for " + parent + " written to " + slotNumber);
+			}
 			parent.jobRunner.queueNormalOrDrop(new PersistentJob() {
 
 				@Override
@@ -875,7 +945,9 @@ public class SplitFileFetcherSegmentStorage {
 
 	private synchronized int findFreeSlot() {
 		for (int i = 0; i < blocksFetched.length; i++) {
-			if (blocksFetched[i] == -1) return i;
+			if (blocksFetched[i] == -1) {
+				return i;
+			}
 		}
 		return -1;
 	}
@@ -887,8 +959,12 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	private synchronized void writeDownloadedBlock(int slotNumber, byte[] data) throws IOException {
 		// FIXME Do we need to pad here for really old splitfiles, or does the FEC code do it?
-		if (data.length != CHKBlock.DATA_LENGTH) throw new IllegalArgumentException();
-		if (slotNumber >= blocksForDecode()) throw new IllegalArgumentException();
+		if (data.length != CHKBlock.DATA_LENGTH) {
+			throw new IllegalArgumentException();
+		}
+		if (slotNumber >= blocksForDecode()) {
+			throw new IllegalArgumentException();
+		}
 		parent.writeBlock(this, slotNumber, data);
 	}
 
@@ -912,11 +988,16 @@ public class SplitFileFetcherSegmentStorage {
 	 * @throws IOException
 	 */
 	private void innerWriteMetadata(boolean force) throws IOException {
-		if (!parent.persistent) return;
+		if (!parent.persistent) {
+			return;
+		}
 		synchronized (this) {
-			if (!(force || metadataDirty)) return;
-			if (logMINOR)
+			if (!(force || metadataDirty)) {
+				return;
+			}
+			if (logMINOR) {
 				Logger.debug(this, "Writing metadata for " + segNo + " for " + parent, new Exception("debug"));
+			}
 			OutputStream cos = parent.writeChecksummedTo(segmentStatusOffset, segmentStatusPaddedLength);
 			try {
 				DataOutputStream dos = new DataOutputStream(cos);
@@ -949,8 +1030,9 @@ public class SplitFileFetcherSegmentStorage {
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(buf));
 		for (int i = 0; i < blocksFetched.length; i++) {
 			int s = dis.readInt();
-			if (s < -1 || s >= totalBlocks())
+			if (s < -1 || s >= totalBlocks()) {
 				throw new StorageFormatException("Bogus block number in blocksFetched[" + i + "]: " + s);
+			}
 			blocksFetched[i] = s;
 			if (s >= 0) {
 				if (!blockChooser.hasSucceeded(s)) {
@@ -977,7 +1059,9 @@ public class SplitFileFetcherSegmentStorage {
 
 	public static int paddedStoredSegmentStatusLength(int dataBlocks, int checkBlocks, int crossCheckBlocks,
 													  boolean trackRetries, int checksumLength, boolean persistent) {
-		if (!persistent) return 0;
+		if (!persistent) {
+			return 0;
+		}
 		return storedSegmentStatusLength(dataBlocks, checkBlocks, crossCheckBlocks, trackRetries) +
 				checksumLength;
 	}
@@ -1009,7 +1093,9 @@ public class SplitFileFetcherSegmentStorage {
 			byte[] buf = readBlock(i);
 			if (i == dataBlocks - 1 && this.segNo == parent.segments.length - 1) {
 				int length = (int) (parent.finalLength % CHKBlock.DATA_LENGTH);
-				if (length == 0) length = CHKBlock.DATA_LENGTH;
+				if (length == 0) {
+					length = CHKBlock.DATA_LENGTH;
+				}
 				os.write(buf, 0, length);
 			} else {
 				os.write(buf);
@@ -1023,7 +1109,9 @@ public class SplitFileFetcherSegmentStorage {
 	 * @throws IOException If an error occurred reading the data from disk.
 	 */
 	private synchronized byte[] readBlock(int slotNumber) throws IOException {
-		if (slotNumber >= blocksForDecode()) throw new IllegalArgumentException();
+		if (slotNumber >= blocksForDecode()) {
+			throw new IllegalArgumentException();
+		}
 		return parent.readBlock(this, slotNumber);
 	}
 
@@ -1032,16 +1120,21 @@ public class SplitFileFetcherSegmentStorage {
 		boolean kill = false;
 		boolean wake = false;
 		boolean write = false;
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Non-fatal failure on block " + blockNumber + " for " + this + " for " + parent);
+		}
 		synchronized (this) {
 			long cooldown = blockChooser.overallCooldownTime();
 			if (blockChooser.onNonFatalFailure(blockNumber)) {
-				if (logMINOR) Logger.minor(this, "Giving up on block " + blockNumber + " on " + this);
+				if (logMINOR) {
+					Logger.minor(this, "Giving up on block " + blockNumber + " on " + this);
+				}
 				givenUp = true;
 				failedBlocks++;
 				int target = checkBlocks;
-				if (!parent.lastBlockMightNotBePadded()) target++;
+				if (!parent.lastBlockMightNotBePadded()) {
+					target++;
+				}
 				if (failedBlocks >= target) {
 					kill = true;
 					failedRetries = true;
@@ -1055,19 +1148,24 @@ public class SplitFileFetcherSegmentStorage {
 					write = true;
 				}
 			} else {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Block " + blockNumber + " on " + this + " : " + blockChooser.getRetries(blockNumber) + "/" + blockChooser.maxRetries);
-				if (blockChooser.overallCooldownTime() < cooldown)
+				}
+				if (blockChooser.overallCooldownTime() < cooldown) {
 					wake = true;
+				}
 				write = true;
 			}
-			if (write)
+			if (write) {
 				metadataDirty = true;
+			}
 		}
-		if (write)
+		if (write) {
 			lazyWriteMetadata();
-		if (givenUp)
+		}
+		if (givenUp) {
 			parent.failedBlock();
+		}
 		if (kill) {
 			if (crossSegmentsByBlock == null) {
 				// Fail the whole splitfile immediately.
@@ -1079,8 +1177,9 @@ public class SplitFileFetcherSegmentStorage {
 				parent.finishedEncoding(this);
 			}
 		}
-		if (wake)
+		if (wake) {
 			parent.maybeClearCooldown();
+		}
 	}
 
 	/**
@@ -1101,7 +1200,9 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	public int allocateCrossDataBlock(SplitFileFetcherCrossSegmentStorage seg, Random random) {
 		int size = dataBlocks;
-		if (crossDataBlocksAllocated == size) return -1;
+		if (crossDataBlocksAllocated == size) {
+			return -1;
+		}
 		int x = 0;
 		for (int i = 0; i < 10; i++) {
 			x = random.nextInt(size);
@@ -1113,7 +1214,9 @@ public class SplitFileFetcherSegmentStorage {
 		}
 		for (int i = 0; i < size; i++) {
 			x++;
-			if (x == size) x = 0;
+			if (x == size) {
+				x = 0;
+			}
 			if (crossSegmentsByBlock[x] == null) {
 				crossSegmentsByBlock[x] = seg;
 				crossDataBlocksAllocated++;
@@ -1133,11 +1236,15 @@ public class SplitFileFetcherSegmentStorage {
 	 * @return The block number allocated (between dataBlocks and dataBlocks+crossSegmentCheckBlocks).
 	 */
 	public int allocateCrossCheckBlock(SplitFileFetcherCrossSegmentStorage seg, Random random) {
-		if (crossCheckBlocksAllocated == crossSegmentCheckBlocks) return -1;
+		if (crossCheckBlocksAllocated == crossSegmentCheckBlocks) {
+			return -1;
+		}
 		int x = dataBlocks + crossSegmentCheckBlocks - (1 + random.nextInt(crossSegmentCheckBlocks));
 		for (int i = 0; i < crossSegmentCheckBlocks; i++) {
 			x++;
-			if (x == dataBlocks + crossSegmentCheckBlocks) x = dataBlocks;
+			if (x == dataBlocks + crossSegmentCheckBlocks) {
+				x = dataBlocks;
+			}
 			if (crossSegmentsByBlock[x] == null) {
 				crossSegmentsByBlock[x] = seg;
 				crossCheckBlocksAllocated++;
@@ -1172,7 +1279,9 @@ public class SplitFileFetcherSegmentStorage {
 
 	public boolean definitelyWantKey(NodeCHK key) {
 		synchronized (this) {
-			if (succeeded || failed || finished) return false;
+			if (succeeded || failed || finished) {
+				return false;
+			}
 		}
 		SplitFileSegmentKeys keys;
 		try {
@@ -1214,24 +1323,28 @@ public class SplitFileFetcherSegmentStorage {
 	}
 
 	synchronized public long countUnfetchedKeys() {
-		if (finished || tryDecode)
+		if (finished || tryDecode) {
 			return 0;
+		}
 		return totalBlocks() - blockChooser.successCount();
 	}
 
 	synchronized public long countSendableKeys(long now, int maxRetries) {
-		if (finished || tryDecode)
+		if (finished || tryDecode) {
 			return 0;
+		}
 		return blockChooser.countFetchable();
 	}
 
 	public synchronized void getUnfetchedKeys(List<Key> keys) throws IOException {
-		if (finished || tryDecode)
+		if (finished || tryDecode) {
 			return;
+		}
 		SplitFileSegmentKeys keyList = getSegmentKeys();
 		for (int i = 0; i < totalBlocks(); i++) {
-			if (!blockChooser.hasSucceeded(i))
+			if (!blockChooser.hasSucceeded(i)) {
 				keys.add(keyList.getNodeKey(i, null, false));
+			}
 		}
 	}
 
@@ -1241,25 +1354,37 @@ public class SplitFileFetcherSegmentStorage {
 	public int chooseRandomKey() {
 		int chosen;
 		synchronized (this) {
-			if (finished) return -1;
-			if (failedRetries) return -1;
-			if (tryDecode) {
-				if (logMINOR) Logger.minor(this, "Segment decoding so not choosing a key on " + this);
+			if (finished) {
 				return -1;
 			}
-			if (corruptMetadata) return -1; // Will be fetchable after we've found out what blocks we actually have.
+			if (failedRetries) {
+				return -1;
+			}
+			if (tryDecode) {
+				if (logMINOR) {
+					Logger.minor(this, "Segment decoding so not choosing a key on " + this);
+				}
+				return -1;
+			}
+			if (corruptMetadata) {
+				return -1; // Will be fetchable after we've found out what blocks we actually have.
+			}
 			chosen = blockChooser.chooseKey();
 			if (chosen != -1) {
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "Chosen key " + chosen + "/" + totalBlocks() + " for " + this + " (retries " + blockChooser.getRetries(chosen) + "/" + blockChooser.maxRetries + ")");
+				}
 			} else {
-				if (logMINOR) Logger.minor(this, "No keys chosen for " + this);
+				if (logMINOR) {
+					Logger.minor(this, "No keys chosen for " + this);
+				}
 			}
 		}
 		if (chosen == -1) {
 			long cooldownTime = blockChooser.overallCooldownTime();
-			if (cooldownTime > System.currentTimeMillis())
+			if (cooldownTime > System.currentTimeMillis()) {
 				parent.increaseCooldown(this, cooldownTime);
+			}
 			return -1;
 		} else {
 			return chosen;
@@ -1269,23 +1394,30 @@ public class SplitFileFetcherSegmentStorage {
 	public void cancel() {
 		boolean decoding;
 		synchronized (this) {
-			if (finished) return;
+			if (finished) {
+				return;
+			}
 			finished = true;
 			decoding = tryDecode;
 			// If already decoding, must wait for decoder to check in before completing shutdown.
 		}
-		if (!decoding)
+		if (!decoding) {
 			parent.finishedEncoding(this);
+		}
 		// Else must wait.
 	}
 
 	public synchronized long getOverallCooldownTime() {
-		if (finished || succeeded || failed || failedRetries) return 0;
+		if (finished || succeeded || failed || failedRetries) {
+			return 0;
+		}
 		return blockChooser.overallCooldownTime();
 	}
 
 	synchronized long getCooldownTime(int blockNumber) {
-		if (finished || succeeded || failed || failedRetries) return 0;
+		if (finished || succeeded || failed || failedRetries) {
+			return 0;
+		}
 		return blockChooser.getCooldownTime(blockNumber);
 	}
 
@@ -1294,8 +1426,12 @@ public class SplitFileFetcherSegmentStorage {
 	}
 
 	public synchronized boolean needsDecode() {
-		if (finished || succeeded || failed) return false;
-		if (tryDecode) return false;
+		if (finished || succeeded || failed) {
+			return false;
+		}
+		if (tryDecode) {
+			return false;
+		}
 		return blockChooser.successCount() == blocksForDecode();
 	}
 
@@ -1314,14 +1450,20 @@ public class SplitFileFetcherSegmentStorage {
 		} catch (IOException e) {
 			return null;
 		}
-		if (keys == null) return null;
+		if (keys == null) {
+			return null;
+		}
 		return keys.getKey(blockNum, null, false);
 	}
 
 	public synchronized byte[] checkAndGetBlockData(int blockNum) throws IOException {
-		if (!blockChooser.hasSucceeded(blockNum)) return null;
+		if (!blockChooser.hasSucceeded(blockNum)) {
+			return null;
+		}
 		ClientCHK key = getKey(blockNum);
-		if (key == null) return null;
+		if (key == null) {
+			return null;
+		}
 		for (int i = 0; i < blocksFetched.length; i++) {
 			if (blocksFetched[i] == blockNum) {
 				byte[] buf = readBlock(i);
@@ -1364,10 +1506,18 @@ public class SplitFileFetcherSegmentStorage {
 	 */
 	public void onFinishedCheckingDatastoreNoFetch(ClientContext context) {
 		synchronized (this) {
-			if (tryDecode) return;
-			if (succeeded) return;
-			if (finished) return;
-			if (failed) return;
+			if (tryDecode) {
+				return;
+			}
+			if (succeeded) {
+				return;
+			}
+			if (finished) {
+				return;
+			}
+			if (failed) {
+				return;
+			}
 			failed = true;
 			finished = true;
 		}

@@ -45,8 +45,9 @@ public class ArchiveContext implements Serializable {
 		if (soFar == null) {
 			soFar = new HashSet<FreenetURI>();
 		}
-		if (soFar.size() > maxArchiveLevels)
+		if (soFar.size() > maxArchiveLevels) {
 			throw new ArchiveFailureException(ArchiveFailureException.TOO_MANY_LEVELS);
+		}
 		FreenetURI uri = key;
 		if (!soFar.add(uri)) {
 			throw new ArchiveFailureException(ArchiveFailureException.ARCHIVE_LOOP_DETECTED);

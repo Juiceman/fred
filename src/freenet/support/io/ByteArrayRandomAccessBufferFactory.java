@@ -10,8 +10,12 @@ public class ByteArrayRandomAccessBufferFactory implements LockableRandomAccessB
 
 	@Override
 	public LockableRandomAccessBuffer makeRAF(long size) throws IOException {
-		if (size < 0) throw new IllegalArgumentException();
-		if (size > Integer.MAX_VALUE) throw new IOException("Too big");
+		if (size < 0) {
+			throw new IllegalArgumentException();
+		}
+		if (size > Integer.MAX_VALUE) {
+			throw new IOException("Too big");
+		}
 		byte[] buf = new byte[(int) size];
 		return new ByteArrayRandomAccessBuffer(buf);
 	}
@@ -19,7 +23,9 @@ public class ByteArrayRandomAccessBufferFactory implements LockableRandomAccessB
 	@Override
 	public LockableRandomAccessBuffer makeRAF(byte[] initialContents, int offset, int size, boolean readOnly)
 			throws IOException {
-		if (size < 0) throw new IllegalArgumentException();
+		if (size < 0) {
+			throw new IllegalArgumentException();
+		}
 		return new ByteArrayRandomAccessBuffer(Arrays.copyOfRange(initialContents, offset,
 				offset + size), 0, size, readOnly);
 	}

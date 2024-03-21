@@ -33,10 +33,18 @@ public class CompatibilityAnalyser implements Serializable {
 		}
 		assert (min != CompatibilityMode.COMPAT_CURRENT);
 		assert (max != CompatibilityMode.COMPAT_CURRENT);
-		if (definitive) this.definitive = true;
-		if (!dontCompress) this.dontCompress = false;
-		if (min.ordinal() > this.min.ordinal()) this.min = min;
-		if (max.ordinal() < this.max.ordinal() || this.max == CompatibilityMode.COMPAT_UNKNOWN) this.max = max;
+		if (definitive) {
+			this.definitive = true;
+		}
+		if (!dontCompress) {
+			this.dontCompress = false;
+		}
+		if (min.ordinal() > this.min.ordinal()) {
+			this.min = min;
+		}
+		if (max.ordinal() < this.max.ordinal() || this.max == CompatibilityMode.COMPAT_UNKNOWN) {
+			this.max = max;
+		}
 		if (this.cryptoKey == null) {
 			this.cryptoKey = cryptoKey;
 		} else if (cryptoKey != null && !Arrays.equals(this.cryptoKey, cryptoKey)) {
@@ -88,7 +96,9 @@ public class CompatibilityAnalyser implements Serializable {
 
 	public CompatibilityAnalyser(DataInputStream dis) throws IOException, StorageFormatException {
 		int ver = dis.readInt();
-		if (ver != VERSION) throw new StorageFormatException("Unknown version for CompatibilityAnalyser");
+		if (ver != VERSION) {
+			throw new StorageFormatException("Unknown version for CompatibilityAnalyser");
+		}
 		try {
 			min = CompatibilityMode.byCode(dis.readShort());
 			max = CompatibilityMode.byCode(dis.readShort());

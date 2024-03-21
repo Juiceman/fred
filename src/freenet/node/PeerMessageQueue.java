@@ -129,18 +129,23 @@ public class PeerMessageQueue {
 		public void addLast(MessageItem item) {
 			// Clear the deadline for the item.
 			item.clearDeadline();
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			if (roundRobinBetweenUIDs) {
 				long id = item.getID();
 				if (itemsByID != null) {
 					Items it = itemsByID.get(id);
 					if (it != null && it.timeLastSent > 0 && it.timeLastSent + timeout <= System.currentTimeMillis()) {
 						it.addLast(item);
-						if (it.getParent() == emptyItemsWithID)
+						if (it.getParent() == emptyItemsWithID) {
 							moveFromEmptyToNonEmptyBackward(it);
-						else
+						} else {
 							assert (it.getParent() == nonEmptyItemsWithID);
-						if (logMINOR) checkOrder();
+						}
+						if (logMINOR) {
+							checkOrder();
+						}
 						return;
 					}
 				}
@@ -149,66 +154,87 @@ public class PeerMessageQueue {
 		}
 
 		private void addToNonUrgent(MessageItem item) {
-			if (itemsNonUrgent == null)
+			if (itemsNonUrgent == null) {
 				itemsNonUrgent = new LinkedList<MessageItem>();
+			}
 			ListIterator<MessageItem> it = itemsNonUrgent.listIterator(itemsNonUrgent.size());
 			// MessageItem's can be created out of order, so the timestamps may not be consistent.
 			// CONCURRENCY: This is not a problem in addNonUrgentMessages() because it is always called from one thread.
 			while (true) {
 				if (!it.hasPrevious()) {
 					it.add(item);
-					if (logMINOR) checkOrder();
+					if (logMINOR) {
+						checkOrder();
+					}
 					return;
 				}
 				MessageItem prev = it.previous();
 				if (item.submitted >= prev.submitted) {
 					it.next();
 					it.add(item);
-					if (logMINOR) checkOrder();
+					if (logMINOR) {
+						checkOrder();
+					}
 					return;
 				}
 			}
 		}
 
 		private void moveToUrgent(long now) {
-			if (logMINOR) checkOrder();
-			if (itemsNonUrgent == null) return;
+			if (logMINOR) {
+				checkOrder();
+			}
+			if (itemsNonUrgent == null) {
+				return;
+			}
 			ListIterator<MessageItem> it = itemsNonUrgent.listIterator();
 			int moved = 0;
 			while (it.hasNext()) {
 				MessageItem item = it.next();
 				Items list = null;
 				long id = item.getID();
-				if (itemsByID != null)
+				if (itemsByID != null) {
 					list = itemsByID.get(id);
+				}
 				boolean moveIt = false;
 				if (list != null && roundRobinBetweenUIDs) {
-					if (list.timeLastSent + timeout <= now)
+					if (list.timeLastSent + timeout <= now) {
 						moveIt = true;
+					}
 				}
 				if (item.submitted + timeout <= now) {
 					moveIt = true;
 				}
 				if (moveIt) {
-					if (logMINOR) Logger.minor(this, "Moving message to urgent list: " + item);
-					if (logMINOR) checkOrder();
+					if (logMINOR) {
+						Logger.minor(this, "Moving message to urgent list: " + item);
+					}
+					if (logMINOR) {
+						checkOrder();
+					}
 					// Move to urgent list
 					if (itemsByID == null) {
 						itemsByID = new HashMap<Long, Items>();
-						if (nonEmptyItemsWithID == null)
+						if (nonEmptyItemsWithID == null) {
 							nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+						}
 						list = new Items(id, item.submitted);
 						addToNonEmptyForward(list);
 						itemsByID.put(id, list);
-						if (logMINOR) checkOrder();
+						if (logMINOR) {
+							checkOrder();
+						}
 					} else {
 						if (list == null) {
 							list = new Items(id, item.submitted);
-							if (nonEmptyItemsWithID == null)
+							if (nonEmptyItemsWithID == null) {
 								nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+							}
 							addToNonEmptyForward(list);
 							itemsByID.put(id, list);
-							if (logMINOR) checkOrder();
+							if (logMINOR) {
+								checkOrder();
+							}
 						} else {
 							if (list.items.isEmpty()) {
 								if (list.getParent() == nonEmptyItemsWithID) {
@@ -223,19 +249,27 @@ public class PeerMessageQueue {
 							} else {
 								assert (list.getParent() == nonEmptyItemsWithID);
 							}
-							if (logMINOR) checkOrder();
+							if (logMINOR) {
+								checkOrder();
+							}
 						}
 					}
 					list.addLast(item);
 					it.remove();
 					moved++;
-					if (logMINOR) checkOrder();
-				} else if (!roundRobinBetweenUIDs)
+					if (logMINOR) {
+						checkOrder();
+					}
+				} else if (!roundRobinBetweenUIDs) {
 					break;
+				}
 			}
-			if (logDEBUG && moved > 0)
+			if (logDEBUG && moved > 0) {
 				Logger.debug(this, "Moved " + moved + " items to urgent round-robin");
-			if (logMINOR) checkOrder();
+			}
+			if (logMINOR) {
+				checkOrder();
+			}
 		}
 
 		private void moveFromEmptyToNonEmptyForward(Items list) {
@@ -247,14 +281,16 @@ public class PeerMessageQueue {
 					return;
 				}
 			}
-			if (emptyItemsWithID != null)
+			if (emptyItemsWithID != null) {
 				emptyItemsWithID.remove(list);
+			}
 			addToNonEmptyForward(list);
 		}
 
 		private void addToNonEmptyForward(Items list) {
-			if (nonEmptyItemsWithID == null)
+			if (nonEmptyItemsWithID == null) {
 				nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+			}
 			Enumeration<Items> it = nonEmptyItemsWithID.elements();
 			while (it.hasMoreElements()) {
 				Items compare = it.nextElement();
@@ -273,8 +309,9 @@ public class PeerMessageQueue {
 		}
 
 		private void addToNonEmptyBackward(Items list) {
-			if (nonEmptyItemsWithID == null)
+			if (nonEmptyItemsWithID == null) {
 				nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+			}
 			Enumeration<Items> it = nonEmptyItemsWithID.reverseElements();
 			while (it.hasMoreElements()) {
 				Items compare = it.nextElement();
@@ -287,8 +324,9 @@ public class PeerMessageQueue {
 		}
 
 		private void addToEmptyBackward(Items list) {
-			if (emptyItemsWithID == null)
+			if (emptyItemsWithID == null) {
 				emptyItemsWithID = new DoublyLinkedListImpl<Items>();
+			}
 			Enumeration<Items> it = emptyItemsWithID.reverseElements();
 			while (it.hasMoreElements()) {
 				Items compare = it.nextElement();
@@ -310,13 +348,16 @@ public class PeerMessageQueue {
 				addToNonUrgent(item);
 				return;
 			}
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			long id = item.getID();
 			Items list;
 			if (itemsByID == null) {
 				itemsByID = new HashMap<Long, Items>();
-				if (nonEmptyItemsWithID == null)
+				if (nonEmptyItemsWithID == null) {
 					nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+				}
 				list = new Items(id, -1);
 				addToNonEmptyForward(list);
 				itemsByID.put(id, list);
@@ -324,8 +365,9 @@ public class PeerMessageQueue {
 				list = itemsByID.get(id);
 				if (list == null) {
 					list = new Items(id, -1);
-					if (nonEmptyItemsWithID == null)
+					if (nonEmptyItemsWithID == null) {
 						nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+					}
 					nonEmptyItemsWithID.unshift(list);
 					itemsByID.put(id, list);
 				} else {
@@ -334,32 +376,39 @@ public class PeerMessageQueue {
 						// It already exists, so it has a valid time.
 						// Which is probably in the past, so use Forward.
 						moveFromEmptyToNonEmptyForward(list);
-					} else
+					} else {
 						assert (list.getParent() == nonEmptyItemsWithID);
+					}
 				}
 			}
 			list.addFirst(item);
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 		}
 
 		public int size() {
 			int size = 0;
-			if (nonEmptyItemsWithID != null)
+			if (nonEmptyItemsWithID != null) {
 				for (Items items : nonEmptyItemsWithID)
 					size += items.items.size();
-			if (itemsNonUrgent != null)
+			}
+			if (itemsNonUrgent != null) {
 				size += itemsNonUrgent.size();
+			}
 			return size;
 		}
 
 		public int addTo(MessageItem[] output, int ptr) {
-			if (nonEmptyItemsWithID != null)
+			if (nonEmptyItemsWithID != null) {
 				for (Items list : nonEmptyItemsWithID)
 					for (MessageItem item : list.items)
 						output[ptr++] = item;
-			if (itemsNonUrgent != null)
+			}
+			if (itemsNonUrgent != null) {
 				for (MessageItem item : itemsNonUrgent)
 					output[ptr++] = item;
+			}
 			return ptr;
 		}
 
@@ -373,8 +422,9 @@ public class PeerMessageQueue {
 				Items prevItems = null;
 				for (Items items : nonEmptyItemsWithID) {
 					long thisTime = items.timeLastSent;
-					if (thisTime < prev)
+					if (thisTime < prev) {
 						Logger.error(this, "Inconsistent order in non empty items with ID: prev timeout was " + prev + " for " + prevItems + " but this timeout is " + thisTime + " for " + items, new Exception("error"));
+					}
 					prev = thisTime;
 					prevItems = items;
 				}
@@ -383,8 +433,9 @@ public class PeerMessageQueue {
 				long prev = -1;
 				MessageItem prevItem = null;
 				for (MessageItem item : itemsNonUrgent) {
-					if (item.submitted < prev)
+					if (item.submitted < prev) {
 						Logger.error(this, "Inconsistent order in itemsNonUrgent: prev submitted at " + prev + " but this at " + item.submitted + " prev is " + prevItem + " this is " + item);
+					}
 					prev = item.submitted;
 					prevItem = item;
 				}
@@ -405,21 +456,29 @@ public class PeerMessageQueue {
 			if (!roundRobinBetweenUIDs) {
 				if (itemsNonUrgent != null && !itemsNonUrgent.isEmpty()) {
 					t = Math.min(t, itemsNonUrgent.getFirst().submitted + timeout);
-					if (t <= stopIfBeforeTime) return t;
+					if (t <= stopIfBeforeTime) {
+						return t;
+					}
 				}
 				assert (nonEmptyItemsWithID == null);
 				assert (itemsByID == null);
 			} else {
 				if (nonEmptyItemsWithID != null) {
 					for (Items items : nonEmptyItemsWithID) {
-						if (items.items.size() == 0) continue;
+						if (items.items.size() == 0) {
+							continue;
+						}
 						if (items.timeLastSent > 0) {
 							t = Math.min(t, items.timeLastSent + timeout);
-							if (t <= stopIfBeforeTime) return t;
+							if (t <= stopIfBeforeTime) {
+								return t;
+							}
 						} else {
 							// It is possible that something requeued isn't urgent, so check anyway.
 							t = Math.min(t, items.items.getFirst().submitted + timeout);
-							if (t <= stopIfBeforeTime) return t;
+							if (t <= stopIfBeforeTime) {
+								return t;
+							}
 						}
 					}
 				}
@@ -429,11 +488,17 @@ public class PeerMessageQueue {
 						Items items = itemsByID == null ? null : itemsByID.get(uid);
 						if (items != null && items.timeLastSent > 0) {
 							t = Math.min(t, items.timeLastSent + timeout);
-							if (t <= stopIfBeforeTime) return t;
+							if (t <= stopIfBeforeTime) {
+								return t;
+							}
 						} else {
 							t = Math.min(t, item.submitted + timeout);
-							if (t <= stopIfBeforeTime) return t;
-							if (itemsByID == null) break; // Only the first one matters, since none have been sent.
+							if (t <= stopIfBeforeTime) {
+								return t;
+							}
+							if (itemsByID == null) {
+								break; // Only the first one matters, since none have been sent.
+							}
 						}
 					}
 				}
@@ -455,7 +520,9 @@ public class PeerMessageQueue {
 				for (MessageItem item : itemsNonUrgent) {
 					int thisLen = item.getLength();
 					length += thisLen;
-					if (length > maxSize) return length;
+					if (length > maxSize) {
+						return length;
+					}
 				}
 			}
 			if (nonEmptyItemsWithID != null) {
@@ -463,7 +530,9 @@ public class PeerMessageQueue {
 					for (MessageItem item : list.items) {
 						int thisLen = item.getLength();
 						length += thisLen;
-						if (length > maxSize) return length;
+						if (length > maxSize) {
+							return length;
+						}
 					}
 				}
 			}
@@ -471,8 +540,12 @@ public class PeerMessageQueue {
 		}
 
 		private MessageItem addNonUrgentMessages(long now, MutableBoolean addPeerLoadStatsRT, MutableBoolean addPeerLoadStatsBulk) {
-			if (logMINOR) checkOrder();
-			if (itemsNonUrgent == null) return null;
+			if (logMINOR) {
+				checkOrder();
+			}
+			if (itemsNonUrgent == null) {
+				return null;
+			}
 			MessageItem ret;
 			for (ListIterator<MessageItem> items = itemsNonUrgent.listIterator(); items.hasNext(); ) {
 				MessageItem item = items.next();
@@ -487,10 +560,12 @@ public class PeerMessageQueue {
 						DoublyLinkedList<? super Items> parent = tracker.getParent();
 						// Demote the corresponding tracker to maintain round-robin.
 						if (tracker.items.isEmpty()) {
-							if (logDEBUG)
+							if (logDEBUG) {
 								Logger.debug(this, "Moving " + tracker + " to end of empty list in addNonUrgentMessages");
-							if (emptyItemsWithID == null)
+							}
+							if (emptyItemsWithID == null) {
 								emptyItemsWithID = new DoublyLinkedListImpl<Items>();
+							}
 							if (parent == null) {
 								Logger.error(this, "Tracker is in itemsByID but not in either list! (empty)");
 							} else if (parent == emptyItemsWithID) {
@@ -499,14 +574,17 @@ public class PeerMessageQueue {
 							} else if (parent == nonEmptyItemsWithID) {
 								Logger.error(this, "Tracker is in non empty items list when is empty");
 								nonEmptyItemsWithID.remove(tracker);
-							} else
+							} else {
 								assert (false);
+							}
 							addToEmptyBackward(tracker);
 						} else {
-							if (logDEBUG)
+							if (logDEBUG) {
 								Logger.debug(this, "Moving " + tracker + " to end of non-empty list in addNonUrgentMessages");
-							if (nonEmptyItemsWithID == null)
+							}
+							if (nonEmptyItemsWithID == null) {
 								nonEmptyItemsWithID = new DoublyLinkedListImpl<Items>();
+							}
 							if (parent == null) {
 								Logger.error(this, "Tracker is in itemsByID but not in either list! (non-empty)");
 							} else if (parent == nonEmptyItemsWithID) {
@@ -515,8 +593,9 @@ public class PeerMessageQueue {
 							} else if (parent == emptyItemsWithID) {
 								Logger.error(this, "Tracker is in empty items list when is non-empty");
 								emptyItemsWithID.remove(tracker);
-							} else
+							} else {
 								assert (false);
+							}
 							addToNonEmptyBackward(tracker);
 						}
 					}
@@ -528,11 +607,17 @@ public class PeerMessageQueue {
 					addPeerLoadStatsBulk.value = true;
 					mustSendLoadBulk = false;
 				}
-				if (logMINOR) checkOrder();
+				if (logMINOR) {
+					checkOrder();
+				}
 
-				if (ret != null) return ret;
+				if (ret != null) {
+					return ret;
+				}
 			}
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			return null;
 		}
 
@@ -547,25 +632,33 @@ public class PeerMessageQueue {
 		 * messages that didn't fit
 		 */
 		private MessageItem addUrgentMessages(long now, MutableBoolean addPeerLoadStatsRT, MutableBoolean addPeerLoadStatsBulk) {
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			MessageItem ret;
 			while (true) {
 				int lists = 0;
 				if (nonEmptyItemsWithID == null) {
-					if (logMINOR) Logger.minor(this, "No non-empty items to send, not sending any urgent messages");
+					if (logMINOR) {
+						Logger.minor(this, "No non-empty items to send, not sending any urgent messages");
+					}
 					return null;
 				}
 				lists += nonEmptyItemsWithID.size();
 				Items list = nonEmptyItemsWithID.head();
 				for (int i = 0; i < lists && list != null; i++) {
-					if (logMINOR) checkOrder();
+					if (logMINOR) {
+						checkOrder();
+					}
 					if (list.items.isEmpty()) {
 						// Should not happen, but check for it anyway since it keeps happening. :(
 						Logger.error(this, "List is in nonEmptyItemsWithID yet it is empty?!: " + list);
 						nonEmptyItemsWithID.remove(list);
 						addToEmptyBackward(list);
 						if (nonEmptyItemsWithID.isEmpty()) {
-							if (logMINOR) Logger.minor(this, "Run out of non-empty items to send");
+							if (logMINOR) {
+								Logger.minor(this, "Run out of non-empty items to send");
+							}
 							return null;
 						}
 						list = nonEmptyItemsWithID.head();
@@ -579,18 +672,21 @@ public class PeerMessageQueue {
 					item.setDeadline(list.timeLastSent + timeout);
 					list.timeLastSent = now;
 					if (!list.items.isEmpty()) {
-						if (logDEBUG)
+						if (logDEBUG) {
 							Logger.debug(this, "Moving " + list + " to end of non empty list in addUrgentMessages");
+						}
 						addToNonEmptyBackward(list);
 					} else {
-						if (logDEBUG)
+						if (logDEBUG) {
 							Logger.debug(this, "Moving " + list + " to end of empty list in addUrgentMessages");
+						}
 						addToEmptyBackward(list);
 					}
-					if (prev == null)
+					if (prev == null) {
 						list = nonEmptyItemsWithID.head();
-					else
+					} else {
 						list = prev.getNext();
+					}
 					ret = item;
 					if (mustSendLoadRT && item.sendLoadRT && !addPeerLoadStatsRT.value) {
 						addPeerLoadStatsRT.value = true;
@@ -599,12 +695,19 @@ public class PeerMessageQueue {
 						addPeerLoadStatsBulk.value = true;
 						mustSendLoadBulk = false;
 					}
-					if (logMINOR) checkOrder();
-					if (ret != null) return ret;
+					if (logMINOR) {
+						checkOrder();
+					}
+					if (ret != null) {
+						return ret;
+					}
 				}
-				if (logDEBUG)
+				if (logDEBUG) {
 					Logger.debug(this, "No more messages queued at this priority");
-				if (logMINOR) checkOrder();
+				}
+				if (logMINOR) {
+					checkOrder();
+				}
 				return null;
 			}
 		}
@@ -632,15 +735,19 @@ public class PeerMessageQueue {
 				int byID = itemsByID == null ? 0 : itemsByID.size();
 				if (nonEmpty + empty < byID) {
 					Logger.error(this, "Leaking itemsByID? non empty = " + nonEmpty + " empty = " + empty + " by ID = " + byID + " on " + this);
-				} else if (logDEBUG)
+				} else if (logDEBUG) {
 					Logger.debug(this, "Items: non empty " + nonEmpty + " empty " + empty + " by ID " + byID + " on " + this);
+				}
 			}
-			if (roundRobinBetweenUIDs)
+			if (roundRobinBetweenUIDs) {
 				moveToUrgent(now);
+			}
 			clearOldNonUrgent(now);
 			if (roundRobinBetweenUIDs) {
 				MessageItem item = addUrgentMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-				if (item != null) return item;
+				if (item != null) {
+					return item;
+				}
 			} else {
 				assert (itemsByID == null);
 			}
@@ -649,12 +756,20 @@ public class PeerMessageQueue {
 		}
 
 		private void clearOldNonUrgent(long now) {
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			int removed = 0;
-			if (emptyItemsWithID == null) return;
+			if (emptyItemsWithID == null) {
+				return;
+			}
 			while (true) {
-				if (logMINOR) checkOrder();
-				if (emptyItemsWithID.isEmpty()) return;
+				if (logMINOR) {
+					checkOrder();
+				}
+				if (emptyItemsWithID.isEmpty()) {
+					return;
+				}
 				Items list = emptyItemsWithID.head();
 				if (!list.items.isEmpty()) {
 					// FIXME remove paranoia
@@ -667,15 +782,17 @@ public class PeerMessageQueue {
 					// FIXME: Urgh, what a braindead API! remove(Object) on a Map<Long, Items> !?!?!?!
 					// Anyway we'd better check the return value!
 					Items old = itemsByID.remove(list.id);
-					if (old == null)
+					if (old == null) {
 						Logger.error(this, "List was not in the items by ID tracker: " + list.id);
-					else if (old != list)
+					} else if (old != list) {
 						Logger.error(this, "Different list in the items by ID tracker: " + old + " not " + list + " for " + list.id);
+					}
 					emptyItemsWithID.remove(list);
 					removed++;
 				} else {
-					if (logDEBUG && removed > 0)
+					if (logDEBUG && removed > 0) {
 						Logger.debug(this, "Removed " + removed + " old empty UID trackers");
+					}
 					break;
 				}
 			}
@@ -686,11 +803,15 @@ public class PeerMessageQueue {
 			nonEmptyItemsWithID = null;
 			itemsByID = null;
 			itemsNonUrgent = null;
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 		}
 
 		public boolean removeMessage(MessageItem item) {
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 			long id = item.getID();
 			Items list;
 			if (itemsByID != null) {
@@ -701,24 +822,35 @@ public class PeerMessageQueue {
 							nonEmptyItemsWithID.remove(list);
 							addToEmptyBackward(list);
 						}
-						if (logMINOR) checkOrder();
+						if (logMINOR) {
+							checkOrder();
+						}
 						return true;
 					}
 				}
 			}
-			if (logMINOR) checkOrder();
-			if (itemsNonUrgent != null)
+			if (logMINOR) {
+				checkOrder();
+			}
+			if (itemsNonUrgent != null) {
 				return itemsNonUrgent.remove(item);
-			else
+			} else {
 				return false;
+			}
 		}
 
 		public void removeUIDs(Long[] list) {
-			if (logMINOR) checkOrder();
-			if (itemsByID == null) return;
+			if (logMINOR) {
+				checkOrder();
+			}
+			if (itemsByID == null) {
+				return;
+			}
 			for (Long l : list) {
 				Items items = itemsByID.get(l);
-				if (items == null) continue;
+				if (items == null) {
+					continue;
+				}
 				if (items.items.isEmpty()) {
 					itemsByID.remove(l);
 					assert (emptyItemsWithID != null);
@@ -726,7 +858,9 @@ public class PeerMessageQueue {
 					emptyItemsWithID.remove(items);
 				}
 			}
-			if (logMINOR) checkOrder();
+			if (logMINOR) {
+				checkOrder();
+			}
 		}
 
 		public boolean isEmpty() {
@@ -735,7 +869,9 @@ public class PeerMessageQueue {
 			}
 			if (nonEmptyItemsWithID != null) {
 				for (Items items : nonEmptyItemsWithID) {
-					if (items.items.size() == 0) continue;
+					if (items.items.size() == 0) {
+						continue;
+					}
 					return false;
 				}
 			}
@@ -748,14 +884,18 @@ public class PeerMessageQueue {
 		queuesByPriority = new PrioQueue[DMT.NUM_PRIORITIES];
 		for (int i = 0; i < queuesByPriority.length; i++) {
 			if (i == DMT.PRIORITY_BULK_DATA)
-				// Bulk: round-robin between UID's (timeout since last sent), long timeout.
+			// Bulk: round-robin between UID's (timeout since last sent), long timeout.
+			{
 				queuesByPriority[i] = new PrioQueue(PacketSender.MAX_COALESCING_DELAY_BULK, true);
-			else if (i == DMT.PRIORITY_REALTIME_DATA)
-				// Realtime: round-robin between UID's (timeout since last sent), short timeout.
+			} else if (i == DMT.PRIORITY_REALTIME_DATA)
+			// Realtime: round-robin between UID's (timeout since last sent), short timeout.
+			{
 				queuesByPriority[i] = new PrioQueue(PacketSender.MAX_COALESCING_DELAY, true);
-			else
-				// Everything else: Still round-robin between UID's, but timeout on submitted.
+			} else
+			// Everything else: Still round-robin between UID's, but timeout on submitted.
+			{
 				queuesByPriority[i] = new PrioQueue(PacketSender.MAX_COALESCING_DELAY, false);
+			}
 		}
 	}
 
@@ -775,16 +915,18 @@ public class PeerMessageQueue {
 			if (pq.itemsNonUrgent != null) {
 				for (MessageItem it : pq.itemsNonUrgent) {
 					x += it.getLength() + 2;
-					if (x > maxSize)
+					if (x > maxSize) {
 						break;
+					}
 				}
 			}
 			if (pq.nonEmptyItemsWithID != null) {
 				for (PrioQueue.Items q : pq.nonEmptyItemsWithID)
 					for (MessageItem it : q.items) {
 						x += it.getLength() + 2;
-						if (x > maxSize)
+						if (x > maxSize) {
 							break;
+						}
 					}
 			}
 		}
@@ -794,10 +936,11 @@ public class PeerMessageQueue {
 	public synchronized long getMessageQueueLengthBytes() {
 		long x = 0;
 		for (PrioQueue pq : queuesByPriority) {
-			if (pq.nonEmptyItemsWithID != null)
+			if (pq.nonEmptyItemsWithID != null) {
 				for (PrioQueue.Items q : pq.nonEmptyItemsWithID)
 					for (MessageItem it : q.items)
 						x += it.getLength() + 2;
+			}
 		}
 		return x;
 	}
@@ -806,10 +949,12 @@ public class PeerMessageQueue {
 		//Assume it goes on the end, both the common case
 		short prio = addMe.getPriority();
 		queuesByPriority[prio].addLast(addMe);
-		if (addMe.sendLoadRT)
+		if (addMe.sendLoadRT) {
 			mustSendLoadRT = true;
-		if (addMe.sendLoadBulk)
+		}
+		if (addMe.sendLoadBulk) {
 			mustSendLoadBulk = true;
+		}
 	}
 
 	/**
@@ -822,10 +967,12 @@ public class PeerMessageQueue {
 		//Assume it goes on the front
 		short prio = addMe.getPriority();
 		queuesByPriority[prio].addFirst(addMe);
-		if (addMe.sendLoadRT)
+		if (addMe.sendLoadRT) {
 			mustSendLoadRT = true;
-		if (addMe.sendLoadBulk)
+		}
+		if (addMe.sendLoadBulk) {
 			mustSendLoadBulk = true;
+		}
 	}
 
 	public synchronized MessageItem[] grabQueuedMessageItems() {
@@ -856,7 +1003,9 @@ public class PeerMessageQueue {
 	public synchronized long getNextUrgentTime(long t, long returnIfBefore) {
 		for (PrioQueue queue : queuesByPriority) {
 			t = Math.min(t, queue.getNextUrgentTime(t, returnIfBefore));
-			if (t <= returnIfBefore) return t; // How much in the past doesn't matter, as long as it's in the past.
+			if (t <= returnIfBefore) {
+				return t; // How much in the past doesn't matter, as long as it's in the past.
+			}
 		}
 		return t;
 	}
@@ -886,7 +1035,9 @@ public class PeerMessageQueue {
 		int length = minSize;
 		for (PrioQueue items : queuesByPriority) {
 			length = items.addSize(length, maxSize);
-			if (length > maxSize) return true;
+			if (length > maxSize) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -907,10 +1058,16 @@ public class PeerMessageQueue {
 		addPeerLoadStatsBulk.value = true;
 
 		for (int i = 0; i < DMT.PRIORITY_REALTIME_DATA; i++) {
-			if (i < minPriority) continue;
-			if (logMINOR) Logger.minor(this, "Adding from priority " + i);
+			if (i < minPriority) {
+				continue;
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Adding from priority " + i);
+			}
 			MessageItem ret = queuesByPriority[i].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
+			if (ret != null) {
+				return ret;
+			}
 		}
 
 		// Include bulk or realtime, whichever is more urgent.
@@ -934,26 +1091,48 @@ public class PeerMessageQueue {
 		// FIXME token bucket?
 		if (tryRealtimeFirst) {
 			// Try realtime first
-			if (logMINOR) Logger.minor(this, "Trying realtime first");
+			if (logMINOR) {
+				Logger.minor(this, "Trying realtime first");
+			}
 			MessageItem ret = queuesByPriority[DMT.PRIORITY_REALTIME_DATA].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
-			if (logMINOR) Logger.minor(this, "Trying bulk");
+			if (ret != null) {
+				return ret;
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Trying bulk");
+			}
 			ret = queuesByPriority[DMT.PRIORITY_BULK_DATA].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
+			if (ret != null) {
+				return ret;
+			}
 		} else {
 			// Try bulk first
-			if (logMINOR) Logger.minor(this, "Trying bulk first");
+			if (logMINOR) {
+				Logger.minor(this, "Trying bulk first");
+			}
 			MessageItem ret = queuesByPriority[DMT.PRIORITY_BULK_DATA].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
-			if (logMINOR) Logger.minor(this, "Trying realtime");
+			if (ret != null) {
+				return ret;
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Trying realtime");
+			}
 			ret = queuesByPriority[DMT.PRIORITY_REALTIME_DATA].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
+			if (ret != null) {
+				return ret;
+			}
 		}
 		for (int i = DMT.PRIORITY_BULK_DATA + 1; i < DMT.NUM_PRIORITIES; i++) {
-			if (i < minPriority) continue;
-			if (logMINOR) Logger.minor(this, "Adding from priority " + i);
+			if (i < minPriority) {
+				continue;
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Adding from priority " + i);
+			}
 			MessageItem ret = queuesByPriority[i].addPriorityMessages(now, addPeerLoadStatsRT, addPeerLoadStatsBulk);
-			if (ret != null) return ret;
+			if (ret != null) {
+				return ret;
+			}
 		}
 		// Nothing to send.
 		return null;
@@ -962,7 +1141,9 @@ public class PeerMessageQueue {
 	public boolean removeMessage(MessageItem message) {
 		synchronized (this) {
 			short prio = message.getPriority();
-			if (!queuesByPriority[prio].removeMessage(message)) return false;
+			if (!queuesByPriority[prio].removeMessage(message)) {
+				return false;
+			}
 		}
 		message.onFailed();
 		return true;

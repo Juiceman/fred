@@ -103,24 +103,30 @@ public class JPEGFilter implements ContentDataFilter {
 					// No more chunks to scan.
 					break;
 				} else if (finished) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "More data after EOI, copying to truncate");
+					}
 					return;
 				}
 				if (markerStart != 0xFF) {
 					throwError("Invalid marker", "The file includes an invalid marker start " + Integer.toHexString(markerStart) + " and cannot be parsed further.");
 				}
-				if (baos != null) baos.write(0xFF);
+				if (baos != null) {
+					baos.write(0xFF);
+				}
 				markerType = dis.readUnsignedByte();
-				if (baos != null) baos.write(markerType);
+				if (baos != null) {
+					baos.write(markerType);
+				}
 			}
-			if (logMINOR)
+			if (logMINOR) {
 				Logger.minor(this, "Marker type: " + Integer.toHexString(markerType));
+			}
 			long countAtStart = cis.count(); // After marker but before type
 			int blockLength;
-			if (markerType == MARKER_EOI || markerType >= MARKER_RST0 && markerType <= MARKER_RST7)
+			if (markerType == MARKER_EOI || markerType >= MARKER_RST0 && markerType <= MARKER_RST7) {
 				blockLength = 0;
-			else {
+			} else {
 				blockLength = dis.readUnsignedShort();
 				dos.writeShort(blockLength);
 			}
@@ -128,15 +134,17 @@ public class JPEGFilter implements ContentDataFilter {
 				// Start of scan marker
 
 				// Copy marker
-				if (blockLength < 2)
+				if (blockLength < 2) {
 					throwError("Invalid frame length", "The file includes an invalid frame (length " + blockLength + ").");
+				}
 				byte[] buf = new byte[blockLength - 2];
 				dis.readFully(buf);
 				dos.write(buf);
 				Logger.minor(this, "Copied start-of-frame marker length " + (blockLength - 2));
 
-				if (baos != null)
+				if (baos != null) {
 					baos.writeTo(output); // will continue; at end
+				}
 
 				// Now copy the scan itself
 
@@ -154,9 +162,12 @@ public class JPEGFilter implements ContentDataFilter {
 							!(x >= MARKER_RST0 && x <= MARKER_RST7)) { // reset markers can occur in the scan
 
 						forceMarkerType = x;
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Moved scan at " + cis.count() + ", found a marker type " + Integer.toHexString(x));
-						if (output != null) output.write(x);
+						}
+						if (output != null) {
+							output.write(x);
+						}
 						break; // End of scan, new marker
 					}
 					prevChar = x;
@@ -165,24 +176,33 @@ public class JPEGFilter implements ContentDataFilter {
 				continue; // Avoid writing the header twice
 
 			} else if (markerType == 0xE0) { // APP0
-				if (logMINOR) Logger.minor(this, "APP0");
+				if (logMINOR) {
+					Logger.minor(this, "APP0");
+				}
 				String type = readNullTerminatedAsciiString(dis);
-				if (baos != null) writeNullTerminatedString(baos, type);
-				if (logMINOR) Logger.minor(this, "Type: " + type + " length " + type.length());
+				if (baos != null) {
+					writeNullTerminatedString(baos, type);
+				}
+				if (logMINOR) {
+					Logger.minor(this, "Type: " + type + " length " + type.length());
+				}
 				if (type.equals("JFIF")) {
 					Logger.minor(this, "JFIF Header");
 					// File header
 					int majorVersion = dis.readUnsignedByte();
-					if (majorVersion != 1)
+					if (majorVersion != 1) {
 						throwError("Invalid header", "Unrecognized major version " + majorVersion + ".");
+					}
 					dos.write(majorVersion);
 					int minorVersion = dis.readUnsignedByte();
-					if (minorVersion > 2)
+					if (minorVersion > 2) {
 						throwError("Invalid header", "Unrecognized version 1." + minorVersion + ".");
+					}
 					dos.write(minorVersion);
 					int units = dis.readUnsignedByte();
-					if (units > 2)
+					if (units > 2) {
 						throwError("Invalid header", "Unrecognized units type " + units + ".");
+					}
 					dos.write(units);
 					dos.writeShort(dis.readShort()); // Copy Xdensity
 					dos.writeShort(dis.readShort()); // Copy Ydensity
@@ -202,19 +222,22 @@ public class JPEGFilter implements ContentDataFilter {
 						dos.write(extensionCode);
 						skipRest(blockLength, countAtStart, cis, dis, dos, "thumbnail frame");
 						Logger.minor(this, "Thumbnail frame");
-					} else
+					} else {
 						throwError("Unknown JFXX extension " + extensionCode, "The file contains an unknown JFXX extension.");
+					}
 				} else {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Dropping application-specific APP0 chunk named " + type);
+					}
 					// Application-specific extension
 					skipRest(blockLength, countAtStart, cis, dis, dos, "application-specific frame");
 					continue; // Don't write the frame.
 				}
 			} else if (markerType == 0xE1) { // EXIF
 				if (deleteExif) {
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Dropping EXIF data");
+					}
 					skipBytes(dis, blockLength - 2);
 					continue; // Don't write the frame
 				}
@@ -223,16 +246,18 @@ public class JPEGFilter implements ContentDataFilter {
 				// Comment
 				if (deleteComments) {
 					skipBytes(dis, blockLength - 2);
-					if (logMINOR)
+					if (logMINOR) {
 						Logger.minor(this, "Dropping comment length " + (blockLength - 2) + '.');
+					}
 					continue; // Don't write the frame
 				}
 				skipRest(blockLength, countAtStart, cis, dis, dos, "comment");
 			} else if (markerType == 0xD9) {
 				// End of image
 				finished = true;
-				if (logMINOR)
+				if (logMINOR) {
 					Logger.minor(this, "End of image");
+				}
 			} else {
 				boolean valid = false;
 				// We used to support only DB C4 C0, because some website said they were
@@ -283,8 +308,9 @@ public class JPEGFilter implements ContentDataFilter {
 				}
 				if (valid) {
 					// Essential, non-terminal, but unparsed frames.
-					if (blockLength < 2)
+					if (blockLength < 2) {
 						throwError("Invalid frame length", "The file includes an invalid frame (length " + blockLength + ").");
+					}
 					byte[] buf = new byte[blockLength - 2];
 					dis.readFully(buf);
 					dos.write(buf);
@@ -292,11 +318,13 @@ public class JPEGFilter implements ContentDataFilter {
 				} else {
 					if (markerType >= 0xE0 && markerType <= 0xEF) {
 						// APP marker. Can be safely deleted.
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Dropping application marker type " + Integer.toHexString(markerType) + " length " + blockLength);
+						}
 					} else {
-						if (logMINOR)
+						if (logMINOR) {
 							Logger.minor(this, "Dropping unknown frame type " + Integer.toHexString(markerType) + " blockLength");
+						}
 					}
 					// Delete frame
 					skipBytes(dis, blockLength - 2);
@@ -304,9 +332,10 @@ public class JPEGFilter implements ContentDataFilter {
 				}
 			}
 
-			if (cis.count() != countAtStart + blockLength)
+			if (cis.count() != countAtStart + blockLength) {
 				throwError("Invalid frame", "The length of the frame is incorrect (read " +
 						(cis.count() - countAtStart) + " bytes, frame length " + blockLength + " for type " + Integer.toHexString(markerType) + ").");
+			}
 			// Write frame
 			baos.writeTo(output);
 		}
@@ -330,12 +359,16 @@ public class JPEGFilter implements ContentDataFilter {
 		StringBuilder sb = new StringBuilder();
 		while (true) {
 			int x = dis.read();
-			if (x == -1)
+			if (x == -1) {
 				throwError("Invalid extension frame", "Could not read an extension frame name.");
-			if (x == 0) break;
+			}
+			if (x == 0) {
+				break;
+			}
 			char c = (char) x; // ASCII
-			if (x > 128 || (c < 32 && c != 10 && c != 13))
+			if (x > 128 || (c < 32 && c != 10 && c != 13)) {
 				throwError("Invalid extension frame name", "Non-ASCII character in extension frame name");
+			}
 			sb.append(c);
 		}
 		return sb.toString();
@@ -344,9 +377,12 @@ public class JPEGFilter implements ContentDataFilter {
 	private void skipRest(int blockLength, long countAtStart, CountedInputStream cis, DataInputStream dis, DataOutputStream dos, String thing) throws IOException {
 		// Skip the rest of the data
 		int skip = (int) (blockLength - (cis.count() - countAtStart));
-		if (skip < 0)
+		if (skip < 0) {
 			throwError("Invalid " + thing, "The file includes an invalid " + thing + '.');
-		if (skip == 0) return;
+		}
+		if (skip == 0) {
+			return;
+		}
 		byte[] buf = new byte[skip];
 		dis.readFully(buf);
 		dos.write(buf);
@@ -361,28 +397,33 @@ public class JPEGFilter implements ContentDataFilter {
 				byte[] buf = new byte[Math.min(4096, skip - skipped)];
 				dis.readFully(buf);
 				skipped += buf.length;
-			} else
+			} else {
 				skipped += x;
+			}
 		}
 	}
 
 	private void assertHeader(DataInputStream dis, byte[] expected) throws IOException {
 		byte[] read = new byte[expected.length];
 		dis.readFully(read);
-		if (!Arrays.equals(read, expected))
+		if (!Arrays.equals(read, expected)) {
 			throwError("Invalid header", "The file does not start with a valid JPEG (JFIF) header.");
+		}
 	}
 
 	private void throwError(String shortReason, String reason) throws DataFilterException {
 		// Throw an exception
 		String message = l10n("notJpeg");
-		if (reason != null)
+		if (reason != null) {
 			message += ' ' + reason;
-		if (shortReason != null)
+		}
+		if (shortReason != null) {
 			message += " - " + shortReason;
+		}
 		DataFilterException e = new DataFilterException(shortReason, shortReason, message);
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.normal(this, "Throwing " + e.getMessage(), e);
+		}
 		throw e;
 	}
 

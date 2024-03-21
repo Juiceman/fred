@@ -44,7 +44,9 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 	@Override
 	public void readFrom(InputStream is, BucketFactory bf, FCPServer server) throws IOException, MessageInvalidException {
 		long len = dataLength();
-		if (len < 0) return;
+		if (len < 0) {
+			return;
+		}
 		if (len == 0) {
 			bucket = new NullBucket();
 			return;
@@ -68,8 +70,12 @@ public abstract class DataCarryingMessage extends BaseDataCarryingMessage {
 	@Override
 	protected void writeData(OutputStream os) throws IOException {
 		long len = dataLength();
-		if (len > 0) BucketTools.copyTo(bucket, os, len);
-		if (freeOnSent) bucket.free(); // Always transient so no removeFrom() needed.
+		if (len > 0) {
+			BucketTools.copyTo(bucket, os, len);
+		}
+		if (freeOnSent) {
+			bucket.free(); // Always transient so no removeFrom() needed.
+		}
 	}
 
 	@Override

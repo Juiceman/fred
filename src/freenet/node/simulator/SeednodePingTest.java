@@ -57,8 +57,9 @@ public class SeednodePingTest extends RealNodeTest {
 	public static void main(String[] args) throws FSParseException, IOException, OpennetDisabledException, PeerParseException, InterruptedException, ReferenceSignatureVerificationException, NodeInitException, InvalidThresholdException {
 		Node node = null;
 		try {
-			if (args.length == 1)
+			if (args.length == 1) {
 				STATUS_DIR = new File(args[0]);
+			}
 			RandomSource random = NodeStarter.globalTestInit("seednode-pingtest", false, LogLevel.ERROR, "", false);
 			// Create one node
 			Executor executor = new PooledExecutor();
@@ -82,8 +83,9 @@ public class SeednodePingTest extends RealNodeTest {
 			//Logger.setupStdoutLogging(LogLevel.MINOR, "freenet:NORMAL,freenet.node.NodeDispatcher:MINOR,freenet.node.FNPPacketMangler:MINOR");
 			Logger.getChain().setThreshold(LogLevel.ERROR); // kill logging
 			Thread.sleep(SECONDS.toMillis(2));
-			if (seedNodes.size() != numberOfNodesInTheFile)
+			if (seedNodes.size() != numberOfNodesInTheFile) {
 				System.out.println("ERROR ADDING SOME OF THE SEEDNODES!!");
+			}
 			System.out.println("Let some time for the " + seedNodes.size() + " nodes to connect...");
 			Thread.sleep(SECONDS.toMillis(8));
 
@@ -96,20 +98,23 @@ public class SeednodePingTest extends RealNodeTest {
 						double pingTime = seednode.averagePingTime();
 						int uptime = seednode.getUptime();
 						long timeDelta = seednode.getClockDelta();
-						if (seednode.isRealConnection())
+						if (seednode.isRealConnection()) {
 							continue;
+						}
 						countConnectedSeednodes++;
 						boolean ping = seednode.ping(pingID++);
-						if (ping)
+						if (ping) {
 							System.out.println(seednode.getIdentityString() +
 									" uptime=" + uptime +
 									" ping=" + ping +
 									" pingTime=" + pingTime +
 									" uptime=" + seednode.getUptime() +
 									" timeDelta=" + TimeUtil.formatTime(timeDelta));
+						}
 						// sanity check
-						if (seednode.isRoutable())
+						if (seednode.isRoutable()) {
 							System.out.println(seednode + " is routable!");
+						}
 					} catch (NotConnectedException e) {
 						System.out.println(seednode.getIdentityString() + " is not connected " + seednode.getHandshakeCount());
 					}
@@ -118,10 +123,11 @@ public class SeednodePingTest extends RealNodeTest {
 				for (SeedServerTestPeerNode seednode : seedNodes) {
 					FATE fate = seednode.getFate();
 					Integer x = totals.get(fate);
-					if (x == null)
+					if (x == null) {
 						totals.put(fate, 1);
-					else
+					} else {
 						totals.put(fate, x + 1);
+					}
 					System.out.println(seednode.getIdentityString() + " : " + fate + " : " + seednode.getPeerNodeStatusString());
 				}
 				System.out.println("TOTALS:");
@@ -135,10 +141,11 @@ public class SeednodePingTest extends RealNodeTest {
 			for (SeedServerTestPeerNode seednode : seedNodes) {
 				FATE fate = seednode.getFate();
 				Integer x = totals.get(fate);
-				if (x == null)
+				if (x == null) {
 					totals.put(fate, 1);
-				else
+				} else {
 					totals.put(fate, x + 1);
+				}
 				System.out.println(seednode.getIdentityString() + " : " + fate + " : " + seednode.getPeerNodeStatusString());
 			}
 			System.out.println("RESULT:TOTALS:");
@@ -168,7 +175,9 @@ public class SeednodePingTest extends RealNodeTest {
 				long countSince = writeTime - COUNT_SUCCESSES_PERIOD;
 				do {
 					line = br.readLine();
-					if (line == null) break;
+					if (line == null) {
+						break;
+					}
 					String[] results = line.split(" : ");
 					if (results.length != 3) {
 						System.err.println("Unable to parse line in " + logFile + " : wrong number of fields : " + results.length + " : " + line);
@@ -176,19 +185,24 @@ public class SeednodePingTest extends RealNodeTest {
 					}
 					long time = Long.parseLong(results[0]);
 					FATE fate = FATE.valueOf(results[2]);
-					if (firstSample == 0) firstSample = time;
+					if (firstSample == 0) {
+						firstSample = time;
+					}
 					if (fate == FATE.CONNECTED_SUCCESS) {
-						if (time >= countSince)
+						if (time >= countSince) {
 							successes++;
+						}
 						lastSuccess = time;
 					} else {
-						if (time >= countSince)
+						if (time >= countSince) {
 							failures++;
+						}
 					}
 				} while (line != null);
 				br.close();
-				if (firstSample < countSince && successes == 0)
+				if (firstSample < countSince && successes == 0) {
 					System.err.println("RESULT:" + peer.getIdentityString() + " NOT CONNECTED IN LAST WEEK! LAST CONNECTED: " + (lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER"));
+				}
 				System.out.println(peer.getIdentityString() + " : last success " + (lastSuccess > 0 ? TimeUtil.formatTime(writeTime - lastSuccess) : "NEVER") + " failures in last week: " + failures + " successes in last week: " + successes);
 			}
 			node.park();
@@ -197,8 +211,9 @@ public class SeednodePingTest extends RealNodeTest {
 			System.err.println("CAUGHT: " + t);
 			t.printStackTrace();
 			try {
-				if (node != null)
+				if (node != null) {
 					node.park();
+				}
 			} catch (Throwable t1) {
 			}
 			System.exit(1);

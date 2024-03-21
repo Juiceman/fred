@@ -90,10 +90,11 @@ public class SerialExecutor implements Executor {
 	}
 
 	public SerialExecutor(int priority, int bound) {
-		if (bound > 0)
+		if (bound > 0) {
 			jobs = new LinkedBlockingQueue<Runnable>(bound);
-		else
+		} else {
 			jobs = new LinkedBlockingQueue<Runnable>();
+		}
 		this.priority = priority;
 		this.syncLock = new Object();
 	}
@@ -103,8 +104,9 @@ public class SerialExecutor implements Executor {
 		this.realExecutor = realExecutor;
 		this.name = name;
 		synchronized (syncLock) {
-			if (!jobs.isEmpty())
+			if (!jobs.isEmpty()) {
 				reallyStart();
+			}
 		}
 	}
 
@@ -112,8 +114,9 @@ public class SerialExecutor implements Executor {
 		synchronized (syncLock) {
 			threadStarted = true;
 		}
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Starting thread... " + name + " : " + runner);
+		}
 		realExecutor.execute(runner, name);
 	}
 
@@ -124,14 +127,16 @@ public class SerialExecutor implements Executor {
 
 	@Override
 	public void execute(Runnable job, String jobName) {
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "Running " + jobName + " : " + job + " started=" + threadStarted + " waiting="
 					+ threadWaiting);
+		}
 		jobs.offer(job);
 
 		synchronized (syncLock) {
-			if (!threadStarted && realExecutor != null)
+			if (!threadStarted && realExecutor != null) {
 				reallyStart();
+			}
 		}
 	}
 
@@ -143,8 +148,9 @@ public class SerialExecutor implements Executor {
 	@Override
 	public int[] runningThreads() {
 		int[] retval = new int[NativeThread.JAVA_PRIORITY_RANGE + 1];
-		if (threadStarted && !threadWaiting)
+		if (threadStarted && !threadWaiting) {
 			retval[priority] = 1;
+		}
 		return retval;
 	}
 
@@ -152,8 +158,9 @@ public class SerialExecutor implements Executor {
 	public int[] waitingThreads() {
 		int[] retval = new int[NativeThread.JAVA_PRIORITY_RANGE + 1];
 		synchronized (syncLock) {
-			if (threadStarted && threadWaiting)
+			if (threadStarted && threadWaiting) {
 				retval[priority] = 1;
+			}
 		}
 		return retval;
 	}

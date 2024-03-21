@@ -117,7 +117,9 @@ public class FilePersistentConfig extends PersistentConfig {
 	 * @throws IOException
 	 */
 	private static SimpleFieldSet initialLoad(File toRead) throws IOException {
-		if (toRead == null) return null;
+		if (toRead == null) {
+			return null;
+		}
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		LineReadingInputStream lis = null;
@@ -161,12 +163,14 @@ public class FilePersistentConfig extends PersistentConfig {
 	 * Don't call without taking storeSync first
 	 */
 	protected final void innerStore() throws IOException {
-		if (!finishedInit)
+		if (!finishedInit) {
 			throw new IllegalStateException("SHOULD NOT HAPPEN!!");
+		}
 
 		SimpleFieldSet fs = exportFieldSet();
-		if (logMINOR)
+		if (logMINOR) {
 			Logger.minor(this, "fs = " + fs);
+		}
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(tempFilename);

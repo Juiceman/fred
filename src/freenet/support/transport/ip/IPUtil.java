@@ -65,7 +65,9 @@ public class IPUtil {
 				isSiteLocalAddress(i)) {
 			if (includeLocalAddressesInNoderefs) {
 				return true;
-			} else return false;
+			} else {
+				return false;
+			}
 		} else if (i.isMulticastAddress()) {
 			// Ignore
 			return false;

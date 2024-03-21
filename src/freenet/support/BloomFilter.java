@@ -28,21 +28,25 @@ public abstract class BloomFilter {
 	}
 
 	public static BloomFilter createFilter(int length, int k, boolean counting) {
-		if (length == 0)
+		if (length == 0) {
 			return new NullBloomFilter(length, k);
-		if (counting)
+		}
+		if (counting) {
 			return new CountingBloomFilter(length, k);
-		else
+		} else {
 			return new BinaryBloomFilter(length, k);
+		}
 	}
 
 	public static BloomFilter createFilter(File file, int length, int k, boolean counting) throws IOException {
-		if (length == 0)
+		if (length == 0) {
 			return new NullBloomFilter(length, k);
-		if (counting)
+		}
+		if (counting) {
 			return new CountingBloomFilter(file, length, k);
-		else
+		} else {
 			return new BinaryBloomFilter(file, length, k);
+		}
 	}
 
 	protected BloomFilter(int length, int k) {
@@ -53,8 +57,9 @@ public abstract class BloomFilter {
 			throw new IllegalArgumentException("Filter must have postitive or zero hashes");
 		}
 
-		if (length % 8 != 0)
+		if (length % 8 != 0) {
 			length -= length % 8;
+		}
 
 		if (length == 0) {
 			// Zero-length filters produce 100% false positives, no need for hashing.
@@ -78,14 +83,16 @@ public abstract class BloomFilter {
 			lock.writeLock().unlock();
 		}
 
-		if (forkedFilter != null)
+		if (forkedFilter != null) {
 			forkedFilter.addKey(key);
+		}
 	}
 
 	// add to the forked filter only
 	public void addKeyForked(byte[] key) {
-		if (forkedFilter != null)
+		if (forkedFilter != null) {
 			forkedFilter.addKey(key);
+		}
 	}
 
 	public boolean checkFilter(byte[] key) {
@@ -93,8 +100,9 @@ public abstract class BloomFilter {
 		lock.readLock().lock();
 		try {
 			for (int i = 0; i < k; i++)
-				if (!getBit(hashes.nextInt(length)))
+				if (!getBit(hashes.nextInt(length))) {
 					return false;
+				}
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -111,8 +119,9 @@ public abstract class BloomFilter {
 			lock.writeLock().unlock();
 		}
 
-		if (forkedFilter != null)
+		if (forkedFilter != null) {
 			forkedFilter.removeKey(key);
+		}
 	}
 
 	//-- Bits and Hashes
@@ -145,8 +154,9 @@ public abstract class BloomFilter {
 	public void merge() {
 		lock.writeLock().lock();
 		try {
-			if (forkedFilter == null)
+			if (forkedFilter == null) {
 				return;
+			}
 
 			Lock forkedLock = forkedFilter.lock.writeLock();
 			forkedLock.lock();
@@ -170,8 +180,9 @@ public abstract class BloomFilter {
 	public void discard() {
 		lock.writeLock().lock();
 		try {
-			if (forkedFilter == null)
+			if (forkedFilter == null) {
 				return;
+			}
 			forkedFilter.close();
 			forkedFilter = null;
 		} finally {
@@ -196,10 +207,12 @@ public abstract class BloomFilter {
 
 		long k = Math.round(Math.log(2) * filterLength / maxKey);
 
-		if (k > 64)
+		if (k > 64) {
 			k = 64;
-		if (k < 1)
+		}
+		if (k < 1) {
 			k = 1;
+		}
 
 		return (int) k;
 	}
@@ -248,7 +261,9 @@ public abstract class BloomFilter {
 	public int getFilledCount() {
 		int x = 0;
 		for (int i = 0; i < length; i++)
-			if (getBit(i)) x++;
+			if (getBit(i)) {
+				x++;
+			}
 		return x;
 	}
 

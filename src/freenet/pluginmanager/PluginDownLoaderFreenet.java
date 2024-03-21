@@ -87,8 +87,9 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 					uri = e.newURI;
 					continue;
 				}
-				if (e.isFatal())
+				if (e.isFatal()) {
 					fatalFailure = true;
+				}
 				Logger.error(this, "error while fetching plugin: " + getSource(), e);
 				throw new PluginNotFoundException("error while fetching plugin: " + e.getMessage() + " for key " + getSource(), e);
 			}
@@ -111,8 +112,9 @@ public class PluginDownLoaderFreenet extends PluginDownLoader<FreenetURI> {
 
 	@Override
 	void tryCancel() {
-		if (get != null)
+		if (get != null) {
 			get.cancel(node.getClientCore().getClientContext());
+		}
 	}
 
 	@Override
