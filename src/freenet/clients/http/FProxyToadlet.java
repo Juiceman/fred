@@ -84,37 +84,33 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	final ClientContext context;
 	final FProxyFetchTracker fetchTracker;
 
-	static final Set<String> prefetchAllowedTypes = new HashSet<>(Arrays.asList(
-			"image/png",
-			"image/jpeg",
-			"image/gif",
-			"audio/mp3",
-			"audio/ogg",
-			"video/ogg",
-			"application/ogg"
-	));
+	static final Set<String> prefetchAllowedTypes = new HashSet<>(Arrays.asList("image/png", "image/jpeg", "image/gif", "audio/mp3", "audio/ogg", "video/ogg", "application/ogg"));
 
 	// ?force= links become invalid after 2 hours.
 	private static final long FORCE_GRAIN_INTERVAL = HOURS.toMillis(1);
-	/** Maximum size for transparent pass-through. See config passthroughMaxSizeProgress */
-	public static long MAX_LENGTH_WITH_PROGRESS = (100*1024*1024) * 11 / 10; // 100MiB plus a bit due to buggy inserts, because our Windows installer is >70 MiB nowadays
-	public static long MAX_LENGTH_NO_PROGRESS = (2*1024*1024) * 11 / 10; // 2MiB plus a bit due to buggy inserts
+	/**
+	 * Maximum size for transparent pass-through. See config passthroughMaxSizeProgress
+	 */
+	public static long MAX_LENGTH_WITH_PROGRESS = (100 * 1024 * 1024) * 11 / 10; // 100MiB plus a bit due to buggy inserts, because our Windows installer is >70 MiB nowadays
+	public static long MAX_LENGTH_NO_PROGRESS = (2 * 1024 * 1024) * 11 / 10; // 2MiB plus a bit due to buggy inserts
 
 	static final URI welcome;
 	public static final short PRIORITY = RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+
 	static {
 		try {
 			welcome = new URI("/welcome/");
 		} catch (URISyntaxException e) {
-			throw new Error("Broken URI constructor: "+e, e);
+			throw new Error("Broken URI constructor: " + e, e);
 		}
 	}
 
-        private static volatile boolean logMINOR;
+	private static volatile boolean logMINOR;
+
 	static {
-		Logger.registerLogThresholdCallback(new LogThresholdCallback(){
+		Logger.registerLogThresholdCallback(new LogThresholdCallback() {
 			@Override
-			public void shouldUpdate(){
+			public void shouldUpdate() {
 				logMINOR = Logger.shouldLog(LogLevel.MINOR, this);
 			}
 		});
@@ -140,9 +136,9 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	public void handleMethodPOST(URI uri, HTTPRequest req, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
 		String ks = uri.getPath();
 
-		if (ks.equals("/")||ks.startsWith("/servlet/")) {
+		if (ks.equals("/") || ks.startsWith("/servlet/")) {
 			try {
-	            throw new RedirectException("/welcome/");
+				throw new RedirectException("/welcome/");
 			} catch (URISyntaxException e) {
 				// HUH!?!
 			}
@@ -150,12 +146,15 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	}
 
 	private void handleDownload(ToadletContext context, Bucket data, BucketFactory bucketFactory, String mimeType, String requestedMimeType, String forceString, boolean forceDownload, String basePath, FreenetURI key, String extras, String referrer, boolean downloadLink, ToadletContext ctx, NodeClientCore core, boolean dontFreeData, String maybeCharset) throws ToadletContextClosedException, IOException {
-		if(logMINOR)
-			Logger.minor(FProxyToadlet.class, "handleDownload(data.size="+data.size()+", mimeType="+mimeType+", requestedMimeType="+requestedMimeType+", forceDownload="+forceDownload+", basePath="+basePath+", key="+key);
+		if (logMINOR) {
+			Logger.minor(FProxyToadlet.class, "handleDownload(data.size=" + data.size() + ", mimeType=" + mimeType + ", requestedMimeType=" + requestedMimeType + ", forceDownload=" + forceDownload + ", basePath=" + basePath + ", key=" + key);
+		}
 		String extrasNoMime = extras; // extras will not include MIME type to start with - REDFLAG maybe it should be an array
-		if(requestedMimeType != null) {
-			if(mimeType == null || !requestedMimeType.equals(mimeType)) {
-				if(extras == null) extras = "";
+		if (requestedMimeType != null) {
+			if (mimeType == null || !requestedMimeType.equals(mimeType)) {
+				if (extras == null) {
+					extras = "";
+				}
 				extras = extras + "&type=" + requestedMimeType;
 			}
 		}
@@ -163,18 +162,18 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 		long now = System.currentTimeMillis();
 		boolean force = false;
-		if(forceString != null) {
-			if(forceString.equals(getForceValue(key, now)) ||
-					forceString.equals(getForceValue(key, now-FORCE_GRAIN_INTERVAL)))
+		if (forceString != null) {
+			if (forceString.equals(getForceValue(key, now)) || forceString.equals(getForceValue(key, now - FORCE_GRAIN_INTERVAL))) {
 				force = true;
+			}
 		}
 
-		if((!force) && (!forceDownload)) {
+		if ((!force) && (!forceDownload)) {
 			//Horrible hack needed for GWT as it relies on document.write() which is not supported in xhtml
-			if(mimeType.compareTo("application/xhtml+xml")==0){
-				mimeType="text/html";
+			if (mimeType.compareTo("application/xhtml+xml") == 0) {
+				mimeType = "text/html";
 			}
-			if(isSniffedAsFeed(data) && !(mimeType.startsWith("application/rss+xml"))) {
+			if (isSniffedAsFeed(data) && !(mimeType.startsWith("application/rss+xml"))) {
 				PageNode page = context.getPageMaker().getPageNode(l10n("dangerousRSSTitle"), context);
 				HTMLNode pageNode = page.outer;
 				HTMLNode contentNode = page.content;
@@ -187,39 +186,24 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				HTMLNode optionList = infoboxContent.addChild("ul");
 				HTMLNode option = optionList.addChild("li");
 
-				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openPossRSSAsPlainText", new String[] { "link", "bold" },
-						new HTMLNode[] {
-						HTMLNode.link(basePath+key.toString()+"?type=text/plain&force="+getForceValue(key,now)+extrasNoMime),
-						HTMLNode.STRONG
-				});
+				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openPossRSSAsPlainText", new String[] { "link", "bold" }, new HTMLNode[] { HTMLNode.link(basePath + key.toString() + "?type=text/plain&force=" + getForceValue(key, now) + extrasNoMime), HTMLNode.STRONG });
 				// 	FIXME: is this safe? See bug #131
 				option = optionList.addChild("li");
-				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openPossRSSForceDisk", new String[] { "link", "bold" },
-						new HTMLNode[] {
-						HTMLNode.link(basePath+key.toString()+"?forcedownload"+extras),
-						HTMLNode.STRONG
-				});
+				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openPossRSSForceDisk", new String[] { "link", "bold" }, new HTMLNode[] { HTMLNode.link(basePath + key.toString() + "?forcedownload" + extras), HTMLNode.STRONG });
 				boolean mimeRSS = mimeType.startsWith("application/xml+rss") || mimeType.startsWith("text/xml"); /* blergh! */
-				if(!(mimeRSS || mimeType.startsWith("text/plain"))) {
+				if (!(mimeRSS || mimeType.startsWith("text/plain"))) {
 					option = optionList.addChild("li");
-					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSForce", new String[] { "link", "bold", "mime" },
-							new HTMLNode[] {
-							HTMLNode.link(basePath+key.toString()+"?force="+getForceValue(key, now)+extras), HTMLNode.STRONG, HTMLNode.text(mimeType) });
+					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSForce", new String[] { "link", "bold", "mime" }, new HTMLNode[] { HTMLNode.link(basePath + key.toString() + "?force=" + getForceValue(key, now) + extras), HTMLNode.STRONG, HTMLNode.text(mimeType) });
 				}
 				option = optionList.addChild("li");
-				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSAsRSS", new String[] { "link", "bold" },
-						new HTMLNode[] {
-						HTMLNode.link(basePath + key.toString() + "?type=application/xml+rss&force=" + getForceValue(key, now)+extrasNoMime),
-						HTMLNode.STRONG });
+				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openRSSAsRSS", new String[] { "link", "bold" }, new HTMLNode[] { HTMLNode.link(basePath + key.toString() + "?type=application/xml+rss&force=" + getForceValue(key, now) + extrasNoMime), HTMLNode.STRONG });
 				addDownloadOptions(ctx, optionList, key, mimeType, true, false, core); // FIXME Or false, false? Or true, true? We don't have filter for rss/atom anyway, so it will be useless - only more confusion and clicking for user. When we *will* have one, we can just get rid of this warning page.
-				if(referrer != null) {
+				if (referrer != null) {
 					option = optionList.addChild("li");
-					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.backToReferrer", new String[] { "link" },
-							new HTMLNode[] { HTMLNode.link(referrer) });
+					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.backToReferrer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link(referrer) });
 				}
 				option = optionList.addChild("li");
-				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.backToFProxy", new String[] { "link" },
-						new HTMLNode[] { HTMLNode.link("/") });
+				NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.backToFProxy", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/") });
 
 				byte[] pageBytes = pageNode.generate().getBytes(StandardCharsets.UTF_8);
 				context.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/html; charset=utf-8", pageBytes.length);
@@ -233,7 +217,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			headers.put("Content-Disposition", "attachment; filename=\"" + key.getPreferredFilename() + '"');
 			headers.put("Cache-Control", "private");
 			headers.put("Content-Transfer-Encoding", "binary");
-            headers.put("X-Content-Type-Options", "nosniff");
+			headers.put("X-Content-Type-Options", "nosniff");
 			// really the above should be enough, but ...
 			// was application/x-msdownload, but some unix browsers offer to open that in Wine as default!
 			// it is important that this type not be understandable, but application/octet-stream doesn't work.
@@ -275,27 +259,29 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				try {
 					is = data.getInputStream();
 					os = tmpRange.getOutputStream();
-					if (range[0] > 0)
+					if (range[0] > 0) {
 						FileUtil.skipFully(is, range[0]);
+					}
 					FileUtil.copy(is, os, range[1] - range[0] + 1);
 					// FIXME catch IOException here and tell the user there is a problem instead of just closing the connection.
 					// Currently there is no way to tell the difference between an IOE caused by the connection to the client and an internal one, we just close the connection in both cases.
-					os.close(); os = null; // If we can't write, we need to throw, so we don't send too little data.
+					os.close();
+					os = null; // If we can't write, we need to throw, so we don't send too little data.
 				} finally {
 					Closer.close(is);
 					Closer.close(os);
 				}
 				retHdr.put("Content-Range", "bytes " + range[0] + "-" + range[1] + "/" + size);
-                retHdr.put("X-Content-Type-Options", "nosniff");
+				retHdr.put("X-Content-Type-Options", "nosniff");
 				context.sendReplyHeadersFProxy(206, "Partial content", retHdr, mimeType, tmpRange.size());
 				context.writeData(tmpRange);
 			} else {
-                retHdr.put("X-Content-Type-Options", "nosniff");
-                if (container.enableCachingForChkAndSskKeys() && (key.isCHK() || key.isSSK())) {
-                    context.sendReplyHeadersStatic(200, "OK", retHdr, mimeType, size, new Date());
-                } else {
-                    context.sendReplyHeadersFProxy(200, "OK", retHdr, mimeType, size);
-                }
+				retHdr.put("X-Content-Type-Options", "nosniff");
+				if (container.enableCachingForChkAndSskKeys() && (key.isCHK() || key.isSSK())) {
+					context.sendReplyHeadersStatic(200, "OK", retHdr, mimeType, size, new Date());
+				} else {
+					context.sendReplyHeadersFProxy(200, "OK", retHdr, mimeType, size);
+				}
 				context.writeData(data);
 			}
 		}
@@ -303,78 +289,49 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 	static final HTMLNode DOWNLOADS_LINK = QueueToadlet.DOWNLOADS_LINK;
 
-	private static void addDownloadOptions(ToadletContext ctx, HTMLNode optionList, FreenetURI key, String mimeType,
-	        boolean disableFiltration, boolean dontShowFilter, NodeClientCore core) {
+	private static void addDownloadOptions(ToadletContext ctx, HTMLNode optionList, FreenetURI key, String mimeType, boolean disableFiltration, boolean dontShowFilter, NodeClientCore core) {
 		PHYSICAL_THREAT_LEVEL threatLevel = core.getNode().getSecurityLevels().getPhysicalThreatLevel();
 		NETWORK_THREAT_LEVEL netLevel = core.getNode().getSecurityLevels().getNetworkThreatLevel();
-		boolean filterChecked = !(((threatLevel == PHYSICAL_THREAT_LEVEL.LOW &&
-		        netLevel == NETWORK_THREAT_LEVEL.LOW)) || disableFiltration);
-		if((filterChecked) && mimeType != null && !mimeType.equals("application/octet-stream") &&
-                !mimeType.isEmpty()) {
+		boolean filterChecked = !(((threatLevel == PHYSICAL_THREAT_LEVEL.LOW && netLevel == NETWORK_THREAT_LEVEL.LOW)) || disableFiltration);
+		if ((filterChecked) && mimeType != null && !mimeType.equals("application/octet-stream") && !mimeType.isEmpty()) {
 			FilterMIMEType type = ContentFilter.getMIMEType(mimeType);
-			if((type == null || (!(type.safeToRead || type.readFilter != null))) &&
-				        !(threatLevel == PHYSICAL_THREAT_LEVEL.HIGH ||
-				        threatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM ||
-				        netLevel == NETWORK_THREAT_LEVEL.HIGH ||
-				        netLevel == NETWORK_THREAT_LEVEL.MAXIMUM))
+			if ((type == null || (!(type.safeToRead || type.readFilter != null))) && !(threatLevel == PHYSICAL_THREAT_LEVEL.HIGH || threatLevel == PHYSICAL_THREAT_LEVEL.MAXIMUM || netLevel == NETWORK_THREAT_LEVEL.HIGH || netLevel == NETWORK_THREAT_LEVEL.MAXIMUM)) {
 				filterChecked = false;
+			}
 		}
 		//Display FProxy option to download to disk if the user isn't at maximum physical threat level
 		//and hasn't disabled downloading to disk.
 		if (threatLevel != PHYSICAL_THREAT_LEVEL.MAXIMUM && !core.isDownloadDisabled()) {
 			HTMLNode option = optionList.addChild("li");
 			HTMLNode optionForm = ctx.addFormChild(option, "/downloads/", "tooBigQueueForm");
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "key", key.toString() });
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "return-type", "disk" });
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "persistence", "forever" });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "key", key.toString() });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "return-type", "disk" });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "persistence", "forever" });
 			if (mimeType != null && !mimeType.isEmpty()) {
-				optionForm.addChild("input",
-				        new String[] { "type", "name", "value" },
-				        new String[] { "hidden", "type", mimeType });
+				optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "type", mimeType });
 			}
-			optionForm.addChild("input", new String[] { "type", "name", "value" },
-			        new String[] { "submit", "download", l10n("downloadInBackgroundToDiskButton") });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "download", l10n("downloadInBackgroundToDiskButton") });
 			String downloadLocation = core.getDownloadsDir().getAbsolutePath();
 			//If the download directory isn't allowed, yet downloading is, at least one directory must
 			//have been explicitly defined, so take the first one.
 			if (!core.allowDownloadTo(core.getDownloadsDir())) {
 				downloadLocation = core.getAllowedDownloadDirs()[0].getAbsolutePath();
 			}
-			NodeL10n.getBase().addL10nSubstitution(optionForm, "FProxyToadlet.downloadInBackgroundToDisk",
-			        new String[] { "dir", "page" },
-			        new HTMLNode[] { new HTMLNode("input",
-			                new String[] { "type", "name", "value", "maxlength", "size" },
-			                new String[] { "text", "path", downloadLocation,
-			                        Integer.toString(QueueToadlet.MAX_FILENAME_LENGTH),
-			                        String.valueOf(downloadLocation.length())}),
-			                DOWNLOADS_LINK });
+			NodeL10n.getBase().addL10nSubstitution(optionForm, "FProxyToadlet.downloadInBackgroundToDisk", new String[] { "dir", "page" }, new HTMLNode[] { new HTMLNode("input", new String[] { "type", "name", "value", "maxlength", "size" }, new String[] { "text", "path", downloadLocation, Integer.toString(QueueToadlet.MAX_FILENAME_LENGTH), String.valueOf(downloadLocation.length()) }), DOWNLOADS_LINK });
 			optionForm.addChild("#", " ");
-			NodeL10n.getBase().addL10nSubstitution(optionForm,
-			        "FProxyToadlet.downloadToDiskWarningNotFiltered",
-			        new String[] {"bold" }, new HTMLNode[] { HTMLNode.STRONG });
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "submit", "select-location",
-				        NodeL10n.getBase().getString("QueueToadlet.browseToChange")+"..."} );
-			if(!dontShowFilter) {
+			NodeL10n.getBase().addL10nSubstitution(optionForm, "FProxyToadlet.downloadToDiskWarningNotFiltered", new String[] { "bold" }, new HTMLNode[] { HTMLNode.STRONG });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "select-location", NodeL10n.getBase().getString("QueueToadlet.browseToChange") + "..." });
+			if (!dontShowFilter) {
 				HTMLNode filterControl = optionForm.addChild("div", l10n("filterData"));
-				HTMLNode f = filterControl.addChild("input",
-				        new String[] { "type", "name", "value" },
-				        new String[] { "checkbox", "filterData", "filterData"});
-				if(filterChecked) f.addAttribute("checked", "checked");
+				HTMLNode f = filterControl.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", "filterData", "filterData" });
+				if (filterChecked) {
+					f.addAttribute("checked", "checked");
+				}
 				filterControl.addChild("div", l10n("filterDataMessage"));
 			}
 			if (threatLevel == PHYSICAL_THREAT_LEVEL.HIGH) {
 				optionForm.addChild("br");
-				NodeL10n.getBase().addL10nSubstitution(optionForm,
-				        "FProxyToadlet.downloadToDiskSecurityWarning",
-				        new String[] {"bold" }, new HTMLNode[] { HTMLNode.STRONG });
+				NodeL10n.getBase().addL10nSubstitution(optionForm, "FProxyToadlet.downloadToDiskSecurityWarning", new String[] { "bold" }, new HTMLNode[] { HTMLNode.STRONG });
 				//optionForm.addChild("#", l10n("downloadToDiskSecurityWarning") + " ");
 			}
 		}
@@ -383,79 +340,70 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		if (threatLevel != PHYSICAL_THREAT_LEVEL.LOW || core.isDownloadDisabled()) {
 			HTMLNode option = optionList.addChild("li");
 			HTMLNode optionForm = ctx.addFormChild(option, "/downloads/", "tooBigQueueForm");
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "key", key.toString() });
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "return-type", "direct" });
-			optionForm.addChild("input",
-			        new String[] { "type", "name", "value" },
-			        new String[] { "hidden", "persistence", "forever" });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "key", key.toString() });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "return-type", "direct" });
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "persistence", "forever" });
 			if (mimeType != null && !mimeType.isEmpty()) {
-				optionForm.addChild("input",
-				        new String[] { "type", "name", "value" },
-				        new String[] { "hidden", "type", mimeType });
+				optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "type", mimeType });
 			}
-			optionForm.addChild("input", new String[] { "type", "name", "value" },
-			        new String[] { "submit", "download", l10n("downloadInBackgroundToTempSpaceButton") });
-			NodeL10n.getBase().addL10nSubstitution(optionForm,
-			        "FProxyToadlet.downloadInBackgroundToTempSpace",
-			        new String[] { "page", "bold" }, new HTMLNode[] { DOWNLOADS_LINK, HTMLNode.STRONG });
-			if(!dontShowFilter) {
+			optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "download", l10n("downloadInBackgroundToTempSpaceButton") });
+			NodeL10n.getBase().addL10nSubstitution(optionForm, "FProxyToadlet.downloadInBackgroundToTempSpace", new String[] { "page", "bold" }, new HTMLNode[] { DOWNLOADS_LINK, HTMLNode.STRONG });
+			if (!dontShowFilter) {
 				HTMLNode filterControl = optionForm.addChild("div", l10n("filterData"));
-				HTMLNode f = filterControl.addChild("input",
-						new String[] { "type", "name", "value" },
-						new String[] { "checkbox", "filterData", "filterData"});
-				if(filterChecked) f.addAttribute("checked", "checked");
+				HTMLNode f = filterControl.addChild("input", new String[] { "type", "name", "value" }, new String[] { "checkbox", "filterData", "filterData" });
+				if (filterChecked) {
+					f.addAttribute("checked", "checked");
+				}
 				filterControl.addChild("div", l10n("filterDataMessage"));
 			}
 		}
 	}
 
 	public static String l10n(String msg) {
-		return NodeL10n.getBase().getString("FProxyToadlet."+msg);
+		return NodeL10n.getBase().getString("FProxyToadlet." + msg);
 	}
 
-	/** Does the first 512 bytes of the data contain anything that Firefox might regard as RSS?
+	/**
+	 * Does the first 512 bytes of the data contain anything that Firefox might regard as RSS?
 	 * This is a horrible evil hack; we shouldn't be doing blacklisting, we should be doing whitelisting.
 	 * REDFLAG Expect future security issues!
-	 * @throws IOException */
+	 *
+	 * @throws IOException
+	 */
 	private static boolean isSniffedAsFeed(Bucket data) throws IOException {
 		DataInputStream is = null;
 		try {
 			int sz = (int) Math.min(data.size(), 512);
-			if(sz == 0)
+			if (sz == 0) {
 				return false;
+			}
 			is = new DataInputStream(data.getInputStream());
 			byte[] buf = new byte[sz];
 			// FIXME Fortunately firefox doesn't detect RSS in UTF16 etc ... yet
 			is.readFully(buf);
 			return RssSniffer.isSniffedAsFeed(buf);
-		}
-		finally {
+		} finally {
 			Closer.close(is);
 		}
 	}
 
-	public void handleMethodGET(URI uri, HTTPRequest httprequest, ToadletContext ctx)
-	throws ToadletContextClosedException, IOException, RedirectException {
+	public void handleMethodGET(URI uri, HTTPRequest httprequest, ToadletContext ctx) throws ToadletContextClosedException, IOException, RedirectException {
 		innerHandleMethodGET(uri, httprequest, ctx, 0);
 	}
 
 	static final int MAX_RECURSION = 5;
 
-	private void innerHandleMethodGET(URI uri, HTTPRequest httprequest, ToadletContext ctx, int recursion)
-			throws ToadletContextClosedException, IOException, RedirectException {
+	private void innerHandleMethodGET(URI uri, HTTPRequest httprequest, ToadletContext ctx, int recursion) throws ToadletContextClosedException, IOException, RedirectException {
 
 		String ks = uri.getPath();
 
-		MultiValueTable<String,String> headers = ctx.getHeaders();
+		MultiValueTable<String, String> headers = ctx.getHeaders();
 		final String ua = headers.get("user-agent");
 		final String accept = headers.get("accept");
-		if(logMINOR) Logger.minor(this, "UA = "+ua+" accept = "+accept);
-		final boolean canSendProgress =
-			isBrowser(ua) && !ctx.disableProgressPage() && (accept == null || accept.contains("text/html")) && !httprequest.isParameterSet("forcedownload");
+		if (logMINOR) {
+			Logger.minor(this, "UA = " + ua + " accept = " + accept);
+		}
+		final boolean canSendProgress = isBrowser(ua) && !ctx.disableProgressPage() && (accept == null || accept.contains("text/html")) && !httprequest.isParameterSet("forcedownload");
 
 		long defaultMaxSize = canSendProgress ? MAX_LENGTH_WITH_PROGRESS : MAX_LENGTH_NO_PROGRESS;
 
@@ -475,8 +423,8 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		boolean overrideSize = false;
 		maxSize = defaultMaxSize;
 		maxSizeDownload = MAX_LENGTH_WITH_PROGRESS;
-		if(!restricted) {
-			if(httprequest.isParameterSet("max-size")) {
+		if (!restricted) {
+			if (httprequest.isParameterSet("max-size")) {
 				maxSize = maxSizeDownload = httprequest.getLongParam("max-size", defaultMaxSize);
 				overrideSize = true;
 			}
@@ -489,12 +437,14 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				try {
 					newURI = new FreenetURI(k);
 				} catch (MalformedURLException e) {
-					Logger.normal(this, "Invalid key: "+e+" for "+k, e);
+					Logger.normal(this, "Invalid key: " + e + " for " + k, e);
 					sendErrorPage(ctx, 404, l10n("notFoundTitle"), NodeL10n.getBase().getString("FProxyToadlet.invalidKeyWithReason", new String[] { "reason" }, new String[] { e.toString() }));
 					return;
 				}
 
-				if(logMINOR) Logger.minor(this, "Redirecting to FreenetURI: "+newURI);
+				if (logMINOR) {
+					Logger.minor(this, "Redirecting to FreenetURI: " + newURI);
+				}
 				String requestedMimeType = httprequest.getParam("type");
 				String location = getLink(newURI, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize);
 				writeTemporaryRedirect(ctx, null, location);
@@ -515,38 +465,39 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				writeTemporaryRedirect(ctx, "Internal error. Please check logs and report.", WelcomeToadlet.PATH);
 				return;
 			}
-		}else if(ks.equals("/favicon.ico")){
-		    try {
-                throw new RedirectException(StaticToadlet.ROOT_URL+"favicon.ico");
-            } catch (URISyntaxException e) {
-                throw new Error(e);
-            }
-		} else if(ks.startsWith("/feed/") || ks.equals("/feed")) {
+		} else if (ks.equals("/favicon.ico")) {
+			try {
+				throw new RedirectException(StaticToadlet.ROOT_URL + "favicon.ico");
+			} catch (URISyntaxException e) {
+				throw new Error(e);
+			}
+		} else if (ks.startsWith("/feed/") || ks.equals("/feed")) {
 			String schemeHostAndPort = getSchemeHostAndPort(ctx);
 			String atom = ctx.getAlertManager().getAtom(schemeHostAndPort);
 			byte[] buf = atom.getBytes(StandardCharsets.UTF_8);
 			ctx.sendReplyHeadersFProxy(200, "OK", null, "application/atom+xml", buf.length);
 			ctx.writeData(buf, 0, buf.length);
 			return;
-		}else if(ks.equals("/robots.txt") && ctx.doRobots()){
+		} else if (ks.equals("/robots.txt") && ctx.doRobots()) {
 			this.writeTextReply(ctx, 200, "Ok", "User-agent: *\nDisallow: /");
 			return;
-		}else if(ks.startsWith("/darknet/") || ks.equals("/darknet")) { //TODO (pre-build 1045 url format) remove when obsolete
+		} else if (ks.startsWith("/darknet/") || ks.equals("/darknet")) { //TODO (pre-build 1045 url format) remove when obsolete
 			writePermanentRedirect(ctx, "obsoleted", "/friends/");
 			return;
-		}else if(ks.startsWith("/opennet/") || ks.equals("/opennet")) { //TODO (pre-build 1045 url format) remove when obsolete
+		} else if (ks.startsWith("/opennet/") || ks.equals("/opennet")) { //TODO (pre-build 1045 url format) remove when obsolete
 			writePermanentRedirect(ctx, "obsoleted", "/strangers/");
 			return;
-		} else if(ks.startsWith("/queue/")) {
+		} else if (ks.startsWith("/queue/")) {
 			writePermanentRedirect(ctx, "obsoleted", "/downloads/");
 			return;
-		} else if(ks.startsWith("/config/")) {
+		} else if (ks.startsWith("/config/")) {
 			writePermanentRedirect(ctx, "obsoleted", "/config/node");
 			return;
 		}
 
-		if(ks.startsWith("/"))
+		if (ks.startsWith("/")) {
 			ks = ks.substring(1);
+		}
 
 		//first check of httprange before get
 		// only valid number format is checked here
@@ -555,7 +506,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			try {
 				parseRange(rangeStr);
 			} catch (HTTPRangeException e) {
-				Logger.normal(this, "Invalid Range Header: "+rangeStr, e);
+				Logger.normal(this, "Invalid Range Header: " + rangeStr, e);
 				ctx.sendReplyHeaders(416, "Requested Range Not Satisfiable", null, null, 0);
 				return;
 			}
@@ -591,21 +542,25 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		String forceString = httprequest.getParam("force");
 		long now = System.currentTimeMillis();
 		boolean force = false;
-		if(forceString != null) {
-			if(forceString.equals(getForceValue(key, now)) ||
-					forceString.equals(getForceValue(key, now-FORCE_GRAIN_INTERVAL)))
+		if (forceString != null) {
+			if (forceString.equals(getForceValue(key, now)) || forceString.equals(getForceValue(key, now - FORCE_GRAIN_INTERVAL))) {
 				force = true;
+			}
 		}
-		if(restricted)
+		if (restricted) {
 			maxRetries = -2;
-		if(maxRetries >= -1) {
+		}
+		if (maxRetries >= -1) {
 			fctx.maxNonSplitfileRetries = maxRetries;
 			fctx.maxSplitfileBlockRetries = maxRetries;
 		}
-		if (!force && !httprequest.isParameterSet("forcedownload")) fctx.filterData = true;
-		else if(logMINOR) Logger.minor(this, "Content filter disabled via request parameter");
+		if (!force && !httprequest.isParameterSet("forcedownload")) {
+			fctx.filterData = true;
+		} else if (logMINOR) {
+			Logger.minor(this, "Content filter disabled via request parameter");
+		}
 		//Load the fetch context with the callbacks needed for web-pushing, if enabled
-		if(container.enableInlinePrefetch()) {
+		if (container.enableInlinePrefetch()) {
 			fctx.prefetchHook = new FoundURICallback() {
 
 				List<FreenetURI> uris = new ArrayList<FreenetURI>();
@@ -617,12 +572,18 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 				@Override
 				public void foundURI(FreenetURI uri, boolean inline) {
-					if(!inline) return;
-					if(logMINOR) Logger.minor(this, "Prefetching "+uri);
-					synchronized(this) {
-						if(uris.size() < MAX_PREFETCH)
-							// FIXME Maybe we should do this randomly, but since it's a DoS protection (in an obscure feature), if so we should do it in constant space!
+					if (!inline) {
+						return;
+					}
+					if (logMINOR) {
+						Logger.minor(this, "Prefetching " + uri);
+					}
+					synchronized (this) {
+						if (uris.size() < MAX_PREFETCH)
+						// FIXME Maybe we should do this randomly, but since it's a DoS protection (in an obscure feature), if so we should do it in constant space!
+						{
 							uris.add(uri);
+						}
 					}
 				}
 
@@ -637,8 +598,8 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 						@Override
 						public void run() {
-							for(FreenetURI uri : uris) {
-								client.prefetch(uri, SECONDS.toMillis(60), 512*1024, prefetchAllowedTypes);
+							for (FreenetURI uri : uris) {
+								client.prefetch(uri, SECONDS.toMillis(60), 512 * 1024, prefetchAllowedTypes);
 							}
 						}
 
@@ -648,20 +609,26 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			};
 
 		}
-		if(container.isFProxyWebPushingEnabled()) fctx.tagReplacer = new PushingTagReplacerCallback(core.getFProxy().fetchTracker, defaultMaxSize, ctx);
+		if (container.isFProxyWebPushingEnabled()) {
+			fctx.tagReplacer = new PushingTagReplacerCallback(core.getFProxy().fetchTracker, defaultMaxSize, ctx);
+		}
 
 		String requestedMimeType = httprequest.getParam("type", null);
 		fctx.overrideMIME = requestedMimeType;
-		String override = (requestedMimeType == null) ? "" : "?type="+URLEncoder.encode(requestedMimeType,true);
+		String override = (requestedMimeType == null) ? "" : "?type=" + URLEncoder.encode(requestedMimeType, true);
 		String maybeCharset = httprequest.isParameterSet("maybecharset") ? httprequest.getParam("maybecharset", null) : null;
 		fctx.charset = maybeCharset;
-		if(override.isEmpty() && maybeCharset != null)
-			override = "?maybecharset="+URLEncoder.encode(maybeCharset, true);
+		if (override.isEmpty() && maybeCharset != null) {
+			override = "?maybecharset=" + URLEncoder.encode(maybeCharset, true);
+		}
 		// No point passing ?force= across a redirect, since the key will change.
 		// However, there is every point in passing ?forcedownload.
-		if(httprequest.isParameterSet("forcedownload")) {
-			if(override.length() == 0) override = "?forcedownload";
-			else override = override+"&forcedownload";
+		if (httprequest.isParameterSet("forcedownload")) {
+			if (override.length() == 0) {
+				override = "?forcedownload";
+			} else {
+				override = override + "&forcedownload";
+			}
 		}
 
 		Bucket data = null;
@@ -672,133 +639,143 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 		FProxyFetchResult fr = null;
 
-			FProxyFetchWaiter fetch = null;
-			try {
-				fetch = fetchTracker.makeFetcher(key, maxSize, fctx, ctx.getReFilterPolicy());
-			} catch (FetchException e) {
-            fe = e;
-			}
-			if(fetch != null)
-			while(true) {
-			fr = fetch.getResult(!canSendProgress);
-			if(fr.hasData()) {
+		FProxyFetchWaiter fetch = null;
+		try {
+			fetch = fetchTracker.makeFetcher(key, maxSize, fctx, ctx.getReFilterPolicy());
+		} catch (FetchException e) {
+			fe = e;
+		}
+		if (fetch != null) {
+			while (true) {
+				fr = fetch.getResult(!canSendProgress);
+				if (fr.hasData()) {
 
-				if(fr.getFetchCount() > 1 && !fr.hasWaited() && fr.getFetchCount() > 1 && key.isUSK() && context.uskManager.lookupKnownGood(USK.create(key)) > key.getSuggestedEdition()) {
-					Logger.normal(this, "Loading later edition...");
-					fetch.progress.requestImmediateCancel();
-					fr = null;
-					fetch = null;
-					try {
-						fetch = fetchTracker.makeFetcher(key, maxSize, fctx, ctx.getReFilterPolicy());
-					} catch (FetchException e) {
-                            fe = e;
+					if (fr.getFetchCount() > 1 && !fr.hasWaited() && fr.getFetchCount() > 1 && key.isUSK() && context.uskManager.lookupKnownGood(USK.create(key)) > key.getSuggestedEdition()) {
+						Logger.normal(this, "Loading later edition...");
+						fetch.progress.requestImmediateCancel();
+						fr = null;
+						fetch = null;
+						try {
+							fetch = fetchTracker.makeFetcher(key, maxSize, fctx, ctx.getReFilterPolicy());
+						} catch (FetchException e) {
+							fe = e;
+						}
+						if (fetch == null) {
+							break;
+						}
+						continue;
 					}
-					if(fetch == null) break;
-					continue;
-				}
 
-				if(logMINOR) Logger.minor(this, "Found data");
-				data = new NoFreeBucket(fr.data);
-				mimeType = fr.mimeType;
-				fetch.close(); // Not waiting any more, but still locked the results until sent
-				break;
-			} else if(fr.failed != null) {
-				if(logMINOR) Logger.minor(this, "Request failed");
-				fe = fr.failed;
-				fetch.close(); // Not waiting any more, but still locked the results until sent
-				break;
-			} else if(canSendProgress) {
-				if(logMINOR) Logger.minor(this, "Still in progress");
-				// Still in progress
-				boolean isJsEnabled=ctx.getContainer().isFProxyJavascriptEnabled() && ua != null && !ua.contains("AppleWebKit/");
-				boolean isWebPushingEnabled = false;
-				PageNode page = ctx.getPageMaker().getPageNode(l10n("fetchingPageTitle"), ctx);
-				HTMLNode pageNode = page.outer;
-				String location = getLink(key, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize);
-				HTMLNode headNode=page.headNode;
-				if(isJsEnabled){
-					//If the user has enabled javascript, we add a <noscript> http refresh(if he has disabled it in the browser)
-					headNode.addChild("noscript").addChild("meta", "http-equiv", "Refresh").addAttribute("content", "2;URL=" + location);
+					if (logMINOR) {
+						Logger.minor(this, "Found data");
+					}
+					data = new NoFreeBucket(fr.data);
+					mimeType = fr.mimeType;
+					fetch.close(); // Not waiting any more, but still locked the results until sent
+					break;
+				} else if (fr.failed != null) {
+					if (logMINOR) {
+						Logger.minor(this, "Request failed");
+					}
+					fe = fr.failed;
+					fetch.close(); // Not waiting any more, but still locked the results until sent
+					break;
+				} else if (canSendProgress) {
+					if (logMINOR) {
+						Logger.minor(this, "Still in progress");
+					}
+					// Still in progress
+					boolean isJsEnabled = ctx.getContainer().isFProxyJavascriptEnabled() && ua != null && !ua.contains("AppleWebKit/");
+					boolean isWebPushingEnabled = false;
+					PageNode page = ctx.getPageMaker().getPageNode(l10n("fetchingPageTitle"), ctx);
+					HTMLNode pageNode = page.outer;
+					String location = getLink(key, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize);
+					HTMLNode headNode = page.headNode;
+					if (isJsEnabled) {
+						//If the user has enabled javascript, we add a <noscript> http refresh(if he has disabled it in the browser)
+						headNode.addChild("noscript").addChild("meta", "http-equiv", "Refresh").addAttribute("content", "2;URL=" + location);
 						// If pushing is disabled, but js is enabled, then we add the original progresspage.js
 						if ((isWebPushingEnabled = ctx.getContainer().isFProxyWebPushingEnabled()) == false) {
 							HTMLNode scriptNode = headNode.addChild("script", "//abc");
 							scriptNode.addAttribute("type", "text/javascript");
 							scriptNode.addAttribute("src", "/static/js/progresspage.js");
 						}
-				}else{
-					//If he disabled it, we just put the http refresh meta, without the noscript
-					headNode.addChild("meta", "http-equiv", "Refresh").addAttribute("content", "2;URL=" + location);
+					} else {
+						//If he disabled it, we just put the http refresh meta, without the noscript
+						headNode.addChild("meta", "http-equiv", "Refresh").addAttribute("content", "2;URL=" + location);
+					}
+					HTMLNode contentNode = page.content;
+					HTMLNode infobox = contentNode.addChild("div", "class", "infobox infobox-information");
+					infobox.addChild("div", "class", "infobox-header", l10n("fetchingPageBox"));
+					HTMLNode infoboxContent = infobox.addChild("div", "class", "infobox-content");
+					infoboxContent.addAttribute("id", "infoContent");
+					infoboxContent.addChild(new ProgressInfoElement(fetchTracker, key, fctx, maxSize, ctx.isAdvancedModeEnabled(), ctx, isWebPushingEnabled));
+
+
+					HTMLNode table = infoboxContent.addChild("table", "border", "0");
+					HTMLNode progressCell = table.addChild("tr").addChild("td", "class", "request-progress");
+					if (fr.totalBlocks <= 0) {
+						progressCell.addChild("#", NodeL10n.getBase().getString("QueueToadlet.unknown"));
+					} else {
+						progressCell.addChild(new ProgressBarElement(fetchTracker, key, fctx, maxSize, ctx, isWebPushingEnabled));
+					}
+
+					infobox = contentNode.addChild("div", "class", "infobox infobox-information");
+					infobox.addChild("div", "class", "infobox-header", l10n("fetchingPageOptions"));
+					infoboxContent = infobox.addChild("div", "class", "infobox-content");
+
+					HTMLNode optionList = infoboxContent.addChild("ul");
+					optionList.addChild("li").addChild("p", l10n("progressOptionZero"));
+
+					addDownloadOptions(ctx, optionList, key, mimeType, false, false, core);
+
+					optionList.addChild("li").addChild(ctx.getPageMaker().createBackLink(ctx, l10n("goBackToPrev")));
+					optionList.addChild("li").addChild("a", new String[] { "href", "title" }, new String[] { "/", NodeL10n.getBase().getString("Toadlet.homepage") }, l10n("abortToHomepage"));
+
+					MultiValueTable<String, String> retHeaders = new MultiValueTable<String, String>();
+					//retHeaders.put("Refresh", "2; url="+location);
+					writeHTMLReply(ctx, 200, "OK", retHeaders, pageNode.generate());
+					fr.close();
+					fetch.close();
+					return;
+				} else if (fr != null) {
+					fr.close();
 				}
-				HTMLNode contentNode = page.content;
-				HTMLNode infobox = contentNode.addChild("div", "class", "infobox infobox-information");
-				infobox.addChild("div", "class", "infobox-header", l10n("fetchingPageBox"));
-				HTMLNode infoboxContent = infobox.addChild("div", "class", "infobox-content");
-				infoboxContent.addAttribute("id", "infoContent");
-				infoboxContent.addChild(new ProgressInfoElement(fetchTracker, key, fctx, maxSize, ctx.isAdvancedModeEnabled(), ctx, isWebPushingEnabled));
-
-
-				HTMLNode table = infoboxContent.addChild("table", "border", "0");
-				HTMLNode progressCell = table.addChild("tr").addChild("td", "class", "request-progress");
-				if(fr.totalBlocks <= 0)
-					progressCell.addChild("#", NodeL10n.getBase().getString("QueueToadlet.unknown"));
-				else {
-					progressCell.addChild(new ProgressBarElement(fetchTracker,key,fctx,maxSize,ctx, isWebPushingEnabled));
-				}
-
-				infobox = contentNode.addChild("div", "class", "infobox infobox-information");
-				infobox.addChild("div", "class", "infobox-header", l10n("fetchingPageOptions"));
-				infoboxContent = infobox.addChild("div", "class", "infobox-content");
-
-				HTMLNode optionList = infoboxContent.addChild("ul");
-				optionList.addChild("li").addChild("p", l10n("progressOptionZero"));
-
-				addDownloadOptions(ctx, optionList, key, mimeType, false, false, core);
-
-				optionList.addChild("li").addChild(ctx.getPageMaker().createBackLink(ctx, l10n("goBackToPrev")));
-				optionList.addChild("li").addChild("a", new String[] { "href", "title" },
-						new String[] { "/", NodeL10n.getBase().getString("Toadlet.homepage") }, l10n("abortToHomepage"));
-
-				MultiValueTable<String, String> retHeaders = new MultiValueTable<String, String>();
-				//retHeaders.put("Refresh", "2; url="+location);
-				writeHTMLReply(ctx, 200, "OK", retHeaders, pageNode.generate());
-				fr.close();
-				fetch.close();
-				return;
-			} else if(fr != null)
-				fr.close();
 			}
+		}
 
 		try {
-			if(logMINOR)
-				Logger.minor(this, "FProxy fetching "+key+" ("+maxSize+ ')');
-			if(data == null && fe == null) {
-				boolean needsFetch=true;
+			if (logMINOR) {
+				Logger.minor(this, "FProxy fetching " + key + " (" + maxSize + ')');
+			}
+			if (data == null && fe == null) {
+				boolean needsFetch = true;
 				//If we don't have the data, then check if an FProxyFetchInProgress has. It can happen when one FetchInProgress downloaded an image
 				//asynchronously, then loads it. This way a FetchInprogress will have the full image, and no need to block.
-				FProxyFetchInProgress progress=fetchTracker.getFetchInProgress(key, maxSize, fctx);
-				if(progress!=null){
-					FProxyFetchWaiter waiter=null;
-					FProxyFetchResult result=null;
-					try{
-						waiter=progress.getWaiter();
-						result=waiter.getResult(false);
-						if(result.failed==null && result.data!=null){
-							mimeType=result.mimeType;
-							data=result.data;
-							data=ctx.getBucketFactory().makeBucket(result.data.size());
+				FProxyFetchInProgress progress = fetchTracker.getFetchInProgress(key, maxSize, fctx);
+				if (progress != null) {
+					FProxyFetchWaiter waiter = null;
+					FProxyFetchResult result = null;
+					try {
+						waiter = progress.getWaiter();
+						result = waiter.getResult(false);
+						if (result.failed == null && result.data != null) {
+							mimeType = result.mimeType;
+							data = result.data;
+							data = ctx.getBucketFactory().makeBucket(result.data.size());
 							BucketTools.copy(result.data, data);
-							needsFetch=false;
+							needsFetch = false;
 						}
-					}finally{
-						if(waiter!=null){
+					} finally {
+						if (waiter != null) {
 							progress.close(waiter);
 						}
-						if(result!=null){
+						if (result != null) {
 							progress.close(result);
 						}
 					}
 				}
-				if(needsFetch){
+				if (needsFetch) {
 					//If we don't have the data, then we need to fetch it and block until it is available
 					FetchResult result = fetch(key, maxSize, new RequestClientBuilder().realTime().build(), fctx);
 
@@ -807,17 +784,19 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 					data = result.asBucket();
 					mimeType = result.getMimeType();
 				}
-			} else if(fe != null) throw fe;
+			} else if (fe != null) {
+				throw fe;
+			}
 
-			handleDownload(ctx, data, ctx.getBucketFactory(), mimeType, requestedMimeType, forceString, httprequest.isParameterSet("forcedownload"), "/", key, "&max-size="+maxSizeDownload, referer, true, ctx, core, fr != null, maybeCharset);
+			handleDownload(ctx, data, ctx.getBucketFactory(), mimeType, requestedMimeType, forceString, httprequest.isParameterSet("forcedownload"), "/", key, "&max-size=" + maxSizeDownload, referer, true, ctx, core, fr != null, maybeCharset);
 		} catch (FetchException e) {
 			//Handle exceptions thrown from the ContentFilter
 			String msg = e.getMessage();
-			if(logMINOR) {
-				Logger.minor(this, "Failed to fetch "+uri+" : "+e);
+			if (logMINOR) {
+				Logger.minor(this, "Failed to fetch " + uri + " : " + e);
 			}
-			if(e.newURI != null) {
-				if(accept != null && (accept.startsWith("text/css") || accept.startsWith("image/")) && recursion++ < MAX_RECURSION) {
+			if (e.newURI != null) {
+				if (accept != null && (accept.startsWith("text/css") || accept.startsWith("image/")) && recursion++ < MAX_RECURSION) {
 					// If it's an image or a CSS fetch, auto-follow the redirect, up to a limit.
 					String link = getLink(e.newURI, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize);
 					try {
@@ -825,12 +804,11 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 						innerHandleMethodGET(uri, httprequest, ctx, recursion);
 						return;
 					} catch (URISyntaxException e1) {
-						Logger.error(this, "Caught "+e1+" parsing new link "+link, e1);
+						Logger.error(this, "Caught " + e1 + " parsing new link " + link, e1);
 					}
 				}
-				Toadlet.writePermanentRedirect(ctx, msg,
-					getLink(e.newURI, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize));
-			} else if(e.mode == FetchExceptionMode.TOO_BIG) {
+				Toadlet.writePermanentRedirect(ctx, msg, getLink(e.newURI, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize));
+			} else if (e.mode == FetchExceptionMode.TOO_BIG) {
 				PageNode page = ctx.getPageMaker().getPageNode(l10n("fileInformationTitle"), ctx);
 				HTMLNode pageNode = page.outer;
 				HTMLNode contentNode = page.content;
@@ -851,14 +829,16 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				infoboxContent.addChild("#", l10n("largeFileExplanationAndOptions"));
 				HTMLNode optionList = infoboxContent.addChild("ul");
 				//HTMLNode optionTable = infoboxContent.addChild("table", "border", "0");
-				if(!restricted) {
+				if (!restricted) {
 					option = optionList.addChild("li");
-					HTMLNode optionForm = option.addChild("form", new String[] { "action", "method" }, new String[] {'/' + key.toString(), "get" });
-					optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "max-size", String.valueOf(e.expectedSize == -1 ? Long.MAX_VALUE : e.expectedSize*2) });
-					if (requestedMimeType != null)
+					HTMLNode optionForm = option.addChild("form", new String[] { "action", "method" }, new String[] { '/' + key.toString(), "get" });
+					optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "max-size", String.valueOf(e.expectedSize == -1 ? Long.MAX_VALUE : e.expectedSize * 2) });
+					if (requestedMimeType != null) {
 						optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "type", requestedMimeType });
-					if(maxRetries >= -1)
+					}
+					if (maxRetries >= -1) {
 						optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "hidden", "max-retries", Integer.toString(maxRetries) });
+					}
 					optionForm.addChild("input", new String[] { "type", "name", "value" }, new String[] { "submit", "fetch", l10n("fetchLargeFileAnywayAndDisplayButton") });
 					optionForm.addChild("#", " - " + l10n("fetchLargeFileAnywayAndDisplay"));
 					addDownloadOptions(ctx, optionList, key, mime, false, false, core);
@@ -889,26 +869,28 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				infobox = contentNode.addChild("div", "class", "infobox infobox-error");
 				infobox.addChild("div", "class", "infobox-header", l10n("explanationTitle"));
 				UnsafeContentTypeException filterException = null;
-				if(e.getCause() != null && e.getCause() instanceof UnsafeContentTypeException) {
-					filterException = (UnsafeContentTypeException)e.getCause();
+				if (e.getCause() != null && e.getCause() instanceof UnsafeContentTypeException) {
+					filterException = (UnsafeContentTypeException) e.getCause();
 				}
 				infoboxContent = infobox.addChild("div", "class", "infobox-content");
-				if(filterException == null)
+				if (filterException == null) {
 					infoboxContent.addChild("p", l10n("unableToRetrieve"));
-				else
+				} else {
 					infoboxContent.addChild("p", l10n("unableToSafelyDisplay"));
-				if(e.isFatal() && filterException == null)
+				}
+				if (e.isFatal() && filterException == null) {
 					infoboxContent.addChild("p", l10n("errorIsFatal"));
+				}
 				infoboxContent.addChild("p", msg);
-				if(filterException != null) {
-					if(filterException.details() != null) {
+				if (filterException != null) {
+					if (filterException.details() != null) {
 						HTMLNode detailList = infoboxContent.addChild("ul");
-						for(String detail : filterException.details()) {
+						for (String detail : filterException.details()) {
 							detailList.addChild("li", detail);
 						}
 					}
 				}
-				if(e.errorCodes != null) {
+				if (e.errorCodes != null) {
 					infoboxContent.addChild("p").addChild("pre").addChild("#", e.errorCodes.toVerboseString());
 				}
 
@@ -919,29 +901,30 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 				HTMLNode optionList = infoboxContent.addChild("ul");
 
 				PluginInfoWrapper keyUtil;
-				if((e.mode == FetchExceptionMode.NOT_IN_ARCHIVE || e.mode == FetchExceptionMode.NOT_ENOUGH_PATH_COMPONENTS)) {
+				if ((e.mode == FetchExceptionMode.NOT_IN_ARCHIVE || e.mode == FetchExceptionMode.NOT_ENOUGH_PATH_COMPONENTS)) {
 					// first look for the newest version
 					if ((keyUtil = core.getNode().getPluginManager().getPluginInfo("plugins.KeyUtils.KeyUtilsPlugin")) != null) {
 						option = optionList.addChild("li");
-						if (keyUtil.getPluginLongVersion() < 5010)
+						if (keyUtil.getPluginLongVersion() < 5010) {
 							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/KeyUtils/?automf=true&key=" + key.toString()) });
-						else {
+						} else {
 							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/KeyUtils/?key=" + key.toString()) });
 							option = optionList.addChild("li");
 							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithSiteExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/KeyUtils/Site?key=" + key.toString()) });
 						}
 					} else if ((keyUtil = core.getNode().getPluginManager().getPluginInfo("plugins.KeyExplorer.KeyExplorer")) != null) {
 						option = optionList.addChild("li");
-						if (keyUtil.getPluginLongVersion() > 4999)
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/KeyExplorer/?automf=true&key=" + key.toString())});
-						else
-							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/plugins/plugins.KeyExplorer.KeyExplorer/?key=" + key.toString())});
+						if (keyUtil.getPluginLongVersion() > 4999) {
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/KeyExplorer/?automf=true&key=" + key.toString()) });
+						} else {
+							NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openWithKeyExplorer", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/plugins/plugins.KeyExplorer.KeyExplorer/?key=" + key.toString()) });
+						}
 					}
 				}
-				if(filterException != null) {
-					if((mime.equals("application/x-freenet-index")) && (core.getNode().getPluginManager().isPluginLoaded("plugins.ThawIndexBrowser.ThawIndexBrowser"))) {
+				if (filterException != null) {
+					if ((mime.equals("application/x-freenet-index")) && (core.getNode().getPluginManager().isPluginLoaded("plugins.ThawIndexBrowser.ThawIndexBrowser"))) {
 						option = optionList.addChild("li");
-						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openAsThawIndex", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/plugins/plugins.ThawIndexBrowser.ThawIndexBrowser/?key=" + key.toString())});
+						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openAsThawIndex", new String[] { "link" }, new HTMLNode[] { HTMLNode.link("/plugins/plugins.ThawIndexBrowser.ThawIndexBrowser/?key=" + key.toString()) });
 					}
 					option = optionList.addChild("li");
 					// FIXME: is this safe? See bug #131
@@ -950,41 +933,43 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openAsText", new String[] { "link" }, new HTMLNode[] { HTMLNode.link(getLink(key, textMediaType.toString(), maxSize, null, false, maxRetries, overrideSize)) });
 					option = optionList.addChild("li");
 					NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openForceDisk", new String[] { "link" }, new HTMLNode[] { HTMLNode.link(getLink(key, mime, maxSize, null, true, maxRetries, overrideSize)) });
-					if(!(mime.equals("application/octet-stream") || mime.equals("application/x-msdownload") || !DefaultMIMETypes.isPlausibleMIMEType(mime))) {
+					if (!(mime.equals("application/octet-stream") || mime.equals("application/x-msdownload") || !DefaultMIMETypes.isPlausibleMIMEType(mime))) {
 						option = optionList.addChild("li");
-						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openForce", new String[] { "link", "mime" }, new HTMLNode[] { HTMLNode.link(getLink(key, mime, maxSize, getForceValue(key, now), false, maxRetries, overrideSize)), HTMLNode.text(HTMLEncoder.encode(mime))});
+						NodeL10n.getBase().addL10nSubstitution(option, "FProxyToadlet.openForce", new String[] { "link", "mime" }, new HTMLNode[] { HTMLNode.link(getLink(key, mime, maxSize, getForceValue(key, now), false, maxRetries, overrideSize)), HTMLNode.text(HTMLEncoder.encode(mime)) });
 					}
 				}
 
-				if((!e.isFatal() || filterException != null) && (ctx.isAllowedFullAccess() || !container.publicGatewayMode())) {
+				if ((!e.isFatal() || filterException != null) && (ctx.isAllowedFullAccess() || !container.publicGatewayMode())) {
 					addDownloadOptions(ctx, optionList, key, mimeType, filterException != null, filterException != null, core);
-					if(filterException == null)
-						optionList.addChild("li").
-							addChild("a", "href", getLink(key, requestedMimeType, maxSize, httprequest.getParam("force", null),
-									httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize)).addChild("#", l10n("retryNow"));
+					if (filterException == null) {
+						optionList.addChild("li").addChild("a", "href", getLink(key, requestedMimeType, maxSize, httprequest.getParam("force", null), httprequest.isParameterSet("forcedownload"), maxRetries, overrideSize)).addChild("#", l10n("retryNow"));
+					}
 				}
 
-				optionList.addChild("li").addChild("a", new String[] { "href", "title" }, new String[] { "/", NodeL10n.getBase().
-						getString("Toadlet.homepage") }, l10n("abortToHomepage"));
+				optionList.addChild("li").addChild("a", new String[] { "href", "title" }, new String[] { "/", NodeL10n.getBase().getString("Toadlet.homepage") }, l10n("abortToHomepage"));
 
 				optionList.addChild("li").addChild(ctx.getPageMaker().createBackLink(ctx, l10n("goBackToPrev")));
-				this.writeHTMLReply(ctx, (e.mode == FetchExceptionMode.NOT_IN_ARCHIVE) ? 404 : 500 /* close enough - FIXME probably should depend on status code */,
-						"Internal Error", pageNode.generate());
+				this.writeHTMLReply(ctx, (e.mode == FetchExceptionMode.NOT_IN_ARCHIVE) ? 404 : 500 /* close enough - FIXME probably should depend on status code */, "Internal Error", pageNode.generate());
 			}
 		} catch (SocketException e) {
 			// Probably irrelevant
-			if(e.getMessage().equals("Broken pipe")) {
-				if(logMINOR)
-					Logger.minor(this, "Caught "+e+" while handling GET", e);
+			if (e.getMessage().equals("Broken pipe")) {
+				if (logMINOR) {
+					Logger.minor(this, "Caught " + e + " while handling GET", e);
+				}
 			} else {
-				Logger.normal(this, "Caught "+e);
+				Logger.normal(this, "Caught " + e);
 			}
 			throw e;
 		} catch (Throwable t) {
 			writeInternalError(t, ctx);
 		} finally {
-			if(fr == null && data != null) data.free();
-			if(fr != null) fr.close();
+			if (fr == null && data != null) {
+				data.free();
+			}
+			if (fr != null) {
+				fr.close();
+			}
 		}
 	}
 
@@ -1005,7 +990,9 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	}
 
 	private boolean isBrowser(String ua) {
-		if(ua == null) return false;
+		if (ua == null) {
+			return false;
+		}
 		return (ua.contains("Mozilla/") || ua.contains("Opera/"));
 	}
 
@@ -1018,50 +1005,54 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	}
 
 	private static void writeSizeAndMIME(HTMLNode fileInformationList, long size, String mime, boolean finalized) {
-		if(size > 0) {
+		if (size > 0) {
 			if (finalized) {
 				fileInformationList.addChild("li", (l10n("sizeLabel") + ' ') + SizeUtil.formatSize(size));
 			} else {
-				fileInformationList.addChild("li", (l10n("sizeLabel") + ' ')+ SizeUtil.formatSize(size) + l10n("mayChange"));
+				fileInformationList.addChild("li", (l10n("sizeLabel") + ' ') + SizeUtil.formatSize(size) + l10n("mayChange"));
 			}
 		} else {
 			fileInformationList.addChild("li", l10n("sizeUnknown"));
 		}
-		if(mime != null) {
-			fileInformationList.addChild("li", NodeL10n.getBase().getString("FProxyToadlet."+(finalized ? "mimeType" : "expectedMimeType"), new String[] { "mime" }, new String[] { mime }));
+		if (mime != null) {
+			fileInformationList.addChild("li", NodeL10n.getBase().getString("FProxyToadlet." + (finalized ? "mimeType" : "expectedMimeType"), new String[] { "mime" }, new String[] { mime }));
 		} else {
 			fileInformationList.addChild("li", l10n("unknownMIMEType"));
 		}
 	}
 
 	private String l10n(String key, String pattern, String value) {
-		return NodeL10n.getBase().getString("FProxyToadlet."+key, new String[] { pattern }, new String[] { value });
+		return NodeL10n.getBase().getString("FProxyToadlet." + key, new String[] { pattern }, new String[] { value });
 	}
 
 	public static String l10n(String key, String[] pattern, String[] value) {
-		return NodeL10n.getBase().getString("FProxyToadlet."+key, pattern, value);
+		return NodeL10n.getBase().getString("FProxyToadlet." + key, pattern, value);
 	}
 
-	private String getLink(FreenetURI uri, String requestedMimeType, long maxSize, String force,
-			boolean forceDownload, int maxRetries, boolean appendMaxSize) {
+	private String getLink(FreenetURI uri, String requestedMimeType, long maxSize, String force, boolean forceDownload, int maxRetries, boolean appendMaxSize) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("/");
 		sb.append(uri.toASCIIString());
 		char c = '?';
-		if(requestedMimeType != null && requestedMimeType.length() != 0) {
-			sb.append(c).append("type=").append(URLEncoder.encode(requestedMimeType,false)); c = '&';
+		if (requestedMimeType != null && requestedMimeType.length() != 0) {
+			sb.append(c).append("type=").append(URLEncoder.encode(requestedMimeType, false));
+			c = '&';
 		}
-		if(maxSize > 0 && appendMaxSize) {
-			sb.append(c).append("max-size=").append(maxSize); c = '&';
+		if (maxSize > 0 && appendMaxSize) {
+			sb.append(c).append("max-size=").append(maxSize);
+			c = '&';
 		}
-		if(force != null) {
-			sb.append(c).append("force=").append(force); c = '&';
+		if (force != null) {
+			sb.append(c).append("force=").append(force);
+			c = '&';
 		}
-		if(forceDownload) {
-			sb.append(c).append("forcedownload=true"); c = '&';
+		if (forceDownload) {
+			sb.append(c).append("forcedownload=true");
+			c = '&';
 		}
-		if(maxRetries >= -1) {
-			sb.append(c).append("max-retries=").append(maxRetries); c = '&';
+		if (maxRetries >= -1) {
+			sb.append(c).append("max-retries=").append(maxRetries);
+			c = '&';
 		}
 		return sb.toString();
 	}
@@ -1069,23 +1060,26 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	private String sanitizeReferer(ToadletContext ctx) {
 		// FIXME we do something similar in the GenericFilterCallback thingy?
 		String referer = ctx.getHeaders().get("referer");
-		if(referer != null) {
+		if (referer != null) {
 			try {
 				URI refererURI = new URI(URIPreEncoder.encode(referer));
 				String path = refererURI.getPath();
-				while(path.startsWith("/")) path = path.substring(1);
-				if(path.isEmpty()) return "/";
+				while (path.startsWith("/")) path = path.substring(1);
+				if (path.isEmpty()) {
+					return "/";
+				}
 				FreenetURI furi = new FreenetURI(path);
 				HTTPRequest req = new HTTPRequestImpl(refererURI, "GET");
 				String type = req.getParam("type");
 				referer = "/" + furi.toString();
-				if(type != null && type.length() > 0)
+				if (type != null && type.length() > 0) {
 					referer += "?type=" + type;
+				}
 			} catch (MalformedURLException e) {
 				referer = "/";
-				Logger.normal(this, "Caught MalformedURLException on the referer : "+e.getMessage());
+				Logger.normal(this, "Caught MalformedURLException on the referer : " + e.getMessage());
 			} catch (Throwable t) {
-				Logger.error(this, "Caught handling referrer: "+t+" for "+referer, t);
+				Logger.error(this, "Caught handling referrer: " + t + " for " + referer, t);
 				referer = null;
 			}
 		}
@@ -1095,7 +1089,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 	private static String getForceValue(FreenetURI key, long time) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-		try{
+		try {
 			bos.write(random);
 			bos.write(key.toString().getBytes(StandardCharsets.UTF_8));
 			bos.write(Long.toString(time / FORCE_GRAIN_INTERVAL).getBytes(StandardCharsets.UTF_8));
@@ -1107,8 +1101,7 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		return f;
 	}
 
-	public static void maybeCreateFProxyEtc(NodeClientCore core, Node node, Config config,
-	        SimpleToadletServer server) throws IOException {
+	public static void maybeCreateFProxyEtc(NodeClientCore core, Node node, Config config, SimpleToadletServer server) throws IOException {
 
 		// FIXME how to change these on the fly when the interface language is changed?
 
@@ -1117,61 +1110,46 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		random = new byte[32];
 		core.getRandom().nextBytes(random);
 
-		FProxyFetchTracker fetchTracker = new FProxyFetchTracker(core.getClientContext(), client.getFetchContext(),
-				new RequestClientBuilder().realTime().build());
+		FProxyFetchTracker fetchTracker = new FProxyFetchTracker(core.getClientContext(), client.getFetchContext(), new RequestClientBuilder().realTime().build());
 
 
 		FProxyToadlet fproxy = new FProxyToadlet(client, core, fetchTracker);
 		core.setFProxy(fproxy);
 
-		server.registerMenu("/",
-		        "FProxyToadlet.categoryBrowsing", "FProxyToadlet.categoryTitleBrowsing", null);
-		server.registerMenu("/downloads/",
-		        "FProxyToadlet.categoryQueue", "FProxyToadlet.categoryTitleQueue", null);
-		server.registerMenu("/friends/",
-		        "FProxyToadlet.categoryFriends", "FProxyToadlet.categoryTitleFriends", null);
-		server.registerMenu("/chat/",
-		        "FProxyToadlet.categoryChat", "FProxyToadlet.categoryTitleChat", null);
-		server.registerMenu("/alerts/",
-		        "FProxyToadlet.categoryStatus", "FProxyToadlet.categoryTitleStatus", null);
-		server.registerMenu("/seclevels/",
-		        "FProxyToadlet.categoryConfig", "FProxyToadlet.categoryTitleConfig", null);
+		server.registerMenu("/", "FProxyToadlet.categoryBrowsing", "FProxyToadlet.categoryTitleBrowsing", null);
+		server.registerMenu("/downloads/", "FProxyToadlet.categoryQueue", "FProxyToadlet.categoryTitleQueue", null);
+		server.registerMenu("/friends/", "FProxyToadlet.categoryFriends", "FProxyToadlet.categoryTitleFriends", null);
+		server.registerMenu("/chat/", "FProxyToadlet.categoryChat", "FProxyToadlet.categoryTitleChat", null);
+		server.registerMenu("/alerts/", "FProxyToadlet.categoryStatus", "FProxyToadlet.categoryTitleStatus", null);
+		server.registerMenu("/seclevels/", "FProxyToadlet.categoryConfig", "FProxyToadlet.categoryTitleConfig", null);
 
-		server.register(fproxy, "FProxyToadlet.categoryBrowsing", "/", false, "FProxyToadlet.welcomeTitle",
-		        "FProxyToadlet.welcome", false, null);
+		server.register(fproxy, "FProxyToadlet.categoryBrowsing", "/", false, "FProxyToadlet.welcomeTitle", "FProxyToadlet.welcome", false, null);
 
 		DecodeToadlet decodeKeywordURL = new DecodeToadlet(client, core);
 		server.register(decodeKeywordURL, null, "/decode/", true, false);
 
 		InsertFreesiteToadlet siteinsert = new InsertFreesiteToadlet(client);
-		server.register(siteinsert, "FProxyToadlet.categoryBrowsing", "/insertsite/", true,
-		        "FProxyToadlet.insertFreesiteTitle", "FProxyToadlet.insertFreesite", false, null);
+		server.register(siteinsert, "FProxyToadlet.categoryBrowsing", "/insertsite/", true, "FProxyToadlet.insertFreesiteTitle", "FProxyToadlet.insertFreesite", false, null);
 
 		UserAlertsToadlet alerts = new UserAlertsToadlet(client);
-		server.register(alerts, "FProxyToadlet.categoryStatus", "/alerts/", true, "FProxyToadlet.alertsTitle",
-		        "FProxyToadlet.alerts", true, null);
+		server.register(alerts, "FProxyToadlet.categoryStatus", "/alerts/", true, "FProxyToadlet.alertsTitle", "FProxyToadlet.alerts", true, null);
 
 		QueueToadlet downloadToadlet = new QueueToadlet(core, core.getFCPServer(), client, false);
-		server.register(downloadToadlet, "FProxyToadlet.categoryQueue", "/downloads/", true,
-		        "FProxyToadlet.downloadsTitle", "FProxyToadlet.downloads", false, downloadToadlet);
-		LocalDownloadDirectoryToadlet localDownloadDirectoryToadlet =
-		        new LocalDownloadDirectoryToadlet(core, client, "/downloads/");
+		server.register(downloadToadlet, "FProxyToadlet.categoryQueue", "/downloads/", true, "FProxyToadlet.downloadsTitle", "FProxyToadlet.downloads", false, downloadToadlet);
+		LocalDownloadDirectoryToadlet localDownloadDirectoryToadlet = new LocalDownloadDirectoryToadlet(core, client, "/downloads/");
 		server.register(localDownloadDirectoryToadlet, null, localDownloadDirectoryToadlet.path(), true, false);
 		QueueToadlet uploadToadlet = new QueueToadlet(core, core.getFCPServer(), client, true);
-		server.register(uploadToadlet, "FProxyToadlet.categoryQueue", "/uploads/", true,
-		         "FProxyToadlet.uploadsTitle", "FProxyToadlet.uploads", false, uploadToadlet);
+		server.register(uploadToadlet, "FProxyToadlet.categoryQueue", "/uploads/", true, "FProxyToadlet.uploadsTitle", "FProxyToadlet.uploads", false, uploadToadlet);
 
 		FileInsertWizardToadlet fiw = new FileInsertWizardToadlet(client, core);
-		server.register(fiw, "FProxyToadlet.categoryQueue", FileInsertWizardToadlet.PATH, true,
-		        "FProxyToadlet.uploadFileWizardTitle", "FProxyToadlet.uploadFileWizard", false, fiw);
+		server.register(fiw, "FProxyToadlet.categoryQueue", FileInsertWizardToadlet.PATH, true, "FProxyToadlet.uploadFileWizardTitle", "FProxyToadlet.uploadFileWizard", false, fiw);
 		uploadToadlet.setFIW(fiw);
 
 		LocalFileInsertToadlet localFileInsertToadlet = new LocalFileInsertToadlet(core, client);
 		server.register(localFileInsertToadlet, null, LocalFileInsertToadlet.PATH, true, false);
 
 		ContentFilterToadlet contentFilterToadlet = new ContentFilterToadlet(client, core);
-		server.register(contentFilterToadlet, "FProxyToadlet.categoryQueue", ContentFilterToadlet.PATH, true,
-		        "FProxyToadlet.filterFileTitle", "FProxyToadlet.filterFile", false, contentFilterToadlet);
+		server.register(contentFilterToadlet, "FProxyToadlet.categoryQueue", ContentFilterToadlet.PATH, true, "FProxyToadlet.filterFileTitle", "FProxyToadlet.filterFile", false, contentFilterToadlet);
 
 		LocalFileFilterToadlet localFileFilterToadlet = new LocalFileFilterToadlet(core, client);
 		server.register(localFileFilterToadlet, null, LocalFileFilterToadlet.PATH, true, false);
@@ -1180,29 +1158,25 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		server.register(symlinkToadlet, null, "/sl/", true, false);
 
 		SecurityLevelsToadlet seclevels = new SecurityLevelsToadlet(client, node, core);
-		server.register(seclevels, "FProxyToadlet.categoryConfig", "/seclevels/", true,
-		        "FProxyToadlet.seclevelsTitle", "FProxyToadlet.seclevels", true, null);
+		server.register(seclevels, "FProxyToadlet.categoryConfig", "/seclevels/", true, "FProxyToadlet.seclevelsTitle", "FProxyToadlet.seclevels", true, null);
 
-		if(node.getPluginManager().isEnabled()) {
-		    PproxyToadlet pproxy = new PproxyToadlet(client, node);
-		    server.register(pproxy, "FProxyToadlet.categoryConfig", "/plugins/", true, "FProxyToadlet.pluginsTitle",
-		            "FProxyToadlet.plugins", true, null);
+		if (node.getPluginManager().isEnabled()) {
+			PproxyToadlet pproxy = new PproxyToadlet(client, node);
+			server.register(pproxy, "FProxyToadlet.categoryConfig", "/plugins/", true, "FProxyToadlet.pluginsTitle", "FProxyToadlet.plugins", true, null);
 		}
 
 		SubConfig[] sc = config.getConfigs();
 		Arrays.sort(sc);
 
-		for(SubConfig cfg : sc) {
+		for (SubConfig cfg : sc) {
 			String prefix = cfg.getPrefix();
-			if(prefix.equals("security-levels") || prefix.equals("pluginmanager")) continue;
-			LocalDirectoryConfigToadlet localDirectoryConfigToadlet =
-			        new LocalDirectoryConfigToadlet(core, client, "/config/"+prefix);
-			ConfigToadlet configtoadlet = new ConfigToadlet(localDirectoryConfigToadlet.path(), client,
-			        config, cfg, node, core);
-			server.register(configtoadlet, "FProxyToadlet.categoryConfig", "/config/"+prefix, true,
-			        "ConfigToadlet."+prefix, "ConfigToadlet.title."+prefix, true, configtoadlet);
-			server.register(localDirectoryConfigToadlet, null, localDirectoryConfigToadlet.path(), true,
-			        false);
+			if (prefix.equals("security-levels") || prefix.equals("pluginmanager")) {
+				continue;
+			}
+			LocalDirectoryConfigToadlet localDirectoryConfigToadlet = new LocalDirectoryConfigToadlet(core, client, "/config/" + prefix);
+			ConfigToadlet configtoadlet = new ConfigToadlet(localDirectoryConfigToadlet.path(), client, config, cfg, node, core);
+			server.register(configtoadlet, "FProxyToadlet.categoryConfig", "/config/" + prefix, true, "ConfigToadlet." + prefix, "ConfigToadlet.title." + prefix, true, configtoadlet);
+			server.register(localDirectoryConfigToadlet, null, localDirectoryConfigToadlet.path(), true, false);
 		}
 
 		WelcomeToadlet welcometoadlet = new WelcomeToadlet(client, node);
@@ -1212,20 +1186,16 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		server.register(externalLinkToadlet, null, ExternalLinkToadlet.PATH, true, false);
 
 		DarknetConnectionsToadlet friendsToadlet = new DarknetConnectionsToadlet(node, core, client);
-		server.register(friendsToadlet, "FProxyToadlet.categoryFriends", "/friends/", true,
-		        "FProxyToadlet.friendsTitle", "FProxyToadlet.friends", true, null);
+		server.register(friendsToadlet, "FProxyToadlet.categoryFriends", "/friends/", true, "FProxyToadlet.friendsTitle", "FProxyToadlet.friends", true, null);
 
 		DarknetAddRefToadlet addRefToadlet = new DarknetAddRefToadlet(node, client, friendsToadlet);
-		server.register(addRefToadlet, "FProxyToadlet.categoryFriends", "/addfriend/", true,
-		        "FProxyToadlet.addFriendTitle", "FProxyToadlet.addFriend", true, null);
+		server.register(addRefToadlet, "FProxyToadlet.categoryFriends", "/addfriend/", true, "FProxyToadlet.addFriendTitle", "FProxyToadlet.addFriend", true, null);
 
 		OpennetConnectionsToadlet opennetToadlet = new OpennetConnectionsToadlet(node, core, client);
-		server.register(opennetToadlet, "FProxyToadlet.categoryStatus", "/strangers/", true,
-		        "FProxyToadlet.opennetTitle", "FProxyToadlet.opennet", true, opennetToadlet);
+		server.register(opennetToadlet, "FProxyToadlet.categoryStatus", "/strangers/", true, "FProxyToadlet.opennetTitle", "FProxyToadlet.opennet", true, opennetToadlet);
 
 		ChatForumsToadlet chatForumsToadlet = new ChatForumsToadlet(client, node.getPluginManager());
-		server.register(chatForumsToadlet, "FProxyToadlet.categoryChat", "/chat/", true,
-		        "FProxyToadlet.chatForumsTitle", "FProxyToadlet.chatForums", true, chatForumsToadlet);
+		server.register(chatForumsToadlet, "FProxyToadlet.categoryChat", "/chat/", true, "FProxyToadlet.chatForumsTitle", "FProxyToadlet.chatForums", true, chatForumsToadlet);
 
 		N2NTMToadlet n2ntmToadlet = new N2NTMToadlet(node, core, client);
 		server.register(n2ntmToadlet, null, "/send_n2ntm/", true, true);
@@ -1239,20 +1209,16 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 		server.register(browserTestToadlet, null, "/test/", true, false);
 
 		StatisticsToadlet statisticsToadlet = new StatisticsToadlet(node, core, client);
-		server.register(statisticsToadlet, "FProxyToadlet.categoryStatus", "/stats/", true,
-		        "FProxyToadlet.statsTitle", "FProxyToadlet.stats", true, null);
+		server.register(statisticsToadlet, "FProxyToadlet.categoryStatus", "/stats/", true, "FProxyToadlet.statsTitle", "FProxyToadlet.stats", true, null);
 
 		DiagnosticToadlet diagnosticToadlet = new DiagnosticToadlet(node, core, core.getFCPServer(), client);
-		server.register(diagnosticToadlet, "FProxyToadlet.categoryStatus", "/diagnostic/", true,
-		        "FProxyToadlet.diagnosticTitle", "FProxyToadlet.diagnostic", true, null);
+		server.register(diagnosticToadlet, "FProxyToadlet.categoryStatus", "/diagnostic/", true, "FProxyToadlet.diagnosticTitle", "FProxyToadlet.diagnostic", true, null);
 
 		ConnectivityToadlet connectivityToadlet = new ConnectivityToadlet(client, node);
-		server.register(connectivityToadlet, "FProxyToadlet.categoryStatus", "/connectivity/", true,
-		        "ConnectivityToadlet.connectivityTitle", "ConnectivityToadlet.connectivity", true, null);
+		server.register(connectivityToadlet, "FProxyToadlet.categoryStatus", "/connectivity/", true, "ConnectivityToadlet.connectivityTitle", "ConnectivityToadlet.connectivity", true, null);
 
 		TranslationToadlet translationToadlet = new TranslationToadlet(client, core);
-		server.register(translationToadlet, "FProxyToadlet.categoryConfig", TranslationToadlet.TOADLET_URL,
-		        true, "TranslationToadlet.title", "TranslationToadlet.titleLong", true, null);
+		server.register(translationToadlet, "FProxyToadlet.categoryConfig", TranslationToadlet.TOADLET_URL, true, "TranslationToadlet.title", "TranslationToadlet.titleLong", true, null);
 
 		FirstTimeWizardToadlet firstTimeWizardToadlet = new FirstTimeWizardToadlet(client, node, core);
 		server.register(firstTimeWizardToadlet, null, FirstTimeWizardToadlet.TOADLET_URL, true, false);
@@ -1293,7 +1259,8 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 
 	/**
 	 * Get expected filename for a file.
-	 * @param uri The original URI.
+	 *
+	 * @param uri              The original URI.
 	 * @param expectedMimeType The expected MIME type.
 	 */
 	private static String getFilename(FreenetURI uri, String expectedMimeType) {
@@ -1312,12 +1279,14 @@ public final class FProxyToadlet extends Toadlet implements RequestClient {
 			}
 			String[] range = units[1].split("-", 2);
 			result[0] = Long.parseLong(range[0]);
-			if (result[0] < 0)
+			if (result[0] < 0) {
 				throw new HTTPRangeException("Negative 'from' value");
+			}
 			if (range[1].trim().length() > 0) {
 				result[1] = Long.parseLong(range[1]);
-				if (result[1] <= result[0])
+				if (result[1] <= result[0]) {
 					throw new HTTPRangeException("'from' value must be less then 'to' value");
+				}
 			} else {
 				result[1] = -1;
 			}

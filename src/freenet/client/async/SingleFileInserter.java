@@ -642,24 +642,26 @@ class SingleFileInserter implements ClientPutState, Serializable {
 		@Override
 		public void onFailure(InsertException e, ClientPutState state, ClientContext context) {
 			boolean toFail = true;
-			synchronized(this) {
-				if(logMINOR)
-					Logger.minor(this, "onFailure(): "+e+" on "+state+" on "+this+" sfi = "+sfi+" metadataPutter = "+metadataPutter);
-				if(state == sfi) {
+			synchronized (this) {
+				if (logMINOR) {
+					Logger.minor(this, "onFailure(): " + e + " on " + state + " on " + this + " sfi = " + sfi + " metadataPutter = " + metadataPutter);
+				}
+				if (state == sfi) {
 					sfi = null;
-				} else if(state == metadataPutter) {
+				} else if (state == metadataPutter) {
 					metadataPutter = null;
 				} else {
-					Logger.error(this, "onFailure() on unknown state "+state+" on "+this, new Exception("debug"));
+					Logger.error(this, "onFailure() on unknown state " + state + " on " + this, new Exception("debug"));
 				}
-				if(finished){
+				if (finished) {
 					toFail = false; // Already failed
 				}
 			}
 			// fail() will cancel the other one, so we don't need to.
 			// When it does, it will come back here, and we won't call fail(), because fail() has already set finished = true.
-			if(toFail)
-			fail(e, context);
+			if (toFail) {
+				fail(e, context);
+			}
 		}
 
 		@Override

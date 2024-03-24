@@ -109,21 +109,23 @@ public class SeedClientPeerNode extends PeerNode {
 	
 	@Override
 	public boolean shouldDisconnectAndRemoveNow() {
-		if(!isConnected()) {
+		if (!isConnected()) {
 			// SeedClientPeerNode's always start off unverified.
 			// If it doesn't manage to connect in 60 seconds, dump it.
 			// However, we don't want to be dumped *before* we connect,
 			// so we need to check that first.
 			// Synchronize to avoid messy races.
-			synchronized(this) {
-				if(timeLastConnectionCompleted() > 0 &&
-						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60))
-				return true;
+			synchronized (this) {
+				if (timeLastConnectionCompleted() > 0 &&
+						System.currentTimeMillis() - lastReceivedPacketTime() > SECONDS.toMillis(60)) {
+					return true;
+				}
 			}
 		} else {
 			// Disconnect after an hour in any event.
-			if(System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1))
+			if (System.currentTimeMillis() - timeLastConnectionCompleted() > HOURS.toMillis(1)) {
 				return true;
+			}
 		}
 		return false;
 	}

@@ -327,23 +327,27 @@ public class SimpleFieldSet {
     /**
      * Put contents of a fieldset, overwrite old values.
      */
-    public void putAllOverwrite(SimpleFieldSet fs) {
-    	for(Map.Entry<String, String> entry: fs.values.entrySet()) {
-    		values.put(entry.getKey(), entry.getValue()); // overwrite old
-    	}
-    	if(fs.subsets == null) return;
-	if(subsets == null) subsets = new HashMap<String, SimpleFieldSet>();
-    	for(Map.Entry<String, SimpleFieldSet> entry: fs.subsets.entrySet()) {
-    		String key = entry.getKey();
-    		SimpleFieldSet hisFS = entry.getValue();
-    		SimpleFieldSet myFS = subsets.get(key);
-    		if(myFS != null) {
-    			myFS.putAllOverwrite(hisFS);
-    		} else {
-    			subsets.put(key, hisFS);
-    		}
-    	}
-    }
+	public void putAllOverwrite(SimpleFieldSet fs) {
+		for (Map.Entry<String, String> entry : fs.values.entrySet()) {
+			values.put(entry.getKey(), entry.getValue()); // overwrite old
+		}
+		if (fs.subsets == null) {
+			return;
+		}
+		if (subsets == null) {
+			subsets = new HashMap<String, SimpleFieldSet>();
+		}
+		for (Map.Entry<String, SimpleFieldSet> entry : fs.subsets.entrySet()) {
+			String key = entry.getKey();
+			SimpleFieldSet hisFS = entry.getValue();
+			SimpleFieldSet myFS = subsets.get(key);
+			if (myFS != null) {
+				myFS.putAllOverwrite(hisFS);
+			} else {
+				subsets.put(key, hisFS);
+			}
+		}
+	}
 
     /**
      * Set a key to a value. If the value already exists, throw IllegalStateException.
@@ -1181,11 +1185,14 @@ public class SimpleFieldSet {
 	 */
 	public char getChar(String key) throws FSParseException {
 		String s = get(key);
-		if(s == null) throw new FSParseException("No key "+key);
-			if (s.length() == 1)
-				return s.charAt(0);
-			else
-				throw new FSParseException("Cannot parse "+s+" for char "+key);
+		if (s == null) {
+			throw new FSParseException("No key " + key);
+		}
+		if (s.length() == 1) {
+			return s.charAt(0);
+		} else {
+			throw new FSParseException("Cannot parse " + s + " for char " + key);
+		}
 	}
 
     /** Get a char for the given key (represented as a single character). The key may be at the 
@@ -1197,11 +1204,14 @@ public class SimpleFieldSet {
      */
 	public char getChar(String key, char def) {
 		String s = get(key);
-		if(s == null) return def;
-			if (s.length() == 1)
-				return s.charAt(0);
-			else
-				return def;
+		if (s == null) {
+			return def;
+		}
+		if (s.length() == 1) {
+			return s.charAt(0);
+		} else {
+			return def;
+		}
 	}
 
 	public boolean getBoolean(String key, boolean def) {

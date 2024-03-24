@@ -366,35 +366,43 @@ public class PersistentRequestClient {
 	public void queueClientRequestMessage(FCPMessage msg, int verbosityLevel) {
 		queueClientRequestMessage(msg, verbosityLevel, false);
 	}
-	
+
 	public void queueClientRequestMessage(FCPMessage msg, int verbosityLevel, boolean useGlobalMask) {
-		if(useGlobalMask && (verbosityLevel & watchGlobalVerbosityMask) != verbosityLevel)
+		if (useGlobalMask && (verbosityLevel & watchGlobalVerbosityMask) != verbosityLevel) {
 			return;
+		}
 		FCPConnectionHandler conn = getConnection();
-		if(conn != null) {
+		if (conn != null) {
 			conn.send(msg);
 		}
 		PersistentRequestClient[] clients;
-		if(isGlobalQueue) {
-			synchronized(clientsWatchingLock) {
-				if(clientsWatching != null)
-				clients = clientsWatching.toArray(new PersistentRequestClient[clientsWatching.size()]);
-				else
+		if (isGlobalQueue) {
+			synchronized (clientsWatchingLock) {
+				if (clientsWatching != null) {
+					clients = clientsWatching.toArray(new PersistentRequestClient[clientsWatching.size()]);
+				} else {
 					clients = null;
+				}
 			}
-			if(clients != null)
-			for(PersistentRequestClient client: clients) {
-				if(client.persistence != persistence) continue;
-				client.queueClientRequestMessage(msg, verbosityLevel, true);
+			if (clients != null) {
+				for (PersistentRequestClient client : clients) {
+					if (client.persistence != persistence) {
+						continue;
+					}
+					client.queueClientRequestMessage(msg, verbosityLevel, true);
+				}
 			}
 		}
 	}
-	
+
 	private void unwatch(PersistentRequestClient client) {
-		if(!isGlobalQueue) return;
-		synchronized(clientsWatchingLock) {
-			if(clientsWatching != null)
-			clientsWatching.remove(client);
+		if (!isGlobalQueue) {
+			return;
+		}
+		synchronized (clientsWatchingLock) {
+			if (clientsWatching != null) {
+				clientsWatching.remove(client);
+			}
 		}
 	}
 

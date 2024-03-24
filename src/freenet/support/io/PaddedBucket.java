@@ -181,18 +181,25 @@ public class PaddedBucket implements Bucket, Serializable {
         
         @Override
         public int read(byte[] buf, int offset, int length) throws IOException {
-            synchronized(PaddedBucket.this) {
-                if(length < 0) return -1;
-                if(length == 0) return 0;
-                if(counter >= size) return -1;
-                if(counter + length >= size) {
-                    length = (int)Math.min(length, size - counter);
+            synchronized (PaddedBucket.this) {
+                if (length < 0) {
+                    return -1;
+                }
+                if (length == 0) {
+                    return 0;
+                }
+                if (counter >= size) {
+                    return -1;
+                }
+                if (counter + length >= size) {
+                    length = (int) Math.min(length, size - counter);
                 }
             }
             int ret = in.read(buf, offset, length);
-            synchronized(PaddedBucket.this) {
-                if(ret > 0)
-                counter += ret;
+            synchronized (PaddedBucket.this) {
+                if (ret > 0) {
+                    counter += ret;
+                }
             }
             return ret;
         }

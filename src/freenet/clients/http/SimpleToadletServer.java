@@ -352,45 +352,48 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 			ts.setAdvancedMode(val);
 		}
 	}
-	private static class FProxyJavascriptEnabledCallback extends BooleanCallback  {
-		
+
+	private static class FProxyJavascriptEnabledCallback extends BooleanCallback {
+
 		private final SimpleToadletServer ts;
-		
-		FProxyJavascriptEnabledCallback(SimpleToadletServer ts){
+
+		FProxyJavascriptEnabledCallback(SimpleToadletServer ts) {
 			this.ts = ts;
 		}
-		
+
 		@Override
 		public Boolean get() {
 			return ts.isFProxyJavascriptEnabled();
 		}
-		
+
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
-				ts.enableFProxyJavascript(val);
+			}
+			ts.enableFProxyJavascript(val);
 		}
 	}
-	
-	private static class FProxyWebPushingEnabledCallback extends BooleanCallback{
-		
+
+	private static class FProxyWebPushingEnabledCallback extends BooleanCallback {
+
 		private final SimpleToadletServer ts;
-		
-		FProxyWebPushingEnabledCallback(SimpleToadletServer ts){
-			this.ts=ts;
+
+		FProxyWebPushingEnabledCallback(SimpleToadletServer ts) {
+			this.ts = ts;
 		}
-		
+
 		@Override
 		public Boolean get() {
 			return ts.isFProxyWebPushingEnabled();
 		}
-		
+
 		@Override
 		public void set(Boolean val) throws InvalidConfigValueException, NodeNeedRestartException {
-			if (get().equals(val))
+			if (get().equals(val)) {
 				return;
-				ts.enableFProxyWebPushing(val);
+			}
+			ts.enableFProxyWebPushing(val);
 		}
 	}
 	

@@ -188,18 +188,25 @@ public class PaddedRandomAccessBucket implements RandomAccessBucket, Serializabl
         
         @Override
         public int read(byte[] buf, int offset, int length) throws IOException {
-            synchronized(PaddedRandomAccessBucket.this) {
-                if(length < 0) return -1;
-                if(length == 0) return 0;
-                if(counter >= size) return -1;
-                if(counter + length >= size) {
-                    length = (int)Math.min(length, size - counter);
+            synchronized (PaddedRandomAccessBucket.this) {
+                if (length < 0) {
+                    return -1;
+                }
+                if (length == 0) {
+                    return 0;
+                }
+                if (counter >= size) {
+                    return -1;
+                }
+                if (counter + length >= size) {
+                    length = (int) Math.min(length, size - counter);
                 }
             }
             int ret = in.read(buf, offset, length);
-            synchronized(PaddedRandomAccessBucket.this) {
-                if(ret > 0)
-                counter += ret;
+            synchronized (PaddedRandomAccessBucket.this) {
+                if (ret > 0) {
+                    counter += ret;
+                }
             }
             return ret;
         }

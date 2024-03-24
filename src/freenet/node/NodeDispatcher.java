@@ -947,22 +947,29 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 	}
 
 	private boolean forward(Message m, long id, PeerNode pn, short htl, double target, RoutedContext ctx, byte[] targetIdentity) {
-		if(logMINOR) Logger.minor(this, "Should forward");
+		if (logMINOR) {
+			Logger.minor(this, "Should forward");
+		}
 		// Forward
 		m = preForward(m, htl);
-		while(true) {
+		while (true) {
 			PeerNode next = node.getPeers().getByPubKeyHash(targetIdentity);
-			if(next != null && !next.isConnected()) {
-				Logger.error(this, "Found target but disconnected!: "+next);
+			if (next != null && !next.isConnected()) {
+				Logger.error(this, "Found target but disconnected!: " + next);
 				next = null;
 			}
-			if(next == null)
-			next = node.getPeers().closerPeer(pn, ctx.routedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
-				        null, htl, 0, pn == null, false, false);
-			if(logMINOR) Logger.minor(this, "Next: "+next+" message: "+m);
-			if(next != null) {
+			if (next == null) {
+				next = node.getPeers().closerPeer(pn, ctx.routedTo, target, true, node.isAdvancedModeEnabled(), -1, null,
+						null, htl, 0, pn == null, false, false);
+			}
+			if (logMINOR) {
+				Logger.minor(this, "Next: " + next + " message: " + m);
+			}
+			if (next != null) {
 				// next is connected, or at least has been => next.getPeer() CANNOT be null.
-				if(logMINOR) Logger.minor(this, "Forwarding "+m.getSpec()+" to "+next.getPeer().getPort());
+				if (logMINOR) {
+					Logger.minor(this, "Forwarding " + m.getSpec() + " to " + next.getPeer().getPort());
+				}
 				ctx.addSent(next);
 				try {
 					next.sendAsync(m, null, nodeStats.routedMessageCtr);
@@ -970,14 +977,18 @@ public class NodeDispatcher implements Dispatcher, Runnable {
 					continue;
 				}
 			} else {
-				if(logMINOR) Logger.minor(this, "Reached dead end for "+m.getSpec()+" on "+node.getDarknetPortNumber());
+				if (logMINOR) {
+					Logger.minor(this, "Reached dead end for " + m.getSpec() + " on " + node.getDarknetPortNumber());
+				}
 				// Reached a dead end...
 				Message reject = DMT.createFNPRoutedRejected(id, htl);
-				if(pn != null) try {
-					pn.sendAsync(reject, null, nodeStats.routedMessageCtr);
-				} catch (NotConnectedException e) {
-					Logger.error(this, "Cannot send reject message back to source "+pn);
-					return true;
+				if (pn != null) {
+					try {
+						pn.sendAsync(reject, null, nodeStats.routedMessageCtr);
+					} catch (NotConnectedException e) {
+						Logger.error(this, "Cannot send reject message back to source " + pn);
+						return true;
+					}
 				}
 			}
 			return true;
